@@ -1,0 +1,15 @@
+### IntelliJ ###
+
+.idea
+*.iml
+
+### NodeJS ###
+
+**/node_modules/*
+**/dist/*
+
+### Gradle ###
+
+**/build/*
+**/out/*
+.gradle
