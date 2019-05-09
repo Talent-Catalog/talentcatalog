@@ -1,3 +1,5 @@
 rootProject.name = 'tbbtalentv2'
 
 include ':server'
+include ':ui:admin-portal'
+include ':ui:candidate-portal'

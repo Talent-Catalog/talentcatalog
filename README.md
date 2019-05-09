@@ -53,8 +53,68 @@ Started TbbTalentApplication in 2.217 seconds (JVM running for 2.99)
 
 ### Run the Candidate Portal ###
 
-- we will fill this in when once we've setup the Candidate Portal
+The "Candidate Portal" is an Angular Module and can be found in the diretory `tbbtalentv2\ui\candidate-portal`.
+
+Before running, make sure all the libraries have been downloaded locally by running `npm install` from the root 
+directory of the module (i.e. `tbbtalentv2\ui\candidate-portal`):
+
+> cd tbbtalentv2\ui\candidate-portal
+> npm install 
+
+Then from within the same directory run: 
+
+> ng serve
+
+You will see log similar to: 
+
+```
+chunk {main} main.js, main.js.map (main) 11.9 kB [initial] [rendered]
+chunk {polyfills} polyfills.js, polyfills.js.map (polyfills) 236 kB [initial] [rendered]
+chunk {runtime} runtime.js, runtime.js.map (runtime) 6.08 kB [entry] [rendered]
+chunk {styles} styles.js, styles.js.map (styles) 16.6 kB [initial] [rendered]
+chunk {vendor} vendor.js, vendor.js.map (vendor) 3.55 MB [initial] [rendered]
+i ｢wdm｣: Compiled successfully.
+```
+
+The Candidate Portal is now running locally and you can open a browser (chrome preferred)to: 
+
+[http://localhost:4200]()
+
+
+__Note:__ _this is for development mode only. In production, the Candidate Portal module will be bundled 
+into the server and serve through Apache Tomcat._  
+
 
 ### Run the Admin Portal ###
 
-- we will fill this in when once we've setup the Admin Portal
+
+The "Admin Portal" is an Angular Module and can be found in the directory `tbbtalentv2\ui\admin-portal`.
+
+Before running, make sure all the libraries have been downloaded locally by running `npm install` from the root 
+directory of the module (i.e. `tbbtalentv2\ui\admin-portal`):
+
+> cd tbbtalentv2\ui\admin-portal
+> npm install 
+
+Then from within the same directory run: 
+
+> ng serve
+
+You will see log similar to: 
+
+```
+chunk {main} main.js, main.js.map (main) 11.9 kB [initial] [rendered]
+chunk {polyfills} polyfills.js, polyfills.js.map (polyfills) 236 kB [initial] [rendered]
+chunk {runtime} runtime.js, runtime.js.map (runtime) 6.08 kB [entry] [rendered]
+chunk {styles} styles.js, styles.js.map (styles) 16.6 kB [initial] [rendered]
+chunk {vendor} vendor.js, vendor.js.map (vendor) 3.55 MB [initial] [rendered]
+i ｢wdm｣: Compiled successfully.
+```
+
+The Admin Portal is now running locally and you can open a browser (chrome preferred)to: 
+
+[http://localhost:4201]()
+
+
+__Note:__ _this is for development mode only. In production, the Admin Portal module will be bundled 
+into the server and serve through Apache Tomcat._ 

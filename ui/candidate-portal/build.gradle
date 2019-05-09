@@ -1,0 +1,20 @@
+plugins {
+  id 'java'
+  id "com.moowork.node" version "1.2.0"
+}
+
+node {
+  version = '10.15.1'
+  download = true
+}
+
+task npm_build_ui_bundle(type: NpmTask) {
+  args = ['run', 'build', '--', '--prod', '--base-href', '/admin/']
+  dependsOn 'npm_install'
+}
+
+jar.dependsOn 'npm_build_ui_bundle'
+
+jar {
+  from 'dist' into 'ui-bundle'
+}
