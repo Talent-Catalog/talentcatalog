@@ -1,6 +1,33 @@
-<h1>Search Candidates</h1>
+<h1>Candidates</h1>
 
-<p>
-  todo: we will add functionality to search and manage candidates here
-</p>
+<div>
+  <table class="table">
+
+    <thead>
+    <tr>
+      <th class="candidate-num-col-head">Candidate #</th>
+      <th>First Name</th>
+      <th>Last Name</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr *ngFor="let candidate of candidates">
+      <td>{{candidate.candidateNumber}}</td>
+      <td>{{candidate.firstName}}</td>
+      <td>{{candidate.lastName}}</td>
+    </tr>
+
+    <!-- loading -->
+    <tr *ngIf="loading">
+      <td colspan="42">
+        <i class="fa fa-spinner fa-spin"></i> Loading...
+      </td>
+    </tr>
+
+    </tbody>
+
+  </table>
+
+</div>
 

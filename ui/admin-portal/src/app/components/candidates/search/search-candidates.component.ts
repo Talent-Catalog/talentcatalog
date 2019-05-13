@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { CandidateService } from '../../../services/candidate.service';
+import { Candidate } from '../../../model/candidate';
 
 @Component({
   selector: 'app-search-candidates',
@@ -7,9 +9,17 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SearchCandidatesComponent implements OnInit {
 
-  constructor() { }
+  loading: boolean;
+  candidates: Candidate[];
+
+  constructor(private candidateService: CandidateService) { }
 
   ngOnInit() {
+    this.loading = true;
+    this.candidateService.search().subscribe(results => {
+      this.candidates = results;
+      this.loading = false;
+    });
   }
 
 }
