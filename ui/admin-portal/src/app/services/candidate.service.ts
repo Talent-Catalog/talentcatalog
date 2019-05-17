@@ -1,42 +1,17 @@
 import { Injectable } from '@angular/core';
 import { Candidate } from '../model/candidate';
 import { Observable } from 'rxjs/index';
-import { of } from 'rxjs';
-import { delay } from 'rxjs/internal/operators';
+import { environment } from '../../environments/environment';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({providedIn: 'root'})
 export class CandidateService {
 
-  private candidates: Candidate[];
+  private apiUrl = environment.apiUrl + '/candidate';
 
-  constructor() {
-    this.candidates = [];
-
-    let nextId = 0;
-
-    this.candidates.push({
-      id: nextId++,
-      candidateNumber: 'CN0001',
-      firstName: 'Test1',
-      lastName: 'Person1'
-    });
-
-    this.candidates.push({
-      id: nextId++,
-      candidateNumber: 'CN0002',
-      firstName: 'Test2',
-      lastName: 'Person2'
-    });
-
-    this.candidates.push({
-      id: nextId++,
-      candidateNumber: 'CN0003',
-      firstName: 'Test3',
-      lastName: 'Person3'
-    });
-  }
+  constructor(private http:HttpClient) {}
 
   search(): Observable<Candidate[]> {
-    return of(this.candidates).pipe(delay(1000));
+    return this.http.get<Candidate[]>(`${this.apiUrl}`);
   }
 }
