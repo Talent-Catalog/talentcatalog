@@ -1,8 +1,16 @@
 package org.tbbtalent.server.model;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "candidate")
 public class Candidate {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "candidate_gen")
+    @SequenceGenerator(name = "candidate_gen", sequenceName = "candidate_id_seq", allocationSize = 1)
     private Long id;
+
     private String candidateNumber;
     private String firstName;
     private String lastName;
