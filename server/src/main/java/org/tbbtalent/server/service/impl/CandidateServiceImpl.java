@@ -2,6 +2,7 @@ package org.tbbtalent.server.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.repository.CandidateRepository;
 import org.tbbtalent.server.request.CreateCandidateRequest;
@@ -26,13 +27,17 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    @Transactional
     public Candidate createCandidates(CreateCandidateRequest request) {
-        String candidateNumber = String.format("CN%04d", id);
         Candidate candidate = new Candidate(
-                candidateNumber,
                 request.getFirstName(),
                 request.getLastName());
-        this.candidates.add(candidate);
+        candidate = this.candidateRepository.save(candidate);
+
+        String candidateNumber = String.format("CN%04d", candidate.getId());
+        candidate.setCandidateNumber(candidateNumber);
+        candidate = this.candidateRepository.save(candidate);
+
         return candidate;
     }
 }

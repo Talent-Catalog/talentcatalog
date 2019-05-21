@@ -18,9 +18,7 @@ public class Candidate {
     public Candidate() {
     }
 
-    public Candidate(Long id, String candidateNumber, String firstName, String lastName) {
-        this.id = id;
-        this.candidateNumber = candidateNumber;
+    public Candidate(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
     }
