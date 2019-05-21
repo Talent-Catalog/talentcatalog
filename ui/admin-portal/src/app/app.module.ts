@@ -8,18 +8,22 @@ import { HeaderComponent } from './components/header/header.component';
 import { SearchCandidatesComponent } from './components/candidates/search/search-candidates.component';
 import { HomeComponent } from './components/home/home.component';
 import { HttpClientModule } from '@angular/common/http';
+import { CreateCandidateComponent } from './components/candidates/create/create-candidate.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
     SearchCandidatesComponent,
-    HomeComponent
+    HomeComponent,
+    CreateCandidateComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
+    ReactiveFormsModule,
     NgbModule
   ],
   providers: [],

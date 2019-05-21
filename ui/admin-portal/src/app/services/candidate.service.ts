@@ -14,4 +14,8 @@ export class CandidateService {
   search(): Observable<Candidate[]> {
     return this.http.get<Candidate[]>(`${this.apiUrl}`);
   }
+
+  create(details): Observable<Candidate>  {
+    return this.http.post<Candidate>(`${this.apiUrl}`, details);
+  }
 }

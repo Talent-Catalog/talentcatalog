@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { SearchCandidatesComponent } from './components/candidates/search/search-candidates.component';
 import { HomeComponent } from './components/home/home.component';
+import { CreateCandidateComponent } from './components/candidates/create/create-candidate.component';
 
 const routes: Routes = [
   {
@@ -11,7 +12,17 @@ const routes: Routes = [
   },
   {
     path: 'candidates',
-    component: SearchCandidatesComponent
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        component: SearchCandidatesComponent
+      },
+      {
+        path: 'create',
+        component: CreateCandidateComponent
+      }
+    ]
   },
 ];
 
