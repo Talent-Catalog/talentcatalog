@@ -30,6 +30,13 @@
       </td>
     </tr>
 
+    <!-- no results -->
+    <tr *ngIf="!loading && !candidates?.length">
+      <td colspan="42">
+        <span class="text-muted">(no matching candidates)</span>
+      </td>
+    </tr>
+
     </tbody>
 
   </table>
