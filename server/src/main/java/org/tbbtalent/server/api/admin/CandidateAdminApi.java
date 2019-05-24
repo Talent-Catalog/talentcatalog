@@ -1,17 +1,15 @@
 package org.tbbtalent.server.api.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.request.CreateCandidateRequest;
 import org.tbbtalent.server.service.CandidateService;
 
 import java.util.List;
 
-@RestController("/api/admin/candidate")
+@RestController()
+@RequestMapping("/api/admin/candidate")
 public class CandidateAdminApi {
 
     private final CandidateService candidateService;
@@ -21,9 +19,14 @@ public class CandidateAdminApi {
         this.candidateService = candidateService;
     }
 
-    @GetMapping
+    @GetMapping()
     public List<Candidate> search() {
         return this.candidateService.searchCandidates();
+    }
+
+    @GetMapping("{id}")
+    public Candidate get(@PathVariable("id") long id) {
+        return this.candidateService.getCandidate(id);
     }
 
     @PostMapping

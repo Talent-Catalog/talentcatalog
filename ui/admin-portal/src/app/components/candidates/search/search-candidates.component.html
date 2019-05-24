@@ -18,7 +18,11 @@
 
     <tbody>
     <tr *ngFor="let candidate of candidates">
-      <td>{{candidate.candidateNumber}}</td>
+      <td>
+        <a [routerLink]="[candidate.id]">
+          {{candidate.candidateNumber}}
+        </a>
+      </td>
       <td>{{candidate.firstName}}</td>
       <td>{{candidate.lastName}}</td>
     </tr>

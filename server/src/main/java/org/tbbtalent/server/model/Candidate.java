@@ -1,5 +1,7 @@
 package org.tbbtalent.server.model;
 
+import org.apache.commons.lang3.StringUtils;
+
 import javax.persistence.*;
 
 @Entity
@@ -53,5 +55,9 @@ public class Candidate {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getDisplayName() {
+        return StringUtils.join(this.firstName, " ", this.lastName);
     }
 }

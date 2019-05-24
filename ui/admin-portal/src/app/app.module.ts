@@ -10,6 +10,7 @@ import { HomeComponent } from './components/home/home.component';
 import { HttpClientModule } from '@angular/common/http';
 import { CreateCandidateComponent } from './components/candidates/create/create-candidate.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ViewCandidateComponent } from './components/candidates/view/view-candidate.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     HeaderComponent,
     SearchCandidatesComponent,
     HomeComponent,
-    CreateCandidateComponent
+    CreateCandidateComponent,
+    ViewCandidateComponent
   ],
   imports: [
     BrowserModule,

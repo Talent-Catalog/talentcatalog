@@ -9,5 +9,7 @@ public interface CandidateService {
 
     List<Candidate> searchCandidates();
 
+    Candidate getCandidate(long id);
+
     Candidate createCandidates(CreateCandidateRequest request);
 }
