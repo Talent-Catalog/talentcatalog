@@ -22,4 +22,8 @@ export class CandidateService {
   create(details): Observable<Candidate>  {
     return this.http.post<Candidate>(`${this.apiUrl}`, details);
   }
+
+  update(id: number, details): Observable<Candidate>  {
+    return this.http.put<Candidate>(`${this.apiUrl}/${id}`, details);
+  }
 }

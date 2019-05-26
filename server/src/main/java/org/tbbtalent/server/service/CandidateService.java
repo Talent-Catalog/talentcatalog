@@ -2,6 +2,7 @@ package org.tbbtalent.server.service;
 
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.request.CreateCandidateRequest;
+import org.tbbtalent.server.request.UpdateCandidateRequest;
 
 import java.util.List;
 
@@ -11,5 +12,7 @@ public interface CandidateService {
 
     Candidate getCandidate(long id);
 
-    Candidate createCandidates(CreateCandidateRequest request);
+    Candidate createCandidate(CreateCandidateRequest request);
+
+    Candidate updateCandidate(long id, UpdateCandidateRequest request);
 }

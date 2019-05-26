@@ -11,7 +11,12 @@
     </ol>
   </nav>
 
-  <h1>{{candidate.displayName}}</h1>
+  <div>
+    <div class="pull-right">
+      <button class="btn btn-primary" [routerLink]="['edit']">Edit</button>
+    </div>
+    <h1>{{candidate.displayName}}</h1>
+  </div>
 
   <div>
     <div class="form-group row">

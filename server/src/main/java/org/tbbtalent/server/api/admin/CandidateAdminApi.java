@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.request.CreateCandidateRequest;
+import org.tbbtalent.server.request.UpdateCandidateRequest;
 import org.tbbtalent.server.service.CandidateService;
 
 import java.util.List;
@@ -31,6 +32,12 @@ public class CandidateAdminApi {
 
     @PostMapping
     public Candidate create(@RequestBody CreateCandidateRequest request) {
-        return this.candidateService.createCandidates(request);
+        return this.candidateService.createCandidate(request);
+    }
+
+    @PutMapping("{id}")
+    public Candidate update(@PathVariable("id") long id,
+                            @RequestBody UpdateCandidateRequest request) {
+        return this.candidateService.updateCandidate(id, request);
     }
 }

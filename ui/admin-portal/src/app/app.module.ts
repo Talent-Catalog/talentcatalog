@@ -11,6 +11,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { CreateCandidateComponent } from './components/candidates/create/create-candidate.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ViewCandidateComponent } from './components/candidates/view/view-candidate.component';
+import { EditCandidateComponent } from './components/candidates/edit/edit-candidate.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { ViewCandidateComponent } from './components/candidates/view/view-candid
     SearchCandidatesComponent,
     HomeComponent,
     CreateCandidateComponent,
-    ViewCandidateComponent
+    ViewCandidateComponent,
+    EditCandidateComponent
   ],
   imports: [
     BrowserModule,
