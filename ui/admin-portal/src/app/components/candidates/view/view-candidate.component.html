@@ -3,6 +3,14 @@
 </div>
 
 <div *ngIf="!loading">
+
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a [routerLink]="['/candidates']">Candidates</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{candidate.displayName}}</li>
+    </ol>
+  </nav>
+
   <h1>{{candidate.displayName}}</h1>
 
   <div>
