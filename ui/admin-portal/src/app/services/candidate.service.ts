@@ -26,4 +26,8 @@ export class CandidateService {
   update(id: number, details): Observable<Candidate>  {
     return this.http.put<Candidate>(`${this.apiUrl}/${id}`, details);
   }
+
+  delete(id: number): Observable<boolean>  {
+    return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
+  }
 }

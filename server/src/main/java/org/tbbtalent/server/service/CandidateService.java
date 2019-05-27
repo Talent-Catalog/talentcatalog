@@ -15,4 +15,6 @@ public interface CandidateService {
     Candidate createCandidate(CreateCandidateRequest request);
 
     Candidate updateCandidate(long id, UpdateCandidateRequest request);
+
+    boolean deleteCandidate(long id);
 }

@@ -12,6 +12,7 @@ import { CreateCandidateComponent } from './components/candidates/create/create-
 import { ReactiveFormsModule } from '@angular/forms';
 import { ViewCandidateComponent } from './components/candidates/view/view-candidate.component';
 import { EditCandidateComponent } from './components/candidates/edit/edit-candidate.component';
+import { DeleteCandidateComponent } from './components/candidates/delete/delete-candidate.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { EditCandidateComponent } from './components/candidates/edit/edit-candid
     HomeComponent,
     CreateCandidateComponent,
     ViewCandidateComponent,
-    EditCandidateComponent
+    EditCandidateComponent,
+    DeleteCandidateComponent
   ],
   imports: [
     BrowserModule,
@@ -29,6 +31,9 @@ import { EditCandidateComponent } from './components/candidates/edit/edit-candid
     HttpClientModule,
     ReactiveFormsModule,
     NgbModule
+  ],
+  entryComponents: [
+    DeleteCandidateComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

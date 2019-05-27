@@ -40,4 +40,9 @@ public class CandidateAdminApi {
                             @RequestBody UpdateCandidateRequest request) {
         return this.candidateService.updateCandidate(id, request);
     }
+
+    @DeleteMapping("{id}")
+    public boolean delete(@PathVariable("id") long id) {
+        return this.candidateService.deleteCandidate(id);
+    }
 }

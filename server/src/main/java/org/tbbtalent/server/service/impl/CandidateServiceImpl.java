@@ -59,4 +59,16 @@ public class CandidateServiceImpl implements CandidateService {
         candidate = this.candidateRepository.save(candidate);
         return candidate;
     }
+
+    @Override
+    @Transactional
+    public boolean deleteCandidate(long id) {
+        Candidate candidate = candidateRepository.findById(id).orElse(null);
+        if (candidate != null) {
+            candidateRepository.delete(candidate);
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

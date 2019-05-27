@@ -13,7 +13,8 @@
 
   <div>
     <div class="pull-right">
-      <button class="btn btn-primary" [routerLink]="['edit']">Edit</button>
+      <button class="btn btn-primary mr-1" [routerLink]="['edit']">Edit</button>
+      <button class="btn btn-danger" (click)="deleteCandidate()">Delete</button>
     </div>
     <h1>{{candidate.displayName}}</h1>
   </div>
