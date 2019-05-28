@@ -12,6 +12,7 @@ import { DeleteCandidateComponent } from '../delete/delete-candidate.component';
 })
 export class ViewCandidateComponent implements OnInit {
 
+  loading: boolean;
   candidate: Candidate;
 
   constructor(private candidateService: CandidateService,
