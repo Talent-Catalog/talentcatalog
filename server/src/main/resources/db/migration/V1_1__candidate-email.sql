@@ -1,0 +1,1 @@
+alter table candidate add column email text;

@@ -38,7 +38,8 @@ public class CandidateServiceImpl implements CandidateService {
     public Candidate createCandidate(CreateCandidateRequest request) {
         Candidate candidate = new Candidate(
                 request.getFirstName(),
-                request.getLastName());
+                request.getLastName(),
+                request.getEmail());
         candidate = this.candidateRepository.save(candidate);
 
         String candidateNumber = String.format("CN%04d", candidate.getId());
@@ -56,6 +57,7 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setCandidateNumber(request.getCandidateNumber());
         candidate.setFirstName(request.getFirstName());
         candidate.setLastName(request.getLastName());
+        candidate.setEmail(request.getEmail());
         candidate = this.candidateRepository.save(candidate);
         return candidate;
     }

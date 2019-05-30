@@ -4,4 +4,5 @@ export interface Candidate {
   displayName: string;
   firstName: string;
   lastName: string;
+  email: string;
 }

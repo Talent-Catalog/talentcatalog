@@ -30,6 +30,7 @@ export class EditCandidateComponent implements OnInit {
           candidateNumber: [candidate.candidateNumber],
           firstName: [candidate.firstName],
           lastName: [candidate.lastName],
+          email: [candidate.email],
         });
         this.loading = false;
       });

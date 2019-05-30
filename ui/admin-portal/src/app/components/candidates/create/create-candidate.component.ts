@@ -21,6 +21,7 @@ export class CreateCandidateComponent implements OnInit {
     this.candidateForm = this.fb.group({
       firstName: [''],
       lastName: [''],
+      email: [''],
     });
   }
 

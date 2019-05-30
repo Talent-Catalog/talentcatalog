@@ -16,13 +16,15 @@ public class Candidate {
     private String candidateNumber;
     private String firstName;
     private String lastName;
+    private String email;
 
     public Candidate() {
     }
 
-    public Candidate(String firstName, String lastName) {
+    public Candidate(String firstName, String lastName, String email) {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.email = email;
     }
 
     public Long getId() {
@@ -60,4 +62,8 @@ public class Candidate {
     public String getDisplayName() {
         return StringUtils.join(this.firstName, " ", this.lastName);
     }
+
+    public String getEmail() { return email; }
+
+    public void setEmail(String email) { this.email = email; }
 }
