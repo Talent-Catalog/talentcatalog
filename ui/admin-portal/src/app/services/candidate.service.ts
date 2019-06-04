@@ -3,6 +3,7 @@ import { Candidate } from '../model/candidate';
 import { Observable } from 'rxjs/index';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
+import { SearchResults } from '../model/search-results';
 
 @Injectable({providedIn: 'root'})
 export class CandidateService {
@@ -11,8 +12,8 @@ export class CandidateService {
 
   constructor(private http:HttpClient) {}
 
-  search(): Observable<Candidate[]> {
-    return this.http.get<Candidate[]>(`${this.apiUrl}`);
+  search(request): Observable<SearchResults<Candidate>> {
+    return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/search`, request);
   }
 
   get(id: number): Observable<Candidate> {

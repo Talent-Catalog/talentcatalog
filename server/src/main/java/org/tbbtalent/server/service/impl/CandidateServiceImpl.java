@@ -1,16 +1,17 @@
 package org.tbbtalent.server.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.repository.CandidateRepository;
 import org.tbbtalent.server.request.CreateCandidateRequest;
+import org.tbbtalent.server.request.SearchCandidateRequest;
 import org.tbbtalent.server.request.UpdateCandidateRequest;
 import org.tbbtalent.server.service.CandidateService;
-
-import java.util.List;
 
 @Service
 public class CandidateServiceImpl implements CandidateService {
@@ -23,8 +24,9 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<Candidate> searchCandidates() {
-        return this.candidateRepository.findAll();
+    public Page<Candidate> searchCandidates(SearchCandidateRequest request) {
+        return this.candidateRepository.findAll(
+                PageRequest.of(request.getPageNumber(), request.getPageSize()));
     }
 
     @Override

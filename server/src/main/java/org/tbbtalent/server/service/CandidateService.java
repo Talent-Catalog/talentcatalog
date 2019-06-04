@@ -1,14 +1,14 @@
 package org.tbbtalent.server.service;
 
+import org.springframework.data.domain.Page;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.request.CreateCandidateRequest;
+import org.tbbtalent.server.request.SearchCandidateRequest;
 import org.tbbtalent.server.request.UpdateCandidateRequest;
-
-import java.util.List;
 
 public interface CandidateService {
 
-    List<Candidate> searchCandidates();
+    Page<Candidate> searchCandidates(SearchCandidateRequest request);
 
     Candidate getCandidate(long id);
 

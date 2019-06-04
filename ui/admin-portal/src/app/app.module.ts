@@ -13,6 +13,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ViewCandidateComponent } from './components/candidates/view/view-candidate.component';
 import { EditCandidateComponent } from './components/candidates/edit/edit-candidate.component';
 import { DeleteCandidateComponent } from './components/candidates/delete/delete-candidate.component';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { DeleteCandidateComponent } from './components/candidates/delete/delete-
     AppRoutingModule,
     HttpClientModule,
     ReactiveFormsModule,
-    NgbModule
+    NgbModule,
+    InfiniteScrollModule
   ],
   entryComponents: [
     DeleteCandidateComponent
@@ -38,4 +40,5 @@ import { DeleteCandidateComponent } from './components/candidates/delete/delete-
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}

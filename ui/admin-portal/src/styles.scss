@@ -5,7 +5,6 @@ $fa-font-path: "../node_modules/font-awesome/fonts";
 @import '~font-awesome/scss/font-awesome.scss';
 
 body {
-  min-height: 75rem;
   padding-top: 4.5rem;
 }
 
@@ -15,4 +14,15 @@ body {
 
 h1 {
   margin-bottom: 2rem;
+}
+
+.link,
+.link:not([href]):not([tabindex]){
+  color: $link-color;
+  cursor: pointer;
+  text-decoration: $link-decoration;
+  &:hover {
+    color: $link-hover-color;
+    text-decoration: $link-hover-decoration;
+  }
 }

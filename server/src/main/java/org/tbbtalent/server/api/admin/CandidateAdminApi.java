@@ -1,13 +1,13 @@
 package org.tbbtalent.server.api.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.request.CreateCandidateRequest;
+import org.tbbtalent.server.request.SearchCandidateRequest;
 import org.tbbtalent.server.request.UpdateCandidateRequest;
 import org.tbbtalent.server.service.CandidateService;
-
-import java.util.List;
 
 @RestController()
 @RequestMapping("/api/admin/candidate")
@@ -20,9 +20,9 @@ public class CandidateAdminApi {
         this.candidateService = candidateService;
     }
 
-    @GetMapping()
-    public List<Candidate> search() {
-        return this.candidateService.searchCandidates();
+    @PostMapping("search")
+    public Page<Candidate> search(@RequestBody SearchCandidateRequest request) {
+        return this.candidateService.searchCandidates(request);
     }
 
     @GetMapping("{id}")
