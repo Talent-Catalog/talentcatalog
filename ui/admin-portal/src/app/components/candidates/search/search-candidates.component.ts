@@ -19,7 +19,7 @@ export class SearchCandidatesComponent implements OnInit {
 
   ngOnInit() {
     this.pageNumber = 1;
-    this.pageSize = 5;
+    this.pageSize = 50;
     this.search();
   }
 
