@@ -4,6 +4,7 @@ public class SearchCandidateRequest {
 
     private int pageSize;
     private int pageNumber;
+    private String phrase;
 
     public int getPageSize() {
         return pageSize;
@@ -19,6 +20,14 @@ public class SearchCandidateRequest {
 
     public void setPageNumber(int pageNumber) {
         this.pageNumber = pageNumber;
+    }
+
+    public String getPhrase() {
+        return phrase;
+    }
+
+    public void setPhrase(String phrase) {
+        this.phrase = phrase;
     }
 }
 

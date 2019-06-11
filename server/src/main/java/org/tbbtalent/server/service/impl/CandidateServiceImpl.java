@@ -25,7 +25,8 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Page<Candidate> searchCandidates(SearchCandidateRequest request) {
-        return this.candidateRepository.findAll(
+        return this.candidateRepository.findByFirstNameOrLastName(
+                request.getPhrase(), request.getPhrase(),
                 PageRequest.of(request.getPageNumber(), request.getPageSize()));
     }
 

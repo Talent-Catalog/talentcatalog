@@ -7,7 +7,22 @@
 
 <div>
 
-  <div class="text-muted mb-2 align-middle">
+  <div>
+    <form [formGroup]="searchForm" (ngSubmit)="search()">
+      <div class="form-row">
+        <div class="col-md-6">
+          <input type="text"
+                 id="phrase"
+                 title="Search phrase"
+                 placeholder="Search..."
+                 class="form-control"
+                 formControlName="phrase">
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="text-muted mt-3 mb-2 align-middle">
 
     <ngb-pagination class="pull-right"
                     [boundaryLinks]="true"
