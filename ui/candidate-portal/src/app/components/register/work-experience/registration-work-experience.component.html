@@ -1,3 +1,91 @@
-<p>
-  registration-work-experience works!
-</p>
+<div class="container">
+
+  <h1 class="text-center">Work Experience</h1>
+
+  <form class="row" [formGroup]="form">
+
+    <!-- COMPANY NAME -->
+    <div class="col-12">
+      <div class="form-group">
+        <label for="companyName">Company Name</label>
+        <input type="text" class="form-control" name="companyName" id="companyName" [formControlName]="'companyName'">
+      </div>
+    </div>
+
+    <!-- COMPANY LOCATION -->
+    <div class="col-12">
+      <div class="form-group">
+        <label for="country">Location</label>
+        <input type="text" class="form-control" name="country" id="country" [formControlName]="'country'">
+      </div>
+    </div>
+
+    <!-- COMPANY LOCATION -->
+    <div class="col-12">
+      <div class="form-group">
+        <label for="role">Location</label>
+        <input type="text" class="form-control" name="role" id="role" [formControlName]="'role'">
+      </div>
+    </div>
+
+    <!-- START DATE -->
+    <div class="col-12 col-md-6">
+      <!-- TODO month picker -->
+      <div class="form-group">
+        <label for="startDate">Started (month / year)</label>
+        <input type="text" class="form-control" name="startDate" id="startDate" [formControlName]="'startDate'">
+      </div>
+    </div>
+
+    <!-- END DATE -->
+    <div class="col-12 col-md-6">
+      <!-- TODO month picker -->
+      <div class="form-group">
+        <label for="endDate">Finished (month / year)</label>
+        <input type="text" class="form-control" name="endDate" id="endDate" [formControlName]="'endDate'">
+      </div>
+    </div>
+
+    <!-- PART TIME / FULL TIME -->
+    <div class="col-12">
+      <label class="switch">
+        <input type="checkbox" [formControlName]="'isFullTime'">
+        <span class="slider round"></span>
+      </label>
+      <span>Part time / Full time</span>
+    </div>
+
+    <!-- VOLUNTEER / PAID -->
+    <div class="col-12">
+      <label class="switch">
+        <input type="checkbox" [formControlName]="'isPaid'">
+        <span class="slider round"></span>
+      </label>
+      <span>Volunteer / Paid</span>
+    </div>
+
+    <!-- ROLE DESCRIPTION -->
+    <div class="col-12">
+      <div class="form-group">
+        <label for="roleDescription">Describe what you did in this role</label>
+        <textarea class="form-control" id="roleDescription" placeholder="" [formControlName]="'roleDescription'"></textarea>
+      </div>
+    </div>
+
+  </form>
+
+  <div class="text-right">
+    <div class="btn btn-secondary" (click)="addMore()">Add more work experience</div>
+  </div>
+
+  <pre>{{form.value | json}}</pre>
+
+  <div class="text-right">
+    <button class="btn btn-primary"
+            [disabled]="form.invalid"
+            (click)="save()">
+      Next
+    </button>
+  </div>
+
+</div>
