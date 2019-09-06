@@ -1,3 +1,55 @@
-<p>
-  registration-profession works!
-</p>
+<div class="container">
+
+  <h1 class="text-center">Tell us about your profession</h1>
+
+  <form [formGroup]="form">
+
+    <!-- FIELD -->
+    <div class="form-group">
+      <label for="field">What is the main field that you have professional skills in?</label>
+      <select class="form-control" name="field" id="field" [formControlName]="'field'">
+        <option value=""></option>
+        <option *ngFor="let field of fields" [value]="field.id">{{field.label}}</option>
+      </select>
+    </div>
+
+    <!-- YEARS OF EXPERIENCE -->
+    <div class="form-group">
+      <label for="yearsOfExperience">How many years of professional work experience do you have in this field?</label>
+      <select class="form-control" name="yearsOfExperience" id="yearsOfExperience" [formControlName]="'yearsOfExperience'">
+        <option value=""></option>
+        <option *ngFor="let year of years" [value]="year.id">{{year.label}}</option>
+      </select>
+
+      <p class="text-muted">
+        Do not include years spent studying in this profession
+      </p>
+    </div>
+
+    <!-- SECOND PROFESSION -->
+    <div class="form-group">
+      <label>Do you have a second profession?</label>
+
+      <div class="radio">
+        <label><input type="radio" [formControlName]="'hasSecondProfession'" value="yes">Yes</label>
+      </div>
+      <div class="radio">
+        <label><input type="radio" [formControlName]="'hasSecondProfession'" value="no">No</label>
+      </div>
+    </div>
+
+    <div class="form-group" *ngIf="form.value.hasSecondProfession === 'yes'">
+      <pre>TODO second profession</pre>
+    </div>
+
+  </form>
+
+  <div class="text-right">
+    <button class="btn btn-primary"
+            [disabled]="form.invalid"
+            (click)="save()">
+      Next
+    </button>
+  </div>
+
+</div>

@@ -1,3 +1,46 @@
-<p>
-  registration-nationality works!
-</p>
+<div class="container">
+
+  <h1 class="text-center">What is your nationality?</h1>
+
+  <form [formGroup]="form">
+
+    <!-- NATIONALITY -->
+    <div class="form-group">
+      <label for="nationality">Nationality</label>
+      <select class="form-control" name="nationality" id="nationality" [formControlName]="'nationality'">
+        <option value=""></option>
+        <option *ngFor="let nationality of nationalities" [value]="nationality">{{nationality}}</option>
+      </select>
+    </div>
+
+    <!-- UN REGISTRATION -->
+    <div class="form-group">
+      <label for="registeredWithUN">Are you registered with UNHCR or UNRWA?</label>
+      <select class="form-control" name="nationality" id="registeredWithUN" [formControlName]="'registeredWithUN'">
+        <option value=""></option>
+        <option [value]="true">Yes</option>
+        <option [value]="false">No</option>
+      </select>
+
+      <p class="text-muted">
+        You do not need to be registered with the UN to be eligible for TBB.
+      </p>
+    </div>
+
+    <!-- REGISTRATION NUMBER -->
+    <div class="form-group" *ngIf="form.value.registeredWithUN === 'true'">
+      <label for="registrationId">UNHCR or UNRWA registration number</label>
+      <input type="text" class="form-control" id="registrationId" placeholder="" [formControlName]="'registrationId'">
+    </div>
+
+  </form>
+
+  <div class="text-right">
+    <button class="btn btn-primary"
+            [disabled]="!formValid()"
+            (click)="save()">
+      Next
+    </button>
+  </div>
+
+</div>

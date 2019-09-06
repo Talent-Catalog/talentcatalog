@@ -1,3 +1,42 @@
-<p>
-  registration-location works!
-</p>
+<div class="container">
+
+  <h1 class="text-center">Where are you living now?</h1>
+
+  <form class="row" [formGroup]="form">
+
+    <!-- COUNTRY -->
+    <div class="col-12 col-md-6">
+      <div class="form-group">
+        <label for="country">Country</label>
+        <input type="text" class="form-control" id="country" placeholder="" [formControlName]="'country'">
+      </div>
+    </div>
+
+    <!-- CITY -->
+    <div class="col-12 col-md-6">
+      <div class="form-group">
+        <label for="city">City</label>
+        <input type="text" class="form-control" id="city" placeholder="" [formControlName]="'city'">
+      </div>
+    </div>
+
+    <!-- YEAR OF ARRIVAL -->
+    <div class="col-12">
+      <div class="form-group">
+        <label for="yearOfArrival">What year did you arrive in this country?</label>
+        <!-- TODO datepicker -->
+        <input type="text" class="form-control" id="yearOfArrival" placeholder="" [formControlName]="'yearOfArrival'">
+      </div>
+    </div>
+
+  </form>
+
+  <div class="text-right">
+    <button class="btn btn-primary"
+            [disabled]="form.invalid"
+            (click)="save()">
+      Next
+    </button>
+  </div>
+
+</div>

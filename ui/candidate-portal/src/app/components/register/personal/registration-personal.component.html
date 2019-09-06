@@ -1,3 +1,55 @@
-<p>
-  registration-personal works!
-</p>
+<div class="container">
+
+  <h1 class="text-center">Tell us about yourself</h1>
+
+  <form class="row" [formGroup]="form">
+
+    <!-- FIRST NAME -->
+    <div class="col-12 col-md-6">
+      <div class="form-group">
+        <label for="firstName">First name</label>
+        <input type="text" class="form-control" id="firstName" placeholder="Enter first name" [formControlName]="'firstName'">
+      </div>
+    </div>
+
+    <!-- LAST NAME -->
+    <div class="col-12 col-md-6">
+      <div class="form-group">
+        <label for="lastName">Last name</label>
+        <input type="text" class="form-control" id="lastName" placeholder="Enter last name" [formControlName]="'lastName'">
+      </div>
+    </div>
+
+    <!-- GENDER -->
+    <div class="col-12 col-md-6">
+      <div class="form-group">
+        <label for="gender">Gender</label>
+
+        <select class="form-control" name="gender" id="gender" [formControlName]="'gender'">
+          <option value=""></option>
+          <option value="female">Female</option>
+          <option value="male">Male</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- DOB -->
+    <div class="col-12 col-md-6">
+      <div class="form-group">
+        <label for="dob">Date of birth</label>
+        <!-- TODO: datepicker -->
+        <input type="text" class="form-control" id="dob" placeholder="Enter last name" [formControlName]="'dob'">
+      </div>
+    </div>
+
+  </form>
+
+  <div class="text-right">
+    <button class="btn btn-primary"
+            [disabled]="form.invalid"
+            (click)="save()">
+      Next
+    </button>
+  </div>
+
+</div>
