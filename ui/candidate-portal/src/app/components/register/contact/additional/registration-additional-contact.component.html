@@ -1,0 +1,29 @@
+<div class="container">
+
+  <h1 class="text-center">Additional contact options (optional)</h1>
+
+  <form [formGroup]="form">
+
+    <!-- PHONE # -->
+    <div class="form-group">
+      <label for="phone">Phone / mobile</label>
+      <input type="text" class="form-control" id="phone" placeholder="Enter phone number" [formControlName]="'phone'">
+    </div>
+
+    <!-- WHATSAPP -->
+    <div class="form-group">
+      <label for="whatsapp">Whatsapp</label>
+      <input type="text" class="form-control" id="whatsapp" placeholder="Enter WhatsApp" [formControlName]="'whatsapp'">
+    </div>
+
+  </form>
+
+  <div class="text-right">
+    <button class="btn btn-primary"
+            [disabled]="!formValid()"
+            (click)="save()">
+      Next
+    </button>
+  </div>
+
+</div>

@@ -1,0 +1,35 @@
+<div class="container">
+
+  <h1 class="text-center">Please provide at least one contact option</h1>
+
+  <form [formGroup]="form">
+
+    <!-- PHONE # -->
+    <div class="form-group">
+      <label for="phone">Phone / mobile</label>
+      <input type="text" class="form-control" id="phone" placeholder="Enter phone number" [formControlName]="'phone'">
+    </div>
+
+    <!-- WHATSAPP -->
+    <div class="form-group">
+      <label for="whatsapp">Whatsapp</label>
+      <input type="text" class="form-control" id="whatsapp" placeholder="Enter WhatsApp" [formControlName]="'whatsapp'">
+    </div>
+
+    <!-- EMAIL -->
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" class="form-control" id="email" placeholder="Enter email" [formControlName]="'email'">
+    </div>
+
+  </form>
+
+  <div class="text-right">
+    <button class="btn btn-primary"
+            [disabled]="!formValid()"
+            (click)="save()">
+      Next
+    </button>
+  </div>
+
+</div>
