@@ -13,6 +13,7 @@ export class RegistrationWorkExperienceComponent implements OnInit {
 
   form: FormGroup;
   countries: string[];
+  experience: any[];
 
   constructor(private fb: FormBuilder,
               private router: Router) { }
@@ -32,7 +33,8 @@ export class RegistrationWorkExperienceComponent implements OnInit {
   }
 
   addMore() {
-    // TODO
+    // TODO add the set of form values to the experience array
+    // TODO patch the form values back to sensible defaults
   }
 
   save() {
