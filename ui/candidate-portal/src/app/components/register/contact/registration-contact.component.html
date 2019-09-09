@@ -13,11 +13,11 @@
       <input type="email" class="form-control" id="email" placeholder="Enter email" [formControlName]="'email'">
     </div>
 
-    <p>
-      If you do not have an email address, <a [routerLink]="['/register', 'contact', 'alternate']">click here</a>.
-    </p>
-
     <ng-container *ngIf="form.controls['password']">
+
+      <p>
+        If you do not have an email address, <a [routerLink]="['/register', 'contact', 'alternate']">click here</a>.
+      </p>
 
       <div class="form-group">
         <label for="password">Password</label>

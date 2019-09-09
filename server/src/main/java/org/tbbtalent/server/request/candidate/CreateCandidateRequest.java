@@ -7,7 +7,6 @@ public class CreateCandidateRequest {
     private String email;
     private String phone;
     private String whatsapp;
-    private String password;
 
     public String getFirstName() {
         return firstName;
@@ -43,13 +42,5 @@ public class CreateCandidateRequest {
 
     public void setWhatsapp(String whatsapp) {
         this.whatsapp = whatsapp;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 }

@@ -141,11 +141,11 @@ public class CandidateServiceImpl implements CandidateService {
         /* Check for existing account with the principal fields */
         Candidate exists = candidateRepository.findByUsernameIgnoreCase(request.getEmail());
         if (exists != null) {
-            if (exists.getEmail().equals(request.getEmail())) {
+            if (StringUtils.isNotBlank(request.getEmail()) && exists.getEmail().equals(request.getEmail())) {
                 throw new UsernameTakenException("email");
-            } else if (exists.getPhone().equals(request.getPhone())) {
+            } else if (StringUtils.isNotBlank(request.getPhone()) && exists.getPhone().equals(request.getPhone())) {
                 throw new UsernameTakenException("phone");
-            } else if (exists.getWhatsapp().equals(request.getWhatsapp())) {
+            } else if (StringUtils.isNotBlank(request.getWhatsapp()) && exists.getWhatsapp().equals(request.getWhatsapp())) {
                 throw new UsernameTakenException("whatsapp");
             }
         }
@@ -153,7 +153,8 @@ public class CandidateServiceImpl implements CandidateService {
         /* Create the candidate */
         CreateCandidateRequest createCandidateRequest = new CreateCandidateRequest();
         createCandidateRequest.setEmail(request.getEmail());
-        createCandidateRequest.setPassword(request.getPassword());
+        createCandidateRequest.setPhone(request.getPhone());
+        createCandidateRequest.setWhatsapp(request.getWhatsapp());
         Candidate candidate = createCandidate(createCandidateRequest);
 
         /* Update the password */

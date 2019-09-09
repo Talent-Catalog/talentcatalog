@@ -22,6 +22,15 @@ export class CandidateService {
     return this.http.post(`${this.apiUrl}/contact/email`, request);
   }
 
+  /* Contact - alternate */
+  getCandidateAlternateContacts(): Observable<Candidate> {
+    return this.http.get<Candidate>(`${this.apiUrl}/contact/alternate`);
+  }
+
+  saveCandidateAlternateContacts(request) {
+    return this.http.post(`${this.apiUrl}/contact/alternate`, request);
+  }
+
   // TODO create a get request and save request for each step of the registration process
   // TODO Each get request should only return the data needed to be displayed on the current registration page
 

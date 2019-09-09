@@ -86,8 +86,4 @@ export class RegistrationContactComponent implements OnInit {
     this.saving = false;
     this.router.navigate(['register', 'contact', 'additional']);
   }
-
-  get passwordControl() {
-    return this.form.controls['password'];
-  }
 }
