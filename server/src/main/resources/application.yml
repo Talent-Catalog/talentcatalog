@@ -14,3 +14,7 @@ spring:
       hibernate:
         temp:
           use_jdbc_metadata_defaults: false
+
+jwt:
+  secret: JWTSuperSecretKey
+  expirationInMs: 604800000

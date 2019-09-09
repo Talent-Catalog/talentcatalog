@@ -1,4 +1,4 @@
-package org.tbbtalent.server.request;
+package org.tbbtalent.server.request.candidate;
 
 public class SearchCandidateRequest {
 

@@ -2,9 +2,11 @@ package org.tbbtalent.server.service;
 
 import org.springframework.data.domain.Page;
 import org.tbbtalent.server.model.Candidate;
-import org.tbbtalent.server.request.CreateCandidateRequest;
-import org.tbbtalent.server.request.SearchCandidateRequest;
-import org.tbbtalent.server.request.UpdateCandidateRequest;
+import org.tbbtalent.server.request.LoginRequest;
+import org.tbbtalent.server.request.candidate.*;
+import org.tbbtalent.server.response.JwtAuthenticationResponse;
+
+import javax.security.auth.login.AccountLockedException;
 
 public interface CandidateService {
 
@@ -17,4 +19,18 @@ public interface CandidateService {
     Candidate updateCandidate(long id, UpdateCandidateRequest request);
 
     boolean deleteCandidate(long id);
+
+    JwtAuthenticationResponse login(LoginRequest request) throws AccountLockedException;
+
+    JwtAuthenticationResponse register(RegisterCandidateRequest request) throws AccountLockedException;
+
+    void logout();
+
+    Candidate getLoggedInCandidate();
+
+    Candidate updateEmail(UpdateCandidateEmailRequest request);
+
+    Candidate updateAlternateContacts(UpdateCandidateAlternateContactRequest request);
+
+    Candidate updateAdditionalContacts(UpdateCandidateAdditionalContactRequest request);
 }

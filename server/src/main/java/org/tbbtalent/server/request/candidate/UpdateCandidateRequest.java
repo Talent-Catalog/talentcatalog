@@ -1,10 +1,19 @@
-package org.tbbtalent.server.request;
+package org.tbbtalent.server.request.candidate;
 
-public class CreateCandidateRequest {
+public class UpdateCandidateRequest {
 
+    private String candidateNumber;
     private String firstName;
     private String lastName;
     private String email;
+
+    public String getCandidateNumber() {
+        return candidateNumber;
+    }
+
+    public void setCandidateNumber(String candidateNumber) {
+        this.candidateNumber = candidateNumber;
+    }
 
     public String getFirstName() {
         return firstName;

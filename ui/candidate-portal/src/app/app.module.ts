@@ -5,7 +5,7 @@ import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './components/app.component';
 import {LandingComponent} from './components/landing/landing.component';
 import {ReactiveFormsModule} from "@angular/forms";
-import {HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {RegistrationLandingComponent} from './components/register/landing/registration-landing.component';
 import {RegistrationContactComponent} from './components/register/contact/registration-contact.component';
@@ -23,6 +23,10 @@ import {RegistrationLanguageComponent} from './components/register/language/regi
 import {RegistrationCertificationsComponent} from './components/register/certifications/registration-certifications.component';
 import {RegistrationAdditionalInfoComponent} from './components/register/additional-info/registration-additional-info.component';
 import {RegistrationAdditionalContactComponent} from './components/register/contact/additional/registration-additional-contact.component';
+import {LocalStorageModule} from "angular-2-local-storage";
+import {JwtInterceptor} from "./services/jwt.interceptor";
+import {AuthService} from "./services/auth.service";
+import {CandidateService} from "./services/candidate.service";
 
 @NgModule({
   declarations: [
@@ -50,9 +54,17 @@ import {RegistrationAdditionalContactComponent} from './components/register/cont
     AppRoutingModule,
     ReactiveFormsModule,
     HttpClientModule,
-    NgbModule
+    NgbModule,
+    LocalStorageModule.forRoot({
+      prefix: 'tbb-candidate-portal',
+      storageType: 'localStorage'
+    })
   ],
-  providers: [],
+  providers: [
+    {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
+    AuthService,
+    CandidateService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

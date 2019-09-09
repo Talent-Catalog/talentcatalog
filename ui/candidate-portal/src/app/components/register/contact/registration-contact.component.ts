@@ -1,6 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
+import {CandidateService} from "../../../services/candidate.service";
+import {AuthService} from "../../../services/auth.service";
+import {Candidate} from "../../../model/candidate";
 
 @Component({
   selector: 'app-registration-contact',
@@ -10,19 +13,81 @@ import {Router} from "@angular/router";
 export class RegistrationContactComponent implements OnInit {
 
   form: FormGroup;
+  error: any;
+  // Form states
+  loading: boolean;
+  saving: boolean;
+  // Candidate data
+  candidate: Candidate;
 
   constructor(private fb: FormBuilder,
-              private router: Router) { }
+              private router: Router,
+              private candidateService: CandidateService,
+              private authService: AuthService) { }
 
   ngOnInit() {
+    this.loading = true;
+    this.candidate = null;
     this.form = this.fb.group({
-      email: ['', Validators.required]
-    })
+      email: ['', [Validators.required, Validators.email]]
+    });
+    if (this.authService.isAuthenticated()) {
+      this.candidateService.getCandidateContactInfo().subscribe(
+        (response) => {
+          this.candidate = response;
+          this.form.patchValue({email: response.email});
+          this.loading = false;
+        },
+        (error) => {
+          this.error = error;
+          this.loading = false;
+        }
+      );
+    } else {
+      // The user has not registered - add the password fields to the reactive form
+      this.form.addControl('password', new FormControl('', [Validators.required]));
+      this.form.addControl('passwordConfirmation', new FormControl('', [Validators.required]));
+      this.loading = false;
+    }
   }
 
   save() {
-    // TODO save
+    this.saving = true;
+    if (this.authService.isAuthenticated()) {
+      // The user has already registered and is revisiting this page
+      // TODO decide on whether this should be editable
+      // this.candidateService.saveCandidateContactInfo(this.form.value).subscribe(
+      //   (response) => {
+      //     // Success - navigate to next step
+      //     this.navigateToNextStep();
+      //   },
+      //   (error) => {
+      //     this.error = error;
+      //     this.saving = false;
+      //   }
+      // );
+      this.navigateToNextStep();
+    } else {
+      // The user has not yet registered - create an account for them
+      this.authService.register(this.form.value).subscribe(
+        (response) => {
+          // Success - navigate to next step
+          this.navigateToNextStep();
+        },
+        (error) => {
+          this.error = error;
+          this.saving = false;
+        }
+      );
+    }
+  }
+
+  navigateToNextStep() {
+    this.saving = false;
     this.router.navigate(['register', 'contact', 'additional']);
   }
 
+  get passwordControl() {
+    return this.form.controls['password'];
+  }
 }
