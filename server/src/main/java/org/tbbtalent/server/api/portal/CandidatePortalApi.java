@@ -75,7 +75,6 @@ public class CandidatePortalApi {
 
     private DtoBuilder candidateAlternateContactDto() {
         return new DtoBuilder()
-                .add("email")
                 .add("phone")
                 .add("whatsapp")
                 ;

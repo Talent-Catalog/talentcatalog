@@ -18,8 +18,8 @@ export class CandidateService {
     return this.http.get<Candidate>(`${this.apiUrl}/contact/email`);
   }
 
-  saveCandidateContactInfo(request) {
-    return this.http.post(`${this.apiUrl}/contact/email`, request);
+  updateCandidateContactInfo(request): Observable<Candidate> {
+    return this.http.post<Candidate>(`${this.apiUrl}/contact/email`, request);
   }
 
   /* Contact - alternate */
@@ -27,8 +27,16 @@ export class CandidateService {
     return this.http.get<Candidate>(`${this.apiUrl}/contact/alternate`);
   }
 
-  saveCandidateAlternateContacts(request) {
-    return this.http.post(`${this.apiUrl}/contact/alternate`, request);
+  updateCandidateAlternateContacts(request): Observable<Candidate> {
+    return this.http.post<Candidate>(`${this.apiUrl}/contact/alternate`, request);
+  }
+
+  getCandidateAdditionalContacts(): Observable<Candidate> {
+    return this.http.get<Candidate>(`${this.apiUrl}/contact/additional`);
+  }
+
+  updateCandidateAdditionalContacts(request): Observable<Candidate> {
+    return this.http.post<Candidate>(`${this.apiUrl}/contact/additional`, request);
   }
 
   // TODO create a get request and save request for each step of the registration process

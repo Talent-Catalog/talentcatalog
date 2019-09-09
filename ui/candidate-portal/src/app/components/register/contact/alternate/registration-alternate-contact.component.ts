@@ -68,7 +68,7 @@ export class RegistrationAlternateContactComponent implements OnInit {
     if (this.authService.isAuthenticated()) {
       // The user has already registered and is revisiting this page
       // TODO decide on whether this should be editable
-      // this.candidateService.saveCandidateAlternateContacts(this.form.value).subscribe(
+      // this.candidateService.updateCandidateAlternateContacts(this.form.value).subscribe(
       //   (response) => {
       //     // Success - navigate to next step
       //     this.navigateToNextStep();
