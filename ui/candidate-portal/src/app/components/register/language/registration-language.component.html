@@ -1,3 +1,89 @@
-<p>
-  registration-language works!
-</p>
+<div class="container">
+
+  <h1 class="text-center">What languages do you speak?</h1>
+
+  <form [formGroup]="form">
+
+    <!-- SPEAK ENGLISH -->
+    <div class="form-group">
+      <label for="speakEnglish">How well do you speak English?</label>
+        <select class="form-control" name="speakEnglish" id="speakEnglish" [formControlName]="'speakEnglish'">
+          <option value=""></option>
+          <option value="Not Well">Not Well</option>
+          <option value="Well">Well</option>
+          <option value="Very Well">Very Well</option>
+        </select>
+    </div>
+
+    <!-- READ WRITE ENGLISH -->
+    <div class="form-group">
+      <label for="readWriteEnglish">How well do you read and write in English?</label>
+      <select class="form-control" name="readWriteEnglish" id="readWriteEnglish" [formControlName]="'readWriteEnglish'">
+        <option value=""></option>
+        <option value="Not Well">Not Well</option>
+        <option value="Well">Well</option>
+        <option value="Very Well">Very Well</option>
+      </select>
+    </div>
+
+    <!-- SECOND LANGUAGE? -->
+    <div class="form-group">
+      <label>Do you speak any other languages?</label>
+      <div class="radio">
+        <label><input type="radio" [formControlName]="'otherLanguages'" value="yes">Yes</label>
+      </div>
+      <div class="radio">
+        <label><input type="radio" [formControlName]="'otherLanguages'" value="no">No</label>
+      </div>
+    </div>
+
+    <!-- IF HAS A SECOND LANGUAGE - WHICH LANGUAGE -->
+    <div *ngIf="form.value.otherLanguages === 'yes'">
+      <div class="form-group">
+        <label for="readWriteEnglish">Which language?</label>
+        <select class="form-control" name="readWriteEnglish" id="readWriteEnglish" [formControlName]="'readWriteEnglish'">
+          <option value=""></option>
+          <option value="Not Well">Not Well</option>
+          <option value="Well">Well</option>
+          <option value="Very Well">Very Well</option>
+        </select>
+      </div>
+      <!-- SPEAK SECOND LANGUAGE -->
+      <div class="form-group">
+        <label for="readWriteEnglish">How well do you speak this language?</label>
+        <select class="form-control" name="readWriteEnglish" id="readWriteEnglish" [formControlName]="'readWriteEnglish'">
+          <option value=""></option>
+          <option value="Not Well">Not Well</option>
+          <option value="Well">Well</option>
+          <option value="Very Well">Very Well</option>
+        </select>
+      </div>
+
+      <!-- READ WRITE SECOND LANGUAGE -->
+      <div class="form-group">
+        <label for="readWriteEnglish">How well do you read and write in this language?</label>
+        <select class="form-control" name="readWriteEnglish" id="readWriteEnglish" [formControlName]="'readWriteEnglish'">
+          <option value=""></option>
+          <option value="Not Well">Not Well</option>
+          <option value="Well">Well</option>
+          <option value="Very Well">Very Well</option>
+        </select>
+      </div>
+
+      <div>
+        <button class="btn btn-outline-primary" [disabled]="form.invalid" (click)="addMore()">
+          Add additional language
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <div class="text-right">
+    <button class="btn btn-primary"
+            [disabled]="form.invalid"
+            (click)="save()">
+      Next
+    </button>
+  </div>
+
+</div>

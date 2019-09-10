@@ -14,12 +14,19 @@ export class RegistrationWorkExperienceComponent implements OnInit {
   form: FormGroup;
   countries: string[];
   experience: any[];
+  startDate: Date;
 
   constructor(private fb: FormBuilder,
               private router: Router) { }
 
+
   ngOnInit() {
     this.countries = countries;
+    this.experience = []
+    this.setUpForm();
+  }
+
+ setUpForm(){
     this.form = this.fb.group({
       companyName: ['', Validators.required],
       country: ['', Validators.required],
@@ -33,6 +40,9 @@ export class RegistrationWorkExperienceComponent implements OnInit {
   }
 
   addMore() {
+    this.experience.push(this.form.value);
+    this.setUpForm();
+    console.log(this.experience);
     // TODO add the set of form values to the experience array
     // TODO patch the form values back to sensible defaults
   }

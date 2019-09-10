@@ -23,7 +23,7 @@
     <!-- COMPANY LOCATION -->
     <div class="col-12">
       <div class="form-group">
-        <label for="role">Location</label>
+        <label for="role">Role</label>
         <input type="text" class="form-control" name="role" id="role" [formControlName]="'role'">
       </div>
     </div>
@@ -32,8 +32,19 @@
     <div class="col-12 col-md-6">
       <!-- TODO month picker -->
       <div class="form-group">
+<!--        <mat-form-field>-->
+<!--          <input matInput [matDatepicker]="picker1" placeholder="Angular forms" [formControl]="date">-->
+<!--          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>-->
+<!--          <mat-datepicker #picker1></mat-datepicker>-->
+<!--        </mat-form-field>-->
+
+<!--        <input class="form-control" type="text" id="date" placeholder="yyyy-mm" name="dp" ngbDatepicker #d="ngbDatepicker" [navigation]="navigation" min-mode="'month'" max-mode="'year'" show-weeks="false" startView="0, month" [formControlName]="'startDate'" (click)="d.toggle()"><i class="form-icon icon icon-calendar calendar-icon" (click)="d.toggle()"></i><h6 class="text-gray mt-2">xxxxx</h6>-->
         <label for="startDate">Started (month / year)</label>
-        <input type="text" class="form-control" name="startDate" id="startDate" [formControlName]="'startDate'">
+        <input type="month" id="startDate" class="form-control" [formControlName]="'startDate'" datepicker-popup is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
+
+        <span class="input-group-btn">
+          <button type="button" class="btn btn-default" (click)="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+        </span>
       </div>
     </div>
 
@@ -74,11 +85,32 @@
 
   </form>
 
-  <div class="text-right">
-    <div class="btn btn-secondary" (click)="addMore()">Add more work experience</div>
+  <div>
+    <button class="btn btn-outline-primary" [disabled]="form.invalid" (click)="addMore()">Submit</button>
+    <button class="btn btn-outline-primary" [disabled]="form.invalid" (click)="addMore()">Add more work experience</button>
   </div>
 
-  <pre>{{form.value | json}}</pre>
+  <div>
+    <h4>Work Experience Summary</h4>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Company Name</th>
+          <th scope="col">Location</th>
+          <th scope="col">Role</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let e of experience">
+          <td>{{e.companyName}}</td>
+          <td>{{e.country}}</td>
+          <td>{{e.role}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+<!--  <pre>{{form.value | json}}</pre>-->
 
   <div class="text-right">
     <button class="btn btn-primary"
