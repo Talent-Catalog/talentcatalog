@@ -1,3 +1,26 @@
-<p>
-  registration-education works!
-</p>
+<div class="container">
+
+  <h1 class="text-center">Tell us about your Education</h1>
+
+  <form [formGroup]="form">
+
+    <div class="form-group">
+      <label for="educationLevel">What is the highest level of education you've obtained?</label>
+      <select class="form-control" id="educationLevel" name="educationLevel" [formControlName]="'educationLevel'">
+        <option value=""></option>
+        <option *ngFor="let education of educationLevels" [value]="education.id">{{education.label}}</option>
+      </select>
+    </div>
+
+  </form>
+
+  <div class="text-right">
+    <button class="btn btn-primary"
+            [disabled]="form.invalid"
+            (click)="save()">
+      Next
+    </button>
+
+  </div>
+
+</div>
