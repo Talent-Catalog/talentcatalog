@@ -24,7 +24,12 @@ public class CandidateUserDetailsService implements UserDetailsService {
     @Override
     public AuthenticatedCandidate loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        Candidate candidate = candidateRepository.findByUsernameIgnoreCase(username);
+        /* Handle JWT token parsing */
+        Candidate candidate = candidateRepository.findByCandidateNumber(username);
+        /* Handle authentication */
+        if (candidate == null) {
+            candidate = candidateRepository.findByAnyUserIdentityIgnoreCase(username);
+        }
         if (candidate == null) {
             throw new UsernameNotFoundException("No candidate found for: " + username);
         }

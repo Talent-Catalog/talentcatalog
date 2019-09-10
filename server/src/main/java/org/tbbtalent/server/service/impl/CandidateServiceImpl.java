@@ -106,7 +106,7 @@ public class CandidateServiceImpl implements CandidateService {
             Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     request.getUsername(), request.getPassword()
             ));
-            Candidate candidate = this.candidateRepository.findByUsernameIgnoreCase(request.getUsername());
+            Candidate candidate = this.candidateRepository.findByAnyUserIdentityIgnoreCase(request.getUsername());
 
             if (candidate.getStatus().equals(Status.inactive)) {
                 throw new InvalidCredentialsException("Sorry, it looks like that account is no longer active.");
@@ -135,20 +135,29 @@ public class CandidateServiceImpl implements CandidateService {
             throw new PasswordMatchException();
         }
 
-        /* Validate the password before account creation */
-        String passwordEncrypted = passwordHelper.validateAndEncodePassword(request.getPassword());
-
-        /* Check for existing account with the principal fields */
-        Candidate exists = candidateRepository.findByUsernameIgnoreCase(request.getEmail());
-        if (exists != null) {
-            if (StringUtils.isNotBlank(request.getEmail()) && exists.getEmail().equals(request.getEmail())) {
+        /* Check for existing account with the username fields */
+        Candidate exists = null;
+        if (StringUtils.isNotBlank(request.getEmail())) {
+            exists = candidateRepository.findByEmailIgnoreCase(request.getEmail());
+            if (exists != null) {
                 throw new UsernameTakenException("email");
-            } else if (StringUtils.isNotBlank(request.getPhone()) && exists.getPhone().equals(request.getPhone())) {
+            }
+        } else if (StringUtils.isNotBlank(request.getPhone())) {
+            exists = candidateRepository.findByPhoneIgnoreCase(request.getPhone());
+            if (exists != null) {
                 throw new UsernameTakenException("phone");
-            } else if (StringUtils.isNotBlank(request.getWhatsapp()) && exists.getWhatsapp().equals(request.getWhatsapp())) {
+            }
+        } else if (StringUtils.isNotBlank(request.getWhatsapp())) {
+            exists = candidateRepository.findByWhatsappIgnoreCase(request.getWhatsapp());
+            if (exists != null) {
                 throw new UsernameTakenException("whatsapp");
             }
+        } else {
+            throw new InvalidRequestException("Must specify at least one method of contact");
         }
+
+        /* Validate the password before account creation */
+        String passwordEncrypted = passwordHelper.validateAndEncodePassword(request.getPassword());
 
         /* Create the candidate */
         CreateCandidateRequest createCandidateRequest = new CreateCandidateRequest();

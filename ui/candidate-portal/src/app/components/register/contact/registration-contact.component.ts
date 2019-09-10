@@ -55,18 +55,16 @@ export class RegistrationContactComponent implements OnInit {
     this.saving = true;
     if (this.authService.isAuthenticated()) {
       // The user has already registered and is revisiting this page
-      // TODO decide on whether this should be editable
-      // this.candidateService.updateCandidateContactInfo(this.form.value).subscribe(
-      //   (response) => {
-      //     // Success - navigate to next step
-      //     this.navigateToNextStep();
-      //   },
-      //   (error) => {
-      //     this.error = error;
-      //     this.saving = false;
-      //   }
-      // );
-      this.navigateToNextStep();
+      this.candidateService.updateCandidateContactInfo(this.form.value).subscribe(
+        (response) => {
+          // Success - navigate to next step
+          this.navigateToNextStep();
+        },
+        (error) => {
+          this.error = error;
+          this.saving = false;
+        }
+      );
     } else {
       // The user has not yet registered - create an account for them
       this.authService.register(this.form.value).subscribe(

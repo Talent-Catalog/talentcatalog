@@ -28,7 +28,7 @@ public class JwtTokenProvider {
 
         if (authentication.getPrincipal() instanceof AuthenticatedCandidate) {
             AuthenticatedCandidate candidate = (AuthenticatedCandidate) authentication.getPrincipal();
-            subject = candidate.getUsername();
+            subject = candidate.getCandidate().getCandidateNumber();
         }
         /* TODO admin */
 //        else if (authentication.getPrincipal() instanceof AuthenticatedAdmin) {
