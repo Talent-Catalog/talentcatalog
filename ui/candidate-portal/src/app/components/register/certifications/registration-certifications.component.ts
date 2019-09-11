@@ -23,6 +23,7 @@ export class RegistrationCertificationsComponent implements OnInit {
   }
 
   save() {
+    console.log(this.form);
     this.router.navigate(['register', 'additional-information']);
   }
 

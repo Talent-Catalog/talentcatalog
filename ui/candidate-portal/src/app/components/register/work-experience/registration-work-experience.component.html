@@ -98,6 +98,7 @@
           <th scope="col">Company Name</th>
           <th scope="col">Location</th>
           <th scope="col">Role</th>
+          <th scope="col">Delete</th>
         </tr>
       </thead>
       <tbody>
@@ -105,6 +106,11 @@
           <td>{{e.companyName}}</td>
           <td>{{e.country}}</td>
           <td>{{e.role}}</td>
+          <td align="center">
+            <button type="button" class="close" aria-label="Close" (click)="delete(e)">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </td>
         </tr>
       </tbody>
     </table>

@@ -29,6 +29,7 @@ export class RegistrationEducationComponent implements OnInit {
   };
 
     save() {
+      console.log(this.form);
       this.education = this.form.value.educationLevel;
       // TODO save
       if(this.education == 'mastersDegree' || this.education == 'doctorateDegree'){

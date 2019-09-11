@@ -15,6 +15,7 @@ export class RegistrationWorkExperienceComponent implements OnInit {
   countries: string[];
   experiences: any[];
   startDate: Date;
+  e: number;
 
   constructor(private fb: FormBuilder,
               private router: Router) { }
@@ -42,9 +43,10 @@ export class RegistrationWorkExperienceComponent implements OnInit {
   addMore() {
     this.experiences.push(this.form.value);
     this.setUpForm();
-    console.log(this.experiences);
-    // TODO add the set of form values to the experience array
-    // TODO patch the form values back to sensible defaults
+  }
+
+  delete(e){
+    this.experiences = this.experiences.filter(experience => experience !== e);
   }
 
   save() {

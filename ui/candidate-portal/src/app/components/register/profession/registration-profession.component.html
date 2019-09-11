@@ -40,7 +40,7 @@
     <div *ngIf="hasSecondProfession">
       <button class="btn btn-outline-primary"
               (click)="addMore()"
-              [disabled]="form.value.field == '' || form.value.yearsOfExperience == ''">
+              [disabled]="form.value.field == '' || form.value.yearsOfExperience == '' || !hasSecondProfession">
         Add Profession
       </button>
     </div>
@@ -62,7 +62,7 @@
       <tr *ngFor="let p of professions">
         <td>{{p.field}}</td>
         <td>{{p.yearsOfExperience}}</td>
-        <td align="center">
+        <td>
           <button type="button" class="close" aria-label="Close" (click)="delete(p)">
             <span aria-hidden="true">&times;</span>
           </button>

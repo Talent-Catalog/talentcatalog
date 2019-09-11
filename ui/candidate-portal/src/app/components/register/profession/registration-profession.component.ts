@@ -12,7 +12,6 @@ export class RegistrationProfessionComponent implements OnInit {
   form: FormGroup;
   professions: any[];
   hasSecondProfession: boolean;
-  deleteAt: number;
   p: number;
   fields: {id: string, label: string}[] = [
     {id: 'tech', label: 'IT / Accounting / etc'},
@@ -40,11 +39,9 @@ export class RegistrationProfessionComponent implements OnInit {
       field: ['', Validators.required],
       yearsOfExperience: ['', Validators.required],
     });
-    console.log(this.form);
   }
 
   addMore(){
-    console.log(this.form.value.field);
     this.hasSecondProfession = true;
     this.professions.push(this.form.value);
     this.setUpForm();

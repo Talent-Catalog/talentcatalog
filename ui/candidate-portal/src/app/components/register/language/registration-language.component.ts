@@ -41,10 +41,12 @@ export class RegistrationLanguageComponent implements OnInit {
       speakLanguage: [''],
       readWriteLanguage: [''],
     }));
-    console.log(this.otherLanguages);
   }
 
    save() {
+      if(this.form.value.bilingual == 'false'){
+        this.form.value.otherLanguages.pop();
+      }
       // TODO save
       console.log(this.form);
       this.router.navigate(['register', 'certifications']);
