@@ -29,53 +29,54 @@
     <!-- SECOND LANGUAGE? -->
     <div class="form-group">
       <label>Do you speak any other languages?</label>
+
       <div class="radio">
-        <label><input type="radio" [formControlName]="'otherLanguages'" value="yes">Yes</label>
+        <label><input type="radio" [formControlName]="'bilingual'" value="true">Yes</label>
       </div>
       <div class="radio">
-        <label><input type="radio" [formControlName]="'otherLanguages'" value="no">No</label>
+        <label><input type="radio" [formControlName]="'bilingual'" value="false">No</label>
       </div>
     </div>
 
-    <!-- IF HAS A SECOND LANGUAGE - WHICH LANGUAGE -->
-    <div *ngIf="form.value.otherLanguages === 'yes'">
-      <div class="form-group">
-        <label for="readWriteEnglish">Which language?</label>
-        <select class="form-control" name="readWriteEnglish" id="readWriteEnglish" [formControlName]="'readWriteEnglish'">
-          <option value=""></option>
-          <option value="Not Well">Not Well</option>
-          <option value="Well">Well</option>
-          <option value="Very Well">Very Well</option>
-        </select>
-      </div>
-      <!-- SPEAK SECOND LANGUAGE -->
-      <div class="form-group">
-        <label for="readWriteEnglish">How well do you speak this language?</label>
-        <select class="form-control" name="readWriteEnglish" id="readWriteEnglish" [formControlName]="'readWriteEnglish'">
-          <option value=""></option>
-          <option value="Not Well">Not Well</option>
-          <option value="Well">Well</option>
-          <option value="Very Well">Very Well</option>
-        </select>
-      </div>
+    <!-- ADD LANGUAGES -->
+    <div *ngIf="form.value.bilingual === 'true'" >
 
-      <!-- READ WRITE SECOND LANGUAGE -->
-      <div class="form-group">
-        <label for="readWriteEnglish">How well do you read and write in this language?</label>
-        <select class="form-control" name="readWriteEnglish" id="readWriteEnglish" [formControlName]="'readWriteEnglish'">
-          <option value=""></option>
-          <option value="Not Well">Not Well</option>
-          <option value="Well">Well</option>
-          <option value="Very Well">Very Well</option>
-        </select>
-      </div>
+        <div *ngFor="let language of form.controls.otherLanguages?.value; let i=index" formArrayName="otherLanguages">
 
-      <div>
-        <button class="btn btn-outline-primary" [disabled]="form.invalid" (click)="addMore()">
+          <div [formGroupName]="i">
+
+            <label for="language">What language?</label>
+            <select class="form-control" id="language" name="language" formControlName="language">
+              <option value=""></option>
+              <option *ngFor="let lang of languages" [value]="lang">{{lang}}</option>
+            </select>
+
+            <label for="speakLanguage">How well do you speak this language?</label>
+            <select class="form-control" name="speakLanguage" id="speakLanguage" formControlName="speakLanguage">
+              <option value=""></option>
+              <option value="Not Well">Not Well</option>
+              <option value="Well">Well</option>
+              <option value="Very Well">Very Well</option>
+            </select>
+
+            <label for="readWriteLanguage">How well do you read and write in this language?</label>
+            <select class="form-control" name="readWriteLanguage" id="readWriteLanguage" formControlName="readWriteLanguage">
+              <option value=""></option>
+              <option value="Not Well">Not Well</option>
+              <option value="Well">Well</option>
+              <option value="Very Well">Very Well</option>
+            </select>
+
+          </div>
+
+        </div>
+
+    </div>
+
+      <button class="btn btn-outline-primary" [disabled]="form.invalid" (click)="addMore()">
           Add additional language
-        </button>
-      </div>
-    </div>
+      </button>
+
   </form>
 
   <div class="text-right">
@@ -84,6 +85,7 @@
             (click)="save()">
       Next
     </button>
+
   </div>
 
 </div>

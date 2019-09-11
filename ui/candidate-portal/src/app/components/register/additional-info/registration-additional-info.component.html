@@ -1,3 +1,22 @@
-<p>
-  registration-additional-info works!
-</p>
+<div class="container">
+
+  <h1 class="text-center">Anything else we should know?</h1>
+
+  <form [formGroup]="form">
+
+    <div class="form-group">
+      <label for="addInfo">This is optional</label>
+      <textarea type="text" class="md-textarea-auto form-control" rows="10" id="addInfo" placeholder="" [formControlName]="'addInfo'"></textarea>
+    </div>
+
+  </form>
+
+  <div class="text-right">
+    <button class="btn btn-primary"
+            [disabled]="form.invalid"
+            (click)="save()">
+      Next
+    </button>
+
+</div>
+
