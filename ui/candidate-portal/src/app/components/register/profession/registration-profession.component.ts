@@ -10,6 +10,10 @@ import {Router} from "@angular/router";
 export class RegistrationProfessionComponent implements OnInit {
 
   form: FormGroup;
+  professions: any[];
+  hasSecondProfession: boolean;
+  deleteAt: number;
+  p: number;
   fields: {id: string, label: string}[] = [
     {id: 'tech', label: 'IT / Accounting / etc'},
     {id: 'medicine', label: 'Medicine'}
@@ -26,14 +30,32 @@ export class RegistrationProfessionComponent implements OnInit {
               private router: Router) { }
 
   ngOnInit() {
+    this.professions = [],
+    this.hasSecondProfession = false;
+    this.setUpForm();
+  }
+
+  setUpForm(){
     this.form = this.fb.group({
       field: ['', Validators.required],
       yearsOfExperience: ['', Validators.required],
-      hasSecondProfession: ['', Validators.required]
     });
+    console.log(this.form);
+  }
+
+  addMore(){
+    console.log(this.form.value.field);
+    this.hasSecondProfession = true;
+    this.professions.push(this.form.value);
+    this.setUpForm();
+  }
+
+  delete(p){
+    this.professions = this.professions.filter(profession => profession !== p);
   }
 
   save() {
+    console.log(this.professions);
     // TODO save
     this.router.navigate(['register', 'experience']);
   }

@@ -13,7 +13,7 @@ export class RegistrationWorkExperienceComponent implements OnInit {
 
   form: FormGroup;
   countries: string[];
-  experience: any[];
+  experiences: any[];
   startDate: Date;
 
   constructor(private fb: FormBuilder,
@@ -22,7 +22,7 @@ export class RegistrationWorkExperienceComponent implements OnInit {
 
   ngOnInit() {
     this.countries = countries;
-    this.experience = []
+    this.experiences = []
     this.setUpForm();
   }
 
@@ -40,15 +40,16 @@ export class RegistrationWorkExperienceComponent implements OnInit {
   }
 
   addMore() {
-    this.experience.push(this.form.value);
+    this.experiences.push(this.form.value);
     this.setUpForm();
-    console.log(this.experience);
+    console.log(this.experiences);
     // TODO add the set of form values to the experience array
     // TODO patch the form values back to sensible defaults
   }
 
   save() {
     // TODO save
+    console.log(this.experiences);
     this.router.navigate(['register', 'education']);
   }
 

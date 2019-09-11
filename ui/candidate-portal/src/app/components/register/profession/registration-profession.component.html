@@ -20,36 +20,70 @@
         <option value=""></option>
         <option *ngFor="let year of years" [value]="year.id">{{year.label}}</option>
       </select>
-
       <p class="text-muted">
         Do not include years spent studying in this profession
       </p>
     </div>
 
-    <!-- SECOND PROFESSION -->
-    <div class="form-group">
+    <!-- SECOND PROFESSION? -->
+    <div class="form-group" *ngIf="professions.length == 0">
       <label>Do you have a second profession?</label>
-
       <div class="radio">
-        <label><input type="radio" [formControlName]="'hasSecondProfession'" value="yes">Yes</label>
+        <label (click)="hasSecondProfession = true"><input type="radio" name="addProfession" value="yes">Yes</label>
       </div>
       <div class="radio">
-        <label><input type="radio" [formControlName]="'hasSecondProfession'" value="no">No</label>
+        <label><input type="radio" name="addProfession" value="no">No</label>
       </div>
     </div>
 
-    <div class="form-group" *ngIf="form.value.hasSecondProfession === 'yes'">
-      <pre>TODO second profession</pre>
+    <!-- ADD SECOND PROFESSION -->
+    <div *ngIf="hasSecondProfession">
+      <button class="btn btn-outline-primary"
+              (click)="addMore()"
+              [disabled]="form.value.field == '' || form.value.yearsOfExperience == ''">
+        Add Profession
+      </button>
     </div>
 
   </form>
 
+  <!-- PROFESSION SUMMARY -->
+  <div>
+    <h4>Profession Summary</h4>
+    <table class="table">
+      <thead>
+      <tr>
+        <th scope="col">Profession Field</th>
+        <th scope="col">Years in Field</th>
+        <th scope="col">Delete</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let p of professions">
+        <td>{{p.field}}</td>
+        <td>{{p.yearsOfExperience}}</td>
+        <td align="center">
+          <button type="button" class="close" aria-label="Close" (click)="delete(p)">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
   <div class="text-right">
     <button class="btn btn-primary"
-            [disabled]="form.invalid"
+            [disabled]="professions.length > 2"
             (click)="save()">
       Next
     </button>
+
+    <!-- ERROR IF ADD MORE THAN TWO MAIN PROFESSIONS -->
+    <p *ngIf="professions.length > 2" class="text-muted">
+      Do not add more than two main professions
+    </p>
+
   </div>
 
 </div>

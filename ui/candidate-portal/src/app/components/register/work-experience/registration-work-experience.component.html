@@ -40,11 +40,10 @@
 
 <!--        <input class="form-control" type="text" id="date" placeholder="yyyy-mm" name="dp" ngbDatepicker #d="ngbDatepicker" [navigation]="navigation" min-mode="'month'" max-mode="'year'" show-weeks="false" startView="0, month" [formControlName]="'startDate'" (click)="d.toggle()"><i class="form-icon icon icon-calendar calendar-icon" (click)="d.toggle()"></i><h6 class="text-gray mt-2">xxxxx</h6>-->
         <label for="startDate">Started (month / year)</label>
-        <input type="month" id="startDate" class="form-control" [formControlName]="'startDate'" datepicker-popup is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
+        <input type="month" id="startDate" class="form-control" [formControlName]="'startDate'"
+               datepicker-popup is-open="status.opened" min-date="minDate" max-date="maxDate"
+               datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
 
-        <span class="input-group-btn">
-          <button type="button" class="btn btn-default" (click)="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-        </span>
       </div>
     </div>
 
@@ -53,7 +52,9 @@
       <!-- TODO month picker -->
       <div class="form-group">
         <label for="endDate">Finished (month / year)</label>
-        <input type="text" class="form-control" name="endDate" id="endDate" [formControlName]="'endDate'">
+        <input type="month" id="endDate" class="form-control" [formControlName]="'endDate'"
+               datepicker-popup is-open="status.opened" min-date="minDate" max-date="maxDate"
+               datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
       </div>
     </div>
 
@@ -86,8 +87,7 @@
   </form>
 
   <div>
-    <button class="btn btn-outline-primary" [disabled]="form.invalid" (click)="addMore()">Submit</button>
-    <button class="btn btn-outline-primary" [disabled]="form.invalid" (click)="addMore()">Add more work experience</button>
+    <button class="btn btn-outline-primary" [disabled]="form.invalid" (click)="addMore()">Add Work Experience</button>
   </div>
 
   <div>
@@ -101,7 +101,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let e of experience">
+        <tr *ngFor="let e of experiences">
           <td>{{e.companyName}}</td>
           <td>{{e.country}}</td>
           <td>{{e.role}}</td>
@@ -114,9 +114,9 @@
 
   <div class="text-right">
     <button class="btn btn-primary"
-            [disabled]="form.invalid"
+            [disabled]="experiences.length == '0'"
             (click)="save()">
-      Next
+      Submit & Next
     </button>
   </div>
 
