@@ -1,24 +1,17 @@
 package org.tbbtalent.server.request.candidate;
 
-public class SearchCandidateRequest {
+import org.tbbtalent.server.request.SearchRequest;
 
-    private int pageSize;
-    private int pageNumber;
+public class SearchCandidateRequest extends SearchRequest {
 
-    public int getPageSize() {
-        return pageSize;
+    private String keyword;
+
+    public String getKeyword() {
+        return keyword;
     }
 
-    public void setPageSize(int pageSize) {
-        this.pageSize = pageSize;
-    }
-
-    public int getPageNumber() {
-        return pageNumber;
-    }
-
-    public void setPageNumber(int pageNumber) {
-        this.pageNumber = pageNumber;
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
     }
 }
 

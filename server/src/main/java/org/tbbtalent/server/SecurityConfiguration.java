@@ -58,7 +58,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/portal/**").hasAnyRole("USER", "ADMIN")
                 .antMatchers("/api/admin/auth").permitAll()
                 .antMatchers("/api/admin/auth/**").permitAll()
-                .antMatchers("/api/admin/**").hasAnyRole("ADMIN")
+                .antMatchers("/api/admin/**").permitAll()
+//                .antMatchers("/api/admin/**").hasAnyRole("ADMIN") //todo add back in one logins done
                 .and()
             .csrf().disable()
             ;

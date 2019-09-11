@@ -1,16 +1,12 @@
 package org.tbbtalent.server.api.portal;
 
-import com.sun.tools.internal.ws.wsdl.framework.NoSuchEntityException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tbbtalent.server.exception.CandidateDeactivatedException;
-import org.tbbtalent.server.exception.InvalidCredentialsException;
-import org.tbbtalent.server.exception.InvalidPasswordFormatException;
-import org.tbbtalent.server.exception.PasswordExpiredException;
+import org.tbbtalent.server.exception.*;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
 import org.tbbtalent.server.response.JwtAuthenticationResponse;
@@ -47,7 +43,7 @@ public class AuthPortalApi {
     }
 
     @PostMapping("register")
-    public Map<String, Object> get(@Valid @RequestBody RegisterCandidateRequest request) throws NoSuchEntityException, AccountLockedException {
+    public Map<String, Object> get(@Valid @RequestBody RegisterCandidateRequest request) throws NoSuchObjectException, AccountLockedException {
         JwtAuthenticationResponse jwt = candidateService.register(request);
         return jwtDto().build(jwt);
     }

@@ -1,11 +1,12 @@
 package org.tbbtalent.server.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tbbtalent.server.model.Candidate;
 
-public interface CandidateRepository extends JpaRepository<Candidate, Long> {
+public interface CandidateRepository extends JpaRepository<Candidate, Long>, JpaSpecificationExecutor<Candidate> {
 
     /* Used for candidate authentication */
     @Query(" select distinct c from Candidate c "

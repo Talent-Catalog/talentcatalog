@@ -6,6 +6,11 @@
 </div>
 
 <div>
+  <div class="section">
+    <form class="form-inline justify-content-between" [formGroup]="searchForm" (ngSubmit)="search()">
+      <input type="text" class="form-control col-5" placeholder="Search..." aria-label="Search" formControlName="keyword">
+    </form>
+  </div>
 
   <div class="text-muted mb-2 align-middle">
 

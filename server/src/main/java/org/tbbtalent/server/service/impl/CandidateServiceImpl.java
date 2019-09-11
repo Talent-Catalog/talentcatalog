@@ -1,6 +1,8 @@
 package org.tbbtalent.server.service.impl;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,9 +15,11 @@ import org.tbbtalent.server.exception.*;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.model.Status;
 import org.tbbtalent.server.repository.CandidateRepository;
+import org.tbbtalent.server.repository.CandidateSpecification;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.response.JwtAuthenticationResponse;
+import org.tbbtalent.server.security.CandidateUserDetailsService;
 import org.tbbtalent.server.security.JwtTokenProvider;
 import org.tbbtalent.server.security.PasswordHelper;
 import org.tbbtalent.server.security.UserContext;
@@ -25,6 +29,8 @@ import javax.security.auth.login.AccountLockedException;
 
 @Service
 public class CandidateServiceImpl implements CandidateService {
+
+    private static final Logger log = LoggerFactory.getLogger(CandidateServiceImpl.class);
 
     private final CandidateRepository candidateRepository;
     private final PasswordHelper passwordHelper;
@@ -47,8 +53,10 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Page<Candidate> searchCandidates(SearchCandidateRequest request) {
-        return this.candidateRepository.findAll(
-                PageRequest.of(request.getPageNumber(), request.getPageSize()));
+        Page<Candidate> candidates = candidateRepository.findAll(
+                CandidateSpecification.buildSearchQuery(request), request.getPageRequest());
+        log.info("Found "+candidates.getTotalElements() +" candidates in search");
+        return candidates;
     }
 
     @Override
