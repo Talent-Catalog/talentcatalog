@@ -33,4 +33,6 @@ public interface CandidateService {
     Candidate updateAlternateContacts(UpdateCandidateAlternateContactRequest request);
 
     Candidate updateAdditionalContacts(UpdateCandidateAdditionalContactRequest request);
+
+    Candidate updatePersonal(UpdateCandidatePersonalRequest request);
 }

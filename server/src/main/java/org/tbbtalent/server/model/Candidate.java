@@ -20,6 +20,8 @@ public class Candidate {
     private String phone;
     private String whatsapp;
     private String passwordEnc;
+    private String gender;
+    private String dob;
     @Enumerated(EnumType.STRING)
     private Status status;
 
@@ -89,6 +91,22 @@ public class Candidate {
 
     public void setWhatsapp(String whatsapp) {
         this.whatsapp = whatsapp;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getDob() {
+        return dob;
+    }
+
+    public void setDob(String dob) {
+        this.dob = dob;
     }
 
     public String getPasswordEnc() {
