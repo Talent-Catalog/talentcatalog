@@ -218,4 +218,12 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setWhatsapp(request.getWhatsapp());
         return candidateRepository.save(candidate);
     }
+
+    @Override
+    public Candidate getLoggedInCandidateLoadProfessions() {
+        Candidate candidate = getLoggedInCandidate();
+        candidate = candidateRepository.findByIdLoadProfessions(candidate.getId());
+        return candidate;
+    }
+
 }

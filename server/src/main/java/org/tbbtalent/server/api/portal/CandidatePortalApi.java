@@ -59,6 +59,12 @@ public class CandidatePortalApi {
         return candidateAlternateContactDto().build(candidate);
     }
 
+    @GetMapping("profession")
+    public Map<String, Object> getCandidateProfessions() {
+        Candidate candidate = this.candidateService.getLoggedInCandidateLoadProfessions();
+        return candidateWithProfessionsDto().build(candidate);
+    }
+
     private DtoBuilder candidateContactDto() {
         return new DtoBuilder()
                 .add("email")
@@ -77,6 +83,27 @@ public class CandidatePortalApi {
         return new DtoBuilder()
                 .add("phone")
                 .add("whatsapp")
+                ;
+    }
+
+    private DtoBuilder candidateWithProfessionsDto() {
+        return new DtoBuilder()
+                .add("professions", professionDto())
+                ;
+    }
+
+    private DtoBuilder professionDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("industry", indutryDto())
+                .add("yearsExperience")
+                ;
+    }
+
+    private DtoBuilder indutryDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
                 ;
     }
 }

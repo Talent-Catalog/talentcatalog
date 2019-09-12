@@ -22,4 +22,8 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long> {
     Candidate findByPhoneIgnoreCase(String phone);
     Candidate findByWhatsappIgnoreCase(String whatsapp);
 
+    @Query(" select distinct c from Candidate c "
+            + " left join c.professions p"
+            + " where c.id = :id ")
+    Candidate findByIdLoadProfessions(@Param("id") Long id);
 }
