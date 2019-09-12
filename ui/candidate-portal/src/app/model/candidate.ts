@@ -8,5 +8,7 @@ export interface Candidate {
   email: string;
   phone: string;
   whatsapp: string;
+  gender: string;
+  dob: string;
   professions: Profession[];
 }

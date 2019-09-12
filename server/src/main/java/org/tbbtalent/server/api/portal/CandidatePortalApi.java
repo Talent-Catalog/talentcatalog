@@ -6,6 +6,7 @@ import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalContactRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateAlternateContactRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateEmailRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tbbtalent.server.service.CandidateService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -59,6 +60,18 @@ public class CandidatePortalApi {
         return candidateAlternateContactDto().build(candidate);
     }
 
+    @GetMapping("personal")
+    public Map<String, Object> getCandidatePersonal() {
+        Candidate candidate = this.candidateService.getLoggedInCandidate();
+        return candidatePersonalDto().build(candidate);
+    }
+
+    @PostMapping("personal")
+    public Map<String, Object> updateCandidatePersonal(@Valid @RequestBody UpdateCandidatePersonalRequest request) {
+        Candidate candidate = this.candidateService.updatePersonal(request);
+        return candidatePersonalDto().build(candidate);
+    }
+
     @GetMapping("profession")
     public Map<String, Object> getCandidateProfessions() {
         Candidate candidate = this.candidateService.getLoggedInCandidateLoadProfessions();
@@ -83,6 +96,15 @@ public class CandidatePortalApi {
         return new DtoBuilder()
                 .add("phone")
                 .add("whatsapp")
+                ;
+    }
+
+    private DtoBuilder candidatePersonalDto() {
+        return new DtoBuilder()
+                .add("firstName")
+                .add("lastName")
+                .add("gender")
+                .add("dob")
                 ;
     }
 

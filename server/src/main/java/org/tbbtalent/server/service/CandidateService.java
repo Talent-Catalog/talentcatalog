@@ -34,6 +34,8 @@ public interface CandidateService {
 
     Candidate updateAdditionalContacts(UpdateCandidateAdditionalContactRequest request);
 
+    Candidate updatePersonal(UpdateCandidatePersonalRequest request);
+
     Candidate getLoggedInCandidateLoadProfessions();
 
 }
