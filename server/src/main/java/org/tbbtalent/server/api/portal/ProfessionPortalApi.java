@@ -29,7 +29,7 @@ public class ProfessionPortalApi {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity deleteProfession(@RequestParam("id") Long id) {
+    public ResponseEntity deleteProfession(@PathVariable("id") Long id) {
         professionService.deleteProfession(id);
         return ResponseEntity.ok().build();
     }

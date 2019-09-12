@@ -67,7 +67,7 @@
 
   <div class="text-right">
     <button class="btn btn-primary"
-            [disabled]="loading || saving"
+            [disabled]="professions?.length === 0 || loading || saving"
             (click)="next()">
       Next
     </button>
