@@ -11,4 +11,10 @@ export interface Candidate {
   gender: string;
   dob: string;
   professions: Profession[];
+  country: string;
+  city: string;
+  yearOfArrival: string;
+  nationality: string;
+  registeredWithUN: string;
+  registrationId: string;
 }

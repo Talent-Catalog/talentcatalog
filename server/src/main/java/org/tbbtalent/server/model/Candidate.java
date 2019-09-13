@@ -24,6 +24,15 @@ public class Candidate {
     private String passwordEnc;
     private String gender;
     private String dob;
+    private String country;
+    private String city;
+    private String yearOfArrival;
+    private String nationality;
+
+    @Column(name = "registered_with_un")
+    private String registeredWithUN;
+
+    private String registrationId;
     @Enumerated(EnumType.STRING)
     private Status status;
 
@@ -112,6 +121,44 @@ public class Candidate {
 
     public void setDob(String dob) {
         this.dob = dob;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getYearOfArrival() {
+        return yearOfArrival;
+    }
+
+    public void setYearOfArrival(String yearOfArrival) {
+        this.yearOfArrival = yearOfArrival;
+    }
+
+    public String getNationality() { return nationality; }
+
+    public void setNationality(String nationality) { this.nationality = nationality; }
+
+    public String getRegisteredWithUN() { return registeredWithUN; }
+
+    public void setRegisteredWithUN(String registeredWithUN) { this.registeredWithUN = registeredWithUN; }
+
+    public String getRegistrationId() { return registrationId; }
+
+    public void setRegistrationId(String registrationId) {
+        this.registrationId = registrationId;
     }
 
     public String getPasswordEnc() {

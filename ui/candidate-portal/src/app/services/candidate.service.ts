@@ -48,6 +48,24 @@ export class CandidateService {
       return this.http.post<Candidate>(`${this.apiUrl}/personal`, request);
    }
 
+   /* Candidate Location */
+    getCandidateLocation(): Observable<Candidate> {
+       return this.http.get<Candidate>(`${this.apiUrl}/location`);
+    }
+
+    updateCandidateLocation(request): Observable<Candidate> {
+       return this.http.post<Candidate>(`${this.apiUrl}/location`, request);
+    }
+
+   /* Candidate Nationality */
+    getCandidateNationality(): Observable<Candidate> {
+       return this.http.get<Candidate>(`${this.apiUrl}/nationality`);
+    }
+
+    updateCandidateNationality(request): Observable<Candidate> {
+       return this.http.post<Candidate>(`${this.apiUrl}/nationality`, request);
+    }
+
 
   // TODO create a get request and save request for each step of the registration process
   // TODO Each get request should only return the data needed to be displayed on the current registration page

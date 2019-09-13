@@ -3,10 +3,7 @@ package org.tbbtalent.server.api.portal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.model.Candidate;
-import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalContactRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateAlternateContactRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateEmailRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
+import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.service.CandidateService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -78,6 +75,30 @@ public class CandidatePortalApi {
         return candidateWithProfessionsDto().build(candidate);
     }
 
+    @GetMapping("location")
+    public Map<String, Object> getCandidateLocation() {
+        Candidate candidate = this.candidateService.getLoggedInCandidate();
+        return candidateLocationDto().build(candidate);
+    }
+
+    @PostMapping("location")
+    public Map<String, Object> updateCandidateLocation(@Valid @RequestBody UpdateCandidateLocationRequest request) {
+        Candidate candidate = this.candidateService.updateLocation(request);
+        return candidateLocationDto().build(candidate);
+    }
+
+    @GetMapping("nationality")
+    public Map<String, Object> getCandidateNationality() {
+        Candidate candidate = this.candidateService.getLoggedInCandidate();
+        return candidateNationalityDto().build(candidate);
+    }
+
+    @PostMapping("nationality")
+    public Map<String, Object> updateCandidateNationality(@Valid @RequestBody UpdateCandidateNationalityRequest request) {
+        Candidate candidate = this.candidateService.updateNationality(request);
+        return candidateNationalityDto().build(candidate);
+    }
+
     private DtoBuilder candidateContactDto() {
         return new DtoBuilder()
                 .add("email")
@@ -117,12 +138,28 @@ public class CandidatePortalApi {
     private DtoBuilder professionDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("industry", indutryDto())
+                .add("industry", industryDto())
                 .add("yearsExperience")
                 ;
     }
 
-    private DtoBuilder indutryDto() {
+    private DtoBuilder candidateLocationDto() {
+        return new DtoBuilder()
+                .add("country")
+                .add("city")
+                .add("yearOfArrival")
+                ;
+    }
+
+    private DtoBuilder candidateNationalityDto() {
+        return new DtoBuilder()
+                .add("nationality")
+                .add("registeredWithUN")
+                .add("registrationId")
+                ;
+    }
+
+    private DtoBuilder industryDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("name")

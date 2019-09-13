@@ -230,6 +230,24 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    public Candidate updateLocation(UpdateCandidateLocationRequest request) {
+        Candidate candidate = getLoggedInCandidate();
+        candidate.setCountry(request.getCountry());
+        candidate.setCity(request.getCity());
+        candidate.setYearOfArrival(request.getYearOfArrival());
+        return candidateRepository.save(candidate);
+    }
+
+    @Override
+    public Candidate updateNationality(UpdateCandidateNationalityRequest request) {
+        Candidate candidate = getLoggedInCandidate();
+        candidate.setNationality(request.getNationality());
+        candidate.setRegisteredWithUN(request.getRegisteredWithUN());
+        candidate.setRegistrationId(request.getRegistrationId());
+        return candidateRepository.save(candidate);
+    }
+
+    @Override
     public Candidate getLoggedInCandidateLoadProfessions() {
         Candidate candidate = getLoggedInCandidate();
         candidate = candidateRepository.findByIdLoadProfessions(candidate.getId());
