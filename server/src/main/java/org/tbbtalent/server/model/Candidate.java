@@ -3,6 +3,8 @@ package org.tbbtalent.server.model;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "candidate")
@@ -20,8 +22,13 @@ public class Candidate {
     private String phone;
     private String whatsapp;
     private String passwordEnc;
+    private String gender;
+    private String dob;
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    private Set<Profession> professions = new HashSet<>();
 
     public Candidate() {
     }
@@ -91,6 +98,22 @@ public class Candidate {
         this.whatsapp = whatsapp;
     }
 
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getDob() {
+        return dob;
+    }
+
+    public void setDob(String dob) {
+        this.dob = dob;
+    }
+
     public String getPasswordEnc() {
         return passwordEnc;
     }
@@ -116,5 +139,13 @@ public class Candidate {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public Set<Profession> getProfessions() {
+        return professions;
+    }
+
+    public void setProfessions(Set<Profession> professions) {
+        this.professions = professions;
     }
 }

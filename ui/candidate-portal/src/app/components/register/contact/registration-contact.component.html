@@ -9,9 +9,9 @@
   <form [formGroup]="form" *ngIf="!loading">
 
     <div class="form-group">
-      <label for="email">Email</label>
-      <input type="email" class="form-control" id="email" placeholder="Enter email" [formControlName]="'email'">
-    </div>
+    <label for="email">Email</label>
+    <input type="email" class="form-control" id="email" placeholder="Enter email" [formControlName]="'email'">
+  </div>
 
     <ng-container *ngIf="form.controls['password']">
 

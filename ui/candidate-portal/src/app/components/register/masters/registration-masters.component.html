@@ -2,8 +2,47 @@
 
   <h1 class="text-center">Tell us about your Master's Degree</h1>
 
-<!--  <form [formGroup]="form">-->
+  <form [formGroup]="form">
 
-<!--  </form>-->
+    <div class="form-group">
+      <label for="degree">What was your Degree in?</label>
+      <input type="text" class="form-control" placeholder="" id="degree" [formControlName]="'degree'">
+    </div>
+
+    <div class="form-group">
+      <label for="countryStudied">Country you studied in:</label>
+      <select class="form-control" name="countryStudied" id="countryStudied" [formControlName]="'countryStudied'">
+        <option value=""></option>
+        <option *ngFor="let country of countries" [value]="country">{{country}}</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="university">Name of your University/Institution</label>
+      <input type="text" class="form-control" placeholder="" id="university" [formControlName]="'university'">
+    </div>
+
+    <div class="form-group">
+      <label for="major">What was your Major/Specialisation?</label>
+      <input type="text" class="form-control" placeholder="" id="major" [formControlName]="'major'">
+    </div>
+
+    <div class="form-group">
+      <label for="graduationYear">Year of graduation:</label>
+      <select class="form-control" name="graduationYear" id="graduationYear" [formControlName]="'graduationYear'">
+        <option value=""></option>
+        <option *ngFor="let year of years" [value]="year">{{year}}</option>
+      </select>
+    </div>
+
+  </form>
+
+  <div class="text-right">
+    <button class="btn btn-primary"
+            [disabled]="form.invalid"
+            (click)="save()">
+      Next
+    </button>
+  </div>
 
 </div>

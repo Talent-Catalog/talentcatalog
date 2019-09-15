@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators, FormArray} from "@angular/forms";
 import {Router} from "@angular/router";
+import {languages} from "../../../model/languages";
 
 @Component({
   selector: 'app-registration-language',
@@ -10,26 +11,44 @@ import {Router} from "@angular/router";
 export class RegistrationLanguageComponent implements OnInit {
 
   form: FormGroup;
+  otherLanguages: FormArray;
   languages: string[];
 
   constructor(private fb: FormBuilder,
               private router: Router) { }
 
   ngOnInit() {
+    this.languages = languages;
     this.form = this.fb.group({
       speakEnglish: ['', Validators.required],
       readWriteEnglish: ['', Validators.required],
-      otherLanguages: ['', Validators]
-    })
+      bilingual: [false, Validators.required],
+      otherLanguages: this.fb.array([
+        this.fb.group({
+          language: [''],
+          speakLanguage: [''],
+          readWriteLanguage: ['']
+         })
+        ])
+      })
   }
 
-  addMore(){
-    // TODO add another language
-
+  // ADD ANOTHER LANGUAGE
+  addMore() {
+    this.otherLanguages = this.form.controls.otherLanguages as FormArray;
+    this.otherLanguages.push(this.fb.group({
+      language: [''],
+      speakLanguage: [''],
+      readWriteLanguage: [''],
+    }));
   }
 
    save() {
+      if(this.form.value.bilingual == 'false'){
+        this.form.value.otherLanguages.pop();
+      }
       // TODO save
+      console.log(this.form);
       this.router.navigate(['register', 'certifications']);
     }
 

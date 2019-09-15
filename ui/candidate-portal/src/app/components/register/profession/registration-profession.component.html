@@ -2,52 +2,73 @@
 
   <h1 class="text-center">Tell us about your profession</h1>
 
-  <form [formGroup]="form">
+  <div class="d-flex justify-content-center" *ngIf="loading">
+    Loading...
+  </div>
+
+  <form [formGroup]="form" *ngIf="!loading">
 
     <!-- FIELD -->
     <div class="form-group">
-      <label for="field">What is the main field that you have professional skills in?</label>
-      <select class="form-control" name="field" id="field" [formControlName]="'field'">
+      <label for="industry">What is the main field that you have professional skills in?</label>
+      <select class="form-control" name="industry" id="industry" [formControlName]="'industryId'">
         <option value=""></option>
-        <option *ngFor="let field of fields" [value]="field.id">{{field.label}}</option>
+        <option *ngFor="let industry of industries" [value]="industry.id">{{industry.name}}</option>
       </select>
     </div>
 
     <!-- YEARS OF EXPERIENCE -->
     <div class="form-group">
-      <label for="yearsOfExperience">How many years of professional work experience do you have in this field?</label>
-      <select class="form-control" name="yearsOfExperience" id="yearsOfExperience" [formControlName]="'yearsOfExperience'">
-        <option value=""></option>
-        <option *ngFor="let year of years" [value]="year.id">{{year.label}}</option>
-      </select>
-
+      <label for="yearsExperience">How many years of professional work experience do you have in this field?</label>
+      <input type="number" class="form-control" name="yearsExperience" id="yearsExperience" [formControlName]="'yearsExperience'">
       <p class="text-muted">
         Do not include years spent studying in this profession
       </p>
     </div>
 
-    <!-- SECOND PROFESSION -->
-    <div class="form-group">
-      <label>Do you have a second profession?</label>
-
-      <div class="radio">
-        <label><input type="radio" [formControlName]="'hasSecondProfession'" value="yes">Yes</label>
-      </div>
-      <div class="radio">
-        <label><input type="radio" [formControlName]="'hasSecondProfession'" value="no">No</label>
-      </div>
-    </div>
-
-    <div class="form-group" *ngIf="form.value.hasSecondProfession === 'yes'">
-      <pre>TODO second profession</pre>
+    <div class="text-right">
+      <button class="btn btn-outline-primary"
+              (click)="addMore()"
+              [disabled]="form.invalid || loading || saving">
+        Add Profession
+      </button>
     </div>
 
   </form>
 
+  <!-- PROFESSION SUMMARY -->
+  <h4>Profession Summary</h4>
+  <table class="table">
+    <thead>
+    <tr>
+      <th scope="col">Profession Field</th>
+      <th scope="col">Years in Field</th>
+      <th scope="col">Delete</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let p of professions">
+      <td>{{p.industry?.name}}</td>
+      <td>{{p.yearsExperience}}</td>
+      <td>
+        <button type="button" class="close" aria-label="Close"
+                [disabled]="saving"
+                (click)="delete(p)">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <div class="alert alert-danger" *ngIf="error">
+    {{error.error?.message || error.message || error}}
+  </div>
+
   <div class="text-right">
     <button class="btn btn-primary"
-            [disabled]="form.invalid"
-            (click)="save()">
+            [disabled]="professions?.length === 0 || loading || saving"
+            (click)="next()">
       Next
     </button>
   </div>
