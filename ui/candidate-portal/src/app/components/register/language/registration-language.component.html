@@ -6,8 +6,8 @@
 
     <!-- SPEAK ENGLISH -->
     <div class="form-group">
-      <label for="speakEnglish">How well do you speak English?</label>
-        <select class="form-control" name="speakEnglish" id="speakEnglish" [formControlName]="'speakEnglish'">
+      <label for="speak">How well do you speak English?</label>
+        <select class="form-control" name="speak" id="speak" [formControlName]="'speak'">
           <option value=""></option>
           <option value="Not Well">Not Well</option>
           <option value="Well">Well</option>
@@ -17,8 +17,8 @@
 
     <!-- READ WRITE ENGLISH -->
     <div class="form-group">
-      <label for="readWriteEnglish">How well do you read and write in English?</label>
-      <select class="form-control" name="readWriteEnglish" id="readWriteEnglish" [formControlName]="'readWriteEnglish'">
+      <label for="readWrite">How well do you read and write in English?</label>
+      <select class="form-control" name="readWrite" id="readWrite" [formControlName]="'readWrite'">
         <option value=""></option>
         <option value="Not Well">Not Well</option>
         <option value="Well">Well</option>
@@ -40,41 +40,34 @@
 
     <!-- ADD LANGUAGES -->
     <div *ngIf="form.value.bilingual === 'true'" >
+      <div *ngFor="let language of languages; let i=index">
 
-        <div *ngFor="let language of form.controls.otherLanguages?.value; let i=index" formArrayName="otherLanguages">
+          <label for="name">What language?</label>
+          <select class="form-control" id="name" name="name" formControlName="name">
+            <option value=""></option>
+            <option *ngFor="let lang of languageList" [value]="lang">{{lang}}</option>
+          </select>
 
-          <div [formGroupName]="i">
+          <label for="speak">How well do you speak this language?</label>
+          <select class="form-control" name="speak" id="speak" formControlName="speak">
+            <option value=""></option>
+            <option value="Not Well">Not Well</option>
+            <option value="Well">Well</option>
+            <option value="Very Well">Very Well</option>
+          </select>
 
-            <label for="language">What language?</label>
-            <select class="form-control" id="language" name="language" formControlName="language">
-              <option value=""></option>
-              <option *ngFor="let lang of languages" [value]="lang">{{lang}}</option>
-            </select>
-
-            <label for="speakLanguage">How well do you speak this language?</label>
-            <select class="form-control" name="speakLanguage" id="speakLanguage" formControlName="speakLanguage">
-              <option value=""></option>
-              <option value="Not Well">Not Well</option>
-              <option value="Well">Well</option>
-              <option value="Very Well">Very Well</option>
-            </select>
-
-            <label for="readWriteLanguage">How well do you read and write in this language?</label>
-            <select class="form-control" name="readWriteLanguage" id="readWriteLanguage" formControlName="readWriteLanguage">
-              <option value=""></option>
-              <option value="Not Well">Not Well</option>
-              <option value="Well">Well</option>
-              <option value="Very Well">Very Well</option>
-            </select>
-
+          <label for="readWrite">How well do you read and write in this language?</label>
+          <select class="form-control" name="readWrite" id="readWrite" formControlName="readWrite">
+            <option value=""></option>
+            <option value="Not Well">Not Well</option>
+            <option value="Well">Well</option>
+            <option value="Very Well">Very Well</option>
+          </select>
           </div>
-
         </div>
-      <button class="btn btn-outline-primary" [disabled]="form.invalid" (click)="addMore()">
+      <button class="btn btn-outline-primary" [disabled]="form.value.bilingual === 'false' && form.invalid" (click)="addMore()">
         Add additional language
       </button>
-
-    </div>
 
 
 

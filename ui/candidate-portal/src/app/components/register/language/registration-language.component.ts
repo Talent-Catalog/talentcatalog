@@ -1,7 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators, FormArray} from "@angular/forms";
 import {Router} from "@angular/router";
-import {languages} from "../../../model/languages";
+import {languageList} from "../../../model/languageList";
+import {Language} from "../../../model/language";
+import {LanguageService} from "../../../services/language.service";
+import {CandidateService} from "../../../services/candidate.service";
+
 
 @Component({
   selector: 'app-registration-language',
@@ -10,45 +14,52 @@ import {languages} from "../../../model/languages";
 })
 export class RegistrationLanguageComponent implements OnInit {
 
+  error: any;
+  loading: boolean;
+  saving: boolean;
   form: FormGroup;
-  otherLanguages: FormArray;
-  languages: string[];
+  languages: Language[];
+  languageList: string[];
 
   constructor(private fb: FormBuilder,
-              private router: Router) { }
+              private router: Router,
+              private candidateService: CandidateService,
+              private languageService: LanguageService,) { }
 
   ngOnInit() {
-    this.languages = languages;
+    this.languages = []
+    this.saving = false;
+    this.loading = true;
+    this.languageList = languageList;
+
     this.form = this.fb.group({
-      speakEnglish: ['', Validators.required],
-      readWriteEnglish: ['', Validators.required],
-      bilingual: [false, Validators.required],
-      otherLanguages: this.fb.array([
-        this.fb.group({
-          language: [''],
-          speakLanguage: [''],
-          readWriteLanguage: ['']
-         })
-        ])
+      name: ['English', Validators.required],
+      speak: ['', Validators.required],
+      readWrite: ['', Validators.required],
+      bilingual: ['', Validators.required]
       })
-  }
+    };
 
-  // ADD ANOTHER LANGUAGE
-  addMore() {
-    this.otherLanguages = this.form.controls.otherLanguages as FormArray;
-    this.otherLanguages.push(this.fb.group({
-      language: [''],
-      speakLanguage: [''],
-      readWriteLanguage: [''],
-    }));
-  }
+    // TODO get method to retrieve old entry
+    // ADD ANOTHER LANGUAGE
+    addMore() {
+      this.saving = true;
+      this.languageService.createLanguage(this.form.value).subscribe(
+        (response) => {
+          console.log(response);
+          this.languages.push(response);
+          this.saving = false;
+        },
+        (error) => {
+          this.error = error;
+          this.saving = false;
+        }
+      );
+    }
 
-   save() {
-      if(this.form.value.bilingual == 'false'){
-        this.form.value.otherLanguages.pop();
-      }
-      // TODO save
-      console.log(this.form);
+    // SAVE FORM
+    save() {
+      this.addMore()
       this.router.navigate(['register', 'certifications']);
     }
 

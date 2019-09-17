@@ -99,6 +99,24 @@ public class CandidatePortalApi {
         return candidateNationalityDto().build(candidate);
     }
 
+    @GetMapping("education")
+    public Map<String, Object> getCandidateEducationLevel() {
+        Candidate candidate = this.candidateService.getLoggedInCandidate();
+        return candidateEducationLevelDto().build(candidate);
+    }
+
+    @PostMapping("education")
+    public Map<String, Object> updateCandidateEducationLevel(@Valid @RequestBody UpdateCandidateEducationLevelRequest request) {
+        Candidate candidate = this.candidateService.updateEducationLevel(request);
+        return candidateEducationLevelDto().build(candidate);
+    }
+
+    @GetMapping("educations")
+    public Map<String, Object> getCandidateEducations() {
+        Candidate candidate = this.candidateService.getLoggedInCandidateLoadEducations();
+        return candidateWithEducationsDto().build(candidate);
+    }
+
     private DtoBuilder candidateContactDto() {
         return new DtoBuilder()
                 .add("email")
@@ -156,6 +174,30 @@ public class CandidatePortalApi {
                 .add("nationality")
                 .add("registeredWithUN")
                 .add("registrationId")
+                ;
+    }
+
+    private DtoBuilder candidateEducationLevelDto() {
+        return new DtoBuilder()
+                .add("educationLevel")
+                ;
+    }
+
+    private DtoBuilder educationDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("educationTypeId")
+                .add("countryId")
+                .add("lengthOfCourseYears")
+                .add("institution")
+                .add("courseName")
+                .add("dateCompleted")
+                ;
+    }
+
+    private DtoBuilder candidateWithEducationsDto() {
+        return new DtoBuilder()
+                .add("educations", educationDto())
                 ;
     }
 

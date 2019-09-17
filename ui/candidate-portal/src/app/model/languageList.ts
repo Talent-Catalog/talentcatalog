@@ -1,4 +1,4 @@
-export const languages = [
+export const languageList = [
   'Abkhazian',
   'Afar',
   'Afrikaans',

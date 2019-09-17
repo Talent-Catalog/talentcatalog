@@ -1,4 +1,5 @@
 import {Profession} from "./profession";
+import {Education} from "./education";
 
 export interface Candidate {
   id: number;
@@ -17,4 +18,7 @@ export interface Candidate {
   nationality: string;
   registeredWithUN: string;
   registrationId: string;
+  educationLevel: string;
+  educations: Education[];
+  additionalInfo: string;
 }

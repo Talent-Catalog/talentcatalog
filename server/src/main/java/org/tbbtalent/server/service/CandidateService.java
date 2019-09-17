@@ -40,6 +40,12 @@ public interface CandidateService {
 
     Candidate updateNationality(UpdateCandidateNationalityRequest request);
 
+    Candidate updateEducationLevel(UpdateCandidateEducationLevelRequest request);
+
+    Candidate updateAdditionalInfo(UpdateCandidateAdditionalInfoRequest request);
+
     Candidate getLoggedInCandidateLoadProfessions();
+
+    Candidate getLoggedInCandidateLoadEducations();
 
 }

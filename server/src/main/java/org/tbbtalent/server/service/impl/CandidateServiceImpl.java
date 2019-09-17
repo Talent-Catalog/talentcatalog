@@ -248,9 +248,30 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    public Candidate updateEducationLevel(UpdateCandidateEducationLevelRequest request) {
+        Candidate candidate = getLoggedInCandidate();
+        candidate.setEducationLevel(request.getEducationLevel());
+        return candidateRepository.save(candidate);
+    }
+
+    @Override
+    public Candidate updateAdditionalInfo(UpdateCandidateAdditionalInfoRequest request) {
+        Candidate candidate = getLoggedInCandidate();
+        candidate.setAdditionalInfo(request.getAdditionalInfo());
+        return candidateRepository.save(candidate);
+    }
+
+    @Override
     public Candidate getLoggedInCandidateLoadProfessions() {
         Candidate candidate = getLoggedInCandidate();
         candidate = candidateRepository.findByIdLoadProfessions(candidate.getId());
+        return candidate;
+    }
+
+    @Override
+    public Candidate getLoggedInCandidateLoadEducations() {
+        Candidate candidate = getLoggedInCandidate();
+        candidate = candidateRepository.findByIdLoadEducations(candidate.getId());
         return candidate;
     }
 

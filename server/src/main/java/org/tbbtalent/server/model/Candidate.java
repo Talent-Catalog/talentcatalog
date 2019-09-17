@@ -27,17 +27,26 @@ public class Candidate {
     private String country;
     private String city;
     private String yearOfArrival;
-    private String nationality;
 
+    private String nationality;
     @Column(name = "registered_with_un")
     private String registeredWithUN;
-
     private String registrationId;
+
+    private String educationLevel;
+    private String additionalInfo;
+
     @Enumerated(EnumType.STRING)
     private Status status;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     private Set<Profession> professions = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    private Set<Education> educations = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    private Set<Language> languages = new HashSet<>();
 
     public Candidate() {
     }
@@ -161,6 +170,14 @@ public class Candidate {
         this.registrationId = registrationId;
     }
 
+    public String getEducationLevel() { return educationLevel; }
+
+    public void setEducationLevel(String educationLevel) { this.educationLevel = educationLevel; }
+
+    public String getAdditionalInfo() { return additionalInfo; }
+
+    public void setAdditionalInfo(String additionalInfo) { this.additionalInfo = additionalInfo; }
+
     public String getPasswordEnc() {
         return passwordEnc;
     }
@@ -194,5 +211,21 @@ public class Candidate {
 
     public void setProfessions(Set<Profession> professions) {
         this.professions = professions;
+    }
+
+    public Set<Education> getEducations() {
+        return educations;
+    }
+
+    public void setEducations(Set<Education> educations) {
+        this.educations = educations;
+    }
+
+    public Set<Language> getLanguages() {
+        return languages;
+    }
+
+    public void setLanguages(Set<Language> languages) {
+        this.languages = languages;
     }
 }

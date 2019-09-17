@@ -66,12 +66,39 @@ export class CandidateService {
        return this.http.post<Candidate>(`${this.apiUrl}/nationality`, request);
     }
 
+   /* Candidate Education Level*/
+    getCandidateEducationLevel(): Observable<Candidate> {
+       return this.http.get<Candidate>(`${this.apiUrl}/education`);
+    }
+
+    updateCandidateEducationLevel(request): Observable<Candidate> {
+       return this.http.post<Candidate>(`${this.apiUrl}/education`, request);
+    }
+
+
+   /* Candidate Additional Info */
+    getCandidateAdditionalInfo(): Observable<Candidate> {
+       return this.http.get<Candidate>(`${this.apiUrl}/education`);
+    }
+
+    updateCandidateAdditionalInfo(request): Observable<Candidate> {
+       return this.http.post<Candidate>(`${this.apiUrl}/education`, request);
+    }
+
 
   // TODO create a get request and save request for each step of the registration process
   // TODO Each get request should only return the data needed to be displayed on the current registration page
 
   getCandidateProfessions(): Observable<Candidate> {
     return this.http.get<Candidate>(`${this.apiUrl}/profession`);
+  }
+
+  getCandidateEducations(): Observable<Candidate> {
+    return this.http.get<Candidate>(`${this.apiUrl}/educations`);
+  }
+
+  getCandidateLanguages(): Observable<Candidate> {
+    return this.http.get<Candidate>(`${this.apiUrl}/languages`);
   }
 
 }

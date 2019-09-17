@@ -5,31 +5,31 @@
   <form [formGroup]="form">
 
     <div class="form-group">
-      <label for="degree">What was your Degree in?</label>
-      <input type="text" class="form-control" placeholder="" id="degree" [formControlName]="'degree'">
+      <label for="courseName">What was your Degree in?</label>
+      <input type="text" class="form-control" placeholder="" id="courseName" [formControlName]="'courseName'">
     </div>
 
     <div class="form-group">
-      <label for="countryStudied">Country you studied in:</label>
-      <select class="form-control" name="countryStudied" id="countryStudied" [formControlName]="'countryStudied'">
+      <label for="countryId">Country you studied in:</label>
+      <select class="form-control" name="countryId" id="countryId" [formControlName]="'countryId'">
         <option value=""></option>
         <option *ngFor="let country of countries" [value]="country">{{country}}</option>
       </select>
     </div>
 
     <div class="form-group">
-      <label for="university">Name of your University/Institution</label>
-      <input type="text" class="form-control" placeholder="" id="university" [formControlName]="'university'">
+      <label for="institution">Name of your University/Institution</label>
+      <input type="text" class="form-control" placeholder="" id="institution" [formControlName]="'institution'">
     </div>
 
     <div class="form-group">
-      <label for="major">What was your Major/Specialisation?</label>
-      <input type="text" class="form-control" placeholder="" id="major" [formControlName]="'major'">
+      <label for="lengthOfCourseYears">What was your Major/Specialisation?</label>
+      <input type="text" class="form-control" placeholder="" id="lengthOfCourseYears" [formControlName]="'lengthOfCourseYears'">
     </div>
 
     <div class="form-group">
-      <label for="graduationYear">Year of graduation:</label>
-      <select class="form-control" name="graduationYear" id="graduationYear" [formControlName]="'graduationYear'">
+      <label for="dateCompleted">Year of graduation:</label>
+      <select class="form-control" name="dateCompleted" id="dateCompleted" [formControlName]="'dateCompleted'">
         <option value=""></option>
         <option *ngFor="let year of years" [value]="year">{{year}}</option>
       </select>
