@@ -2,19 +2,19 @@ package org.tbbtalent.server.request.education;
 
 public class CreateEducationRequest {
 
-    private String educationTypeId;
+    private String educationType;
     private String countryId;
     private String lengthOfCourseYears;
     private String institution;
     private String courseName;
     private String dateCompleted;
 
-    public String getEducationTypeId() {
-        return educationTypeId;
+    public String getEducationType() {
+        return educationType;
     }
 
-    public void setEducationTypeId(String educationTypeId) {
-        this.educationTypeId = educationTypeId;
+    public void setEducationType(String educationType) {
+        this.educationType = educationType;
     }
 
     public String getCountryId() {

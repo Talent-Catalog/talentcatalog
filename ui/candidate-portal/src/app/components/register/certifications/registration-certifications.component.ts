@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
+import {Certification} from "../../../model/certification";
 
 @Component({
   selector: 'app-registration-certifications',

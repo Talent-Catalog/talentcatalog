@@ -1,6 +1,6 @@
 export interface Education {
   id: number;
-  educationTypeId: string;
+  educationType: string;
   countryId: number;
   lengthOfCourseYears: number;
   institution: string;

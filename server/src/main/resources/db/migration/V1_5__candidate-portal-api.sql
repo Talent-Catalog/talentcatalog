@@ -13,11 +13,13 @@ alter table candidate add column education_level text;
 -- Add additional info
 alter table candidate add column additional_info text;
 
+CREATE type education_type AS ENUM ('Masters','University','Schooling');
+
 create table education
 (
   id                      bigserial not null primary key,
   candidate_id            bigint not null,
-  education_type_id       text,
+  education_type          education_type,
   country_id              text,
   length_of_course_years  text,
   institution             text,
@@ -25,17 +27,25 @@ create table education
   date_completed          text
 );
 
-create table education_type
-(
-  id                      bigserial not null primary key,
-  name                    text
-);
-
 create table language
 (
-  id                      bigserial not null primary key,
-  candidate_id            bigint not null,
-  name                    text,
-  read_write              text,
-  speak                   text
+id                      bigserial not null primary key,
+candidate_id            bigint not null,
+name                    text,
+read_write              text,
+speak                   text
+);
+
+create table work_experience
+(
+id                      bigserial not null primary key,
+candidate_id            bigint not null,
+company_name            text,
+country_id              text,
+role                    text,
+start_date              text,
+end_date                text,
+full_time               text,
+paid                    text,
+description             text
 );

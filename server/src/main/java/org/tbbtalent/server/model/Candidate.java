@@ -48,6 +48,9 @@ public class Candidate {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     private Set<Language> languages = new HashSet<>();
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    private Set<WorkExperience> workExperiences = new HashSet<>();
+
     public Candidate() {
     }
 
@@ -228,4 +231,12 @@ public class Candidate {
     public void setLanguages(Set<Language> languages) {
         this.languages = languages;
     }
+
+    public Set<WorkExperience> getWorkExperiences() {
+        return workExperiences;
+    }
+
+    public void setWorkExperiences(Set<WorkExperience> workExperiences) { this.workExperiences = workExperiences; }
+
+
 }

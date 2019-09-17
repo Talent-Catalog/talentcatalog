@@ -15,7 +15,15 @@ public class Education {
     @JoinColumn(name = "candidate_id")
     private Candidate candidate;
 
-    private String educationTypeId;
+    public enum EducationType {
+        Masters,
+        University,
+        Schooling,
+    }
+
+    @Enumerated(EnumType.STRING)
+    private EducationType educationType;
+
     private String countryId;
     private String lengthOfCourseYears;
     private String institution;
@@ -41,13 +49,9 @@ public class Education {
         this.candidate = candidate;
     }
 
-    public String getEducationTypeId() {
-        return educationTypeId;
-    }
+    public EducationType getEducationType() { return educationType; }
 
-    public void setEducationTypeId(String educationTypeId) {
-        this.educationTypeId = educationTypeId;
-    }
+    public void setEducationType(EducationType educationType) { this.educationType = educationType; }
 
     public String getCountryId() {
         return countryId;

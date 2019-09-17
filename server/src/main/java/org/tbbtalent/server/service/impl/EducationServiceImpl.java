@@ -15,6 +15,7 @@ public class EducationServiceImpl implements EducationService {
     private final EducationRepository educationRepository;
     private final UserContext userContext;
 
+
     @Autowired
     public EducationServiceImpl(EducationRepository educationRepository,
                                  UserContext userContext) {
@@ -30,7 +31,7 @@ public class EducationServiceImpl implements EducationService {
         // Create a new profession object to insert into the database
         Education education = new Education();
         education.setCandidate(candidate);
-        education.setEducationTypeId(request.getEducationTypeId());
+        education.setEducationType(Education.EducationType.valueOf(request.getEducationType()));
         education.setCountryId(request.getCountryId());
         education.setLengthOfCourseYears(request.getLengthOfCourseYears());
         education.setInstitution(request.getInstitution());

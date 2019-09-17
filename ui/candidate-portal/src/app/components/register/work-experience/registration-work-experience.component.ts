@@ -2,6 +2,9 @@ import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {countries} from "../../../model/countries";
+import {CandidateService} from "../../../services/candidate.service";
+import {WorkExperienceService} from "../../../services/work-experience.service";
+import {WorkExperience} from "../../../model/work-experience";
 
 @Component({
   selector: 'app-registration-work-experience',
@@ -10,15 +13,21 @@ import {countries} from "../../../model/countries";
 })
 export class RegistrationWorkExperienceComponent implements OnInit {
 
+  error: any;
+  loading: boolean;
+  saving: boolean;
 
   form: FormGroup;
   countries: string[];
-  experiences: any[];
+  experiences: WorkExperience[];
+
   startDate: Date;
   e: number;
 
   constructor(private fb: FormBuilder,
-              private router: Router) { }
+              private router: Router,
+              private candidateService: CandidateService,
+              private workExperienceService: WorkExperienceService) { }
 
 
   ngOnInit() {
@@ -27,23 +36,34 @@ export class RegistrationWorkExperienceComponent implements OnInit {
     this.setUpForm();
   }
 
- setUpForm(){
+  setUpForm(){
     this.form = this.fb.group({
-      companyName: ['', Validators.required],
-      country: ['', Validators.required],
-      role: ['', Validators.required],
-      startDate: ['', Validators.required],
-      endDate: ['', Validators.required],
-      isFullTime: [false, Validators.required],
-      isPaid: [false, Validators.required],
-      roleDescription: ['', Validators.required]
+    companyName: ['', Validators.required],
+    countryId: ['', Validators.required],
+    role: ['', Validators.required],
+    startDate: ['', Validators.required],
+    endDate: ['', Validators.required],
+    fullTime: [false, Validators.required],
+    paid: [false, Validators.required],
+    description: ['', Validators.required]
     })
   }
 
   addMore() {
-    this.experiences.push(this.form.value);
+    this.saving = true;
+    this.workExperienceService.createWorkExperience(this.form.value).subscribe(
+      (response) => {
+        this.experiences.push(response);
+        this.saving = false;
+      },
+      (error) => {
+        this.error = error;
+        this.saving = false;
+      }
+    );
+    console.log(this.form.value)
     this.setUpForm();
-  }
+    }
 
   delete(e){
     this.experiences = this.experiences.filter(experience => experience !== e);

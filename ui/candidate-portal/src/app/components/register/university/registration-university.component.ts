@@ -34,7 +34,7 @@ export class RegistrationUniversityComponent implements OnInit {
     this.saving = false;
     this.loading = true;
     this.form = this.fb.group({
-      educationTypeId: ['University'],
+      educationType: ['University'],
       courseName: ['', Validators.required],
       countryId: ['', Validators.required],
       institution: ['', Validators.required],

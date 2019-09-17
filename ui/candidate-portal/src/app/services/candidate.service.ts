@@ -101,4 +101,8 @@ export class CandidateService {
     return this.http.get<Candidate>(`${this.apiUrl}/languages`);
   }
 
+  getCandidateWorkExperiences(): Observable<Candidate> {
+    return this.http.get<Candidate>(`${this.apiUrl}/work-experience`);
+  }
+
 }

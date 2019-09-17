@@ -34,7 +34,7 @@ public class EducationPortalApi {
     private DtoBuilder educationDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("educationTypeId")
+                .add("educationType")
                 .add("countryId")
                 .add("lengthOfCourseYears")
                 .add("institution")

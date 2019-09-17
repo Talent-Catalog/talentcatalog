@@ -35,7 +35,7 @@ export class RegistrationSchoolComponent implements OnInit {
     this.countries = countries;
     this.years = years;
     this.form = this.fb.group({
-      educationTypeId: ['School'],
+      educationType: ['School'],
       courseName: [''],
       countryId: ['', Validators.required],
       institution: ['', Validators.required],
