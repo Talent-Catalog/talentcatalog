@@ -38,7 +38,7 @@ public class WorkExperiencePortalApi {
         return new DtoBuilder()
                 .add("id")
                 .add("companyName")
-                .add("countryId")
+                .add("country")
                 .add("role")
                 .add("startDate")
                 .add("endDate")

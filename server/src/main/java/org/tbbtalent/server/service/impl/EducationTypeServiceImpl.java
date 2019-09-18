@@ -2,7 +2,7 @@ package org.tbbtalent.server.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.tbbtalent.server.model.EducationType;
+import org.tbbtalent.server.model.EduType;
 import org.tbbtalent.server.repository.EducationTypeRepository;
 import org.tbbtalent.server.service.EducationTypeService;
 
@@ -19,7 +19,7 @@ public class EducationTypeServiceImpl implements EducationTypeService {
     }
 
     @Override
-    public List<EducationType> listEducationTypes() {
+    public List<EduType> listEducationTypes() {
         return educationTypeRepository.findAll();
     }
 }

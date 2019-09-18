@@ -10,10 +10,10 @@
     </div>
 
     <div class="form-group">
-      <label for="countryId">Country you studied in</label>
-      <select class="form-control" name="countryId" id="countryId" [formControlName]="'countryId'">
+      <label for="country">Country you studied in</label>
+      <select class="form-control" name="country" id="country" [formControlName]="'country'">
         <option value=""></option>
-        <option *ngFor="let country of countries" [value]="country">{{country}}</option>
+        <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
       </select>
     </div>
 

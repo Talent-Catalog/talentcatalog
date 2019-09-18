@@ -1,7 +1,7 @@
 export interface WorkExperience {
   id: number;
   companyName: string;
-  countryId: number;
+  country: number;
   role: string;
   startDate: string;
   endDate: string;

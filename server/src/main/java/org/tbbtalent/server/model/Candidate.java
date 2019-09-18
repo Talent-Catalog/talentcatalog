@@ -24,13 +24,17 @@ public class Candidate {
     private String passwordEnc;
     private String gender;
     private String dob;
-    private String country;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "country_id")
+    private Country country;
+
     private String city;
-    private String yearOfArrival;
+    private Integer yearOfArrival;
 
     private String nationality;
     @Column(name = "registered_with_un")
-    private String registeredWithUN;
+    private Boolean registeredWithUN;
     private String registrationId;
 
     private String educationLevel;
@@ -50,6 +54,9 @@ public class Candidate {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     private Set<WorkExperience> workExperiences = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    private Set<Certification> certifications = new HashSet<>();
 
     public Candidate() {
     }
@@ -135,11 +142,11 @@ public class Candidate {
         this.dob = dob;
     }
 
-    public String getCountry() {
+    public Country getCountry() {
         return country;
     }
 
-    public void setCountry(String country) {
+    public void setCountry(Country country) {
         this.country = country;
     }
 
@@ -151,11 +158,11 @@ public class Candidate {
         this.city = city;
     }
 
-    public String getYearOfArrival() {
+    public Integer getYearOfArrival() {
         return yearOfArrival;
     }
 
-    public void setYearOfArrival(String yearOfArrival) {
+    public void setYearOfArrival(Integer yearOfArrival) {
         this.yearOfArrival = yearOfArrival;
     }
 
@@ -163,9 +170,9 @@ public class Candidate {
 
     public void setNationality(String nationality) { this.nationality = nationality; }
 
-    public String getRegisteredWithUN() { return registeredWithUN; }
+    public Boolean getRegisteredWithUN() { return registeredWithUN; }
 
-    public void setRegisteredWithUN(String registeredWithUN) { this.registeredWithUN = registeredWithUN; }
+    public void setRegisteredWithUN(Boolean registeredWithUN) { this.registeredWithUN = registeredWithUN; }
 
     public String getRegistrationId() { return registrationId; }
 
@@ -232,11 +239,15 @@ public class Candidate {
         this.languages = languages;
     }
 
-    public Set<WorkExperience> getWorkExperiences() {
-        return workExperiences;
-    }
+    public Set<WorkExperience> getWorkExperiences() { return workExperiences; }
 
     public void setWorkExperiences(Set<WorkExperience> workExperiences) { this.workExperiences = workExperiences; }
+
+    public Set<Certification> getCertifications() {
+        return certifications;
+    }
+
+    public void setCertifications(Set<Certification> certifications) { this.certifications = certifications; }
 
 
 }

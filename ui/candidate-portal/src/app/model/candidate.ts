@@ -1,5 +1,6 @@
 import {Profession} from "./profession";
 import {Education} from "./education";
+import {Country} from "./country";
 
 export interface Candidate {
   id: number;
@@ -12,11 +13,11 @@ export interface Candidate {
   gender: string;
   dob: string;
   professions: Profession[];
-  country: string;
+  country: Country;
   city: string;
-  yearOfArrival: string;
+  yearOfArrival: number;
   nationality: string;
-  registeredWithUN: string;
+  registeredWithUN: boolean;
   registrationId: string;
   educationLevel: string;
   educations: Education[];

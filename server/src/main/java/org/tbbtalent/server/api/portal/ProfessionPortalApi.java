@@ -37,12 +37,12 @@ public class ProfessionPortalApi {
     private DtoBuilder professionDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("industry", indutryDto())
+                .add("industry", industryDto())
                 .add("yearsExperience")
                 ;
     }
 
-    private DtoBuilder indutryDto() {
+    private DtoBuilder industryDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("name")

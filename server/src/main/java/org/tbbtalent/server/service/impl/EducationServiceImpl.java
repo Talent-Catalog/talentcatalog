@@ -2,8 +2,12 @@ package org.tbbtalent.server.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.Candidate;
+import org.tbbtalent.server.model.Country;
 import org.tbbtalent.server.model.Education;
+import org.tbbtalent.server.model.EducationType;
+import org.tbbtalent.server.repository.CountryRepository;
 import org.tbbtalent.server.repository.EducationRepository;
 import org.tbbtalent.server.request.education.CreateEducationRequest;
 import org.tbbtalent.server.security.UserContext;
@@ -13,13 +17,16 @@ import org.tbbtalent.server.service.EducationService;
 public class EducationServiceImpl implements EducationService {
 
     private final EducationRepository educationRepository;
+    private final CountryRepository countryRepository;
     private final UserContext userContext;
 
 
     @Autowired
     public EducationServiceImpl(EducationRepository educationRepository,
+                                 CountryRepository countryRepository,
                                  UserContext userContext) {
         this.educationRepository = educationRepository;
+        this.countryRepository = countryRepository;
         this.userContext = userContext;
     }
 
@@ -28,11 +35,20 @@ public class EducationServiceImpl implements EducationService {
     public Education createEducation(CreateEducationRequest request) {
         Candidate candidate = userContext.getLoggedInCandidate();
 
+        // Load the country from the database - throw an exception if not found
+        Country country = countryRepository.findById(request.getCountry())
+                .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountry()));
+
+        // Get ENUM for education type
+        EducationType educationType = EducationType.valueOf(request.getEducationType());
+
+
         // Create a new profession object to insert into the database
+
         Education education = new Education();
         education.setCandidate(candidate);
-        education.setEducationType(Education.EducationType.valueOf(request.getEducationType()));
-        education.setCountryId(request.getCountryId());
+        education.setEducationType(educationType);
+        education.setCountry(country);
         education.setLengthOfCourseYears(request.getLengthOfCourseYears());
         education.setInstitution(request.getInstitution());
         education.setCourseName(request.getCourseName());

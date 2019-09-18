@@ -33,7 +33,7 @@ public class WorkExperienceServiceImpl implements WorkExperienceService {
         WorkExperience workExperience = new WorkExperience();
         workExperience.setCandidate(candidate);
         workExperience.setCompanyName(request.getCompanyName());
-        workExperience.setCountryId(request.getCountryId());
+        workExperience.setCountry(request.getCountry());
         workExperience.setStartDate(request.getStartDate());
         workExperience.setEndDate(request.getEndDate());
         workExperience.setFullTime(request.getFullTime());

@@ -35,11 +35,18 @@ public class EducationPortalApi {
         return new DtoBuilder()
                 .add("id")
                 .add("educationType")
-                .add("countryId")
+                .add("country", countryDto())
                 .add("lengthOfCourseYears")
                 .add("institution")
                 .add("courseName")
                 .add("dateCompleted")
+                ;
+    }
+
+    private DtoBuilder countryDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
                 ;
     }
 

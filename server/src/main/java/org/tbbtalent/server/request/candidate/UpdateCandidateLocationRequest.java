@@ -2,15 +2,15 @@ package org.tbbtalent.server.request.candidate;
 
 public class UpdateCandidateLocationRequest {
 
-    private String country;
+    private Long country;
     private String city;
-    private String yearOfArrival;
+    private Integer yearOfArrival;
 
-    public String getCountry() {
+    public Long getCountry() {
         return country;
     }
 
-    public void setCountry(String country) {
+    public void setCountry(Long country) {
         this.country = country;
     }
 
@@ -22,9 +22,9 @@ public class UpdateCandidateLocationRequest {
         this.city = city;
     }
 
-    public String getYearOfArrival() { return yearOfArrival; }
+    public Integer getYearOfArrival() { return yearOfArrival; }
 
-    public void setYearOfArrival(String yearOfArrival) { this.yearOfArrival = yearOfArrival; }
+    public void setYearOfArrival(Integer yearOfArrival) { this.yearOfArrival = yearOfArrival; }
 
 
 }

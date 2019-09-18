@@ -1,34 +1,9 @@
 package org.tbbtalent.server.model;
 
-import javax.persistence.*;
+public enum EducationType {
 
-@Entity
-@Table(name = "education_type")
-public class EducationType {
+    Masters,
+    University,
+    School
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "education_type_gen")
-    @SequenceGenerator(name = "education_type_gen", sequenceName = "education_type_id_seq", allocationSize = 1)
-    private Long id;
-
-    private String name;
-
-    public EducationType() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }

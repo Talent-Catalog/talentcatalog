@@ -187,7 +187,7 @@ public class CandidatePortalApi {
         return new DtoBuilder()
                 .add("id")
                 .add("educationType")
-                .add("countryId")
+                .add("country")
                 .add("lengthOfCourseYears")
                 .add("institution")
                 .add("courseName")

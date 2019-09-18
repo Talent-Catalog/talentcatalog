@@ -11,8 +11,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.*;
 import org.tbbtalent.server.model.Candidate;
+import org.tbbtalent.server.model.Country;
 import org.tbbtalent.server.model.Status;
 import org.tbbtalent.server.repository.CandidateRepository;
+import org.tbbtalent.server.repository.CountryRepository;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.response.JwtAuthenticationResponse;
@@ -27,6 +29,7 @@ import javax.security.auth.login.AccountLockedException;
 public class CandidateServiceImpl implements CandidateService {
 
     private final CandidateRepository candidateRepository;
+    private final CountryRepository countryRepository;
     private final PasswordHelper passwordHelper;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider tokenProvider;
@@ -34,11 +37,13 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Autowired
     public CandidateServiceImpl(CandidateRepository candidateRepository,
+                                CountryRepository countryRepository,
                                 PasswordHelper passwordHelper,
                                 AuthenticationManager authenticationManager,
                                 JwtTokenProvider tokenProvider,
                                 UserContext userContext) {
         this.candidateRepository = candidateRepository;
+        this.countryRepository = countryRepository;
         this.passwordHelper = passwordHelper;
         this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;
@@ -231,8 +236,13 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateLocation(UpdateCandidateLocationRequest request) {
+
+        // Load the country from the database - throw an exception if not found
+        Country country = countryRepository.findById(request.getCountry())
+                .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountry()));
+
         Candidate candidate = getLoggedInCandidate();
-        candidate.setCountry(request.getCountry());
+        candidate.setCountry(country);
         candidate.setCity(request.getCity());
         candidate.setYearOfArrival(request.getYearOfArrival());
         return candidateRepository.save(candidate);

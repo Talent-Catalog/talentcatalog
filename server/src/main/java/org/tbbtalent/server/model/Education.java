@@ -15,19 +15,19 @@ public class Education {
     @JoinColumn(name = "candidate_id")
     private Candidate candidate;
 
-    public enum EducationType {
-        Masters,
-        University,
-        Schooling,
-    }
-
     @Enumerated(EnumType.STRING)
     private EducationType educationType;
 
-    private String countryId;
-    private String lengthOfCourseYears;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "country_id")
+    private Country country;
+
+    private Integer lengthOfCourseYears;
     private String institution;
     private String courseName;
+
+    // TODO determine if this is a date or a year?
     private String dateCompleted;
 
     public Education() {
@@ -53,19 +53,17 @@ public class Education {
 
     public void setEducationType(EducationType educationType) { this.educationType = educationType; }
 
-    public String getCountryId() {
-        return countryId;
+    public Country getCountry() { return country; }
+
+    public void setCountry(Country country) {
+        this.country = country;
     }
 
-    public void setCountryId(String countryId) {
-        this.countryId = countryId;
-    }
-
-    public String getLengthOfCourseYears() {
+    public Integer getLengthOfCourseYears() {
         return lengthOfCourseYears;
     }
 
-    public void setLengthOfCourseYears(String lengthOfCourseYears) {
+    public void setLengthOfCourseYears(Integer lengthOfCourseYears) {
         this.lengthOfCourseYears = lengthOfCourseYears;
     }
 

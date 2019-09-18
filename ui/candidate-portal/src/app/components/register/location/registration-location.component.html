@@ -8,7 +8,10 @@
     <div class="col-12 col-md-6">
       <div class="form-group">
         <label for="country">Country</label>
-        <input type="text" class="form-control" id="country" placeholder="" [formControlName]="'country'">
+        <select class="form-control" name="country" id="country" [formControlName]="'country'">
+          <option value=""></option>
+          <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
+        </select>
       </div>
     </div>
 
@@ -24,8 +27,10 @@
     <div class="col-12">
       <div class="form-group">
         <label for="yearOfArrival">What year did you arrive in this country?</label>
-        <!-- TODO datepicker -->
-        <input type="text" class="form-control" id="yearOfArrival" placeholder="" [formControlName]="'yearOfArrival'">
+        <select class="form-control" name="yearOfArrival" id="yearOfArrival" [formControlName]="'yearOfArrival'">
+          <option value=""></option>
+          <option *ngFor="let year of years" [value]="year">{{year}}</option>
+        </select>
       </div>
     </div>
 

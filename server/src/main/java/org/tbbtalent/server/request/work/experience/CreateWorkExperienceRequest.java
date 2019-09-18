@@ -3,7 +3,7 @@ package org.tbbtalent.server.request.work.experience;
 public class CreateWorkExperienceRequest {
 
     private String companyName;
-    private String countryId;
+    private String country;
     private String role;
     private String startDate;
     private String endDate;
@@ -15,9 +15,9 @@ public class CreateWorkExperienceRequest {
 
     public void setCompanyName(String companyName) { this.companyName = companyName; }
 
-    public String getCountryId() { return countryId; }
+    public String getCountry() { return country; }
 
-    public void setCountryId(String countryId) { this.countryId = countryId; }
+    public void setCountry(String country) { this.country = country; }
 
     public String getRole() { return role; }
 

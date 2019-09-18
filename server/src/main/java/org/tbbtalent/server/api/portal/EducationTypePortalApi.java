@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tbbtalent.server.model.EducationType;
+import org.tbbtalent.server.model.EduType;
 import org.tbbtalent.server.service.EducationTypeService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -24,7 +24,7 @@ public class EducationTypePortalApi {
 
     @GetMapping()
     public List<Map<String, Object>> listAllEducationTypes() {
-        List<EducationType> educationTypes = educationTypeService.listEducationTypes();
+        List<EduType> educationTypes = educationTypeService.listEducationTypes();
         return educationTypeDto().buildList(educationTypes);
     }
 

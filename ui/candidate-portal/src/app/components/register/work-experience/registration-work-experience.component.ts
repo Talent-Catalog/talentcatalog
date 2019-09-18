@@ -39,7 +39,7 @@ export class RegistrationWorkExperienceComponent implements OnInit {
   setUpForm(){
     this.form = this.fb.group({
     companyName: ['', Validators.required],
-    countryId: ['', Validators.required],
+    country: ['', Validators.required],
     role: ['', Validators.required],
     startDate: ['', Validators.required],
     endDate: ['', Validators.required],
