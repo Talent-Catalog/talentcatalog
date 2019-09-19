@@ -121,7 +121,6 @@ export class RegistrationLanguageComponent implements OnInit {
 
     // SAVE FORM
     save() {
-      this.addMore()
       this.router.navigate(['register', 'certifications']);
     }
 

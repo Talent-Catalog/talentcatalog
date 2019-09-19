@@ -49,8 +49,10 @@ export class RegistrationUniversityComponent implements OnInit {
     this.candidateService.getCandidateEducations().subscribe(
       (candidate) => {
         this.educations = candidate.educations || [];
-        if(this.educations.length !== 0){
-          this.university = this.educations.filter(e => e.educationType == "University");
+
+        /* filter for the correct education type for the component */
+        this.university = this.educations.filter(e => e.educationType == "University");
+        if(this.university.length !== 0){
           this.form.patchValue({
             educationType: this.university[0].educationType,
             courseName: this.university[0].courseName,
@@ -82,10 +84,10 @@ export class RegistrationUniversityComponent implements OnInit {
 
   save() {
     this.saving = true;
-    if(this.educations.length == 0){
+    /* CREATE if no education type exists in education table*/
+    if(this.university.length == 0){
       this.educationService.createEducation(this.form.value).subscribe(
         (response) => {
-           console.log(response);
            this.educations.push(response);
            this.saving = false;
            this.router.navigate(['register', 'education', 'school']);

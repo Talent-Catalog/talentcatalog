@@ -92,7 +92,6 @@ export class RegistrationSchoolComponent implements OnInit {
      if(this.school.length == 0){
        this.educationService.createEducation(this.form.value).subscribe(
          (response) => {
-            console.log(response);
             this.educations.push(response);
             this.saving = false;
             this.router.navigate(['register', 'language']);

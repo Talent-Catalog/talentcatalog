@@ -16,5 +16,6 @@ public class CreateCandidateLanguageRequest {
 
     public Long getSpeakId() { return speakId; }
 
-    public void setSpeak(Long speakId) { this.speakId = speakId; }
+    public void setSpeak(Long speakId) { this.speakId = speakId;
+    }
 }
