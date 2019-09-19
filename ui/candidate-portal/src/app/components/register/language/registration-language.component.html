@@ -9,9 +9,7 @@
       <label for="speak">How well do you speak English?</label>
         <select class="form-control" name="speak" id="speak" [formControlName]="'speak'">
           <option value=""></option>
-          <option value="Not Well">Not Well</option>
-          <option value="Well">Well</option>
-          <option value="Very Well">Very Well</option>
+          <option *ngFor="let l of languageLevels" [value]="l.id">{{l.level}}</option>
         </select>
     </div>
 
@@ -20,9 +18,7 @@
       <label for="readWrite">How well do you read and write in English?</label>
       <select class="form-control" name="readWrite" id="readWrite" [formControlName]="'readWrite'">
         <option value=""></option>
-        <option value="Not Well">Not Well</option>
-        <option value="Well">Well</option>
-        <option value="Very Well">Very Well</option>
+        <option *ngFor="let l of languageLevels" [value]="l.id">{{l.level}}</option>
       </select>
     </div>
 
@@ -49,53 +45,53 @@
           <label for="speak">How well do you speak this language?</label>
           <select class="form-control" name="speak" id="speak" formControlName="speak">
             <option value=""></option>
-            <option value="Not Well">Not Well</option>
-            <option value="Well">Well</option>
-            <option value="Very Well">Very Well</option>
+            <option *ngFor="let l of languageLevels" [value]="l.id">{{l.level}}</option>
           </select>
 
           <label for="readWrite">How well do you read and write in this language?</label>
           <select class="form-control" name="readWrite" id="readWrite" formControlName="readWrite">
             <option value=""></option>
-            <option value="Not Well">Not Well</option>
-            <option value="Well">Well</option>
-            <option value="Very Well">Very Well</option>
+            <option *ngFor="let l of languageLevels" [value]="l.id">{{l.level}}</option>
           </select>
     </div>
-      <button class="btn btn-outline-primary" [disabled]="form.value.bilingual === 'false' && form.invalid" (click)="addMore()">
+
+    <div>
+      <button class="btn btn-outline-primary"
+              [disabled]="form.value.bilingual === 'false' && form.invalid"
+              (click)="addMore()">
         Add additional language
       </button>
-
-
+    </div>
 
   </form>
+  <div>
 
-  <!-- LANGUAGES SUMMARY -->
-  <h4>Languages Summary</h4>
-  <table class="table">
-    <thead>
-    <tr>
-      <th scope="col">Language</th>
-      <th scope="col">Speak</th>
-      <th scope="col">Read/Write</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr *ngFor="let l of candidateLanguages">
-      <td>{{l.language.name}}</td>
-      <td>{{l.speak}}</td>
-      <td>{{l.readWrite}}</td>
-      <td>
-        <button *ngIf="l.language.name != 'English'" type="button" class="close" aria-label="Close"
-                [disabled]="saving"
-                (click)="delete(l)">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </td>
-    </tr>
-    </tbody>
-  </table>
-
+    <!-- LANGUAGES SUMMARY -->
+    <h4>Languages Summary</h4>
+    <table class="table">
+      <thead>
+      <tr>
+        <th scope="col">Language</th>
+        <th scope="col">Speak</th>
+        <th scope="col">Read/Write</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let l of candidateLanguages">
+        <td>{{l.language.name}}</td>
+        <td>{{l.speak.level}}</td>
+        <td>{{l.readWrite.level}}</td>
+        <td>
+          <button type="button" class="close" aria-label="Close"
+                  [disabled]="saving"
+                  (click)="delete(l)">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
   <div class="alert alert-danger" *ngIf="error">
     {{error.error?.message || error.message || error}}
   </div>

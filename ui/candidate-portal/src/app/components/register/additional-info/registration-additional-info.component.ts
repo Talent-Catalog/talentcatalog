@@ -25,12 +25,12 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
     this.loading = true;
     this.saving = false;
     this.form = this.fb.group({
-      addInfo: ['']
+      additionalInfo: ['']
     });
     this.candidateService.getCandidateAdditionalInfo().subscribe(
       (response) => {
         this.form.patchValue({
-          addInfo: [''],
+          additionalInfo: [response.additionalInfo],
         });
         this.loading = false;
       },

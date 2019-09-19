@@ -38,8 +38,8 @@ public class CandidateLanguagePortalApi {
         return new DtoBuilder()
                 .add("id")
                 .add("language", languageDto())
-                .add("readWrite")
-                .add("speak")
+                .add("readWrite", languageLevelDto())
+                .add("speak",languageLevelDto())
                 ;
     }
 
@@ -47,6 +47,13 @@ public class CandidateLanguagePortalApi {
         return new DtoBuilder()
                 .add("id")
                 .add("name")
+                ;
+    }
+
+    private DtoBuilder languageLevelDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("level")
                 ;
     }
 

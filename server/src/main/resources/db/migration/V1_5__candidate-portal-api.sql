@@ -30,8 +30,8 @@ create table candidate_language
 id                      bigserial not null primary key,
 candidate_id            bigint not null,
 language_id             bigint not null,
-read_write              text,
-speak                   text
+read_write              bigint not null,
+speak                   bigint not null
 );
 
 create table work_experience
@@ -91,10 +91,22 @@ id                      bigserial not null primary key,
 name                    text
 );
 
--- Add nationalities
+-- Add languages
 insert into language (name) values ('English');
 insert into language (name) values ('Afar');
 insert into language (name) values ('Afrikaans');
 insert into language (name) values ('Akan');
 insert into language (name) values ('Albanian');
 insert into language (name) values ('Amharic');
+
+create table language_level
+(
+id                       bigserial not null primary key,
+level                    text
+);
+
+-- Add language levels
+insert into language_level (level) values ('Elementary');
+insert into language_level (level) values ('Intermediate');
+insert into language_level (level) values ('Professional');
+insert into language_level (level) values ('Fluent');

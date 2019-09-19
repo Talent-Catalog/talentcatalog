@@ -120,13 +120,13 @@ public class CandidatePortalApi {
     @GetMapping("additional-info")
     public Map<String, Object> getCandidateAdditionalInfo() {
         Candidate candidate = this.candidateService.getLoggedInCandidate();
-        return candidateEducationLevelDto().build(candidate);
+        return candidateAdditionalInfoDto().build(candidate);
     }
 
     @PostMapping("additional-info")
-    public Map<String, Object> updateCandidateAdditionalInfo(@Valid @RequestBody UpdateCandidateEducationLevelRequest request) {
-        Candidate candidate = this.candidateService.updateEducationLevel(request);
-        return candidateEducationLevelDto().build(candidate);
+    public Map<String, Object> updateCandidateAdditionalInfo(@Valid @RequestBody UpdateCandidateAdditionalInfoRequest request) {
+        Candidate candidate = this.candidateService.updateAdditionalInfo(request);
+        return candidateAdditionalInfoDto().build(candidate);
     }
 
     @GetMapping("work-experiences")
@@ -193,7 +193,7 @@ public class CandidatePortalApi {
 
     private DtoBuilder candidateLocationDto() {
         return new DtoBuilder()
-                .add("country")
+                .add("country", countryDto())
                 .add("city")
                 .add("yearOfArrival")
                 ;
@@ -201,9 +201,16 @@ public class CandidatePortalApi {
 
     private DtoBuilder candidateNationalityDto() {
         return new DtoBuilder()
-                .add("nationality")
+                .add("nationality", nationalityDto())
                 .add("registeredWithUN")
                 .add("registrationId")
+                ;
+    }
+
+    private DtoBuilder nationalityDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
                 ;
     }
 
@@ -237,6 +244,14 @@ public class CandidatePortalApi {
                 .add("educations", educationDto())
                 ;
     }
+
+    private DtoBuilder candidateAdditionalInfoDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("additionalInfo")
+                ;
+    }
+
 
     private DtoBuilder candidateWithWorkExperiencesDto() {
         return new DtoBuilder()
@@ -290,8 +305,8 @@ public class CandidatePortalApi {
         return new DtoBuilder()
                 .add("id")
                 .add("language", languageDto())
-                .add("readWrite")
-                .add("speak")
+                .add("readWrite", languageLevelDto())
+                .add("speak", languageLevelDto())
                 ;
     }
 
@@ -299,6 +314,13 @@ public class CandidatePortalApi {
         return new DtoBuilder()
                 .add("id")
                 .add("name")
+                ;
+    }
+
+    private DtoBuilder languageLevelDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("level")
                 ;
     }
 }

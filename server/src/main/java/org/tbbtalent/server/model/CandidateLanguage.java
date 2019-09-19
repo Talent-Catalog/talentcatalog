@@ -19,8 +19,13 @@ public class CandidateLanguage {
     @JoinColumn(name = "language_id")
     private Language language;
 
-    private String readWrite;
-    private String speak;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "read_write")
+    private LanguageLevel readWrite;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "speak")
+    private LanguageLevel speak;
 
     public CandidateLanguage() {
     }
@@ -45,11 +50,11 @@ public class CandidateLanguage {
 
     public void setLanguage(Language language) { this.language = language; }
 
-    public String getReadWrite() { return readWrite; }
+    public LanguageLevel getReadWrite() { return readWrite; }
 
-    public void setReadWrite(String readWrite) { this.readWrite = readWrite; }
+    public void setReadWrite(LanguageLevel readWrite) { this.readWrite = readWrite; }
 
-    public String getSpeak() { return speak; }
+    public LanguageLevel getSpeak() { return speak; }
 
-    public void setSpeak(String speak) { this.speak = speak; }
+    public void setSpeak(LanguageLevel speak) { this.speak = speak; }
 }

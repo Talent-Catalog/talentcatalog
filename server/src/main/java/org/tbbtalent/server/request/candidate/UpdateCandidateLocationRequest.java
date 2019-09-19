@@ -10,7 +10,7 @@ public class UpdateCandidateLocationRequest {
         return countryId;
     }
 
-    public void setCountryId(Long countryId) {
+    public void setCountry(Long countryId) {
         this.countryId = countryId;
     }
 

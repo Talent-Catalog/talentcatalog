@@ -6,6 +6,8 @@ import {CandidateLanguageService} from "../../../services/candidate-language.ser
 import {CandidateService} from "../../../services/candidate.service";
 import {Language} from "../../../model/language";
 import {LanguageService} from "../../../services/language.service";
+import {LanguageLevel} from "../../../model/language-level";
+import {LanguageLevelService} from "../../../services/language-level.service";
 
 
 @Component({
@@ -21,12 +23,14 @@ export class RegistrationLanguageComponent implements OnInit {
   form: FormGroup;
   candidateLanguages: CandidateLanguage[];
   languages: Language[];
+  languageLevels: LanguageLevel[];
 
   constructor(private fb: FormBuilder,
               private router: Router,
               private candidateService: CandidateService,
               private candidateLanguageService: CandidateLanguageService,
-              private languageService: LanguageService) { }
+              private languageService: LanguageService,
+              private languageLevelService: LanguageLevelService) { }
 
   ngOnInit() {
     this.candidateLanguages = []
@@ -45,10 +49,21 @@ export class RegistrationLanguageComponent implements OnInit {
         this.candidateLanguages = this.candidateLanguages.filter(l => l.language.name == "English");
         console.log(this.candidateLanguages);
 
-        /* Wait for the candidate then load the languages */
+        /* Load the languages */
         this.languageService.listLanguages().subscribe(
           (response) => {
             this.languages = response;
+            this.loading = false;
+          },
+          (error) => {
+            this.error = error;
+            this.loading = false;
+          }
+        );
+        /* Load the language levels */
+        this.languageLevelService.listLanguageLevels().subscribe(
+          (response) => {
+            this.languageLevels = response;
             this.loading = false;
           },
           (error) => {

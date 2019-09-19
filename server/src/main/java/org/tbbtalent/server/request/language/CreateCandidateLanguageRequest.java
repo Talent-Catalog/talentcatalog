@@ -3,18 +3,18 @@ package org.tbbtalent.server.request.language;
 public class CreateCandidateLanguageRequest {
 
     private Long languageId;
-    private String readWrite;
-    private String speak;
+    private Long readWriteId;
+    private Long speakId;
 
     public Long getLanguageId() { return languageId; }
 
     public void setLanguageId(Long languageId) { this.languageId = languageId; }
 
-    public String getReadWrite() { return readWrite; }
+    public Long getReadWriteId() { return readWriteId; }
 
-    public void setReadWrite(String readWrite) { this.readWrite = readWrite; }
+    public void setReadWrite(Long readWriteId) { this.readWriteId = readWriteId; }
 
-    public String getSpeak() { return speak; }
+    public Long getSpeakId() { return speakId; }
 
-    public void setSpeak(String speak) { this.speak = speak; }
+    public void setSpeak(Long speakId) { this.speakId = speakId; }
 }

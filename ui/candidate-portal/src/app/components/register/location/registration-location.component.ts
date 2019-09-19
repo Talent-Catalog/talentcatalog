@@ -49,10 +49,11 @@ export class RegistrationLocationComponent implements OnInit {
      }
     );
 
+    /* Load the candidate */
     this.candidateService.getCandidateLocation().subscribe(
       (response) => {
         this.form.patchValue({
-          country: response.country,
+          country: response.country.id,
           city: response.city,
           yearOfArrival: response.yearOfArrival
         });
