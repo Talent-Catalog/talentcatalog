@@ -17,4 +17,8 @@ export class EducationService {
     return this.http.post<Education>(`${this.apiUrl}`, request);
   }
 
+  updateEducation(request): Observable<Education> {
+     return this.http.post<Education>(`${this.apiUrl}/update`, request);
+  }
+
 }

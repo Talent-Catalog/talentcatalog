@@ -35,6 +35,7 @@ export class RegistrationProfessionComponent implements OnInit {
     /* Load the candidate data */
     this.candidateService.getCandidateProfessions().subscribe(
       (candidate) => {
+        console.log(candidate);
         this.professions = candidate.professions || [];
 
         /* Wait for the candidate then load the industries */

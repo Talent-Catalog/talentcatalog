@@ -36,17 +36,23 @@ public class WorkExperiencePortalApi {
 
     private DtoBuilder workExperienceDto() {
         return new DtoBuilder()
-                .add("id")
-                .add("companyName")
-                .add("country")
-                .add("role")
-                .add("startDate")
-                .add("endDate")
-                .add("fullTime")
-                .add("paid")
-                .add("description")
-                ;
+            .add("id")
+            .add("country", countryDto())
+            .add("companyName")
+            .add("role")
+            .add("startDate")
+            .add("endDate")
+            .add("fullTime")
+            .add("paid")
+            .add("description")
+            ;
     }
 
+    private DtoBuilder countryDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            ;
+    }
 
 }

@@ -11,13 +11,7 @@ public class Language {
     @SequenceGenerator(name = "language_gen", sequenceName = "language_id_seq", allocationSize = 1)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "candidate_id")
-    private Candidate candidate;
-
     private String name;
-    private String readWrite;
-    private String speak;
 
     public Language() {
     }
@@ -30,23 +24,11 @@ public class Language {
         this.id = id;
     }
 
-    public Candidate getCandidate() {
-        return candidate;
+    public String getName() {
+        return name;
     }
 
-    public void setCandidate(Candidate candidate) {
-        this.candidate = candidate;
+    public void setName(String name) {
+        this.name = name;
     }
-
-    public String getName() { return name; }
-
-    public void setName(String name) { this.name = name; }
-
-    public String getReadWrite() { return readWrite; }
-
-    public void setReadWrite(String readWrite) { this.readWrite = readWrite; }
-
-    public String getSpeak() { return speak; }
-
-    public void setSpeak(String speak) { this.speak = speak; }
 }

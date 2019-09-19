@@ -1,8 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
-import {nationalities} from "../../../model/nationality";
 import {CandidateService} from "../../../services/candidate.service";
+import {NationalityService} from "../../../services/nationality.service";
+import {Nationality} from "../../../model/nationality";
 
 @Component({
   selector: 'app-registration-nationality',
@@ -12,7 +13,7 @@ import {CandidateService} from "../../../services/candidate.service";
 export class RegistrationNationalityComponent implements OnInit {
 
   form: FormGroup;
-  nationalities: string[];
+  nationalities: Nationality[];
   error: any;
   // Component states
   loading: boolean;
@@ -20,17 +21,32 @@ export class RegistrationNationalityComponent implements OnInit {
 
   constructor(private fb: FormBuilder,
               private router: Router,
-              private candidateService: CandidateService) { }
+              private candidateService: CandidateService,
+              private nationalityService: NationalityService) { }
 
   ngOnInit() {
     this.loading = true;
     this.saving = false;
-    this.nationalities = nationalities;
+    this.nationalities = [];
+
+    /* Wait for the candidate then load the nationalities */
+    this.nationalityService.listNationalities().subscribe(
+      (response) => {
+        this.nationalities = response;
+        this.loading = false;
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      }
+    );
+
     this.form = this.fb.group({
       nationality: ['', Validators.required],
       registeredWithUN: ['', Validators.required],
       registrationId: ['', Validators.required]
     });
+
     this.candidateService.getCandidateNationality().subscribe(
       (response) => {
         this.form.patchValue({

@@ -48,4 +48,10 @@ public interface CandidateService {
 
     Candidate getLoggedInCandidateLoadEducations();
 
+    Candidate getLoggedInCandidateLoadWorkExperiences();
+
+    Candidate getLoggedInCandidateLoadCertifications();
+
+    Candidate getLoggedInCandidateLoadCandidateLanguages();
+
 }

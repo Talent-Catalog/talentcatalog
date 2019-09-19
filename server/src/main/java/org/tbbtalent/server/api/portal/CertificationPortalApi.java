@@ -1,10 +1,8 @@
 package org.tbbtalent.server.api.portal;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.model.Certification;
 import org.tbbtalent.server.request.certification.CreateCertificationRequest;
 import org.tbbtalent.server.service.CertificationService;
@@ -29,6 +27,13 @@ public class CertificationPortalApi {
         Certification certification = certificationService.createCertification(request);
         return certificationDto().build(certification);
     }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity deleteCertification(@PathVariable("id") Long id) {
+        certificationService.deleteCertification(id);
+        return ResponseEntity.ok().build();
+    }
+
 
 
     private DtoBuilder certificationDto() {

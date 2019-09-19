@@ -3,7 +3,7 @@ package org.tbbtalent.server.request.education;
 public class CreateEducationRequest {
 
     private String educationType;
-    private Long country;
+    private Long countryId;
     private Integer lengthOfCourseYears;
     private String institution;
     private String courseName;
@@ -17,12 +17,12 @@ public class CreateEducationRequest {
         this.educationType = educationType;
     }
 
-    public Long getCountry() {
-        return country;
+    public Long getCountryId() {
+        return countryId;
     }
 
-    public void setCountry(Long country) {
-        this.country = country;
+    public void setCountry(Long countryId) {
+        this.countryId = countryId;
     }
 
     public Integer getLengthOfCourseYears() {

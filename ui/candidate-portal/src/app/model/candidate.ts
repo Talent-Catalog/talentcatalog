@@ -1,6 +1,9 @@
 import {Profession} from "./profession";
 import {Education} from "./education";
 import {Country} from "./country";
+import {WorkExperience} from "./work-experience";
+import {Certification} from "./certification";
+import {CandidateLanguage} from "./candidate-language";
 
 export interface Candidate {
   id: number;
@@ -18,6 +21,9 @@ export interface Candidate {
   yearOfArrival: number;
   nationality: string;
   registeredWithUN: boolean;
+  workExperiences: WorkExperience[];
+  certifications: Certification[];
+  candidateLanguages: CandidateLanguage[];
   registrationId: string;
   educationLevel: string;
   educations: Education[];

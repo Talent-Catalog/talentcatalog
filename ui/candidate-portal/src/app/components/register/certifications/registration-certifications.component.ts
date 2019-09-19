@@ -29,6 +29,16 @@ export class RegistrationCertificationsComponent implements OnInit {
     this.loading = false;
     this.setUpForm();
 
+   /* Load the candidate data */
+    this.candidateService.getCandidateCertifications().subscribe(
+      (candidate) => {
+        this.certifications = candidate.certifications || [];
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      }
+    );
   }
 
   setUpForm(){
@@ -72,7 +82,7 @@ export class RegistrationCertificationsComponent implements OnInit {
     next() {
       console.log(this.certifications);
       // TODO check if the form is not empty and warn the user
-      this.router.navigate(['register', 'experience']);
+      this.router.navigate(['register', 'additional-information']);
     }
 
 }

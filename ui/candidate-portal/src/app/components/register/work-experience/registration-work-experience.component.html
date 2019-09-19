@@ -2,7 +2,7 @@
 
   <h1 class="text-center">Work Experience</h1>
 
-  <form class="row" [formGroup]="form">
+  <form [formGroup]="form" *ngIf="!loading">
 
     <!-- COMPANY NAME -->
     <div class="col-12">
@@ -16,7 +16,10 @@
     <div class="col-12">
       <div class="form-group">
         <label for="country">Location</label>
-        <input type="text" class="form-control" name="country" id="country" [formControlName]="'country'">
+        <select class="form-control" name="country" id="country" [formControlName]="'country'">
+          <option value=""></option>
+          <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
+        </select>
       </div>
     </div>
 
@@ -84,11 +87,14 @@
       </div>
     </div>
 
+    <div>
+      <button class="btn btn-outline-primary"
+              [disabled]="form.invalid || loading || saving"
+              (click)="addMore()">
+        Add Work Experience
+      </button>
+    </div>
   </form>
-
-  <div>
-    <button class="btn btn-outline-primary" [disabled]="form.invalid" (click)="addMore()">Add Work Experience</button>
-  </div>
 
   <div>
     <h4>Work Experience Summary</h4>
@@ -104,7 +110,7 @@
       <tbody>
         <tr *ngFor="let e of experiences">
           <td>{{e.companyName}}</td>
-          <td>{{e.country}}</td>
+          <td>{{e.country.name}}</td>
           <td>{{e.role}}</td>
           <td align="center">
             <button type="button" class="close" aria-label="Close" (click)="delete(e)">

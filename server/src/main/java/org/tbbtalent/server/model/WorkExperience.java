@@ -15,8 +15,11 @@ public class WorkExperience {
     @JoinColumn(name = "candidate_id")
     private Candidate candidate;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "country_id")
+    private Country country;
+
     private String companyName;
-    private String country;
     private String role;
     private String startDate;
     private String endDate;
@@ -47,9 +50,9 @@ public class WorkExperience {
 
     public void setCompanyName(String companyName) { this.companyName = companyName; }
 
-    public String getCountry() { return country; }
+    public Country getCountry() { return country; }
 
-    public void setCountry(String country) { this.country = country; }
+    public void setCountry(Country country) { this.country = country; }
 
     public String getRole() { return role; }
 

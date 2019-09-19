@@ -4,7 +4,7 @@ alter table candidate add column city text;
 alter table candidate add column year_of_arrival integer;
 
 -- Add nationality
-alter table candidate add column nationality text;
+alter table candidate add column nationality_id bigint;
 alter table candidate add column registered_with_un boolean;
 alter table candidate add column registration_id text;
 
@@ -25,11 +25,11 @@ create table education
   date_completed          text
 );
 
-create table language
+create table candidate_language
 (
 id                      bigserial not null primary key,
 candidate_id            bigint not null,
-name                    text,
+language_id             bigint not null,
 read_write              text,
 speak                   text
 );
@@ -39,7 +39,7 @@ create table work_experience
 id                      bigserial not null primary key,
 candidate_id            bigint not null,
 company_name            text,
-country_id              text,
+country_id              bigint,
 role                    text,
 start_date              text,
 end_date                text,
@@ -70,3 +70,31 @@ insert into country (name) values ('Algeria');
 insert into country (name) values ('Andorra');
 insert into country (name) values ('Angola');
 insert into country (name) values ('Antigua and Barbuda');
+
+create table nationality
+(
+id                      bigserial not null primary key,
+name                    text
+);
+
+-- Add nationalities
+insert into nationality (name) values ('Afghan');
+insert into nationality (name) values ('Albanian');
+insert into nationality (name) values ('Algerian');
+insert into nationality (name) values ('Andorran');
+insert into nationality (name) values ('Angolan');
+insert into nationality (name) values ('Antiguan or Barbudan');
+
+create table language
+(
+id                      bigserial not null primary key,
+name                    text
+);
+
+-- Add nationalities
+insert into language (name) values ('English');
+insert into language (name) values ('Afar');
+insert into language (name) values ('Afrikaans');
+insert into language (name) values ('Akan');
+insert into language (name) values ('Albanian');
+insert into language (name) values ('Amharic');

@@ -2,13 +2,13 @@ package org.tbbtalent.server.request.candidate;
 
 public class UpdateCandidateNationalityRequest {
 
-    private String nationality;
+    private Long nationality;
     private Boolean registeredWithUN;
     private String registrationId;
 
-    public String getNationality() { return nationality; }
+    public Long getNationality() { return nationality; }
 
-    public void setNationality(String nationality) {  this.nationality = nationality; }
+    public void setNationality(Long nationality) {  this.nationality = nationality; }
 
     public Boolean getRegisteredWithUN() { return registeredWithUN; }
 

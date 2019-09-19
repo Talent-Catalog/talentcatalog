@@ -1,7 +1,9 @@
+import {Country} from "./country";
+
 export interface WorkExperience {
   id: number;
+  country: Country;
   companyName: string;
-  country: number;
   role: string;
   startDate: string;
   endDate: string;

@@ -30,10 +30,7 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
     this.candidateService.getCandidateAdditionalInfo().subscribe(
       (response) => {
         this.form.patchValue({
-          firstName: response.firstName,
-          lastName: response.lastName,
-          gender: response.gender,
-          dob: response.dob,
+          addInfo: [''],
         });
         this.loading = false;
       },

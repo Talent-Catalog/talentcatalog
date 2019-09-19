@@ -1,14 +1,14 @@
 package org.tbbtalent.server.request.language;
 
-public class CreateLanguageRequest {
+public class CreateCandidateLanguageRequest {
 
-    private String name;
+    private Long languageId;
     private String readWrite;
     private String speak;
 
-    public String getName() { return name; }
+    public Long getLanguageId() { return languageId; }
 
-    public void setName(String name) { this.name = name; }
+    public void setLanguageId(Long languageId) { this.languageId = languageId; }
 
     public String getReadWrite() { return readWrite; }
 

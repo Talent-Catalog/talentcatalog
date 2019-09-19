@@ -28,11 +28,12 @@ public class Candidate {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "country_id")
     private Country country;
-
     private String city;
     private Integer yearOfArrival;
 
-    private String nationality;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "nationality_id")
+    private Nationality nationality;
     @Column(name = "registered_with_un")
     private Boolean registeredWithUN;
     private String registrationId;
@@ -50,7 +51,7 @@ public class Candidate {
     private Set<Education> educations = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
-    private Set<Language> languages = new HashSet<>();
+    private Set<CandidateLanguage> candidateLanguages = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     private Set<WorkExperience> workExperiences = new HashSet<>();
@@ -166,9 +167,9 @@ public class Candidate {
         this.yearOfArrival = yearOfArrival;
     }
 
-    public String getNationality() { return nationality; }
+    public Nationality getNationality() { return nationality; }
 
-    public void setNationality(String nationality) { this.nationality = nationality; }
+    public void setNationality(Nationality nationality) { this.nationality = nationality; }
 
     public Boolean getRegisteredWithUN() { return registeredWithUN; }
 
@@ -231,12 +232,12 @@ public class Candidate {
         this.educations = educations;
     }
 
-    public Set<Language> getLanguages() {
-        return languages;
+    public Set<CandidateLanguage> getCandidateLanguages() {
+        return candidateLanguages;
     }
 
-    public void setLanguages(Set<Language> languages) {
-        this.languages = languages;
+    public void setCandidateLanguages(Set<CandidateLanguage> candidateLanguages) {
+        this.candidateLanguages = candidateLanguages;
     }
 
     public Set<WorkExperience> getWorkExperiences() { return workExperiences; }

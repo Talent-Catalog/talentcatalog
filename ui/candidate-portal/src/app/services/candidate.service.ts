@@ -78,11 +78,11 @@ export class CandidateService {
 
    /* Candidate Additional Info */
     getCandidateAdditionalInfo(): Observable<Candidate> {
-       return this.http.get<Candidate>(`${this.apiUrl}/education`);
+       return this.http.get<Candidate>(`${this.apiUrl}/additional-info`);
     }
 
     updateCandidateAdditionalInfo(request): Observable<Candidate> {
-       return this.http.post<Candidate>(`${this.apiUrl}/education`, request);
+       return this.http.post<Candidate>(`${this.apiUrl}/additional-info`, request);
     }
 
 
@@ -102,7 +102,13 @@ export class CandidateService {
   }
 
   getCandidateWorkExperiences(): Observable<Candidate> {
-    return this.http.get<Candidate>(`${this.apiUrl}/work-experience`);
+    return this.http.get<Candidate>(`${this.apiUrl}/work-experiences`);
   }
+
+  getCandidateCertifications(): Observable<Candidate> {
+    return this.http.get<Candidate>(`${this.apiUrl}/certifications`);
+  }
+
+
 
 }

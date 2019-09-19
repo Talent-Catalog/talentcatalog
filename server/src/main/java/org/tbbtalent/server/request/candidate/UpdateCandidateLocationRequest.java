@@ -2,16 +2,16 @@ package org.tbbtalent.server.request.candidate;
 
 public class UpdateCandidateLocationRequest {
 
-    private Long country;
+    private Long countryId;
     private String city;
     private Integer yearOfArrival;
 
-    public Long getCountry() {
-        return country;
+    public Long getCountryId() {
+        return countryId;
     }
 
-    public void setCountry(Long country) {
-        this.country = country;
+    public void setCountryId(Long countryId) {
+        this.countryId = countryId;
     }
 
     public String getCity() {

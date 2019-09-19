@@ -36,16 +36,41 @@ public class EducationServiceImpl implements EducationService {
         Candidate candidate = userContext.getLoggedInCandidate();
 
         // Load the country from the database - throw an exception if not found
-        Country country = countryRepository.findById(request.getCountry())
-                .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountry()));
+        Country country = countryRepository.findById(request.getCountryId())
+                .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountryId()));
 
         // Get ENUM for education type
         EducationType educationType = EducationType.valueOf(request.getEducationType());
 
-
         // Create a new profession object to insert into the database
-
         Education education = new Education();
+        education.setCandidate(candidate);
+        education.setEducationType(educationType);
+        education.setCountry(country);
+        education.setLengthOfCourseYears(request.getLengthOfCourseYears());
+        education.setInstitution(request.getInstitution());
+        education.setCourseName(request.getCourseName());
+        education.setDateCompleted(request.getDateCompleted());
+
+        // Save the profession
+        return educationRepository.save(education);
+    }
+
+    @Override
+    public Education updateEducation(CreateEducationRequest request) {
+        // Get ENUM for education type
+        EducationType educationType = EducationType.valueOf(request.getEducationType());
+
+        Candidate candidate = userContext.getLoggedInCandidate();
+
+        Education education = educationRepository.findByIdLoadEducationType(educationType);
+
+        // Load the country from the database - throw an exception if not found
+        Country country = countryRepository.findById(request.getCountryId())
+                .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountryId()));
+
+
+        // Update education object to insert into the database
         education.setCandidate(candidate);
         education.setEducationType(educationType);
         education.setCountry(country);

@@ -117,6 +117,36 @@ public class CandidatePortalApi {
         return candidateWithEducationsDto().build(candidate);
     }
 
+    @GetMapping("additional-info")
+    public Map<String, Object> getCandidateAdditionalInfo() {
+        Candidate candidate = this.candidateService.getLoggedInCandidate();
+        return candidateEducationLevelDto().build(candidate);
+    }
+
+    @PostMapping("additional-info")
+    public Map<String, Object> updateCandidateAdditionalInfo(@Valid @RequestBody UpdateCandidateEducationLevelRequest request) {
+        Candidate candidate = this.candidateService.updateEducationLevel(request);
+        return candidateEducationLevelDto().build(candidate);
+    }
+
+    @GetMapping("work-experiences")
+    public Map<String, Object> getCandidateWorkExperiences() {
+        Candidate candidate = this.candidateService.getLoggedInCandidateLoadWorkExperiences();
+        return candidateWithWorkExperiencesDto().build(candidate);
+    }
+
+    @GetMapping("certifications")
+    public Map<String, Object> getCandidateCertifications() {
+        Candidate candidate = this.candidateService.getLoggedInCandidateLoadCertifications();
+        return candidateWithCertificationsDto().build(candidate);
+    }
+
+    @GetMapping("languages")
+    public Map<String, Object> getCandidateLanguages() {
+        Candidate candidate = this.candidateService.getLoggedInCandidateLoadCandidateLanguages();
+        return candidateWithCandidateLanguagesDto().build(candidate);
+    }
+
     private DtoBuilder candidateContactDto() {
         return new DtoBuilder()
                 .add("email")
@@ -187,11 +217,18 @@ public class CandidatePortalApi {
         return new DtoBuilder()
                 .add("id")
                 .add("educationType")
-                .add("country")
+                .add("country", countryDto())
                 .add("lengthOfCourseYears")
                 .add("institution")
                 .add("courseName")
                 .add("dateCompleted")
+                ;
+    }
+
+    private DtoBuilder industryDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
                 ;
     }
 
@@ -201,7 +238,64 @@ public class CandidatePortalApi {
                 ;
     }
 
-    private DtoBuilder industryDto() {
+    private DtoBuilder candidateWithWorkExperiencesDto() {
+        return new DtoBuilder()
+                .add("workExperiences", workExperienceDto())
+                ;
+    }
+
+    private DtoBuilder workExperienceDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("country", countryDto())
+                .add("companyName")
+                .add("role")
+                .add("startDate")
+                .add("endDate")
+                .add("fullTime")
+                .add("paid")
+                .add("description")
+                ;
+    }
+
+    private DtoBuilder countryDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
+                ;
+    }
+
+    private DtoBuilder candidateWithCertificationsDto() {
+        return new DtoBuilder()
+                .add("certifications", certificationDto())
+                ;
+    }
+
+    private DtoBuilder certificationDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
+                .add("institution")
+                .add("dateCompleted")
+                ;
+    }
+
+    private DtoBuilder candidateWithCandidateLanguagesDto() {
+        return new DtoBuilder()
+                .add("candidateLanguages", candidateLanguageDto())
+                ;
+    }
+
+    private DtoBuilder candidateLanguageDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("language", languageDto())
+                .add("readWrite")
+                .add("speak")
+                ;
+    }
+
+    private DtoBuilder languageDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("name")

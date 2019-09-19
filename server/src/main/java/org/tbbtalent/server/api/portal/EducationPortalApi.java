@@ -30,6 +30,12 @@ public class EducationPortalApi {
         return educationDto().build(education);
     }
 
+    @PostMapping("update")
+    public Map<String, Object> updateEducation(@Valid @RequestBody CreateEducationRequest request) {
+        Education candidate = this.educationService.updateEducation(request);
+        return educationDto().build(candidate);
+    }
+
 
     private DtoBuilder educationDto() {
         return new DtoBuilder()

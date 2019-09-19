@@ -7,4 +7,6 @@ public interface EducationService {
 
     Education createEducation(CreateEducationRequest request);
 
+    Education updateEducation(CreateEducationRequest request);
+
 }
