@@ -3,10 +3,7 @@ package org.tbbtalent.server.api.portal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.model.Candidate;
-import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalContactRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateAlternateContactRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateEmailRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
+import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.service.CandidateService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -78,6 +75,78 @@ public class CandidatePortalApi {
         return candidateWithProfessionsDto().build(candidate);
     }
 
+    @GetMapping("location")
+    public Map<String, Object> getCandidateLocation() {
+        Candidate candidate = this.candidateService.getLoggedInCandidate();
+        return candidateLocationDto().build(candidate);
+    }
+
+    @PostMapping("location")
+    public Map<String, Object> updateCandidateLocation(@Valid @RequestBody UpdateCandidateLocationRequest request) {
+        Candidate candidate = this.candidateService.updateLocation(request);
+        return candidateLocationDto().build(candidate);
+    }
+
+    @GetMapping("nationality")
+    public Map<String, Object> getCandidateNationality() {
+        Candidate candidate = this.candidateService.getLoggedInCandidate();
+        return candidateNationalityDto().build(candidate);
+    }
+
+    @PostMapping("nationality")
+    public Map<String, Object> updateCandidateNationality(@Valid @RequestBody UpdateCandidateNationalityRequest request) {
+        Candidate candidate = this.candidateService.updateNationality(request);
+        return candidateNationalityDto().build(candidate);
+    }
+
+    @GetMapping("education")
+    public Map<String, Object> getCandidateEducationLevel() {
+        Candidate candidate = this.candidateService.getLoggedInCandidate();
+        return candidateEducationLevelDto().build(candidate);
+    }
+
+    @PostMapping("education")
+    public Map<String, Object> updateCandidateEducationLevel(@Valid @RequestBody UpdateCandidateEducationLevelRequest request) {
+        Candidate candidate = this.candidateService.updateEducationLevel(request);
+        return candidateEducationLevelDto().build(candidate);
+    }
+
+    @GetMapping("educations")
+    public Map<String, Object> getCandidateEducations() {
+        Candidate candidate = this.candidateService.getLoggedInCandidateLoadEducations();
+        return candidateWithEducationsDto().build(candidate);
+    }
+
+    @GetMapping("additional-info")
+    public Map<String, Object> getCandidateAdditionalInfo() {
+        Candidate candidate = this.candidateService.getLoggedInCandidate();
+        return candidateAdditionalInfoDto().build(candidate);
+    }
+
+    @PostMapping("additional-info")
+    public Map<String, Object> updateCandidateAdditionalInfo(@Valid @RequestBody UpdateCandidateAdditionalInfoRequest request) {
+        Candidate candidate = this.candidateService.updateAdditionalInfo(request);
+        return candidateAdditionalInfoDto().build(candidate);
+    }
+
+    @GetMapping("work-experiences")
+    public Map<String, Object> getCandidateWorkExperiences() {
+        Candidate candidate = this.candidateService.getLoggedInCandidateLoadWorkExperiences();
+        return candidateWithWorkExperiencesDto().build(candidate);
+    }
+
+    @GetMapping("certifications")
+    public Map<String, Object> getCandidateCertifications() {
+        Candidate candidate = this.candidateService.getLoggedInCandidateLoadCertifications();
+        return candidateWithCertificationsDto().build(candidate);
+    }
+
+    @GetMapping("languages")
+    public Map<String, Object> getCandidateLanguages() {
+        Candidate candidate = this.candidateService.getLoggedInCandidateLoadCandidateLanguages();
+        return candidateWithCandidateLanguagesDto().build(candidate);
+    }
+
     private DtoBuilder candidateContactDto() {
         return new DtoBuilder()
                 .add("email")
@@ -117,15 +186,141 @@ public class CandidatePortalApi {
     private DtoBuilder professionDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("industry", indutryDto())
+                .add("industry", industryDto())
                 .add("yearsExperience")
                 ;
     }
 
-    private DtoBuilder indutryDto() {
+    private DtoBuilder candidateLocationDto() {
+        return new DtoBuilder()
+                .add("country", countryDto())
+                .add("city")
+                .add("yearOfArrival")
+                ;
+    }
+
+    private DtoBuilder candidateNationalityDto() {
+        return new DtoBuilder()
+                .add("nationality", nationalityDto())
+                .add("registeredWithUN")
+                .add("registrationId")
+                ;
+    }
+
+    private DtoBuilder nationalityDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("name")
+                ;
+    }
+
+    private DtoBuilder candidateEducationLevelDto() {
+        return new DtoBuilder()
+                .add("educationLevel")
+                ;
+    }
+
+    private DtoBuilder educationDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("educationType")
+                .add("country", countryDto())
+                .add("lengthOfCourseYears")
+                .add("institution")
+                .add("courseName")
+                .add("dateCompleted")
+                ;
+    }
+
+    private DtoBuilder industryDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
+                ;
+    }
+
+    private DtoBuilder candidateWithEducationsDto() {
+        return new DtoBuilder()
+                .add("educations", educationDto())
+                ;
+    }
+
+    private DtoBuilder candidateAdditionalInfoDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("additionalInfo")
+                ;
+    }
+
+
+    private DtoBuilder candidateWithWorkExperiencesDto() {
+        return new DtoBuilder()
+                .add("workExperiences", workExperienceDto())
+                ;
+    }
+
+    private DtoBuilder workExperienceDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("country", countryDto())
+                .add("companyName")
+                .add("role")
+                .add("startDate")
+                .add("endDate")
+                .add("fullTime")
+                .add("paid")
+                .add("description")
+                ;
+    }
+
+    private DtoBuilder countryDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
+                ;
+    }
+
+    private DtoBuilder candidateWithCertificationsDto() {
+        return new DtoBuilder()
+                .add("certifications", certificationDto())
+                ;
+    }
+
+    private DtoBuilder certificationDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
+                .add("institution")
+                .add("dateCompleted")
+                ;
+    }
+
+    private DtoBuilder candidateWithCandidateLanguagesDto() {
+        return new DtoBuilder()
+                .add("candidateLanguages", candidateLanguageDto())
+                ;
+    }
+
+    private DtoBuilder candidateLanguageDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("language", languageDto())
+                .add("readWrite", languageLevelDto())
+                .add("speak", languageLevelDto())
+                ;
+    }
+
+    private DtoBuilder languageDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
+                ;
+    }
+
+    private DtoBuilder languageLevelDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("level")
                 ;
     }
 }

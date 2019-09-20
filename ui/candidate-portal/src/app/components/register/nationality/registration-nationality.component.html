@@ -9,7 +9,7 @@
       <label for="nationality">Nationality</label>
       <select class="form-control" name="nationality" id="nationality" [formControlName]="'nationality'">
         <option value=""></option>
-        <option *ngFor="let nationality of nationalities" [value]="nationality">{{nationality}}</option>
+        <option *ngFor="let nationality of nationalities" [value]="nationality.id">{{nationality.name}}</option>
       </select>
     </div>
 

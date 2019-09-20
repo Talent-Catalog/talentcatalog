@@ -24,11 +24,40 @@ public class Candidate {
     private String passwordEnc;
     private String gender;
     private String dob;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "country_id")
+    private Country country;
+    private String city;
+    private Integer yearOfArrival;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "nationality_id")
+    private Nationality nationality;
+    @Column(name = "registered_with_un")
+    private Boolean registeredWithUN;
+    private String registrationId;
+
+    private String educationLevel;
+    private String additionalInfo;
+
     @Enumerated(EnumType.STRING)
     private Status status;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     private Set<Profession> professions = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    private Set<Education> educations = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    private Set<CandidateLanguage> candidateLanguages = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    private Set<WorkExperience> workExperiences = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    private Set<Certification> certifications = new HashSet<>();
 
     public Candidate() {
     }
@@ -114,6 +143,52 @@ public class Candidate {
         this.dob = dob;
     }
 
+    public Country getCountry() {
+        return country;
+    }
+
+    public void setCountry(Country country) {
+        this.country = country;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public Integer getYearOfArrival() {
+        return yearOfArrival;
+    }
+
+    public void setYearOfArrival(Integer yearOfArrival) {
+        this.yearOfArrival = yearOfArrival;
+    }
+
+    public Nationality getNationality() { return nationality; }
+
+    public void setNationality(Nationality nationality) { this.nationality = nationality; }
+
+    public Boolean getRegisteredWithUN() { return registeredWithUN; }
+
+    public void setRegisteredWithUN(Boolean registeredWithUN) { this.registeredWithUN = registeredWithUN; }
+
+    public String getRegistrationId() { return registrationId; }
+
+    public void setRegistrationId(String registrationId) {
+        this.registrationId = registrationId;
+    }
+
+    public String getEducationLevel() { return educationLevel; }
+
+    public void setEducationLevel(String educationLevel) { this.educationLevel = educationLevel; }
+
+    public String getAdditionalInfo() { return additionalInfo; }
+
+    public void setAdditionalInfo(String additionalInfo) { this.additionalInfo = additionalInfo; }
+
     public String getPasswordEnc() {
         return passwordEnc;
     }
@@ -148,4 +223,32 @@ public class Candidate {
     public void setProfessions(Set<Profession> professions) {
         this.professions = professions;
     }
+
+    public Set<Education> getEducations() {
+        return educations;
+    }
+
+    public void setEducations(Set<Education> educations) {
+        this.educations = educations;
+    }
+
+    public Set<CandidateLanguage> getCandidateLanguages() {
+        return candidateLanguages;
+    }
+
+    public void setCandidateLanguages(Set<CandidateLanguage> candidateLanguages) {
+        this.candidateLanguages = candidateLanguages;
+    }
+
+    public Set<WorkExperience> getWorkExperiences() { return workExperiences; }
+
+    public void setWorkExperiences(Set<WorkExperience> workExperiences) { this.workExperiences = workExperiences; }
+
+    public Set<Certification> getCertifications() {
+        return certifications;
+    }
+
+    public void setCertifications(Set<Certification> certifications) { this.certifications = certifications; }
+
+
 }

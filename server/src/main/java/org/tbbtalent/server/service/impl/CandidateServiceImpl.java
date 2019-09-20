@@ -13,8 +13,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.*;
 import org.tbbtalent.server.model.Candidate;
+import org.tbbtalent.server.model.Country;
+import org.tbbtalent.server.model.Nationality;
 import org.tbbtalent.server.model.Status;
 import org.tbbtalent.server.repository.CandidateRepository;
+import org.tbbtalent.server.repository.CountryRepository;
+import org.tbbtalent.server.repository.NationalityRepository;
 import org.tbbtalent.server.repository.CandidateSpecification;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.candidate.*;
@@ -33,6 +37,8 @@ public class CandidateServiceImpl implements CandidateService {
     private static final Logger log = LoggerFactory.getLogger(CandidateServiceImpl.class);
 
     private final CandidateRepository candidateRepository;
+    private final CountryRepository countryRepository;
+    private final NationalityRepository nationalityRepository;
     private final PasswordHelper passwordHelper;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider tokenProvider;
@@ -40,11 +46,15 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Autowired
     public CandidateServiceImpl(CandidateRepository candidateRepository,
+                                CountryRepository countryRepository,
+                                NationalityRepository nationalityRepository,
                                 PasswordHelper passwordHelper,
                                 AuthenticationManager authenticationManager,
                                 JwtTokenProvider tokenProvider,
                                 UserContext userContext) {
         this.candidateRepository = candidateRepository;
+        this.countryRepository = countryRepository;
+        this.nationalityRepository = nationalityRepository;
         this.passwordHelper = passwordHelper;
         this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;
@@ -238,9 +248,79 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    public Candidate updateLocation(UpdateCandidateLocationRequest request) {
+
+        // Load the country from the database - throw an exception if not found
+        Country country = countryRepository.findById(request.getCountryId())
+                .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountryId()));
+
+        Candidate candidate = getLoggedInCandidate();
+        candidate.setCountry(country);
+        candidate.setCity(request.getCity());
+        candidate.setYearOfArrival(request.getYearOfArrival());
+        return candidateRepository.save(candidate);
+    }
+
+    @Override
+    public Candidate updateNationality(UpdateCandidateNationalityRequest request) {
+
+        // Load the nationality from the database - throw an exception if not found
+        Nationality nationality = nationalityRepository.findById(request.getNationality())
+                .orElseThrow(() -> new NoSuchObjectException(Nationality.class, request.getNationality()));
+
+        Candidate candidate = getLoggedInCandidate();
+        candidate.setNationality(nationality);
+        candidate.setRegisteredWithUN(request.getRegisteredWithUN());
+        candidate.setRegistrationId(request.getRegistrationId());
+        return candidateRepository.save(candidate);
+    }
+
+    @Override
+    public Candidate updateEducationLevel(UpdateCandidateEducationLevelRequest request) {
+        Candidate candidate = getLoggedInCandidate();
+        candidate.setEducationLevel(request.getEducationLevel());
+        return candidateRepository.save(candidate);
+    }
+
+    @Override
+    public Candidate updateAdditionalInfo(UpdateCandidateAdditionalInfoRequest request) {
+        Candidate candidate = getLoggedInCandidate();
+        candidate.setAdditionalInfo(request.getAdditionalInfo());
+        return candidateRepository.save(candidate);
+    }
+
+    @Override
     public Candidate getLoggedInCandidateLoadProfessions() {
         Candidate candidate = getLoggedInCandidate();
         candidate = candidateRepository.findByIdLoadProfessions(candidate.getId());
+        return candidate;
+    }
+
+    @Override
+    public Candidate getLoggedInCandidateLoadEducations() {
+        Candidate candidate = getLoggedInCandidate();
+        candidate = candidateRepository.findByIdLoadEducations(candidate.getId());
+        return candidate;
+    }
+
+    @Override
+    public Candidate getLoggedInCandidateLoadWorkExperiences() {
+        Candidate candidate = getLoggedInCandidate();
+        candidate = candidateRepository.findByIdLoadWorkExperiences(candidate.getId());
+        return candidate;
+    }
+
+    @Override
+    public Candidate getLoggedInCandidateLoadCertifications() {
+        Candidate candidate = getLoggedInCandidate();
+        candidate = candidateRepository.findByIdLoadCertifications(candidate.getId());
+        return candidate;
+    }
+
+    @Override
+    public Candidate getLoggedInCandidateLoadCandidateLanguages() {
+        Candidate candidate = getLoggedInCandidate();
+        candidate = candidateRepository.findByIdLoadCandidateLanguages(candidate.getId());
         return candidate;
     }
 

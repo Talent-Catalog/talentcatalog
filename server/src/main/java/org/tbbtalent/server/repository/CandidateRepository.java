@@ -27,4 +27,26 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             + " left join c.professions p"
             + " where c.id = :id ")
     Candidate findByIdLoadProfessions(@Param("id") Long id);
+
+    @Query(" select distinct c from Candidate c "
+            + " left join c.educations e"
+            + " where c.id = :id ")
+    Candidate findByIdLoadEducations(@Param("id") Long id);
+
+    @Query(" select distinct c from Candidate c "
+            + " left join c.workExperiences e"
+            + " where c.id = :id ")
+    Candidate findByIdLoadWorkExperiences(@Param("id") Long id);
+
+    @Query(" select distinct c from Candidate c "
+            + " left join c.certifications cert"
+            + " where c.id = :id ")
+    Candidate findByIdLoadCertifications(@Param("id") Long id);
+
+    @Query(" select distinct c from Candidate c "
+            + " left join c.candidateLanguages lang"
+            + " where c.id = :id ")
+    Candidate findByIdLoadCandidateLanguages(@Param("id") Long id);
+
+
 }

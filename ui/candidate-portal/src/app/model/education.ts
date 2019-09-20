@@ -1,0 +1,11 @@
+import {Country} from "./country";
+
+export interface Education {
+  id: number;
+  educationType: string;
+  country: Country;
+  lengthOfCourseYears: number;
+  institution: string;
+  courseName: string;
+  dateCompleted: string;
+};

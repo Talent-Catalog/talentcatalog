@@ -35,6 +35,7 @@ export class RegistrationProfessionComponent implements OnInit {
     /* Load the candidate data */
     this.candidateService.getCandidateProfessions().subscribe(
       (candidate) => {
+        console.log(candidate);
         this.professions = candidate.professions || [];
 
         /* Wait for the candidate then load the industries */
@@ -76,6 +77,7 @@ export class RegistrationProfessionComponent implements OnInit {
         this.saving = false;
       }
     );
+    console.log(this.form.value)
     this.setUpForm();
   }
 
@@ -94,6 +96,7 @@ export class RegistrationProfessionComponent implements OnInit {
   }
 
   next() {
+    console.log(this.professions);
     // TODO check if the form is not empty and warn the user
     this.router.navigate(['register', 'experience']);
   }

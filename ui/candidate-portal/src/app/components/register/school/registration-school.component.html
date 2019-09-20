@@ -5,15 +5,15 @@
   <form [formGroup]="form">
 
     <div class="form-group">
-      <label for="schoolName">What your school name?</label>
-      <input type="text" class="form-control" placeholder="" id="schoolName" [formControlName]="'schoolName'">
+      <label for="institution">What your school name?</label>
+      <input type="text" class="form-control" placeholder="" id="institution" [formControlName]="'institution'">
     </div>
 
     <div class="form-group">
-      <label for="countryStudied">Country you studied in</label>
-      <select class="form-control" name="countryStudied" id="countryStudied" [formControlName]="'countryStudied'">
+      <label for="country">Country you studied in</label>
+      <select class="form-control" name="country" id="country" [formControlName]="'country'">
         <option value=""></option>
-        <option *ngFor="let country of countries" [value]="country">{{country}}</option>
+        <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
       </select>
     </div>
 
@@ -29,8 +29,8 @@
 
     <div *ngIf="form.value.completedSchool === 'yes'">
       <div class="form-group">
-        <label for="graduationYear">Year of graduation:</label>
-        <select class="form-control" name="graduationYear" id="graduationYear" [formControlName]="'graduationYear'">
+        <label for="dateCompleted">Year of graduation:</label>
+        <select class="form-control" name="dateCompleted" id="dateCompleted" [formControlName]="'dateCompleted'">
           <option value=""></option>
           <option *ngFor="let year of years" [value]="year">{{year}}</option>
         </select>

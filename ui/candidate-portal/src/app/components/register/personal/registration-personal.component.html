@@ -37,8 +37,7 @@
     <div class="col-12 col-md-6">
       <div class="form-group">
         <label for="dob">Date of birth</label>
-        <!-- TODO: datepicker -->
-        <input type="text" class="form-control" id="dob" placeholder="Enter last name" [formControlName]="'dob'">
+        <input type="date" id="dob" class="form-control" [formControlName]="'dob'" datepicker-popup is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
       </div>
     </div>
 
