@@ -36,32 +36,33 @@
 
     <!-- ADD LANGUAGES -->
     <div *ngIf="form.value.bilingual === 'true'" >
-          <label for="languageId">What language?</label>
-          <select class="form-control" id="languageId" name="languageId" formControlName="languageId">
-            <option value=""></option>
-            <option *ngFor="let language of languages" [value]="language.id">{{language.name}}</option>
-          </select>
+      <label for="languageId">What language?</label>
+      <select class="form-control" id="languageId" name="languageId" formControlName="languageId">
+        <option value=""></option>
+        <option *ngFor="let language of languages" [value]="language.id">{{language.name}}</option>
+      </select>
 
-          <label for="speak">How well do you speak this language?</label>
-          <select class="form-control" name="speak" id="speak" formControlName="speak">
-            <option value=""></option>
-            <option *ngFor="let l of languageLevels" [value]="l.id">{{l.level}}</option>
-          </select>
+      <label for="speak">How well do you speak this language?</label>
+      <select class="form-control" name="speak" id="speak" formControlName="speak">
+        <option value=""></option>
+        <option *ngFor="let l of languageLevels" [value]="l.id">{{l.level}}</option>
+      </select>
 
-          <label for="readWrite">How well do you read and write in this language?</label>
-          <select class="form-control" name="readWrite" id="readWrite" formControlName="readWrite">
-            <option value=""></option>
-            <option *ngFor="let l of languageLevels" [value]="l.id">{{l.level}}</option>
-          </select>
+      <label for="readWrite">How well do you read and write in this language?</label>
+      <select class="form-control" name="readWrite" id="readWrite" formControlName="readWrite">
+        <option value=""></option>
+        <option *ngFor="let l of languageLevels" [value]="l.id">{{l.level}}</option>
+      </select>
+      <div>
+        <button class="btn btn-outline-primary"
+                [disabled]="form.value.bilingual === 'false' && form.invalid"
+                (click)="addMore()">
+          Add additional language
+        </button>
+      </div>
     </div>
 
-    <div>
-      <button class="btn btn-outline-primary"
-              [disabled]="form.value.bilingual === 'false' && form.invalid"
-              (click)="addMore()">
-        Add additional language
-      </button>
-    </div>
+
 
   </form>
   <div>

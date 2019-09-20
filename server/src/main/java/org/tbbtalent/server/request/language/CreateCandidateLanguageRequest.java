@@ -8,7 +8,7 @@ public class CreateCandidateLanguageRequest {
 
     public Long getLanguageId() { return languageId; }
 
-    public void setLanguageId(Long languageId) { this.languageId = languageId; }
+    public void setLanguage(Long languageId) { this.languageId = languageId; }
 
     public Long getReadWriteId() { return readWriteId; }
 
