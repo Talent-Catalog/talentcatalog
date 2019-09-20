@@ -31,6 +31,7 @@ export class RegistrationAdditionalContactComponent implements OnInit {
     });
     this.candidateService.getCandidateAdditionalContacts().subscribe(
       (response) => {
+        console.log(response);
         this.form.patchValue({
           phone: response.phone,
           whatsapp: response.whatsapp

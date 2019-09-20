@@ -6,8 +6,8 @@
 
     <!-- SPEAK ENGLISH -->
     <div class="form-group">
-      <label for="speak">How well do you speak English?</label>
-        <select class="form-control" name="speak" id="speak" [formControlName]="'speak'">
+      <label for="speakId">How well do you speak English?</label>
+        <select class="form-control" name="speakId" id="speakId" [formControlName]="'speakId'">
           <option value=""></option>
           <option *ngFor="let l of languageLevels" [value]="l.id">{{l.level}}</option>
         </select>
@@ -15,8 +15,8 @@
 
     <!-- READ WRITE ENGLISH -->
     <div class="form-group">
-      <label for="readWrite">How well do you read and write in English?</label>
-      <select class="form-control" name="readWrite" id="readWrite" [formControlName]="'readWrite'">
+      <label for="readWriteId">How well do you read and write in English?</label>
+      <select class="form-control" name="readWriteId" id="readWriteId" [formControlName]="'readWriteId'">
         <option value=""></option>
         <option *ngFor="let l of languageLevels" [value]="l.id">{{l.level}}</option>
       </select>
@@ -42,14 +42,14 @@
             <option *ngFor="let language of languages" [value]="language.id">{{language.name}}</option>
           </select>
 
-          <label for="speak">How well do you speak this language?</label>
-          <select class="form-control" name="speak" id="speak" formControlName="speak">
+          <label for="speakId">How well do you speak this language?</label>
+          <select class="form-control" name="speakId" id="speakId" formControlName="speakId">
             <option value=""></option>
             <option *ngFor="let l of languageLevels" [value]="l.id">{{l.level}}</option>
           </select>
 
-          <label for="readWrite">How well do you read and write in this language?</label>
-          <select class="form-control" name="readWrite" id="readWrite" formControlName="readWrite">
+          <label for="readWriteId">How well do you read and write in this language?</label>
+          <select class="form-control" name="readWriteId" id="readWriteId" formControlName="readWriteId">
             <option value=""></option>
             <option *ngFor="let l of languageLevels" [value]="l.id">{{l.level}}</option>
           </select>
@@ -63,7 +63,7 @@
       </button>
     </div>
 
-  </form>
+
   <div>
 
     <!-- LANGUAGES SUMMARY -->
@@ -98,10 +98,10 @@
 
   <div class="text-right">
     <button class="btn btn-primary"
-            [disabled]="candidateLanguages?.length === 0 || loading || saving"
+            [disabled]="form.invalid || loading || saving"
             (click)="save()">
       Next
     </button>
   </div>
-
+  </form>
 </div>

@@ -39,7 +39,7 @@ export class RegistrationUniversityComponent implements OnInit {
     this.form = this.fb.group({
       educationType: ['University'],
       courseName: ['', Validators.required],
-      country: ['', Validators.required],
+      countryId: ['', Validators.required],
       institution: ['', Validators.required],
       lengthOfCourseYears: ['', Validators.required],
       dateCompleted: ['', Validators.required]
@@ -56,7 +56,7 @@ export class RegistrationUniversityComponent implements OnInit {
           this.form.patchValue({
             educationType: this.university[0].educationType,
             courseName: this.university[0].courseName,
-            country: this.university[0].country.id,
+            countryId: this.university[0].country.id,
             institution: this.university[0].institution,
             lengthOfCourseYears: this.university[0].lengthOfCourseYears,
             dateCompleted: this.university[0].dateCompleted,

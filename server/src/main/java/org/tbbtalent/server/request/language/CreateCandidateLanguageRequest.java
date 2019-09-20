@@ -12,10 +12,10 @@ public class CreateCandidateLanguageRequest {
 
     public Long getReadWriteId() { return readWriteId; }
 
-    public void setReadWrite(Long readWriteId) { this.readWriteId = readWriteId; }
+    public void setReadWriteId(Long readWriteId) { this.readWriteId = readWriteId; }
 
     public Long getSpeakId() { return speakId; }
 
-    public void setSpeak(Long speakId) { this.speakId = speakId;
+    public void setSpeakId(Long speakId) { this.speakId = speakId;
     }
 }

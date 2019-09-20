@@ -49,13 +49,14 @@ export class RegistrationNationalityComponent implements OnInit {
 
     this.candidateService.getCandidateNationality().subscribe(
       (response) => {
-        console.log(response);
-        this.form.patchValue({
-          nationality: response.nationality.id,
-          registeredWithUN: response.registeredWithUN,
-          registrationId: response.registrationId
-        });
-        this.loading = false;
+        if(response.nationality){
+          this.form.patchValue({
+            nationality: response.nationality.id,
+            registeredWithUN: response.registeredWithUN,
+            registrationId: response.registrationId
+          });
+          this.loading = false;
+        }
       },
       (error) => {
         this.error = error;

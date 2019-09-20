@@ -45,9 +45,6 @@ export class RegistrationLanguageComponent implements OnInit {
     this.candidateService.getCandidateLanguages().subscribe(
       (candidate) => {
         this.candidateLanguages = candidate.candidateLanguages || [];
-        console.log(this.candidateLanguages);
-        this.candidateLanguages = this.candidateLanguages.filter(l => l.language.name == "English");
-        console.log(this.candidateLanguages);
 
         /* Load the languages */
         this.languageService.listLanguages().subscribe(
@@ -82,8 +79,8 @@ export class RegistrationLanguageComponent implements OnInit {
   setUpForm(){
     this.form = this.fb.group({
       languageId: ['', Validators.required],
-      speak: ['', Validators.required],
-      readWrite: ['', Validators.required],
+      speakId: ['', Validators.required],
+      readWriteId: ['', Validators.required],
       bilingual: ['', Validators.required]
       })
   };
@@ -121,6 +118,7 @@ export class RegistrationLanguageComponent implements OnInit {
 
     // SAVE FORM
     save() {
+      this.addMore();
       this.router.navigate(['register', 'certifications']);
     }
 

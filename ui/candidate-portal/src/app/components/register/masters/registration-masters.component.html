@@ -10,8 +10,8 @@
     </div>
 
     <div class="form-group">
-      <label for="country">Country you studied in:</label>
-      <select class="form-control" name="country" id="country" [formControlName]="'country'">
+      <label for="countryId">Country you studied in:</label>
+      <select class="form-control" name="countryId" id="countryId" [formControlName]="'countryId'">
         <option value=""></option>
         <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
       </select>

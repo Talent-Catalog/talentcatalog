@@ -21,7 +21,7 @@ public class CreateEducationRequest {
         return countryId;
     }
 
-    public void setCountry(Long countryId) {
+    public void setCountryId(Long countryId) {
         this.countryId = countryId;
     }
 

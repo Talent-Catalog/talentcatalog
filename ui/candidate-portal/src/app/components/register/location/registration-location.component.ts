@@ -32,7 +32,7 @@ export class RegistrationLocationComponent implements OnInit {
     this.countries = [];
     this.years = years;
     this.form = this.fb.group({
-      country: ['', Validators.required],
+      countryId: ['', Validators.required],
       city: ['', Validators.required],
       yearOfArrival: ['', Validators.required]
     });
@@ -52,12 +52,13 @@ export class RegistrationLocationComponent implements OnInit {
     /* Load the candidate */
     this.candidateService.getCandidateLocation().subscribe(
       (response) => {
-        this.form.patchValue({
-          country: response.country.id,
-          city: response.city,
-          yearOfArrival: response.yearOfArrival
-        });
-        this.loading = false;
+        if(response.country){
+          this.form.patchValue({
+            countryId: response.country.id,
+            city: response.city,
+            yearOfArrival: response.yearOfArrival
+          });
+         }
       },
       (error) => {
         this.error = error;
