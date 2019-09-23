@@ -24,7 +24,7 @@ export class RegistrationLanguageComponent implements OnInit {
   candidateLanguages: CandidateLanguage[];
   languages: Language[];
   languageLevels: LanguageLevel[];
-  english: Language[];
+  english: CandidateLanguage[];
 
   constructor(private fb: FormBuilder,
               private router: Router,
@@ -51,8 +51,7 @@ export class RegistrationLanguageComponent implements OnInit {
          if(this.english.length !== 0){
           this.form.patchValue({
              speak: this.english[0].speak.id,
-             readWrite: this.english[0].readWrite.id,
-             bilingual: this.english[0].bilingual,
+             readWrite: this.english[0].readWrite.id
            });
          }
 

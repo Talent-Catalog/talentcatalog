@@ -1,62 +1,3 @@
--- Add location
-alter table candidate add column country_id bigint;
-alter table candidate add column city text;
-alter table candidate add column year_of_arrival integer;
-
--- Add nationality
-alter table candidate add column nationality_id bigint;
-alter table candidate add column registered_with_un boolean;
-alter table candidate add column registration_id text;
-
-alter table candidate add column education_level text;
-
--- Add additional info
-alter table candidate add column additional_info text;
-
-create table education
-(
-  id                      bigserial not null primary key,
-  candidate_id            bigint not null,
-  education_type          text,
-  country_id              bigint not null,
-  length_of_course_years  integer,
-  institution             text,
-  course_name             text,
-  date_completed          text
-);
-
-create table candidate_language
-(
-id                      bigserial not null primary key,
-candidate_id            bigint not null,
-language_id             bigint not null,
-read_write              bigint not null,
-speak                   bigint not null
-);
-
-create table work_experience
-(
-id                      bigserial not null primary key,
-candidate_id            bigint not null,
-company_name            text,
-country_id              bigint,
-role                    text,
-start_date              text,
-end_date                text,
-full_time               text,
-paid                    text,
-description             text
-);
-
-create table certification
-(
-id                      bigserial not null primary key,
-candidate_id            bigint not null,
-name                    text,
-institution             text,
-date_completed          text
-);
-
 create table country
 (
 id                      bigserial not null primary key,
@@ -110,3 +51,63 @@ insert into language_level (level) values ('Elementary');
 insert into language_level (level) values ('Intermediate');
 insert into language_level (level) values ('Professional');
 insert into language_level (level) values ('Fluent');
+
+-- Add location
+alter table candidate add column country_id bigint references country;
+alter table candidate add column city text;
+alter table candidate add column year_of_arrival integer;
+
+-- Add nationality
+alter table candidate add column nationality_id bigint references nationality;
+alter table candidate add column registered_with_un boolean;
+alter table candidate add column registration_id text;
+
+alter table candidate add column education_level text;
+
+-- Add additional info
+alter table candidate add column additional_info text;
+
+create table education
+(
+  id                      bigserial not null primary key,
+  candidate_id            bigint not null references candidate,
+  education_type          text,
+  country_id              bigint not null references country,
+  length_of_course_years  integer,
+  institution             text,
+  course_name             text,
+  date_completed          text
+);
+
+create table candidate_language
+(
+id                      bigserial not null primary key,
+candidate_id            bigint not null references candidate,
+language_id             bigint not null references language,
+read_write              bigint not null references language_level,
+speak                   bigint not null references language_level
+);
+
+create table work_experience
+(
+id                      bigserial not null primary key,
+candidate_id            bigint not null references candidate,
+company_name            text,
+country_id              bigint references country,
+role                    text,
+start_date              text,
+end_date                text,
+full_time               boolean,
+paid                    boolean,
+description             text
+);
+
+create table certification
+(
+id                      bigserial not null primary key,
+candidate_id            bigint not null references candidate,
+name                    text,
+institution             text,
+date_completed          text
+);
+
