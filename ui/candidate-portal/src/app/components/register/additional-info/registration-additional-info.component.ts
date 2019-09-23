@@ -30,7 +30,7 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
     this.candidateService.getCandidateAdditionalInfo().subscribe(
       (response) => {
         this.form.patchValue({
-          additionalInfo: [response.additionalInfo],
+          additionalInfo: response.additionalInfo,
         });
         this.loading = false;
       },
@@ -44,7 +44,7 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
   save(){
     this.candidateService.updateCandidateAdditionalInfo(this.form.value).subscribe(
       (response) => {
-        this.router.navigate([''])
+        this.router.navigate(['register'])
       },
       (error) => {
         this.error = error;
