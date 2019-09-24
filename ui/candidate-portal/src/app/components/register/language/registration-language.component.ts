@@ -50,8 +50,8 @@ export class RegistrationLanguageComponent implements OnInit {
         this.english = this.candidateLanguages.filter(l => l.language.name == "English");
          if(this.english.length !== 0){
           this.form.patchValue({
-             speak: this.english[0].speak.id,
-             readWrite: this.english[0].readWrite.id
+             speakId: this.english[0].speak.id,
+             readWriteId: this.english[0].readWrite.id
            });
          }
 
@@ -95,13 +95,11 @@ export class RegistrationLanguageComponent implements OnInit {
       })
   };
 
-  // TODO get method to retrieve old entry
   // ADD ANOTHER LANGUAGE
   addMore() {
     this.saving = true;
     this.candidateLanguageService.createCandidateLanguage(this.form.value).subscribe(
       (response) => {
-        console.log(response);
         this.candidateLanguages.push(response);
         this.saving = false;
       },
@@ -112,6 +110,7 @@ export class RegistrationLanguageComponent implements OnInit {
     );
   }
 
+  //DELETE LANGUAGE
   delete(candidateLanguage){
     this.saving = true;
     this.candidateLanguageService.deleteCandidateLanguage(candidateLanguage.id).subscribe(
@@ -126,10 +125,9 @@ export class RegistrationLanguageComponent implements OnInit {
     );
   }
 
-    // SAVE FORM
-    save() {
-      this.addMore();
-      this.router.navigate(['register', 'certifications']);
-    }
+  // SAVE FORM
+  save() {
+    this.router.navigate(['register', 'certifications']);
+  }
 
 }
