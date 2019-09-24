@@ -6,11 +6,32 @@
 </div>
 
 <div>
-  <div class="section">
-    <form class="form-inline justify-content-between" [formGroup]="searchForm" (ngSubmit)="search()">
-      <input type="text" class="form-control col-5" placeholder="Search..." aria-label="Search" formControlName="keyword">
-    </form>
-  </div>
+  <form [formGroup]="searchForm" (ngSubmit)="search()">
+    <div class="form-row">
+      <div class="col-7 form-group">
+        <label for="keyword">Keyword</label>
+        <input type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword" id="keyword">
+      </div>
+
+      <div class="col-auto form-group">
+        <label for="status">Status</label>
+        <select class="form-control" name="status" id="status" [formControlName]="'status'">
+          <option value=""></option>
+          <option value="active">Active</option>
+          <option value="inactive">Not Active</option>
+        </select>
+      </div>
+
+      <div class="col-auto form-group">
+        <label for="registeredWithUN">Registered With UN?</label>
+        <select class="form-control" name="registeredWithUN" id="registeredWithUN" [formControlName]="'registeredWithUN'">
+          <option value=""></option>
+          <option value="true">Yes</option>
+          <option value="false">No</option>
+        </select>
+      </div>
+    </div>
+  </form>
 
   <div class="text-muted mb-2 align-middle">
 

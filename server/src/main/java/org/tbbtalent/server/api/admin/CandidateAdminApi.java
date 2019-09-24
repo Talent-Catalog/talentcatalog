@@ -8,6 +8,9 @@ import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
 import org.tbbtalent.server.service.CandidateService;
+import org.tbbtalent.server.util.dto.DtoBuilder;
+
+import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate")
@@ -21,13 +24,15 @@ public class CandidateAdminApi {
     }
 
     @PostMapping("search")
-    public Page<Candidate> search(@RequestBody SearchCandidateRequest request) {
-        return this.candidateService.searchCandidates(request);
+    public Map<String, Object> search(@RequestBody SearchCandidateRequest request) {
+        Page<Candidate> candidates = this.candidateService.searchCandidates(request);
+        return candidateDto().buildPage(candidates);
     }
 
     @GetMapping("{id}")
-    public Candidate get(@PathVariable("id") long id) {
-        return this.candidateService.getCandidate(id);
+    public Map<String, Object> get(@PathVariable("id") long id) {
+        Candidate candidate = this.candidateService.getCandidate(id);
+        return candidateDto().build(candidate);
     }
 
     @PostMapping
@@ -45,4 +50,15 @@ public class CandidateAdminApi {
     public boolean delete(@PathVariable("id") long id) {
         return this.candidateService.deleteCandidate(id);
     }
+
+    private DtoBuilder candidateDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("candidateNumber")
+                .add("firstName")
+                .add("lastName")
+                .add("email")
+                ;
+    }
+
 }

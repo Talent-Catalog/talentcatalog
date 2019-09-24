@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CandidateService } from '../../../services/candidate.service';
 import { Candidate } from '../../../model/candidate';
+import { Country } from '../../../model/country';
 import { SearchResults } from '../../../model/search-results';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
@@ -23,7 +24,9 @@ export class SearchCandidatesComponent implements OnInit {
 
   ngOnInit() {
     this.searchForm = this.fb.group({
-      keyword: ['']
+      keyword: [''],
+      status: [''],
+      registeredWithUN: ['']
     });
     this.pageNumber = 1;
     this.pageSize = 50;

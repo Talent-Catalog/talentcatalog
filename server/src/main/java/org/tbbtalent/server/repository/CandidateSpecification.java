@@ -3,6 +3,7 @@ package org.tbbtalent.server.repository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.tbbtalent.server.model.Candidate;
+import org.tbbtalent.server.model.Status;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 
 import javax.persistence.criteria.Predicate;
@@ -24,9 +25,21 @@ public class CandidateSpecification {
                         ));
             }
 
+            if (!StringUtils.isBlank(request.getStatus())) {
+                conjunction.getExpressions().add(
+                        builder.equal(user.get("status"), Status.valueOf(request.getStatus()))
+                        );
+            }
 
+
+            if(request.getRegisteredWithUN() != null) {
+                conjunction.getExpressions().add(
+                        builder.equal(user.get("registeredWithUN"), request.getRegisteredWithUN())
+                );
+            }
 
             return conjunction;
         };
     }
+
 }
