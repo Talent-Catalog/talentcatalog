@@ -8,12 +8,12 @@
 <div>
   <form [formGroup]="searchForm" (ngSubmit)="search()">
     <div class="form-row">
-      <div class="col-7 form-group">
+      <div class="col-4 form-group">
         <label for="keyword">Keyword</label>
         <input type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword" id="keyword">
       </div>
 
-      <div class="col-auto form-group">
+      <div class="col-1 form-group">
         <label for="status">Status</label>
         <select class="form-control" name="status" id="status" [formControlName]="'status'">
           <option value=""></option>
@@ -22,15 +22,91 @@
         </select>
       </div>
 
-      <div class="col-auto form-group">
-        <label for="registeredWithUN">Registered With UN?</label>
-        <select class="form-control" name="registeredWithUN" id="registeredWithUN" [formControlName]="'registeredWithUN'">
+      <div class="col-1 form-group">
+        <label for="">Shortlistings</label>
+        <select class="form-control" name="" id="">
           <option value=""></option>
-          <option value="true">Yes</option>
-          <option value="false">No</option>
         </select>
       </div>
+
+      <div class="col-2 form-group">
+        <label for="nationalityId">Nationality</label>
+        <select class="form-control" name="nationalityId" id="nationalityId" [formControlName]="'nationalityId'">
+          <option value=""></option>
+          <option *ngFor="let nationality of nationalities" [value]="nationality.id">{{nationality.name}}</option>
+        </select>
+      </div>
+
+      <div class="col-2 form-group">
+        <label for="countryId">Country</label>
+        <select class="form-control" name="countryId" id="countryId" [formControlName]="'countryId'">
+          <option value=""></option>
+          <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
+        </select>
+      </div>
+
+      <div class="col-2 form-group more-filter">
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)="moreFilters = !moreFilters"
+                [attr.aria-expanded]="!moreFilters" aria-controls="collapseExample">
+          <span *ngIf="!moreFilters">More</span><span *ngIf="moreFilters">Less</span> Filters
+        </button>
+      </div>
+
     </div>
+
+    <div id="collapseExample" [ngbCollapse]="!moreFilters">
+
+      <div class="form-row d-flex justify-content-around align-items-end">
+
+        <div class="form-group">
+          <label for="registeredWithUN">Registered With UN?</label>
+          <select class="form-control" name="registeredWithUN" id="registeredWithUN" [formControlName]="'registeredWithUN'">
+            <option value=""></option>
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="gender">Gender</label>
+          <select class="form-control" name="gender" id="gender" [formControlName]="'gender'">
+            <option value=""></option>
+            <option value="female">Female</option>
+            <option value="male">Male</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="educationLevel">Education Level</label>
+          <select class="form-control" id="educationLevel" name="educationLevel" [formControlName]="'educationLevel'">
+            <option value=""></option>
+            <option *ngFor="let education of educationLevels" [value]="education.id">{{education.label}}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="candidateLanguageId">Language</label>
+          <select class="form-control" id="candidateLanguageId" name="candidateLanguageId" [formControlName]="'candidateLanguageId'">
+            <option value=""></option>
+            <option *ngFor="let language of languages" [value]="language.id">{{language.name}}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="age">Age</label>
+          <select class="form-control" id="age" name="age" [formControlName]="'age'">
+            <option value=""></option>
+            <option *ngFor="let age of ages" [value]="age.id">{{age.name}}</option>
+          </select>
+        </div>
+
+
+
+
+      </div>
+
+    </div>
+
   </form>
 
   <div class="text-muted mb-2 align-middle">

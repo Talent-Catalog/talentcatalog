@@ -1,3 +1,13 @@
 .candidate-num-col-head {
   width: 12rem;
 }
+
+.more-filter {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+label {
+  font-size: 14px;
+}
