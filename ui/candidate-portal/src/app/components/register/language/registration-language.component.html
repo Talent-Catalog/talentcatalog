@@ -36,11 +36,11 @@
 
     <!-- ADD LANGUAGES -->
     <div *ngIf="form.value.bilingual === 'true'" >
-          <label for="languageId">What language?</label>
-          <select class="form-control" id="languageId" name="languageId" formControlName="languageId">
-            <option value=""></option>
-            <option *ngFor="let language of languages" [value]="language.id">{{language.name}}</option>
-          </select>
+      <label for="languageId">What language?</label>
+      <select class="form-control" id="languageId" name="languageId" formControlName="languageId">
+        <option value=""></option>
+        <option *ngFor="let language of languages" [value]="language.id">{{language.name}}</option>
+      </select>
 
           <label for="speakId">How well do you speak this language?</label>
           <select class="form-control" name="speakId" id="speakId" formControlName="speakId">

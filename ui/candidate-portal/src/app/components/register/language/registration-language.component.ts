@@ -24,6 +24,7 @@ export class RegistrationLanguageComponent implements OnInit {
   candidateLanguages: CandidateLanguage[];
   languages: Language[];
   languageLevels: LanguageLevel[];
+  english: CandidateLanguage[];
 
   constructor(private fb: FormBuilder,
               private router: Router,
@@ -46,6 +47,14 @@ export class RegistrationLanguageComponent implements OnInit {
       (candidate) => {
         this.candidateLanguages = candidate.candidateLanguages || [];
 
+        this.english = this.candidateLanguages.filter(l => l.language.name == "English");
+         if(this.english.length !== 0){
+          this.form.patchValue({
+             speak: this.english[0].speak.id,
+             readWrite: this.english[0].readWrite.id
+           });
+         }
+
         /* Load the languages */
         this.languageService.listLanguages().subscribe(
           (response) => {
@@ -57,6 +66,7 @@ export class RegistrationLanguageComponent implements OnInit {
             this.loading = false;
           }
         );
+
         /* Load the language levels */
         this.languageLevelService.listLanguageLevels().subscribe(
           (response) => {

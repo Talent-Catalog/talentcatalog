@@ -7,8 +7,8 @@ public class CreateWorkExperienceRequest {
     private String role;
     private String startDate;
     private String endDate;
-    private String fullTime;
-    private String paid;
+    private Boolean fullTime;
+    private Boolean paid;
     private String description;
 
     public String getCompanyName() { return companyName; }
@@ -35,13 +35,13 @@ public class CreateWorkExperienceRequest {
 
     public void setEndDate(String endDate) { this.endDate = endDate; }
 
-    public String getFullTime() { return fullTime; }
+    public Boolean getFullTime() { return fullTime; }
 
-    public void setFullTime(String fullTime) { this.fullTime = fullTime; }
+    public void setFullTime(Boolean fullTime) { this.fullTime = fullTime; }
 
-    public String getPaid() { return paid; }
+    public Boolean getPaid() { return paid; }
 
-    public void setPaid(String paid) { this.paid = paid; }
+    public void setPaid(Boolean paid) { this.paid = paid; }
 
     public String getDescription() { return description; }
 
