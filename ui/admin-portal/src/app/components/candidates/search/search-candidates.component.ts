@@ -123,6 +123,8 @@ export class SearchCandidatesComponent implements OnInit {
     request.pageNumber = this.pageNumber - 1;
     request.pageSize =  this.pageSize;
     this.candidateService.search(request).subscribe(results => {
+      console.log(request);
+      console.log(results);
       this.results = results;
       this.loading = false;
     });

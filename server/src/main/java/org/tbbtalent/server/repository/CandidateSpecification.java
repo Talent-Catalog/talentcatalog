@@ -8,14 +8,17 @@ import org.tbbtalent.server.model.Status;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
+import java.util.Objects;
 
 public class CandidateSpecification {
 
     public static Specification<Candidate> buildSearchQuery(final SearchCandidateRequest request) {
         return (user, query, builder) -> {
             Predicate conjunction = builder.conjunction();
-            Join<Candidate, CandidateLanguage> candidateLanguages = user.join("candidateLanguages");
+            query.distinct(true);
+            Join<Candidate, CandidateLanguage> candidateLanguages = user.join("candidateLanguages", JoinType.LEFT);
 
             // KEYWORD SEARCH
             if (!StringUtils.isBlank(request.getKeyword())){
@@ -44,7 +47,7 @@ public class CandidateSpecification {
             }
 
             // NATIONALITY SEARCH
-            if(request.getNationalityId() != null) {
+            if(!Objects.isNull(request.getNationalityId())) {
 //                System.out.println(request.getNationalityId());
                 conjunction.getExpressions().add(
                         builder.equal(user.get("nationality"), request.getNationalityId())
@@ -84,7 +87,7 @@ public class CandidateSpecification {
             if(request.getCandidateLanguageId() != null) {
                 System.out.println(request.getCandidateLanguageId());
                 conjunction.getExpressions().add(
-                        builder.equal(candidateLanguages.get("id"), request.getCandidateLanguageId())
+                        builder.equal(candidateLanguages.get("language"), request.getCandidateLanguageId())
                 );
             }
 
