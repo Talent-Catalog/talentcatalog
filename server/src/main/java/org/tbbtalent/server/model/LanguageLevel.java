@@ -4,24 +4,15 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "language_level")
-public class LanguageLevel {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "language_level_gen")
-    @SequenceGenerator(name = "language_level_gen", sequenceName = "language_level_id_seq", allocationSize = 1)
-    private Long id;
+@SequenceGenerator(name = "language_level_gen", sequenceName = "language_level_id_seq", allocationSize = 1)
+public class LanguageLevel extends AbstractDomainObject<Long> {
 
     private String level;
 
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
     public LanguageLevel() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getLevel() {
@@ -30,5 +21,13 @@ public class LanguageLevel {
 
     public void setLevel(String level) {
         this.level = level;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }

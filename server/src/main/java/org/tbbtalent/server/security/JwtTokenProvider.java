@@ -26,9 +26,9 @@ public class JwtTokenProvider {
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
         String subject = "";
 
-        if (authentication.getPrincipal() instanceof AuthenticatedCandidate) {
-            AuthenticatedCandidate candidate = (AuthenticatedCandidate) authentication.getPrincipal();
-            subject = candidate.getCandidate().getCandidateNumber();
+        if (authentication.getPrincipal() instanceof AuthenticatedUser) {
+            AuthenticatedUser user = (AuthenticatedUser) authentication.getPrincipal();
+            subject = user.getUsername();
         }
         /* TODO admin */
 //        else if (authentication.getPrincipal() instanceof AuthenticatedAdmin) {

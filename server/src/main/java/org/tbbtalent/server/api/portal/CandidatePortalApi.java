@@ -170,8 +170,8 @@ public class CandidatePortalApi {
 
     private DtoBuilder candidatePersonalDto() {
         return new DtoBuilder()
-                .add("firstName")
-                .add("lastName")
+                .add("user.firstName")
+                .add("user.lastName")
                 .add("gender")
                 .add("dob")
                 ;
@@ -179,14 +179,14 @@ public class CandidatePortalApi {
 
     private DtoBuilder candidateWithProfessionsDto() {
         return new DtoBuilder()
-                .add("professions", professionDto())
+                .add("candidateOccupations", professionDto())
                 ;
     }
 
     private DtoBuilder professionDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("industry", industryDto())
+                .add("occupation", occupationDto())
                 .add("yearsExperience")
                 ;
     }
@@ -202,8 +202,8 @@ public class CandidatePortalApi {
     private DtoBuilder candidateNationalityDto() {
         return new DtoBuilder()
                 .add("nationality", nationalityDto())
-                .add("registeredWithUN")
-                .add("registrationId")
+                .add("unRegistered")
+                .add("unRegistrationNumber")
                 ;
     }
 
@@ -225,14 +225,12 @@ public class CandidatePortalApi {
                 .add("id")
                 .add("educationType")
                 .add("country", countryDto())
-                .add("lengthOfCourseYears")
-                .add("institution")
                 .add("courseName")
                 .add("dateCompleted")
                 ;
     }
 
-    private DtoBuilder industryDto() {
+    private DtoBuilder occupationDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("name")
@@ -241,7 +239,7 @@ public class CandidatePortalApi {
 
     private DtoBuilder candidateWithEducationsDto() {
         return new DtoBuilder()
-                .add("educations", educationDto())
+                .add("candidateEducation", educationDto())
                 ;
     }
 
@@ -255,7 +253,7 @@ public class CandidatePortalApi {
 
     private DtoBuilder candidateWithWorkExperiencesDto() {
         return new DtoBuilder()
-                .add("workExperiences", workExperienceDto())
+                .add("candidateJobExperience", workExperienceDto())
                 ;
     }
 

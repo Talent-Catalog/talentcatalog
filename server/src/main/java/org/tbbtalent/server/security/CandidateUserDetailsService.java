@@ -7,35 +7,34 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.tbbtalent.server.model.Candidate;
+import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.repository.CandidateRepository;
+import org.tbbtalent.server.repository.UserRepository;
 
 @Component
 public class CandidateUserDetailsService implements UserDetailsService {
 
     private static final Logger log = LoggerFactory.getLogger(CandidateUserDetailsService.class);
 
-    private final CandidateRepository candidateRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public CandidateUserDetailsService(CandidateRepository candidateRepository) {
-        this.candidateRepository = candidateRepository;
+    public CandidateUserDetailsService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override
-    public AuthenticatedCandidate loadUserByUsername(String username) throws UsernameNotFoundException {
+    public AuthenticatedUser loadUserByUsername(String username) throws UsernameNotFoundException {
 
         /* Handle JWT token parsing */
-        Candidate candidate = candidateRepository.findByCandidateNumber(username);
+        User user = userRepository.findByUsernameIgnoreCase(username);
         /* Handle authentication */
-        if (candidate == null) {
-            candidate = candidateRepository.findByAnyUserIdentityIgnoreCase(username);
-        }
-        if (candidate == null) {
-            throw new UsernameNotFoundException("No candidate found for: " + username);
+        if (user == null) {
+            throw new UsernameNotFoundException("No user found for: " + username);
         }
 
-        log.debug("Found candidate with ID {} for username '{}'", candidate.getId(), username);
-        return new AuthenticatedCandidate(candidate);
+        log.debug("Found candidate with ID {} for username '{}'", user.getId(), username);
+        return new AuthenticatedUser(user);
     }
 
 }

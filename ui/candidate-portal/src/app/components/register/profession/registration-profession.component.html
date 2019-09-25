@@ -1,6 +1,6 @@
 <div class="container">
 
-  <h1 class="text-center">Tell us about your profession</h1>
+  <h1 class="text-center">Tell us about your Occupation</h1>
 
   <div class="d-flex justify-content-center" *ngIf="loading">
     Loading...
@@ -10,10 +10,10 @@
 
     <!-- FIELD -->
     <div class="form-group">
-      <label for="industry">What is the main field that you have professional skills in?</label>
-      <select class="form-control" name="industry" id="industry" [formControlName]="'industryId'">
+      <label for="occupation">What is the main field that you have professional skills in?</label>
+      <select class="form-control" name="occupation" id="occupation" [formControlName]="'occupationId'">
         <option value=""></option>
-        <option *ngFor="let industry of industries" [value]="industry.id">{{industry.name}}</option>
+        <option *ngFor="let occupation of occupations" [value]="occupation.id">{{occupation.name}}</option>
       </select>
     </div>
 
@@ -22,7 +22,7 @@
       <label for="yearsExperience">How many years of professional work experience do you have in this field?</label>
       <input type="number" class="form-control" name="yearsExperience" id="yearsExperience" [formControlName]="'yearsExperience'">
       <p class="text-muted">
-        Do not include years spent studying in this profession
+        Do not include years spent studying in this occupation
       </p>
     </div>
 
@@ -37,11 +37,11 @@
   </form>
 
   <!-- PROFESSION SUMMARY -->
-  <h4>Profession Summary</h4>
+  <h4>Occupation Summary</h4>
   <table class="table">
     <thead>
     <tr>
-      <th scope="col">Profession Field</th>
+      <th scope="col">Occupation Field</th>
       <th scope="col">Years in Field</th>
       <th scope="col">Delete</th>
     </tr>

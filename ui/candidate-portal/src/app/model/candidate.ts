@@ -8,6 +8,7 @@ import {CandidateLanguage} from "./candidate-language";
 
 export interface Candidate {
   id: number;
+  username: string;
   candidateNumber: string;
   firstName: string;
   lastName: string;

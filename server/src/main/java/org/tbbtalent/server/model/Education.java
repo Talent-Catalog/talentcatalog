@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "education")
-public class Education {
+public class Education  extends AbstractDomainObject<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "education_gen")

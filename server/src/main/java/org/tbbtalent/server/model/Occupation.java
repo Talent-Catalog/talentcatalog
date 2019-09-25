@@ -3,15 +3,25 @@ package org.tbbtalent.server.model;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "industry")
-@SequenceGenerator(name = "seq_gen", sequenceName = "industry_id_seq", allocationSize = 1)
-public class Industry  extends AbstractDomainObject<Long> {
+@Table(name = "occupation")
+@SequenceGenerator(name = "seq_gen", sequenceName = "occupation_id_seq", allocationSize = 1)
+public class Occupation extends AbstractDomainObject<Long> {
+
+    private Long id;
 
     private String name;
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    public Industry() {
+    public Occupation() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {

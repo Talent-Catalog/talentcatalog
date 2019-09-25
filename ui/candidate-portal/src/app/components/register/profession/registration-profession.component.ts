@@ -1,11 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
-import {Industry} from "../../../model/industry";
-import {IndustryService} from "../../../services/industry.service";
 import {CandidateService} from "../../../services/candidate.service";
 import {ProfessionService} from "../../../services/profession.service";
 import {Profession} from "../../../model/profession";
+import {Occupation} from "../../../model/occupation";
+import {OccupationService} from "../../../services/occupation.service";
 
 @Component({
   selector: 'app-registration-profession',
@@ -19,12 +19,12 @@ export class RegistrationProfessionComponent implements OnInit {
   saving: boolean;
   form: FormGroup;
   professions: Profession[];
-  industries: Industry[];
+  occupations: Occupation[];
 
   constructor(private fb: FormBuilder,
               private router: Router,
               private candidateService: CandidateService,
-              private industryService: IndustryService,
+              private occupationService: OccupationService,
               private professionService: ProfessionService) { }
 
   ngOnInit() {
@@ -38,9 +38,9 @@ export class RegistrationProfessionComponent implements OnInit {
         this.professions = candidate.professions || [];
 
         /* Wait for the candidate then load the industries */
-        this.industryService.listIndustries().subscribe(
+        this.occupationService.listOccupations().subscribe(
           (response) => {
-            this.industries = response;
+            this.occupations = response;
             this.loading = false;
             this.setUpForm();
           },
@@ -59,7 +59,7 @@ export class RegistrationProfessionComponent implements OnInit {
 
   setUpForm(){
     this.form = this.fb.group({
-      industryId: [null, Validators.required],
+      occupationId: [null, Validators.required],
       yearsExperience: [null, Validators.required],
     });
   }

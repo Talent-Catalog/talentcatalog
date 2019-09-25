@@ -4,23 +4,15 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "country")
-public class Country {
+@SequenceGenerator(name = "seq_gen", sequenceName = "country_id_seq", allocationSize = 1)
+public class Country extends AbstractDomainObject<Long> {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "country_gen")
-    @SequenceGenerator(name = "country_gen", sequenceName = "country_id_seq", allocationSize = 1)
-    private Long id;
     private String name;
 
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
     public Country() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -31,4 +23,11 @@ public class Country {
         this.name = name;
     }
 
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
 }

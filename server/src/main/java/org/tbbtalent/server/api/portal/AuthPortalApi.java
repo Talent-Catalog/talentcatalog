@@ -59,9 +59,8 @@ public class AuthPortalApi {
     private DtoBuilder candidateBriefDto() {
         return new DtoBuilder()
                 .add("id")
+                .add("username")
                 .add("email")
-                .add("phone")
-                .add("whatsapp")
                 ;
     }
 }

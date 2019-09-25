@@ -6,7 +6,7 @@ import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.model.Country;
-import org.tbbtalent.server.model.WorkExperience;
+import org.tbbtalent.server.model.CandidateJobExperience;
 import org.tbbtalent.server.repository.CountryRepository;
 import org.tbbtalent.server.repository.WorkExperienceRepository;
 import org.tbbtalent.server.request.work.experience.CreateWorkExperienceRequest;
@@ -31,7 +31,7 @@ public class WorkExperienceServiceImpl implements WorkExperienceService {
 
 
     @Override
-    public WorkExperience createWorkExperience(CreateWorkExperienceRequest request) {
+    public CandidateJobExperience createWorkExperience(CreateWorkExperienceRequest request) {
         Candidate candidate = userContext.getLoggedInCandidate();
         Long test = 3L;
 
@@ -41,32 +41,32 @@ public class WorkExperienceServiceImpl implements WorkExperienceService {
                 .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountryId()));
 
         // Create a new profession object to insert into the database
-        WorkExperience workExperience = new WorkExperience();
-        workExperience.setCandidate(candidate);
-        workExperience.setCountry(country);
-        workExperience.setCompanyName(request.getCompanyName());
-        workExperience.setRole(request.getRole());
-        workExperience.setStartDate(request.getStartDate());
-        workExperience.setEndDate(request.getEndDate());
-        workExperience.setFullTime(request.getFullTime());
-        workExperience.setPaid(request.getPaid());
-        workExperience.setDescription(request.getDescription());
+        CandidateJobExperience candidateJobExperience = new CandidateJobExperience();
+        candidateJobExperience.setCandidate(candidate);
+        candidateJobExperience.setCountry(country);
+        candidateJobExperience.setCompanyName(request.getCompanyName());
+        candidateJobExperience.setJobTitle(request.getRole());
+        candidateJobExperience.setStartDate(request.getStartDate());
+        candidateJobExperience.setEndDate(request.getEndDate());
+        candidateJobExperience.setFullTime(request.getFullTime());
+        candidateJobExperience.setPaid(request.getPaid());
+        candidateJobExperience.setDescription(request.getDescription());
 
         // Save the profession
-        return workExperienceRepository.save(workExperience);
+        return workExperienceRepository.save(candidateJobExperience);
     }
 
     @Override
     public void deleteWorkExperience(Long id) {
         Candidate candidate = userContext.getLoggedInCandidate();
-        WorkExperience workExperience = workExperienceRepository.findByIdLoadCandidate(id)
-                .orElseThrow(() -> new NoSuchObjectException(WorkExperience.class, id));
+        CandidateJobExperience candidateJobExperience = workExperienceRepository.findByIdLoadCandidate(id)
+                .orElseThrow(() -> new NoSuchObjectException(CandidateJobExperience.class, id));
 
         // Check that the user is deleting their own profession
-        if (!candidate.getId().equals(workExperience.getCandidate().getId())) {
+        if (!candidate.getId().equals(candidateJobExperience.getCandidate().getId())) {
             throw new InvalidCredentialsException("You do not have permission to perform that action");
         }
 
-        workExperienceRepository.delete(workExperience);
+        workExperienceRepository.delete(candidateJobExperience);
     }
 }

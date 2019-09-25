@@ -3,7 +3,7 @@ package org.tbbtalent.server.api.portal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.tbbtalent.server.model.WorkExperience;
+import org.tbbtalent.server.model.CandidateJobExperience;
 import org.tbbtalent.server.request.work.experience.CreateWorkExperienceRequest;
 import org.tbbtalent.server.service.WorkExperienceService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
@@ -24,8 +24,8 @@ public class WorkExperiencePortalApi {
 
     @PostMapping()
     public Map<String, Object> createWorkExperience(@Valid @RequestBody CreateWorkExperienceRequest request) {
-        WorkExperience workExperience = workExperienceService.createWorkExperience(request);
-        return workExperienceDto().build(workExperience);
+        CandidateJobExperience candidateJobExperience = workExperienceService.createWorkExperience(request);
+        return workExperienceDto().build(candidateJobExperience);
     }
 
     @DeleteMapping("{id}")

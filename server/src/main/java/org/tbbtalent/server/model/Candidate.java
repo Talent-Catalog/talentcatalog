@@ -1,82 +1,69 @@
 package org.tbbtalent.server.model;
 
-import org.apache.commons.lang3.StringUtils;
-
 import javax.persistence.*;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "candidate")
-public class Candidate {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "candidate_gen")
-    @SequenceGenerator(name = "candidate_gen", sequenceName = "candidate_id_seq", allocationSize = 1)
-    private Long id;
+@SequenceGenerator(name = "seq_gen", sequenceName = "candidate_id_seq", allocationSize = 1)
+public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     private String candidateNumber;
-    private String firstName;
-    private String lastName;
-    private String email;
     private String phone;
     private String whatsapp;
-    private String passwordEnc;
     private String gender;
-    private String dob;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "country_id")
-    private Country country;
+    private Date dob;
     private String city;
     private Integer yearOfArrival;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "nationality_id")
-    private Nationality nationality;
-    @Column(name = "registered_with_un")
-    private Boolean registeredWithUN;
-    private String registrationId;
-
-    private String educationLevel;
+    private Boolean unRegistered;
+    private String unRegistrationNumber;
     private String additionalInfo;
 
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
-    private Set<Profession> professions = new HashSet<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "max_education_level_id")
+    private EducationLevel maxEducationLevel;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "country_id")
+    private Country country;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "nationality_id")
+    private Nationality nationality;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
-    private Set<Education> educations = new HashSet<>();
+    private Set<CandidateOccupation> candidateOccupations = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    private Set<Education> candidateEducation = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     private Set<CandidateLanguage> candidateLanguages = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
-    private Set<WorkExperience> workExperiences = new HashSet<>();
+    private Set<CandidateJobExperience> candidateJobExperiences = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
-    private Set<Certification> certifications = new HashSet<>();
+    private Set<CandidateCertification> candidateCertifications = new HashSet<>();
 
     public Candidate() {
     }
 
-    public Candidate(String firstName, String lastName, String email, String phone, String whatsapp) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
+    public Candidate(User user, String phone, String whatsapp, User caller) {
+        super(caller);
+        this.user = user;
         this.phone = phone;
         this.whatsapp = whatsapp;
         this.status = Status.active;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getCandidateNumber() {
@@ -86,30 +73,6 @@ public class Candidate {
     public void setCandidateNumber(String candidateNumber) {
         this.candidateNumber = candidateNumber;
     }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getDisplayName() {
-        return StringUtils.join(this.firstName, " ", this.lastName);
-    }
-
-    public String getEmail() { return email; }
-
-    public void setEmail(String email) { this.email = email; }
 
     public String getPhone() {
         return phone;
@@ -135,20 +98,12 @@ public class Candidate {
         this.gender = gender;
     }
 
-    public String getDob() {
+    public Date getDob() {
         return dob;
     }
 
-    public void setDob(String dob) {
+    public void setDob(Date dob) {
         this.dob = dob;
-    }
-
-    public Country getCountry() {
-        return country;
-    }
-
-    public void setCountry(Country country) {
-        this.country = country;
     }
 
     public String getCity() {
@@ -167,45 +122,36 @@ public class Candidate {
         this.yearOfArrival = yearOfArrival;
     }
 
-    public Nationality getNationality() { return nationality; }
-
-    public void setNationality(Nationality nationality) { this.nationality = nationality; }
-
-    public Boolean getRegisteredWithUN() { return registeredWithUN; }
-
-    public void setRegisteredWithUN(Boolean registeredWithUN) { this.registeredWithUN = registeredWithUN; }
-
-    public String getRegistrationId() { return registrationId; }
-
-    public void setRegistrationId(String registrationId) {
-        this.registrationId = registrationId;
+    public Boolean getUnRegistered() {
+        return unRegistered;
     }
 
-    public String getEducationLevel() { return educationLevel; }
-
-    public void setEducationLevel(String educationLevel) { this.educationLevel = educationLevel; }
-
-    public String getAdditionalInfo() { return additionalInfo; }
-
-    public void setAdditionalInfo(String additionalInfo) { this.additionalInfo = additionalInfo; }
-
-    public String getPasswordEnc() {
-        return passwordEnc;
+    public void setUnRegistered(Boolean unRegistered) {
+        this.unRegistered = unRegistered;
     }
 
-    public void setPasswordEnc(String passwordEnc) {
-        this.passwordEnc = passwordEnc;
+    public String getUnRegistrationNumber() {
+        return unRegistrationNumber;
     }
 
-    public String getUsername() {
-        if (StringUtils.isNotBlank(email)) {
-            return email;
-        } else if (StringUtils.isNotBlank(phone)) {
-            return phone;
-        } else if (StringUtils.isNotBlank(whatsapp)) {
-            return whatsapp;
-        }
-        return null;
+    public void setUnRegistrationNumber(String unRegistrationNumber) {
+        this.unRegistrationNumber = unRegistrationNumber;
+    }
+
+    public EducationLevel getMaxEducationLevel() {
+        return maxEducationLevel;
+    }
+
+    public void setMaxEducationLevel(EducationLevel maxEducationLevel) {
+        this.maxEducationLevel = maxEducationLevel;
+    }
+
+    public String getAdditionalInfo() {
+        return additionalInfo;
+    }
+
+    public void setAdditionalInfo(String additionalInfo) {
+        this.additionalInfo = additionalInfo;
     }
 
     public Status getStatus() {
@@ -216,20 +162,44 @@ public class Candidate {
         this.status = status;
     }
 
-    public Set<Profession> getProfessions() {
-        return professions;
+    public Country getCountry() {
+        return country;
     }
 
-    public void setProfessions(Set<Profession> professions) {
-        this.professions = professions;
+    public void setCountry(Country country) {
+        this.country = country;
     }
 
-    public Set<Education> getEducations() {
-        return educations;
+    public Nationality getNationality() {
+        return nationality;
     }
 
-    public void setEducations(Set<Education> educations) {
-        this.educations = educations;
+    public void setNationality(Nationality nationality) {
+        this.nationality = nationality;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Set<CandidateOccupation> getCandidateOccupations() {
+        return candidateOccupations;
+    }
+
+    public void setCandidateOccupations(Set<CandidateOccupation> candidateOccupations) {
+        this.candidateOccupations = candidateOccupations;
+    }
+
+    public Set<Education> getCandidateEducation() {
+        return candidateEducation;
+    }
+
+    public void setCandidateEducation(Set<Education> candidateEducation) {
+        this.candidateEducation = candidateEducation;
     }
 
     public Set<CandidateLanguage> getCandidateLanguages() {
@@ -240,15 +210,19 @@ public class Candidate {
         this.candidateLanguages = candidateLanguages;
     }
 
-    public Set<WorkExperience> getWorkExperiences() { return workExperiences; }
-
-    public void setWorkExperiences(Set<WorkExperience> workExperiences) { this.workExperiences = workExperiences; }
-
-    public Set<Certification> getCertifications() {
-        return certifications;
+    public Set<CandidateJobExperience> getCandidateJobExperiences() {
+        return candidateJobExperiences;
     }
 
-    public void setCertifications(Set<Certification> certifications) { this.certifications = certifications; }
+    public void setCandidateJobExperiences(Set<CandidateJobExperience> candidateJobExperiences) {
+        this.candidateJobExperiences = candidateJobExperiences;
+    }
 
+    public Set<CandidateCertification> getCandidateCertifications() {
+        return candidateCertifications;
+    }
 
+    public void setCandidateCertifications(Set<CandidateCertification> candidateCertifications) {
+        this.candidateCertifications = candidateCertifications;
+    }
 }

@@ -5,24 +5,35 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.tbbtalent.server.model.Candidate;
+import org.tbbtalent.server.model.Role;
+import org.tbbtalent.server.model.User;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class AuthenticatedCandidate implements UserDetails {
+public class AuthenticatedUser implements UserDetails {
 
-    private Candidate candidate;
+    private User user;
     private List<GrantedAuthority> authorities;
 
-    public AuthenticatedCandidate(Candidate candidate) {
-        this.candidate = candidate;
+    public AuthenticatedUser(User user) {
+        this.user = user;
         this.authorities = new ArrayList<>();
-        this.authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        if (user.getRole().equals(Role.admin)){
+            this.authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        } else {
+            this.authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+
+        }
     }
 
-    public Candidate getCandidate() {
-        return candidate;
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
@@ -32,19 +43,12 @@ public class AuthenticatedCandidate implements UserDetails {
 
     @Override
     public String getPassword() {
-        return candidate.getPasswordEnc();
+        return user.getPasswordEnc();
     }
 
     @Override
     public String getUsername() {
-        if (StringUtils.isNotBlank(candidate.getEmail())) {
-            return candidate.getEmail();
-        } else if (StringUtils.isNotBlank(candidate.getPhone())) {
-            return candidate.getPhone();
-        } else if (StringUtils.isNotBlank(candidate.getWhatsapp())) {
-            return candidate.getWhatsapp();
-        }
-        return null;
+        return user.getUsername();
     }
 
     @Override

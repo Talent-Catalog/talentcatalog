@@ -1,11 +1,13 @@
 package org.tbbtalent.server.request.candidate;
 
+import java.util.Date;
+
 public class UpdateCandidatePersonalRequest {
 
     private String firstName;
     private String lastName;
     private String gender;
-    private String dob;
+    private Date dob;
 
     public String getFirstName() {
         return firstName;
@@ -27,13 +29,11 @@ public class UpdateCandidatePersonalRequest {
 
     public void setGender(String gender) { this.gender = gender; }
 
-    public String getDob() {
+    public Date getDob() {
         return dob;
     }
 
-    public void setDob(String dob) {
+    public void setDob(Date dob) {
         this.dob = dob;
     }
-
-
 }

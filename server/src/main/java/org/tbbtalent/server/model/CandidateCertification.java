@@ -4,12 +4,8 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "certification")
-public class Certification {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "certification_gen")
-    @SequenceGenerator(name = "certification_gen", sequenceName = "certification_id_seq", allocationSize = 1)
-    private Long id;
+@SequenceGenerator(name = "seq_gen", sequenceName = "certification_id_seq", allocationSize = 1)
+public class CandidateCertification extends AbstractDomainObject<Long>  {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_id")
@@ -19,15 +15,7 @@ public class Certification {
     private String institution;
     private String dateCompleted;
 
-    public Certification() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    public CandidateCertification() {
     }
 
     public Candidate getCandidate() {

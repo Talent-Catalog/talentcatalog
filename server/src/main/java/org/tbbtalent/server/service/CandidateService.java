@@ -2,6 +2,7 @@ package org.tbbtalent.server.service;
 
 import org.springframework.data.domain.Page;
 import org.tbbtalent.server.model.Candidate;
+import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.response.JwtAuthenticationResponse;
@@ -25,8 +26,6 @@ public interface CandidateService {
     JwtAuthenticationResponse register(RegisterCandidateRequest request) throws AccountLockedException;
 
     void logout();
-
-    Candidate getLoggedInCandidate();
 
     Candidate updateEmail(UpdateCandidateEmailRequest request);
 
@@ -53,5 +52,7 @@ public interface CandidateService {
     Candidate getLoggedInCandidateLoadCertifications();
 
     Candidate getLoggedInCandidateLoadCandidateLanguages();
+
+    Candidate getLoggedInCandidate();
 
 }

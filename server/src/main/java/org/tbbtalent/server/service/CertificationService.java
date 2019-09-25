@@ -1,11 +1,11 @@
 package org.tbbtalent.server.service;
 
-import org.tbbtalent.server.model.Certification;
+import org.tbbtalent.server.model.CandidateCertification;
 import org.tbbtalent.server.request.certification.CreateCertificationRequest;
 
 public interface CertificationService {
 
-    Certification createCertification(CreateCertificationRequest request);
+    CandidateCertification createCertification(CreateCertificationRequest request);
 
     void deleteCertification(Long id);
 

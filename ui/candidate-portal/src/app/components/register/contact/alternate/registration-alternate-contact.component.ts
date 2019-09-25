@@ -29,6 +29,7 @@ export class RegistrationAlternateContactComponent implements OnInit {
     this.saving = false;
     this.loading = true;
     this.form = this.fb.group({
+      username: [''],
       phone: [''],
       whatsapp: [''],
       email: ['']
@@ -38,6 +39,7 @@ export class RegistrationAlternateContactComponent implements OnInit {
         (response) => {
           this.candidate = response;
           this.form.patchValue({
+            username: response.username,
             email: response.email,
             phone: response.phone,
             whatsapp: response.whatsapp

@@ -87,7 +87,7 @@ export class RegistrationWorkExperienceComponent implements OnInit {
         this.saving = false;
       }
     );
-    console.log(this.form.value)
+    console.log(this.form.value);
     this.setUpForm();
     }
 

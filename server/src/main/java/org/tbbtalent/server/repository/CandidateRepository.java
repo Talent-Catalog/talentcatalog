@@ -8,38 +8,38 @@ import org.tbbtalent.server.model.Candidate;
 
 public interface CandidateRepository extends JpaRepository<Candidate, Long>, JpaSpecificationExecutor<Candidate> {
 
-    /* Used for candidate authentication */
-    @Query(" select distinct c from Candidate c "
-            + " where lower(c.email) = lower(:username) "
-            + " or lower(c.phone) = lower(:username) "
-            + " or lower(c.whatsapp) = lower(:username) ")
-    Candidate findByAnyUserIdentityIgnoreCase(@Param("username") String username);
+//    /* Used for candidate authentication */
+//    @Query(" select distinct c from Candidate c "
+//            + " where lower(c.email) = lower(:username) "
+//            + " or lower(c.phone) = lower(:username) "
+//            + " or lower(c.whatsapp) = lower(:username) ")
+//    Candidate findByAnyUserIdentityIgnoreCase(@Param("username") String username);
 
     /* Used for JWT token parsing */
     Candidate findByCandidateNumber(String number);
 
     /* Used for candidate registration to check for existing accounts with different username options */
-    Candidate findByEmailIgnoreCase(String email);
+//    Candidate findByEmailIgnoreCase(String email);
     Candidate findByPhoneIgnoreCase(String phone);
     Candidate findByWhatsappIgnoreCase(String whatsapp);
 
     @Query(" select distinct c from Candidate c "
-            + " left join c.professions p"
+            + " left join c.candidateOccupations p"
             + " where c.id = :id ")
     Candidate findByIdLoadProfessions(@Param("id") Long id);
 
     @Query(" select distinct c from Candidate c "
-            + " left join c.educations e"
+            + " left join c.candidateEducation e"
             + " where c.id = :id ")
     Candidate findByIdLoadEducations(@Param("id") Long id);
 
     @Query(" select distinct c from Candidate c "
-            + " left join c.workExperiences e"
+            + " left join c.candidateJobExperiences e"
             + " where c.id = :id ")
     Candidate findByIdLoadWorkExperiences(@Param("id") Long id);
 
     @Query(" select distinct c from Candidate c "
-            + " left join c.certifications cert"
+            + " left join c.candidateCertifications cert"
             + " where c.id = :id ")
     Candidate findByIdLoadCertifications(@Param("id") Long id);
 
@@ -49,4 +49,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     Candidate findByIdLoadCandidateLanguages(@Param("id") Long id);
 
 
+    @Query(" select c from Candidate c "
+            + " where c.user.id = :id ")
+    Candidate findByUserId(@Param("id") Long userId);
 }

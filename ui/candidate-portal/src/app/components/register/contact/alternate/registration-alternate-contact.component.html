@@ -26,6 +26,12 @@
       <input type="email" class="form-control" id="email" placeholder="Enter email" [formControlName]="'email'">
     </div>
 
+    <!-- Username -->
+    <div class="form-group">
+      <label for="email">Username</label>
+      <input type="email" class="form-control" id="username" placeholder="Enter username" [formControlName]="'username'">
+    </div>
+
     <ng-container *ngIf="form.controls['password']">
 
       <div class="form-group">

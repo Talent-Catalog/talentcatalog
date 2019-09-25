@@ -1,16 +1,16 @@
 package org.tbbtalent.server.request.profession;
 
-public class CreateProfessionRequest {
+public class CreateCandidateOccupationRequest {
 
-    private Long industryId;
+    private Long occupationId;
     private Long yearsExperience;
 
-    public Long getIndustryId() {
-        return industryId;
+    public Long getOccupationId() {
+        return occupationId;
     }
 
-    public void setIndustryId(Long industryId) {
-        this.industryId = industryId;
+    public void setOccupationId(Long occupationId) {
+        this.occupationId = occupationId;
     }
 
     public Long getYearsExperience() {

@@ -29,13 +29,15 @@ export class RegistrationContactComponent implements OnInit {
     this.loading = true;
     this.candidate = null;
     this.form = this.fb.group({
-      email: ['', [Validators.required, Validators.email]]
+      email: ['', [Validators.required, Validators.email]],
+      username: ['', [Validators.required]]
     });
     if (this.authService.isAuthenticated()) {
       this.candidateService.getCandidateContactInfo().subscribe(
         (response) => {
           this.candidate = response;
           this.form.patchValue({email: response.email});
+          this.form.patchValue({username: response.username});
           this.loading = false;
         },
         (error) => {

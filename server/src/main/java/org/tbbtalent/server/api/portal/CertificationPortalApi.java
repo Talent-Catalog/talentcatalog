@@ -3,7 +3,7 @@ package org.tbbtalent.server.api.portal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.tbbtalent.server.model.Certification;
+import org.tbbtalent.server.model.CandidateCertification;
 import org.tbbtalent.server.request.certification.CreateCertificationRequest;
 import org.tbbtalent.server.service.CertificationService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
@@ -24,8 +24,8 @@ public class CertificationPortalApi {
 
     @PostMapping()
     public Map<String, Object> createCertification(@Valid @RequestBody CreateCertificationRequest request) {
-        Certification certification = certificationService.createCertification(request);
-        return certificationDto().build(certification);
+        CandidateCertification candidateCertification = certificationService.createCertification(request);
+        return certificationDto().build(candidateCertification);
     }
 
     @DeleteMapping("{id}")

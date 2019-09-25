@@ -4,12 +4,8 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "candidate_language")
-public class CandidateLanguage {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "candidate_language_gen")
-    @SequenceGenerator(name = "candidate_language_gen", sequenceName = "candidate_language_id_seq", allocationSize = 1)
-    private Long id;
+@SequenceGenerator(name = "seq_gen", sequenceName = "candidate_language_id_seq", allocationSize = 1)
+public class CandidateLanguage  extends AbstractDomainObject<Long> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_id")
@@ -20,22 +16,14 @@ public class CandidateLanguage {
     private Language language;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "read_write")
-    private LanguageLevel readWrite;
+    @JoinColumn(name = "written_level_id")
+    private LanguageLevel writtenLevel;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "speak")
-    private LanguageLevel speak;
+    @JoinColumn(name = "spoken_level_id")
+    private LanguageLevel spokenLevel;
 
     public CandidateLanguage() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public Candidate getCandidate() {
@@ -46,15 +34,28 @@ public class CandidateLanguage {
         this.candidate = candidate;
     }
 
-    public Language getLanguage() { return language; }
+    public Language getLanguage() {
+        return language;
+    }
 
-    public void setLanguage(Language language) { this.language = language; }
+    public void setLanguage(Language language) {
+        this.language = language;
+    }
 
-    public LanguageLevel getReadWrite() { return readWrite; }
+    public LanguageLevel getWrittenLevel() {
+        return writtenLevel;
+    }
 
-    public void setReadWrite(LanguageLevel readWrite) { this.readWrite = readWrite; }
+    public void setWrittenLevel(LanguageLevel writtenLevel) {
+        this.writtenLevel = writtenLevel;
+    }
 
-    public LanguageLevel getSpeak() { return speak; }
+    public LanguageLevel getSpokenLevel() {
+        return spokenLevel;
+    }
 
-    public void setSpeak(LanguageLevel speak) { this.speak = speak; }
+    public void setSpokenLevel(LanguageLevel spokenLevel) {
+        this.spokenLevel = spokenLevel;
+    }
 }
+

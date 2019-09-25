@@ -3,13 +3,9 @@ package org.tbbtalent.server.model;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "work_experience")
-public class WorkExperience {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "work_experience_gen")
-    @SequenceGenerator(name = "work_experience_gen", sequenceName = "work_experience_id_seq", allocationSize = 1)
-    private Long id;
+@Table(name = "candidate_work_experience")
+@SequenceGenerator(name = "seq_gen", sequenceName = "candidate_work_experience_id_seq", allocationSize = 1)
+public class CandidateJobExperience extends AbstractDomainObject<Long> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_id")
@@ -20,22 +16,14 @@ public class WorkExperience {
     private Country country;
 
     private String companyName;
-    private String role;
+    private String jobTitle;
     private String startDate;
     private String endDate;
     private Boolean fullTime;
     private Boolean paid;
     private String description;
 
-    public WorkExperience() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    public CandidateJobExperience() {
     }
 
     public Candidate getCandidate() {
@@ -54,9 +42,13 @@ public class WorkExperience {
 
     public void setCountry(Country country) { this.country = country; }
 
-    public String getRole() { return role; }
+    public String getJobTitle() {
+        return jobTitle;
+    }
 
-    public void setRole(String role) { this.role = role; }
+    public void setJobTitle(String jobTitle) {
+        this.jobTitle = jobTitle;
+    }
 
     public String getStartDate() { return startDate; }
 

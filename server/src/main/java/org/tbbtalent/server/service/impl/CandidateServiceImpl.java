@@ -1,29 +1,22 @@
 package org.tbbtalent.server.service.impl;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.*;
-import org.tbbtalent.server.model.Candidate;
-import org.tbbtalent.server.model.Country;
-import org.tbbtalent.server.model.Nationality;
-import org.tbbtalent.server.model.Status;
-import org.tbbtalent.server.repository.CandidateRepository;
-import org.tbbtalent.server.repository.CountryRepository;
-import org.tbbtalent.server.repository.NationalityRepository;
-import org.tbbtalent.server.repository.CandidateSpecification;
+import org.tbbtalent.server.model.*;
+import org.tbbtalent.server.repository.*;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.response.JwtAuthenticationResponse;
-import org.tbbtalent.server.security.CandidateUserDetailsService;
 import org.tbbtalent.server.security.JwtTokenProvider;
 import org.tbbtalent.server.security.PasswordHelper;
 import org.tbbtalent.server.security.UserContext;
@@ -36,6 +29,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     private static final Logger log = LoggerFactory.getLogger(CandidateServiceImpl.class);
 
+    private final UserRepository userRepository;
     private final CandidateRepository candidateRepository;
     private final CountryRepository countryRepository;
     private final NationalityRepository nationalityRepository;
@@ -45,13 +39,14 @@ public class CandidateServiceImpl implements CandidateService {
     private final UserContext userContext;
 
     @Autowired
-    public CandidateServiceImpl(CandidateRepository candidateRepository,
+    public CandidateServiceImpl(UserRepository userRepository, CandidateRepository candidateRepository,
                                 CountryRepository countryRepository,
                                 NationalityRepository nationalityRepository,
                                 PasswordHelper passwordHelper,
                                 AuthenticationManager authenticationManager,
                                 JwtTokenProvider tokenProvider,
                                 UserContext userContext) {
+        this.userRepository = userRepository;
         this.candidateRepository = candidateRepository;
         this.countryRepository = countryRepository;
         this.nationalityRepository = nationalityRepository;
@@ -65,7 +60,7 @@ public class CandidateServiceImpl implements CandidateService {
     public Page<Candidate> searchCandidates(SearchCandidateRequest request) {
         Page<Candidate> candidates = candidateRepository.findAll(
                 CandidateSpecification.buildSearchQuery(request), request.getPageRequest());
-        log.info("Found "+candidates.getTotalElements() +" candidates in search");
+        log.info("Found " + candidates.getTotalElements() + " candidates in search");
         return candidates;
     }
 
@@ -78,12 +73,17 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     @Transactional
     public Candidate createCandidate(CreateCandidateRequest request) {
-        Candidate candidate = new Candidate(
+        User user = new User(
+                request.getUsername(),
                 request.getFirstName(),
                 request.getLastName(),
                 request.getEmail(),
-                request.getPhone(),
-                request.getWhatsapp());
+                Role.user);
+
+        user = this.userRepository.save(user);
+
+        Candidate candidate = new Candidate(user, request.getPhone(), request.getWhatsapp(), user);
+        candidate.setCandidateNumber("TEMP%04d"+RandomStringUtils.random(6));
         candidate = this.candidateRepository.save(candidate);
 
         String candidateNumber = String.format("CN%04d", candidate.getId());
@@ -99,9 +99,9 @@ public class CandidateServiceImpl implements CandidateService {
         Candidate candidate = this.candidateRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
         candidate.setCandidateNumber(request.getCandidateNumber());
-        candidate.setFirstName(request.getFirstName());
-        candidate.setLastName(request.getLastName());
-        candidate.setEmail(request.getEmail());
+        candidate.getUser().setFirstName(request.getFirstName());
+        candidate.getUser().setLastName(request.getLastName());
+        candidate.getUser().setEmail(request.getEmail());
         candidate = this.candidateRepository.save(candidate);
         return candidate;
     }
@@ -124,15 +124,15 @@ public class CandidateServiceImpl implements CandidateService {
             Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     request.getUsername(), request.getPassword()
             ));
-            Candidate candidate = this.candidateRepository.findByAnyUserIdentityIgnoreCase(request.getUsername());
+            User user = this.userRepository.findByUsernameIgnoreCase(request.getUsername());
 
-            if (candidate.getStatus().equals(Status.inactive)) {
+            if (user.getStatus().equals(Status.inactive)) {
                 throw new InvalidCredentialsException("Sorry, it looks like that account is no longer active.");
             }
 
             SecurityContextHolder.getContext().setAuthentication(auth);
             String jwt = tokenProvider.generateToken(auth);
-            return new JwtAuthenticationResponse(jwt, candidate);
+            return new JwtAuthenticationResponse(jwt, user);
 
         } catch (BadCredentialsException e) {
             // map spring exception to a service exception for better handling
@@ -154,23 +154,34 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         /* Check for existing account with the username fields */
-        Candidate exists = null;
+        if (StringUtils.isNotBlank(request.getUsername())) {
+            User exists = userRepository.findByUsernameIgnoreCase(request.getUsername());
+            if (exists != null) {
+                throw new UsernameTakenException("username");
+            }
+        }
         if (StringUtils.isNotBlank(request.getEmail())) {
-            exists = candidateRepository.findByEmailIgnoreCase(request.getEmail());
+            User exists = userRepository.findByEmailIgnoreCase(request.getEmail());
             if (exists != null) {
                 throw new UsernameTakenException("email");
             }
-        } else if (StringUtils.isNotBlank(request.getPhone())) {
-            exists = candidateRepository.findByPhoneIgnoreCase(request.getPhone());
+        }
+        if (StringUtils.isNotBlank(request.getPhone())) {
+            Candidate exists = candidateRepository.findByPhoneIgnoreCase(request.getPhone());
             if (exists != null) {
                 throw new UsernameTakenException("phone");
             }
-        } else if (StringUtils.isNotBlank(request.getWhatsapp())) {
-            exists = candidateRepository.findByWhatsappIgnoreCase(request.getWhatsapp());
+        }
+        if (StringUtils.isNotBlank(request.getWhatsapp())) {
+            Candidate exists = candidateRepository.findByWhatsappIgnoreCase(request.getWhatsapp());
             if (exists != null) {
                 throw new UsernameTakenException("whatsapp");
             }
-        } else {
+        }
+
+        if (StringUtils.isBlank(request.getEmail())
+                && StringUtils.isBlank(request.getPhone())
+                && StringUtils.isBlank(request.getWhatsapp())) {
             throw new InvalidRequestException("Must specify at least one method of contact");
         }
 
@@ -179,18 +190,20 @@ public class CandidateServiceImpl implements CandidateService {
 
         /* Create the candidate */
         CreateCandidateRequest createCandidateRequest = new CreateCandidateRequest();
+        createCandidateRequest.setUsername(request.getUsername());
         createCandidateRequest.setEmail(request.getEmail());
         createCandidateRequest.setPhone(request.getPhone());
         createCandidateRequest.setWhatsapp(request.getWhatsapp());
         Candidate candidate = createCandidate(createCandidateRequest);
 
         /* Update the password */
-        candidate.setPasswordEnc(passwordEncrypted);
-        candidate = this.candidateRepository.save(candidate);
+        User user = candidate.getUser();
+        user.setPasswordEnc(passwordEncrypted);
+        user = this.userRepository.save(user);
 
         /* Log the candidate in */
         LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setUsername(candidate.getUsername());
+        loginRequest.setUsername(user.getUsername());
         loginRequest.setPassword(request.getPassword());
         return login(loginRequest);
     }
@@ -200,32 +213,36 @@ public class CandidateServiceImpl implements CandidateService {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
-    @Override
-    public Candidate getLoggedInCandidate() {
-        Candidate candidate = userContext.getLoggedInCandidate();
-        if (candidate == null) {
+    public User getLoggedInUser() {
+        User user = userContext.getLoggedInUser();
+        if (user == null) {
             throw new InvalidSessionException("Can not find an active session for a candidate with this token");
         }
-        return candidate;
+        return user;
     }
 
     @Override
     public Candidate updateEmail(UpdateCandidateEmailRequest request) {
-        Candidate candidate = getLoggedInCandidate();
-        candidate.setEmail(request.getEmail());
-        return candidateRepository.save(candidate);
+        User user = userContext.getLoggedInUser();
+        user.setEmail(request.getEmail());
+        user = userRepository.save(user);
+        return user.getCandidate();
     }
 
     @Override
     public Candidate updateAlternateContacts(UpdateCandidateAlternateContactRequest request) {
-        Candidate candidate = getLoggedInCandidate();
-        if (StringUtils.isBlank(request.getEmail()) && StringUtils.isBlank(request.getPhone())
-                && StringUtils.isBlank(request.getWhatsapp())) {
-            throw new InvalidRequestException("You must specify at least one method of contact");
+        User user = userContext.getLoggedInUser();
+        user.setEmail(request.getEmail());
+        user = userRepository.save(user);
+        Candidate candidate = candidateRepository.findByUserId(user.getId());
+        if (candidate != null) {
+            if (StringUtils.isBlank(request.getEmail()) && StringUtils.isBlank(request.getPhone())
+                    && StringUtils.isBlank(request.getWhatsapp())) {
+                throw new InvalidRequestException("You must specify at least one method of contact");
+            }
+            candidate.setPhone(request.getPhone());
+            candidate.setWhatsapp(request.getWhatsapp());
         }
-        candidate.setEmail(request.getEmail());
-        candidate.setPhone(request.getPhone());
-        candidate.setWhatsapp(request.getWhatsapp());
         return candidateRepository.save(candidate);
     }
 
@@ -239,11 +256,15 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updatePersonal(UpdateCandidatePersonalRequest request) {
-        Candidate candidate = getLoggedInCandidate();
-        candidate.setFirstName(request.getFirstName());
-        candidate.setLastName(request.getLastName());
-        candidate.setGender(request.getGender());
-        candidate.setDob(request.getDob());
+        User user = userContext.getLoggedInUser();
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user = userRepository.save(user);
+        Candidate candidate = candidateRepository.findByUserId(user.getId());
+        if (candidate != null) {
+            candidate.setGender(request.getGender());
+            candidate.setDob(request.getDob());
+        }
         return candidateRepository.save(candidate);
     }
 
@@ -270,15 +291,15 @@ public class CandidateServiceImpl implements CandidateService {
 
         Candidate candidate = getLoggedInCandidate();
         candidate.setNationality(nationality);
-        candidate.setRegisteredWithUN(request.getRegisteredWithUN());
-        candidate.setRegistrationId(request.getRegistrationId());
+        candidate.setUnRegistered(request.getRegisteredWithUN());
+        candidate.setUnRegistrationNumber(request.getRegistrationId());
         return candidateRepository.save(candidate);
     }
 
     @Override
     public Candidate updateEducationLevel(UpdateCandidateEducationLevelRequest request) {
         Candidate candidate = getLoggedInCandidate();
-        candidate.setEducationLevel(request.getEducationLevel());
+        //candidate.setMaxEducationLevel(request.getEducationLevel()); todo
         return candidateRepository.save(candidate);
     }
 
@@ -322,6 +343,12 @@ public class CandidateServiceImpl implements CandidateService {
         Candidate candidate = getLoggedInCandidate();
         candidate = candidateRepository.findByIdLoadCandidateLanguages(candidate.getId());
         return candidate;
+    }
+
+    @Override
+    public Candidate getLoggedInCandidate() {
+        User user = userContext.getLoggedInUser();
+        return candidateRepository.findByUserId(user.getId());
     }
 
 }

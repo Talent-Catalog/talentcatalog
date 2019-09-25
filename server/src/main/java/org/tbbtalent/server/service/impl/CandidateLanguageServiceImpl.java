@@ -53,8 +53,8 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
         CandidateLanguage candidateLanguage = new CandidateLanguage();
         candidateLanguage.setCandidate(candidate);
         candidateLanguage.setLanguage(language);
-        candidateLanguage.setSpeak(languageSpeak);
-        candidateLanguage.setReadWrite(languageReadWrite);
+        candidateLanguage.setSpokenLevel(languageSpeak);
+        candidateLanguage.setWrittenLevel(languageReadWrite);
 
         // Save the profession
         return candidateLanguageRepository.save(candidateLanguage);
