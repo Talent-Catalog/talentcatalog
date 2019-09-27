@@ -13,8 +13,8 @@ import {RegistrationAlternateContactComponent} from './components/register/conta
 import {RegistrationPersonalComponent} from './components/register/personal/registration-personal.component';
 import {RegistrationLocationComponent} from './components/register/location/registration-location.component';
 import {RegistrationNationalityComponent} from './components/register/nationality/registration-nationality.component';
-import {RegistrationProfessionComponent} from './components/register/profession/registration-profession.component';
-import {RegistrationWorkExperienceComponent} from './components/register/work-experience/registration-work-experience.component';
+import {RegistrationCandidateOccupationComponent} from './components/register/candidate-occupation/registration-candidate-occupation.component';
+import {RegistrationJobExperienceComponent} from './components/register/job-experience/registration-job-experience.component';
 import {RegistrationEducationComponent} from './components/register/education/registration-education.component';
 import {RegistrationMastersComponent} from './components/register/masters/registration-masters.component';
 import {RegistrationUniversityComponent} from './components/register/university/registration-university.component';
@@ -38,8 +38,8 @@ import {CandidateService} from "./services/candidate.service";
     RegistrationPersonalComponent,
     RegistrationLocationComponent,
     RegistrationNationalityComponent,
-    RegistrationProfessionComponent,
-    RegistrationWorkExperienceComponent,
+    RegistrationCandidateOccupationComponent,
+    RegistrationJobExperienceComponent,
     RegistrationEducationComponent,
     RegistrationMastersComponent,
     RegistrationUniversityComponent,

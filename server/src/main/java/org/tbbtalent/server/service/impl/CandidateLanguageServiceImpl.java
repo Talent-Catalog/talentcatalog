@@ -49,14 +49,14 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
         LanguageLevel languageReadWrite = languageLevelRepository.findById(request.getReadWriteId())
                 .orElseThrow(() -> new NoSuchObjectException(LanguageLevel.class, request.getReadWriteId()));
 
-        // Create a new profession object to insert into the database
+        // Create a new candidateOccupation object to insert into the database
         CandidateLanguage candidateLanguage = new CandidateLanguage();
         candidateLanguage.setCandidate(candidate);
         candidateLanguage.setLanguage(language);
         candidateLanguage.setSpokenLevel(languageSpeak);
         candidateLanguage.setWrittenLevel(languageReadWrite);
 
-        // Save the profession
+        // Save the candidateOccupation
         return candidateLanguageRepository.save(candidateLanguage);
     }
 
@@ -66,7 +66,7 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
         CandidateLanguage candidateLanguage = candidateLanguageRepository.findByIdLoadCandidate(id)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateLanguage.class, id));
 
-        // Check that the user is deleting their own profession
+        // Check that the user is deleting their own candidateOccupation
         if (!candidate.getId().equals(candidateLanguage.getCandidate().getId())) {
             throw new InvalidCredentialsException("You do not have permission to perform that action");
         }

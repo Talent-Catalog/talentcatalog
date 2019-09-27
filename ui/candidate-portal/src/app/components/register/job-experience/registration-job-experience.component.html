@@ -23,6 +23,17 @@
       </div>
     </div>
 
+    <!-- Occupation -->
+    <div class="col-12">
+      <div class="form-group">
+        <label for="candiateOccupationId">Occupation</label>
+        <select class="form-control" name="candiateOccupationId" id="candiateOccupationId" [formControlName]="'candiateOccupationId'">
+          <option value=""></option>
+          <option *ngFor="let candidateOccupation of occupations" [value]="candidateOccupation.id">{{candidateOccupation.occupation.name}}</option>
+        </select>
+      </div>
+    </div>
+
     <!-- COMPANY LOCATION -->
     <div class="col-12">
       <div class="form-group">

@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {years} from "../../../model/years";
-import {Education} from "../../../model/education";
+import {CandidateEducation} from "../../../model/candidate-education";
 import {CandidateService} from "../../../services/candidate.service";
 import {EducationService} from "../../../services/education.service";
 import {Country} from "../../../model/country";
@@ -22,8 +22,8 @@ export class RegistrationMastersComponent implements OnInit {
   saving: boolean;
   countries: Country[];
   years: number[];
-  educations: Education[];
-  masters: Education[];
+  educations: CandidateEducation[];
+  masters: CandidateEducation[];
 
   constructor(private fb: FormBuilder,
               private router: Router,

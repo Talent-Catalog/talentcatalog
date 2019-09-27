@@ -25,7 +25,7 @@ insert into language (name) values ('Amharic');
 -- Add language levels
 insert into language_level (level, sort_order) values ('Elementary Proficiency', 0);
 insert into language_level (level, sort_order) values ('Intermediate Proficiency', 1);
-insert into language_level (level, sort_order) values ('Full Professional Proficiency', 2);
+insert into language_level (level, sort_order) values ('Full CandidateOccupational Proficiency', 2);
 insert into language_level (level, sort_order) values ('Native or Bilingual Proficiency', 3);
 
 -- Add industries

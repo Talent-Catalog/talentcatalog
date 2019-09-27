@@ -10,7 +10,7 @@
 
     <!-- FIELD -->
     <div class="form-group">
-      <label for="occupation">What is the main field that you have professional skills in?</label>
+      <label for="occupation">What is the main field that you have candidateOccupational skills in?</label>
       <select class="form-control" name="occupation" id="occupation" [formControlName]="'occupationId'">
         <option value=""></option>
         <option *ngFor="let occupation of occupations" [value]="occupation.id">{{occupation.name}}</option>
@@ -19,7 +19,7 @@
 
     <!-- YEARS OF EXPERIENCE -->
     <div class="form-group">
-      <label for="yearsExperience">How many years of professional work experience do you have in this field?</label>
+      <label for="yearsExperience">How many years of candidateOccupational work experience do you have in this field?</label>
       <input type="number" class="form-control" name="yearsExperience" id="yearsExperience" [formControlName]="'yearsExperience'">
       <p class="text-muted">
         Do not include years spent studying in this occupation
@@ -30,13 +30,13 @@
       <button class="btn btn-outline-primary"
               (click)="addMore()"
               [disabled]="form.invalid || loading || saving">
-        Add Profession
+        Add CandidateOccupation
       </button>
     </div>
 
   </form>
 
-  <!-- PROFESSION SUMMARY -->
+  <!-- CandidateOccupation SUMMARY -->
   <h4>Occupation Summary</h4>
   <table class="table">
     <thead>
@@ -47,8 +47,8 @@
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let p of professions">
-      <td>{{p.industry?.name}}</td>
+    <tr *ngFor="let p of candidateOccupations">
+      <td>{{p.occupation?.name}}</td>
       <td>{{p.yearsExperience}}</td>
       <td>
         <button type="button" class="close" aria-label="Close"
@@ -67,7 +67,7 @@
 
   <div class="text-right">
     <button class="btn btn-primary"
-            [disabled]="professions?.length === 0 || loading || saving"
+            [disabled]="candidateOccupations?.length === 0 || loading || saving"
             (click)="next()">
       Next
     </button>

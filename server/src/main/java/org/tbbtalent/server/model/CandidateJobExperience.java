@@ -3,8 +3,8 @@ package org.tbbtalent.server.model;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "candidate_work_experience")
-@SequenceGenerator(name = "seq_gen", sequenceName = "candidate_work_experience_id_seq", allocationSize = 1)
+@Table(name = "candidate_job_experience")
+@SequenceGenerator(name = "seq_gen", sequenceName = "candidate_job_experience_id_seq", allocationSize = 1)
 public class CandidateJobExperience extends AbstractDomainObject<Long> {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -16,7 +16,7 @@ public class CandidateJobExperience extends AbstractDomainObject<Long> {
     private Country country;
 
     private String companyName;
-    private String jobTitle;
+    private String role;
     private String startDate;
     private String endDate;
     private Boolean fullTime;
@@ -42,12 +42,12 @@ public class CandidateJobExperience extends AbstractDomainObject<Long> {
 
     public void setCountry(Country country) { this.country = country; }
 
-    public String getJobTitle() {
-        return jobTitle;
+    public String getRole() {
+        return role;
     }
 
-    public void setJobTitle(String jobTitle) {
-        this.jobTitle = jobTitle;
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public String getStartDate() { return startDate; }

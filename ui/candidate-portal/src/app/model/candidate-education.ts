@@ -1,6 +1,6 @@
 import {Country} from "./country";
 
-export interface Education {
+export interface CandidateEducation {
   id: number;
   educationType: string;
   country: Country;

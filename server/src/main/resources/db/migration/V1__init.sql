@@ -137,7 +137,7 @@ create table candidate_job_experience
 (
 id                      bigserial not null primary key,
 candidate_id            bigint not null references candidate,
-occupation_id           bigint not null references occupation,
+candidate_occupation_id bigint not null references candidate_occupation,
 company_name            text,
 country_id              bigint references country,
 role                    text,

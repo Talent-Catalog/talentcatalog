@@ -311,9 +311,9 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Candidate getLoggedInCandidateLoadProfessions() {
+    public Candidate getLoggedInCandidateLoadCandidateOccupations() {
         Candidate candidate = getLoggedInCandidate();
-        candidate = candidateRepository.findByIdLoadProfessions(candidate.getId());
+        candidate = candidateRepository.findByIdLoadCandidateOccupations(candidate.getId());
         return candidate;
     }
 
@@ -325,9 +325,9 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Candidate getLoggedInCandidateLoadWorkExperiences() {
+    public Candidate getLoggedInCandidateLoadJobExperiences() {
         Candidate candidate = getLoggedInCandidate();
-        candidate = candidateRepository.findByIdLoadWorkExperiences(candidate.getId());
+        candidate = candidateRepository.findByIdLoadJobExperiences(candidate.getId());
         return candidate;
     }
 

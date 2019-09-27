@@ -29,14 +29,14 @@ public class CertificationServiceImpl implements CertificationService {
     public CandidateCertification createCertification(CreateCertificationRequest request) {
         Candidate candidate = userContext.getLoggedInCandidate();
 
-        // Create a new profession object to insert into the database
+        // Create a new candidateOccupation object to insert into the database
         CandidateCertification candidateCertification = new CandidateCertification();
         candidateCertification.setCandidate(candidate);
         candidateCertification.setName(request.getName());
         candidateCertification.setInstitution(request.getInstitution());
         candidateCertification.setDateCompleted(request.getDateCompleted());
 
-        // Save the profession
+        // Save the candidateOccupation
         return certificationRepository.save(candidateCertification);
     }
 
@@ -46,7 +46,7 @@ public class CertificationServiceImpl implements CertificationService {
         CandidateCertification candidateCertification = certificationRepository.findByIdLoadCandidate(id)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateCertification.class, id));
 
-        // Check that the user is deleting their own profession
+        // Check that the user is deleting their own candidateOccupation
         if (!candidate.getId().equals(candidateCertification.getCandidate().getId())) {
             throw new InvalidCredentialsException("You do not have permission to perform that action");
         }

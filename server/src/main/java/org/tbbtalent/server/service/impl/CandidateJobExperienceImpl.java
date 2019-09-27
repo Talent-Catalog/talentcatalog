@@ -5,33 +5,33 @@ import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.Candidate;
-import org.tbbtalent.server.model.Country;
 import org.tbbtalent.server.model.CandidateJobExperience;
+import org.tbbtalent.server.model.Country;
 import org.tbbtalent.server.repository.CountryRepository;
-import org.tbbtalent.server.repository.WorkExperienceRepository;
-import org.tbbtalent.server.request.work.experience.CreateWorkExperienceRequest;
+import org.tbbtalent.server.repository.CandidateJobExperienceRepository;
+import org.tbbtalent.server.request.work.experience.CreateJobExperienceRequest;
 import org.tbbtalent.server.security.UserContext;
-import org.tbbtalent.server.service.WorkExperienceService;
+import org.tbbtalent.server.service.CandidateJobExperienceService;
 
 @Service
-public class WorkExperienceServiceImpl implements WorkExperienceService {
+public class CandidateJobExperienceImpl implements CandidateJobExperienceService {
 
-    private final WorkExperienceRepository workExperienceRepository;
+    private final CandidateJobExperienceRepository candidateJobExperienceRepository;
     private final CountryRepository countryRepository;
     private final UserContext userContext;
 
     @Autowired
-    public WorkExperienceServiceImpl(WorkExperienceRepository workExperienceRepository,
-                                     CountryRepository countryRepository,
-                                     UserContext userContext) {
-        this.workExperienceRepository = workExperienceRepository;
+    public CandidateJobExperienceImpl(CandidateJobExperienceRepository candidateJobExperienceRepository,
+                                      CountryRepository countryRepository,
+                                      UserContext userContext) {
+        this.candidateJobExperienceRepository = candidateJobExperienceRepository;
         this.countryRepository = countryRepository;
         this.userContext = userContext;
     }
 
 
     @Override
-    public CandidateJobExperience createWorkExperience(CreateWorkExperienceRequest request) {
+    public CandidateJobExperience createJobExperience(CreateJobExperienceRequest request) {
         Candidate candidate = userContext.getLoggedInCandidate();
         Long test = 3L;
 
@@ -40,33 +40,33 @@ public class WorkExperienceServiceImpl implements WorkExperienceService {
         Country country = countryRepository.findById(request.getCountryId())
                 .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountryId()));
 
-        // Create a new profession object to insert into the database
+        // Create a new candidateOccupation object to insert into the database
         CandidateJobExperience candidateJobExperience = new CandidateJobExperience();
         candidateJobExperience.setCandidate(candidate);
         candidateJobExperience.setCountry(country);
         candidateJobExperience.setCompanyName(request.getCompanyName());
-        candidateJobExperience.setJobTitle(request.getRole());
+        candidateJobExperience.setRole(request.getRole());
         candidateJobExperience.setStartDate(request.getStartDate());
         candidateJobExperience.setEndDate(request.getEndDate());
         candidateJobExperience.setFullTime(request.getFullTime());
         candidateJobExperience.setPaid(request.getPaid());
         candidateJobExperience.setDescription(request.getDescription());
 
-        // Save the profession
-        return workExperienceRepository.save(candidateJobExperience);
+        // Save the candidateOccupation
+        return candidateJobExperienceRepository.save(candidateJobExperience);
     }
 
     @Override
-    public void deleteWorkExperience(Long id) {
+    public void deleteJobExperience(Long id) {
         Candidate candidate = userContext.getLoggedInCandidate();
-        CandidateJobExperience candidateJobExperience = workExperienceRepository.findByIdLoadCandidate(id)
+        CandidateJobExperience candidateJobExperience = candidateJobExperienceRepository.findByIdLoadCandidate(id)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateJobExperience.class, id));
 
-        // Check that the user is deleting their own profession
+        // Check that the user is deleting their own candidateOccupation
         if (!candidate.getId().equals(candidateJobExperience.getCandidate().getId())) {
             throw new InvalidCredentialsException("You do not have permission to perform that action");
         }
 
-        workExperienceRepository.delete(candidateJobExperience);
+        candidateJobExperienceRepository.delete(candidateJobExperience);
     }
 }

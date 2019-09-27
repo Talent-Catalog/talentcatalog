@@ -43,11 +43,11 @@ public interface CandidateService {
 
     Candidate updateAdditionalInfo(UpdateCandidateAdditionalInfoRequest request);
 
-    Candidate getLoggedInCandidateLoadProfessions();
+    Candidate getLoggedInCandidateLoadCandidateOccupations();
 
     Candidate getLoggedInCandidateLoadEducations();
 
-    Candidate getLoggedInCandidateLoadWorkExperiences();
+    Candidate getLoggedInCandidateLoadJobExperiences();
 
     Candidate getLoggedInCandidateLoadCertifications();
 

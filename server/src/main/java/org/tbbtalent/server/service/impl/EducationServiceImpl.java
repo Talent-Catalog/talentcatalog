@@ -42,7 +42,7 @@ public class EducationServiceImpl implements EducationService {
         // Get ENUM for education type
         EducationType educationType = EducationType.valueOf(request.getEducationType());
 
-        // Create a new profession object to insert into the database
+        // Create a new candidateOccupation object to insert into the database
         Education education = new Education();
         education.setCandidate(candidate);
         education.setEducationType(educationType);
@@ -52,7 +52,7 @@ public class EducationServiceImpl implements EducationService {
         education.setCourseName(request.getCourseName());
         education.setDateCompleted(request.getDateCompleted());
 
-        // Save the profession
+        // Save the candidateOccupation
         return educationRepository.save(education);
     }
 
@@ -79,7 +79,7 @@ public class EducationServiceImpl implements EducationService {
         education.setCourseName(request.getCourseName());
         education.setDateCompleted(request.getDateCompleted());
 
-        // Save the profession
+        // Save the candidateOccupation
         return educationRepository.save(education);
     }
 

@@ -1,4 +1,4 @@
-export interface Certification {
+export interface CandidateCertification {
   id: number;
   name: string;
   institution: string;

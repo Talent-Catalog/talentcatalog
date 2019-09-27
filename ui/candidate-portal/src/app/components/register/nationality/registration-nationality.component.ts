@@ -73,7 +73,7 @@ export class RegistrationNationalityComponent implements OnInit {
   save() {
     this.candidateService.updateCandidateNationality(this.form.value).subscribe(
       (response) => {
-        this.router.navigate(['register', 'profession']);
+        this.router.navigate(['register', 'candidateOccupation']);
       },
       (error) => {
         this.error = error;

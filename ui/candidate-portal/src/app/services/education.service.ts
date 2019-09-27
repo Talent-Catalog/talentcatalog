@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {Education} from "../model/education";
+import {CandidateEducation} from "../model/candidate-education";
 
 @Injectable({
   providedIn: 'root'
@@ -13,12 +13,12 @@ export class EducationService {
 
   constructor(private http: HttpClient) { }
 
-  createEducation(request): Observable<Education> {
-    return this.http.post<Education>(`${this.apiUrl}`, request);
+  createEducation(request): Observable<CandidateEducation> {
+    return this.http.post<CandidateEducation>(`${this.apiUrl}`, request);
   }
 
-  updateEducation(request): Observable<Education> {
-     return this.http.post<Education>(`${this.apiUrl}/update`, request);
+  updateEducation(request): Observable<CandidateEducation> {
+     return this.http.post<CandidateEducation>(`${this.apiUrl}/update`, request);
   }
 
 }

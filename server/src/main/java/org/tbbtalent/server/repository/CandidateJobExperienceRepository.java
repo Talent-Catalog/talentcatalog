@@ -7,7 +7,7 @@ import org.tbbtalent.server.model.CandidateJobExperience;
 
 import java.util.Optional;
 
-public interface WorkExperienceRepository extends JpaRepository<CandidateJobExperience, Long> {
+public interface CandidateJobExperienceRepository extends JpaRepository<CandidateJobExperience, Long> {
 
     @Query(" select w from CandidateJobExperience w "
             + " left join w.candidate c "

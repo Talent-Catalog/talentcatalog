@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
-import {Certification} from "../../../model/certification";
+import {CandidateCertification} from "../../../model/candidate-certification";
 import {CandidateService} from "../../../services/candidate.service";
 import {CertificationService} from "../../../services/certification.service";
 
@@ -16,7 +16,7 @@ export class RegistrationCertificationsComponent implements OnInit {
   loading: boolean;
   saving: boolean;
   form: FormGroup;
-  certifications: Certification[];
+  certifications: CandidateCertification[];
 
   constructor(private fb: FormBuilder,
               private router: Router,

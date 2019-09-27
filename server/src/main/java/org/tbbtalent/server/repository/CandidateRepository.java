@@ -26,7 +26,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     @Query(" select distinct c from Candidate c "
             + " left join c.candidateOccupations p"
             + " where c.id = :id ")
-    Candidate findByIdLoadProfessions(@Param("id") Long id);
+    Candidate findByIdLoadCandidateOccupations(@Param("id") Long id);
 
     @Query(" select distinct c from Candidate c "
             + " left join c.candidateEducation e"
@@ -36,7 +36,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     @Query(" select distinct c from Candidate c "
             + " left join c.candidateJobExperiences e"
             + " where c.id = :id ")
-    Candidate findByIdLoadWorkExperiences(@Param("id") Long id);
+    Candidate findByIdLoadJobExperiences(@Param("id") Long id);
 
     @Query(" select distinct c from Candidate c "
             + " left join c.candidateCertifications cert"

@@ -69,10 +69,10 @@ public class CandidatePortalApi {
         return candidatePersonalDto().build(candidate);
     }
 
-    @GetMapping("profession")
-    public Map<String, Object> getCandidateProfessions() {
-        Candidate candidate = this.candidateService.getLoggedInCandidateLoadProfessions();
-        return candidateWithProfessionsDto().build(candidate);
+    @GetMapping("candidateOccupation")
+    public Map<String, Object> getCandidateCandidateOccupations() {
+        Candidate candidate = this.candidateService.getLoggedInCandidateLoadCandidateOccupations();
+        return candidateWithCandidateOccupationsDto().build(candidate);
     }
 
     @GetMapping("location")
@@ -129,10 +129,10 @@ public class CandidatePortalApi {
         return candidateAdditionalInfoDto().build(candidate);
     }
 
-    @GetMapping("work-experiences")
-    public Map<String, Object> getCandidateWorkExperiences() {
-        Candidate candidate = this.candidateService.getLoggedInCandidateLoadWorkExperiences();
-        return candidateWithWorkExperiencesDto().build(candidate);
+    @GetMapping("job-experiences")
+    public Map<String, Object> getCandidateJobExperiences() {
+        Candidate candidate = this.candidateService.getLoggedInCandidateLoadJobExperiences();
+        return candidateWithJobExperiencesDto().build(candidate);
     }
 
     @GetMapping("certifications")
@@ -149,13 +149,13 @@ public class CandidatePortalApi {
 
     private DtoBuilder candidateContactDto() {
         return new DtoBuilder()
-                .add("email")
+                .add("user.email")
                 ;
     }
 
     private DtoBuilder candidateAdditionalContactDto() {
         return new DtoBuilder()
-                .add("email")
+                .add("user.email")
                 .add("phone")
                 .add("whatsapp")
                 ;
@@ -177,13 +177,13 @@ public class CandidatePortalApi {
                 ;
     }
 
-    private DtoBuilder candidateWithProfessionsDto() {
+    private DtoBuilder candidateWithCandidateOccupationsDto() {
         return new DtoBuilder()
-                .add("candidateOccupations", professionDto())
+                .add("candidateOccupations", candidateOccupationDto())
                 ;
     }
 
-    private DtoBuilder professionDto() {
+    private DtoBuilder candidateOccupationDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("occupation", occupationDto())
@@ -251,13 +251,13 @@ public class CandidatePortalApi {
     }
 
 
-    private DtoBuilder candidateWithWorkExperiencesDto() {
+    private DtoBuilder candidateWithJobExperiencesDto() {
         return new DtoBuilder()
-                .add("candidateJobExperience", workExperienceDto())
+                .add("candidateJobExperiences", jobExperienceDto())
                 ;
     }
 
-    private DtoBuilder workExperienceDto() {
+    private DtoBuilder jobExperienceDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("country", countryDto())
@@ -280,7 +280,7 @@ public class CandidatePortalApi {
 
     private DtoBuilder candidateWithCertificationsDto() {
         return new DtoBuilder()
-                .add("certifications", certificationDto())
+                .add("candidateCertifications", certificationDto())
                 ;
     }
 

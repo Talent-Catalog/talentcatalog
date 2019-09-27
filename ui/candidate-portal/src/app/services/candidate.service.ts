@@ -89,8 +89,8 @@ export class CandidateService {
   // TODO create a get request and save request for each step of the registration process
   // TODO Each get request should only return the data needed to be displayed on the current registration page
 
-  getCandidateProfessions(): Observable<Candidate> {
-    return this.http.get<Candidate>(`${this.apiUrl}/profession`);
+  getCandidateCandidateOccupations(): Observable<Candidate> {
+    return this.http.get<Candidate>(`${this.apiUrl}/candidateOccupation`);
   }
 
   getCandidateEducations(): Observable<Candidate> {
@@ -101,8 +101,8 @@ export class CandidateService {
     return this.http.get<Candidate>(`${this.apiUrl}/languages`);
   }
 
-  getCandidateWorkExperiences(): Observable<Candidate> {
-    return this.http.get<Candidate>(`${this.apiUrl}/work-experiences`);
+  getCandidateJobExperiences(): Observable<Candidate> {
+    return this.http.get<Candidate>(`${this.apiUrl}/job-experiences`);
   }
 
   getCandidateCertifications(): Observable<Candidate> {

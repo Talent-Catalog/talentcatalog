@@ -1,14 +1,23 @@
 package org.tbbtalent.server.request.work.experience;
 
-public class CreateWorkExperienceRequest {
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
+public class CreateJobExperienceRequest {
+
+    @NotBlank
     private String companyName;
+    @NotNull
     private Long countryId;
+    @NotNull
+    private Long candidateOccupationId;
+    @NotBlank
     private String role;
     private String startDate;
     private String endDate;
     private Boolean fullTime;
     private Boolean paid;
+    @NotBlank
     private String description;
 
     public String getCompanyName() { return companyName; }
@@ -21,6 +30,14 @@ public class CreateWorkExperienceRequest {
 
     public void setCountry(Long countryId) {
         this.countryId = countryId;
+    }
+
+    public Long getCandidateOccupationId() {
+        return candidateOccupationId;
+    }
+
+    public void setCandidateOccupationId(Long candidateOccupationId) {
+        this.candidateOccupationId = candidateOccupationId;
     }
 
     public String getRole() { return role; }

@@ -1,6 +1,6 @@
 <div class="container">
 
-  <h1 class="text-center">Any other professional candidateCertifications?</h1>
+  <h1 class="text-center">Any other candidateOccupational candidateCertifications?</h1>
 
   <div class="d-flex justify-content-center" *ngIf="loading">
     Loading...
@@ -9,7 +9,7 @@
   <form [formGroup]="form" *ngIf="!loading">
 
     <div class="form-group">
-      <label for="name">Certification Name</label>
+      <label for="name">CandidateCertification Name</label>
       <input type="text" class="form-control" id="name" placeholder="" [formControlName]="'name'">
     </div>
 
@@ -27,7 +27,7 @@
       <button class="btn btn-outline-primary"
               (click)="addMore()"
               [disabled]="form.invalid || loading || saving">
-        Add Certification
+        Add CandidateCertification
       </button>
     </div>
 
@@ -39,7 +39,7 @@
   <table class="table">
     <thead>
     <tr>
-      <th scope="col">Certification Field</th>
+      <th scope="col">CandidateCertification Field</th>
       <th scope="col">Institution Field</th>
       <th scope="col">Delete</th>
     </tr>
@@ -65,7 +65,7 @@
 
   <div class="text-right">
     <button class="btn btn-primary"
-            [disabled]="professions?.length === 0 || loading || saving"
+            [disabled]="candidateOccupations?.length === 0 || loading || saving"
             (click)="next()">
       Next
     </button>

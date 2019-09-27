@@ -1,9 +1,9 @@
-import {Profession} from "./profession";
-import {Education} from "./education";
+import {CandidateOccupation} from "./candidate-occupation";
+import {CandidateEducation} from "./candidate-education";
 import {Country} from "./country";
 import {Nationality} from "./nationality";
-import {WorkExperience} from "./work-experience";
-import {Certification} from "./certification";
+import {CandidateJobExperience} from "./candidate-job-experience";
+import {CandidateCertification} from "./candidate-certification";
 import {CandidateLanguage} from "./candidate-language";
 
 export interface Candidate {
@@ -17,17 +17,17 @@ export interface Candidate {
   whatsapp: string;
   gender: string;
   dob: string;
-  professions: Profession[];
+  candidateOccupations: CandidateOccupation[];
   country: Country;
   city: string;
   yearOfArrival: number;
   nationality: Nationality;
   registeredWithUN: boolean;
-  workExperiences: WorkExperience[];
-  certifications: Certification[];
+  jobExperiences: CandidateJobExperience[];
+  certifications: CandidateCertification[];
   candidateLanguages: CandidateLanguage[];
   registrationId: string;
   educationLevel: string;
-  educations: Education[];
+  educations: CandidateEducation[];
   additionalInfo: string;
 }

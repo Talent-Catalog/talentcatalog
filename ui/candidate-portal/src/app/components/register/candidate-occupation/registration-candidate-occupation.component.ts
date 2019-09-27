@@ -2,40 +2,40 @@ import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
-import {ProfessionService} from "../../../services/profession.service";
-import {Profession} from "../../../model/profession";
+import {CandidateOccupationService} from "../../../services/candidate-occupation.service";
+import {CandidateOccupation} from "../../../model/candidate-occupation";
 import {Occupation} from "../../../model/occupation";
 import {OccupationService} from "../../../services/occupation.service";
 
 @Component({
-  selector: 'app-registration-profession',
-  templateUrl: './registration-profession.component.html',
-  styleUrls: ['./registration-profession.component.scss']
+  selector: 'app-registration-candidate-occupation',
+  templateUrl: './registration-candidate-occupation.component.html',
+  styleUrls: ['./registration-candidate-occupation.component.scss']
 })
-export class RegistrationProfessionComponent implements OnInit {
+export class RegistrationCandidateOccupationComponent implements OnInit {
 
   error: any;
   loading: boolean;
   saving: boolean;
   form: FormGroup;
-  professions: Profession[];
+  candidateOccupations: CandidateOccupation[];
   occupations: Occupation[];
 
   constructor(private fb: FormBuilder,
               private router: Router,
               private candidateService: CandidateService,
               private occupationService: OccupationService,
-              private professionService: ProfessionService) { }
+              private candidateOccupationService: CandidateOccupationService) { }
 
   ngOnInit() {
-    this.professions = [];
+    this.candidateOccupations = [];
     this.saving = false;
     this.loading = true;
 
     /* Load the candidate data */
-    this.candidateService.getCandidateProfessions().subscribe(
+    this.candidateService.getCandidateCandidateOccupations().subscribe(
       (candidate) => {
-        this.professions = candidate.professions || [];
+        this.candidateOccupations = candidate.candidateOccupations || [];
 
         /* Wait for the candidate then load the industries */
         this.occupationService.listOccupations().subscribe(
@@ -66,9 +66,9 @@ export class RegistrationProfessionComponent implements OnInit {
 
   addMore(){
     this.saving = true;
-    this.professionService.createProfession(this.form.value).subscribe(
+    this.candidateOccupationService.createCandidateOccupation(this.form.value).subscribe(
       (response) => {
-        this.professions.push(response);
+        this.candidateOccupations.push(response);
         this.saving = false;
       },
       (error) => {
@@ -80,11 +80,11 @@ export class RegistrationProfessionComponent implements OnInit {
     this.setUpForm();
   }
 
-  delete(profession){
+  delete(candidateOccupation){
     this.saving = true;
-    this.professionService.deleteProfession(profession.id).subscribe(
+    this.candidateOccupationService.deleteCandidateOccupation(candidateOccupation.id).subscribe(
       () => {
-        this.professions = this.professions.filter(p => p !== profession);
+        this.candidateOccupations = this.candidateOccupations.filter(p => p !== candidateOccupation);
         this.saving = false;
       },
       (error) => {
@@ -95,7 +95,7 @@ export class RegistrationProfessionComponent implements OnInit {
   }
 
   next() {
-    console.log(this.professions);
+    console.log(this.candidateOccupations);
     // TODO check if the form is not empty and warn the user
     this.router.navigate(['register', 'experience']);
   }

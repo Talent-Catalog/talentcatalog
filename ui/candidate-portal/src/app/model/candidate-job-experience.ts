@@ -1,6 +1,6 @@
 import {Country} from "./country";
 
-export interface WorkExperience {
+export interface CandidateJobExperience {
   id: number;
   country: Country;
   companyName: string;
