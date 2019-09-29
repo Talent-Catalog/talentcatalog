@@ -3,6 +3,12 @@ package org.tbbtalent.server.model;
 public enum Status {
 
     active,
-    inactive
+    inactive,
+    pending,
+    incomplete,
+    rejected,
+    approved,
+    employed,
+    deleted
 
 }

@@ -1,15 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { CandidateService } from '../../../services/candidate.service';
+
 import { Candidate } from '../../../model/candidate';
+import { CandidateService } from '../../../services/candidate.service';
 import { Country } from '../../../model/country';
-import {Nationality} from "../../../model/nationality";
-import { SearchResults } from '../../../model/search-results';
-import {FormBuilder, FormGroup} from "@angular/forms";
-import {debounceTime, distinctUntilChanged} from "rxjs/operators";
-import {NationalityService} from "../../../services/nationality.service";
 import {CountryService} from "../../../services/country.service";
+import {Nationality} from "../../../model/nationality";
+import {NationalityService} from "../../../services/nationality.service";
 import {Language} from "../../../model/language";
 import {LanguageService} from "../../../services/language.service";
+import { SearchResults } from '../../../model/search-results';
+
+import {FormBuilder, FormGroup} from "@angular/forms";
+import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 
 @Component({
   selector: 'app-search-candidates',
@@ -25,6 +27,13 @@ export class SearchCandidatesComponent implements OnInit {
   pageNumber: number;
   pageSize: number;
   results: SearchResults<Candidate>;
+
+  /* MULTI SELECT */
+  selectedNationalities = [];
+  selectedStatus = [];
+  dropdownSettings = {};
+
+  /* DATA */
   nationalities: Nationality[];
   countries: Country[];
   languages: Language[];
@@ -45,6 +54,8 @@ export class SearchCandidatesComponent implements OnInit {
       {id: '60Plus', label: '60+ '},
   ];
 
+  status: String[] = ['pending','incomplete','rejected','approved','employed','deleted', 'active', 'inactive'];
+
   constructor(private fb: FormBuilder,
               private candidateService: CandidateService,
               private nationalityService: NationalityService,
@@ -54,7 +65,7 @@ export class SearchCandidatesComponent implements OnInit {
   ngOnInit() {
     this.moreFilters = false;
 
-    /* LOAD NATIONALITIES */
+  /* LOAD NATIONALITIES */
     this.nationalityService.listNationalities().subscribe(
       (response) => {
         this.nationalities = response;
@@ -66,7 +77,7 @@ export class SearchCandidatesComponent implements OnInit {
       }
     );
 
-    /* LOAD COUNTRIES */
+  /* LOAD COUNTRIES */
     this.countryService.listCountries().subscribe(
      (response) => {
        this.countries = response;
@@ -78,7 +89,7 @@ export class SearchCandidatesComponent implements OnInit {
      }
     );
 
-    /* LOAD LANGUAGES */
+  /* LOAD LANGUAGES */
     this.languageService.listLanguages().subscribe(
       (response) => {
         this.languages = response;
@@ -90,7 +101,7 @@ export class SearchCandidatesComponent implements OnInit {
       }
     );
 
-    /* SET UP FORM */
+  /* SET UP FORM */
     this.searchForm = this.fb.group({
       keyword: [''],
       status: [''],
@@ -100,12 +111,14 @@ export class SearchCandidatesComponent implements OnInit {
       gender: [''],
       educationLevel: [''],
       candidateLanguageId: [''],
-      age: ['']
+      age: [''],
+      selectedNationalities: [[]],
+      selectedStatus: [[]]
     });
     this.pageNumber = 1;
     this.pageSize = 50;
 
-    /* SEARCH ON CHANGE*/
+  /* SEARCH ON CHANGE*/
     this.searchForm.get('keyword').valueChanges
       .pipe(
         debounceTime(400),
@@ -115,11 +128,34 @@ export class SearchCandidatesComponent implements OnInit {
         this.search();
       });
     this.search();
+
+  /* MULTI SELECT DROPDOWN SETTINGS */
+    this.dropdownSettings = {
+      singleSelection: false,
+      textField: 'name',
+      selectAllText: 'Select All',
+      unSelectAllText: 'UnSelect All',
+      itemsShowLimit: 3,
+      allowSearchFilter: true
+    };
+
   }
 
+/* METHODS */
+
+/* MULTI SELECT METHODS */
+  onItemSelect(item: any) {
+    this.selectedStatus.push(item.id);
+  }
+  onSelectAll(items: any) {}
+  onItemDeSelect(item: any) {}
+  onDeSelectAll(items: any) {}
+
+/* SEARCH FORM */
   search() {
     this.loading = true;
     let request = this.searchForm.value;
+    console.log(request);
     request.pageNumber = this.pageNumber - 1;
     request.pageSize =  this.pageSize;
     this.candidateService.search(request).subscribe(results => {
