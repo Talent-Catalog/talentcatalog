@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {UserService} from '../../services/user.service';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-change-password',
@@ -20,6 +20,7 @@ export class ChangePasswordComponent implements OnInit {
 
   constructor(private fb: FormBuilder,
               private userService: UserService,
+              private router: Router,
               private route: ActivatedRoute) {
   }
 
@@ -67,6 +68,9 @@ export class ChangePasswordComponent implements OnInit {
     if (this.reset) {
         this.userService.resetPassword(this.form.value).subscribe(
           () => {
+            setTimeout(() => {
+              this.router.navigate(['/login']);
+            }, 2000);
             this.resetForm();
             this.updated = true;
           },
