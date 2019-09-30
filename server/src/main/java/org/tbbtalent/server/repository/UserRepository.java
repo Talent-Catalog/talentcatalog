@@ -11,20 +11,23 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     
     @Query("select distinct u from User u "
             + " where lower(u.username) = lower(:username) "
-            + " and u.role = :role")
+            + " and u.role = :role "
+            + " and u.status != 'deleted' ")
     User findByUsernameAndRole(@Param("username") String username,
                                @Param("role") Role role);
     
     @Query("select distinct u from User u "
-            + " where lower(u.username) = lower(:username) ")
+            + " where lower(u.username) = lower(:username) "
+            + " and u.status != 'deleted'")
     User findByUsernameIgnoreCase(@Param("username") String username);
 
     /* Used for candidate authentication */
     @Query("select distinct u from User u "
-            + " where lower(u.email) = lower(:email) ")
+            + " where lower(u.email) = lower(:email) "
+            + " and u.status != 'deleted'")
     User findByEmailIgnoreCase(@Param("email") String email);
 
-    @Query("select u from User u where u.resetToken = ?1")
+    @Query("select u from User u where u.resetToken = ?1 and u.status != 'deleted'")
     User findByResetToken(String token);
 
 

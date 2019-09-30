@@ -1,15 +1,15 @@
 package org.tbbtalent.server.request.candidate;
 
-import org.tbbtalent.server.model.Nationality;
-import org.tbbtalent.server.model.Status;
-import org.tbbtalent.server.request.SearchRequest;
-
 import java.util.List;
+
+import org.tbbtalent.server.model.CandidateStatus;
+import org.tbbtalent.server.model.Nationality;
+import org.tbbtalent.server.request.SearchRequest;
 
 public class SearchCandidateRequest extends SearchRequest {
 
     private String keyword;
-    private List<Status> selectedStatus;
+    private List<CandidateStatus> selectedStatus;
     private Boolean registeredWithUN;
     private Long nationalityId;
     private Long countryId;
@@ -26,36 +26,67 @@ public class SearchCandidateRequest extends SearchRequest {
         this.keyword = keyword;
     }
 
-    public List<Status> getSelectedStatus() { return selectedStatus; }
+    public List<CandidateStatus> getSelectedStatus() {
+        return selectedStatus;
+    }
 
-    public void setSelectedStatus(List<Status> selectedStatus) { this.selectedStatus = selectedStatus; }
+    public void setSelectedStatus(List<CandidateStatus> selectedStatus) {
+        this.selectedStatus = selectedStatus;
+    }
 
-    public Boolean getRegisteredWithUN() { return registeredWithUN; }
+    public Boolean getRegisteredWithUN() {
+        return registeredWithUN;
+    }
 
-    public void setRegisteredWithUN(Boolean registeredWithUN) { this.registeredWithUN = registeredWithUN; }
+    public void setRegisteredWithUN(Boolean registeredWithUN) {
+        this.registeredWithUN = registeredWithUN;
+    }
 
-    public Long getNationalityId() { return nationalityId; }
+    public Long getNationalityId() {
+        return nationalityId;
+    }
 
-    public void setNationalityId(Long nationalityId) { this.nationalityId = nationalityId; }
+    public void setNationalityId(Long nationalityId) {
+        this.nationalityId = nationalityId;
+    }
 
-    public Long getCountryId() { return countryId; }
+    public Long getCountryId() {
+        return countryId;
+    }
 
-    public void setCountryId(Long countryId) { this.countryId = countryId; }
+    public void setCountryId(Long countryId) {
+        this.countryId = countryId;
+    }
 
-    public String getGender() { return gender; }
+    public String getGender() {
+        return gender;
+    }
 
-    public void setGender(String gender) { this.gender = gender; }
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
 
-    public String getEducationLevel() { return educationLevel; }
+    public String getEducationLevel() {
+        return educationLevel;
+    }
 
-    public void setEducationLevel(String educationLevel) { this.educationLevel = educationLevel; }
+    public void setEducationLevel(String educationLevel) {
+        this.educationLevel = educationLevel;
+    }
 
-    public Long getCandidateLanguageId() { return candidateLanguageId; }
+    public Long getCandidateLanguageId() {
+        return candidateLanguageId;
+    }
 
-    public void setCandidateLanguageId(Long candidateLanguageId) { this.candidateLanguageId = candidateLanguageId; }
+    public void setCandidateLanguageId(Long candidateLanguageId) {
+        this.candidateLanguageId = candidateLanguageId;
+    }
 
-    public List<Nationality> getSelectedNationalities() { return selectedNationalities; }
+    public List<Nationality> getSelectedNationalities() {
+        return selectedNationalities;
+    }
 
-    public void setSelectedNationalities(List<Nationality> selectedNationalities) { this.selectedNationalities = selectedNationalities; }
+    public void setSelectedNationalities(List<Nationality> selectedNationalities) {
+        this.selectedNationalities = selectedNationalities;
+    }
 }
-

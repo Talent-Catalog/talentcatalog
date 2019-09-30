@@ -3,6 +3,7 @@ package org.tbbtalent.server.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.model.LanguageLevel;
+import org.tbbtalent.server.model.Status;
 import org.tbbtalent.server.repository.LanguageLevelRepository;
 import org.tbbtalent.server.service.LanguageLevelService;
 
@@ -20,6 +21,6 @@ public class LanguageLevelServiceImpl implements LanguageLevelService {
 
     @Override
     public List<LanguageLevel> listLanguageLevels() {
-        return languageLevelRepository.findAll();
+        return languageLevelRepository.findByStatus(Status.active);
     }
 }

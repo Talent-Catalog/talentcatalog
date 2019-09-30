@@ -3,6 +3,7 @@ package org.tbbtalent.server.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.model.Occupation;
+import org.tbbtalent.server.model.Status;
 import org.tbbtalent.server.repository.OccupationRepository;
 import org.tbbtalent.server.service.OccupationService;
 
@@ -20,6 +21,6 @@ public class OccupationServiceImpl implements OccupationService {
 
     @Override
     public List<Occupation> listOccupations() {
-        return occupationRepository.findAll();
+        return occupationRepository.findByStatus(Status.active);
     }
 }
