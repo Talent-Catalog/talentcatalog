@@ -28,7 +28,6 @@ export class EditCandidateComponent implements OnInit {
       this.loading = true;
       this.candidateService.get(this.candidateId).subscribe(candidate => {
         this.candidateForm = this.fb.group({
-          candidateNumber: [candidate.candidateNumber],
           firstName: [candidate.user.firstName],
           lastName: [candidate.user.lastName],
           email: [candidate.user.email],
@@ -46,7 +45,6 @@ export class EditCandidateComponent implements OnInit {
         this.saving = false;
       },
       (error) => {
-        console.log(error);
         this.error = error;
         this.saving = false;
       });
