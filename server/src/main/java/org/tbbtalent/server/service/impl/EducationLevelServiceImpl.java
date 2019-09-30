@@ -3,6 +3,7 @@ package org.tbbtalent.server.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.model.EducationLevel;
+import org.tbbtalent.server.model.Status;
 import org.tbbtalent.server.repository.EducationLevelRepository;
 import org.tbbtalent.server.service.EducationLevelService;
 
@@ -20,6 +21,6 @@ public class EducationLevelServiceImpl implements EducationLevelService {
 
     @Override
     public List<EducationLevel> listEducationLevels() {
-        return educationLevelRepository.findAll();
+        return educationLevelRepository.findByStatus(Status.active);
     }
 }

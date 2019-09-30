@@ -6,9 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-import org.tbbtalent.server.model.Candidate;
+import org.tbbtalent.server.model.Role;
 import org.tbbtalent.server.model.User;
-import org.tbbtalent.server.repository.CandidateRepository;
 import org.tbbtalent.server.repository.UserRepository;
 
 @Component
@@ -27,7 +26,7 @@ public class CandidateUserDetailsService implements UserDetailsService {
     public AuthenticatedUser loadUserByUsername(String username) throws UsernameNotFoundException {
 
         /* Handle JWT token parsing */
-        User user = userRepository.findByUsernameIgnoreCase(username);
+        User user = userRepository.findByUsernameAndRole(username, Role.user);
         /* Handle authentication */
         if (user == null) {
             throw new UsernameNotFoundException("No user found for: " + username);

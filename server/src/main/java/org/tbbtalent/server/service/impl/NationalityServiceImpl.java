@@ -13,6 +13,7 @@ import org.tbbtalent.server.model.Nationality;
 import org.tbbtalent.server.model.Role;
 import org.tbbtalent.server.model.Status;
 import org.tbbtalent.server.model.Nationality;
+import org.tbbtalent.server.model.Status;
 import org.tbbtalent.server.repository.NationalityRepository;
 import org.tbbtalent.server.repository.NationalitySpecification;
 import org.tbbtalent.server.request.nationality.CreateNationalityRequest;
@@ -36,7 +37,7 @@ public class NationalityServiceImpl implements NationalityService {
 
     @Override
     public List<Nationality> listNationalities() {
-        return nationalityRepository.findAll();
+        return nationalityRepository.findByStatus(Status.active);
     }
 
     @Override

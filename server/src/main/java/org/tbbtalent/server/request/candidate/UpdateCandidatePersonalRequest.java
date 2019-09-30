@@ -1,7 +1,6 @@
 package org.tbbtalent.server.request.candidate;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 public class UpdateCandidatePersonalRequest {
 

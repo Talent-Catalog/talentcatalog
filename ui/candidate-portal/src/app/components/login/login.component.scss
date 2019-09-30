@@ -21,13 +21,17 @@ input {
   padding: 1em;
   margin-bottom: 25px;
   border-radius: 4px;
-  width: 80%;
   max-width: 500px;
   height: auto !important;
 }
 
 button {
-  width: 50%;
+  width: 100%;
   max-width: 250px;
   padding: 1em;
+}
+
+.reset {
+  padding-top: 15px;
+  text-align: center;
 }
