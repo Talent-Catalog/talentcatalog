@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { CandidateService } from '../../../services/candidate.service';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
+import {CandidateService} from '../../../services/candidate.service';
+import {FormBuilder, FormGroup} from '@angular/forms';
 
 @Component({
   selector: 'app-edit-candidate',
@@ -12,6 +12,7 @@ export class EditCandidateComponent implements OnInit {
 
   candidateId: number;
   candidateForm: FormGroup;
+  error;
   loading: boolean;
   saving: boolean;
 
@@ -39,9 +40,14 @@ export class EditCandidateComponent implements OnInit {
 
   onSave() {
     this.saving = true;
-    this.candidateService.update(this.candidateId, this.candidateForm.value)
-      .subscribe(candidate => {
+    this.candidateService.update(this.candidateId, this.candidateForm.value).subscribe(
+      (candidate) => {
         this.router.navigate(['candidates', candidate.id]);
+        this.saving = false;
+      },
+      (error) => {
+        console.log(error);
+        this.error = error;
         this.saving = false;
       });
   }

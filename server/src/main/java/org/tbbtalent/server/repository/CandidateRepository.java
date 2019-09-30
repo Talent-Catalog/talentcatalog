@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tbbtalent.server.model.Candidate;
 
+import java.util.Optional;
+
 public interface CandidateRepository extends JpaRepository<Candidate, Long>, JpaSpecificationExecutor<Candidate> {
 
 //    /* Used for candidate authentication */
@@ -21,6 +23,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     /* Used for candidate registration to check for existing accounts with different username options */
 //    Candidate findByEmailIgnoreCase(String email);
     Candidate findByPhoneIgnoreCase(String phone);
+
     Candidate findByWhatsappIgnoreCase(String whatsapp);
 
     @Query(" select distinct c from Candidate c "
@@ -52,4 +55,9 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     @Query(" select c from Candidate c "
             + " where c.user.id = :id ")
     Candidate findByUserId(@Param("id") Long userId);
+
+    @Query(" select c from Candidate c "
+            + " join c.user u"
+            + " where c.id = :id ")
+    Optional<Candidate> findByIdLoadUser(@Param("id") Long id);
 }

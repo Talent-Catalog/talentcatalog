@@ -104,13 +104,18 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     @Transactional
     public Candidate updateCandidate(long id, UpdateCandidateRequest request) {
-        Candidate candidate = this.candidateRepository.findById(id)
+        Candidate candidate = this.candidateRepository.findByIdLoadUser(id)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
-        candidate.setCandidateNumber(request.getCandidateNumber());
-        candidate.getUser().setFirstName(request.getFirstName());
-        candidate.getUser().setLastName(request.getLastName());
-        candidate.getUser().setEmail(request.getEmail());
-        candidate = this.candidateRepository.save(candidate);
+
+
+        User user = candidate.getUser();
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setEmail(request.getEmail());
+        userRepository.save(user);
+        //todo can you change email - does it need to be unique??
+
+        candidate.setUser(user);
         return candidate;
     }
 

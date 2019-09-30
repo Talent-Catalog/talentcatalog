@@ -2,6 +2,11 @@
   <i class="fa fa-spinner fa-spin"></i> loading...
 </div>
 
+<div class="alert alert-danger" *ngIf="error">
+  {{error}}
+</div>
+
+
 <div *ngIf="!loading">
   <h1>Edit Candidate</h1>
 

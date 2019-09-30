@@ -37,14 +37,16 @@ public class CandidateAdminApi {
     }
 
     @PostMapping
-    public Candidate create(@RequestBody CreateCandidateRequest request) throws UsernameTakenException {
-        return this.candidateService.createCandidate(request);
+    public Map<String, Object> create(@RequestBody CreateCandidateRequest request) throws UsernameTakenException {
+        Candidate candidate = this.candidateService.createCandidate(request);
+        return candidateDto().build(candidate);
     }
 
     @PutMapping("{id}")
-    public Candidate update(@PathVariable("id") long id,
+    public Map<String, Object> update(@PathVariable("id") long id,
                             @RequestBody UpdateCandidateRequest request) {
-        return this.candidateService.updateCandidate(id, request);
+        Candidate candidate = this.candidateService.updateCandidate(id, request);
+        return candidateDto().build(candidate);
     }
 
     @DeleteMapping("{id}")

@@ -35,7 +35,6 @@ export class CreateCandidateComponent implements OnInit {
         this.saving = false;
       },
       (error) => {
-        console.log(error);
         this.error = error;
         this.saving = false;
       });
