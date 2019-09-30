@@ -1,17 +1,22 @@
 package org.tbbtalent.server.request.candidate;
 
+import org.tbbtalent.server.model.Nationality;
+import org.tbbtalent.server.model.Status;
 import org.tbbtalent.server.request.SearchRequest;
+
+import java.util.List;
 
 public class SearchCandidateRequest extends SearchRequest {
 
     private String keyword;
-    private String status;
+    private List<Status> selectedStatus;
     private Boolean registeredWithUN;
     private Long nationalityId;
     private Long countryId;
     private String gender;
     private String educationLevel;
     private Long candidateLanguageId;
+    private List<Nationality> selectedNationalities;
 
     public String getKeyword() {
         return keyword;
@@ -21,9 +26,9 @@ public class SearchCandidateRequest extends SearchRequest {
         this.keyword = keyword;
     }
 
-    public String getStatus() { return status; }
+    public List<Status> getSelectedStatus() { return selectedStatus; }
 
-    public void setStatus(String status) { this.status = status; }
+    public void setSelectedStatus(List<Status> selectedStatus) { this.selectedStatus = selectedStatus; }
 
     public Boolean getRegisteredWithUN() { return registeredWithUN; }
 
@@ -48,5 +53,9 @@ public class SearchCandidateRequest extends SearchRequest {
     public Long getCandidateLanguageId() { return candidateLanguageId; }
 
     public void setCandidateLanguageId(Long candidateLanguageId) { this.candidateLanguageId = candidateLanguageId; }
+
+    public List<Nationality> getSelectedNationalities() { return selectedNationalities; }
+
+    public void setSelectedNationalities(List<Nationality> selectedNationalities) { this.selectedNationalities = selectedNationalities; }
 }
 

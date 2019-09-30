@@ -26,3 +26,37 @@ h1 {
     text-decoration: $link-hover-decoration;
   }
 }
+
+.multiselect-dropdown .dropdown-btn {
+    border: 1px solid #ced4da !important;
+
+}
+
+.multiselect-dropdown .dropdown-btn .dropdown-down{
+  border-top: 6px solid #999 !important;
+  border-left: 6px solid transparent !important;
+  border-right: 6px solid transparent !important;
+}
+
+.multiselect-dropdown .dropdown-btn .dropdown-up{
+  border-bottom: 6px solid #999 !important;
+  border-left: 6px solid transparent !important;
+  border-right: 6px solid transparent !important;
+}
+
+.multiselect-dropdown .dropdown-btn {
+  border: 1px solid #cccccc!important;
+}
+
+.dropdown-btn > span {
+  color: #6C757C;
+}
+
+ng-multiselect-dropdown div.dropdown-list {
+  font-size: 12px !important;
+}
+
+ng-multiselect-dropdown div.multiselect-dropdown {
+  color: red !important;
+}
+

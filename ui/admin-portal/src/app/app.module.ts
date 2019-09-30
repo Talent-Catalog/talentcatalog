@@ -1,6 +1,8 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
+
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './components/app.component';
@@ -32,7 +34,8 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
     HttpClientModule,
     ReactiveFormsModule,
     NgbModule,
-    InfiniteScrollModule
+    InfiniteScrollModule,
+    NgMultiSelectDropDownModule
   ],
   entryComponents: [
     DeleteCandidateComponent

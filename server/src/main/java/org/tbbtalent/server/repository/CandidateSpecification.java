@@ -4,13 +4,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.model.CandidateLanguage;
-import org.tbbtalent.server.model.Status;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
-import java.util.Objects;
 
 public class CandidateSpecification {
 
@@ -33,10 +31,10 @@ public class CandidateSpecification {
                         ));
             }
             // STATUS SEARCH
-            if (!StringUtils.isBlank(request.getStatus())) {
+            if(!(request.getSelectedStatus()).isEmpty()) {
                 conjunction.getExpressions().add(
-                        builder.equal(user.get("status"), Status.valueOf(request.getStatus()))
-                        );
+                        builder.isTrue(user.get("status").in(request.getSelectedStatus()))
+                );
             }
 
             // UN REGISTERED SEARCH
@@ -47,10 +45,9 @@ public class CandidateSpecification {
             }
 
             // NATIONALITY SEARCH
-            if(!Objects.isNull(request.getNationalityId())) {
-//                System.out.println(request.getNationalityId());
+            if(!(request.getSelectedNationalities()).isEmpty()) {
                 conjunction.getExpressions().add(
-                        builder.equal(user.get("nationality"), request.getNationalityId())
+                      builder.isTrue(user.get("nationality").in(request.getSelectedNationalities()))
                 );
             }
 
@@ -82,14 +79,7 @@ public class CandidateSpecification {
                         builder.equal(candidateLanguages.get("id"), request.getCandidateLanguageId())
                 );
             }
-
-            // LANGUAGE SEARCH
-            if(request.getCandidateLanguageId() != null) {
-                System.out.println(request.getCandidateLanguageId());
-                conjunction.getExpressions().add(
-                        builder.equal(candidateLanguages.get("language"), request.getCandidateLanguageId())
-                );
-            }
+            
 
             return conjunction;
         };
