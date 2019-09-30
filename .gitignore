@@ -13,3 +13,11 @@
 **/build/*
 **/out/*
 .gradle
+/bin/
+
+### Eclipse ###
+.classpath
+.project
+.settings/
+bin/
+
