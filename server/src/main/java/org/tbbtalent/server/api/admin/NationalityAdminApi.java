@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.exception.EntityExistsException;
+import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.model.Nationality;
 import org.tbbtalent.server.request.nationality.CreateNationalityRequest;
 import org.tbbtalent.server.request.nationality.SearchNationalityRequest;
@@ -57,7 +58,7 @@ public class NationalityAdminApi {
     }
 
     @DeleteMapping("{id}")
-    public boolean delete(@PathVariable("id") long id) {
+    public boolean delete(@PathVariable("id") long id) throws EntityReferencedException {
         return this.nationalityService.deleteNationality(id);
     }
 

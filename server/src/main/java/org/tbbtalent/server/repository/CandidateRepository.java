@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tbbtalent.server.model.Candidate;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface CandidateRepository extends JpaRepository<Candidate, Long>, JpaSpecificationExecutor<Candidate> {
@@ -60,4 +61,8 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             + " join c.user u"
             + " where c.id = :id ")
     Optional<Candidate> findByIdLoadUser(@Param("id") Long id);
+
+    @Query(" select c from Candidate c "
+            + " where c.nationality.id = :nationalityId ")
+    List<Candidate> findByNationalityId(@Param("nationalityId") Long nationalityId);
 }

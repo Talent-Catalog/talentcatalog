@@ -16,6 +16,7 @@ public interface NationalityRepository extends JpaRepository<Nationality, Long>,
     List<Nationality> findByStatus(@Param("status") Status status);
 
     @Query(" select distinct n from Nationality n "
-            + " where lower(n.name) = lower(:name) ")
+            + " where lower(n.name) = lower(:name)"
+            + " and n.status != 'deleted'" )
     Nationality findByNameIgnoreCase(@Param("name") String name);
 }

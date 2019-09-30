@@ -2,6 +2,7 @@ package org.tbbtalent.server.service;
 
 import org.springframework.data.domain.Page;
 import org.tbbtalent.server.exception.EntityExistsException;
+import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.model.Nationality;
 import org.tbbtalent.server.request.nationality.CreateNationalityRequest;
 import org.tbbtalent.server.request.nationality.SearchNationalityRequest;
@@ -21,6 +22,6 @@ public interface NationalityService {
 
     Nationality updateNationality(long id, UpdateNationalityRequest request) throws EntityExistsException ;
 
-    boolean deleteNationality(long id);
+    boolean deleteNationality(long id) throws EntityReferencedException;
 
 }

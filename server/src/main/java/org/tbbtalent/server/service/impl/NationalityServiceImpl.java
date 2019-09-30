@@ -1,6 +1,6 @@
 package org.tbbtalent.server.service.impl;
 
-import org.apache.commons.lang3.StringUtils;
+import io.jsonwebtoken.lang.Collections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,12 +8,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.EntityExistsException;
+import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.Nationality;
-import org.tbbtalent.server.model.Role;
-import org.tbbtalent.server.model.Status;
+import org.tbbtalent.server.model.*;
 import org.tbbtalent.server.model.Nationality;
 import org.tbbtalent.server.model.Status;
+import org.tbbtalent.server.repository.CandidateRepository;
 import org.tbbtalent.server.repository.NationalityRepository;
 import org.tbbtalent.server.repository.NationalitySpecification;
 import org.tbbtalent.server.request.nationality.CreateNationalityRequest;
@@ -21,6 +21,7 @@ import org.tbbtalent.server.request.nationality.SearchNationalityRequest;
 import org.tbbtalent.server.request.nationality.UpdateNationalityRequest;
 import org.tbbtalent.server.service.NationalityService;
 
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -28,10 +29,12 @@ public class NationalityServiceImpl implements NationalityService {
 
     private static final Logger log = LoggerFactory.getLogger(NationalityServiceImpl.class);
 
+    private final CandidateRepository candidateRepository;
     private final NationalityRepository nationalityRepository;
 
     @Autowired
-    public NationalityServiceImpl(NationalityRepository nationalityRepository) {
+    public NationalityServiceImpl(CandidateRepository candidateRepository, NationalityRepository nationalityRepository) {
+        this.candidateRepository = candidateRepository;
         this.nationalityRepository = nationalityRepository;
     }
 
@@ -78,8 +81,12 @@ public class NationalityServiceImpl implements NationalityService {
 
     @Override
     @Transactional
-    public boolean deleteNationality(long id) {
+    public boolean deleteNationality(long id) throws EntityReferencedException {
         Nationality nationality = nationalityRepository.findById(id).orElse(null);
+        List<Candidate> candidates = candidateRepository.findByNationalityId(id);
+        if (!Collections.isEmpty(candidates)){
+            throw new EntityReferencedException("nationality");
+        }
         if (nationality != null) {
             nationality.setStatus(Status.deleted);
             nationalityRepository.save(nationality);
