@@ -2,11 +2,9 @@ package org.tbbtalent.server.service;
 
 import javax.security.auth.login.AccountLockedException;
 
-import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.model.User;
 import org.springframework.data.domain.Page;
 import org.tbbtalent.server.exception.UsernameTakenException;
-import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.user.CreateUserRequest;
 import org.tbbtalent.server.request.user.SearchUserRequest;

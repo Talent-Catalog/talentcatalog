@@ -5,10 +5,12 @@ import java.util.UUID;
 
 import javax.security.auth.login.AccountLockedException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
@@ -19,17 +21,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tbbtalent.server.exception.CandidateDeactivatedException;
-import org.tbbtalent.server.exception.ExpiredTokenException;
-import org.tbbtalent.server.exception.InvalidCredentialsException;
-import org.tbbtalent.server.exception.InvalidPasswordTokenException;
-import org.tbbtalent.server.exception.InvalidSessionException;
-import org.tbbtalent.server.exception.PasswordExpiredException;
-import org.tbbtalent.server.exception.PasswordMatchException;
+import org.tbbtalent.server.exception.*;
+import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.model.Role;
 import org.tbbtalent.server.model.Status;
-import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.repository.UserRepository;
+import org.tbbtalent.server.repository.UserSpecification;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.user.*;
 import org.tbbtalent.server.request.user.CheckPasswordResetTokenRequest;
@@ -40,7 +37,6 @@ import org.tbbtalent.server.response.JwtAuthenticationResponse;
 import org.tbbtalent.server.security.JwtTokenProvider;
 import org.tbbtalent.server.security.PasswordHelper;
 import org.tbbtalent.server.security.UserContext;
-import org.tbbtalent.server.service.UserService;
 import org.tbbtalent.server.service.UserService;
 
 @Service
@@ -142,7 +138,7 @@ public class UserServiceImpl implements UserService {
             Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     request.getUsername(), request.getPassword()
             ));
-            User user = userRepository.findByUsernameAndRole(request.getUsername(), Role.user);
+            User user = userRepository.findByUsernameIgnoreCase(request.getUsername());
 
             if (user.getStatus().equals(Status.inactive)) {
                 throw new InvalidCredentialsException("Sorry, it looks like that account is no longer active.");

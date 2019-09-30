@@ -9,7 +9,6 @@ import org.tbbtalent.server.request.user.CreateUserRequest;
 import org.tbbtalent.server.request.user.SearchUserRequest;
 import org.tbbtalent.server.request.user.UpdateUserRequest;
 import org.tbbtalent.server.service.UserService;
-import org.tbbtalent.server.service.UserService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 import java.util.Map;

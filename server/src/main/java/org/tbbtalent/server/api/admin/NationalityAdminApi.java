@@ -5,11 +5,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.model.Nationality;
-import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.request.nationality.CreateNationalityRequest;
 import org.tbbtalent.server.request.nationality.SearchNationalityRequest;
 import org.tbbtalent.server.request.nationality.UpdateNationalityRequest;
-import org.tbbtalent.server.request.user.SearchUserRequest;
 import org.tbbtalent.server.service.NationalityService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 

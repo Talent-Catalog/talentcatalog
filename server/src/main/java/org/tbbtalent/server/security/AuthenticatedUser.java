@@ -1,10 +1,8 @@
 package org.tbbtalent.server.security;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.model.Role;
 import org.tbbtalent.server.model.User;
 

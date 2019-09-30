@@ -11,11 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tbbtalent.server.exception.CandidateDeactivatedException;
-import org.tbbtalent.server.exception.InvalidCredentialsException;
-import org.tbbtalent.server.exception.InvalidPasswordFormatException;
-import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.exception.PasswordExpiredException;
+import org.tbbtalent.server.exception.*;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
 import org.tbbtalent.server.response.JwtAuthenticationResponse;
@@ -40,7 +36,7 @@ public class AuthPortalApi {
     @PostMapping("login")
     public Map<String, Object> login(@RequestBody LoginRequest request)
             throws AccountLockedException, PasswordExpiredException, InvalidCredentialsException,
-            InvalidPasswordFormatException, CandidateDeactivatedException {
+            InvalidPasswordFormatException, UserDeactivatedException {
         JwtAuthenticationResponse response = userService.login(request);
         return jwtDto().build(response);
     }
