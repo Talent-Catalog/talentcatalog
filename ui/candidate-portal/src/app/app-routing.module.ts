@@ -33,15 +33,18 @@ const routes: Routes = [
   },
   {
     path: 'login',
-    component: LoginComponent
+    component: LoginComponent,
+    data: {
+      hideHeader: true
+    }
   },
-  { 
-    path: 'reset-password', 
-    component: ResetPasswordComponent
+  {
+    path: 'reset-password',
+    component: ResetPasswordComponent,
   },
-  { 
-    path: 'reset-password/:token', 
-    component: ChangePasswordComponent 
+  {
+    path: 'reset-password/:token',
+    component: ChangePasswordComponent
   },
   {
     path: 'home',

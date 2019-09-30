@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
   <div class="container">
-    <a class="navbar-brand" [routerLink]="'/'">TBB Admin</a>
+    <a class="navbar-brand" [routerLink]="'/'">TBB Portal</a>
 
     <button class="navbar-toggler hidden-sm-up" type="button"
             (click)="isNavbarCollapsed = !isNavbarCollapsed"
@@ -14,10 +14,28 @@
           <a class="nav-link" [routerLink]="'/'">Home</a>
         </li>
         <li class="nav-item" [routerLinkActive]="'active'">
-          <a class="nav-link" [routerLink]="'/candidates'">Candidates</a>
+          <a class="nav-link" [routerLink]="'/register/contact'">Contact</a>
         </li>
         <li class="nav-item" [routerLinkActive]="'active'">
-          <a class="nav-link" [routerLink]="'/settings'">Settings</a>
+          <a class="nav-link" [routerLink]="'/register/contact/additional'">Alternative</a>
+        </li>
+        <li class="nav-item" [routerLinkActive]="'active'">
+          <a class="nav-link" [routerLink]="'/register/personal'">Personal</a>
+        </li>
+        <li class="nav-item" [routerLinkActive]="'active'">
+          <a class="nav-link" [routerLink]="'/register/nationality'">Nationality</a>
+        </li>
+        <li class="nav-item" [routerLinkActive]="'active'">
+          <a class="nav-link" [routerLink]="'/register/experience'">Experience</a>
+        </li>
+        <li class="nav-item" [routerLinkActive]="'active'">
+          <a class="nav-link" [routerLink]="'/register/language'">Language</a>
+        </li>
+        <li class="nav-item" [routerLinkActive]="'active'">
+          <a class="nav-link" [routerLink]="'/register/certifications'">Certifications</a>
+        </li>
+        <li class="nav-item" [routerLinkActive]="'active'">
+          <a class="nav-link" [routerLink]="'/register/additional-information'">Additional Info</a>
         </li>
       </ul>
 
@@ -33,6 +51,7 @@
 
         </li>
       </ul>
+
     </div>
   </div>
 </nav>

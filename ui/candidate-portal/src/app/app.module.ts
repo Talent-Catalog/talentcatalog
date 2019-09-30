@@ -33,10 +33,12 @@ import {HomeComponent} from "./components/home/home.component";
 import {ErrorInterceptor} from "./services/error.interceptor";
 import {ResetPasswordComponent} from './components/reset-password/reset-password.component';
 import {ChangePasswordComponent} from './components/change-password/change-password.component';
+import {HeaderComponent} from "./components/header/header.component";
 
 @NgModule({
   declarations: [
     AppComponent,
+    HeaderComponent,
     LandingComponent,
     RegistrationLandingComponent,
     RegistrationContactComponent,

@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import {Router} from "@angular/router";
+import {Component, Input, OnInit} from '@angular/core';
 import {AuthService} from "../../services/auth.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-header',
@@ -9,6 +9,7 @@ import {AuthService} from "../../services/auth.service";
 })
 export class HeaderComponent implements OnInit {
 
+  @Input() hideHeader: boolean;
   isNavbarCollapsed=true;
 
   constructor(private authService: AuthService,
@@ -21,4 +22,5 @@ export class HeaderComponent implements OnInit {
     this.authService.logout();
     this.router.navigate(['login']);
   }
+
 }
