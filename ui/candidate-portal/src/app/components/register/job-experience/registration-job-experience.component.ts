@@ -20,7 +20,7 @@ export class RegistrationJobExperienceComponent implements OnInit {
   loading: boolean;
   saving: boolean;
   form: FormGroup;
-  experiences: CandidateJobExperience[];
+  candidateJobExperiences: CandidateJobExperience[];
   countries: Country[];
   occupations: CandidateOccupation[];
   startDate: Date;
@@ -37,7 +37,7 @@ export class RegistrationJobExperienceComponent implements OnInit {
   ngOnInit() {
     this.countries = [];
     this.occupations = [];
-    this.experiences = [];
+    this.candidateJobExperiences = [];
     this.saving = false;
     this.loading = true;
 
@@ -45,7 +45,7 @@ export class RegistrationJobExperienceComponent implements OnInit {
     this.candidateService.getCandidateJobExperiences().subscribe(
       (candidate) => {
         console.log(candidate);
-        this.experiences = candidate.jobExperiences || [];
+        this.candidateJobExperiences = candidate.candidateJobExperiences || [];
 
         /* Wait for the candidate then load the countries */
         this.countryService.listCountries().subscribe(
@@ -98,7 +98,7 @@ export class RegistrationJobExperienceComponent implements OnInit {
     this.saving = true;
     this.jobExperienceService.createJobExperience(this.form.value).subscribe(
       (response) => {
-        this.experiences.push(response);
+        this.candidateJobExperiences.push(response);
         this.setUpForm();
         this.saving = false;
       },
@@ -113,7 +113,7 @@ export class RegistrationJobExperienceComponent implements OnInit {
     this.saving = true;
     this.jobExperienceService.deleteJobExperience(experience.id).subscribe(
       () => {
-        this.experiences = this.experiences.filter(e => e !== experience);
+        this.candidateJobExperiences = this.candidateJobExperiences.filter(e => e !== experience);
         this.saving = false;
       },
       (error) => {
@@ -125,7 +125,7 @@ export class RegistrationJobExperienceComponent implements OnInit {
 
   save() {
     // TODO save
-    console.log(this.experiences);
+    console.log(this.candidateJobExperiences);
     this.router.navigate(['register', 'education']);
   }
 

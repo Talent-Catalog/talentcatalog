@@ -149,13 +149,22 @@ public class CandidatePortalApi {
 
     private DtoBuilder candidateContactDto() {
         return new DtoBuilder()
-                .add("user.email")
+                .add("user", userDto())
+                ;
+    }
+
+    private DtoBuilder userDto() {
+        return new DtoBuilder()
+                .add("username")
+                .add("email")
+                .add("firstName")
+                .add("lastName")
                 ;
     }
 
     private DtoBuilder candidateAdditionalContactDto() {
         return new DtoBuilder()
-                .add("user.email")
+                .add("user", userDto())
                 .add("phone")
                 .add("whatsapp")
                 ;
@@ -170,8 +179,7 @@ public class CandidatePortalApi {
 
     private DtoBuilder candidatePersonalDto() {
         return new DtoBuilder()
-                .add("user.firstName")
-                .add("user.lastName")
+                .add("user", userDto())
                 .add("gender")
                 .add("dob")
                 ;
@@ -216,7 +224,7 @@ public class CandidatePortalApi {
 
     private DtoBuilder candidateEducationLevelDto() {
         return new DtoBuilder()
-                .add("educationLevel")
+                .add("maxEducationLevel", educationLevelDto())
                 ;
     }
 
@@ -231,6 +239,13 @@ public class CandidatePortalApi {
     }
 
     private DtoBuilder occupationDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
+                ;
+    }
+
+    private DtoBuilder educationLevelDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("name")
@@ -303,8 +318,8 @@ public class CandidatePortalApi {
         return new DtoBuilder()
                 .add("id")
                 .add("language", languageDto())
-                .add("readWrite", languageLevelDto())
-                .add("speak", languageLevelDto())
+                .add("writtenLevel", languageLevelDto())
+                .add("spokenLevel", languageLevelDto())
                 ;
     }
 

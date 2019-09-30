@@ -15,6 +15,10 @@ public class CandidateJobExperience extends AbstractDomainObject<Long> {
     @JoinColumn(name = "country_id")
     private Country country;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "candidate_occupation_id")
+    private CandidateOccupation candidateOccupation;
+
     private String companyName;
     private String role;
     private String startDate;
@@ -41,6 +45,14 @@ public class CandidateJobExperience extends AbstractDomainObject<Long> {
     public Country getCountry() { return country; }
 
     public void setCountry(Country country) { this.country = country; }
+
+    public CandidateOccupation getCandidateOccupation() {
+        return candidateOccupation;
+    }
+
+    public void setCandidateOccupation(CandidateOccupation candidateOccupation) {
+        this.candidateOccupation = candidateOccupation;
+    }
 
     public String getRole() {
         return role;

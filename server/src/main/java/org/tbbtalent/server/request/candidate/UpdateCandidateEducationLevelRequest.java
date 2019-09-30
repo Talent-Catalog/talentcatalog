@@ -2,9 +2,13 @@ package org.tbbtalent.server.request.candidate;
 
 public class UpdateCandidateEducationLevelRequest {
 
-    private String educationLevel;
+    private Long maxEducationLevelId;
 
-    public String getEducationLevel() { return educationLevel; }
+    public Long getMaxEducationLevelId() {
+        return maxEducationLevelId;
+    }
 
-    public void setEducationLevel(String educationLevel) { this.educationLevel = educationLevel; }
+    public void setMaxEducationLevelId(Long maxEducationLevelId) {
+        this.maxEducationLevelId = maxEducationLevelId;
+    }
 }

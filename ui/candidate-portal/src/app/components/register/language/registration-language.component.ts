@@ -34,7 +34,7 @@ export class RegistrationLanguageComponent implements OnInit {
               private languageLevelService: LanguageLevelService) { }
 
   ngOnInit() {
-    this.candidateLanguages = []
+    this.candidateLanguages = [];
     this.saving = false;
     this.loading = true;
     this.setUpForm();
@@ -50,8 +50,8 @@ export class RegistrationLanguageComponent implements OnInit {
         this.english = this.candidateLanguages.filter(l => l.language.name == "English");
          if(this.english.length !== 0){
           this.form.patchValue({
-             speakId: this.english[0].speak.id,
-             readWriteId: this.english[0].readWrite.id
+             spokenLevelId: this.english[0].spokenLevel.id,
+             writtenLevelId: this.english[0].writtenLevel.id
            });
          }
 
@@ -89,8 +89,8 @@ export class RegistrationLanguageComponent implements OnInit {
   setUpForm(){
     this.form = this.fb.group({
       languageId: ['', Validators.required],
-      speakId: ['', Validators.required],
-      readWriteId: ['', Validators.required],
+      spokenLevelId: ['', Validators.required],
+      writtenLevelId: ['', Validators.required],
       bilingual: ['', Validators.required]
       })
   };

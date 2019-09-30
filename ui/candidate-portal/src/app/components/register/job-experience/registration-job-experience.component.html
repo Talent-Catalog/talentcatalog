@@ -26,8 +26,8 @@
     <!-- Occupation -->
     <div class="col-12">
       <div class="form-group">
-        <label for="candiateOccupationId">Occupation</label>
-        <select class="form-control" name="candiateOccupationId" id="candiateOccupationId" [formControlName]="'candiateOccupationId'">
+        <label for="candidateOccupationId">Occupation</label>
+        <select class="form-control" name="candidateOccupationId" id="candidateOccupationId" [formControlName]="'candidateOccupationId'">
           <option value=""></option>
           <option *ngFor="let candidateOccupation of occupations" [value]="candidateOccupation.id">{{candidateOccupation.occupation.name}}</option>
         </select>
@@ -119,7 +119,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let e of experiences">
+        <tr *ngFor="let e of candidateJobExperiences">
           <td>{{e.companyName}}</td>
           <td>{{e.country.name}}</td>
           <td>{{e.role}}</td>

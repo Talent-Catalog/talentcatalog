@@ -6,8 +6,8 @@
 
     <!-- SPEAK ENGLISH -->
     <div class="form-group">
-      <label for="speakId">How well do you speak English?</label>
-        <select class="form-control" name="speakId" id="speakId" [formControlName]="'speakId'">
+      <label for="spokenLevelId">How well do you speak English?</label>
+        <select class="form-control" name="spokenLevelId" id="spokenLevelId" [formControlName]="'spokenLevelId'">
           <option value=""></option>
           <option *ngFor="let l of languageLevels" [value]="l.id">{{l.level}}</option>
         </select>
@@ -15,8 +15,8 @@
 
     <!-- READ WRITE ENGLISH -->
     <div class="form-group">
-      <label for="readWriteId">How well do you read and write in English?</label>
-      <select class="form-control" name="readWriteId" id="readWriteId" [formControlName]="'readWriteId'">
+      <label for="writtenLevelId">How well do you read and write in English?</label>
+      <select class="form-control" name="writtenLevelId" id="writtenLevelId" [formControlName]="'writtenLevelId'">
         <option value=""></option>
         <option *ngFor="let l of languageLevels" [value]="l.id">{{l.level}}</option>
       </select>
@@ -48,8 +48,8 @@
         <option *ngFor="let l of languageLevels" [value]="l.id">{{l.level}}</option>
       </select>
 
-      <label for="readWriteId">How well do you read and write in this language?</label>
-      <select class="form-control" name="readWriteId" id="readWriteId" formControlName="readWriteId">
+      <label for="writtenLevelId">How well do you read and write in this language?</label>
+      <select class="form-control" name="writtenLevelId" id="writtenLevelId" formControlName="readWriteId">
         <option value=""></option>
         <option *ngFor="let l of languageLevels" [value]="l.id">{{l.level}}</option>
       </select>
@@ -78,8 +78,8 @@
       <tbody>
       <tr *ngFor="let l of candidateLanguages">
         <td>{{l.language.name}}</td>
-        <td>{{l.speak.level}}</td>
-        <td>{{l.readWrite.level}}</td>
+        <td>{{l.spokenLevel.level}}</td>
+        <td>{{l.writtenLevel.level}}</td>
         <td>
           <button type="button" class="close" aria-label="Close"
                   [disabled]="saving"

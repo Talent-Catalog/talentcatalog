@@ -27,6 +27,8 @@ import {LocalStorageModule} from "angular-2-local-storage";
 import {JwtInterceptor} from "./services/jwt.interceptor";
 import {AuthService} from "./services/auth.service";
 import {CandidateService} from "./services/candidate.service";
+import {LoginComponent} from "./components/login/login.component";
+import {ErrorInterceptor} from "./services/error.interceptor";
 
 @NgModule({
   declarations: [
@@ -47,7 +49,8 @@ import {CandidateService} from "./services/candidate.service";
     RegistrationLanguageComponent,
     RegistrationCertificationsComponent,
     RegistrationAdditionalInfoComponent,
-    RegistrationAdditionalContactComponent
+    RegistrationAdditionalContactComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
@@ -62,6 +65,7 @@ import {CandidateService} from "./services/candidate.service";
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
     AuthService,
     CandidateService
   ],

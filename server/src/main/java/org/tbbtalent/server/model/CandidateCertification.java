@@ -1,10 +1,12 @@
 package org.tbbtalent.server.model;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.util.Date;
 
 @Entity
-@Table(name = "certification")
-@SequenceGenerator(name = "seq_gen", sequenceName = "certification_id_seq", allocationSize = 1)
+@Table(name = "candidate_certification")
+@SequenceGenerator(name = "seq_gen", sequenceName = "candidate_certification_id_seq", allocationSize = 1)
 public class CandidateCertification extends AbstractDomainObject<Long>  {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -13,7 +15,7 @@ public class CandidateCertification extends AbstractDomainObject<Long>  {
 
     private String name;
     private String institution;
-    private String dateCompleted;
+    private LocalDate dateCompleted;
 
     public CandidateCertification() {
     }
@@ -34,7 +36,7 @@ public class CandidateCertification extends AbstractDomainObject<Long>  {
 
     public void setInstitution(String institution) { this.institution = institution; }
 
-    public String getDateCompleted() { return dateCompleted; }
+    public LocalDate getDateCompleted() { return dateCompleted; }
 
-    public void setDateCompleted(String dateCompleted) { this.dateCompleted = dateCompleted; }
+    public void setDateCompleted(LocalDate dateCompleted) { this.dateCompleted = dateCompleted; }
 }

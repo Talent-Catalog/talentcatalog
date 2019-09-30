@@ -36,8 +36,8 @@ export class RegistrationContactComponent implements OnInit {
       this.candidateService.getCandidateContactInfo().subscribe(
         (response) => {
           this.candidate = response;
-          this.form.patchValue({email: response.email});
-          this.form.patchValue({username: response.username});
+          this.form.patchValue({email: response.user.email});
+          this.form.patchValue({username: response.user.username});
           this.loading = false;
         },
         (error) => {

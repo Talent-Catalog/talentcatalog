@@ -1,5 +1,6 @@
 package org.tbbtalent.server.request.candidate;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class UpdateCandidatePersonalRequest {
@@ -7,7 +8,7 @@ public class UpdateCandidatePersonalRequest {
     private String firstName;
     private String lastName;
     private String gender;
-    private Date dob;
+    private LocalDate dob;
 
     public String getFirstName() {
         return firstName;
@@ -29,11 +30,11 @@ public class UpdateCandidatePersonalRequest {
 
     public void setGender(String gender) { this.gender = gender; }
 
-    public Date getDob() {
+    public LocalDate getDob() {
         return dob;
     }
 
-    public void setDob(Date dob) {
+    public void setDob(LocalDate dob) {
         this.dob = dob;
     }
 }

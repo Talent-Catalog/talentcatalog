@@ -3,13 +3,9 @@ package org.tbbtalent.server.model;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "education")
-public class Education  extends AbstractDomainObject<Long> {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "education_gen")
-    @SequenceGenerator(name = "education_gen", sequenceName = "education_id_seq", allocationSize = 1)
-    private Long id;
+@Table(name = "candidate_education")
+@SequenceGenerator(name = "seq_gen", sequenceName = "candidate_education_id_seq", allocationSize = 1)
+public class CandidateEducation extends AbstractDomainObject<Long> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_id")
@@ -30,15 +26,7 @@ public class Education  extends AbstractDomainObject<Long> {
     // TODO determine if this is a date or a year?
     private String dateCompleted;
 
-    public Education() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    public CandidateEducation() {
     }
 
     public Candidate getCandidate() {

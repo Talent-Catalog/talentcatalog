@@ -34,8 +34,8 @@ export class RegistrationPersonalComponent implements OnInit {
     this.candidateService.getCandidatePersonal().subscribe(
       (response) => {
         this.form.patchValue({
-          firstName: response.firstName,
-          lastName: response.lastName,
+          firstName: response.user.firstName,
+          lastName: response.user.lastName,
           gender: response.gender,
           dob: response.dob,
         });

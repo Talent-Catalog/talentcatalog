@@ -6,7 +6,9 @@ import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.model.CandidateJobExperience;
+import org.tbbtalent.server.model.CandidateOccupation;
 import org.tbbtalent.server.model.Country;
+import org.tbbtalent.server.repository.CandidateOccupationRepository;
 import org.tbbtalent.server.repository.CountryRepository;
 import org.tbbtalent.server.repository.CandidateJobExperienceRepository;
 import org.tbbtalent.server.request.work.experience.CreateJobExperienceRequest;
@@ -18,14 +20,17 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
 
     private final CandidateJobExperienceRepository candidateJobExperienceRepository;
     private final CountryRepository countryRepository;
+    private final CandidateOccupationRepository candidateOccupationRepository;
     private final UserContext userContext;
 
     @Autowired
     public CandidateJobExperienceImpl(CandidateJobExperienceRepository candidateJobExperienceRepository,
+                                      CandidateOccupationRepository candidateOccupationRepository,
                                       CountryRepository countryRepository,
                                       UserContext userContext) {
         this.candidateJobExperienceRepository = candidateJobExperienceRepository;
         this.countryRepository = countryRepository;
+        this.candidateOccupationRepository = candidateOccupationRepository;
         this.userContext = userContext;
     }
 
@@ -40,10 +45,15 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
         Country country = countryRepository.findById(request.getCountryId())
                 .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountryId()));
 
+        // Load the candidate occupation from the database - throw an exception if not found
+        CandidateOccupation occupation = candidateOccupationRepository.findById(request.getCountryId())
+                .orElseThrow(() -> new NoSuchObjectException(CandidateOccupation.class, request.getCandidateOccupationId()));
+
         // Create a new candidateOccupation object to insert into the database
         CandidateJobExperience candidateJobExperience = new CandidateJobExperience();
         candidateJobExperience.setCandidate(candidate);
         candidateJobExperience.setCountry(country);
+        candidateJobExperience.setCandidateOccupation(occupation);
         candidateJobExperience.setCompanyName(request.getCompanyName());
         candidateJobExperience.setRole(request.getRole());
         candidateJobExperience.setStartDate(request.getStartDate());

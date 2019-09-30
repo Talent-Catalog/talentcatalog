@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.Candidate;
+import org.tbbtalent.server.model.CandidateEducation;
 import org.tbbtalent.server.model.Country;
-import org.tbbtalent.server.model.Education;
 import org.tbbtalent.server.model.EducationType;
 import org.tbbtalent.server.repository.CountryRepository;
 import org.tbbtalent.server.repository.EducationRepository;
@@ -32,7 +32,7 @@ public class EducationServiceImpl implements EducationService {
 
 
     @Override
-    public Education createEducation(CreateEducationRequest request) {
+    public CandidateEducation createEducation(CreateEducationRequest request) {
         Candidate candidate = userContext.getLoggedInCandidate();
 
         // Load the country from the database - throw an exception if not found
@@ -43,27 +43,27 @@ public class EducationServiceImpl implements EducationService {
         EducationType educationType = EducationType.valueOf(request.getEducationType());
 
         // Create a new candidateOccupation object to insert into the database
-        Education education = new Education();
-        education.setCandidate(candidate);
-        education.setEducationType(educationType);
-        education.setCountry(country);
-        education.setLengthOfCourseYears(request.getLengthOfCourseYears());
-        education.setInstitution(request.getInstitution());
-        education.setCourseName(request.getCourseName());
-        education.setDateCompleted(request.getDateCompleted());
+        CandidateEducation candidateEducation = new CandidateEducation();
+        candidateEducation.setCandidate(candidate);
+        candidateEducation.setEducationType(educationType);
+        candidateEducation.setCountry(country);
+        candidateEducation.setLengthOfCourseYears(request.getLengthOfCourseYears());
+        candidateEducation.setInstitution(request.getInstitution());
+        candidateEducation.setCourseName(request.getCourseName());
+        candidateEducation.setDateCompleted(request.getDateCompleted());
 
         // Save the candidateOccupation
-        return educationRepository.save(education);
+        return educationRepository.save(candidateEducation);
     }
 
     @Override
-    public Education updateEducation(CreateEducationRequest request) {
+    public CandidateEducation updateEducation(CreateEducationRequest request) {
         // Get ENUM for education type
         EducationType educationType = EducationType.valueOf(request.getEducationType());
 
         Candidate candidate = userContext.getLoggedInCandidate();
 
-        Education education = educationRepository.findByIdLoadEducationType(educationType);
+        CandidateEducation candidateEducation = educationRepository.findByIdLoadEducationType(educationType);
 
         // Load the country from the database - throw an exception if not found
         Country country = countryRepository.findById(request.getCountryId())
@@ -71,16 +71,16 @@ public class EducationServiceImpl implements EducationService {
 
 
         // Update education object to insert into the database
-        education.setCandidate(candidate);
-        education.setEducationType(educationType);
-        education.setCountry(country);
-        education.setLengthOfCourseYears(request.getLengthOfCourseYears());
-        education.setInstitution(request.getInstitution());
-        education.setCourseName(request.getCourseName());
-        education.setDateCompleted(request.getDateCompleted());
+        candidateEducation.setCandidate(candidate);
+        candidateEducation.setEducationType(educationType);
+        candidateEducation.setCountry(country);
+        candidateEducation.setLengthOfCourseYears(request.getLengthOfCourseYears());
+        candidateEducation.setInstitution(request.getInstitution());
+        candidateEducation.setCourseName(request.getCourseName());
+        candidateEducation.setDateCompleted(request.getDateCompleted());
 
         // Save the candidateOccupation
-        return educationRepository.save(education);
+        return educationRepository.save(candidateEducation);
     }
 
 }

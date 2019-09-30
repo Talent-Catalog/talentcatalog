@@ -16,7 +16,7 @@ export class RegistrationCertificationsComponent implements OnInit {
   loading: boolean;
   saving: boolean;
   form: FormGroup;
-  certifications: CandidateCertification[];
+  candidateCertifications: CandidateCertification[];
 
   constructor(private fb: FormBuilder,
               private router: Router,
@@ -24,7 +24,7 @@ export class RegistrationCertificationsComponent implements OnInit {
               private certificationService: CertificationService ) { }
 
   ngOnInit() {
-    this.certifications = [];
+    this.candidateCertifications = [];
     this.saving = false;
     this.loading = false;
     this.setUpForm();
@@ -32,7 +32,7 @@ export class RegistrationCertificationsComponent implements OnInit {
    /* Load the candidate data */
     this.candidateService.getCandidateCertifications().subscribe(
       (candidate) => {
-        this.certifications = candidate.certifications || [];
+        this.candidateCertifications = candidate.candidateCertifications || [];
       },
       (error) => {
         this.error = error;
@@ -53,7 +53,7 @@ export class RegistrationCertificationsComponent implements OnInit {
     this.saving = true;
     this.certificationService.createCertification(this.form.value).subscribe(
       (response) => {
-        this.certifications.push(response);
+        this.candidateCertifications.push(response);
         this.saving = false;
       },
       (error) => {
@@ -69,7 +69,7 @@ export class RegistrationCertificationsComponent implements OnInit {
     this.saving = true;
     this.certificationService.deleteCertification(certification.id).subscribe(
       () => {
-        this.certifications = this.certifications.filter(c => c !== certification);
+        this.candidateCertifications = this.candidateCertifications.filter(c => c !== certification);
         this.saving = false;
       },
       (error) => {
@@ -80,7 +80,7 @@ export class RegistrationCertificationsComponent implements OnInit {
   }
 
     next() {
-      console.log(this.certifications);
+      console.log(this.candidateCertifications);
       // TODO check if the form is not empty and warn the user
       this.router.navigate(['register', 'additional-information']);
     }

@@ -39,8 +39,8 @@ export class RegistrationAlternateContactComponent implements OnInit {
         (response) => {
           this.candidate = response;
           this.form.patchValue({
-            username: response.username,
-            email: response.email,
+            username: response.user.username,
+            email: response.user.email,
             phone: response.phone,
             whatsapp: response.whatsapp
           });

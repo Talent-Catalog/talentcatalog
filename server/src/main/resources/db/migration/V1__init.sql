@@ -48,6 +48,7 @@ create table occupation
 );
 
 
+
 create table education_level
 (
 id                      bigserial not null primary key,
@@ -57,6 +58,13 @@ status                  text not null default 'active'
 
 );
 
+create table education_major
+(
+id                      bigserial not null primary key,
+name                    text,
+status                  text not null default 'active'
+
+);
 
 create table users
 (

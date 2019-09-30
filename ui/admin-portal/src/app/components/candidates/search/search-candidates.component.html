@@ -80,7 +80,7 @@
           <label for="educationLevel">Education Level</label>
           <select class="form-control" id="educationLevel" name="educationLevel" [formControlName]="'educationLevel'">
             <option value=""></option>
-            <option *ngFor="let education of educationLevels" [value]="education.id">{{education.label}}</option>
+            <option *ngFor="let candidateEducation of educationLevels" [value]="candidateEducation.id">{{candidateEducation.label}}</option>
           </select>
         </div>
 

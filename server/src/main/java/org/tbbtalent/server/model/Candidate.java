@@ -1,6 +1,7 @@
 package org.tbbtalent.server.model;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,7 +15,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private String phone;
     private String whatsapp;
     private String gender;
-    private Date dob;
+    private LocalDate dob;
     private String city;
     private Integer yearOfArrival;
     private Boolean unRegistered;
@@ -44,7 +45,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private Set<CandidateOccupation> candidateOccupations = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
-    private Set<Education> candidateEducation = new HashSet<>();
+    private Set<CandidateEducation> candidateEducation = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     private Set<CandidateLanguage> candidateLanguages = new HashSet<>();
@@ -98,11 +99,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.gender = gender;
     }
 
-    public Date getDob() {
+    public LocalDate getDob() {
         return dob;
     }
 
-    public void setDob(Date dob) {
+    public void setDob(LocalDate dob) {
         this.dob = dob;
     }
 
@@ -194,11 +195,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.candidateOccupations = candidateOccupations;
     }
 
-    public Set<Education> getCandidateEducation() {
+    public Set<CandidateEducation> getCandidateEducation() {
         return candidateEducation;
     }
 
-    public void setCandidateEducation(Set<Education> candidateEducation) {
+    public void setCandidateEducation(Set<CandidateEducation> candidateEducation) {
         this.candidateEducation = candidateEducation;
     }
 

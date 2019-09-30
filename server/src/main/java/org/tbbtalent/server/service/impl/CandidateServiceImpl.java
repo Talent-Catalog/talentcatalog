@@ -32,6 +32,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final UserRepository userRepository;
     private final CandidateRepository candidateRepository;
     private final CountryRepository countryRepository;
+    private final EducationLevelRepository educationLevelRepository;
     private final NationalityRepository nationalityRepository;
     private final PasswordHelper passwordHelper;
     private final AuthenticationManager authenticationManager;
@@ -41,6 +42,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Autowired
     public CandidateServiceImpl(UserRepository userRepository, CandidateRepository candidateRepository,
                                 CountryRepository countryRepository,
+                                EducationLevelRepository educationLevelRepository,
                                 NationalityRepository nationalityRepository,
                                 PasswordHelper passwordHelper,
                                 AuthenticationManager authenticationManager,
@@ -49,6 +51,7 @@ public class CandidateServiceImpl implements CandidateService {
         this.userRepository = userRepository;
         this.candidateRepository = candidateRepository;
         this.countryRepository = countryRepository;
+        this.educationLevelRepository = educationLevelRepository;
         this.nationalityRepository = nationalityRepository;
         this.passwordHelper = passwordHelper;
         this.authenticationManager = authenticationManager;
@@ -299,7 +302,12 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Candidate updateEducationLevel(UpdateCandidateEducationLevelRequest request) {
         Candidate candidate = getLoggedInCandidate();
-        //candidate.setMaxEducationLevel(request.getEducationLevel()); todo
+
+        // Load the nationality from the database - throw an exception if not found
+        EducationLevel educationLevel = educationLevelRepository.findById(request.getMaxEducationLevelId())
+                .orElseThrow(() -> new NoSuchObjectException(EducationLevel.class, request.getMaxEducationLevelId()));
+
+        candidate.setMaxEducationLevel(educationLevel);
         return candidateRepository.save(candidate);
     }
 

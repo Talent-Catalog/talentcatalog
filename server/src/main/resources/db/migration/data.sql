@@ -44,7 +44,7 @@ insert into occupation (name) values ('Bookkeeper');
 insert into occupation (name) values ('Carpenter or Joiner');
 insert into occupation (name) values ('Cartoonist');
 
--- Add education level
+-- Add candidateEducation level
 insert into education_level (name, sort_order) values ('No Formal Education', 0);
 insert into education_level (name, sort_order) values ('Primary School', 1);
 insert into education_level (name, sort_order) values ('Some Secondary School', 2);
@@ -56,3 +56,6 @@ insert into education_level (name, sort_order) values ('Vocational Degree', 7);
 insert into education_level (name, sort_order) values ('Some University', 8);
 insert into education_level (name, sort_order) values ('Bachelors Degree', 9);
 insert into education_level (name, sort_order) values ('Doctoral Degree', 10);
+
+insert into education_major (name) values ('Accounting');
+insert into education_major (name) values ('Engineering');

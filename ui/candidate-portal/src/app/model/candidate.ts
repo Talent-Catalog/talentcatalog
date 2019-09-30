@@ -5,14 +5,13 @@ import {Nationality} from "./nationality";
 import {CandidateJobExperience} from "./candidate-job-experience";
 import {CandidateCertification} from "./candidate-certification";
 import {CandidateLanguage} from "./candidate-language";
+import {EducationLevel} from "./education-level";
+import {User} from "./user";
 
 export interface Candidate {
   id: number;
-  username: string;
+  user: User;
   candidateNumber: string;
-  firstName: string;
-  lastName: string;
-  email: string;
   phone: string;
   whatsapp: string;
   gender: string;
@@ -23,11 +22,11 @@ export interface Candidate {
   yearOfArrival: number;
   nationality: Nationality;
   registeredWithUN: boolean;
-  jobExperiences: CandidateJobExperience[];
-  certifications: CandidateCertification[];
+  candidateJobExperiences: CandidateJobExperience[];
+  candidateCertifications: CandidateCertification[];
   candidateLanguages: CandidateLanguage[];
   registrationId: string;
-  educationLevel: string;
+  maxEducationLevel: EducationLevel;
   educations: CandidateEducation[];
   additionalInfo: string;
 }

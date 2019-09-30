@@ -5,10 +5,10 @@
   <form [formGroup]="form">
 
     <div class="form-group">
-      <label for="educationLevel">What is the highest level of education you've obtained?</label>
-      <select class="form-control" id="educationLevel" name="educationLevel" [formControlName]="'educationLevel'">
+      <label for="maxEducationLevelId">What is the highest level of candidateEducation you've obtained?</label>
+      <select class="form-control" id="maxEducationLevelId" name="maxEducationLevelId" [formControlName]="'maxEducationLevelId'">
         <option value=""></option>
-        <option *ngFor="let education of educationLevels" [value]="education.id">{{education.label}}</option>
+        <option *ngFor="let educationLevel of educationLevels" [value]="educationLevel.id">{{educationLevel.name}}</option>
       </select>
     </div>
 

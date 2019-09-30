@@ -43,11 +43,11 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
                 .orElseThrow(() -> new NoSuchObjectException(Language.class, request.getLanguageId()));
 
         // Load the languageLevels from the database - throw an exception if not found
-        LanguageLevel languageSpeak = languageLevelRepository.findById(request.getSpeakId())
-                .orElseThrow(() -> new NoSuchObjectException(LanguageLevel.class, request.getSpeakId()));
+        LanguageLevel languageSpeak = languageLevelRepository.findById(request.getSpokenLevelId())
+                .orElseThrow(() -> new NoSuchObjectException(LanguageLevel.class, request.getSpokenLevelId()));
 
-        LanguageLevel languageReadWrite = languageLevelRepository.findById(request.getReadWriteId())
-                .orElseThrow(() -> new NoSuchObjectException(LanguageLevel.class, request.getReadWriteId()));
+        LanguageLevel languageReadWrite = languageLevelRepository.findById(request.getWrittenLevelId())
+                .orElseThrow(() -> new NoSuchObjectException(LanguageLevel.class, request.getWrittenLevelId()));
 
         // Create a new candidateOccupation object to insert into the database
         CandidateLanguage candidateLanguage = new CandidateLanguage();

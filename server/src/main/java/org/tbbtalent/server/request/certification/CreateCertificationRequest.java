@@ -1,10 +1,13 @@
 package org.tbbtalent.server.request.certification;
 
+import java.time.LocalDate;
+import java.util.Date;
+
 public class CreateCertificationRequest {
 
     private String name;
     private String institution;
-    private String dateCompleted;
+    private LocalDate dateCompleted;
 
     public String getName() { return name; }
 
@@ -14,7 +17,7 @@ public class CreateCertificationRequest {
 
     public void setInstitution(String institution) { this.institution = institution; }
 
-    public String getDateCompleted() { return dateCompleted; }
+    public LocalDate getDateCompleted() { return dateCompleted; }
 
-    public void setDateCompleted(String dateCompleted) { this.dateCompleted = dateCompleted; }
+    public void setDateCompleted(LocalDate dateCompleted) { this.dateCompleted = dateCompleted; }
 }
