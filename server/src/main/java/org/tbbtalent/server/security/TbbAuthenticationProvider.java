@@ -5,9 +5,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-public class CandidateAuthenticationProvider extends DaoAuthenticationProvider {
+public class TbbAuthenticationProvider extends DaoAuthenticationProvider {
 
-    public CandidateAuthenticationProvider(UserDetailsService userDetailsService) {
+    public TbbAuthenticationProvider(UserDetailsService userDetailsService) {
         this.setUserDetailsService(userDetailsService);
     }
 
@@ -18,7 +18,7 @@ public class CandidateAuthenticationProvider extends DaoAuthenticationProvider {
 
     @Override
     public boolean supports( Class<?> authentication ) {
-        if (authentication.isAssignableFrom(CandidateAuthorizationToken.class)) {
+        if (authentication.isAssignableFrom(TbbAuthorizationToken.class)) {
             return true;
         }
         return false;

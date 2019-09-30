@@ -26,7 +26,7 @@ public class CandidateUserDetailsService implements UserDetailsService {
     public AuthenticatedUser loadUserByUsername(String username) throws UsernameNotFoundException {
 
         /* Handle JWT token parsing */
-        User user = userRepository.findByUsernameAndRole(username, Role.user);
+        User user = userRepository.findByUsernameIgnoreCase(username);
         /* Handle authentication */
         if (user == null) {
             throw new UsernameNotFoundException("No user found for: " + username);

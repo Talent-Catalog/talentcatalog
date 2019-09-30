@@ -15,7 +15,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.tbbtalent.server.security.CandidateAuthenticationProvider;
+import org.tbbtalent.server.security.TbbAuthenticationProvider;
 import org.tbbtalent.server.security.CandidateUserDetailsService;
 import org.tbbtalent.server.security.JwtAuthenticationEntryPoint;
 import org.tbbtalent.server.security.JwtAuthenticationFilter;
@@ -83,10 +83,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         auth.authenticationProvider(userAuthenticationProvider());
     }
 
-    private CandidateAuthenticationProvider userAuthenticationProvider() {
-        CandidateAuthenticationProvider candidateAuthenticationProvider = new CandidateAuthenticationProvider(userDetailsService);
-        candidateAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-        return candidateAuthenticationProvider;
+    private TbbAuthenticationProvider userAuthenticationProvider() {
+        TbbAuthenticationProvider tbbAuthenticationProvider = new TbbAuthenticationProvider(userDetailsService);
+        tbbAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+        return tbbAuthenticationProvider;
     }
 
 }
