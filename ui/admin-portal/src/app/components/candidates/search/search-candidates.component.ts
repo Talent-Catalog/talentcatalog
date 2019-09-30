@@ -165,5 +165,4 @@ export class SearchCandidatesComponent implements OnInit {
       this.loading = false;
     });
   }
-
 }

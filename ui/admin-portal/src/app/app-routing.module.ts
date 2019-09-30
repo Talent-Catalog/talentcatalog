@@ -7,6 +7,8 @@ import {ViewCandidateComponent} from './components/candidates/view/view-candidat
 import {EditCandidateComponent} from './components/candidates/edit/edit-candidate.component';
 import {AuthGuard} from "./services/auth.guard";
 import {LoginComponent} from "./components/login/login.component";
+import {SearchUsersComponent} from "./components/settings/users/search-users.component";
+import {SettingsComponent} from "./components/settings/settings.component";
 
 const routes: Routes = [
   {
@@ -37,6 +39,20 @@ const routes: Routes = [
           {
             path: ':candidateId/edit',
             component: EditCandidateComponent
+          }
+        ]
+      },
+      {
+        path: 'settings',
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            component: SettingsComponent
+          },
+          {
+            path: 'users',
+            component: SearchUsersComponent
           }
         ]
       }

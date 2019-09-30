@@ -153,7 +153,7 @@ public class CandidateServiceImpl implements CandidateService {
         } catch (LockedException e) {
             throw new AccountLockedException("Account locked");
         } catch (DisabledException e) {
-            throw new CandidateDeactivatedException();
+            throw new UserDeactivatedException();
         } catch (CredentialsExpiredException e) {
             throw new PasswordExpiredException();
         }

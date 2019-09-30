@@ -21,18 +21,30 @@ import {ErrorInterceptor} from "./services/error.interceptor";
 import {AuthService} from "./services/auth.service";
 import {LocalStorageModule} from "angular-2-local-storage";
 import {LoginComponent} from "./components/login/login.component";
+import {SettingsComponent} from "./components/settings/settings.component";
+import {SearchUsersComponent} from "./components/settings/users/search-users.component";
+import {SearchNationalitiesComponent} from "./components/settings/nationalities/search-nationalities.component";
+import {CreateNationalityComponent} from "./components/settings/nationalities/create/create-nationality.component";
+import {EditNationalityComponent} from "./components/settings/nationalities/edit/edit-nationality.component";
+import {ConfirmationComponent} from "./components/util/confirm/confirmation.component";
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     HeaderComponent,
+    ConfirmationComponent,
     SearchCandidatesComponent,
     HomeComponent,
     CreateCandidateComponent,
     ViewCandidateComponent,
     EditCandidateComponent,
-    DeleteCandidateComponent
+    DeleteCandidateComponent,
+    SettingsComponent,
+    SearchUsersComponent,
+    SearchNationalitiesComponent,
+    EditNationalityComponent,
+    CreateNationalityComponent
   ],
   imports: [
     BrowserModule,
@@ -48,7 +60,11 @@ import {LoginComponent} from "./components/login/login.component";
     })
   ],
   entryComponents: [
-    DeleteCandidateComponent
+    DeleteCandidateComponent,
+    SearchNationalitiesComponent,
+    CreateNationalityComponent,
+    EditNationalityComponent,
+    ConfirmationComponent
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},

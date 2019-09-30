@@ -1,0 +1,9 @@
+<ul class="nav nav-tabs">
+  <li class="nav-item" *ngFor="let tab of tabs">
+    <a class="nav-link active" (click)="setSelectedTab(tab)">{{tab.label}}</a>
+  </li>
+</ul>
+<ng-container *ngComponentOutlet="selectedTab.component">
+</ng-container>
+
+

@@ -15,12 +15,12 @@ import org.tbbtalent.server.exception.*;
 import org.tbbtalent.server.model.*;
 import org.tbbtalent.server.repository.*;
 import org.tbbtalent.server.request.LoginRequest;
-import org.tbbtalent.server.request.candidate.*;
+import org.tbbtalent.server.request.user.*;
 import org.tbbtalent.server.response.JwtAuthenticationResponse;
 import org.tbbtalent.server.security.JwtTokenProvider;
 import org.tbbtalent.server.security.PasswordHelper;
 import org.tbbtalent.server.security.UserContext;
-import org.tbbtalent.server.service.CandidateService;
+import org.tbbtalent.server.service.UserService;
 import org.tbbtalent.server.service.UserService;
 
 import javax.security.auth.login.AccountLockedException;
@@ -49,6 +49,71 @@ public class UserServiceImpl implements UserService {
         this.userContext = userContext;
     }
 
+    @Override
+    public Page<User> searchUsers(SearchUserRequest request) {
+        Page<User> users = userRepository.findAll(
+                UserSpecification.buildSearchQuery(request), request.getPageRequest());
+        log.info("Found " + users.getTotalElements() + " users in search");
+        return users;
+    }
+
+    @Override
+    public User getUser(long id) {
+        return this.userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(User.class, id));
+    }
+
+    @Override
+    @Transactional
+    public User createUser(CreateUserRequest request) throws UsernameTakenException {
+        User user = new User(
+                StringUtils.isBlank(request.getUsername()) ? request.getEmail() : null,
+                request.getFirstName(),
+                request.getLastName(),
+                request.getEmail(),
+                Role.user);
+
+        User existing = userRepository.findByUsernameIgnoreCase(user.getUsername());
+        if (existing != null){
+            throw new UsernameTakenException("username");
+        }
+
+        existing = userRepository.findByEmailIgnoreCase(user.getEmail());
+        if (existing != null){
+            throw new UsernameTakenException("email");
+        }
+        return this.userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public User updateUser(long id, UpdateUserRequest request) {
+        User user = this.userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(User.class, id));
+
+        if (!user.getEmail().equalsIgnoreCase(request.getEmail())){
+            User existing = userRepository.findByEmailIgnoreCase(request.getEmail());
+            if (existing != null){
+                throw new UsernameTakenException("email");
+            }
+        }
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setEmail(request.getEmail());
+
+        return userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void deleteUser(long id) {
+        User user = userRepository.findById(id).orElse(null);
+        if (user != null) {
+            user.setStatus(Status.deleted);
+            userRepository.save(user);
+        }
+    }
+    
 
     @Override
     public JwtAuthenticationResponse login(LoginRequest request) throws AccountLockedException {
@@ -68,11 +133,11 @@ public class UserServiceImpl implements UserService {
 
         } catch (BadCredentialsException e) {
             // map spring exception to a service exception for better handling
-            throw new InvalidCredentialsException("Invalid credentials for candidate");
+            throw new InvalidCredentialsException("Invalid credentials for user");
         } catch (LockedException e) {
             throw new AccountLockedException("Account locked");
         } catch (DisabledException e) {
-            throw new CandidateDeactivatedException();
+            throw new UserDeactivatedException();
         } catch (CredentialsExpiredException e) {
             throw new PasswordExpiredException();
         }
@@ -87,7 +152,7 @@ public class UserServiceImpl implements UserService {
     public User getLoggedInUser() {
         User user = userContext.getLoggedInUser();
         if (user == null) {
-            throw new InvalidSessionException("Can not find an active session for a candidate with this token");
+            throw new InvalidSessionException("Can not find an active session for a user with this token");
         }
         return user;
     }

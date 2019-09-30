@@ -31,7 +31,7 @@ public class AuthPortalApi {
     @PostMapping("login")
     public Map<String, Object> login(@RequestBody LoginRequest request)
             throws AccountLockedException, PasswordExpiredException, InvalidCredentialsException,
-            InvalidPasswordFormatException, CandidateDeactivatedException {
+            InvalidPasswordFormatException, UserDeactivatedException {
         JwtAuthenticationResponse response = this.candidateService.login(request);
         return jwtDto().build(response);
     }

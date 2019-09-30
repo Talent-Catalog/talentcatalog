@@ -15,6 +15,11 @@ public class Nationality  extends AbstractDomainObject<Long> {
     public Nationality() {
     }
 
+    public Nationality(String name, Status status) {
+        this.name = name;
+        this.status = status;
+    }
+
     public String getName() {
         return name;
     }
