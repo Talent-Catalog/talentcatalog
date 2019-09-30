@@ -75,13 +75,18 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     @Transactional
-    public Candidate createCandidate(CreateCandidateRequest request) {
+    public Candidate createCandidate(CreateCandidateRequest request) throws UsernameTakenException {
         User user = new User(
-                request.getUsername(),
+                StringUtils.isBlank(request.getUsername()) ? request.getEmail() : null,
                 request.getFirstName(),
                 request.getLastName(),
                 request.getEmail(),
                 Role.user);
+
+        User existing = userRepository.findByUsernameIgnoreCase(user.getUsername());
+        if (existing != null){
+            throw new UsernameTakenException("A user already exists with username: "+existing.getUsername());
+        }
 
         user = this.userRepository.save(user);
 

@@ -1,8 +1,8 @@
+import {User} from "./user";
+
 export interface Candidate {
   id: number;
   candidateNumber: string;
   displayName: string;
-  firstName: string;
-  lastName: string;
-  email: string;
+  user: User;
 }

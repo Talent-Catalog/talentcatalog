@@ -1,25 +1,31 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
+import {BrowserModule} from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {NgMultiSelectDropDownModule} from 'ng-multiselect-dropdown';
 
 
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './components/app.component';
-import { HeaderComponent } from './components/header/header.component';
-import { SearchCandidatesComponent } from './components/candidates/search/search-candidates.component';
-import { HomeComponent } from './components/home/home.component';
-import { HttpClientModule } from '@angular/common/http';
-import { CreateCandidateComponent } from './components/candidates/create/create-candidate.component';
-import { ReactiveFormsModule } from '@angular/forms';
-import { ViewCandidateComponent } from './components/candidates/view/view-candidate.component';
-import { EditCandidateComponent } from './components/candidates/edit/edit-candidate.component';
-import { DeleteCandidateComponent } from './components/candidates/delete/delete-candidate.component';
-import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import {AppRoutingModule} from './app-routing.module';
+import {AppComponent} from './components/app.component';
+import {HeaderComponent} from './components/header/header.component';
+import {SearchCandidatesComponent} from './components/candidates/search/search-candidates.component';
+import {HomeComponent} from './components/home/home.component';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
+import {CreateCandidateComponent} from './components/candidates/create/create-candidate.component';
+import {ReactiveFormsModule} from '@angular/forms';
+import {ViewCandidateComponent} from './components/candidates/view/view-candidate.component';
+import {EditCandidateComponent} from './components/candidates/edit/edit-candidate.component';
+import {DeleteCandidateComponent} from './components/candidates/delete/delete-candidate.component';
+import {InfiniteScrollModule} from 'ngx-infinite-scroll';
+import {JwtInterceptor} from "./services/jwt.interceptor";
+import {ErrorInterceptor} from "./services/error.interceptor";
+import {AuthService} from "./services/auth.service";
+import {LocalStorageModule} from "angular-2-local-storage";
+import {LoginComponent} from "./components/login/login.component";
 
 @NgModule({
   declarations: [
     AppComponent,
+    LoginComponent,
     HeaderComponent,
     SearchCandidatesComponent,
     HomeComponent,
@@ -35,12 +41,19 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
     ReactiveFormsModule,
     NgbModule,
     InfiniteScrollModule,
-    NgMultiSelectDropDownModule
+    NgMultiSelectDropDownModule,
+    LocalStorageModule.forRoot({
+      prefix: 'tbb-admin',
+      storageType: 'localStorage'
+    })
   ],
   entryComponents: [
     DeleteCandidateComponent
   ],
-  providers: [],
+  providers: [
+    {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
+    AuthService],
   bootstrap: [AppComponent]
 })
 export class AppModule {

@@ -28,9 +28,9 @@ export class EditCandidateComponent implements OnInit {
       this.candidateService.get(this.candidateId).subscribe(candidate => {
         this.candidateForm = this.fb.group({
           candidateNumber: [candidate.candidateNumber],
-          firstName: [candidate.firstName],
-          lastName: [candidate.lastName],
-          email: [candidate.email],
+          firstName: [candidate.user.firstName],
+          lastName: [candidate.user.lastName],
+          email: [candidate.user.email],
         });
         this.loading = false;
       });

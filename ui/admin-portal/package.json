@@ -21,6 +21,8 @@
     "@angular/platform-browser-dynamic": "~7.0.0",
     "@angular/router": "~7.0.0",
     "@ng-bootstrap/ng-bootstrap": "^4.1.2",
+    "angular-2-local-storage": "^3.0.2",
+    "angular-local-storage": "^0.7.1",
     "bootstrap": "^4.3.1",
     "core-js": "^2.5.4",
     "font-awesome": "^4.7.0",

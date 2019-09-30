@@ -3,6 +3,7 @@ package org.tbbtalent.server.api.admin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
+import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
@@ -36,7 +37,7 @@ public class CandidateAdminApi {
     }
 
     @PostMapping
-    public Candidate create(@RequestBody CreateCandidateRequest request) {
+    public Candidate create(@RequestBody CreateCandidateRequest request) throws UsernameTakenException {
         return this.candidateService.createCandidate(request);
     }
 
@@ -55,6 +56,13 @@ public class CandidateAdminApi {
         return new DtoBuilder()
                 .add("id")
                 .add("candidateNumber")
+                .add("user", userDto())
+                ;
+    }
+
+    private DtoBuilder userDto() {
+        return new DtoBuilder()
+                .add("id")
                 .add("firstName")
                 .add("lastName")
                 .add("email")

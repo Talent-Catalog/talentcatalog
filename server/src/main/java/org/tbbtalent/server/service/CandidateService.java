@@ -1,6 +1,7 @@
 package org.tbbtalent.server.service;
 
 import org.springframework.data.domain.Page;
+import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.request.LoginRequest;
@@ -15,7 +16,7 @@ public interface CandidateService {
 
     Candidate getCandidate(long id);
 
-    Candidate createCandidate(CreateCandidateRequest request);
+    Candidate createCandidate(CreateCandidateRequest request) throws UsernameTakenException;
 
     Candidate updateCandidate(long id, UpdateCandidateRequest request);
 

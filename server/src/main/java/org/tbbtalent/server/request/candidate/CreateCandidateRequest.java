@@ -1,8 +1,12 @@
 package org.tbbtalent.server.request.candidate;
 
+import javax.validation.constraints.NotBlank;
+
 public class CreateCandidateRequest {
 
+    @NotBlank
     private String firstName;
+    @NotBlank
     private String lastName;
     private String username;
     private String email;
