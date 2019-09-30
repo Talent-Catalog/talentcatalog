@@ -18,3 +18,6 @@ spring:
 jwt:
   secret: JWTSuperSecretKey
   expirationInMs: 604800000
+
+web:
+  portal: http://localhost:4200

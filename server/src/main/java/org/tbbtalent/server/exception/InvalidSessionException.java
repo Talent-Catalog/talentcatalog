@@ -1,9 +1,9 @@
 package org.tbbtalent.server.exception;
 
-public class InvalidSessionException extends RuntimeException {
+public class InvalidSessionException extends ServiceException {
 
     public InvalidSessionException(String message) {
-        super(message);
+        super("invalid_session", message);
     }
 }
 

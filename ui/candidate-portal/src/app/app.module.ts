@@ -26,9 +26,13 @@ import {RegistrationAdditionalContactComponent} from './components/register/cont
 import {LocalStorageModule} from "angular-2-local-storage";
 import {JwtInterceptor} from "./services/jwt.interceptor";
 import {AuthService} from "./services/auth.service";
+import {UserService} from "./services/user.service";
 import {CandidateService} from "./services/candidate.service";
 import {LoginComponent} from "./components/login/login.component";
+import {HomeComponent} from "./components/home/home.component";
 import {ErrorInterceptor} from "./services/error.interceptor";
+import {ResetPasswordComponent} from './components/reset-password/reset-password.component';
+import {ChangePasswordComponent} from './components/change-password/change-password.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +54,10 @@ import {ErrorInterceptor} from "./services/error.interceptor";
     RegistrationCertificationsComponent,
     RegistrationAdditionalInfoComponent,
     RegistrationAdditionalContactComponent,
-    LoginComponent
+    LoginComponent,
+    HomeComponent,
+    ResetPasswordComponent,
+    ChangePasswordComponent
   ],
   imports: [
     BrowserModule,

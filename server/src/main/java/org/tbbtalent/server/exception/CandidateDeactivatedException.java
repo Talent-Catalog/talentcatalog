@@ -1,9 +1,9 @@
 package org.tbbtalent.server.exception;
 
-public class CandidateDeactivatedException extends RuntimeException {
+public class CandidateDeactivatedException extends ServiceException {
 
     public CandidateDeactivatedException() {
-        super("This account has been deactivated");
+        super("candidate_deactivated", "This account has been deactivated");
     }
 
 }

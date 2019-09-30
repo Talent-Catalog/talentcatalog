@@ -18,6 +18,9 @@ import {RegistrationCertificationsComponent} from "./components/register/certifi
 import {RegistrationAdditionalInfoComponent} from "./components/register/additional-info/registration-additional-info.component";
 import {RegistrationAdditionalContactComponent} from "./components/register/contact/additional/registration-additional-contact.component";
 import {LoginComponent} from "./components/login/login.component";
+import {HomeComponent} from "./components/home/home.component";
+import {ResetPasswordComponent} from './components/reset-password/reset-password.component';
+import {ChangePasswordComponent} from './components/change-password/change-password.component';
 
 const routes: Routes = [
   {
@@ -31,6 +34,18 @@ const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent
+  },
+  { 
+    path: 'reset-password', 
+    component: ResetPasswordComponent
+  },
+  { 
+    path: 'reset-password/:token', 
+    component: ChangePasswordComponent 
+  },
+  {
+    path: 'home',
+    component: HomeComponent
   },
   {
     path: 'register/contact',

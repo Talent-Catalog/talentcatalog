@@ -1,4 +1,6 @@
-<form class="login wrapper" [formGroup]="loginForm" (submit)="login()">
+<div class="login wrapper">
+<div>
+<form class="justify-content-center" [formGroup]="loginForm" (submit)="login()">
   <h1>Login</h1>
 
   <div class="alert alert-danger" *ngIf="error">
@@ -18,3 +20,8 @@
     </div>
   </button>
 </form>
+</div>
+<div class="reset">
+   <a [routerLink]="'/reset-password'">Forgot Password?</a>
+</div>
+</div>

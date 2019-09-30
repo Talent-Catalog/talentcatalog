@@ -23,7 +23,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private String additionalInfo;
 
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private CandidateStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "max_education_level_id")
@@ -64,7 +64,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.user = user;
         this.phone = phone;
         this.whatsapp = whatsapp;
-        this.status = Status.active;
+        this.status = CandidateStatus.active;
     }
 
     public String getCandidateNumber() {
@@ -155,11 +155,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.additionalInfo = additionalInfo;
     }
 
-    public Status getStatus() {
+    public CandidateStatus getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(CandidateStatus status) {
         this.status = status;
     }
 

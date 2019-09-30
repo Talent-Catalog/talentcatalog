@@ -1,7 +1,6 @@
 package org.tbbtalent.server.request.certification;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 public class CreateCertificationRequest {
 

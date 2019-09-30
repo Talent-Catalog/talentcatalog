@@ -6,9 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.security.authentication.*;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.*;
@@ -16,8 +13,6 @@ import org.tbbtalent.server.model.*;
 import org.tbbtalent.server.repository.*;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.candidate.*;
-import org.tbbtalent.server.response.JwtAuthenticationResponse;
-import org.tbbtalent.server.security.JwtTokenProvider;
 import org.tbbtalent.server.security.PasswordHelper;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.CandidateService;
@@ -35,8 +30,6 @@ public class CandidateServiceImpl implements CandidateService {
     private final EducationLevelRepository educationLevelRepository;
     private final NationalityRepository nationalityRepository;
     private final PasswordHelper passwordHelper;
-    private final AuthenticationManager authenticationManager;
-    private final JwtTokenProvider tokenProvider;
     private final UserContext userContext;
 
     @Autowired
@@ -45,8 +38,6 @@ public class CandidateServiceImpl implements CandidateService {
                                 EducationLevelRepository educationLevelRepository,
                                 NationalityRepository nationalityRepository,
                                 PasswordHelper passwordHelper,
-                                AuthenticationManager authenticationManager,
-                                JwtTokenProvider tokenProvider,
                                 UserContext userContext) {
         this.userRepository = userRepository;
         this.candidateRepository = candidateRepository;
@@ -54,8 +45,6 @@ public class CandidateServiceImpl implements CandidateService {
         this.educationLevelRepository = educationLevelRepository;
         this.nationalityRepository = nationalityRepository;
         this.passwordHelper = passwordHelper;
-        this.authenticationManager = authenticationManager;
-        this.tokenProvider = tokenProvider;
         this.userContext = userContext;
     }
 
@@ -77,13 +66,13 @@ public class CandidateServiceImpl implements CandidateService {
     @Transactional
     public Candidate createCandidate(CreateCandidateRequest request) throws UsernameTakenException {
         User user = new User(
-                StringUtils.isBlank(request.getUsername()) ? request.getEmail() : null,
+                StringUtils.isNotBlank(request.getUsername()) ? request.getUsername() : request.getEmail(),
                 request.getFirstName(),
                 request.getLastName(),
                 request.getEmail(),
                 Role.user);
 
-        User existing = userRepository.findByUsernameIgnoreCase(user.getUsername());
+        User existing = userRepository.findByUsernameAndRole(user.getUsername(), Role.user);
         if (existing != null){
             throw new UsernameTakenException("A user already exists with username: "+existing.getUsername());
         }
@@ -132,43 +121,15 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public JwtAuthenticationResponse login(LoginRequest request) throws AccountLockedException {
-        try {
-            Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                    request.getUsername(), request.getPassword()
-            ));
-            User user = this.userRepository.findByUsernameIgnoreCase(request.getUsername());
-
-            if (user.getStatus().equals(Status.inactive)) {
-                throw new InvalidCredentialsException("Sorry, it looks like that account is no longer active.");
-            }
-
-            SecurityContextHolder.getContext().setAuthentication(auth);
-            String jwt = tokenProvider.generateToken(auth);
-            return new JwtAuthenticationResponse(jwt, user);
-
-        } catch (BadCredentialsException e) {
-            // map spring exception to a service exception for better handling
-            throw new InvalidCredentialsException("Invalid credentials for candidate");
-        } catch (LockedException e) {
-            throw new AccountLockedException("Account locked");
-        } catch (DisabledException e) {
-            throw new CandidateDeactivatedException();
-        } catch (CredentialsExpiredException e) {
-            throw new PasswordExpiredException();
-        }
-    }
-
-    @Override
     @Transactional(rollbackFor = Exception.class)
-    public JwtAuthenticationResponse register(RegisterCandidateRequest request) throws AccountLockedException {
+    public LoginRequest register(RegisterCandidateRequest request) throws AccountLockedException {
         if (!request.getPassword().equals(request.getPasswordConfirmation())) {
             throw new PasswordMatchException();
         }
 
         /* Check for existing account with the username fields */
         if (StringUtils.isNotBlank(request.getUsername())) {
-            User exists = userRepository.findByUsernameIgnoreCase(request.getUsername());
+            User exists = userRepository.findByUsernameAndRole(request.getUsername(), Role.user);
             if (exists != null) {
                 throw new UsernameTakenException("username");
             }
@@ -218,20 +179,7 @@ public class CandidateServiceImpl implements CandidateService {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername(user.getUsername());
         loginRequest.setPassword(request.getPassword());
-        return login(loginRequest);
-    }
-
-    @Override
-    public void logout() {
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
-    public User getLoggedInUser() {
-        User user = userContext.getLoggedInUser();
-        if (user == null) {
-            throw new InvalidSessionException("Can not find an active session for a candidate with this token");
-        }
-        return user;
+        return loginRequest;
     }
 
     @Override

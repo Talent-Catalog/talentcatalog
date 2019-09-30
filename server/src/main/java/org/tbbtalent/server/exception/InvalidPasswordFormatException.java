@@ -1,9 +1,9 @@
 package org.tbbtalent.server.exception;
 
-public class InvalidPasswordFormatException extends RuntimeException {
+public class InvalidPasswordFormatException extends ServiceException {
 
     public InvalidPasswordFormatException(String message) {
-        super(message);
+        super("invalid_password_format", message);
     }
 }
 

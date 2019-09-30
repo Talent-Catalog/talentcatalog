@@ -1,9 +1,9 @@
 package org.tbbtalent.server.exception;
 
-public class PasswordMatchException extends RuntimeException {
+public class PasswordMatchException extends ServiceException {
 
     public PasswordMatchException() {
-        super("The confirmation password did not match");
+        super("invalid_password_match", "The confirmation password did not match");
     }
 
 }

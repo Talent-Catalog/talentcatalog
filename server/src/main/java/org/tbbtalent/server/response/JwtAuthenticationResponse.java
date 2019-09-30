@@ -1,6 +1,5 @@
 package org.tbbtalent.server.response;
 
-import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.model.User;
 
 public class JwtAuthenticationResponse {

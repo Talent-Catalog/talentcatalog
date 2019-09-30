@@ -12,12 +12,25 @@ public class User extends AbstractAuditableDomainObject<Long> {
     private String firstName;
     private String lastName;
     private String email;
+    
     @Enumerated(EnumType.STRING)
     private Role role;
+    
     private String passwordEnc;
+    
     @Enumerated(EnumType.STRING)
     private Status status;
+    
     private LocalDateTime lastLogin;
+
+    @Column
+    private String resetToken;
+
+    @Column(name = "reset_token_issued_date")
+    private LocalDateTime resetTokenIssuedDate;
+    
+    @Column(name = "password_updated_date")
+    private LocalDateTime passwordUpdatedDate;
 
     @OneToOne(mappedBy = "user")
     private Candidate candidate;
@@ -105,4 +118,29 @@ public class User extends AbstractAuditableDomainObject<Long> {
     public void setCandidate(Candidate candidate) {
         this.candidate = candidate;
     }
+
+    public String getResetToken() {
+        return resetToken;
+    }
+
+    public void setResetToken(String resetToken) {
+        this.resetToken = resetToken;
+    }
+
+    public LocalDateTime getResetTokenIssuedDate() {
+        return resetTokenIssuedDate;
+    }
+
+    public void setResetTokenIssuedDate(LocalDateTime resetTokenIssuedDate) {
+        this.resetTokenIssuedDate = resetTokenIssuedDate;
+    }
+
+    public LocalDateTime getPasswordUpdatedDate() {
+        return passwordUpdatedDate;
+    }
+
+    public void setPasswordUpdatedDate(LocalDateTime passwordUpdatedDate) {
+        this.passwordUpdatedDate = passwordUpdatedDate;
+    }
+    
 }
