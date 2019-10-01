@@ -2,15 +2,15 @@ package org.tbbtalent.server.repository;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
-import org.tbbtalent.server.model.Nationality;
-import org.tbbtalent.server.request.nationality.SearchNationalityRequest;
+import org.tbbtalent.server.model.Country;
+import org.tbbtalent.server.request.country.SearchCountryRequest;
 
 import javax.persistence.criteria.Predicate;
 
-public class NationalitySpecification {
+public class CountrySpecification {
 
-    public static Specification<Nationality> buildSearchQuery(final SearchNationalityRequest request) {
-        return (nationality, query, builder) -> {
+    public static Specification<Country> buildSearchQuery(final SearchCountryRequest request) {
+        return (country, query, builder) -> {
             Predicate conjunction = builder.conjunction();
             query.distinct(true);
 
@@ -20,16 +20,15 @@ public class NationalitySpecification {
                 String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
                 conjunction.getExpressions().add(
                         builder.or(
-                                builder.like(builder.lower(nationality.get("name")), likeMatchTerm)
+                                builder.like(builder.lower(country.get("name")), likeMatchTerm)
                         ));
             }
 
             if (request.getStatus() != null){
-                conjunction.getExpressions().add(builder.equal(nationality.get("status"), request.getStatus()));
+                conjunction.getExpressions().add(builder.equal(country.get("status"), request.getStatus()));
             }
 
             return conjunction;
         };
     }
-
 }

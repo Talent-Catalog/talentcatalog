@@ -1,6 +1,6 @@
 <div class="modal-header">
 
-  <h4 class="modal-title">Edit Nationality</h4>
+  <h4 class="modal-title">Edit Country</h4>
 
   <button type="button" class="close" aria-label="Close" (click)="dismiss()">
     <span aria-hidden="true">&times;</span>
@@ -19,7 +19,7 @@
       {{error}}
     </div>
 
-    <form [formGroup]="nationalityForm">
+    <form [formGroup]="countryForm">
       <div class="form-group">
         <label for="name">Name</label>
         <input type="text" class="form-control" id="name" formControlName="name">
@@ -32,13 +32,15 @@
         </select>
       </div>
 
+
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="onSave()"
-                [disabled]="nationalityForm.invalid || loading || saving">
+                [disabled]="countryForm.invalid || loading || saving">
           <i class="fa fa-spinner fa-spin" *ngIf="saving"></i>
           Save
         </button>
       </div>
     </form>
+
   </div>
 </div>
