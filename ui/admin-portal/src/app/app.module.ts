@@ -27,6 +27,7 @@ import {SearchNationalitiesComponent} from "./components/settings/nationalities/
 import {CreateNationalityComponent} from "./components/settings/nationalities/create/create-nationality.component";
 import {EditNationalityComponent} from "./components/settings/nationalities/edit/edit-nationality.component";
 import {ConfirmationComponent} from "./components/util/confirm/confirmation.component";
+import {SearchSavedSearchesComponent} from "./components/candidates/search/saved-search/search-saved-searches.component";
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import {ConfirmationComponent} from "./components/util/confirm/confirmation.comp
     SearchUsersComponent,
     SearchNationalitiesComponent,
     EditNationalityComponent,
-    CreateNationalityComponent
+    CreateNationalityComponent,
+    SearchSavedSearchesComponent
   ],
   imports: [
     BrowserModule,

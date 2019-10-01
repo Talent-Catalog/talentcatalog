@@ -9,7 +9,7 @@ status                  text not null default 'active'
 create table nationality
 (
 id                      bigserial not null primary key,
-name                    text,
+name                    text not null,
 status                  text not null default 'active'
 
 );
@@ -18,7 +18,7 @@ status                  text not null default 'active'
 create table language
 (
 id                      bigserial not null primary key,
-name                    text,
+name                    text not null,
 status                  text not null default 'active'
 
 );
@@ -26,7 +26,7 @@ status                  text not null default 'active'
 create table language_level
 (
 id                       bigserial not null primary key,
-level                    text,
+level                    text not null,
 status                   text not null default 'active',
 sort_order               integer not null
 
@@ -35,7 +35,7 @@ sort_order               integer not null
 create table industry
 (
   id                      bigserial not null primary key,
-  name                    text,
+  name                    text not null,
   status                  text not null default 'active'
 );
 
@@ -43,7 +43,7 @@ create table industry
 create table occupation
 (
   id                      bigserial not null primary key,
-  name                    text,
+  name                    text not null,
   status                  text not null default 'active'
 );
 
@@ -52,8 +52,8 @@ create table occupation
 create table education_level
 (
 id                      bigserial not null primary key,
-name                    text,
-sort_order              integer,
+name                    text not null,
+sort_order              integer not null,
 status                  text not null default 'active'
 
 );
@@ -61,7 +61,7 @@ status                  text not null default 'active'
 create table education_major
 (
 id                      bigserial not null primary key,
-name                    text,
+name                    text not null,
 status                  text not null default 'active'
 
 );

@@ -1,5 +1,6 @@
 package org.tbbtalent.server.repository;
 
+import io.jsonwebtoken.lang.Collections;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.tbbtalent.server.model.Candidate;
@@ -33,32 +34,32 @@ public class CandidateSpecification {
                         ));
             }
             // STATUS SEARCH
-            if(!(request.getSelectedStatus()).isEmpty()) {
+            if(!Collections.isEmpty(request.getStatuses())) {
                 conjunction.getExpressions().add(
-                        builder.isTrue(candidate.get("status").in(request.getSelectedStatus()))
+                        builder.isTrue(candidate.get("status").in(request.getStatuses()))
                 );
             }
 
             // UN REGISTERED SEARCH
-            if(request.getRegisteredWithUN() != null) {
+            if(request.getUnRegistered() != null) {
                 conjunction.getExpressions().add(
-                        builder.equal(candidate.get("registeredWithUN"), request.getRegisteredWithUN())
+                        builder.equal(candidate.get("registeredWithUN"), request.getUnRegistered())
                 );
             }
 
             // NATIONALITY SEARCH
-            if(!(request.getSelectedNationalities()).isEmpty()) {
+            if(!Collections.isEmpty(request.getNationalityIds())) {
                 conjunction.getExpressions().add(
-                      builder.isTrue(candidate.get("nationality").in(request.getSelectedNationalities()))
+                      builder.isTrue(candidate.get("nationality").in(request.getNationalityIds()))
                 );
             }
 
-            // COUNTRY SEARCH
-            if(request.getCountryId() != null) {
-                conjunction.getExpressions().add(
-                        builder.equal(candidate.get("country"), request.getCountryId())
-                );
-            }
+//            // COUNTRY SEARCH
+//            if(request.getCountryId() != null) {
+//                conjunction.getExpressions().add(
+//                        builder.equal(candidate.get("country"), request.getCountryId())
+//                );
+//            }
 
             // GENDER SEARCH
             if(!StringUtils.isBlank(request.getGender())) {
@@ -67,20 +68,20 @@ public class CandidateSpecification {
                 );
             }
 
-            // EDUCATION LEVEL SEARCH
-            if(!StringUtils.isBlank(request.getEducationLevel())) {
-                conjunction.getExpressions().add(
-                        builder.equal(candidate.get("educationLevel"), request.getEducationLevel())
-                );
-            }
+//            // EDUCATION LEVEL SEARCH
+//            if(!StringUtils.isBlank(request.getEducationLevel())) {
+//                conjunction.getExpressions().add(
+//                        builder.equal(candidate.get("educationLevel"), request.getEducationLevel())
+//                );
+//            }
 
             // LANGUAGE SEARCH
-            if(request.getCandidateLanguageId() != null) {
-                System.out.println(request.getCandidateLanguageId());
-                conjunction.getExpressions().add(
-                        builder.equal(candidateLanguages.get("id"), request.getCandidateLanguageId())
-                );
-            }
+//            if(request.getCandidateLanguageId() != null) {
+//                System.out.println(request.getCandidateLanguageId());
+//                conjunction.getExpressions().add(
+//                        builder.equal(candidateLanguages.get("id"), request.getCandidateLanguageId())
+//                );
+//            }
             
 
             return conjunction;

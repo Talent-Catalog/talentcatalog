@@ -119,7 +119,7 @@ export class SearchCandidatesComponent implements OnInit {
     this.pageSize = 50;
 
   /* SEARCH ON CHANGE*/
-    this.searchForm.get('keyword').valueChanges
+    this.searchForm.valueChanges
       .pipe(
         debounceTime(400),
         distinctUntilChanged()
@@ -143,7 +143,7 @@ export class SearchCandidatesComponent implements OnInit {
 
 /* METHODS */
 
-/* MULTI SELECT METHODS */
+ /* MULTI SELECT METHODS */
   onItemSelect(item: any) {
     this.selectedStatus.push(item.id);
   }
@@ -151,16 +151,12 @@ export class SearchCandidatesComponent implements OnInit {
   onItemDeSelect(item: any) {}
   onDeSelectAll(items: any) {}
 
-/* SEARCH FORM */
-  search() {
+  search(){
     this.loading = true;
     let request = this.searchForm.value;
-    console.log(request);
     request.pageNumber = this.pageNumber - 1;
     request.pageSize =  this.pageSize;
     this.candidateService.search(request).subscribe(results => {
-      console.log(request);
-      console.log(results);
       this.results = results;
       this.loading = false;
     });

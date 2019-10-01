@@ -9,6 +9,7 @@ import {AuthGuard} from "./services/auth.guard";
 import {LoginComponent} from "./components/login/login.component";
 import {SearchUsersComponent} from "./components/settings/users/search-users.component";
 import {SettingsComponent} from "./components/settings/settings.component";
+import {SearchSavedSearchesComponent} from "./components/candidates/search/saved-search/search-saved-searches.component";
 
 const routes: Routes = [
   {
@@ -39,11 +40,19 @@ const routes: Routes = [
           {
             path: ':candidateId/edit',
             component: EditCandidateComponent
-          }
+          },
+          {
+            path: ':savedSearchId',
+            component: SearchCandidatesComponent
+          },
+          {
+            path: 'saved-search',
+            component: SearchSavedSearchesComponent
+          },
         ]
       },
       {
-        path: 'settings',
+        path:  'settings',
         children: [
           {
             path: '',
