@@ -12,6 +12,7 @@ import org.tbbtalent.server.request.nationality.UpdateNationalityRequest;
 import org.tbbtalent.server.service.NationalityService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -45,14 +46,15 @@ public class NationalityAdminApi {
     }
 
     @PostMapping
-    public Map<String, Object> create(@RequestBody CreateNationalityRequest request) throws EntityExistsException {
+    public Map<String, Object> create(@Valid @RequestBody CreateNationalityRequest request) throws EntityExistsException {
         Nationality nationality = this.nationalityService.createNationality(request);
         return nationalityDto().build(nationality);
     }
 
     @PutMapping("{id}")
     public Map<String, Object> update(@PathVariable("id") long id,
-                                      @RequestBody UpdateNationalityRequest request) throws EntityExistsException  {
+                                      @Valid @RequestBody UpdateNationalityRequest request) throws EntityExistsException  {
+
         Nationality nationality = this.nationalityService.updateNationality(id, request);
         return nationalityDto().build(nationality);
     }

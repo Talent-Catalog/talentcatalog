@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Nationality} from "../../../../model/nationality";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {NationalityService} from "../../../../services/nationality.service";
@@ -26,8 +26,8 @@ export class EditNationalityComponent implements OnInit {
     this.loading = true;
     this.nationalityService.get(this.nationalityId).subscribe(nationality => {
       this.nationalityForm = this.fb.group({
-        name: [nationality.name],
-        status: [nationality.status],
+        name: [nationality.name, Validators.required],
+        status: [nationality.status, Validators.required],
       });
       this.loading = false;
     });

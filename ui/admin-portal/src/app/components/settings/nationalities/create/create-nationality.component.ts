@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Nationality} from "../../../../model/nationality";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {NationalityService} from "../../../../services/nationality.service";
@@ -22,8 +22,8 @@ export class CreateNationalityComponent implements OnInit {
 
   ngOnInit() {
     this.nationalityForm = this.fb.group({
-      name: [''],
-      status: [''],
+      name: [null, Validators.required],
+      status: [null, Validators.required],
     });
   }
 
