@@ -9,6 +9,7 @@ import {NationalityService} from "../../../../services/nationality.service";
   templateUrl: './create-nationality.component.html',
   styleUrls: ['./create-nationality.component.scss']
 })
+
 export class CreateNationalityComponent implements OnInit {
 
   nationalityForm: FormGroup;

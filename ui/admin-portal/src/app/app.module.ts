@@ -27,6 +27,9 @@ import {SearchNationalitiesComponent} from "./components/settings/nationalities/
 import {CreateNationalityComponent} from "./components/settings/nationalities/create/create-nationality.component";
 import {EditNationalityComponent} from "./components/settings/nationalities/edit/edit-nationality.component";
 import {ConfirmationComponent} from "./components/util/confirm/confirmation.component";
+import {SearchCountriesComponent} from "./components/settings/countries/search-countries.component";
+import {CreateCountryComponent} from "./components/settings/countries/create/create-country.component";
+import {EditCountryComponent} from "./components/settings/countries/edit/edit-country.component";
 import {SearchSavedSearchesComponent} from "./components/candidates/search/saved-search/search-saved-searches.component";
 
 @NgModule({
@@ -45,6 +48,10 @@ import {SearchSavedSearchesComponent} from "./components/candidates/search/saved
     SearchUsersComponent,
     SearchNationalitiesComponent,
     EditNationalityComponent,
+    CreateNationalityComponent,
+    SearchCountriesComponent,
+    CreateCountryComponent,
+    EditCountryComponent,
     CreateNationalityComponent,
     SearchSavedSearchesComponent
   ],
@@ -66,6 +73,9 @@ import {SearchSavedSearchesComponent} from "./components/candidates/search/saved
     SearchNationalitiesComponent,
     CreateNationalityComponent,
     EditNationalityComponent,
+    SearchCountriesComponent,
+    CreateCountryComponent,
+    EditCountryComponent,
     ConfirmationComponent
   ],
   providers: [
