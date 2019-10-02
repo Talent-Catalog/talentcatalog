@@ -32,6 +32,11 @@ import {CreateCountryComponent} from "./components/settings/countries/create/cre
 import {EditCountryComponent} from "./components/settings/countries/edit/edit-country.component";
 import {SearchSavedSearchesComponent} from "./components/candidates/search/saved/search-saved-searches.component";
 import {SaveSearchComponent} from "./components/candidates/search/save/save-search.component";
+import {CandidateSearchCardComponent} from './components/candidates/search/candidate-search-card/candidate-search-card.component';
+import {CandidateGeneralTabComponent} from './components/candidates/search/candidate-search-card/candidate-general-tab/candidate-general-tab.component';
+import {CandidateExperienceTabComponent} from './components/candidates/search/candidate-search-card/candidate-experience-tab/candidate-experience-tab.component';
+import {CandidateHistoryTabComponent} from './components/candidates/search/candidate-search-card/candidate-history-tab/candidate-history-tab.component';
+import {CandidateEligibilityTabComponent} from './components/candidates/search/candidate-search-card/candidate-eligibility-tab/candidate-eligibility-tab.component';
 
 @NgModule({
   declarations: [
@@ -55,7 +60,12 @@ import {SaveSearchComponent} from "./components/candidates/search/save/save-sear
     EditCountryComponent,
     CreateNationalityComponent,
     SearchSavedSearchesComponent,
-    SaveSearchComponent
+    SaveSearchComponent,
+    CandidateSearchCardComponent,
+    CandidateGeneralTabComponent,
+    CandidateExperienceTabComponent,
+    CandidateHistoryTabComponent,
+    CandidateEligibilityTabComponent
   ],
   imports: [
     BrowserModule,

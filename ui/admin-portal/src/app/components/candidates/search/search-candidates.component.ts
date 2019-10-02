@@ -33,7 +33,6 @@ export class SearchCandidatesComponent implements OnInit {
 
   savedSearchId;
   /* MULTI SELECT */
-  selectedStatus = [];
   dropdownSettings = {};
 
   /* DATA */
@@ -54,6 +53,7 @@ export class SearchCandidatesComponent implements OnInit {
   statuses: String[] = ['pending', 'incomplete', 'rejected', 'approved', 'employed', 'deleted', 'active', 'inactive'];
   savedSearches: SavedSearch[];
   searchJoin: SavedSearchJoin;
+  selectedCandidate: Candidate;
 
   constructor(private fb: FormBuilder,
               private candidateService: CandidateService,
@@ -65,7 +65,7 @@ export class SearchCandidatesComponent implements OnInit {
 
   ngOnInit() {
     this.moreFilters = false;
-
+    this.selectedCandidate = null;
     this.resetSavedSearchJoin();
     // TODO saved search service call
     this.savedSearches = [];
@@ -240,7 +240,6 @@ export class SearchCandidatesComponent implements OnInit {
     this.search();
   }
 
-  // TODO better name
   resetSavedSearchJoin() {
     this.searchJoin = {savedSearchId: null, searchType: null};
   }
@@ -248,5 +247,9 @@ export class SearchCandidatesComponent implements OnInit {
   addSavedSearchJoin() {
     (this.searchForm.controls.searchJoinRequests as FormArray).push(new FormControl(this.searchJoin));
     this.resetSavedSearchJoin();
+  }
+
+  viewCandidate(candidate: Candidate) {
+    this.selectedCandidate = candidate;
   }
 }

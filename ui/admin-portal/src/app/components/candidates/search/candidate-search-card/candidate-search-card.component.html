@@ -1,0 +1,54 @@
+<div class="candidate-card" *ngIf="!!candidate">
+
+  <!-- HEADER -->
+  <div class="candidate-header">
+
+    <h4>{{candidate.candidateNumber}}</h4>
+
+    <div class="actions">
+
+      <a class="btn btn-primary" [routerLink]="candidate.id">View Profile</a>
+
+      <button class="btn btn-secondary" (click)="close()">x</button>
+
+    </div>
+
+  </div>
+
+  <!-- NAME -->
+  <h5>{{candidate.user?.firstName}} {{candidate.user?.lastName}}</h5>
+
+  <!-- TABS -->
+  <ngb-tabset>
+
+    <!-- GENERAL -->
+    <ngb-tab [title]="'General'">
+      <ng-template ngbTabContent>
+        <app-candidate-general-tab></app-candidate-general-tab>
+      </ng-template>
+    </ngb-tab>
+
+    <!-- EXPERIENCE -->
+    <ngb-tab [title]="'Experience'">
+      <ng-template ngbTabContent>
+        <app-candidate-experience-tab></app-candidate-experience-tab>
+      </ng-template>
+    </ngb-tab>
+
+    <!-- HISTORY -->
+    <ngb-tab [title]="'History'">
+      <ng-template ngbTabContent>
+        <app-candidate-history-tab></app-candidate-history-tab>
+      </ng-template>
+    </ngb-tab>
+
+    <!-- HISTORY -->
+    <ngb-tab [title]="'Eligibility'">
+      <ng-template ngbTabContent>
+        <app-candidate-eligibility-tab></app-candidate-eligibility-tab>
+      </ng-template>
+    </ngb-tab>
+
+  </ngb-tabset>
+
+</div>

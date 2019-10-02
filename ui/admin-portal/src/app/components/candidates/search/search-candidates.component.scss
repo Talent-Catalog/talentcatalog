@@ -5,6 +5,10 @@
   }
 }
 
+label {
+  font-size: 14px;
+}
+
 .form-row {
   display: flex;
   justify-content: space-between;
@@ -18,10 +22,44 @@
   padding-top: 1rem;
 }
 
-.candidate-num-col-head {
-  width: 12rem;
+.filter-results {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1em;
+
+  ::ng-deep ul.pagination {
+    margin-bottom: 0;
+  }
 }
 
-label {
-  font-size: 14px;
+.candidate-number {
+  cursor: pointer;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+$candidate-card-width: 375px;
+
+.split-view {
+  display: flex;
+  justify-content: space-between;
+
+  .table-wrapper {
+    flex: 1 1 auto;
+    overflow-x: auto;
+  }
+
+  &.show {
+    .table-wrapper {
+      // Remove 20px to simulate padding between the card and the table
+      flex: 0 1 calc(100% - #{$candidate-card-width} - 20px);
+    }
+
+    .profile {
+      flex: 0 0 $candidate-card-width;
+      display: flex;
+    }
+  }
+
 }
