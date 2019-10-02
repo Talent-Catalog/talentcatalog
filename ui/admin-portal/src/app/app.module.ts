@@ -93,10 +93,11 @@ import {CandidateEligibilityTabComponent} from './components/candidates/search/c
     EditNationalityComponent,
     CreateCountryComponent,
     EditCountryComponent,
+    SearchCountriesComponent,
     SearchLanguagesComponent,
     CreateLanguageComponent,
     EditLanguageComponent,
-    ConfirmationComponent
+    ConfirmationComponent,
     ConfirmationComponent,
     SaveSearchComponent
   ],
