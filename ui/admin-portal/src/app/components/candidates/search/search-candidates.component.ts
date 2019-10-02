@@ -1,14 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
-import { Candidate } from '../../../model/candidate';
-import { CandidateService } from '../../../services/candidate.service';
-import { Country } from '../../../model/country';
+import {Candidate} from '../../../model/candidate';
+import {CandidateService} from '../../../services/candidate.service';
+import {Country} from '../../../model/country';
 import {CountryService} from "../../../services/country.service";
 import {Nationality} from "../../../model/nationality";
 import {NationalityService} from "../../../services/nationality.service";
 import {Language} from "../../../model/language";
 import {LanguageService} from "../../../services/language.service";
-import { SearchResults } from '../../../model/search-results';
+import {SearchResults} from '../../../model/search-results';
 
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
@@ -28,8 +28,6 @@ export class SearchCandidatesComponent implements OnInit {
   loading: boolean;
   error: any;
   moreFilters: boolean;
-  pageNumber: number;
-  pageSize: number;
   results: SearchResults<Candidate>;
 
   savedSearchId;
@@ -42,24 +40,18 @@ export class SearchCandidatesComponent implements OnInit {
   nationalities: Nationality[];
   countries: Country[];
   languages: Language[];
-  educationLevels: {id: string, label: string}[] = [
-      {id: 'lessHighSchool', label: 'Less than High School'},
-      {id: 'highSchool', label: 'Completed High School'},
-      {id: 'bachelorsDegree', label: "Have a Bachelor's Degree"},
-      {id: 'mastersDegree', label: "Have a Master's Degree"},
-      {id: 'doctorateDegree', label: 'Have a Doctorate Degree'}
-    ];
-  ages: {id: string, label: string}[] = [
-      {id: 'lessThan18', label: 'Less than 18'},
-      {id: '18To24', label: '18 to 24'},
-      {id: '24To30', label: '25 to 30'},
-      {id: '30To40', label: '30 to 40'},
-      {id: '40To50', label: '40 to 50'},
-      {id: '50To60', label: '50 to 60'},
-      {id: '60Plus', label: '60+ '},
+  educationLevels: { id: string, label: string }[] = [
+    {id: 'lessHighSchool', label: 'Less than High School'},
+    {id: 'highSchool', label: 'Completed High School'},
+    {id: 'bachelorsDegree', label: "Have a Bachelor's Degree"},
+    {id: 'mastersDegree', label: "Have a Master's Degree"},
+    {id: 'doctorateDegree', label: 'Have a Doctorate Degree'}
+  ];
+  occupations: { id: string, name: string }[] = [
+    {id: 'tester', name: 'Tester'}
   ];
 
-  status: String[] = ['pending','incomplete','rejected','approved','employed','deleted', 'active', 'inactive'];
+  statuses: String[] = ['pending', 'incomplete', 'rejected', 'approved', 'employed', 'deleted', 'active', 'inactive'];
 
   constructor(private fb: FormBuilder,
               private candidateService: CandidateService,
@@ -71,7 +63,41 @@ export class SearchCandidatesComponent implements OnInit {
   ngOnInit() {
     this.moreFilters = false;
 
-  /* LOAD NATIONALITIES */
+    /* SET UP FORM */
+    this.searchForm = this.fb.group({
+      selectedNationalities: [[]],
+      selectedStatus: [[]],
+
+      savedSearchId: [''],
+      keyword: [''],
+      statuses: [''],
+      gender: [''],
+      occupationIds: [''],
+      orProfileKeyword: [''],
+      verifiedOccupationIds: [''],
+      verifiedOccupationSearchType: [''],
+      nationalityIds: [''],
+      nationalitySearchType: [''],
+      countryIds: [''],
+      englishMinWrittenLevelId: [''],
+      englishMinSpokenLevelId: [''],
+      otherLanguageId: [''],
+      otherMinWrittenLevelId: [''],
+      otherMinSpokenLevelId: [''],
+      unRegistered: [''],
+      lastModifiedFrom: [''],
+      lastModifiedTo: [''],
+      createdFrom: [''],
+      createdTo: [''],
+      minAge: [''],
+      maxAge: [''],
+      minEducationLevelId: [''],
+      educationMajorIds: [''],
+      page: 1,
+      size: 50
+    });
+
+    /* LOAD NATIONALITIES */
     this.nationalityService.listNationalities().subscribe(
       (response) => {
         this.nationalities = response;
@@ -83,19 +109,19 @@ export class SearchCandidatesComponent implements OnInit {
       }
     );
 
-  /* LOAD COUNTRIES */
+    /* LOAD COUNTRIES */
     this.countryService.listCountries().subscribe(
-     (response) => {
-       this.countries = response;
-       this.loading = false;
-     },
-     (error) => {
-       this.error = error;
-       this.loading = false;
-     }
+      (response) => {
+        this.countries = response;
+        this.loading = false;
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      }
     );
 
-  /* LOAD LANGUAGES */
+    /* LOAD LANGUAGES */
     this.languageService.listLanguages().subscribe(
       (response) => {
         this.languages = response;
@@ -107,25 +133,9 @@ export class SearchCandidatesComponent implements OnInit {
       }
     );
 
-  /* SET UP FORM */
-    this.searchForm = this.fb.group({
-      keyword: [''],
-      status: [''],
-      registeredWithUN: [''],
-      nationalityId: [''],
-      countryId: [''],
-      gender: [''],
-      educationLevel: [''],
-      candidateLanguageId: [''],
-      age: [''],
-      selectedNationalities: [[]],
-      selectedStatus: [[]]
-    });
-    this.pageNumber = 1;
-    this.pageSize = 50;
-
-  /* SEARCH ON CHANGE*/
-    this.searchForm.valueChanges
+    // TODO Change to explicit button click
+    /* SEARCH ON CHANGE */
+    this.searchForm.get('keyword').valueChanges
       .pipe(
         debounceTime(400),
         distinctUntilChanged()
@@ -135,7 +145,7 @@ export class SearchCandidatesComponent implements OnInit {
       });
     this.search();
 
-  /* MULTI SELECT DROPDOWN SETTINGS */
+    /* MULTI SELECT DROPDOWN SETTINGS */
     this.dropdownSettings = {
       singleSelection: false,
       textField: 'name',
@@ -147,25 +157,34 @@ export class SearchCandidatesComponent implements OnInit {
 
   }
 
-/* METHODS */
-
- /* MULTI SELECT METHODS */
+  /* MULTI SELECT METHODS */
   onItemSelect(item: any) {
     this.selectedStatus.push(item.id);
   }
-  onSelectAll(items: any) {}
-  onItemDeSelect(item: any) {}
-  onDeSelectAll(items: any) {}
 
-  search(){
+  onSelectAll(items: any) {
+  }
+
+  onItemDeSelect(item: any) {
+  }
+
+  onDeSelectAll(items: any) {
+  }
+
+  /* SEARCH FORM */
+  search() {
     this.loading = true;
-    let request = this.searchForm.value;
-    request.pageNumber = this.pageNumber - 1;
-    request.pageSize =  this.pageSize;
-    this.candidateService.search(request).subscribe(results => {
-      this.results = results;
-      this.loading = false;
-    });
+    const request = this.searchForm.value;
+    request.page = request.page - 1;
+    this.candidateService.search(request).subscribe(
+      results => {
+        this.results = results;
+        this.loading = false;
+      },
+      error => {
+        this.error = error;
+        this.loading = false;
+      });
   }
 
   showSavedSearches() {
