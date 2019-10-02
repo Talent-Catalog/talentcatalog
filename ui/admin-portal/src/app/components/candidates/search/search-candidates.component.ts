@@ -1,71 +1,132 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 
-import { Candidate } from '../../../model/candidate';
-import { CandidateService } from '../../../services/candidate.service';
-import { Country } from '../../../model/country';
+import {Candidate} from '../../../model/candidate';
+import {CandidateService} from '../../../services/candidate.service';
+import {Country} from '../../../model/country';
 import {CountryService} from "../../../services/country.service";
 import {Nationality} from "../../../model/nationality";
 import {NationalityService} from "../../../services/nationality.service";
 import {Language} from "../../../model/language";
 import {LanguageService} from "../../../services/language.service";
-import { SearchResults } from '../../../model/search-results';
+import {SearchResults} from '../../../model/search-results';
 
-import {FormBuilder, FormGroup} from "@angular/forms";
-import {debounceTime, distinctUntilChanged} from "rxjs/operators";
+import {FormArray, FormBuilder, FormControl, FormGroup} from "@angular/forms";
+import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from "rxjs/operators";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {SearchSavedSearchesComponent} from "./saved/search-saved-searches.component";
+import {SaveSearchComponent} from "./save/save-search.component";
+import {SavedSearchService} from "../../../services/saved-search.service";
+import {SavedSearch, SavedSearchJoin} from "../../../model/saved-search";
+import {IDropdownSettings} from 'ng-multiselect-dropdown';
+import {Subscription} from "rxjs";
+import {Observable, of} from "rxjs";
 
 @Component({
   selector: 'app-search-candidates',
   templateUrl: './search-candidates.component.html',
   styleUrls: ['./search-candidates.component.scss']
 })
-export class SearchCandidatesComponent implements OnInit {
+export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   searchForm: FormGroup;
   loading: boolean;
   error: any;
   moreFilters: boolean;
-  pageNumber: number;
-  pageSize: number;
   results: SearchResults<Candidate>;
+  savedSearch;
+  subscription: Subscription;
 
   /* MULTI SELECT */
-  selectedNationalities = [];
-  selectedStatus = [];
-  dropdownSettings = {};
+  dropdownSettings: IDropdownSettings = {
+    idField: 'id',
+    textField: 'name',
+    singleSelection: false,
+    selectAllText: 'Select All',
+    unSelectAllText: 'Deselect All',
+    itemsShowLimit: 3,
+    allowSearchFilter: true
+  };
 
   /* DATA */
   nationalities: Nationality[];
   countries: Country[];
   languages: Language[];
-  educationLevels: {id: string, label: string}[] = [
-      {id: 'lessHighSchool', label: 'Less than High School'},
-      {id: 'highSchool', label: 'Completed High School'},
-      {id: 'bachelorsDegree', label: "Have a Bachelor's Degree"},
-      {id: 'mastersDegree', label: "Have a Master's Degree"},
-      {id: 'doctorateDegree', label: 'Have a Doctorate Degree'}
-    ];
-  ages: {id: string, label: string}[] = [
-      {id: 'lessThan18', label: 'Less than 18'},
-      {id: '18To24', label: '18 to 24'},
-      {id: '24To30', label: '25 to 30'},
-      {id: '30To40', label: '30 to 40'},
-      {id: '40To50', label: '40 to 50'},
-      {id: '50To60', label: '50 to 60'},
-      {id: '60Plus', label: '60+ '},
+  educationLevels: { id: string, label: string }[] = [
+    {id: 'lessHighSchool', label: 'Less than High School'},
+    {id: 'highSchool', label: 'Completed High School'},
+    {id: 'bachelorsDegree', label: "Have a Bachelor's Degree"},
+    {id: 'mastersDegree', label: "Have a Master's Degree"},
+    {id: 'doctorateDegree', label: 'Have a Doctorate Degree'}
+  ];
+  occupations: { id: string, name: string }[] = [
+    {id: 'tester', name: 'Tester'}
   ];
 
-  status: String[] = ['pending','incomplete','rejected','approved','employed','deleted', 'active', 'inactive'];
+  statuses: {id: string, name: string}[] = [
+    {id: 'pending', name: 'pending'},
+    {id: 'incomplete', name: 'incomplete'},
+    {id: 'rejected', name: 'rejected'},
+    {id: 'approved', name: 'approved'},
+    {id: 'employed', name: 'employed'},
+    {id: 'deleted', name: 'deleted'},
+    {id: 'active', name: 'active'},
+    {id: 'inactive', name: 'inactive'},
+  ];
+  savedSearches: SavedSearch[];
+  searchJoin: SavedSearchJoin;
+  selectedCandidate: Candidate;
+  selectedSavedSearch: SavedSearch;
+  searching = false;
+  searchFailed = false;
+  doSavedSearchSearch;
 
   constructor(private fb: FormBuilder,
               private candidateService: CandidateService,
               private nationalityService: NationalityService,
               private countryService: CountryService,
-              private languageService: LanguageService) { }
+              private languageService: LanguageService,
+              private savedSearchService: SavedSearchService,
+              private modalService: NgbModal) { }
 
   ngOnInit() {
     this.moreFilters = false;
+    this.selectedCandidate = null;
+    this.resetSavedSearchJoin();
+    /* SET UP FORM */
+    this.searchForm = this.fb.group({
+      savedSearchId: [null],
+      keyword: [null],
+      statuses: [[]],
+      gender: [null],
+      occupationIds: [[]],
+      orProfileKeyword: [null],
+      verifiedOccupationIds: [[]],
+      verifiedOccupationSearchType: [null],
+      nationalityIds: [[]],
+      nationalitySearchType: [null],
+      countryIds: [[]],
+      englishMinWrittenLevelId: [null],
+      englishMinSpokenLevelId: [null],
+      otherLanguageId: [null],
+      otherMinWrittenLevelId: [null],
+      otherMinSpokenLevelId: [null],
+      unRegistered: [null],
+      lastModifiedFrom: [null],
+      lastModifiedTo: [null],
+      createdFrom: [null],
+      createdTo: [null],
+      minAge: [null],
+      maxAge: [null],
+      minEducationLevelId: [null],
+      educationMajorIds: [[]],
+      searchJoinRequests: this.fb.array([]),
+      page: 1,
+      size: 50,
+      selectedSavedSearch: [null],
+      selectedSearchType: [null]
+    });
 
-  /* LOAD NATIONALITIES */
+    /* LOAD NATIONALITIES */
     this.nationalityService.listNationalities().subscribe(
       (response) => {
         this.nationalities = response;
@@ -77,19 +138,19 @@ export class SearchCandidatesComponent implements OnInit {
       }
     );
 
-  /* LOAD COUNTRIES */
+    /* LOAD COUNTRIES */
     this.countryService.listCountries().subscribe(
-     (response) => {
-       this.countries = response;
-       this.loading = false;
-     },
-     (error) => {
-       this.error = error;
-       this.loading = false;
-     }
+      (response) => {
+        this.countries = response;
+        this.loading = false;
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      }
     );
 
-  /* LOAD LANGUAGES */
+    /* LOAD LANGUAGES */
     this.languageService.listLanguages().subscribe(
       (response) => {
         this.languages = response;
@@ -101,68 +162,170 @@ export class SearchCandidatesComponent implements OnInit {
       }
     );
 
-  /* SET UP FORM */
-    this.searchForm = this.fb.group({
-      keyword: [''],
-      status: [''],
-      registeredWithUN: [''],
-      nationalityId: [''],
-      countryId: [''],
-      gender: [''],
-      educationLevel: [''],
-      candidateLanguageId: [''],
-      age: [''],
-      selectedNationalities: [[]],
-      selectedStatus: [[]]
-    });
-    this.pageNumber = 1;
-    this.pageSize = 50;
+    // TODO Change to explicit button click
+    /* SEARCH ON CHANGE */
+    // this.searchForm.get('keyword').valueChanges
+    //   .pipe(
+    //     debounceTime(400),
+    //     distinctUntilChanged()
+    //   )
+    //   .subscribe(res => {
+    //     this.search();
+    //   });
+    // this.search();
+  }
 
-  /* SEARCH ON CHANGE*/
-    this.searchForm.get('keyword').valueChanges
-      .pipe(
-        debounceTime(400),
-        distinctUntilChanged()
-      )
-      .subscribe(res => {
-        this.search();
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+    /* MULTI SELECT DROPDOWN SETTINGS */
+    // this.dropdownSettings = {
+    //   singleSelection: false,
+    //   textField: 'name',
+    //   selectAllText: 'Select All',
+    //   unSelectAllText: 'UnSelect All',
+    //   itemsShowLimit: 3,
+    //   allowSearchFilter: true
+    // };
+
+    this.doSavedSearchSearch = (text$: Observable<string>) =>
+      text$.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        tap(() => { this.searching = true; this.error = null }),
+        switchMap(term =>
+          this.savedSearchService.search({phrase: term}).pipe(
+            tap(() => this.searchFailed = false),
+            map(result => result.content),
+            catchError(() => {
+              this.searchFailed = true;
+              return of([]);
+            }))
+        ),
+        tap(() => this.searching = false)
+      );
+
+    /* SEARCH ON CHANGE */
+    this.searchForm.get('selectedSavedSearch').valueChanges
+      .subscribe(searchResult => {
+        this.searchJoin.savedSearchId = searchResult ? searchResult.id : null;
+        console.log(this.searchJoin);
       });
-    this.search();
 
-  /* MULTI SELECT DROPDOWN SETTINGS */
-    this.dropdownSettings = {
-      singleSelection: false,
-      textField: 'name',
-      selectAllText: 'Select All',
-      unSelectAllText: 'UnSelect All',
-      itemsShowLimit: 3,
-      allowSearchFilter: true
-    };
-
+    this.searchForm.get('selectedSearchType').valueChanges
+      .subscribe(searchType => {
+        this.searchJoin.searchType = searchType;
+        console.log(this.searchJoin);
+      });
   }
 
-/* METHODS */
 
-/* MULTI SELECT METHODS */
-  onItemSelect(item: any) {
-    this.selectedStatus.push(item.id);
+
+  /* MULTI SELECT METHODS */
+  onItemSelect(item: any, formControlName: string) {
+    /* DEBUG */
+    console.log('item', item);
+    const values = this.searchForm.controls[formControlName].value || [];
+    const addValue = item.id || item;
+    /* DEBUG */
+    console.log('addvalud', addValue);
+    values.push(addValue);
+    this.searchForm.controls[formControlName].patchValue(values);
   }
-  onSelectAll(items: any) {}
-  onItemDeSelect(item: any) {}
-  onDeSelectAll(items: any) {}
 
-/* SEARCH FORM */
+  onSelectAll(items: any[], formControlName: string) {
+    const values = this.searchForm.controls[formControlName].value || [];
+    items = items.map(i => i.id || i);
+    values.push(...items);
+    this.searchForm.controls[formControlName].patchValue(values);
+  }
+
+  onItemDeSelect(item: any, formControlName: string) {
+  }
+
+  onDeSelectAll(formControlName: string) {
+    this.searchForm.controls[formControlName].patchValue([]);
+  }
+
+  /* SEARCH FORM */
   search() {
     this.loading = true;
-    let request = this.searchForm.value;
-    console.log(request);
-    request.pageNumber = this.pageNumber - 1;
-    request.pageSize =  this.pageSize;
-    this.candidateService.search(request).subscribe(results => {
-      console.log(request);
-      console.log(results);
-      this.results = results;
-      this.loading = false;
+    const request = this.searchForm.value;
+    request.page = request.page - 1;
+    this.subscription = this.candidateService.search(request).subscribe(
+      results => {
+        this.results = results;
+        this.loading = false;
+      },
+      error => {
+        this.error = error;
+        this.loading = false;
+      });
+  }
+
+  loadSavedSearch(id){
+    this.loading = true;
+    this.savedSearchService.load(id).subscribe(
+      request => {
+        this.populateFormFromRequest(request);
+      },
+      error => {
+        this.error = error;
+        this.loading = false;
+      });
+  }
+
+  showSavedSearches() {
+    const showSavedSearchesModal = this.modalService.open(SearchSavedSearchesComponent, {
+      centered: true,
+      backdrop: 'static'
     });
+
+    showSavedSearchesModal.result
+      .then((savedSearch) => {
+        this.savedSearch = savedSearch;
+        this.loadSavedSearch(savedSearch.id)
+      })
+      .catch(() => { /* Isn't possible */ });
+  }
+
+  showSave() {
+    const showSaveModal = this.modalService.open(SaveSearchComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    showSaveModal.componentInstance.savedSearchId = this.savedSearch? this.savedSearch.id:null;
+    showSaveModal.componentInstance.searchCandidateRequest = this.searchForm.value;
+
+    showSaveModal.result
+      .then((savedSearch) => {
+        this.savedSearch = savedSearch;
+      })
+      .catch(() => { /* Isn't possible */ });
+  }
+
+  populateFormFromRequest(request){
+
+    Object.keys(this.searchForm.controls).forEach(name => {
+        this.searchForm.controls[name].patchValue(request[name]);
+    });
+    this.search();
+  }
+
+  resetSavedSearchJoin() {
+    this.searchJoin = {savedSearchId: null, searchType: null};
+  }
+
+  addSavedSearchJoin() {
+    (this.searchForm.controls.searchJoinRequests as FormArray).push(new FormControl(this.searchJoin));
+    this.resetSavedSearchJoin();
+  }
+
+  viewCandidate(candidate: Candidate) {
+    this.selectedCandidate = candidate;
+  }
+
+  renderSavedSearchRow(savedSearch: SavedSearch) {
+    return savedSearch.name;
   }
 }

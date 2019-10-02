@@ -1,0 +1,44 @@
+<div class="modal-header">
+
+  <h4 class="modal-title">Save Search</h4>
+
+  <button type="button" class="close" aria-label="Close" (click)="dismiss()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+
+</div>
+
+<div class="modal-body">
+
+  <div class="alert alert-danger" *ngIf="error">
+    {{error}}
+  </div>
+
+  <form [formGroup]="form">
+    <div class="form-group">
+      <label for="name">Create new search</label>
+      <input type="text" class="form-control" id="name" formControlName="name">
+    </div>
+
+    <div *ngIf="savedSearch">
+      <div>
+        todo card layout for search
+      </div>
+
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="" id="update" formControlName="update">
+        <label class="form-check-label" for="update">
+          Replace existing search
+        </label>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary" (click)="save()"
+          [disabled]="saving">
+    <i class="fa fa-spinner fa-spin" *ngIf="saving"></i>
+    Save
+  </button>
+</div>

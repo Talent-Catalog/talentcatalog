@@ -11,7 +11,7 @@ import {SearchCandidatesComponent} from './components/candidates/search/search-c
 import {HomeComponent} from './components/home/home.component';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {CreateCandidateComponent} from './components/candidates/create/create-candidate.component';
-import {ReactiveFormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ViewCandidateComponent} from './components/candidates/view/view-candidate.component';
 import {EditCandidateComponent} from './components/candidates/edit/edit-candidate.component';
 import {DeleteCandidateComponent} from './components/candidates/delete/delete-candidate.component';
@@ -33,6 +33,13 @@ import {EditCountryComponent} from "./components/settings/countries/edit/edit-co
 import {SearchLanguagesComponent} from './components/settings/languages/search-languages.component';
 import {CreateLanguageComponent} from './components/settings/languages/create/create-language.component';
 import {EditLanguageComponent} from './components/settings/languages/edit/edit-language.component';
+import {SearchSavedSearchesComponent} from "./components/candidates/search/saved/search-saved-searches.component";
+import {SaveSearchComponent} from "./components/candidates/search/save/save-search.component";
+import {CandidateSearchCardComponent} from './components/candidates/search/candidate-search-card/candidate-search-card.component';
+import {CandidateGeneralTabComponent} from './components/candidates/search/candidate-search-card/candidate-general-tab/candidate-general-tab.component';
+import {CandidateExperienceTabComponent} from './components/candidates/search/candidate-search-card/candidate-experience-tab/candidate-experience-tab.component';
+import {CandidateHistoryTabComponent} from './components/candidates/search/candidate-search-card/candidate-history-tab/candidate-history-tab.component';
+import {CandidateEligibilityTabComponent} from './components/candidates/search/candidate-search-card/candidate-eligibility-tab/candidate-eligibility-tab.component';
 
 @NgModule({
   declarations: [
@@ -57,6 +64,14 @@ import {EditLanguageComponent} from './components/settings/languages/edit/edit-l
     SearchLanguagesComponent,
     CreateLanguageComponent,
     EditLanguageComponent,
+    CreateNationalityComponent,
+    SearchSavedSearchesComponent,
+    SaveSearchComponent,
+    CandidateSearchCardComponent,
+    CandidateGeneralTabComponent,
+    CandidateExperienceTabComponent,
+    CandidateHistoryTabComponent,
+    CandidateEligibilityTabComponent
   ],
   imports: [
     BrowserModule,
@@ -65,7 +80,7 @@ import {EditLanguageComponent} from './components/settings/languages/edit/edit-l
     ReactiveFormsModule,
     NgbModule,
     InfiniteScrollModule,
-    NgMultiSelectDropDownModule,
+    NgMultiSelectDropDownModule.forRoot(),
     LocalStorageModule.forRoot({
       prefix: 'tbb-admin',
       storageType: 'localStorage'
@@ -76,13 +91,14 @@ import {EditLanguageComponent} from './components/settings/languages/edit/edit-l
     SearchNationalitiesComponent,
     CreateNationalityComponent,
     EditNationalityComponent,
-    SearchCountriesComponent,
     CreateCountryComponent,
     EditCountryComponent,
     SearchLanguagesComponent,
     CreateLanguageComponent,
     EditLanguageComponent,
     ConfirmationComponent
+    ConfirmationComponent,
+    SaveSearchComponent
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},

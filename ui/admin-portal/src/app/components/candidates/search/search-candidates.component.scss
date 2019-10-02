@@ -1,18 +1,65 @@
-.candidate-num-col-head {
-  width: 12rem;
-}
-
-.more-filter {
-  display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
+// Extend bootstrap style to override default layout type of form row
+:host {
+  ::ng-deep .dropdown-btn {
+    background-color: #fff;
+  }
 }
 
 label {
   font-size: 14px;
 }
 
-ng-multiselect-dropdown .multiselect-dropdown > .dropdown-btn{
-     font-size:12px;
+.form-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  background-color: #efefef;
+  padding: 1em;
 }
 
+.filter-group {
+  border: 1px solid grey;
+  padding-top: 1rem;
+}
+
+.filter-results {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1em;
+
+  ::ng-deep ul.pagination {
+    margin-bottom: 0;
+  }
+}
+
+.candidate-number {
+  cursor: pointer;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+$candidate-card-width: 375px;
+
+.split-view {
+  display: flex;
+  justify-content: space-between;
+
+  .table-wrapper {
+    flex: 1 1 auto;
+    overflow-x: auto;
+  }
+
+  &.show {
+    .table-wrapper {
+      // Remove 20px to simulate padding between the card and the table
+      flex: 0 1 calc(100% - #{$candidate-card-width} - 20px);
+    }
+
+    .profile {
+      flex: 0 0 $candidate-card-width;
+      display: flex;
+    }
+  }
+
+}

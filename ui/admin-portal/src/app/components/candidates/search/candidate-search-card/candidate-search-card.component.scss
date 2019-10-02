@@ -1,0 +1,28 @@
+:host {
+  font-size: 12px;
+}
+
+.candidate-card {
+  width: 100%;
+  padding: 1em;
+  border: 1px solid #aaa;
+}
+
+.candidate-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1em;
+
+  * {
+    margin: 0;
+  }
+
+  .btn + .btn {
+    margin: 0 0 0 1em;
+  }
+}
+
+::ng-deep .nav-tabs {
+  margin: 0 0 1em 0;
+}
