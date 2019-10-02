@@ -8,6 +8,8 @@ import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {SavedSearch} from "../../../../model/saved-search";
 import {SavedSearchService} from "../../../../services/saved-search.service";
 import {Router} from "@angular/router";
+import {Country} from "../../../../model/country";
+import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-search-saved-searches',
@@ -22,9 +24,11 @@ export class SearchSavedSearchesComponent implements OnInit {
   pageNumber: number;
   pageSize: number;
   results: SearchResults<SavedSearch>;
+  selectedSearchId;
 
 
-  constructor(private fb: FormBuilder,
+  constructor(private activeModal: NgbActiveModal,
+              private fb: FormBuilder,
               private router: Router,
               private savedSearchService: SavedSearchService) {
   }
@@ -63,9 +67,16 @@ export class SearchSavedSearchesComponent implements OnInit {
     });
   }
 
-  loadSavedSearch(savedSearch){
-     this.router.navigateByUrl('/candidate/search/', savedSearch.id);
+  selectSearch(savedSearch){
+     this.selectedSearchId = savedSearch.id;
   }
 
+  closeModal(country: Country) {
+    this.activeModal.close(this.selectedSearchId);
+  }
+
+  dismiss() {
+    this.activeModal.dismiss(false);
+  }
 
 }

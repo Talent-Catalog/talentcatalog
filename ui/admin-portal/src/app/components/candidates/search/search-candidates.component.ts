@@ -12,6 +12,9 @@ import {SearchResults} from '../../../model/search-results';
 
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
+import {EditCountryComponent} from "../../settings/countries/edit/edit-country.component";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {SearchSavedSearchesComponent} from "./saved-search/search-saved-searches.component";
 
 @Component({
   selector: 'app-search-candidates',
@@ -52,8 +55,8 @@ export class SearchCandidatesComponent implements OnInit {
               private candidateService: CandidateService,
               private nationalityService: NationalityService,
               private countryService: CountryService,
-              private languageService: LanguageService) {
-  }
+              private languageService: LanguageService,
+              private modalService: NgbModal) { }
 
   ngOnInit() {
     this.moreFilters = false;
@@ -181,4 +184,20 @@ export class SearchCandidatesComponent implements OnInit {
         this.loading = false;
       });
   }
+
+  showSavedSearches() {
+    const showSavedSearchesModal = this.modalService.open(SearchSavedSearchesComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    showSavedSearchesModal.result
+      .then((request) => this.populateFormFromRequest(request))
+      .catch(() => { /* Isn't possible */ });
+  }
+
+  populateFormFromRequest(request){
+
+  }
+
 }
