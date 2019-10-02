@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.model.CandidateLanguage;
-import org.tbbtalent.server.request.language.CreateCandidateLanguageRequest;
+import org.tbbtalent.server.request.candidate.language.CreateCandidateLanguageRequest;
 import org.tbbtalent.server.service.CandidateLanguageService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 

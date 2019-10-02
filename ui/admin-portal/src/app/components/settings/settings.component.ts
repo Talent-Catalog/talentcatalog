@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {SearchUsersComponent} from "./users/search-users.component";
 import {SearchNationalitiesComponent} from "./nationalities/search-nationalities.component";
 import {SearchCountriesComponent} from "./countries/search-countries.component";
+import {SearchLanguagesComponent} from "./languages/search-languages.component";
 
 @Component({
   selector: 'app-settings',
@@ -24,6 +25,10 @@ export class SettingsComponent implements OnInit {
     {
       label: 'Countries',
       component: SearchCountriesComponent
+    },
+    {
+      label: 'Language',
+      component: SearchLanguagesComponent
     }
   ];
 

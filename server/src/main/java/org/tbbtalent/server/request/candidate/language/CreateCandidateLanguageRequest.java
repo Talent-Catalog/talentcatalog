@@ -1,4 +1,4 @@
-package org.tbbtalent.server.request.language;
+package org.tbbtalent.server.request.candidate.language;
 
 public class CreateCandidateLanguageRequest {
 

@@ -30,6 +30,9 @@ import {ConfirmationComponent} from "./components/util/confirm/confirmation.comp
 import {SearchCountriesComponent} from "./components/settings/countries/search-countries.component";
 import {CreateCountryComponent} from "./components/settings/countries/create/create-country.component";
 import {EditCountryComponent} from "./components/settings/countries/edit/edit-country.component";
+import {SearchLanguagesComponent} from './components/settings/languages/search-languages.component';
+import {CreateLanguageComponent} from './components/settings/languages/create/create-language.component';
+import {EditLanguageComponent} from './components/settings/languages/edit/edit-language.component';
 
 @NgModule({
   declarations: [
@@ -51,6 +54,9 @@ import {EditCountryComponent} from "./components/settings/countries/edit/edit-co
     SearchCountriesComponent,
     CreateCountryComponent,
     EditCountryComponent,
+    SearchLanguagesComponent,
+    CreateLanguageComponent,
+    EditLanguageComponent,
   ],
   imports: [
     BrowserModule,
@@ -73,6 +79,9 @@ import {EditCountryComponent} from "./components/settings/countries/edit/edit-co
     SearchCountriesComponent,
     CreateCountryComponent,
     EditCountryComponent,
+    SearchLanguagesComponent,
+    CreateLanguageComponent,
+    EditLanguageComponent,
     ConfirmationComponent
   ],
   providers: [

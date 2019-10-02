@@ -16,6 +16,11 @@ public class Language  extends AbstractDomainObject<Long> {
     public Language() {
     }
 
+    public Language(String name, Status status) {
+        this.name = name;
+        this.status = status;
+    }
+
     public String getName() {
         return name;
     }

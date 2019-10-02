@@ -2,7 +2,7 @@
   <div class="section">
     <div>
       <div class="pull-right">
-        <button class="btn btn-primary" (click)="addCountry()">Add</button>
+        <button class="btn btn-primary" (click)="addLanguage()">Add</button>
       </div>
     </div>
     <div class="alert alert-danger" *ngIf="error">
@@ -38,7 +38,7 @@
                     (pageChange)="search()">
     </ngb-pagination>
 
-    Found {{results?.totalElements}} countries
+    Found {{results?.totalElements}} languages
   </div>
 
   <table class="table">
@@ -53,15 +53,15 @@
     </thead>
 
     <tbody>
-    <tr *ngFor="let country of results?.content">
-      <td>{{country.name}}</td>
-      <td>{{country.status}}</td>
+    <tr *ngFor="let language of results?.content">
+      <td>{{language.name}}</td>
+      <td>{{language.status}}</td>
       <td></td>
       <td>
         <div class="btn-group">
-          <button type="button" class="btn btn-default" (click)="editCountry(country)"><i
+          <button type="button" class="btn btn-default" (click)="editLanguage(language)"><i
             class="fa fa-edit"></i></button>
-          <button type="button" class="btn btn-default" (click)="deleteCountry(country)"><i
+          <button type="button" class="btn btn-default" (click)="deleteLanguage(language)"><i
             class="fa fa-trash"></i></button>
         </div>
       </td>
@@ -77,7 +77,7 @@
     <!-- no results -->
     <tr *ngIf="!loading && !results?.totalElements">
       <td colspan="42">
-        <span class="text-muted">(no matching countries)</span>
+        <span class="text-muted">(no matching languages)</span>
       </td>
     </tr>
 
@@ -86,4 +86,3 @@
   </table>
 
 </div>
-

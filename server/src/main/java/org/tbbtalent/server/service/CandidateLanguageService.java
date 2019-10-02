@@ -1,7 +1,7 @@
 package org.tbbtalent.server.service;
 
 import org.tbbtalent.server.model.CandidateLanguage;
-import org.tbbtalent.server.request.language.CreateCandidateLanguageRequest;
+import org.tbbtalent.server.request.candidate.language.CreateCandidateLanguageRequest;
 
 public interface CandidateLanguageService {
 

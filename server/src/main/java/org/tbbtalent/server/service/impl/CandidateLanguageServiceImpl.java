@@ -11,7 +11,7 @@ import org.tbbtalent.server.model.LanguageLevel;
 import org.tbbtalent.server.repository.CandidateLanguageRepository;
 import org.tbbtalent.server.repository.LanguageLevelRepository;
 import org.tbbtalent.server.repository.LanguageRepository;
-import org.tbbtalent.server.request.language.CreateCandidateLanguageRequest;
+import org.tbbtalent.server.request.candidate.language.CreateCandidateLanguageRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.CandidateLanguageService;
 

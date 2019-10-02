@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.*;
+import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.model.Nationality;
 import org.tbbtalent.server.model.Status;
 import org.tbbtalent.server.repository.CandidateRepository;
@@ -21,7 +21,6 @@ import org.tbbtalent.server.request.nationality.SearchNationalityRequest;
 import org.tbbtalent.server.request.nationality.UpdateNationalityRequest;
 import org.tbbtalent.server.service.NationalityService;
 
-import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -61,7 +60,7 @@ public class NationalityServiceImpl implements NationalityService {
     @Transactional
     public Nationality createNationality(CreateNationalityRequest request) throws EntityExistsException {
         Nationality nationality = new Nationality(
-                request.getName(), Status.active);
+                request.getName(), request.getStatus());
         checkDuplicates(null, request.getName());
         return this.nationalityRepository.save(nationality);
     }

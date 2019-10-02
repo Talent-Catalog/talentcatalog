@@ -65,4 +65,6 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     @Query(" select c from Candidate c "
             + " where c.nationality.id = :nationalityId ")
     List<Candidate> findByNationalityId(@Param("nationalityId") Long nationalityId);
+
+    //TO DO FIND BY COUNTRY ID & FIND BY LANGUAGE ID
 }
