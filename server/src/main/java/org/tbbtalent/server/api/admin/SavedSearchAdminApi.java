@@ -55,7 +55,6 @@ public class SavedSearchAdminApi {
     @PutMapping("{id}")
     public Map<String, Object> update(@PathVariable("id") long id,
                                       @Valid @RequestBody UpdateSavedSearchRequest request) throws EntityExistsException  {
-
         SavedSearch savedSearch = this.savedSearchService.updateSavedSearch(id, request);
         return savedSearchDto().build(savedSearch);
     }

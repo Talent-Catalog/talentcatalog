@@ -12,6 +12,6 @@ public interface SearchJoinRepository extends JpaRepository<SearchJoin, Long> {
 
     @Modifying
     @Query(" delete from SearchJoin s "
-            + " where s.savedSearch = :savedSearchId" )
+            + " where s.savedSearch.id = :savedSearchId" )
     void deleteBySearchId(@Param("savedSearchId") Long savedSearchId);
 }

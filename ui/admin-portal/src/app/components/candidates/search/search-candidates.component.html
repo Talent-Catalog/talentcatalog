@@ -1,9 +1,13 @@
-<div>
+<nav aria-label="breadcrumb">
   <div class="pull-right">
     <button class="btn btn-primary" [routerLink]="['create']">Add</button>
   </div>
-  <h1>Candidates</h1>
-</div>
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]="['/candidates']">Candidates</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{savedSearch ? savedSearch.name : 'Search'}}</li>
+  </ol>
+
+</nav>
 
 <div>
   <form class="form-row" [formGroup]="searchForm" (ngSubmit)="search()">
@@ -251,8 +255,10 @@
   </form>
 
   <div>
-     <a (click)="showSavedSearches()">Load Saved Search</a>
-     <a (click)="showSave()">Save Search</a>
+    <div class="btn-group" role="group">
+      <button class="btn btn-outline-dark" (click)="showSavedSearches()">Load Saved Search</button>
+      <button class="btn btn-outline-dark" (click)="showSave()">Save Search</button>
+    </div>
   </div>
 
   <div class="text-muted mb-2 align-middle">

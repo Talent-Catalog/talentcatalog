@@ -39,14 +39,9 @@
 
   <table class="table">
 
-    <thead>
-    <tr>
-      <th>Name</th>
-    </tr>
-    </thead>
 
     <tbody>
-    <tr *ngFor="let savedSearch of results?.content" (click)="selectSearch(savedSearch)">
+    <tr *ngFor="let savedSearch of results?.content" (click)="selectSearch(savedSearch)"  [ngClass]="{'selected': savedSearch.id == selectedSearch?.id}">
       <td>{{savedSearch.name}}</td>
     </tr>
 
@@ -71,7 +66,7 @@
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-primary" (click)="closeModal()"
-          [disabled]="!selectedSearchId">
+          [disabled]="!selectedSearch">
     Load
   </button>
 </div>
