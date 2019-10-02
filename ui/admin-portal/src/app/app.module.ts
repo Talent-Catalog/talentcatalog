@@ -30,7 +30,8 @@ import {ConfirmationComponent} from "./components/util/confirm/confirmation.comp
 import {SearchCountriesComponent} from "./components/settings/countries/search-countries.component";
 import {CreateCountryComponent} from "./components/settings/countries/create/create-country.component";
 import {EditCountryComponent} from "./components/settings/countries/edit/edit-country.component";
-import {SearchSavedSearchesComponent} from "./components/candidates/search/saved-search/search-saved-searches.component";
+import {SearchSavedSearchesComponent} from "./components/candidates/search/saved/search-saved-searches.component";
+import {SaveSearchComponent} from "./components/candidates/search/save/save-search.component";
 
 @NgModule({
   declarations: [
@@ -53,7 +54,8 @@ import {SearchSavedSearchesComponent} from "./components/candidates/search/saved
     CreateCountryComponent,
     EditCountryComponent,
     CreateNationalityComponent,
-    SearchSavedSearchesComponent
+    SearchSavedSearchesComponent,
+    SaveSearchComponent
   ],
   imports: [
     BrowserModule,
@@ -73,10 +75,10 @@ import {SearchSavedSearchesComponent} from "./components/candidates/search/saved
     SearchNationalitiesComponent,
     CreateNationalityComponent,
     EditNationalityComponent,
-    SearchCountriesComponent,
     CreateCountryComponent,
     EditCountryComponent,
-    ConfirmationComponent
+    ConfirmationComponent,
+    SaveSearchComponent
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},

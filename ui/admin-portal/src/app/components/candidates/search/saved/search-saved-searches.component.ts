@@ -56,7 +56,7 @@ export class SearchSavedSearchesComponent implements OnInit {
     this.search();
   }
 
-  search() {
+  search(){
     this.loading = true;
     let request = this.searchForm.value;
     request.pageNumber = this.pageNumber - 1;

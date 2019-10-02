@@ -47,7 +47,7 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
     @JoinColumn(name = "other_min_spoken_level_id")
     private LanguageLevel otherMinSpokenLevel;
 
-    private boolean unRegistered;
+    private Boolean unRegistered;
 
     private LocalDate lastModifiedFrom;
     private LocalDate lastModifiedTo;
@@ -209,11 +209,11 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
         this.otherMinSpokenLevel = otherMinSpokenLevel;
     }
 
-    public boolean isUnRegistered() {
+    public Boolean isUnRegistered() {
         return unRegistered;
     }
 
-    public void setUnRegistered(boolean unRegistered) {
+    public void setUnRegistered(Boolean unRegistered) {
         this.unRegistered = unRegistered;
     }
 

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.*;
@@ -115,14 +116,17 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     private SavedSearch addSearchJoins(CreateSavedSearchRequest request, SavedSearch savedSearch) {
         Set<SearchJoin> searchJoins = new HashSet<>();
-        for (SearchJoinRequest searchJoinRequest : request.getSearchCandidateRequest().getSearchJoinRequests()) {
-            SearchJoin searchJoin = new SearchJoin();
-            searchJoin.setSavedSearch(savedSearch);
-            searchJoin.setChildSavedSearch(savedSearchRepository.findById(searchJoinRequest.getSavedSearchId()).orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, searchJoinRequest.getSavedSearchId())));
-            searchJoin.setSearchType(searchJoinRequest.getSearchType());
-            this.searchJoinRepository.save(searchJoin);
+        if (!CollectionUtils.isEmpty(request.getSearchCandidateRequest().getSearchJoinRequests())){
+            for (SearchJoinRequest searchJoinRequest : request.getSearchCandidateRequest().getSearchJoinRequests()) {
+                SearchJoin searchJoin = new SearchJoin();
+                searchJoin.setSavedSearch(savedSearch);
+                searchJoin.setChildSavedSearch(savedSearchRepository.findById(searchJoinRequest.getSavedSearchId()).orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, searchJoinRequest.getSavedSearchId())));
+                searchJoin.setSearchType(searchJoinRequest.getSearchType());
+                this.searchJoinRepository.save(searchJoin);
+            }
+            savedSearch.setSearchJoins(searchJoins);
         }
-        savedSearch.setSearchJoins(searchJoins);
+
         return savedSearch;
     }
 
@@ -212,24 +216,24 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
 
     String getListAsString(List<Long> ids){
-        return ids.stream().map(String::valueOf)
-                .collect(Collectors.joining(","));
+        return !CollectionUtils.isEmpty(ids) ? ids.stream().map(String::valueOf)
+                .collect(Collectors.joining(",")) : null;
     }
 
     List<Long> getIdsFromString(String listIds){
-        return Stream.of(listIds.split(","))
+        return listIds != null ? Stream.of(listIds.split(","))
                 .map(Long::parseLong)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()) : null;
     }
 
     String getStatusListAsString(List<CandidateStatus> statuses){
-        return statuses.stream().map(String::valueOf)
-                .collect(Collectors.joining(","));
+        return !CollectionUtils.isEmpty(statuses) ? statuses.stream().map(String::valueOf)
+                .collect(Collectors.joining(",")) : null;
     }
 
     List<CandidateStatus> getStatusListFromString(String statusList){
-        return Stream.of(statusList.split(","))
+        return statusList != null ? Stream.of(statusList.split(","))
                 .map(s -> CandidateStatus.valueOf(s))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()) : null;
     }
 }

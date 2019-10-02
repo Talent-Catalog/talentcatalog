@@ -14,7 +14,8 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {EditCountryComponent} from "../../settings/countries/edit/edit-country.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {SearchSavedSearchesComponent} from "./saved-search/search-saved-searches.component";
+import {SearchSavedSearchesComponent} from "./saved/search-saved-searches.component";
+import {SaveSearchComponent} from "./save/save-search.component";
 
 @Component({
   selector: 'app-search-candidates',
@@ -31,6 +32,7 @@ export class SearchCandidatesComponent implements OnInit {
   pageSize: number;
   results: SearchResults<Candidate>;
 
+  savedSearchId;
   /* MULTI SELECT */
   selectedNationalities = [];
   selectedStatus = [];
@@ -174,6 +176,20 @@ export class SearchCandidatesComponent implements OnInit {
 
     showSavedSearchesModal.result
       .then((request) => this.populateFormFromRequest(request))
+      .catch(() => { /* Isn't possible */ });
+  }
+
+  showSave() {
+    const showSaveModal = this.modalService.open(SaveSearchComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    showSaveModal.componentInstance.savedSearchId = this.savedSearchId;
+    showSaveModal.componentInstance.searchCandidateRequest = this.searchForm.value;
+
+    showSaveModal.result
+      .then((savedSearch) => this.savedSearchId = savedSearch.id)
       .catch(() => { /* Isn't possible */ });
   }
 
