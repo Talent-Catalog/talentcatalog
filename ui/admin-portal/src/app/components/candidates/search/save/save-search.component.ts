@@ -18,6 +18,7 @@ export class SaveSearchComponent implements OnInit {
   savedSearchId;
   savedSearch;
   searchCandidateRequest;
+  update;
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
@@ -46,8 +47,10 @@ export class SaveSearchComponent implements OnInit {
 
   save() {
     this.saving = true;
-    if (this.savedSearchId) {
-      this.savedSearchService.update(this.savedSearchId, this.form.value).subscribe(
+    let request = this.form.value;
+    request.name = this.savedSearch.name;
+    if (request.update && this.savedSearchId) {
+      this.savedSearchService.update(this.savedSearchId, request).subscribe(
         (savedSearch) => {
           this.closeModal(savedSearch);
           this.saving = false;

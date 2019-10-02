@@ -31,7 +31,7 @@ export class SearchCandidatesComponent implements OnInit {
   moreFilters: boolean;
   results: SearchResults<Candidate>;
 
-  savedSearchId;
+  savedSearch;
   /* MULTI SELECT */
   dropdownSettings = {};
 
@@ -214,7 +214,10 @@ export class SearchCandidatesComponent implements OnInit {
     });
 
     showSavedSearchesModal.result
-      .then((savedSearchId) => this.loadSavedSearch(savedSearchId))
+      .then((savedSearch) => {
+        this.savedSearch = savedSearch;
+        this.loadSavedSearch(savedSearch.id)
+      })
       .catch(() => { /* Isn't possible */ });
   }
 
@@ -224,11 +227,14 @@ export class SearchCandidatesComponent implements OnInit {
       backdrop: 'static'
     });
 
-    showSaveModal.componentInstance.savedSearchId = this.savedSearchId;
+    showSaveModal.componentInstance.savedSearchId = this.savedSearch? this.savedSearch.id:null;
     showSaveModal.componentInstance.searchCandidateRequest = this.searchForm.value;
 
     showSaveModal.result
-      .then((savedSearch) => this.savedSearchId = savedSearch.id)
+      .then((savedSearch) => {
+        this.savedSearch = savedSearch;
+        console.log(savedSearch);
+      })
       .catch(() => { /* Isn't possible */ });
   }
 

@@ -1,3 +1,10 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]="['/candidates']">Candidates</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{savedSearch ? savedSearch.name : 'Search'}}</li>
+  </ol>
+</nav>
+
 <div class="page-header">
   <h1>Candidates</h1>
 
@@ -250,10 +257,12 @@
 
 </form>
 
-<div>
-  <a (click)="showSavedSearches()">Load Saved Search</a>
-  <a (click)="showSave()">Save Search</a>
-</div>
+  <div>
+    <div class="btn-group" role="group">
+      <button class="btn btn-outline-dark" (click)="showSavedSearches()">Load Saved Search</button>
+      <button class="btn btn-outline-dark" (click)="showSave()">Save Search</button>
+    </div>
+  </div>
 
 <div class="filter-results text-muted">
   <span>Found {{results?.totalElements}} candidates</span>

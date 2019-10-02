@@ -24,7 +24,7 @@ export class SearchSavedSearchesComponent implements OnInit {
   pageNumber: number;
   pageSize: number;
   results: SearchResults<SavedSearch>;
-  selectedSearchId;
+  selectedSearch;
 
 
   constructor(private activeModal: NgbActiveModal,
@@ -68,11 +68,11 @@ export class SearchSavedSearchesComponent implements OnInit {
   }
 
   selectSearch(savedSearch){
-     this.selectedSearchId = savedSearch.id;
+     this.selectedSearch = savedSearch;
   }
 
   closeModal() {
-    this.activeModal.close(this.selectedSearchId);
+    this.activeModal.close(this.selectedSearch);
   }
 
   dismiss() {

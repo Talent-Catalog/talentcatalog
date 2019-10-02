@@ -37,7 +37,7 @@
 
 <div class="modal-footer">
   <button type="button" class="btn btn-primary" (click)="save()"
-          [disabled]="form.invalid || saving">
+          [disabled]="saving">
     <i class="fa fa-spinner fa-spin" *ngIf="saving"></i>
     Save
   </button>
