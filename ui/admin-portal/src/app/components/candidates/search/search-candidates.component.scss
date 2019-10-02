@@ -1,4 +1,10 @@
 // Extend bootstrap style to override default layout type of form row
+:host {
+  ::ng-deep .dropdown-btn {
+    background-color: #fff;
+  }
+}
+
 .form-row {
   display: flex;
   justify-content: space-between;
@@ -9,7 +15,7 @@
 
 .filter-group {
   border: 1px solid grey;
-  //padding: 1em;
+  padding-top: 1rem;
 }
 
 .candidate-num-col-head {
@@ -18,8 +24,4 @@
 
 label {
   font-size: 14px;
-}
-
-ng-multiselect-dropdown .multiselect-dropdown > .dropdown-btn {
-  font-size: 12px;
 }

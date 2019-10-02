@@ -10,12 +10,13 @@ import {Language} from "../../../model/language";
 import {LanguageService} from "../../../services/language.service";
 import {SearchResults} from '../../../model/search-results';
 
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {FormArray, FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {SearchSavedSearchesComponent} from "./saved/search-saved-searches.component";
 import {SaveSearchComponent} from "./save/save-search.component";
 import {SavedSearchService} from "../../../services/saved-search.service";
+import {SavedSearch, SavedSearchJoin} from "../../../model/saved-search";
 
 @Component({
   selector: 'app-search-candidates',
@@ -51,6 +52,8 @@ export class SearchCandidatesComponent implements OnInit {
   ];
 
   statuses: String[] = ['pending', 'incomplete', 'rejected', 'approved', 'employed', 'deleted', 'active', 'inactive'];
+  savedSearches: SavedSearch[];
+  searchJoin: SavedSearchJoin;
 
   constructor(private fb: FormBuilder,
               private candidateService: CandidateService,
@@ -63,10 +66,12 @@ export class SearchCandidatesComponent implements OnInit {
   ngOnInit() {
     this.moreFilters = false;
 
+    this.resetSavedSearchJoin();
+    // TODO saved search service call
+    this.savedSearches = [];
+
     /* SET UP FORM */
     this.searchForm = this.fb.group({
-      selectedStatus: [[]],
-
       savedSearchId: [null],
       keyword: [null],
       statuses: [[]],
@@ -92,6 +97,7 @@ export class SearchCandidatesComponent implements OnInit {
       maxAge: [null],
       minEducationLevelId: [null],
       educationMajorIds: [[]],
+      searchJoinRequests: this.fb.array([]),
       page: 1,
       size: 50
     });
@@ -234,4 +240,13 @@ export class SearchCandidatesComponent implements OnInit {
     this.search();
   }
 
+  // TODO better name
+  resetSavedSearchJoin() {
+    this.searchJoin = {savedSearchId: null, searchType: null};
+  }
+
+  addSavedSearchJoin() {
+    (this.searchForm.controls.searchJoinRequests as FormArray).push(new FormControl(this.searchJoin));
+    this.resetSavedSearchJoin();
+  }
 }
