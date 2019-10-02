@@ -29,12 +29,11 @@
       name="status"
       [placeholder]="''"
       [data]="statuses"
-      formControlName="statuses"
       [settings]="dropdownSettings"
-      (onSelect)="onItemSelect($event)"
-      (onDeSelect)="onItemDeSelect($event)"
-      (onSelectAll)="onSelectAll($event)"
-      (onDeSelectAll)="onDeSelectAll($event)">
+      (onSelect)="onItemSelect($event, 'statuses')"
+      (onDeSelect)="onItemDeSelect($event, 'statuses')"
+      (onSelectAll)="onSelectAll($event, 'statuses')"
+      (onDeSelectAll)="onDeSelectAll('statuses')">
     </ng-multiselect-dropdown>
   </div>
 
@@ -80,10 +79,10 @@
             [data]="occupations"
             formControlName="occupationIds"
             [settings]="dropdownSettings"
-            (onSelect)="onItemSelect($event)"
-            (onDeSelect)="onItemDeSelect($event)"
-            (onSelectAll)="onSelectAll($event)"
-            (onDeSelectAll)="onDeSelectAll($event)">
+            (onSelect)="onItemSelect($event, 'occupationIds')"
+            (onDeSelect)="onItemDeSelect($event, 'occupationIds')"
+            (onSelectAll)="onSelectAll($event, 'occupationIds')"
+            (onDeSelectAll)="onDeSelectAll('occupationIds')">
           </ng-multiselect-dropdown>
         </div>
 
@@ -142,10 +141,10 @@
             [data]="countries"
             formControlName="countryIds"
             [settings]="dropdownSettings"
-            (onSelect)="onItemSelect($event)"
-            (onDeSelect)="onItemDeSelect($event)"
-            (onSelectAll)="onSelectAll($event)"
-            (onDeSelectAll)="onDeSelectAll($event)">
+            (onSelect)="onItemSelect($event, 'countryIds')"
+            (onDeSelect)="onItemDeSelect($event, 'countryIds')"
+            (onSelectAll)="onSelectAll($event, 'countryIds')"
+            (onDeSelectAll)="onDeSelectAll('countryIds')">
           </ng-multiselect-dropdown>
         </div>
 
@@ -187,10 +186,10 @@
         [data]="nationalities"
         formControlName="nationalityIds"
         [settings]="dropdownSettings"
-        (onSelect)="onItemSelect($event, 'nationality')"
-        (onDeSelect)="onItemDeSelect($event, 'nationality')"
-        (onSelectAll)="onSelectAll($event, 'nationality')"
-        (onDeSelectAll)="onDeSelectAll($event, 'nationality')">
+        (onSelect)="onItemSelect($event, 'nationalityIds')"
+        (onDeSelect)="onItemDeSelect($event, 'nationalityIds')"
+        (onSelectAll)="onSelectAll($event, 'nationalityIds')"
+        (onDeSelectAll)="onDeSelectAll('nationalityIds')">
       </ng-multiselect-dropdown>
     </div>
 
@@ -255,14 +254,22 @@
 
   </ng-container>
 
-</form>
+  <hr class="w-100">
 
-  <div>
+  <div class="col-6">
     <div class="btn-group" role="group">
       <button class="btn btn-outline-dark" (click)="showSavedSearches()">Load Saved Search</button>
       <button class="btn btn-outline-dark" (click)="showSave()">Save Search</button>
     </div>
   </div>
+
+  <div class="col-6">
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-primary" (click)="search()">Apply</button>
+    </div>
+  </div>
+
+</form>
 
 <div class="filter-results text-muted">
   <span>Found {{results?.totalElements}} candidates</span>

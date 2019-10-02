@@ -74,7 +74,7 @@ import {CandidateEligibilityTabComponent} from './components/candidates/search/c
     ReactiveFormsModule,
     NgbModule,
     InfiniteScrollModule,
-    NgMultiSelectDropDownModule,
+    NgMultiSelectDropDownModule.forRoot(),
     LocalStorageModule.forRoot({
       prefix: 'tbb-admin',
       storageType: 'localStorage'

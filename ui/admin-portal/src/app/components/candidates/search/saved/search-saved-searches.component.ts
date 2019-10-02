@@ -8,7 +8,6 @@ import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {SavedSearch} from "../../../../model/saved-search";
 import {SavedSearchService} from "../../../../services/saved-search.service";
 import {Router} from "@angular/router";
-import {Country} from "../../../../model/country";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({

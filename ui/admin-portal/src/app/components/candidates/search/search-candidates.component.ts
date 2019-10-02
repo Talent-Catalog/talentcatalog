@@ -11,12 +11,12 @@ import {LanguageService} from "../../../services/language.service";
 import {SearchResults} from '../../../model/search-results';
 
 import {FormArray, FormBuilder, FormControl, FormGroup} from "@angular/forms";
-import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {SearchSavedSearchesComponent} from "./saved/search-saved-searches.component";
 import {SaveSearchComponent} from "./save/save-search.component";
 import {SavedSearchService} from "../../../services/saved-search.service";
 import {SavedSearch, SavedSearchJoin} from "../../../model/saved-search";
+import {IDropdownSettings} from 'ng-multiselect-dropdown';
 
 @Component({
   selector: 'app-search-candidates',
@@ -30,10 +30,18 @@ export class SearchCandidatesComponent implements OnInit {
   error: any;
   moreFilters: boolean;
   results: SearchResults<Candidate>;
-
   savedSearch;
+
   /* MULTI SELECT */
-  dropdownSettings = {};
+  dropdownSettings: IDropdownSettings = {
+    idField: 'id',
+    textField: 'name',
+    singleSelection: false,
+    selectAllText: 'Select All',
+    unSelectAllText: 'Deselect All',
+    itemsShowLimit: 3,
+    allowSearchFilter: true
+  };
 
   /* DATA */
   nationalities: Nationality[];
@@ -50,7 +58,16 @@ export class SearchCandidatesComponent implements OnInit {
     {id: 'tester', name: 'Tester'}
   ];
 
-  statuses: String[] = ['pending', 'incomplete', 'rejected', 'approved', 'employed', 'deleted', 'active', 'inactive'];
+  statuses: {id: string, name: string}[] = [
+    {id: 'pending', name: 'pending'},
+    {id: 'incomplete', name: 'incomplete'},
+    {id: 'rejected', name: 'rejected'},
+    {id: 'approved', name: 'approved'},
+    {id: 'employed', name: 'employed'},
+    {id: 'deleted', name: 'deleted'},
+    {id: 'active', name: 'active'},
+    {id: 'inactive', name: 'inactive'},
+  ];
   savedSearches: SavedSearch[];
   searchJoin: SavedSearchJoin;
   selectedCandidate: Candidate;
@@ -140,43 +157,44 @@ export class SearchCandidatesComponent implements OnInit {
 
     // TODO Change to explicit button click
     /* SEARCH ON CHANGE */
-    this.searchForm.get('keyword').valueChanges
-      .pipe(
-        debounceTime(400),
-        distinctUntilChanged()
-      )
-      .subscribe(res => {
-        this.search();
-      });
+    // this.searchForm.get('keyword').valueChanges
+    //   .pipe(
+    //     debounceTime(400),
+    //     distinctUntilChanged()
+    //   )
+    //   .subscribe(res => {
+    //     this.search();
+    //   });
     this.search();
-
-    /* MULTI SELECT DROPDOWN SETTINGS */
-    this.dropdownSettings = {
-      singleSelection: false,
-      textField: 'name',
-      selectAllText: 'Select All',
-      unSelectAllText: 'UnSelect All',
-      itemsShowLimit: 3,
-      allowSearchFilter: true
-    };
-
   }
 
   /* MULTI SELECT METHODS */
   onItemSelect(item: any, formControlName: string) {
-    const value = this.searchForm.controls[formControlName].value || [];
-    value.push(item.id);
-    this.searchForm.controls[formControlName].patchValue(value);
-    // this.selectedStatus.push(item.id);
+    const values = this.searchForm.controls[formControlName].value || [];
+    const addValue = item.id || item;
+    values.push(addValue);
+    this.searchForm.controls[formControlName].patchValue(values);
   }
 
-  onSelectAll(items: any, formControlName: string) {
+  onSelectAll(items: any[], formControlName: string) {
+    const values = this.searchForm.controls[formControlName].value || [];
+    items = items.map(i => i.id || i);
+    values.push(...items);
+    this.searchForm.controls[formControlName].patchValue(values);
   }
 
   onItemDeSelect(item: any, formControlName: string) {
+    const values = this.searchForm.controls[formControlName].value || [];
+    const removeValue = item.id || item;
+    const indexToRemove = values.findIndex(val => val === removeValue);
+    if (indexToRemove >= 0) {
+      values.splice(indexToRemove, 1);
+      this.searchForm.controls[formControlName].patchValue(values);
+    }
   }
 
-  onDeSelectAll(items: any, formControlName: string) {
+  onDeSelectAll(formControlName: string) {
+    this.searchForm.controls[formControlName].patchValue([]);
   }
 
   /* SEARCH FORM */
