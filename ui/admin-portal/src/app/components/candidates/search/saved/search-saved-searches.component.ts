@@ -71,7 +71,7 @@ export class SearchSavedSearchesComponent implements OnInit {
      this.selectedSearchId = savedSearch.id;
   }
 
-  closeModal(country: Country) {
+  closeModal() {
     this.activeModal.close(this.selectedSearchId);
   }
 

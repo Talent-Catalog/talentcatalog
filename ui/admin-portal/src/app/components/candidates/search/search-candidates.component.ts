@@ -16,6 +16,7 @@ import {EditCountryComponent} from "../../settings/countries/edit/edit-country.c
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {SearchSavedSearchesComponent} from "./saved/search-saved-searches.component";
 import {SaveSearchComponent} from "./save/save-search.component";
+import {SavedSearchService} from "../../../services/saved-search.service";
 
 @Component({
   selector: 'app-search-candidates',
@@ -58,6 +59,7 @@ export class SearchCandidatesComponent implements OnInit {
               private nationalityService: NationalityService,
               private countryService: CountryService,
               private languageService: LanguageService,
+              private savedSearchService: SavedSearchService,
               private modalService: NgbModal) { }
 
   ngOnInit() {
@@ -68,31 +70,31 @@ export class SearchCandidatesComponent implements OnInit {
       selectedNationalities: [[]],
       selectedStatus: [[]],
 
-      savedSearchId: [''],
-      keyword: [''],
-      statuses: [''],
-      gender: [''],
-      occupationIds: [''],
-      orProfileKeyword: [''],
-      verifiedOccupationIds: [''],
-      verifiedOccupationSearchType: [''],
-      nationalityIds: [''],
-      nationalitySearchType: [''],
-      countryIds: [''],
-      englishMinWrittenLevelId: [''],
-      englishMinSpokenLevelId: [''],
-      otherLanguageId: [''],
-      otherMinWrittenLevelId: [''],
-      otherMinSpokenLevelId: [''],
-      unRegistered: [''],
-      lastModifiedFrom: [''],
-      lastModifiedTo: [''],
-      createdFrom: [''],
-      createdTo: [''],
-      minAge: [''],
-      maxAge: [''],
-      minEducationLevelId: [''],
-      educationMajorIds: [''],
+      savedSearchId: [null],
+      keyword: [null],
+      statuses: [[]],
+      gender: [null],
+      occupationIds: [[]],
+      orProfileKeyword: [null],
+      verifiedOccupationIds: [[]],
+      verifiedOccupationSearchType: [null],
+      nationalityIds: [[]],
+      nationalitySearchType: [null],
+      countryIds: [[]],
+      englishMinWrittenLevelId: [null],
+      englishMinSpokenLevelId: [null],
+      otherLanguageId: [null],
+      otherMinWrittenLevelId: [null],
+      otherMinSpokenLevelId: [null],
+      unRegistered: [null],
+      lastModifiedFrom: [null],
+      lastModifiedTo: [null],
+      createdFrom: [null],
+      createdTo: [null],
+      minAge: [null],
+      maxAge: [null],
+      minEducationLevelId: [null],
+      educationMajorIds: [[]],
       page: 1,
       size: 50
     });
@@ -187,6 +189,18 @@ export class SearchCandidatesComponent implements OnInit {
       });
   }
 
+  loadSavedSearch(id){
+    this.loading = true;
+    this.savedSearchService.load(id).subscribe(
+      request => {
+        this.populateFormFromRequest(request);
+      },
+      error => {
+        this.error = error;
+        this.loading = false;
+      });
+  }
+
   showSavedSearches() {
     const showSavedSearchesModal = this.modalService.open(SearchSavedSearchesComponent, {
       centered: true,
@@ -194,7 +208,7 @@ export class SearchCandidatesComponent implements OnInit {
     });
 
     showSavedSearchesModal.result
-      .then((request) => this.populateFormFromRequest(request))
+      .then((savedSearchId) => this.loadSavedSearch(savedSearchId))
       .catch(() => { /* Isn't possible */ });
   }
 
@@ -214,6 +228,10 @@ export class SearchCandidatesComponent implements OnInit {
 
   populateFormFromRequest(request){
 
+    Object.keys(this.searchForm.controls).forEach(name => {
+        this.searchForm.controls[name].patchValue(request[name]);
+    });
+    this.search();
   }
 
 }

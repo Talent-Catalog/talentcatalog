@@ -17,7 +17,7 @@ public interface SavedSearchRepository extends JpaRepository<SavedSearch, Long>,
     SavedSearch findByNameIgnoreCase(@Param("name") String name);
 
     @Query(" select distinct s from SavedSearch s "
-            + " join s.searchJoins"
+            + " left join s.searchJoins"
             + " where s.id = :id" )
     Optional<SavedSearch> findByIdLoadSearchJoins(@Param("id") long id);
 }

@@ -42,21 +42,12 @@
     <thead>
     <tr>
       <th>Name</th>
-      <th>Filters</th>
     </tr>
     </thead>
 
     <tbody>
-    <tr *ngFor="let savedSearch of results?.content">
+    <tr *ngFor="let savedSearch of results?.content" (click)="selectSearch(savedSearch)">
       <td>{{savedSearch.name}}</td>
-      <td></td>
-      <td></td>
-      <td>
-        <div class="btn-group">
-          <button type="button" class="btn btn-default" (click)="loadSavedSearch(savedSearch)"><i
-            class="fa fa-upload"></i></button>
-        </div>
-      </td>
     </tr>
 
     <!-- loading -->
@@ -79,7 +70,7 @@
 
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-primary"
+  <button type="button" class="btn btn-primary" (click)="closeModal()"
           [disabled]="!selectedSearchId">
     Load
   </button>
