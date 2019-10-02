@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 
 import {Candidate} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
@@ -17,13 +17,14 @@ import {SaveSearchComponent} from "./save/save-search.component";
 import {SavedSearchService} from "../../../services/saved-search.service";
 import {SavedSearch, SavedSearchJoin} from "../../../model/saved-search";
 import {IDropdownSettings} from 'ng-multiselect-dropdown';
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-search-candidates',
   templateUrl: './search-candidates.component.html',
   styleUrls: ['./search-candidates.component.scss']
 })
-export class SearchCandidatesComponent implements OnInit {
+export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   searchForm: FormGroup;
   loading: boolean;
@@ -31,6 +32,7 @@ export class SearchCandidatesComponent implements OnInit {
   moreFilters: boolean;
   results: SearchResults<Candidate>;
   savedSearch;
+  subscription: Subscription;
 
   /* MULTI SELECT */
   dropdownSettings: IDropdownSettings = {
@@ -165,13 +167,21 @@ export class SearchCandidatesComponent implements OnInit {
     //   .subscribe(res => {
     //     this.search();
     //   });
-    this.search();
+    // this.search();
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 
   /* MULTI SELECT METHODS */
   onItemSelect(item: any, formControlName: string) {
+    /* DEBUG */
+    console.log('item', item);
     const values = this.searchForm.controls[formControlName].value || [];
     const addValue = item.id || item;
+    /* DEBUG */
+    console.log('addvalud', addValue);
     values.push(addValue);
     this.searchForm.controls[formControlName].patchValue(values);
   }
@@ -202,7 +212,7 @@ export class SearchCandidatesComponent implements OnInit {
     this.loading = true;
     const request = this.searchForm.value;
     request.page = request.page - 1;
-    this.candidateService.search(request).subscribe(
+    this.subscription = this.candidateService.search(request).subscribe(
       results => {
         this.results = results;
         this.loading = false;

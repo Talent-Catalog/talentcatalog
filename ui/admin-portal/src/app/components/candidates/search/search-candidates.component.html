@@ -77,7 +77,6 @@
             name="status"
             [placeholder]="''"
             [data]="occupations"
-            formControlName="occupationIds"
             [settings]="dropdownSettings"
             (onSelect)="onItemSelect($event, 'occupationIds')"
             (onDeSelect)="onItemDeSelect($event, 'occupationIds')"
@@ -139,7 +138,6 @@
           <ng-multiselect-dropdown
             name="country"
             [data]="countries"
-            formControlName="countryIds"
             [settings]="dropdownSettings"
             (onSelect)="onItemSelect($event, 'countryIds')"
             (onDeSelect)="onItemDeSelect($event, 'countryIds')"
@@ -184,7 +182,6 @@
         name="selectedNationalities"
         [placeholder]="'Select Nationalities'"
         [data]="nationalities"
-        formControlName="nationalityIds"
         [settings]="dropdownSettings"
         (onSelect)="onItemSelect($event, 'nationalityIds')"
         (onDeSelect)="onItemDeSelect($event, 'nationalityIds')"
@@ -265,7 +262,9 @@
 
   <div class="col-6">
     <div class="d-flex justify-content-end">
-      <button class="btn btn-primary" (click)="search()">Apply</button>
+      <button class="btn btn-primary"
+              [disabled]="loading"
+              (click)="search()">Apply</button>
     </div>
   </div>
 
