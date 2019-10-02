@@ -6,121 +6,211 @@
 </div>
 
 <div>
-  <form [formGroup]="searchForm" (ngSubmit)="search()">
+  <form class="form-row" [formGroup]="searchForm" (ngSubmit)="search()">
 
-    <div class="form-row d-flex justify-content-between align-items-end">
+    <!-- KEYWORD -->
+    <div class="form-group col-12 col-md-4">
+      <label for="keyword">Keyword</label>
+      <input id="keyword" type="text" class="form-control" placeholder="Search..." aria-label="Search"
+             formControlName="keyword">
+    </div>
 
-      <div class="form-group col-4">
-        <label for="keyword">Keyword</label>
-        <input type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword" id="keyword">
+    <!-- STATUS -->
+    <div class="form-group col-12 col-md-2">
+      <label>Status</label>
+      <ng-multiselect-dropdown
+        name="status"
+        [placeholder]="''"
+        [data]="statuses"
+        formControlName="selectedStatus"
+        [settings]="dropdownSettings"
+        (onSelect)="onItemSelect($event)"
+        (onDeSelect)="onItemDeSelect($event)"
+        (onSelectAll)="onSelectAll($event)"
+        (onDeSelectAll)="onDeSelectAll($event)">
+      </ng-multiselect-dropdown>
+    </div>
+
+    <!-- OCCUPATION (VETTED) -->
+    <!-- TODO 'any | not' -->
+    <div class="form-group col-12 col-md-2">
+      <label>Occupation
+        <small>(TBB vetted)</small>
+      </label>
+      <input type="text" class="form-control">
+    </div>
+
+    <!-- ENGLISH LANGUAGE -->
+    <div class="form-group col-12 col-md-2">
+      <label>English Proficiency</label>
+      <!-- TODO: Grouped select component -->
+      <select class="form-control" name="englishLanguage" id="englishLanguage"></select>
+    </div>
+
+    <!-- TOGGLE FILTERS -->
+    <div class="form-group col-12 col-md-2">
+      <button type="button" class="btn btn-outline-primary w-100" (click)="moreFilters = !moreFilters">
+        <span *ngIf="!moreFilters">More Filters</span>
+        <span *ngIf="moreFilters">Less Filters</span>
+      </button>
+    </div>
+
+    <ng-container *ngIf="moreFilters">
+
+      <!-- OCCUPATION + PROFILE GROUP -->
+      <div class="col-12 col-md-3 filter-group">
+
+        <div class="d-flex flex-wrap">
+
+          <!-- OCCUPATION MULTISELECT -->
+          <div class="form-group col-12">
+            <label>Occupation (candidate specified)</label>
+            <ng-multiselect-dropdown
+              name="status"
+              [placeholder]="''"
+              [data]="occupations"
+              formControlName="occupationIds"
+              [settings]="dropdownSettings"
+              (onSelect)="onItemSelect($event)"
+              (onDeSelect)="onItemDeSelect($event)"
+              (onSelectAll)="onSelectAll($event)"
+              (onDeSelectAll)="onDeSelectAll($event)">
+            </ng-multiselect-dropdown>
+          </div>
+
+          <!-- PROFILE KEYWORD -->
+          <div class="form-group col-12">
+            <label for="orProfileKeyword">Or profile has any of these words</label>
+            <input id="orProfileKeyword" type="text" class="form-control" placeholder="Butcher, Meat, Beef"
+                   aria-label="Search" formControlName="orProfileKeyword">
+          </div>
+
+        </div>
+
       </div>
 
-      <div class="form-group col-2">
-        <label>Status</label>
+      <div class="col-12 col-md-9">
+
+        <div class="d-flex flex-wrap">
+
+          <!-- AGE -->
+          <div class="col-12 col-md-4">
+
+            <div class="d-flex flex-wrap">
+
+              <!-- MIN AGE -->
+              <div class="form-group col-4">
+                <label for="minAge">Min Age</label>
+                <input id="minAge" type="number" class="form-control" name="minAge" [formControlName]="'minAge'">
+              </div>
+
+              <!-- MAX AGE -->
+              <div class="form-group col-6">
+                <label for="maxAge">Max Age</label>
+                <input id="maxAge" type="number" class="form-control" name="maxAge" [formControlName]="'maxAge'">
+              </div>
+            </div>
+
+          </div>
+
+          <div class="col-12 col-md-4">
+            <div class="form-group">
+              <label for="">Registered On</label>
+            </div>
+          </div>
+
+        </div>
+
+
+        <!-- COUNTRIES  -->
+        <div class="form-group col-12">
+          <label>Country</label>
+          <ng-multiselect-dropdown
+            name="country"
+            [data]="countries"
+            formControlName="countryIds"
+            [settings]="dropdownSettings"
+            (onSelect)="onItemSelect($event)"
+            (onDeSelect)="onItemDeSelect($event)"
+            (onSelectAll)="onSelectAll($event)"
+            (onDeSelectAll)="onDeSelectAll($event)">
+          </ng-multiselect-dropdown>
+        </div>
+
+      </div>
+
+
+      <!-- TODO multi-select -->
+      <div class="form-group col-3">
+        <label for="countryId">Country</label>
+        <select class="form-control" name="countryId" id="countryId" [formControlName]="'countryIds'">
+          <option value=""></option>
+          <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
+        </select>
+      </div>
+
+      <!-- TODO multi-select -->
+      <div class="form-group col-3">
+        <label>Nationalities</label>
         <ng-multiselect-dropdown
-          name="status"
-          [placeholder]="''"
-          [data]="status"
-          formControlName="selectedStatus"
+          name="selectedNationalities"
+          [placeholder]="'Select Nationalities'"
+          [data]="nationalities"
+          formControlName="selectedNationalities"
           [settings]="dropdownSettings"
-          (onSelect)="onItemSelect($event, 'status')"
-          (onDeSelect)="onItemDeSelect($event, 'status')"
-          (onSelectAll)="onSelectAll($event, 'status')"
-          (onDeSelectAll)="onDeSelectAll($event, 'status')">
+          (onSelect)="onItemSelect($event, 'nationality')"
+          (onDeSelect)="onItemDeSelect($event, 'nationality')"
+          (onSelectAll)="onSelectAll($event, 'nationality')"
+          (onDeSelectAll)="onDeSelectAll($event, 'nationality')">
         </ng-multiselect-dropdown>
       </div>
 
       <div class="form-group">
-        <label>Occupation</label>
-        <input type="text" class="form-control">
-      </div>
-
-      <div class="form-group">
-        <label>List Status</label>
-        <input type="text" class="form-control">
-      </div>
-
-      <div class="form-group more-filter">
-        <button type="button" class="btn btn-outline-primary btn-sm" (click)="moreFilters = !moreFilters"
-                [attr.aria-expanded]="!moreFilters" aria-controls="collapseExample">
-          <span *ngIf="!moreFilters">More</span><span *ngIf="moreFilters">Less</span> Filters
-        </button>
-      </div>
-
-    </div>
-
-    <div id="collapseExample" [ngbCollapse]="!moreFilters">
-
-      <div class="form-row d-flex justify-content-between align-items-end">
-
-        <div class="form-group">
-          <label for="">Shortlistings</label>
-          <select class="form-control" name="" id="">
-            <option value=""></option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="countryId">Country</label>
-          <select class="form-control" name="countryId" id="countryId" [formControlName]="'countryId'">
-            <option value=""></option>
-            <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Nationalities</label>
-          <ng-multiselect-dropdown
-            name="selectedNationalities"
-            [placeholder]="'Select Nationalities'"
-            [data]="nationalities"
-            formControlName="selectedNationalities"
-            [settings]="dropdownSettings"
-            (onSelect)="onItemSelect($event, 'nationality')"
-            (onDeSelect)="onItemDeSelect($event, 'nationality')"
-            (onSelectAll)="onSelectAll($event, 'nationality')"
-            (onDeSelectAll)="onDeSelectAll($event, 'nationality')">
-          </ng-multiselect-dropdown>
-        </div>
-
-        <div class="form-group">
-          <label for="registeredWithUN">Registered With UN?</label>
-          <select class="form-control" name="registeredWithUN" id="registeredWithUN" [formControlName]="'registeredWithUN'">
-            <option value=""></option>
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-          </select>
-        </div>
-
+        <label for="unRegistered">UN Registered</label>
+        <select class="form-control" name="unRegistered" id="unRegistered"
+                [formControlName]="'unRegistered'">
+          <option value=""></option>
+          <option value="true">Yes</option>
+          <option value="false">No</option>
+        </select>
       </div>
 
       <div class="form-row d-flex justify-content-between align-items-end">
 
+        <!-- GENDER -->
         <div class="form-group">
           <label for="gender">Gender</label>
           <select class="form-control" name="gender" id="gender" [formControlName]="'gender'">
             <option value=""></option>
             <option value="female">Female</option>
             <option value="male">Male</option>
+            <option value="other">Other</option>
           </select>
         </div>
 
+        <!-- EDUCATION LEVEL (MIN) -->
         <div class="form-group">
-          <label for="educationLevel">Education Level</label>
-          <select class="form-control" id="educationLevel" name="educationLevel" [formControlName]="'educationLevel'">
+          <label for="minEducationLevelId">Education Level (minimum)</label>
+          <select class="form-control" id="minEducationLevelId" name="minEducationLevelId"
+                  [formControlName]="'minEducationLevelId'">
             <option value=""></option>
-            <option *ngFor="let candidateEducation of educationLevels" [value]="candidateEducation.id">{{candidateEducation.label}}</option>
+            <option *ngFor="let candidateEducation of educationLevels" [value]="candidateEducation.id">
+              {{candidateEducation.label}}
+            </option>
           </select>
         </div>
 
+        <!-- OTHER LANGUAGE -->
         <div class="form-group">
-          <label for="candidateLanguageId">Language</label>
-          <select class="form-control" id="candidateLanguageId" name="candidateLanguageId" [formControlName]="'candidateLanguageId'">
+          <label for="otherLanguageId">Language</label>
+          <select class="form-control" id="otherLanguageId" name="otherLanguageId"
+                  [formControlName]="'otherLanguageId'">
             <option value=""></option>
             <option *ngFor="let language of languages" [value]="language.id">{{language.name}}</option>
           </select>
         </div>
 
+        <!-- MIN AGE -->
         <div class="form-group">
           <label for="age">Age</label>
           <select class="form-control" id="age" name="age" [formControlName]="'age'">
@@ -130,11 +220,12 @@
         </div>
 
       </div>
-    </div>
+    </ng-container>
 
   </form>
+
   <div>
-     <a routerLink="search/saved-search">Load Saved Search</a>
+    <a routerLink="search/saved-search">Load Saved Search</a>
   </div>
 
   <div class="text-muted mb-2 align-middle">

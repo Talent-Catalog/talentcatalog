@@ -1,18 +1,23 @@
-.candidate-num-col-head {
-  width: 12rem;
+// Extend bootstrap style to override default layout type of form row
+.form-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
 }
 
-.more-filter {
-  display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
+.filter-group {
+  border: 1px solid grey;
+  //padding: 1em;
+}
+
+.candidate-num-col-head {
+  width: 12rem;
 }
 
 label {
   font-size: 14px;
 }
 
-ng-multiselect-dropdown .multiselect-dropdown > .dropdown-btn{
-     font-size:12px;
+ng-multiselect-dropdown .multiselect-dropdown > .dropdown-btn {
+  font-size: 12px;
 }
-
