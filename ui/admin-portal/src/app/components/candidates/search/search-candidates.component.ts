@@ -12,7 +12,6 @@ import {SearchResults} from '../../../model/search-results';
 
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
-import {EditCountryComponent} from "../../settings/countries/edit/edit-country.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {SearchSavedSearchesComponent} from "./saved/search-saved-searches.component";
 import {SaveSearchComponent} from "./save/save-search.component";
@@ -33,7 +32,6 @@ export class SearchCandidatesComponent implements OnInit {
 
   savedSearchId;
   /* MULTI SELECT */
-  selectedNationalities = [];
   selectedStatus = [];
   dropdownSettings = {};
 
@@ -67,7 +65,6 @@ export class SearchCandidatesComponent implements OnInit {
 
     /* SET UP FORM */
     this.searchForm = this.fb.group({
-      selectedNationalities: [[]],
       selectedStatus: [[]],
 
       savedSearchId: [null],
@@ -160,17 +157,20 @@ export class SearchCandidatesComponent implements OnInit {
   }
 
   /* MULTI SELECT METHODS */
-  onItemSelect(item: any) {
-    this.selectedStatus.push(item.id);
+  onItemSelect(item: any, formControlName: string) {
+    const value = this.searchForm.controls[formControlName].value || [];
+    value.push(item.id);
+    this.searchForm.controls[formControlName].patchValue(value);
+    // this.selectedStatus.push(item.id);
   }
 
-  onSelectAll(items: any) {
+  onSelectAll(items: any, formControlName: string) {
   }
 
-  onItemDeSelect(item: any) {
+  onItemDeSelect(item: any, formControlName: string) {
   }
 
-  onDeSelectAll(items: any) {
+  onDeSelectAll(items: any, formControlName: string) {
   }
 
   /* SEARCH FORM */

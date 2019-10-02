@@ -57,6 +57,8 @@
 
     <ng-container *ngIf="moreFilters">
 
+      <hr class="w-100">
+
       <!-- OCCUPATION + PROFILE GROUP -->
       <div class="col-12 col-md-3 filter-group">
 
@@ -99,13 +101,13 @@
             <div class="d-flex flex-wrap">
 
               <!-- MIN AGE -->
-              <div class="form-group col-4">
+              <div class="form-group col-6 pl-0">
                 <label for="minAge">Min Age</label>
                 <input id="minAge" type="number" class="form-control" name="minAge" [formControlName]="'minAge'">
               </div>
 
               <!-- MAX AGE -->
-              <div class="form-group col-6">
+              <div class="form-group col-6 pr-0">
                 <label for="maxAge">Max Age</label>
                 <input id="maxAge" type="number" class="form-control" name="maxAge" [formControlName]="'maxAge'">
               </div>
@@ -113,50 +115,69 @@
 
           </div>
 
-          <div class="col-12 col-md-4">
-            <div class="form-group">
-              <label for="">Registered On</label>
-            </div>
+          <!-- TODO: REGISTERED BETWEEN -->
+          <div class="form-group col-12 col-md-4">
+            <label for="">Registered On</label>
+            <input type="text" class="form-control">
+          </div>
+
+          <!-- TODO: MODIFIED BETWEEN -->
+          <div class="form-group col-12 col-md-4">
+            <label for="">Last Modified</label>
+            <input type="text" class="form-control">
+          </div>
+
+          <!-- COUNTRIES  -->
+          <div class="form-group col-12 col-md-4">
+            <label>Country</label>
+            <ng-multiselect-dropdown
+              name="country"
+              [data]="countries"
+              formControlName="countryIds"
+              [settings]="dropdownSettings"
+              (onSelect)="onItemSelect($event)"
+              (onDeSelect)="onItemDeSelect($event)"
+              (onSelectAll)="onSelectAll($event)"
+              (onDeSelectAll)="onDeSelectAll($event)">
+            </ng-multiselect-dropdown>
+          </div>
+
+          <!-- TODO EDUCATION LEVEL -->
+          <div class="form-group col-12 col-md-4">
+            <label for="minEducationLevelId">Education Level (minimum)</label>
+            <select class="form-control" id="minEducationLevelId" name="minEducationLevelId"
+                    [formControlName]="'minEducationLevelId'">
+              <option value=""></option>
+              <option *ngFor="let candidateEducation of educationLevels" [value]="candidateEducation.id">
+                {{candidateEducation.label}}
+              </option>
+            </select>
+          </div>
+
+          <!-- TODO EDUCATION MAJOR -->
+          <div class="form-group col-12 col-md-4">
+            <label for="">Education major (minimum)</label>
+            <input type="text" class="form-control">
           </div>
 
         </div>
 
-
-        <!-- COUNTRIES  -->
-        <div class="form-group col-12">
-          <label>Country</label>
-          <ng-multiselect-dropdown
-            name="country"
-            [data]="countries"
-            formControlName="countryIds"
-            [settings]="dropdownSettings"
-            (onSelect)="onItemSelect($event)"
-            (onDeSelect)="onItemDeSelect($event)"
-            (onSelectAll)="onSelectAll($event)"
-            (onDeSelectAll)="onDeSelectAll($event)">
-          </ng-multiselect-dropdown>
-        </div>
-
       </div>
 
-
-      <!-- TODO multi-select -->
-      <div class="form-group col-3">
-        <label for="countryId">Country</label>
-        <select class="form-control" name="countryId" id="countryId" [formControlName]="'countryIds'">
-          <option value=""></option>
-          <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
-        </select>
+      <!-- TODO OTHER LANGUAGE -->
+      <div class="form-group col-12 col-md-3">
+        <label for="">Other Language</label>
+        <input type="text" class="form-control">
       </div>
 
-      <!-- TODO multi-select -->
-      <div class="form-group col-3">
+      <!-- TODO NATIONALITIES -->
+      <div class="form-group col-12 col-md-3">
         <label>Nationalities</label>
         <ng-multiselect-dropdown
           name="selectedNationalities"
           [placeholder]="'Select Nationalities'"
           [data]="nationalities"
-          formControlName="selectedNationalities"
+          formControlName="nationalityIds"
           [settings]="dropdownSettings"
           (onSelect)="onItemSelect($event, 'nationality')"
           (onDeSelect)="onItemDeSelect($event, 'nationality')"
@@ -165,61 +186,31 @@
         </ng-multiselect-dropdown>
       </div>
 
-      <div class="form-group">
-        <label for="unRegistered">UN Registered</label>
-        <select class="form-control" name="unRegistered" id="unRegistered"
-                [formControlName]="'unRegistered'">
+      <!-- GENDER -->
+      <div class="form-group col-12 col-md-3">
+        <label for="gender">Gender</label>
+        <select class="form-control" name="gender" id="gender" [formControlName]="'gender'">
           <option value=""></option>
-          <option value="true">Yes</option>
-          <option value="false">No</option>
+          <option value="female">Female</option>
+          <option value="male">Male</option>
+          <option value="other">Other</option>
         </select>
       </div>
 
-      <div class="form-row d-flex justify-content-between align-items-end">
-
-        <!-- GENDER -->
-        <div class="form-group">
-          <label for="gender">Gender</label>
-          <select class="form-control" name="gender" id="gender" [formControlName]="'gender'">
-            <option value=""></option>
-            <option value="female">Female</option>
-            <option value="male">Male</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-
-        <!-- EDUCATION LEVEL (MIN) -->
-        <div class="form-group">
-          <label for="minEducationLevelId">Education Level (minimum)</label>
-          <select class="form-control" id="minEducationLevelId" name="minEducationLevelId"
-                  [formControlName]="'minEducationLevelId'">
-            <option value=""></option>
-            <option *ngFor="let candidateEducation of educationLevels" [value]="candidateEducation.id">
-              {{candidateEducation.label}}
-            </option>
-          </select>
-        </div>
-
-        <!-- OTHER LANGUAGE -->
-        <div class="form-group">
-          <label for="otherLanguageId">Language</label>
-          <select class="form-control" id="otherLanguageId" name="otherLanguageId"
-                  [formControlName]="'otherLanguageId'">
-            <option value=""></option>
-            <option *ngFor="let language of languages" [value]="language.id">{{language.name}}</option>
-          </select>
-        </div>
-
-        <!-- MIN AGE -->
-        <div class="form-group">
-          <label for="age">Age</label>
-          <select class="form-control" id="age" name="age" [formControlName]="'age'">
-            <option value=""></option>
-            <option *ngFor="let age of ages" [value]="age.id">{{age.name}}</option>
-          </select>
-        </div>
-
+      <!-- UN REGISTERED -->
+      <div class="form-group col-12 col-md-3">
+        <label for="unRegistered">UN Registered</label>
+        <select class="form-control" name="unRegistered" id="unRegistered" [formControlName]="'unRegistered'">
+          <option value=""></option>
+          <option [value]="true">Yes</option>
+          <option [value]="false">No</option>
+        </select>
       </div>
+
+      <hr class="w-100">
+
+
+
     </ng-container>
 
   </form>
