@@ -57,14 +57,14 @@ export class SearchSavedSearchesComponent implements OnInit {
     let request = this.searchForm.value;
     request.pageNumber = this.pageNumber - 1;
     request.pageSize = this.pageSize;
-    // this.savedSearchService.search(request).subscribe(results => {
-    //   this.results = results;
-    //   this.loading = false;
-    // });
+    this.savedSearchService.search(request).subscribe(results => {
+      this.results = results;
+      this.loading = false;
+    });
   }
 
   loadSavedSearch(savedSearch){
-     // this.router.navigateByUrl('/candidate', savedSearch.id);
+     this.router.navigateByUrl('/candidate/search/', savedSearch.id);
   }
 
 

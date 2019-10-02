@@ -30,6 +30,14 @@ const routes: Routes = [
             component: SearchCandidatesComponent
           },
           {
+            path: 'search/saved-search',
+            component: SearchSavedSearchesComponent
+          },
+          {
+            path: 'search/:savedSearchId',
+            component: SearchCandidatesComponent
+          },
+          {
             path: 'create',
             component: CreateCandidateComponent
           },
@@ -41,14 +49,7 @@ const routes: Routes = [
             path: ':candidateId/edit',
             component: EditCandidateComponent
           },
-          {
-            path: ':savedSearchId',
-            component: SearchCandidatesComponent
-          },
-          {
-            path: 'saved-search',
-            component: SearchSavedSearchesComponent
-          },
+
         ]
       },
       {

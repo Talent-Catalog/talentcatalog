@@ -1,6 +1,7 @@
 create table saved_search
 (
   id                            bigserial not null primary key,
+  status                        text not null,
   name                          text not null,
   keyword                       text,
   statuses                      text,
@@ -24,7 +25,7 @@ create table saved_search
   created_to                    date,
   min_age                       integer,
   max_age                       integer,
-  min_education_level           bigint references education_level,
+  min_education_level_id        bigint references education_level,
   education_major_ids           text,
   created_by              bigint not null references users,
   created_date            timestamp not null,
