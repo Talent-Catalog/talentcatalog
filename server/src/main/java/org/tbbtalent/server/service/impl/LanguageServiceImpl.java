@@ -78,7 +78,7 @@ public class LanguageServiceImpl implements LanguageService {
     @Transactional
     public boolean deleteLanguage(long id) throws EntityReferencedException {
         Language language = languageRepository.findById(id).orElse(null);
-        List<Candidate> candidates = candidateRepository.findByLanguageId(id);
+        List<Candidate> candidates = candidateRepository.findByCountryId(id);
         if (!Collections.isEmpty(candidates)){
             throw new EntityReferencedException("language");
         }
