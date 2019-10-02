@@ -48,8 +48,9 @@ export class SaveSearchComponent implements OnInit {
   save() {
     this.saving = true;
     let request = this.form.value;
-    request.name = this.savedSearch.name;
     if (request.update && this.savedSearchId) {
+      request.name = this.savedSearch.name;
+
       this.savedSearchService.update(this.savedSearchId, request).subscribe(
         (savedSearch) => {
           this.closeModal(savedSearch);

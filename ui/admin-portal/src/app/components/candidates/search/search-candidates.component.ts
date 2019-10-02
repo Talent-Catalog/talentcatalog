@@ -11,6 +11,7 @@ import {LanguageService} from "../../../services/language.service";
 import {SearchResults} from '../../../model/search-results';
 
 import {FormArray, FormBuilder, FormControl, FormGroup} from "@angular/forms";
+import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from "rxjs/operators";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {SearchSavedSearchesComponent} from "./saved/search-saved-searches.component";
 import {SaveSearchComponent} from "./save/save-search.component";
@@ -18,6 +19,7 @@ import {SavedSearchService} from "../../../services/saved-search.service";
 import {SavedSearch, SavedSearchJoin} from "../../../model/saved-search";
 import {IDropdownSettings} from 'ng-multiselect-dropdown';
 import {Subscription} from "rxjs";
+import {Observable, of} from "rxjs";
 
 @Component({
   selector: 'app-search-candidates',
@@ -73,6 +75,10 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   savedSearches: SavedSearch[];
   searchJoin: SavedSearchJoin;
   selectedCandidate: Candidate;
+  selectedSavedSearch: SavedSearch;
+  searching = false;
+  searchFailed = false;
+  doSavedSearchSearch;
 
   constructor(private fb: FormBuilder,
               private candidateService: CandidateService,
@@ -86,9 +92,6 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     this.moreFilters = false;
     this.selectedCandidate = null;
     this.resetSavedSearchJoin();
-    // TODO saved search service call
-    this.savedSearches = [];
-
     /* SET UP FORM */
     this.searchForm = this.fb.group({
       savedSearchId: [null],
@@ -118,7 +121,9 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       educationMajorIds: [[]],
       searchJoinRequests: this.fb.array([]),
       page: 1,
-      size: 50
+      size: 50,
+      selectedSavedSearch: [null],
+      selectedSearchType: [null]
     });
 
     /* LOAD NATIONALITIES */
@@ -172,7 +177,48 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
+    /* MULTI SELECT DROPDOWN SETTINGS */
+    // this.dropdownSettings = {
+    //   singleSelection: false,
+    //   textField: 'name',
+    //   selectAllText: 'Select All',
+    //   unSelectAllText: 'UnSelect All',
+    //   itemsShowLimit: 3,
+    //   allowSearchFilter: true
+    // };
+
+    this.doSavedSearchSearch = (text$: Observable<string>) =>
+      text$.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        tap(() => { this.searching = true; this.error = null }),
+        switchMap(term =>
+          this.savedSearchService.search({phrase: term}).pipe(
+            tap(() => this.searchFailed = false),
+            map(result => result.content),
+            catchError(() => {
+              this.searchFailed = true;
+              return of([]);
+            }))
+        ),
+        tap(() => this.searching = false)
+      );
+
+    /* SEARCH ON CHANGE */
+    this.searchForm.get('selectedSavedSearch').valueChanges
+      .subscribe(searchResult => {
+        this.searchJoin.savedSearchId = searchResult ? searchResult.id : null;
+        console.log(this.searchJoin);
+      });
+
+    this.searchForm.get('selectedSearchType').valueChanges
+      .subscribe(searchType => {
+        this.searchJoin.searchType = searchType;
+        console.log(this.searchJoin);
+      });
   }
+
+
 
   /* MULTI SELECT METHODS */
   onItemSelect(item: any, formControlName: string) {
@@ -194,13 +240,6 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   }
 
   onItemDeSelect(item: any, formControlName: string) {
-    const values = this.searchForm.controls[formControlName].value || [];
-    const removeValue = item.id || item;
-    const indexToRemove = values.findIndex(val => val === removeValue);
-    if (indexToRemove >= 0) {
-      values.splice(indexToRemove, 1);
-      this.searchForm.controls[formControlName].patchValue(values);
-    }
   }
 
   onDeSelectAll(formControlName: string) {
@@ -261,7 +300,6 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     showSaveModal.result
       .then((savedSearch) => {
         this.savedSearch = savedSearch;
-        console.log(savedSearch);
       })
       .catch(() => { /* Isn't possible */ });
   }
@@ -285,5 +323,9 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   viewCandidate(candidate: Candidate) {
     this.selectedCandidate = candidate;
+  }
+
+  renderSavedSearchRow(savedSearch: SavedSearch) {
+    return savedSearch.name;
   }
 }
