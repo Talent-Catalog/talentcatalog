@@ -10,9 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.Candidate;
+import org.tbbtalent.server.model.CandidateLanguage;
 import org.tbbtalent.server.model.Language;
 import org.tbbtalent.server.model.Status;
+import org.tbbtalent.server.repository.CandidateLanguageRepository;
 import org.tbbtalent.server.repository.CandidateRepository;
 import org.tbbtalent.server.repository.LanguageRepository;
 import org.tbbtalent.server.repository.LanguageSpecification;
@@ -30,10 +31,13 @@ public class LanguageServiceImpl implements LanguageService {
 
     private final LanguageRepository languageRepository;
     private final CandidateRepository candidateRepository;
+    private final CandidateLanguageRepository candidateLanguageRepository;
 
     @Autowired
-    public LanguageServiceImpl(CandidateRepository candidateRepository, LanguageRepository languageRepository) {
+    public LanguageServiceImpl(CandidateRepository candidateRepository, CandidateLanguageRepository candidateLanguageRepository,
+                               LanguageRepository languageRepository) {
         this.candidateRepository = candidateRepository;
+        this.candidateLanguageRepository = candidateLanguageRepository;
         this.languageRepository = languageRepository;
     }
 
@@ -82,8 +86,8 @@ public class LanguageServiceImpl implements LanguageService {
     @Transactional
     public boolean deleteLanguage(long id) throws EntityReferencedException {
         Language language = languageRepository.findById(id).orElse(null);
-        List<Candidate> candidates = candidateRepository.findByCountryId(id);
-        if (!Collections.isEmpty(candidates)){
+        List<CandidateLanguage> candidateLanguages = candidateLanguageRepository.findByLanguageId(id);
+        if (!Collections.isEmpty(candidateLanguages)){
             throw new EntityReferencedException("language");
         }
         if (language != null) {

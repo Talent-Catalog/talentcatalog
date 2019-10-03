@@ -24,8 +24,7 @@ import org.tbbtalent.server.service.CountryService;
 import java.util.List;
 
 @Service
-public class
-CountryServiceImpl implements CountryService {
+public class CountryServiceImpl implements CountryService {
 
     private static final Logger log = LoggerFactory.getLogger(CountryServiceImpl.class);
 
@@ -85,7 +84,7 @@ CountryServiceImpl implements CountryService {
         Country country = countryRepository.findById(id).orElse(null);
         List<Candidate> candidates = candidateRepository.findByCountryId(id);
         if (!Collections.isEmpty(candidates)){
-            throw new EntityReferencedException("nationality");
+            throw new EntityReferencedException("country");
         }
         if (country != null) {
             country.setStatus(Status.deleted);
