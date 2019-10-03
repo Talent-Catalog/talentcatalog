@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.model.CandidateOccupation;
-import org.tbbtalent.server.request.occupation.CreateCandidateOccupationRequest;
+import org.tbbtalent.server.request.candidate.occupation.CreateCandidateOccupationRequest;
 import org.tbbtalent.server.service.CandidateOccupationService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 

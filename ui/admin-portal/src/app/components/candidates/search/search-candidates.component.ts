@@ -164,28 +164,28 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
     // TODO Change to explicit button click
     /* SEARCH ON CHANGE */
-    // this.searchForm.get('keyword').valueChanges
-    //   .pipe(
-    //     debounceTime(400),
-    //     distinctUntilChanged()
-    //   )
-    //   .subscribe(res => {
-    //     this.search();
-    //   });
-    // this.search();
-  }
+    this.searchForm.get('keyword').valueChanges
+      .pipe(
+       debounceTime(400),
+       distinctUntilChanged()
+      )
+      .subscribe(res => {
+       this.search();
+      });
+    this.search();
+    }
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
     /* MULTI SELECT DROPDOWN SETTINGS */
-    // this.dropdownSettings = {
-    //   singleSelection: false,
-    //   textField: 'name',
-    //   selectAllText: 'Select All',
-    //   unSelectAllText: 'UnSelect All',
-    //   itemsShowLimit: 3,
-    //   allowSearchFilter: true
-    // };
+    this.dropdownSettings = {
+      singleSelection: false,
+      textField: 'name',
+      selectAllText: 'Select All',
+      unSelectAllText: 'UnSelect All',
+      itemsShowLimit: 3,
+      allowSearchFilter: true
+    };
 
     this.doSavedSearchSearch = (text$: Observable<string>) =>
       text$.pipe(

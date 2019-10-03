@@ -9,7 +9,7 @@ import org.tbbtalent.server.model.CandidateOccupation;
 import org.tbbtalent.server.model.Occupation;
 import org.tbbtalent.server.repository.CandidateOccupationRepository;
 import org.tbbtalent.server.repository.OccupationRepository;
-import org.tbbtalent.server.request.occupation.CreateCandidateOccupationRequest;
+import org.tbbtalent.server.request.candidate.occupation.CreateCandidateOccupationRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.CandidateOccupationService;
 

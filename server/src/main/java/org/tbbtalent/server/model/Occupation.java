@@ -16,6 +16,11 @@ public class Occupation extends AbstractDomainObject<Long> {
     public Occupation() {
     }
 
+    public Occupation(String name, Status status) {
+        this.name = name;
+        this.status = status;
+    }
+
     public Long getId() {
         return id;
     }

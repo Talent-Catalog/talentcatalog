@@ -40,6 +40,9 @@ import {CandidateGeneralTabComponent} from './components/candidates/search/candi
 import {CandidateExperienceTabComponent} from './components/candidates/search/candidate-search-card/candidate-experience-tab/candidate-experience-tab.component';
 import {CandidateHistoryTabComponent} from './components/candidates/search/candidate-search-card/candidate-history-tab/candidate-history-tab.component';
 import {CandidateEligibilityTabComponent} from './components/candidates/search/candidate-search-card/candidate-eligibility-tab/candidate-eligibility-tab.component';
+import {SearchOccupationsComponent} from './components/settings/occupations/search-occupations.component';
+import {CreateOccupationComponent} from './components/settings/occupations/create/create-occupation.component';
+import {EditOccupationComponent} from './components/settings/occupations/edit/edit-occupation.component';
 
 @NgModule({
   declarations: [
@@ -71,7 +74,10 @@ import {CandidateEligibilityTabComponent} from './components/candidates/search/c
     CandidateGeneralTabComponent,
     CandidateExperienceTabComponent,
     CandidateHistoryTabComponent,
-    CandidateEligibilityTabComponent
+    CandidateEligibilityTabComponent,
+    SearchOccupationsComponent,
+    CreateOccupationComponent,
+    EditOccupationComponent
   ],
   imports: [
     BrowserModule,
@@ -97,6 +103,9 @@ import {CandidateEligibilityTabComponent} from './components/candidates/search/c
     SearchLanguagesComponent,
     CreateLanguageComponent,
     EditLanguageComponent,
+    SearchOccupationsComponent,
+    CreateOccupationComponent,
+    EditOccupationComponent,
     ConfirmationComponent,
     ConfirmationComponent,
     SaveSearchComponent

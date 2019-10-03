@@ -1,4 +1,4 @@
-package org.tbbtalent.server.request.occupation;
+package org.tbbtalent.server.request.candidate.occupation;
 
 public class CreateCandidateOccupationRequest {
 

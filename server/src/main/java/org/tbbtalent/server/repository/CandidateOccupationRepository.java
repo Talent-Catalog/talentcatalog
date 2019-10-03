@@ -20,4 +20,8 @@ public interface CandidateOccupationRepository extends JpaRepository<CandidateOc
             + " left join co.occupation o "
             + " where c.id = :candidateId")
     List<CandidateOccupation> findByCandidateIdLoadOccupation(@Param("candidateId") Long candidateId);
+
+    @Query(" select co from CandidateOccupation co "
+            + " where co.occupation.id = :occupationId ")
+    List<CandidateOccupation> findByOccupationId(@Param("occupationId") Long occupationId);
 }

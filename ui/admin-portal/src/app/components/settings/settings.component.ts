@@ -3,6 +3,7 @@ import {SearchUsersComponent} from "./users/search-users.component";
 import {SearchNationalitiesComponent} from "./nationalities/search-nationalities.component";
 import {SearchCountriesComponent} from "./countries/search-countries.component";
 import {SearchLanguagesComponent} from "./languages/search-languages.component";
+import {SearchOccupationsComponent} from "./occupations/search-occupations.component";
 
 @Component({
   selector: 'app-settings',
@@ -27,8 +28,12 @@ export class SettingsComponent implements OnInit {
       component: SearchCountriesComponent
     },
     {
-      label: 'Language',
+      label: 'Languages',
       component: SearchLanguagesComponent
+    },
+    {
+      label: 'Occupations',
+      component: SearchOccupationsComponent
     }
   ];
 
