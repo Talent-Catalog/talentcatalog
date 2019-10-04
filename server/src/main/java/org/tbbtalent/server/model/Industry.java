@@ -14,6 +14,11 @@ public class Industry  extends AbstractDomainObject<Long> {
     public Industry() {
     }
 
+    public Industry(String name, Status status) {
+        this.name = name;
+        this.status = status;
+    }
+
     public String getName() {
         return name;
     }

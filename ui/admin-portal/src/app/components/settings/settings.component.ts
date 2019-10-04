@@ -4,11 +4,12 @@ import {SearchNationalitiesComponent} from "./nationalities/search-nationalities
 import {SearchCountriesComponent} from "./countries/search-countries.component";
 import {SearchLanguagesComponent} from "./languages/search-languages.component";
 import {SearchOccupationsComponent} from "./occupations/search-occupations.component";
+import {SearchIndustriesComponent} from "./industries/search-industries.component";
 
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
-  styleUrls: ['./settngs.component.scss']
+  styleUrls: ['./settings.component.scss']
 })
 export class SettingsComponent implements OnInit {
 
@@ -34,6 +35,10 @@ export class SettingsComponent implements OnInit {
     {
       label: 'Occupations',
       component: SearchOccupationsComponent
+    },
+    {
+      label: 'Industries',
+      component: SearchIndustriesComponent
     }
   ];
 

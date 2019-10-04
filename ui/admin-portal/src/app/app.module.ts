@@ -43,6 +43,9 @@ import {CandidateEligibilityTabComponent} from './components/candidates/search/c
 import {SearchOccupationsComponent} from './components/settings/occupations/search-occupations.component';
 import {CreateOccupationComponent} from './components/settings/occupations/create/create-occupation.component';
 import {EditOccupationComponent} from './components/settings/occupations/edit/edit-occupation.component';
+import {SearchIndustriesComponent} from './components/settings/industries/search-industries.component';
+import {CreateIndustryComponent} from './components/settings/industries/create/create-industry.component';
+import {EditIndustryComponent} from './components/settings/industries/edit/edit-industry.component';
 
 @NgModule({
   declarations: [
@@ -77,7 +80,10 @@ import {EditOccupationComponent} from './components/settings/occupations/edit/ed
     CandidateEligibilityTabComponent,
     SearchOccupationsComponent,
     CreateOccupationComponent,
-    EditOccupationComponent
+    EditOccupationComponent,
+    SearchIndustriesComponent,
+    CreateIndustryComponent,
+    EditIndustryComponent
   ],
   imports: [
     BrowserModule,
@@ -106,6 +112,9 @@ import {EditOccupationComponent} from './components/settings/occupations/edit/ed
     SearchOccupationsComponent,
     CreateOccupationComponent,
     EditOccupationComponent,
+    SearchIndustriesComponent,
+    CreateIndustryComponent,
+    EditIndustryComponent,
     ConfirmationComponent,
     ConfirmationComponent,
     SaveSearchComponent
