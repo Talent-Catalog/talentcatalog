@@ -15,6 +15,11 @@ public class EducationMajor extends AbstractDomainObject<Long> {
     public EducationMajor() {
     }
 
+    public EducationMajor(String name, Status status) {
+        this.name = name;
+        this.status = status;
+    }
+
     public Long getId() {
         return id;
     }

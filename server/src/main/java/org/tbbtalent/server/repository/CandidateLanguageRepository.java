@@ -18,4 +18,9 @@ public interface CandidateLanguageRepository extends JpaRepository<CandidateLang
     @Query(" select l from CandidateLanguage l "
             + " where l.language.id = :languageId ")
     List<CandidateLanguage> findByLanguageId(@Param("languageId") Long languageId);
+
+    @Query(" select l from CandidateLanguage l "
+            + " where l.writtenLevel.id = :languageLevelId "
+            + " or l.spokenLevel.id = :languageLevelId ")
+    List<CandidateLanguage> findByLanguageLevelId(@Param("languageLevelId") Long languageId);
 }

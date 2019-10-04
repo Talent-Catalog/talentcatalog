@@ -16,6 +16,11 @@ public class EducationLevel extends AbstractDomainObject<Long> {
     public EducationLevel() {
     }
 
+    public EducationLevel(String name, Status status) {
+        this.name = name;
+        this.status = status;
+    }
+
     public Long getId() {
         return id;
     }

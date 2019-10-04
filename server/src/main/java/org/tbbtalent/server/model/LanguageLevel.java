@@ -8,11 +8,16 @@ import javax.persistence.*;
 public class LanguageLevel extends AbstractDomainObject<Long> {
 
     private String level;
-
+    private int sortOrder;
     @Enumerated(EnumType.STRING)
     private Status status;
 
     public LanguageLevel() {
+    }
+
+    public LanguageLevel(String level, Status status) {
+        this.level = level;
+        this.status = status;
     }
 
     public String getLevel() {
@@ -21,6 +26,14 @@ public class LanguageLevel extends AbstractDomainObject<Long> {
 
     public void setLevel(String level) {
         this.level = level;
+    }
+
+    public int getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(int sortOrder) {
+        this.sortOrder = sortOrder;
     }
 
     public Status getStatus() {

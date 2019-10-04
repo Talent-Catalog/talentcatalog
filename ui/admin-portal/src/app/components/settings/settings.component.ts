@@ -5,6 +5,9 @@ import {SearchCountriesComponent} from "./countries/search-countries.component";
 import {SearchLanguagesComponent} from "./languages/search-languages.component";
 import {SearchOccupationsComponent} from "./occupations/search-occupations.component";
 import {SearchIndustriesComponent} from "./industries/search-industries.component";
+import {SearchLanguageLevelsComponent} from "./language-levels/search-language-levels.component";
+import {SearchEducationLevelsComponent} from "./education-levels/search-education-levels.component";
+import {SearchEducationMajorsComponent} from "./education-majors/search-education-majors.component";
 
 @Component({
   selector: 'app-settings',
@@ -39,6 +42,18 @@ export class SettingsComponent implements OnInit {
     {
       label: 'Industries',
       component: SearchIndustriesComponent
+    },
+    {
+      label: 'Language Levels',
+      component: SearchLanguageLevelsComponent
+    },
+    {
+      label: 'Education Levels',
+      component: SearchEducationLevelsComponent
+    },
+    {
+      label: 'Education Majors',
+      component: SearchEducationMajorsComponent
     }
   ];
 

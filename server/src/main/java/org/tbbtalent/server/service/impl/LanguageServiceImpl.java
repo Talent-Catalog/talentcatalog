@@ -14,7 +14,6 @@ import org.tbbtalent.server.model.CandidateLanguage;
 import org.tbbtalent.server.model.Language;
 import org.tbbtalent.server.model.Status;
 import org.tbbtalent.server.repository.CandidateLanguageRepository;
-import org.tbbtalent.server.repository.CandidateRepository;
 import org.tbbtalent.server.repository.LanguageRepository;
 import org.tbbtalent.server.repository.LanguageSpecification;
 import org.tbbtalent.server.request.language.CreateLanguageRequest;
@@ -30,13 +29,11 @@ public class LanguageServiceImpl implements LanguageService {
     private static final Logger log = LoggerFactory.getLogger(LanguageServiceImpl.class);
 
     private final LanguageRepository languageRepository;
-    private final CandidateRepository candidateRepository;
     private final CandidateLanguageRepository candidateLanguageRepository;
 
     @Autowired
-    public LanguageServiceImpl(CandidateRepository candidateRepository, CandidateLanguageRepository candidateLanguageRepository,
+    public LanguageServiceImpl(CandidateLanguageRepository candidateLanguageRepository,
                                LanguageRepository languageRepository) {
-        this.candidateRepository = candidateRepository;
         this.candidateLanguageRepository = candidateLanguageRepository;
         this.languageRepository = languageRepository;
     }

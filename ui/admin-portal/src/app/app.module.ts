@@ -46,6 +46,15 @@ import {EditOccupationComponent} from './components/settings/occupations/edit/ed
 import {SearchIndustriesComponent} from './components/settings/industries/search-industries.component';
 import {CreateIndustryComponent} from './components/settings/industries/create/create-industry.component';
 import {EditIndustryComponent} from './components/settings/industries/edit/edit-industry.component';
+import {SearchLanguageLevelsComponent} from './components/settings/language-levels/search-language-levels.component';
+import {CreateLanguageLevelComponent} from './components/settings/language-levels/create/create-language-level.component';
+import {EditLanguageLevelComponent} from './components/settings/language-levels/edit/edit-language-level.component';
+import {SearchEducationLevelsComponent} from './components/settings/education-levels/search-education-levels.component';
+import {CreateEducationLevelComponent} from './components/settings/education-levels/create/create-education-level.component';
+import {EditEducationLevelComponent} from './components/settings/education-levels/edit/edit-education-level.component';
+import {SearchEducationMajorsComponent} from './components/settings/education-majors/search-education-majors.component';
+import {CreateEducationMajorComponent} from './components/settings/education-majors/create/create-education-major.component';
+import {EditEducationMajorComponent} from './components/settings/education-majors/edit/edit-education-major.component';
 
 @NgModule({
   declarations: [
@@ -83,7 +92,16 @@ import {EditIndustryComponent} from './components/settings/industries/edit/edit-
     EditOccupationComponent,
     SearchIndustriesComponent,
     CreateIndustryComponent,
-    EditIndustryComponent
+    EditIndustryComponent,
+    SearchLanguageLevelsComponent,
+    CreateLanguageLevelComponent,
+    EditLanguageLevelComponent,
+    SearchEducationLevelsComponent,
+    CreateEducationLevelComponent,
+    EditEducationLevelComponent,
+    SearchEducationMajorsComponent,
+    CreateEducationMajorComponent,
+    EditEducationMajorComponent
   ],
   imports: [
     BrowserModule,
@@ -115,6 +133,15 @@ import {EditIndustryComponent} from './components/settings/industries/edit/edit-
     SearchIndustriesComponent,
     CreateIndustryComponent,
     EditIndustryComponent,
+    SearchLanguageLevelsComponent,
+    CreateLanguageLevelComponent,
+    EditLanguageLevelComponent,
+    SearchEducationLevelsComponent,
+    CreateEducationLevelComponent,
+    EditEducationLevelComponent,
+    SearchEducationMajorsComponent,
+    CreateEducationMajorComponent,
+    EditEducationMajorComponent,
     ConfirmationComponent,
     ConfirmationComponent,
     SaveSearchComponent
