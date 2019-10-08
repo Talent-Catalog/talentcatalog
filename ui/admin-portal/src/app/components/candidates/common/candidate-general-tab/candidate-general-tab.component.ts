@@ -1,5 +1,5 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {Candidate} from "../../../../../model/candidate";
+import {Candidate} from "../../../../model/candidate";
 
 @Component({
   selector: 'app-candidate-general-tab',
@@ -25,7 +25,6 @@ export class CandidateGeneralTabComponent implements OnInit, OnChanges {
       this.error = null;
       this.loading = true;
       this.result = this.candidate;
-      console.log(this.candidate);
       this.loading = false;
     }
   }

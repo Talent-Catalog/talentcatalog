@@ -18,21 +18,51 @@
       <button class="btn btn-primary mr-1" (click)="editCandidate()"><i class="fa fa-edit"></i></button>
       <button class="btn btn-danger" (click)="deleteCandidate()"><i class="fa fa-trash"></i></button>
     </div>
-    <h1>{{candidate.user.firstName}}</h1>
+    <h1>{{candidate.user.firstName}} {{candidate.user.lastName}} ({{candidate.candidateNumber}})</h1>
   </div>
 
-  <div>
-    <div class="col-12">
-      <app-view-contact-candidate
-        [candidate]="candidate">
-      </app-view-contact-candidate>
-    </div>
-    <div class="col-12">
-      <app-view-language-candidate
-        [candidate]="candidate">
-      </app-view-language-candidate>
-    </div>
+  <!-- TABS -->
+  <ngb-tabset>
 
-  </div>
+    <!-- GENERAL -->
+    <ngb-tab [title]="'General'">
+      <ng-template ngbTabContent>
+        <app-candidate-general-tab
+          [candidate]="candidate">
+        </app-candidate-general-tab>
+      </ng-template>
+    </ngb-tab>
+
+    <!-- EXPERIENCE -->
+    <ngb-tab [title]="'Experience'">
+      <ng-template ngbTabContent>
+        <app-candidate-experience-tab></app-candidate-experience-tab>
+      </ng-template>
+    </ngb-tab>
+
+    <!-- Education -->
+    <ngb-tab [title]="'Education'">
+      <ng-template ngbTabContent>
+        <app-candidate-education-tab></app-candidate-education-tab>
+      </ng-template>
+    </ngb-tab>
+
+    <!-- HISTORY -->
+    <ngb-tab [title]="'History'">
+      <ng-template ngbTabContent>
+        <app-candidate-history-tab></app-candidate-history-tab>
+      </ng-template>
+    </ngb-tab>
+
+    <!-- HISTORY -->
+    <ngb-tab [title]="'Eligibility'">
+      <ng-template ngbTabContent>
+        <app-candidate-eligibility-tab></app-candidate-eligibility-tab>
+      </ng-template>
+    </ngb-tab>
+
+  </ngb-tabset>
+
+
 
 </div>

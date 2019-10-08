@@ -1,12 +1,12 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {Candidate} from "../../../../../model/candidate";
+import {Candidate} from "../../../../model/candidate";
 
 @Component({
-  selector: 'app-candidate-experience-tab',
-  templateUrl: './candidate-experience-tab.component.html',
-  styleUrls: ['./candidate-experience-tab.component.scss']
+  selector: 'app-candidate-eligibility-tab',
+  templateUrl: './candidate-eligibility-tab.component.html',
+  styleUrls: ['./candidate-eligibility-tab.component.scss']
 })
-export class CandidateExperienceTabComponent implements OnInit, OnChanges {
+export class CandidateEligibilityTabComponent implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
 
