@@ -24,7 +24,9 @@
     <!-- GENERAL -->
     <ngb-tab [title]="'General'">
       <ng-template ngbTabContent>
-        <app-candidate-general-tab></app-candidate-general-tab>
+        <app-candidate-general-tab
+          [candidate]="candidate">
+        </app-candidate-general-tab>
       </ng-template>
     </ngb-tab>
 

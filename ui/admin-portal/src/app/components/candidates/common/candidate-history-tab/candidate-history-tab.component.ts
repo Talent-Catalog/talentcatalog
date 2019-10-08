@@ -1,5 +1,5 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {Candidate} from "../../../../../model/candidate";
+import {Candidate} from "../../../../model/candidate";
 
 @Component({
   selector: 'app-candidate-history-tab',

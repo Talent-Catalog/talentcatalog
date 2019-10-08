@@ -16,6 +16,7 @@ public class SearchJoin extends AbstractDomainObject<Long> {
     @JoinColumn(name = "child_search_id")
     private SavedSearch childSavedSearch;
 
+    @Enumerated(EnumType.STRING)
     private SearchType searchType;
 
     public SearchJoin() {

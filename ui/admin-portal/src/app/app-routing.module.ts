@@ -4,7 +4,7 @@ import {SearchCandidatesComponent} from './components/candidates/search/search-c
 import {HomeComponent} from './components/home/home.component';
 import {CreateCandidateComponent} from './components/candidates/create/create-candidate.component';
 import {ViewCandidateComponent} from './components/candidates/view/view-candidate.component';
-import {EditCandidateComponent} from './components/candidates/edit/edit-candidate.component';
+import {EditCandidateComponent} from './components/candidates/view/edit/edit-candidate.component';
 import {AuthGuard} from "./services/auth.guard";
 import {LoginComponent} from "./components/login/login.component";
 import {SearchUsersComponent} from "./components/settings/users/search-users.component";

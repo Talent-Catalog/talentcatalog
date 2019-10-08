@@ -58,6 +58,9 @@ public class CandidateAdminApi {
         return new DtoBuilder()
                 .add("id")
                 .add("candidateNumber")
+                .add("dob")
+                .add("phone")
+                .add("whatsapp")
                 .add("user", userDto())
                 ;
     }

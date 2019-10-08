@@ -13,8 +13,8 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {CreateCandidateComponent} from './components/candidates/create/create-candidate.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ViewCandidateComponent} from './components/candidates/view/view-candidate.component';
-import {EditCandidateComponent} from './components/candidates/edit/edit-candidate.component';
-import {DeleteCandidateComponent} from './components/candidates/delete/delete-candidate.component';
+import {EditCandidateComponent} from './components/candidates/view/edit/edit-candidate.component';
+import {DeleteCandidateComponent} from './components/candidates/view/delete/delete-candidate.component';
 import {InfiniteScrollModule} from 'ngx-infinite-scroll';
 import {JwtInterceptor} from "./services/jwt.interceptor";
 import {ErrorInterceptor} from "./services/error.interceptor";
@@ -36,10 +36,10 @@ import {EditLanguageComponent} from './components/settings/languages/edit/edit-l
 import {SearchSavedSearchesComponent} from "./components/candidates/search/saved/search-saved-searches.component";
 import {SaveSearchComponent} from "./components/candidates/search/save/save-search.component";
 import {CandidateSearchCardComponent} from './components/candidates/search/candidate-search-card/candidate-search-card.component';
-import {CandidateGeneralTabComponent} from './components/candidates/search/candidate-search-card/candidate-general-tab/candidate-general-tab.component';
-import {CandidateExperienceTabComponent} from './components/candidates/search/candidate-search-card/candidate-experience-tab/candidate-experience-tab.component';
-import {CandidateHistoryTabComponent} from './components/candidates/search/candidate-search-card/candidate-history-tab/candidate-history-tab.component';
-import {CandidateEligibilityTabComponent} from './components/candidates/search/candidate-search-card/candidate-eligibility-tab/candidate-eligibility-tab.component';
+import {CandidateGeneralTabComponent} from './components/candidates/common/candidate-general-tab/candidate-general-tab.component';
+import {CandidateExperienceTabComponent} from './components/candidates/common/candidate-experience-tab/candidate-experience-tab.component';
+import {CandidateHistoryTabComponent} from './components/candidates/common/candidate-history-tab/candidate-history-tab.component';
+import {CandidateEligibilityTabComponent} from './components/candidates/common/candidate-eligibility-tab/candidate-eligibility-tab.component';
 import {SearchOccupationsComponent} from './components/settings/occupations/search-occupations.component';
 import {CreateOccupationComponent} from './components/settings/occupations/create/create-occupation.component';
 import {EditOccupationComponent} from './components/settings/occupations/edit/edit-occupation.component';
@@ -57,6 +57,9 @@ import {CreateEducationMajorComponent} from './components/settings/education-maj
 import {EditEducationMajorComponent} from './components/settings/education-majors/edit/edit-education-major.component';
 import { EditUserComponent } from './components/settings/users/edit/edit-user.component';
 import { CreateUserComponent } from './components/settings/users/create/create-user.component';
+import {ViewContactCandidateComponent} from "./components/candidates/common/contact/view-contact-candidate.component";
+import {ViewLanguageCandidateComponent} from "./components/candidates/common/language/view-language-candidate.component";
+import {CandidateEducationTabComponent} from "./components/candidates/common/candidate-education-tab/candidate-education-tab.component";
 
 @NgModule({
   declarations: [
@@ -88,6 +91,7 @@ import { CreateUserComponent } from './components/settings/users/create/create-u
     CandidateGeneralTabComponent,
     CandidateExperienceTabComponent,
     CandidateHistoryTabComponent,
+    CandidateEducationTabComponent,
     CandidateEligibilityTabComponent,
     SearchOccupationsComponent,
     CreateOccupationComponent,
@@ -106,6 +110,9 @@ import { CreateUserComponent } from './components/settings/users/create/create-u
     EditEducationMajorComponent,
     EditUserComponent,
     CreateUserComponent
+    EditEducationMajorComponent,
+    ViewContactCandidateComponent,
+    ViewLanguageCandidateComponent
   ],
   imports: [
     BrowserModule,

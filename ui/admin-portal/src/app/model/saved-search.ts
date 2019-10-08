@@ -7,5 +7,6 @@ export interface SavedSearch {
 
 export interface SavedSearchJoin {
   savedSearchId: number;
+  name: string;
   searchType: 'and' | 'or';
 }
