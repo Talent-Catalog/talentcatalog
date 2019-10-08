@@ -1,48 +1,36 @@
 <div *ngIf="loading">
   <i class="fa fa-spinner fa-spin"></i> loading...
 </div>
-
+<div class="alert alert-danger" *ngIf="error">
+  {{error}}
+</div>
 <div *ngIf="!loading">
 
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a [routerLink]="['/candidates']">Candidates</a></li>
-      <li class="breadcrumb-item active" aria-current="page">{{candidate.displayName}}</li>
+      <li class="breadcrumb-item active" aria-current="page">{{candidate.user.firstName}}</li>
     </ol>
   </nav>
 
   <div>
     <div class="pull-right">
-      <button class="btn btn-primary mr-1" [routerLink]="['edit']"><i class="fa fa-edit"></i></button>
+      <button class="btn btn-primary mr-1" (click)="editCandidate()"><i class="fa fa-edit"></i></button>
       <button class="btn btn-danger" (click)="deleteCandidate()"><i class="fa fa-trash"></i></button>
     </div>
-    <h1>{{candidate.displayName}}</h1>
+    <h1>{{candidate.user.firstName}}</h1>
   </div>
 
   <div>
-    <div class="form-group row">
-      <label class="col-sm-2 col-form-label">Candidate #</label>
-      <div class="col-sm-10">
-        <span class="form-control-plaintext">{{candidate.candidateNumber}}</span>
-      </div>
+    <div class="col-12">
+      <app-view-contact-candidate
+        [candidate]="candidate">
+      </app-view-contact-candidate>
     </div>
-    <div class="form-group row">
-      <label class="col-sm-2 col-form-label">First name</label>
-      <div class="col-sm-10">
-        <span class="form-control-plaintext">{{candidate.user.firstName}}</span>
-      </div>
-    </div>
-    <div class="form-group row">
-      <label class="col-sm-2 col-form-label">Last name</label>
-      <div class="col-sm-10">
-        <span class="form-control-plaintext">{{candidate.user.lastName}}</span>
-      </div>
-    </div>
-    <div class="form-group row">
-      <label class="col-sm-2 col-form-label">Email</label>
-      <div class="col-sm-10">
-        <span class="form-control-plaintext">{{candidate.user.email}}</span>
-      </div>
+    <div class="col-12">
+      <app-view-language-candidate
+        [candidate]="candidate">
+      </app-view-language-candidate>
     </div>
 
   </div>

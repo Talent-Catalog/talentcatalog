@@ -31,4 +31,6 @@ export class CandidateService {
   delete(id: number): Observable<boolean>  {
     return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
   }
+
+
 }

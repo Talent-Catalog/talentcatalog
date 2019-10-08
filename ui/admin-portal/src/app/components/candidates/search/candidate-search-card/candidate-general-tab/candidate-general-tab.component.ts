@@ -24,8 +24,8 @@ export class CandidateGeneralTabComponent implements OnInit, OnChanges {
     if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
       this.error = null;
       this.loading = true;
-      // TODO replace service call to load candidate data
       this.result = this.candidate;
+      console.log(this.candidate);
       this.loading = false;
     }
   }

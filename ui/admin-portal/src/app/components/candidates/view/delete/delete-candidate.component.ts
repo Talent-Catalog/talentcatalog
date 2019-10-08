@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { CandidateService } from '../../../services/candidate.service';
-import { Candidate } from '../../../model/candidate';
+import { CandidateService } from '../../../../services/candidate.service';
+import { Candidate } from '../../../../model/candidate';
 
 @Component({
   selector: 'app-delete-candidate',

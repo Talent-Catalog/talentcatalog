@@ -1,0 +1,38 @@
+<div *ngIf="loading">
+  <i class="fa fa-spinner fa-spin"></i> loading...
+</div>
+<div *ngIf="error">
+  {{error}}
+</div>
+<div class="card" *ngIf="!loading">
+
+  <div class="card-header">Languages</div>
+
+  <div class="card-body">
+    <div *ngIf="!candidateLanguages || candidateLanguages.length == 0">
+      <div class="row">
+        <div class="col-sm-12">
+          No languages entered
+        </div>
+      </div>
+    </div>
+    <div *ngFor="let candidateLanguage of candidateLanguages">
+      <div class="row">
+        <div class="col-sm-12">
+          {{candidateLanguage.language.name}}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-6">
+          <label class="col-form-label">Speaking: {{candidateLanguage.spokenLevel.level}}</label>
+        </div>
+        <div class="col-sm-12 col-md-6">
+          <label class="col-form-label">Reading and Writing: {{candidateLanguage.writtenLevel.level}}</label>
+        </div>
+      </div>
+      <hr/>
+    </div>
+
+  </div>
+
+</div>

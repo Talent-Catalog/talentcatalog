@@ -15,6 +15,8 @@ import org.tbbtalent.server.request.candidate.language.CreateCandidateLanguageRe
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.CandidateLanguageService;
 
+import java.util.List;
+
 @Service
 public class CandidateLanguageServiceImpl implements CandidateLanguageService {
 
@@ -74,4 +76,8 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
         candidateLanguageRepository.delete(candidateLanguage);
     }
 
+    @Override
+    public List<CandidateLanguage> list(long id) {
+        return candidateLanguageRepository.findByCandidateId(id);
+    }
 }

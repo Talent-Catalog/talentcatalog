@@ -13,8 +13,8 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {CreateCandidateComponent} from './components/candidates/create/create-candidate.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ViewCandidateComponent} from './components/candidates/view/view-candidate.component';
-import {EditCandidateComponent} from './components/candidates/edit/edit-candidate.component';
-import {DeleteCandidateComponent} from './components/candidates/delete/delete-candidate.component';
+import {EditCandidateComponent} from './components/candidates/view/edit/edit-candidate.component';
+import {DeleteCandidateComponent} from './components/candidates/view/delete/delete-candidate.component';
 import {InfiniteScrollModule} from 'ngx-infinite-scroll';
 import {JwtInterceptor} from "./services/jwt.interceptor";
 import {ErrorInterceptor} from "./services/error.interceptor";
@@ -55,6 +55,8 @@ import {EditEducationLevelComponent} from './components/settings/education-level
 import {SearchEducationMajorsComponent} from './components/settings/education-majors/search-education-majors.component';
 import {CreateEducationMajorComponent} from './components/settings/education-majors/create/create-education-major.component';
 import {EditEducationMajorComponent} from './components/settings/education-majors/edit/edit-education-major.component';
+import {ViewContactCandidateComponent} from "./components/candidates/view/contact/view-contact-candidate.component";
+import {ViewLanguageCandidateComponent} from "./components/candidates/view/language/view-language-candidate.component";
 
 @NgModule({
   declarations: [
@@ -101,7 +103,9 @@ import {EditEducationMajorComponent} from './components/settings/education-major
     EditEducationLevelComponent,
     SearchEducationMajorsComponent,
     CreateEducationMajorComponent,
-    EditEducationMajorComponent
+    EditEducationMajorComponent,
+    ViewContactCandidateComponent,
+    ViewLanguageCandidateComponent
   ],
   imports: [
     BrowserModule,
