@@ -70,55 +70,5 @@ export class SearchOccupationsComponent implements OnInit {
     });
   }
 
-  addOccupation() {
-    const addOccupationModal = this.modalService.open(CreateOccupationComponent, {
-      centered: true,
-      backdrop: 'static'
-    });
 
-    addOccupationModal.result
-      .then((occupation) => this.search())
-      .catch(() => { /* Isn't possible */ });
-  }
-
-  editOccupation(occupation) {
-    const editOccupationModal = this.modalService.open(EditOccupationComponent, {
-      centered: true,
-      backdrop: 'static'
-    });
-
-    editOccupationModal.componentInstance.occupationId = occupation.id;
-
-    editOccupationModal.result
-      .then((occupation) => this.search())
-      .catch(() => { /* Isn't possible */ });
-  }
-
-  deleteOccupation(occupation) {
-    const deleteOccupationModal = this.modalService.open(ConfirmationComponent, {
-      centered: true,
-      backdrop: 'static'
-    });
-
-    deleteOccupationModal.componentInstance.message = 'Are you sure you want to delete '+occupation.name;
-
-    deleteOccupationModal.result
-      .then((result) => {
-        console.log(result);
-        if (result === true) {
-          this.occupationService.delete(occupation.id).subscribe(
-            (occupation) => {
-              this.loading = false;
-              this.search();
-            },
-            (error) => {
-              this.error = error;
-              this.loading = false;
-            });
-          this.search()
-        }
-      })
-      .catch(() => { /* Isn't possible */ });
-
-  }
 }

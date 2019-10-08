@@ -55,6 +55,8 @@ import {EditEducationLevelComponent} from './components/settings/education-level
 import {SearchEducationMajorsComponent} from './components/settings/education-majors/search-education-majors.component';
 import {CreateEducationMajorComponent} from './components/settings/education-majors/create/create-education-major.component';
 import {EditEducationMajorComponent} from './components/settings/education-majors/edit/edit-education-major.component';
+import { EditUserComponent } from './components/settings/users/edit/edit-user.component';
+import { CreateUserComponent } from './components/settings/users/create/create-user.component';
 
 @NgModule({
   declarations: [
@@ -101,7 +103,9 @@ import {EditEducationMajorComponent} from './components/settings/education-major
     EditEducationLevelComponent,
     SearchEducationMajorsComponent,
     CreateEducationMajorComponent,
-    EditEducationMajorComponent
+    EditEducationMajorComponent,
+    EditUserComponent,
+    CreateUserComponent
   ],
   imports: [
     BrowserModule,
@@ -142,6 +146,8 @@ import {EditEducationMajorComponent} from './components/settings/education-major
     SearchEducationMajorsComponent,
     CreateEducationMajorComponent,
     EditEducationMajorComponent,
+    EditUserComponent,
+    CreateUserComponent,
     ConfirmationComponent,
     ConfirmationComponent,
     SaveSearchComponent

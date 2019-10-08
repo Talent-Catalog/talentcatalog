@@ -22,12 +22,17 @@ public class UserSpecification {
                         builder.or(
                                 builder.like(builder.lower(user.get("firstName")), likeMatchTerm),
                                 builder.like(builder.lower(user.get("lastName")), likeMatchTerm),
-                                builder.like(builder.lower(user.get("email")), likeMatchTerm)
+                                builder.like(builder.lower(user.get("email")), likeMatchTerm),
+                                builder.like(builder.lower(user.get("username")), likeMatchTerm)
                         ));
             }
 
             if (request.getRole() != null){
                 conjunction.getExpressions().add(builder.equal(user.get("role"), request.getRole()));
+            }
+
+            if (request.getStatus() != null){
+                conjunction.getExpressions().add(builder.equal(user.get("status"), request.getStatus()));
             }
 
             return conjunction;
