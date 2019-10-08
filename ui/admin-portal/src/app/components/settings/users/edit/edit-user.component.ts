@@ -26,7 +26,7 @@ export class EditUserComponent implements OnInit {
     this.loading = true;
     this.userService.get(this.userId).subscribe(user => {
       this.userForm = this.fb.group({
-        email: [user.email, Validators.required],
+        email: [user.email, [Validators.required, Validators.email]],
         username: [user.username, Validators.required],
         firstName: [user.firstName, Validators.required],
         lastName: [user.lastName, Validators.required],
