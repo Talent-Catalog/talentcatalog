@@ -85,8 +85,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     @Transactional
     public SavedSearch updateSavedSearch(long id, UpdateSavedSearchRequest request) throws EntityExistsException {
         SavedSearch savedSearch = convertToSavedSearch(request);
+        savedSearch.setId(id);
         //delete and recreate all joined searches
         searchJoinRepository.deleteBySearchId(id);
+
         savedSearch = addSearchJoins(request, savedSearch);
         savedSearch.setId(id);
         savedSearch.setAuditFields(userContext.getLoggedInUser());
@@ -205,7 +207,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         List<SearchJoinRequest> searchJoinRequests = new ArrayList<>();
         for (SearchJoin searchJoin : request.getSearchJoins()) {
-            searchJoinRequests.add(new SearchJoinRequest(searchJoin.getChildSavedSearch().getId(), searchJoin.getSearchType()));
+            searchJoinRequests.add(new SearchJoinRequest(searchJoin.getChildSavedSearch().getId(), searchJoin.getChildSavedSearch().getName(), searchJoin.getSearchType()));
         }
         searchCandidateRequest.setSearchJoinRequests(searchJoinRequests);
 

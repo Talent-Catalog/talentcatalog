@@ -5,13 +5,15 @@ import org.tbbtalent.server.model.SearchType;
 public class SearchJoinRequest {
 
     private Long savedSearchId;
+    private String name;
     private SearchType searchType;
 
     public SearchJoinRequest() {
     }
 
-    public SearchJoinRequest(Long savedSearchId, SearchType searchType) {
+    public SearchJoinRequest(Long savedSearchId, String name, SearchType searchType) {
         this.savedSearchId = savedSearchId;
+        this.name = name;
         this.searchType = searchType;
     }
 
@@ -21,6 +23,14 @@ public class SearchJoinRequest {
 
     public void setSavedSearchId(Long savedSearchId) {
         this.savedSearchId = savedSearchId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public SearchType getSearchType() {

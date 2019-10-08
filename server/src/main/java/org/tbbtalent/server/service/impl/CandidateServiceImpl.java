@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.*;
@@ -16,8 +17,11 @@ import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.security.PasswordHelper;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.CandidateService;
+import org.tbbtalent.server.service.SavedSearchService;
 
 import javax.security.auth.login.AccountLockedException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class CandidateServiceImpl implements CandidateService {
@@ -31,6 +35,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final NationalityRepository nationalityRepository;
     private final PasswordHelper passwordHelper;
     private final UserContext userContext;
+    private final SavedSearchService savedSearchService;
 
     @Autowired
     public CandidateServiceImpl(UserRepository userRepository, CandidateRepository candidateRepository,
@@ -38,7 +43,7 @@ public class CandidateServiceImpl implements CandidateService {
                                 EducationLevelRepository educationLevelRepository,
                                 NationalityRepository nationalityRepository,
                                 PasswordHelper passwordHelper,
-                                UserContext userContext) {
+                                UserContext userContext, SavedSearchService savedSearchService) {
         this.userRepository = userRepository;
         this.candidateRepository = candidateRepository;
         this.countryRepository = countryRepository;
@@ -46,15 +51,50 @@ public class CandidateServiceImpl implements CandidateService {
         this.nationalityRepository = nationalityRepository;
         this.passwordHelper = passwordHelper;
         this.userContext = userContext;
+        this.savedSearchService = savedSearchService;
     }
 
     @Override
     public Page<Candidate> searchCandidates(SearchCandidateRequest request) {
-        Page<Candidate> candidates = candidateRepository.findAll(
-                CandidateSpecification.buildSearchQuery(request), request.getPageRequest());
+        List<Long> searchIds = new ArrayList<>();
+        if (request.getSavedSearchId() != null){
+            searchIds.add(request.getSavedSearchId());
+        }
+        Specification<Candidate> query = CandidateSpecification.buildSearchQuery(request);
+        if (!request.getSearchJoinRequests().isEmpty()) {
+            for (SearchJoinRequest searchJoinRequest : request.getSearchJoinRequests()) {
+                query = addQuery(query, searchJoinRequest, searchIds);
+            }
+        }
+
+        Page<Candidate> candidates = candidateRepository.findAll(query, request.getPageRequest());
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
         return candidates;
     }
+
+    Specification<Candidate> addQuery(Specification<Candidate> query, SearchJoinRequest searchJoinRequest, List<Long> savedSearchIds) {
+        if (savedSearchIds.contains(searchJoinRequest.getSavedSearchId())){
+            throw new CircularReferencedException(searchJoinRequest.getSavedSearchId());
+        }
+        //add id to list as do not want circular references
+        savedSearchIds.add(searchJoinRequest.getSavedSearchId());
+        //load saved search
+        SearchCandidateRequest request = savedSearchService.loadSavedSearch(searchJoinRequest.getSavedSearchId());
+        Specification<Candidate> joinQuery = CandidateSpecification.buildSearchQuery(request);
+        if (searchJoinRequest.getSearchType().equals(SearchType.and)) {
+            query = Specification.where(query.and(joinQuery));
+        } else {
+            query = Specification.where(query.or(joinQuery));
+        }
+        if (!request.getSearchJoinRequests().isEmpty()){
+            for (SearchJoinRequest joinRequest : request.getSearchJoinRequests()) {
+                query = addQuery(query, joinRequest, savedSearchIds);
+            }
+        }
+        return query;
+
+    }
+
 
     @Override
     public Candidate getCandidate(long id) {
@@ -73,14 +113,14 @@ public class CandidateServiceImpl implements CandidateService {
                 Role.user);
 
         User existing = userRepository.findByUsernameAndRole(user.getUsername(), Role.user);
-        if (existing != null){
-            throw new UsernameTakenException("A user already exists with username: "+existing.getUsername());
+        if (existing != null) {
+            throw new UsernameTakenException("A user already exists with username: " + existing.getUsername());
         }
 
         user = this.userRepository.save(user);
 
         Candidate candidate = new Candidate(user, request.getPhone(), request.getWhatsapp(), user);
-        candidate.setCandidateNumber("TEMP%04d"+RandomStringUtils.random(6));
+        candidate.setCandidateNumber("TEMP%04d" + RandomStringUtils.random(6));
         candidate = this.candidateRepository.save(candidate);
 
         String candidateNumber = String.format("CN%04d", candidate.getId());
