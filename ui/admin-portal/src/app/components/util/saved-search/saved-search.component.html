@@ -1,0 +1,11 @@
+<div class="card">
+  <div class="card-body">
+     <div class="row"><strong>{{savedSearch.name}}</strong></div>
+     <div class="row">
+       <span *ngIf="savedSearch.keyword">Keyword: {{savedSearch.keyword}},</span>
+       <span *ngIf="savedSearch.gender">Gender: {{savedSearch.gender}},</span>
+       <span *ngIf="savedSearch.statuses">Statuses: {{savedSearch.statuses}},</span>
+     </div>
+  </div>
+
+</div>

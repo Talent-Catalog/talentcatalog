@@ -28,7 +28,7 @@ export class SaveSearchComponent implements OnInit {
   ngOnInit() {
     this.form = this.fb.group({
       name: [null, Validators.required],
-      update: [false],
+      update: [this.savedSearchId ? true : false],
       searchCandidateRequest: [this.searchCandidateRequest]
     });
     if (this.savedSearchId) {

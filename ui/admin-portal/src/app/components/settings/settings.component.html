@@ -1,9 +1,78 @@
-<ul class="nav nav-tabs">
-  <li class="nav-item" *ngFor="let tab of tabs">
-    <a class="nav-link active" (click)="setSelectedTab(tab)">{{tab.label}}</a>
-  </li>
-</ul>
-<ng-container *ngComponentOutlet="selectedTab.component">
-</ng-container>
+<!--<ul class="nav nav-tabs">-->
+<!--  <li class="nav-item" *ngFor="let tab of tabs">-->
+<!--    <a class="nav-link active" (click)="setSelectedTab(tab)">{{tab.label}}</a>-->
+<!--  </li>-->
+<!--</ul>-->
+<!--<ng-container *ngComponentOutlet="selectedTab.component">-->
+<!--</ng-container>-->
+
+
+<ngb-tabset>
+
+  <!-- Admin Users -->
+  <ngb-tab [title]="'Admin Users'">
+    <ng-template ngbTabContent>
+      <app-search-users>
+      </app-search-users>
+    </ng-template>
+  </ngb-tab>
+
+  <!-- Countries -->
+  <ngb-tab [title]="'Countries'">
+    <ng-template ngbTabContent>
+      <app-search-countries>
+      </app-search-countries>
+    </ng-template>
+  </ngb-tab>
+
+  <!-- Nationalities -->
+  <ngb-tab [title]="'Nationalities'">
+    <ng-template ngbTabContent>
+      <app-search-nationalities>
+      </app-search-nationalities>
+    </ng-template>
+  </ngb-tab>
+
+  <!-- Languages -->
+  <ngb-tab [title]="'Languages'">
+    <ng-template ngbTabContent>
+      <app-search-languages>
+      </app-search-languages>
+    </ng-template>
+  </ngb-tab>
+
+  <!-- Language Levels -->
+  <ngb-tab [title]="'Language Levels'">
+    <ng-template ngbTabContent>
+      <app-search-language-levels>
+      </app-search-language-levels>
+    </ng-template>
+  </ngb-tab>
+
+  <!-- Occupations -->
+  <ngb-tab [title]="'Occupations'">
+    <ng-template ngbTabContent>
+      <app-search-occupations>
+      </app-search-occupations>
+    </ng-template>
+  </ngb-tab>
+
+  <!-- Education -->
+  <ngb-tab [title]="'Education Levels'">
+    <ng-template ngbTabContent>
+      <app-search-education-levels>
+      </app-search-education-levels>
+    </ng-template>
+  </ngb-tab>
+
+  <!-- Education Mahors -->
+  <ngb-tab [title]="'Education Majors'">
+    <ng-template ngbTabContent>
+      <app-search-education-majors>
+      </app-search-education-majors>
+    </ng-template>
+  </ngb-tab>
+
+</ngb-tabset>
 
 

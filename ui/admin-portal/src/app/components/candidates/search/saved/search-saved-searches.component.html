@@ -42,7 +42,7 @@
 
     <tbody>
     <tr *ngFor="let savedSearch of results?.content" (click)="selectSearch(savedSearch)"  [ngClass]="{'selected': savedSearch.id == selectedSearch?.id}">
-      <td>{{savedSearch.name}}</td>
+      <td><app-saved-search [savedSearch]="savedSearch"></app-saved-search></td>
     </tr>
 
     <!-- loading -->

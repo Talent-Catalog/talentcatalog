@@ -61,6 +61,8 @@ import {EditCandidateContactComponent} from "./components/candidates/view/contac
 import { EditUserComponent } from './components/settings/users/edit/edit-user.component';
 import { CreateUserComponent } from './components/settings/users/create/create-user.component';
 import {CandidateEducationTabComponent} from "./components/candidates/view/tab/candidate-education-tab/candidate-education-tab.component";
+import {JoinSavedSearchComponent} from "./components/candidates/search/join-search/join-saved-search.component";
+import {SavedSearchComponent} from "./components/util/saved-search/saved-search.component";
 
 @NgModule({
   declarations: [
@@ -114,7 +116,9 @@ import {CandidateEducationTabComponent} from "./components/candidates/view/tab/c
     EditEducationMajorComponent,
     ViewCandidateContactComponent,
     EditCandidateContactComponent,
-    ViewCandidateLanguageComponent
+    ViewCandidateLanguageComponent,
+    JoinSavedSearchComponent,
+    SavedSearchComponent
   ],
   imports: [
     BrowserModule,
@@ -159,7 +163,8 @@ import {CandidateEducationTabComponent} from "./components/candidates/view/tab/c
     CreateUserComponent,
     ConfirmationComponent,
     SaveSearchComponent,
-    EditCandidateContactComponent
+    EditCandidateContactComponent,
+    JoinSavedSearchComponent
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
