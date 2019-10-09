@@ -23,8 +23,7 @@ public class CandidateEducation extends AbstractDomainObject<Long> {
     private String institution;
     private String courseName;
 
-    // TODO determine if this is a date or a year?
-    private String dateCompleted;
+    private Integer yearCompleted;
 
     public CandidateEducation() {
     }
@@ -71,11 +70,11 @@ public class CandidateEducation extends AbstractDomainObject<Long> {
         this.courseName = courseName;
     }
 
-    public String getDateCompleted() {
-        return dateCompleted;
+    public Integer getYearCompleted() {
+        return yearCompleted;
     }
 
-    public void setDateCompleted(String dateCompleted) {
-        this.dateCompleted = dateCompleted;
+    public void setYearCompleted(Integer yearCompleted) {
+        this.yearCompleted = yearCompleted;
     }
 }

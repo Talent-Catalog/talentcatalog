@@ -7,7 +7,7 @@ public class CreateEducationRequest {
     private Integer lengthOfCourseYears;
     private String institution;
     private String courseName;
-    private String dateCompleted;
+    private Integer yearCompleted;
 
     public String getEducationType() {
         return educationType;
@@ -49,11 +49,11 @@ public class CreateEducationRequest {
         this.courseName = courseName;
     }
 
-    public String getDateCompleted() {
-        return dateCompleted;
+    public Integer getYearCompleted() {
+        return yearCompleted;
     }
 
-    public void setDateCompleted(String dateCompleted) {
-        this.dateCompleted = dateCompleted;
+    public void setYearCompleted(Integer yearCompleted) {
+        this.yearCompleted = yearCompleted;
     }
 }

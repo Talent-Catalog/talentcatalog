@@ -2,10 +2,17 @@ package org.tbbtalent.server.request.candidate;
 
 import org.tbbtalent.server.model.Gender;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 public class UpdateCandidateContactRequest {
 
+    @NotBlank
+    private String firstName;
+    @NotBlank
+    private String lastName;
+    @NotNull
+    private Gender gender;
     @NotNull
     private Long nationalityId;
     @NotNull
@@ -16,6 +23,30 @@ public class UpdateCandidateContactRequest {
     private String phone;
     private String whatsapp;
     private String email;
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
 
     public Long getNationalityId() {
         return nationalityId;

@@ -24,12 +24,12 @@ export class CandidateService {
     return this.http.post<Candidate>(`${this.apiUrl}`, details);
   }
 
-  update(id: number, details): Observable<Candidate>  {
-    return this.http.put<Candidate>(`${this.apiUrl}/${id}`, details);
+  updateStatus(id: number, details): Observable<Candidate>  {
+    return this.http.put<Candidate>(`${this.apiUrl}/${id}/status`, details);
   }
 
-  updateContact(id: number, details): Observable<Candidate>  {
-    return this.http.put<Candidate>(`${this.apiUrl}/${id}/contact`, details);
+  update(id: number, details): Observable<Candidate>  {
+    return this.http.put<Candidate>(`${this.apiUrl}/${id}`, details);
   }
 
   delete(id: number): Observable<boolean>  {

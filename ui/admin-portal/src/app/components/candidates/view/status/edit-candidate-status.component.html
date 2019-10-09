@@ -1,5 +1,5 @@
 <div class="modal-header">
-  <h4 class="modal-title">Edit Candidate</h4>
+  <h4 class="modal-title">Edit Candidate Status</h4>
   <button type="button" class="close" aria-label="Close"
           [disabled]="loading" (click)="cancel()">
     <span aria-hidden="true">&times;</span>
@@ -17,22 +17,19 @@
 
   <div *ngIf="!loading">
     <form [formGroup]="candidateForm" (ngSubmit)="onSave()">
+
       <div class="form-group">
-        <label for="firstName">First name</label>
-        <input type="text" class="form-control" id="firstName" formControlName="firstName">
-      </div>
-      <div class="form-group">
-        <label for="lastName">Last name</label>
-        <input type="text" class="form-control" id="lastName" formControlName="lastName">
-      </div>
-      <div class="form-group">
-        <label for="gender">Gender</label>
-        <select class="form-control" name="gender" id="gender" [formControlName]="'gender'">
+        <label for="status">Status</label>
+        <select class="form-control" name="status" id="status" [formControlName]="'status'">
           <option value=""></option>
-          <option value="female">Female</option>
-          <option value="male">Male</option>
-          <option value="other">Other</option>
+          <option value="pending">Pending</option>
+          <option value="active">Active</option>
+          <option value="incomplete">Incomplete</option>
         </select>
+      </div>
+      <div class="form-group">
+        <label for="comment">Comment</label>
+        <textarea  class="form-control"  id="comment" [formControlName]="'comment'"></textarea>
       </div>
     </form>
   </div>

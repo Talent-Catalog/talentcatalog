@@ -67,6 +67,9 @@ export class EditCandidateContactComponent implements OnInit {
 
     this.candidateService.get(this.candidateId).subscribe(candidate => {
       this.candidateForm = this.fb.group({
+        firstName: [candidate.user.firstName],
+        lastName: [candidate.user.lastName],
+        gender: [candidate.gender],
         address1: [candidate.address1],
         city: [candidate.city],
         countryId: [candidate.country ? candidate.country.id : null, Validators.required],
@@ -83,7 +86,7 @@ export class EditCandidateContactComponent implements OnInit {
 
   onSave() {
     this.saving = true;
-    this.candidateService.updateContact(this.candidateId, this.candidateForm.value).subscribe(
+    this.candidateService.update(this.candidateId, this.candidateForm.value).subscribe(
       (candidate) => {
         this.closeModal(candidate);
         this.saving = false;

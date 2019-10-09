@@ -13,7 +13,7 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {CreateCandidateComponent} from './components/candidates/create/create-candidate.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ViewCandidateComponent} from './components/candidates/view/view-candidate.component';
-import {EditCandidateComponent} from './components/candidates/view/edit/edit-candidate.component';
+import {EditCandidateStatusComponent} from './components/candidates/view/status/edit-candidate-status.component';
 import {DeleteCandidateComponent} from './components/candidates/view/delete/delete-candidate.component';
 import {InfiniteScrollModule} from 'ngx-infinite-scroll';
 import {JwtInterceptor} from "./services/jwt.interceptor";
@@ -74,7 +74,7 @@ import {SavedSearchComponent} from "./components/util/saved-search/saved-search.
     HomeComponent,
     CreateCandidateComponent,
     ViewCandidateComponent,
-    EditCandidateComponent,
+    EditCandidateStatusComponent,
     DeleteCandidateComponent,
     SettingsComponent,
     SearchUsersComponent,

@@ -50,7 +50,7 @@ public class EducationServiceImpl implements EducationService {
         candidateEducation.setLengthOfCourseYears(request.getLengthOfCourseYears());
         candidateEducation.setInstitution(request.getInstitution());
         candidateEducation.setCourseName(request.getCourseName());
-        candidateEducation.setDateCompleted(request.getDateCompleted());
+        candidateEducation.setYearCompleted(request.getYearCompleted());
 
         // Save the candidateOccupation
         return educationRepository.save(candidateEducation);
@@ -77,7 +77,7 @@ public class EducationServiceImpl implements EducationService {
         candidateEducation.setLengthOfCourseYears(request.getLengthOfCourseYears());
         candidateEducation.setInstitution(request.getInstitution());
         candidateEducation.setCourseName(request.getCourseName());
-        candidateEducation.setDateCompleted(request.getDateCompleted());
+        candidateEducation.setYearCompleted(request.getYearCompleted());
 
         // Save the candidateOccupation
         return educationRepository.save(candidateEducation);
