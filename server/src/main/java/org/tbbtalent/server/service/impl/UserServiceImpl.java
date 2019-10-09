@@ -1,43 +1,32 @@
 package org.tbbtalent.server.service.impl;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-import javax.security.auth.login.AccountLockedException;
-
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.CredentialsExpiredException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.LockedException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.*;
-import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.model.Role;
 import org.tbbtalent.server.model.Status;
+import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.repository.UserRepository;
 import org.tbbtalent.server.repository.UserSpecification;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.user.*;
-import org.tbbtalent.server.request.user.CheckPasswordResetTokenRequest;
-import org.tbbtalent.server.request.user.ResetPasswordRequest;
-import org.tbbtalent.server.request.user.SendResetPasswordEmailRequest;
-import org.tbbtalent.server.request.user.UpdateUserPasswordRequest;
 import org.tbbtalent.server.response.JwtAuthenticationResponse;
 import org.tbbtalent.server.security.JwtTokenProvider;
 import org.tbbtalent.server.security.PasswordHelper;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.UserService;
+
+import javax.security.auth.login.AccountLockedException;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -84,11 +73,15 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User createUser(CreateUserRequest request) throws UsernameTakenException {
         User user = new User(
-                StringUtils.isBlank(request.getUsername()) ? request.getEmail() : null,
+                request.getUsername(),
                 request.getFirstName(),
                 request.getLastName(),
                 request.getEmail(),
-                Role.user);
+                Role.admin);
+
+        /* Validate the password before account creation */
+        String passwordEncrypted = passwordHelper.validateAndEncodePassword(request.getPassword());
+        user.setPasswordEnc(passwordEncrypted);
 
         User existing = userRepository.findByUsernameIgnoreCase(user.getUsername());
         if (existing != null){
@@ -99,6 +92,7 @@ public class UserServiceImpl implements UserService {
         if (existing != null){
             throw new UsernameTakenException("email");
         }
+
         return this.userRepository.save(user);
     }
 
@@ -114,9 +108,11 @@ public class UserServiceImpl implements UserService {
                 throw new UsernameTakenException("email");
             }
         }
+
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
+        user.setStatus(request.getStatus());
 
         return userRepository.save(user);
     }

@@ -11,6 +11,7 @@ import org.tbbtalent.server.request.user.UpdateUserRequest;
 import org.tbbtalent.server.service.UserService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
+import javax.validation.Valid;
 import java.util.Map;
 
 @RestController()
@@ -37,7 +38,7 @@ public class UserAdminApi {
     }
 
     @PostMapping
-    public Map<String, Object> create(@RequestBody CreateUserRequest request) throws UsernameTakenException {
+    public Map<String, Object> create(@Valid @RequestBody CreateUserRequest request) throws UsernameTakenException {
         User user = this.userService.createUser(request);
         return userDto().build(user);
     }

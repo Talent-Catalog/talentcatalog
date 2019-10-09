@@ -1,11 +1,12 @@
 <div>
-
-</div>
-
-<div>
   <div class="section">
-    <div class="pull-right">
-      <button class="btn btn-primary" [routerLink]="['create']">Add</button>
+    <div>
+      <div class="pull-right">
+        <button class="btn btn-primary" (click)="addUser()">Add</button>
+      </div>
+    </div>
+    <div class="alert alert-danger" *ngIf="error">
+      {{error}}
     </div>
     <form [formGroup]="searchForm" (ngSubmit)="search()">
 
@@ -14,6 +15,13 @@
         <div class="form-group col-4">
           <input type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword"
                  id="keyword">
+        </div>
+
+        <div class="form-group col-4">
+          <select class="form-control" id="status" formControlName="status">
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
         </div>
 
       </div>
@@ -55,8 +63,8 @@
       <td>{{user.status}}</td>
       <td>
         <div class="btn-group">
-          <button type="button" class="btn btn-default"><i class="fa fa-edit"></i></button>
-          <button type="button" class="btn btn-default"><i class="fa fa-trash"></i></button>
+          <button type="button" class="btn btn-default" (click)="editUser(user)"><i class="fa fa-edit"></i></button>
+          <button type="button" class="btn btn-default" (click)="deleteUser(user)"><i class="fa fa-trash"></i></button>
         </div>
       </td>
     </tr>

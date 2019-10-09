@@ -59,6 +59,11 @@ import {ViewCandidateContactComponent} from "./components/candidates/view/contac
 import {ViewCandidateLanguageComponent} from "./components/candidates/view/language/view-candidate-language.component";
 import {CandidateEducationTabComponent} from "./components/candidates/view/tab/candidate-education-tab/candidate-education-tab.component";
 import {EditCandidateContactComponent} from "./components/candidates/view/contact/edit/edit-candidate-contact.component";
+import { EditUserComponent } from './components/settings/users/edit/edit-user.component';
+import { CreateUserComponent } from './components/settings/users/create/create-user.component';
+import {ViewContactCandidateComponent} from "./components/candidates/common/contact/view-contact-candidate.component";
+import {ViewLanguageCandidateComponent} from "./components/candidates/common/language/view-language-candidate.component";
+import {CandidateEducationTabComponent} from "./components/candidates/common/candidate-education-tab/candidate-education-tab.component";
 
 @NgModule({
   declarations: [
@@ -107,6 +112,11 @@ import {EditCandidateContactComponent} from "./components/candidates/view/contac
     SearchEducationMajorsComponent,
     CreateEducationMajorComponent,
     EditEducationMajorComponent,
+    EditUserComponent,
+    CreateUserComponent,
+    EditEducationMajorComponent,
+    ViewContactCandidateComponent,
+    ViewLanguageCandidateComponent
     ViewCandidateContactComponent,
     EditCandidateContactComponent,
     ViewCandidateLanguageComponent
@@ -150,6 +160,8 @@ import {EditCandidateContactComponent} from "./components/candidates/view/contac
     SearchEducationMajorsComponent,
     CreateEducationMajorComponent,
     EditEducationMajorComponent,
+    EditUserComponent,
+    CreateUserComponent,
     ConfirmationComponent,
     SaveSearchComponent,
     EditCandidateContactComponent
