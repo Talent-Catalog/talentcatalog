@@ -6,7 +6,13 @@
 </div>
 <div class="card" *ngIf="!loading">
 
-  <div class="card-header">Contact Information</div>
+  <div class="card-header">
+    Contact Information
+    <div class="pull-right" *ngIf="editable">
+      <button type="button" class="btn btn-default" (click)="editContactDetails()"><i
+        class="fa fa-edit"></i></button>
+    </div>
+  </div>
 
   <div class="card-body">
     <div class="row">
@@ -14,7 +20,7 @@
       <div class="form-group col-sm-12 col-md-8">
         <label class="col-form-label"><i class="fa fa-map-marker"></i>Address</label>
         <div >
-          <span class="form-control-plaintext">{{candidate.city}}  {{candidate.country?.name}}</span>
+          <span class="form-control-plaintext">{{candidate.address1}} {{candidate.city}} {{candidate.country?.name}}</span>
         </div>
       </div>
       <div class="form-group col-sm-12 col-md-4">
@@ -41,6 +47,20 @@
         <label class="col-form-label"><i class="fa fa-envelope"></i>Email</label>
         <div>
           <span class="form-control-plaintext">{{candidate.user.email}}</span>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fa fa-globe"></i>Nationality</label>
+        <div>
+          <span class="form-control-plaintext">{{candidate.nationality?.name}}</span>
+        </div>
+      </div>
+      <div class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fa fa-calendar"></i> Year of arrival</label>
+        <div>
+          <span class="form-control-plaintext">{{candidate.yearOfArrival}}</span>
         </div>
       </div>
     </div>

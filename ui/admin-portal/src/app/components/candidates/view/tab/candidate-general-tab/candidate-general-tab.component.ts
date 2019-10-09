@@ -1,14 +1,15 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {Candidate} from "../../../../model/candidate";
+import {Candidate} from "../../../../../model/candidate";
 
 @Component({
-  selector: 'app-candidate-experience-tab',
-  templateUrl: './candidate-experience-tab.component.html',
-  styleUrls: ['./candidate-experience-tab.component.scss']
+  selector: 'app-candidate-general-tab',
+  templateUrl: './candidate-general-tab.component.html',
+  styleUrls: ['./candidate-general-tab.component.scss']
 })
-export class CandidateExperienceTabComponent implements OnInit, OnChanges {
+export class CandidateGeneralTabComponent implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
+  @Input() editable: boolean;
 
   loading: boolean;
   error;
@@ -24,7 +25,6 @@ export class CandidateExperienceTabComponent implements OnInit, OnChanges {
     if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
       this.error = null;
       this.loading = true;
-      // TODO replace service call to load candidate data
       this.result = this.candidate;
       this.loading = false;
     }

@@ -28,6 +28,10 @@ export class CandidateService {
     return this.http.put<Candidate>(`${this.apiUrl}/${id}`, details);
   }
 
+  updateContact(id: number, details): Observable<Candidate>  {
+    return this.http.put<Candidate>(`${this.apiUrl}/${id}/contact`, details);
+  }
+
   delete(id: number): Observable<boolean>  {
     return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
   }

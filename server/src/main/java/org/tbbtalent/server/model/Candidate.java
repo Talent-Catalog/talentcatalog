@@ -13,8 +13,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private String candidateNumber;
     private String phone;
     private String whatsapp;
-    private String gender;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
     private LocalDate dob;
+    private String address1;
     private String city;
     private Integer yearOfArrival;
     private Boolean unRegistered;
@@ -90,11 +92,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.whatsapp = whatsapp;
     }
 
-    public String getGender() {
+    public Gender getGender() {
         return gender;
     }
 
-    public void setGender(String gender) {
+    public void setGender(Gender gender) {
         this.gender = gender;
     }
 
@@ -104,6 +106,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setDob(LocalDate dob) {
         this.dob = dob;
+    }
+
+    public String getAddress1() {
+        return address1;
+    }
+
+    public void setAddress1(String address1) {
+        this.address1 = address1;
     }
 
     public String getCity() {

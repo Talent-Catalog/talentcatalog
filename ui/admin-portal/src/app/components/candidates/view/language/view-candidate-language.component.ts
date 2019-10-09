@@ -6,11 +6,11 @@ import {CandidateLanguage} from "../../../../model/candidate-language";
 import {CandidateLanguageService} from "../../../../services/candidate-language.service";
 
 @Component({
-  selector: 'app-view-language-candidate',
-  templateUrl: './view-language-candidate.component.html',
-  styleUrls: ['./view-language-candidate.component.scss']
+  selector: 'app-view-candidate-language',
+  templateUrl: './view-candidate-language.component.html',
+  styleUrls: ['./view-candidate-language.component.scss']
 })
-export class ViewLanguageCandidateComponent implements OnInit, OnChanges {
+export class ViewCandidateLanguageComponent implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
 

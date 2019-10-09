@@ -13,25 +13,25 @@
       </select>
     </div>
 
-    <!-- UN REGISTRATION -->
-    <div class="form-group">
-      <label for="registeredWithUN">Are you registered with UNHCR or UNRWA?</label>
-      <select class="form-control" name="nationality" id="registeredWithUN" [formControlName]="'registeredWithUN'">
-        <option value=""></option>
-        <option [value]="true">Yes</option>
-        <option [value]="false">No</option>
-      </select>
+    <!-- UN REGISTRATION - removed for now -->
+<!--    <div class="form-group">-->
+<!--      <label for="registeredWithUN">Are you registered with UNHCR or UNRWA?</label>-->
+<!--      <select class="form-control" name="nationality" id="registeredWithUN" [formControlName]="'registeredWithUN'">-->
+<!--        <option value=""></option>-->
+<!--        <option [value]="true">Yes</option>-->
+<!--        <option [value]="false">No</option>-->
+<!--      </select>-->
 
-      <p class="text-muted">
-        You do not need to be registered with the UN to be eligible for TBB.
-      </p>
-    </div>
+<!--      <p class="text-muted">-->
+<!--        You do not need to be registered with the UN to be eligible for TBB.-->
+<!--      </p>-->
+<!--    </div>-->
 
-    <!-- REGISTRATION NUMBER -->
-    <div class="form-group" *ngIf="form.value.registeredWithUN === 'true'">
-      <label for="registrationId">UNHCR or UNRWA registration number</label>
-      <input type="text" class="form-control" id="registrationId" placeholder="" [formControlName]="'registrationId'">
-    </div>
+<!--    &lt;!&ndash; REGISTRATION NUMBER &ndash;&gt;-->
+<!--    <div class="form-group" *ngIf="form.value.registeredWithUN === 'true'">-->
+<!--      <label for="registrationId">UNHCR or UNRWA registration number</label>-->
+<!--      <input type="text" class="form-control" id="registrationId" placeholder="" [formControlName]="'registrationId'">-->
+<!--    </div>-->
 
   </form>
 

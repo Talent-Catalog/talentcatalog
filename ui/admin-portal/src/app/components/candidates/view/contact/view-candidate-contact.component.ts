@@ -3,21 +3,24 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from "../../../../model/candidate";
 import {CandidateService} from "../../../../services/candidate.service";
+import {EditCountryComponent} from "../../../settings/countries/edit/edit-country.component";
+import {EditCandidateContactComponent} from "./edit/edit-candidate-contact.component";
 
 @Component({
-  selector: 'app-view-contact-candidate',
-  templateUrl: './view-contact-candidate.component.html',
-  styleUrls: ['./view-contact-candidate.component.scss']
+  selector: 'app-view-candidate-contact',
+  templateUrl: './view-candidate-contact.component.html',
+  styleUrls: ['./view-candidate-contact.component.scss']
 })
-export class ViewContactCandidateComponent implements OnInit, OnChanges {
+export class ViewCandidateContactComponent implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
+  @Input() editable: boolean;
 
   loading: boolean;
   error;
 
   constructor(private candidateService: CandidateService,
-              private route: ActivatedRoute) { }
+              private modalService: NgbModal) { }
 
   ngOnInit() {
 
@@ -37,6 +40,18 @@ export class ViewContactCandidateComponent implements OnInit, OnChanges {
         });
     }
   }
+
+  editContactDetails() {
+    const editCandidateModal = this.modalService.open(EditCandidateContactComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    editCandidateModal.componentInstance.candidateId = this.candidate.id;
+
+    editCandidateModal.result
+      .then((candidate) => this.candidate = candidate)
+      .catch(() => { /* Isn't possible */ });  }
 
 
 }

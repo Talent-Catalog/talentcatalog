@@ -21,48 +21,58 @@
     <h1>{{candidate.user.firstName}} {{candidate.user.lastName}} ({{candidate.candidateNumber}})</h1>
   </div>
 
-  <!-- TABS -->
-  <ngb-tabset>
+  <div class="row">
+    <div class="col-sm-9">
+      <!-- TABS -->
+      <ngb-tabset>
 
-    <!-- GENERAL -->
-    <ngb-tab [title]="'General'">
-      <ng-template ngbTabContent>
-        <app-candidate-general-tab
-          [candidate]="candidate">
-        </app-candidate-general-tab>
-      </ng-template>
-    </ngb-tab>
+        <!-- GENERAL -->
+        <ngb-tab [title]="'General'">
+          <ng-template ngbTabContent>
+            <app-candidate-general-tab
+              [candidate]="candidate"
+              [editable]="true">
+            </app-candidate-general-tab>
+          </ng-template>
+        </ngb-tab>
 
-    <!-- EXPERIENCE -->
-    <ngb-tab [title]="'Experience'">
-      <ng-template ngbTabContent>
-        <app-candidate-experience-tab></app-candidate-experience-tab>
-      </ng-template>
-    </ngb-tab>
+        <!-- EXPERIENCE -->
+        <ngb-tab [title]="'Experience'">
+          <ng-template ngbTabContent>
+            <app-candidate-experience-tab></app-candidate-experience-tab>
+          </ng-template>
+        </ngb-tab>
 
-    <!-- Education -->
-    <ngb-tab [title]="'Education'">
-      <ng-template ngbTabContent>
-        <app-candidate-education-tab></app-candidate-education-tab>
-      </ng-template>
-    </ngb-tab>
+        <!-- Education -->
+        <ngb-tab [title]="'Education'">
+          <ng-template ngbTabContent>
+            <app-candidate-education-tab></app-candidate-education-tab>
+          </ng-template>
+        </ngb-tab>
 
-    <!-- HISTORY -->
-    <ngb-tab [title]="'History'">
-      <ng-template ngbTabContent>
-        <app-candidate-history-tab></app-candidate-history-tab>
-      </ng-template>
-    </ngb-tab>
+      </ngb-tabset>
+    </div>
+    <div class="col-sm-3 admin-panel">
+      <!-- TABS -->
+      <ngb-tabset>
 
-    <!-- HISTORY -->
-    <ngb-tab [title]="'Eligibility'">
-      <ng-template ngbTabContent>
-        <app-candidate-eligibility-tab></app-candidate-eligibility-tab>
-      </ng-template>
-    </ngb-tab>
+        <!-- HISTORY -->
+        <ngb-tab [title]="'History'">
+          <ng-template ngbTabContent>
+            <app-candidate-history-tab></app-candidate-history-tab>
+          </ng-template>
+        </ngb-tab>
 
-  </ngb-tabset>
+        <!-- HISTORY -->
+        <ngb-tab [title]="'Eligibility'">
+          <ng-template ngbTabContent>
+            <app-candidate-eligibility-tab></app-candidate-eligibility-tab>
+          </ng-template>
+        </ngb-tab>
 
+      </ngb-tabset>
+    </div>
+  </div>
 
 
 </div>

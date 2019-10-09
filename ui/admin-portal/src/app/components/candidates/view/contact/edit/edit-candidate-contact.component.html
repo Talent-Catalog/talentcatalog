@@ -1,0 +1,101 @@
+<div class="modal-header">
+
+  <h4 class="modal-title">Edit Candidate</h4>
+
+  <button type="button" class="close" aria-label="Close" (click)="dismiss()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+
+</div>
+
+<div class="modal-body">
+
+  <div *ngIf="loading">
+    <i class="fa fa-spinner fa-spin"></i>
+  </div>
+
+  <div *ngIf="!loading">
+    <div class="alert alert-danger" *ngIf="error">
+      {{error}}
+    </div>
+
+    <form [formGroup]="candidateForm">
+
+      <!-- NATIONALITY -->
+      <div class="form-group">
+        <label for="nationalityId">Nationality *</label>
+        <select class="form-control" name="nationality" id="nationalityId" [formControlName]="'nationalityId'">
+          <option value=""></option>
+          <option *ngFor="let nationality of nationalities" [value]="nationality.id">{{nationality.name}}</option>
+        </select>
+      </div>
+
+      <!-- DOB -->
+      <div class="form-group">
+        <label for="dob">Date of birth</label>
+        <input type="date" id="dob" class="form-control" [formControlName]="'dob'" datepicker-popup
+               is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions"
+               date-disabled="disabled(date, mode)" ng-required="true" close-text="Close"/>
+      </div>
+
+      <!-- ADDRESS # -->
+      <div class="form-group">
+        <label for="address1">Address</label>
+        <input type="text" class="form-control" id="address1" placeholder="Enter address (if have one)"
+               [formControlName]="'address1'">
+      </div>
+
+      <!-- City # -->
+      <div class="form-group">
+        <label for="address1">City</label>
+        <input type="text" class="form-control" id="city" placeholder="Entercity" [formControlName]="'city'">
+      </div>
+
+
+      <div class="form-group">
+        <label for="countryId">Current country *</label>
+        <select class="form-control" name="countryId" id="countryId" [formControlName]="'countryId'">
+          <option value=""></option>
+          <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
+        </select>
+      </div>
+
+      <!-- YEAR OF ARRIVAL -->
+      <div class="form-group">
+        <label for="yearOfArrival">What year did they arrive in this country?</label>
+        <select class="form-control" name="yearOfArrival" id="yearOfArrival" [formControlName]="'yearOfArrival'">
+          <option value=""></option>
+          <option *ngFor="let year of years" [value]="year">{{year}}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" class="form-control" id="email" placeholder="Enter email" [formControlName]="'email'">
+      </div>
+
+      <!-- PHONE # -->
+      <div class="form-group">
+        <label for="phone">Phone / mobile</label>
+        <input type="text" class="form-control" id="phone" placeholder="Enter phone number" [formControlName]="'phone'">
+      </div>
+
+      <!-- WHATSAPP -->
+      <div class="form-group">
+        <label for="whatsapp">Whatsapp</label>
+        <input type="text" class="form-control" id="whatsapp" placeholder="Enter WhatsApp"
+               [formControlName]="'whatsapp'">
+      </div>
+
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="onSave()"
+                [disabled]="candidateForm.invalid || loading || saving">
+          <i class="fa fa-spinner fa-spin" *ngIf="saving"></i>
+          Save
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>

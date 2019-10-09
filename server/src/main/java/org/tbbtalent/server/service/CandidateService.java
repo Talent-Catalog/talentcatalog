@@ -16,7 +16,9 @@ public interface CandidateService {
 
     Candidate createCandidate(CreateCandidateRequest request) throws UsernameTakenException;
 
-    Candidate updateCandidate(long id, UpdateCandidateRequest request);
+    Candidate updateCandidatePersonal(long id, UpdateCandidateRequest request);
+
+    Candidate updateCandidateContact(long id, UpdateCandidateContactRequest request);
 
     boolean deleteCandidate(long id);
 

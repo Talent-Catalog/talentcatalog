@@ -30,7 +30,7 @@ export class EditCandidateComponent implements OnInit {
         this.candidateForm = this.fb.group({
           firstName: [candidate.user.firstName],
           lastName: [candidate.user.lastName],
-          email: [candidate.user.email],
+          gender: [candidate.gender],
         });
         this.loading = false;
       });

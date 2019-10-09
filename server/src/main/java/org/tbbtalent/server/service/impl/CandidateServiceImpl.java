@@ -57,7 +57,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Page<Candidate> searchCandidates(SearchCandidateRequest request) {
         List<Long> searchIds = new ArrayList<>();
-        if (request.getSavedSearchId() != null){
+        if (request.getSavedSearchId() != null) {
             searchIds.add(request.getSavedSearchId());
         }
         Specification<Candidate> query = CandidateSpecification.buildSearchQuery(request);
@@ -73,7 +73,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     Specification<Candidate> addQuery(Specification<Candidate> query, SearchJoinRequest searchJoinRequest, List<Long> savedSearchIds) {
-        if (savedSearchIds.contains(searchJoinRequest.getSavedSearchId())){
+        if (savedSearchIds.contains(searchJoinRequest.getSavedSearchId())) {
             throw new CircularReferencedException(searchJoinRequest.getSavedSearchId());
         }
         //add id to list as do not want circular references
@@ -86,7 +86,7 @@ public class CandidateServiceImpl implements CandidateService {
         } else {
             query = Specification.where(query.or(joinQuery));
         }
-        if (!request.getSearchJoinRequests().isEmpty()){
+        if (!request.getSearchJoinRequests().isEmpty()) {
             for (SearchJoinRequest joinRequest : request.getSearchJoinRequests()) {
                 query = addQuery(query, joinRequest, savedSearchIds);
             }
@@ -132,20 +132,69 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     @Transactional
-    public Candidate updateCandidate(long id, UpdateCandidateRequest request) {
+    public Candidate updateCandidatePersonal(long id, UpdateCandidateRequest request) {
         Candidate candidate = this.candidateRepository.findByIdLoadUser(id)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
-
 
         User user = candidate.getUser();
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
-        user.setEmail(request.getEmail());
         userRepository.save(user);
-        //todo can you change email - does it need to be unique??
 
         candidate.setUser(user);
-        return candidate;
+        candidate.setGender(request.getGender());
+        return candidateRepository.save(candidate);
+    }
+
+    @Override
+    public Candidate updateCandidateContact(long id, UpdateCandidateContactRequest request) {
+
+        Candidate candidate = this.candidateRepository.findByIdLoadUser(id)
+                .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
+
+        // Load the country from the database - throw an exception if not found
+        Country country = countryRepository.findById(request.getCountryId())
+                .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountryId()));
+
+        // Load the country from the database - throw an exception if not found
+        Nationality nationality = nationalityRepository.findById(request.getNationalityId())
+                .orElseThrow(() -> new NoSuchObjectException(Nationality.class, request.getNationalityId()));
+
+        User user = candidate.getUser();
+        //check email not already taken
+        if (!StringUtils.isBlank(request.getPhone())) {
+            User exists = userRepository.findByEmailIgnoreCase(request.getEmail());
+            if (exists != null && !exists.getId().equals(user.getId())) {
+                throw new UsernameTakenException("email");
+            }
+            user.setEmail(request.getEmail());
+            userRepository.save(user);
+        }
+
+        //check phone not already taken
+        if (!StringUtils.isBlank(request.getPhone())) {
+            Candidate exists = candidateRepository.findByPhoneIgnoreCase(request.getEmail());
+            if (exists != null && !exists.getId().equals(id)) {
+                throw new UsernameTakenException("phone");
+            }
+        }
+
+        //check whatsapp not already taken
+        if (!StringUtils.isBlank(request.getWhatsapp())) {
+            Candidate exists = candidateRepository.findByWhatsappIgnoreCase(request.getWhatsapp());
+            if (exists != null && !exists.getId().equals(id)) {
+                throw new UsernameTakenException("whatsapp");
+            }
+        }
+        candidate.setUser(user);
+        candidate.setPhone(request.getPhone());
+        candidate.setWhatsapp(request.getWhatsapp());
+        candidate.setAddress1(request.getAddress1());
+        candidate.setCity(request.getCity());
+        candidate.setCountry(country);
+        candidate.setYearOfArrival(request.getYearOfArrival());
+        candidate.setNationality(nationality);
+        return candidateRepository.save(candidate);
     }
 
     @Override

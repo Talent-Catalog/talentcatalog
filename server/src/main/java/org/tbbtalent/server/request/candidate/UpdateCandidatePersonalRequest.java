@@ -1,12 +1,14 @@
 package org.tbbtalent.server.request.candidate;
 
+import org.tbbtalent.server.model.Gender;
+
 import java.time.LocalDate;
 
 public class UpdateCandidatePersonalRequest {
 
     private String firstName;
     private String lastName;
-    private String gender;
+    private Gender gender;
     private LocalDate dob;
 
     public String getFirstName() {
@@ -25,9 +27,9 @@ public class UpdateCandidatePersonalRequest {
         this.lastName = lastName;
     }
 
-    public String getGender() { return gender; }
+    public Gender getGender() { return gender; }
 
-    public void setGender(String gender) { this.gender = gender; }
+    public void setGender(Gender gender) { this.gender = gender; }
 
     public LocalDate getDob() {
         return dob;

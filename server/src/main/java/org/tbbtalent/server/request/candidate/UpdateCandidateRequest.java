@@ -1,10 +1,12 @@
 package org.tbbtalent.server.request.candidate;
 
+import org.tbbtalent.server.model.Gender;
+
 public class UpdateCandidateRequest {
 
     private String firstName;
     private String lastName;
-    private String email;
+    private Gender gender;
 
     public String getFirstName() {
         return firstName;
@@ -22,7 +24,11 @@ public class UpdateCandidateRequest {
         this.lastName = lastName;
     }
 
-    public String getEmail() { return email; }
+    public Gender getGender() {
+        return gender;
+    }
 
-    public void setEmail(String email) { this.email = email; }
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
 }
