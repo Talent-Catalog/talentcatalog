@@ -109,7 +109,7 @@ import {CandidateEducationTabComponent} from "./components/candidates/common/can
     CreateEducationMajorComponent,
     EditEducationMajorComponent,
     EditUserComponent,
-    CreateUserComponent
+    CreateUserComponent,
     EditEducationMajorComponent,
     ViewContactCandidateComponent,
     ViewLanguageCandidateComponent
