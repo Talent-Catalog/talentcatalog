@@ -40,10 +40,6 @@ export class SettingsComponent implements OnInit {
       component: SearchOccupationsComponent
     },
     {
-      label: 'Industries',
-      component: SearchIndustriesComponent
-    },
-    {
       label: 'Language Levels',
       component: SearchLanguageLevelsComponent
     },

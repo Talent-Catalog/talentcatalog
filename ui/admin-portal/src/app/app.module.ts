@@ -57,13 +57,10 @@ import {CreateEducationMajorComponent} from './components/settings/education-maj
 import {EditEducationMajorComponent} from './components/settings/education-majors/edit/edit-education-major.component';
 import {ViewCandidateContactComponent} from "./components/candidates/view/contact/view-candidate-contact.component";
 import {ViewCandidateLanguageComponent} from "./components/candidates/view/language/view-candidate-language.component";
-import {CandidateEducationTabComponent} from "./components/candidates/view/tab/candidate-education-tab/candidate-education-tab.component";
 import {EditCandidateContactComponent} from "./components/candidates/view/contact/edit/edit-candidate-contact.component";
 import { EditUserComponent } from './components/settings/users/edit/edit-user.component';
 import { CreateUserComponent } from './components/settings/users/create/create-user.component';
-import {ViewContactCandidateComponent} from "./components/candidates/common/contact/view-contact-candidate.component";
-import {ViewLanguageCandidateComponent} from "./components/candidates/common/language/view-language-candidate.component";
-import {CandidateEducationTabComponent} from "./components/candidates/common/candidate-education-tab/candidate-education-tab.component";
+import {CandidateEducationTabComponent} from "./components/candidates/view/tab/candidate-education-tab/candidate-education-tab.component";
 
 @NgModule({
   declarations: [
@@ -115,8 +112,6 @@ import {CandidateEducationTabComponent} from "./components/candidates/common/can
     EditUserComponent,
     CreateUserComponent,
     EditEducationMajorComponent,
-    ViewContactCandidateComponent,
-    ViewLanguageCandidateComponent
     ViewCandidateContactComponent,
     EditCandidateContactComponent,
     ViewCandidateLanguageComponent
