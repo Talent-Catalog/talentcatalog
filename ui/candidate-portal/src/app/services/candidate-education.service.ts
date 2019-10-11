@@ -7,17 +7,17 @@ import {CandidateEducation} from "../model/candidate-education";
 @Injectable({
   providedIn: 'root'
 })
-export class EducationService {
+export class CandidateEducationService {
 
-  private apiUrl: string = environment.apiUrl + '/education';
+  private apiUrl: string = environment.apiUrl + '/candidate-education';
 
   constructor(private http: HttpClient) { }
 
-  createEducation(request): Observable<CandidateEducation> {
+  createCandidateEducation(request): Observable<CandidateEducation> {
     return this.http.post<CandidateEducation>(`${this.apiUrl}`, request);
   }
 
-  updateEducation(request): Observable<CandidateEducation> {
+  updateCandidateEducation(request): Observable<CandidateEducation> {
      return this.http.post<CandidateEducation>(`${this.apiUrl}/update`, request);
   }
 

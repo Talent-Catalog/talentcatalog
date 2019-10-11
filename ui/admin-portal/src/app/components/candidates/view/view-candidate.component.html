@@ -39,14 +39,18 @@
         <!-- EXPERIENCE -->
         <ngb-tab [title]="'Experience'">
           <ng-template ngbTabContent>
-            <app-candidate-experience-tab></app-candidate-experience-tab>
+            <app-candidate-experience-tab
+              [candidate]="candidate">
+            </app-candidate-experience-tab>
           </ng-template>
         </ngb-tab>
 
         <!-- Education -->
         <ngb-tab [title]="'Education'">
           <ng-template ngbTabContent>
-            <app-candidate-education-tab></app-candidate-education-tab>
+            <app-candidate-education-tab
+              [candidate]="candidate">
+            </app-candidate-education-tab>
           </ng-template>
         </ngb-tab>
 

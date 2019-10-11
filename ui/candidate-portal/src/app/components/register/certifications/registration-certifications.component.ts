@@ -3,7 +3,7 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateCertification} from "../../../model/candidate-certification";
 import {CandidateService} from "../../../services/candidate.service";
-import {CertificationService} from "../../../services/certification.service";
+import {CandidateCertificationService} from "../../../services/candidate-certification.service";
 
 @Component({
   selector: 'app-registration-certifications',
@@ -21,7 +21,7 @@ export class RegistrationCertificationsComponent implements OnInit {
   constructor(private fb: FormBuilder,
               private router: Router,
               private candidateService: CandidateService,
-              private certificationService: CertificationService ) { }
+              private candidateCertificationService: CandidateCertificationService ) { }
 
   ngOnInit() {
     this.candidateCertifications = [];
@@ -51,7 +51,7 @@ export class RegistrationCertificationsComponent implements OnInit {
 
   addMore(){
     this.saving = true;
-    this.certificationService.createCertification(this.form.value).subscribe(
+    this.candidateCertificationService.createCandidateCertification(this.form.value).subscribe(
       (response) => {
         this.candidateCertifications.push(response);
         this.saving = false;
@@ -67,7 +67,7 @@ export class RegistrationCertificationsComponent implements OnInit {
 
   delete(certification){
     this.saving = true;
-    this.certificationService.deleteCertification(certification.id).subscribe(
+    this.candidateCertificationService.deleteCandidateCertification(certification.id).subscribe(
       () => {
         this.candidateCertifications = this.candidateCertifications.filter(c => c !== certification);
         this.saving = false;

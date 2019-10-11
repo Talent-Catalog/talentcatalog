@@ -9,6 +9,7 @@ import {Candidate} from "../../../../../model/candidate";
 export class CandidateHistoryTabComponent implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
+  @Input() editable: boolean;
 
   loading: boolean;
   error;

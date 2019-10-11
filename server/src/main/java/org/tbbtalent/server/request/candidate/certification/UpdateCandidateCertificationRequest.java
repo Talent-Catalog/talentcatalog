@@ -1,8 +1,8 @@
-package org.tbbtalent.server.request.certification;
+package org.tbbtalent.server.request.candidate.certification;
 
 import java.time.LocalDate;
 
-public class CreateCertificationRequest {
+public class UpdateCandidateCertificationRequest {
 
     private String name;
     private String institution;

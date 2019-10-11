@@ -7,17 +7,17 @@ import {CandidateCertification} from "../model/candidate-certification";
 @Injectable({
   providedIn: 'root'
 })
-export class CertificationService {
+export class CandidateCertificationService {
 
-  private apiUrl: string = environment.apiUrl + '/certification';
+  private apiUrl: string = environment.apiUrl + '/candidate-certification';
 
   constructor(private http: HttpClient) { }
 
-  createCertification(request): Observable<CandidateCertification> {
+  createCandidateCertification(request): Observable<CandidateCertification> {
     return this.http.post<CandidateCertification>(`${this.apiUrl}`, request);
   }
 
-  deleteCertification(id: number): Observable<any> {
+  deleteCandidateCertification(id: number): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
   }
 }

@@ -1,0 +1,51 @@
+<div *ngIf="loading">
+  <i class="fa fa-spinner fa-spin"></i> loading...
+</div>
+<div *ngIf="error">
+  {{error}}
+</div>
+<div class="card" *ngIf="!loading">
+
+  <div class="card-header">
+    Note
+    <div class="pull-right" *ngIf="editable">
+      <button type="button" class="btn btn-primary" (click)="createCandidateNote()">Add</button>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <div *ngIf="!candidateNotes || candidateNotes.length == 0">
+      <div class="row">
+        <div class="col-sm-12">
+          No note entered
+        </div>
+      </div>
+    </div>
+    <div *ngFor="let candidateNote of candidateNotes">
+      <div class="row">
+        <div class="col-6">
+          <h6 class="card-title">TITLE</h6>
+        </div>
+        <div class="col-6">
+          <div class="pull-right" *ngIf="editable">
+            <button type="button" class="btn btn-default" (click)="editCandidateNote(candidateNote)"><i
+              class="fa fa-edit"></i></button>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-6">
+          <label class="col-form-label card-subtitle text-muted">LABEL</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-6">
+          <label class="col-form-label mb-2 text-muted">LABEL</label>
+        </div>
+      </div>
+      <hr/>
+    </div>
+
+  </div>
+
+</div>

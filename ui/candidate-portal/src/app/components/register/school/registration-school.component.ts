@@ -4,7 +4,7 @@ import {Router} from "@angular/router";
 import {years} from "../../../model/years";
 import {CandidateEducation} from "../../../model/candidate-education";
 import {CandidateService} from "../../../services/candidate.service";
-import {EducationService} from "../../../services/education.service";
+import {CandidateEducationService} from "../../../services/candidate-education.service";
 import {Country} from "../../../model/country";
 import {CountryService} from "../../../services/country.service";
 
@@ -27,7 +27,7 @@ export class RegistrationSchoolComponent implements OnInit {
   constructor(private fb: FormBuilder,
               private router: Router,
               private candidateService: CandidateService,
-              private educationService: EducationService,
+              private candidateEducationService: CandidateEducationService,
               private countryService: CountryService) { }
 
   ngOnInit() {
@@ -90,7 +90,7 @@ export class RegistrationSchoolComponent implements OnInit {
      /* CREATE if no education type exists in education table*/
 
      if(this.school.length == 0){
-       this.educationService.createEducation(this.form.value).subscribe(
+       this.candidateEducationService.createCandidateEducation(this.form.value).subscribe(
          (response) => {
             this.educations.push(response);
             this.saving = false;
@@ -105,7 +105,7 @@ export class RegistrationSchoolComponent implements OnInit {
      /* UPDATE if education type exists */
 
      } else {
-       this.educationService.updateEducation(this.form.value).subscribe(
+       this.candidateEducationService.updateCandidateEducation(this.form.value).subscribe(
          (response) => {
             this.router.navigate(['register', 'language']);
          },

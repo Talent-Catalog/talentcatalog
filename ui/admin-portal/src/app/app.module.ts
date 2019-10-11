@@ -61,6 +61,15 @@ import {EditCandidateContactComponent} from "./components/candidates/view/contac
 import { EditUserComponent } from './components/settings/users/edit/edit-user.component';
 import { CreateUserComponent } from './components/settings/users/create/create-user.component';
 import {CandidateEducationTabComponent} from "./components/candidates/view/tab/candidate-education-tab/candidate-education-tab.component";
+import { ViewCandidateEducationComponent } from './components/candidates/view/education/view-candidate-education.component';
+import { ViewCandidateCertificationComponent } from './components/candidates/view/certification/view-candidate-certification.component';
+import { EditCandidateEducationComponent } from './components/candidates/view/education/edit/edit-candidate-education.component';
+import { CreateCandidateEducationComponent } from './components/candidates/view/education/create/create-candidate-education.component';
+import { CreateCandidateCertificationComponent } from './components/candidates/view/certification/create/create-candidate-certification.component';
+import { EditCandidateCertificationComponent } from './components/candidates/view/certification/edit/edit-candidate-certification.component';
+import { ViewCandidateNoteComponent } from './components/candidates/view/note/view-candidate-note.component';
+import { CreateCandidateNoteComponent } from './components/candidates/view/note/create/create-candidate-note.component';
+import { EditCandidateNoteComponent } from './components/candidates/view/note/edit/edit-candidate-note.component';
 
 @NgModule({
   declarations: [
@@ -114,7 +123,16 @@ import {CandidateEducationTabComponent} from "./components/candidates/view/tab/c
     EditEducationMajorComponent,
     ViewCandidateContactComponent,
     EditCandidateContactComponent,
-    ViewCandidateLanguageComponent
+    ViewCandidateLanguageComponent,
+    ViewCandidateEducationComponent,
+    ViewCandidateCertificationComponent,
+    EditCandidateEducationComponent,
+    CreateCandidateEducationComponent,
+    CreateCandidateCertificationComponent,
+    EditCandidateCertificationComponent,
+    ViewCandidateNoteComponent,
+    CreateCandidateNoteComponent,
+    EditCandidateNoteComponent
   ],
   imports: [
     BrowserModule,
@@ -159,7 +177,11 @@ import {CandidateEducationTabComponent} from "./components/candidates/view/tab/c
     CreateUserComponent,
     ConfirmationComponent,
     SaveSearchComponent,
-    EditCandidateContactComponent
+    EditCandidateContactComponent,
+    EditCandidateEducationComponent,
+    CreateCandidateEducationComponent,
+    CreateCandidateCertificationComponent,
+    EditCandidateCertificationComponent
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},

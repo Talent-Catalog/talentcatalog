@@ -51,7 +51,9 @@ export class ViewCandidateContactComponent implements OnInit, OnChanges {
 
     editCandidateModal.result
       .then((candidate) => this.candidate = candidate)
-      .catch(() => { /* Isn't possible */ });  }
+      .catch(() => { /* Isn't possible */ });
+
+  }
 
 
 }

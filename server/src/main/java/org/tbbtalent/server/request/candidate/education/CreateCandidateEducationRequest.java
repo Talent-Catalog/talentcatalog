@@ -1,19 +1,21 @@
-package org.tbbtalent.server.request.education;
+package org.tbbtalent.server.request.candidate.education;
 
-public class CreateEducationRequest {
+import org.tbbtalent.server.model.EducationType;
 
-    private String educationType;
+public class CreateCandidateEducationRequest {
+
+    private EducationType educationType;
     private Long countryId;
     private Integer lengthOfCourseYears;
     private String institution;
     private String courseName;
     private String dateCompleted;
 
-    public String getEducationType() {
+    public EducationType getEducationType() {
         return educationType;
     }
 
-    public void setEducationType(String educationType) {
+    public void setEducationType(EducationType educationType) {
         this.educationType = educationType;
     }
 
