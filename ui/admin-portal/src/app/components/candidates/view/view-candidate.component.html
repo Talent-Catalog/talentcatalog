@@ -69,7 +69,10 @@
         <!-- HISTORY -->
         <ngb-tab [title]="'History'">
           <ng-template ngbTabContent>
-            <app-candidate-history-tab></app-candidate-history-tab>
+            <app-candidate-history-tab
+              [candidate]="candidate"
+              [editable]="true">
+            </app-candidate-history-tab>
           </ng-template>
         </ngb-tab>
 

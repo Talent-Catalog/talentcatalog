@@ -58,11 +58,25 @@ import {EditEducationMajorComponent} from './components/settings/education-major
 import {ViewCandidateContactComponent} from "./components/candidates/view/contact/view-candidate-contact.component";
 import {ViewCandidateLanguageComponent} from "./components/candidates/view/language/view-candidate-language.component";
 import {EditCandidateContactComponent} from "./components/candidates/view/contact/edit/edit-candidate-contact.component";
-import { EditUserComponent } from './components/settings/users/edit/edit-user.component';
-import { CreateUserComponent } from './components/settings/users/create/create-user.component';
+
+import {ViewCandidateNoteComponent} from "./components/candidates/view/note/view-candidate-note.component";
+import {CreateCandidateNoteComponent} from "./components/candidates/view/note/create/create-candidate-note.component";
+import {EditCandidateNoteComponent} from "./components/candidates/view/note/edit/edit-candidate-note.component";
+
+import {ViewCandidateEducationComponent} from "./components/candidates/view/education/view-candidate-education.component";
+import {CreateCandidateEducationComponent} from "./components/candidates/view/education/create/create-candidate-education.component";
+import {EditCandidateEducationComponent} from "./components/candidates/view/education/edit/edit-candidate-education.component";
+
+import {ViewCandidateCertificationComponent} from "./components/candidates/view/certification/view-candidate-certification.component";
+import {CreateCandidateCertificationComponent} from "./components/candidates/view/certification/create/create-candidate-certification.component";
+import {EditCandidateCertificationComponent} from "./components/candidates/view/certification/edit/edit-candidate-certification.component";
+
+import {EditUserComponent} from './components/settings/users/edit/edit-user.component';
+import {CreateUserComponent} from './components/settings/users/create/create-user.component';
 import {CandidateEducationTabComponent} from "./components/candidates/view/tab/candidate-education-tab/candidate-education-tab.component";
 import {JoinSavedSearchComponent} from "./components/candidates/search/join-search/join-saved-search.component";
 import {SavedSearchComponent} from "./components/util/saved-search/saved-search.component";
+
 
 @NgModule({
   declarations: [
@@ -117,6 +131,15 @@ import {SavedSearchComponent} from "./components/util/saved-search/saved-search.
     ViewCandidateContactComponent,
     EditCandidateContactComponent,
     ViewCandidateLanguageComponent,
+    ViewCandidateNoteComponent,
+    CreateCandidateNoteComponent,
+    EditCandidateNoteComponent,
+    ViewCandidateEducationComponent,
+    CreateCandidateEducationComponent,
+    EditCandidateEducationComponent,
+    ViewCandidateCertificationComponent,
+    CreateCandidateCertificationComponent,
+    EditCandidateCertificationComponent,
     JoinSavedSearchComponent,
     SavedSearchComponent
   ],
@@ -164,7 +187,13 @@ import {SavedSearchComponent} from "./components/util/saved-search/saved-search.
     ConfirmationComponent,
     SaveSearchComponent,
     EditCandidateContactComponent,
-    JoinSavedSearchComponent
+    JoinSavedSearchComponent,
+    CreateCandidateNoteComponent,
+    EditCandidateNoteComponent,
+    CreateCandidateEducationComponent,
+    EditCandidateEducationComponent,
+    CreateCandidateCertificationComponent,
+    EditCandidateCertificationComponent
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},

@@ -46,7 +46,7 @@ export class EditCandidateEducationComponent implements OnInit {
       courseName: [this.candidateEducation.courseName],
       institution: [this.candidateEducation.institution],
       countryId: [this.candidateEducation.country ? this.candidateEducation.country.id : null, Validators.required],
-      dateCompleted: [this.candidateEducation.dateCompleted],
+      yearCompleted: [this.candidateEducation.yearCompleted],
     });
     this.loading = false;
   }

@@ -3,20 +3,15 @@ package org.tbbtalent.server.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.Candidate;
-import org.tbbtalent.server.model.CandidateNote;
-import org.tbbtalent.server.model.NoteType;
-import org.tbbtalent.server.model.User;
+import org.tbbtalent.server.model.*;
 import org.tbbtalent.server.repository.CandidateNoteRepository;
 import org.tbbtalent.server.repository.CandidateRepository;
 import org.tbbtalent.server.request.note.CreateCandidateNoteRequest;
 import org.tbbtalent.server.request.note.SearchCandidateNotesRequest;
+import org.tbbtalent.server.request.note.UpdateCandidateNoteRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.CandidateNoteService;
-
-import java.util.List;
 
 @Service
 public class CandidateNotesServiceImpl implements CandidateNoteService {
@@ -31,6 +26,11 @@ public class CandidateNotesServiceImpl implements CandidateNoteService {
         this.candidateRepository = candidateRepository;
         this.candidateNoteRepository = candidateNoteRepository;
         this.userContext = userContext;
+    }
+
+    @Override
+    public Page<CandidateNote> searchCandidateNotes(SearchCandidateNotesRequest request) {
+        return candidateNoteRepository.findByCandidateId(request.getCandidateId(), request.getPageRequest());
     }
 
     @Override
@@ -51,7 +51,20 @@ public class CandidateNotesServiceImpl implements CandidateNoteService {
     }
 
     @Override
-    public Page<CandidateNote> searchCandidateNotes(SearchCandidateNotesRequest request) {
-        return candidateNoteRepository.findByCandidateId(request.getCandidateId(), request.getPageRequest());
+    public CandidateNote updateCandidateNote(long id, UpdateCandidateNoteRequest request) {
+        CandidateNote candidateNote = this.candidateNoteRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(CandidateEducation.class, id));
+
+        User user = userContext.getLoggedInUser();
+
+        // Update education object to insert into the database
+        candidateNote.setTitle(request.getTitle());
+        candidateNote.setComment(request.getComment());
+        candidateNote.setAuditFields(user);
+
+        // Save the candidateOccupation
+        return candidateNoteRepository.save(candidateNote);
+
     }
+
 }

@@ -18,12 +18,16 @@ export class CandidateNoteService {
     return this.http.get<CandidateNote[]>(`${this.apiUrl}/${id}/list`);
   }
 
-  create(id: number, details): Observable<CandidateNote>  {
-    return this.http.post<CandidateNote>(`${this.apiUrl}/${id}`, details);
+  search(request): Observable<SearchResults<CandidateNote>> {
+    return this.http.post<SearchResults<CandidateNote>>(`${this.apiUrl}/search`, request);
   }
 
-  update(id: number, details): Observable<CandidateNote>  {
-    return this.http.put<CandidateNote>(`${this.apiUrl}/${id}`, details);
+  create(details): Observable<CandidateNote>  {
+    return this.http.post<CandidateNote>(`${this.apiUrl}`, details);
+  }
+
+  update(id: number, details): Observable<CandidateEducation>  {
+    return this.http.put<CandidateEducation>(`${this.apiUrl}/${id}`, details);
   }
 
 }

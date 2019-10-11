@@ -53,7 +53,7 @@ public class CandidateEducationAdminApi {
                 .add("lengthOfCourseYears")
                 .add("institution")
                 .add("courseName")
-                .add("dateCompleted")
+                .add("yearCompleted")
                 ;
     }
 

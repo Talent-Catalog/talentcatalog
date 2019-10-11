@@ -2,8 +2,11 @@ import {User} from "./user";
 
 export interface CandidateNote {
   id: number;
-  subject: string;
+  title: string;
   comment: string;
-  user: User;
+  noteType: string;
+  createdBy: User;
   createdDate: number;
+  updatedBy: User
+  updatedDate: number;
 }

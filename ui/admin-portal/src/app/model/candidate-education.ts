@@ -7,5 +7,5 @@ export interface CandidateEducation {
   lengthOfCourseYears: number;
   institution: string;
   courseName: string;
-  dateCompleted: string;
+  yearOfCompletion: string;
 };

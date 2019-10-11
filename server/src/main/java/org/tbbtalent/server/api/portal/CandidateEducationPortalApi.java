@@ -45,7 +45,7 @@ public class CandidateEducationPortalApi {
                 .add("lengthOfCourseYears")
                 .add("institution")
                 .add("courseName")
-                .add("dateCompleted")
+                .add("yearCompleted")
                 ;
     }
 

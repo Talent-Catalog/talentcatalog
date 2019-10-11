@@ -57,7 +57,7 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
         candidateEducation.setLengthOfCourseYears(request.getLengthOfCourseYears());
         candidateEducation.setInstitution(request.getInstitution());
         candidateEducation.setCourseName(request.getCourseName());
-        candidateEducation.setDateCompleted(request.getDateCompleted());
+        candidateEducation.setYearCompleted(request.getYearCompleted());
 
         // Save the candidateOccupation
         return candidateEducationRepository.save(candidateEducation);
@@ -84,7 +84,7 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
         candidateEducation.setLengthOfCourseYears(request.getLengthOfCourseYears());
         candidateEducation.setInstitution(request.getInstitution());
         candidateEducation.setCourseName(request.getCourseName());
-        candidateEducation.setDateCompleted(request.getDateCompleted());
+        candidateEducation.setYearCompleted(request.getYearCompleted());
 
         // Save the candidateOccupation
         return candidateEducationRepository.save(candidateEducation);
@@ -115,7 +115,7 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
         candidateEducation.setLengthOfCourseYears(request.getLengthOfCourseYears());
         candidateEducation.setInstitution(request.getInstitution());
         candidateEducation.setCourseName(request.getCourseName());
-        candidateEducation.setDateCompleted(request.getDateCompleted());
+        candidateEducation.setYearCompleted(request.getYearCompleted());
 
         // Save the candidateOccupation
         return candidateEducationRepository.save(candidateEducation);
@@ -137,7 +137,7 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
         candidateEducation.setLengthOfCourseYears(request.getLengthOfCourseYears());
         candidateEducation.setInstitution(request.getInstitution());
         candidateEducation.setCourseName(request.getCourseName());
-        candidateEducation.setDateCompleted(request.getDateCompleted());
+        candidateEducation.setYearCompleted(request.getYearCompleted());
 
         // Save the candidateOccupation
         return candidateEducationRepository.save(candidateEducation);

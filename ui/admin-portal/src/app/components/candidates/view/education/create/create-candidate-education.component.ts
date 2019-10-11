@@ -32,6 +32,14 @@ export class CreateCandidateEducationComponent implements OnInit {
   ngOnInit() {
     this.loading = true;
 
+    /* load the years */
+    this.years = [];
+    let currentYear = new Date().getFullYear();
+    let year = 1950;
+    while (year < currentYear){
+      this.years.push(year++);
+    }
+
     /*load the countries */
     this.countryService.listCountries().subscribe(
       (response) => {
@@ -47,7 +55,7 @@ export class CreateCandidateEducationComponent implements OnInit {
       courseName: ['', [Validators.required]],
       institution: ['', [Validators.required]],
       countryId: ['', [Validators.required]],
-      dateCompleted: ['', [Validators.required]],
+      yearCompleted: ['', [Validators.required]],
       educationType: ['', [Validators.required]]
     });
     this.loading = false;

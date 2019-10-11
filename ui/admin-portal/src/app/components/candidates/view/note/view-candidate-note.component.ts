@@ -6,6 +6,8 @@ import {CandidateNote} from "../../../../model/candidate-note";
 import {CandidateNoteService} from "../../../../services/candidate-note.service";
 import {EditCandidateNoteComponent} from "./edit/edit-candidate-note.component";
 import {CreateCandidateNoteComponent} from "./create/create-candidate-note.component";
+import {FormArray, FormBuilder, FormControl, FormGroup} from "@angular/forms";
+import {SearchResults} from '../../../model/search-results';
 
 @Component({
   selector: 'app-view-candidate-note',
@@ -17,27 +19,38 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
   @Input() candidate: Candidate;
   @Input() editable: boolean;
 
-  candidateNotes: CandidateNote[];
+  candidateNoteForm: FormGroup;
   candidateNote: CandidateNote;
   loading: boolean;
   error;
+  results: SearchResults<CandidateNote>;
 
   constructor(private candidateNoteService: CandidateNoteService,
-              private modalService: NgbModal ) {
+              private modalService: NgbModal,
+              private fb: FormBuilder) {
   }
 
   ngOnInit() {
+
   }
 
   ngOnChanges(changes: SimpleChanges) {
     this.editable = true;
     console.log(changes);
+
+    this.candidateNoteForm = this.fb.group({
+      candidateId: [this.candidate.id],
+      pageSize: 10,
+      sortDirection: 'DESC',
+      sortFields: [['createdDate']]
+    });
+
     if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
       this.loading = true;
-      this.candidateNoteService.list(this.candidate.id).subscribe(
-        candidateNotes => {
-          console.log(candidateNotes);
-          this.candidateNotes = candidateNotes;
+      console.log(this.candidateNoteForm.value);
+      this.candidateNoteService.search(this.candidateNoteForm.value).subscribe(
+        results => {
+          this.results = results;
           this.loading = false;
         },
         error => {
@@ -75,6 +88,7 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
       .catch(() => { /* Isn't possible */ });
 
   }
+
 
 
 }

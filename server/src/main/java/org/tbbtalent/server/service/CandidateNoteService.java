@@ -1,15 +1,10 @@
 package org.tbbtalent.server.service;
 
 import org.springframework.data.domain.Page;
-import org.tbbtalent.server.model.Candidate;
-import org.tbbtalent.server.model.CandidateLanguage;
 import org.tbbtalent.server.model.CandidateNote;
-import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
-import org.tbbtalent.server.request.candidate.language.CreateCandidateLanguageRequest;
 import org.tbbtalent.server.request.note.CreateCandidateNoteRequest;
 import org.tbbtalent.server.request.note.SearchCandidateNotesRequest;
-
-import java.util.List;
+import org.tbbtalent.server.request.note.UpdateCandidateNoteRequest;
 
 public interface CandidateNoteService {
 
@@ -17,6 +12,7 @@ public interface CandidateNoteService {
 
     CandidateNote createCandidateNote(CreateCandidateNoteRequest request);
 
+    CandidateNote updateCandidateNote(long id, UpdateCandidateNoteRequest request);
 
 
 }

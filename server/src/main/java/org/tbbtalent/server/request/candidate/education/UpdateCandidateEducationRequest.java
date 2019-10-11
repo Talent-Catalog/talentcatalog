@@ -9,7 +9,7 @@ public class UpdateCandidateEducationRequest {
     private Integer lengthOfCourseYears;
     private String institution;
     private String courseName;
-    private String dateCompleted;
+    private Integer yearCompleted;
 
     public EducationType getEducationType() {
         return educationType;
@@ -51,11 +51,7 @@ public class UpdateCandidateEducationRequest {
         this.courseName = courseName;
     }
 
-    public String getDateCompleted() {
-        return dateCompleted;
-    }
+    public Integer getYearCompleted() { return yearCompleted; }
 
-    public void setDateCompleted(String dateCompleted) {
-        this.dateCompleted = dateCompleted;
-    }
+    public void setYearCompleted(Integer yearCompleted) { this.yearCompleted = yearCompleted; }
 }

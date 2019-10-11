@@ -2,14 +2,12 @@ package org.tbbtalent.server.api.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.model.CandidateNote;
 import org.tbbtalent.server.request.note.CreateCandidateNoteRequest;
 import org.tbbtalent.server.request.note.SearchCandidateNotesRequest;
+import org.tbbtalent.server.request.note.UpdateCandidateNoteRequest;
 import org.tbbtalent.server.service.CandidateNoteService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -27,7 +25,6 @@ public class CandidateNoteAdminApi {
         this.candidateNoteService = candidateNoteService;
     }
 
-
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchCandidateNotesRequest request) {
         Page<CandidateNote> candidateNotes = this.candidateNoteService.searchCandidateNotes(request);
@@ -40,10 +37,18 @@ public class CandidateNoteAdminApi {
         return candidateNoteDto().build(candidateNote);
     }
 
+    @PutMapping("{id}")
+    public Map<String, Object> update(@PathVariable("id") long id,
+                                      @RequestBody UpdateCandidateNoteRequest request) {
+        CandidateNote candidateNote = this.candidateNoteService.updateCandidateNote(id, request);
+        return candidateNoteDto().build(candidateNote);
+    }
+
+
     private DtoBuilder candidateNoteDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("type")
+                .add("noteType")
                 .add("title")
                 .add("comment")
                 .add("createdBy", userDto())
