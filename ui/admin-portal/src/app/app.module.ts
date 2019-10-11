@@ -13,7 +13,7 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {CreateCandidateComponent} from './components/candidates/create/create-candidate.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ViewCandidateComponent} from './components/candidates/view/view-candidate.component';
-import {EditCandidateComponent} from './components/candidates/view/edit/edit-candidate.component';
+import {EditCandidateStatusComponent} from './components/candidates/view/status/edit-candidate-status.component';
 import {DeleteCandidateComponent} from './components/candidates/view/delete/delete-candidate.component';
 import {InfiniteScrollModule} from 'ngx-infinite-scroll';
 import {JwtInterceptor} from "./services/jwt.interceptor";
@@ -61,15 +61,8 @@ import {EditCandidateContactComponent} from "./components/candidates/view/contac
 import { EditUserComponent } from './components/settings/users/edit/edit-user.component';
 import { CreateUserComponent } from './components/settings/users/create/create-user.component';
 import {CandidateEducationTabComponent} from "./components/candidates/view/tab/candidate-education-tab/candidate-education-tab.component";
-import { ViewCandidateEducationComponent } from './components/candidates/view/education/view-candidate-education.component';
-import { ViewCandidateCertificationComponent } from './components/candidates/view/certification/view-candidate-certification.component';
-import { EditCandidateEducationComponent } from './components/candidates/view/education/edit/edit-candidate-education.component';
-import { CreateCandidateEducationComponent } from './components/candidates/view/education/create/create-candidate-education.component';
-import { CreateCandidateCertificationComponent } from './components/candidates/view/certification/create/create-candidate-certification.component';
-import { EditCandidateCertificationComponent } from './components/candidates/view/certification/edit/edit-candidate-certification.component';
-import { ViewCandidateNoteComponent } from './components/candidates/view/note/view-candidate-note.component';
-import { CreateCandidateNoteComponent } from './components/candidates/view/note/create/create-candidate-note.component';
-import { EditCandidateNoteComponent } from './components/candidates/view/note/edit/edit-candidate-note.component';
+import {JoinSavedSearchComponent} from "./components/candidates/search/join-search/join-saved-search.component";
+import {SavedSearchComponent} from "./components/util/saved-search/saved-search.component";
 
 @NgModule({
   declarations: [
@@ -81,7 +74,7 @@ import { EditCandidateNoteComponent } from './components/candidates/view/note/ed
     HomeComponent,
     CreateCandidateComponent,
     ViewCandidateComponent,
-    EditCandidateComponent,
+    EditCandidateStatusComponent,
     DeleteCandidateComponent,
     SettingsComponent,
     SearchUsersComponent,
@@ -124,15 +117,8 @@ import { EditCandidateNoteComponent } from './components/candidates/view/note/ed
     ViewCandidateContactComponent,
     EditCandidateContactComponent,
     ViewCandidateLanguageComponent,
-    ViewCandidateEducationComponent,
-    ViewCandidateCertificationComponent,
-    EditCandidateEducationComponent,
-    CreateCandidateEducationComponent,
-    CreateCandidateCertificationComponent,
-    EditCandidateCertificationComponent,
-    ViewCandidateNoteComponent,
-    CreateCandidateNoteComponent,
-    EditCandidateNoteComponent
+    JoinSavedSearchComponent,
+    SavedSearchComponent
   ],
   imports: [
     BrowserModule,
@@ -178,10 +164,7 @@ import { EditCandidateNoteComponent } from './components/candidates/view/note/ed
     ConfirmationComponent,
     SaveSearchComponent,
     EditCandidateContactComponent,
-    EditCandidateEducationComponent,
-    CreateCandidateEducationComponent,
-    CreateCandidateCertificationComponent,
-    EditCandidateCertificationComponent
+    JoinSavedSearchComponent
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},

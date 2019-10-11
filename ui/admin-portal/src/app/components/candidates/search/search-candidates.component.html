@@ -202,16 +202,23 @@
       </div>
 
       <!-- UN REGISTERED - removed for now -->
-<!--      <div class="form-group col-12 col-md-3">-->
-<!--        <label for="unRegistered">UN Registered</label>-->
-<!--        <select class="form-control" name="unRegistered" id="unRegistered" [formControlName]="'unRegistered'">-->
-<!--          <option value=""></option>-->
-<!--          <option [value]="true">Yes</option>-->
-<!--          <option [value]="false">No</option>-->
-<!--        </select>-->
-<!--      </div>-->
+      <!--      <div class="form-group col-12 col-md-3">-->
+      <!--        <label for="unRegistered">UN Registered</label>-->
+      <!--        <select class="form-control" name="unRegistered" id="unRegistered" [formControlName]="'unRegistered'">-->
+      <!--          <option value=""></option>-->
+      <!--          <option [value]="true">Yes</option>-->
+      <!--          <option [value]="false">No</option>-->
+      <!--        </select>-->
+      <!--      </div>-->
 
       <hr class="w-100">
+
+      <div class="col-12">
+        <span>Joined Searches</span>
+        <div class="pull-right">
+          <button class="btn btn-primary" (click)="addSavedSearchJoin()">Add</button>
+        </div>
+      </div>
 
       <!-- SEARCH JOINS -->
       <ng-container *ngFor="let join of searchForm.value.searchJoinRequests">
@@ -227,37 +234,9 @@
         </div>
       </ng-container>
 
-      <div class="form-group col-2">
-        <select class="form-control" [formControlName]="'selectedSearchType'">
-          <option value="and">AND</option>
-          <option value="or">OR</option>
-        </select>
-      </div>
 
-      <div class="form-group col-6">
-        <input id="typeahead-http"
-               type="text" class="form-control"
-               [formControlName]="'selectedSavedSearch'"
-               [ngbTypeahead]="doSavedSearchSearch"
-               [resultTemplate]="rt"
-               [inputFormatter]="renderSavedSearchRow"
-               [editable]="false"
-               placeholder="Search for other searches ..."/>
-        <ng-template #rt let-r="result" let-t="term">
-          <ngb-highlight [result]="r.name" [term]="t"></ngb-highlight>
-        </ng-template>
-      </div>
-      <div class="form-group col-4">
-        <button class="btn btn-secondary" [disabled]="!searchJoin?.searchType || !searchJoin?.savedSearchId"
-                (click)="addSavedSearchJoin()">
-          Add
-        </button>
-      </div>
-
+      <hr class="w-100">
     </ng-container>
-
-    <hr class="w-100">
-
     <div class="col-6">
       <div class="btn-group" role="group">
         <button class="btn btn-outline-dark" (click)="showSavedSearches()">Load Saved Search</button>
@@ -277,6 +256,7 @@
         </button>
       </div>
     </div>
+
 
   </form>
 

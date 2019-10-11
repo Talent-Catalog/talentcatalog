@@ -20,6 +20,7 @@ import {SavedSearch, SavedSearchJoin} from "../../../model/saved-search";
 import {IDropdownSettings} from 'ng-multiselect-dropdown';
 import {Subscription} from "rxjs";
 import {Observable, of} from "rxjs";
+import {JoinSavedSearchComponent} from "./join-search/join-saved-search.component";
 
 @Component({
   selector: 'app-search-candidates',
@@ -72,13 +73,8 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     {id: 'active', name: 'active'},
     {id: 'inactive', name: 'inactive'},
   ];
-  savedSearches: SavedSearch[];
-  searchJoin: SavedSearchJoin;
   selectedCandidate: Candidate;
-  selectedSavedSearch: SavedSearch;
-  searching = false;
-  searchFailed = false;
-  doSavedSearchSearch;
+
 
   constructor(private fb: FormBuilder,
               private candidateService: CandidateService,
@@ -92,9 +88,6 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.moreFilters = false;
     this.selectedCandidate = null;
-    this.resetSavedSearchJoin();
-    // TODO saved search service call
-    this.savedSearches = [];
 
     /* SET UP FORM */
     this.searchForm = this.fb.group({
@@ -125,9 +118,8 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       educationMajorIds: [[]],
       searchJoinRequests: this.fb.array([]),
       page: 1,
-      size: 50,
-      selectedSavedSearch: [null],
-      selectedSearchType: [null]
+      size: 50
+
     });
 
     /* LOAD NATIONALITIES */
@@ -166,50 +158,14 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       }
     );
 
-    //dropdown to add joined searches
-    this.doSavedSearchSearch = (text$: Observable<string>) =>
-      text$.pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        tap(() => {
-          this.searching = true;
-          this.error = null
-        }),
-        switchMap(term =>
-          this.savedSearchService.search({phrase: term}).pipe(
-            tap(() => this.searchFailed = false),
-            map(result => result.content),
-            catchError(() => {
-              this.searchFailed = true;
-              return of([]);
-            }))
-        ),
-        tap(() => this.searching = false)
-      );
 
-    /* SEARCH ON CHANGE */
-    this.searchForm.get('selectedSavedSearch').valueChanges
-      .subscribe(searchResult => {
-        this.searchJoin.savedSearchId = searchResult ? searchResult.id : null;
-        this.searchJoin.name = searchResult ? searchResult.name : null;
-        console.log(this.searchJoin);
-      });
-
-    this.searchForm.get('selectedSearchType').valueChanges
-      .subscribe(searchType => {
-        this.searchJoin.searchType = searchType;
-        console.log(this.searchJoin);
-      });
 
     this.search();
   }
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
-
-
   }
-
 
   /* MULTI SELECT METHODS */
   onItemSelect(item: any, formControlName: string) {
@@ -218,7 +174,6 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     const values = this.searchForm.controls[formControlName].value || [];
     const addValue = item.id || item;
     /* DEBUG */
-    console.log('addvalud', addValue);
     values.push(addValue);
     this.searchForm.controls[formControlName].patchValue(values);
   }
@@ -316,6 +271,9 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       this.searchForm.controls[name].patchValue(request[name]);
       //Form arrays need to be handled
       if (name === 'searchJoinRequests' && request[name]) {
+        while (this.searchJoinArray.length) {
+          this.searchJoinArray.removeAt(0);
+        }
         request[name].forEach((join) => {
           this.searchJoinArray.push(this.fb.group(join))
         });
@@ -329,22 +287,23 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     return this.searchForm.get('searchJoinRequests') as FormArray;
   }
 
-  resetSavedSearchJoin() {
-    this.searchJoin = {savedSearchId: null, name: null, searchType: null};
-  }
-
   addSavedSearchJoin() {
-    console.log('adding search join');
-    (this.searchForm.controls.searchJoinRequests as FormArray).push(new FormControl(this.searchJoin));
-    this.resetSavedSearchJoin();
-    console.log(this.searchForm.controls.searchJoinRequests);
+    const joinSavedSearchComponent = this.modalService.open(JoinSavedSearchComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    joinSavedSearchComponent.result
+      .then((join) => {
+        this.searchJoinArray.push(this.fb.group(join))
+      })
+      .catch(() => { /* Isn't possible */
+      });
   }
 
   viewCandidate(candidate: Candidate) {
     this.selectedCandidate = candidate;
   }
 
-  renderSavedSearchRow(savedSearch: SavedSearch) {
-    return savedSearch.name;
-  }
+
 }

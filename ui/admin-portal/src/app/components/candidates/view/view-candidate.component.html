@@ -15,10 +15,16 @@
 
   <div>
     <div class="pull-right">
-      <button class="btn btn-primary mr-1" (click)="editCandidate()"><i class="fa fa-edit"></i></button>
-      <button class="btn btn-danger" (click)="deleteCandidate()"><i class="fa fa-trash"></i></button>
+      <div class="input-group">
+        <input type="text" class="form-control" id="status" value="{{candidate.status}}" disabled>
+        <div class="input-group-append">
+          <button class="btn btn-outline-dark" (click)="editCandidate()"><i class="fa fa-edit"></i></button>
+        </div>
+      </div>
     </div>
-    <h1>{{candidate.user.firstName}} {{candidate.user.lastName}} ({{candidate.candidateNumber}})</h1>
+    <h1>{{candidate.user.firstName}} {{candidate.user.lastName}}  <span
+      class="small text-muted">{{candidate.candidateNumber}}</span></h1>
+
   </div>
 
   <div class="row">

@@ -15,21 +15,26 @@
   </div>
 
   <form [formGroup]="form">
+    <div class="form-check">
+      <label>
+        <input type="radio" value="false" formControlName="update">
+        <span>Create new search</span>
+      </label>
+    </div>
     <div class="form-group">
-      <label for="name">Create new search</label>
       <input type="text" class="form-control" id="name" formControlName="name">
     </div>
+    <hr/>
 
     <div *ngIf="savedSearch">
-      <div>
-        todo card layout for search
-      </div>
-
       <div class="form-check">
-        <input class="form-check-input" type="checkbox" value="" id="update" formControlName="update">
-        <label class="form-check-label" for="update">
-          Replace existing search
+        <label>
+          <input type="radio" value="true" formControlName="update">
+          <span>Replace search</span>
         </label>
+      </div>
+      <div>
+        <app-saved-search [savedSearch]="savedSearch"></app-saved-search>
       </div>
     </div>
   </form>

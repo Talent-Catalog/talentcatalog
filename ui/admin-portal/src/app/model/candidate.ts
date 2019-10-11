@@ -5,6 +5,7 @@ import {Nationality} from "./nationality";
 export interface Candidate {
   id: number;
   candidateNumber: string;
+  status: string;
   gender: string;
   dob: Date;
   address1: string;

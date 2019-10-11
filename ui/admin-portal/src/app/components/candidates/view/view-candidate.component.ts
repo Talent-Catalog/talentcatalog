@@ -4,7 +4,7 @@ import { Candidate } from '../../../model/candidate';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DeleteCandidateComponent } from './delete/delete-candidate.component';
-import {EditCandidateComponent} from "./edit/edit-candidate.component";
+import {EditCandidateStatusComponent} from "./status/edit-candidate-status.component";
 
 @Component({
   selector: 'app-view-candidate',
@@ -45,7 +45,7 @@ export class ViewCandidateComponent implements OnInit {
   }
 
   editCandidate() {
-    let modal = this.modalService.open(EditCandidateComponent);
+    let modal = this.modalService.open(EditCandidateStatusComponent);
     modal.componentInstance.candidateId = this.candidate.id;
     modal.result.then(result => {
       console.log(result)

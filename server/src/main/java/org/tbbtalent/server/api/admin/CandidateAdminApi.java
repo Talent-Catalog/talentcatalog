@@ -8,7 +8,7 @@ import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateContactRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tbbtalent.server.service.CandidateService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -43,17 +43,17 @@ public class CandidateAdminApi {
         return candidateDto().build(candidate);
     }
 
-    @PutMapping("{id}")
+    @PutMapping("{id}/status")
     public Map<String, Object> update(@PathVariable("id") long id,
-                            @RequestBody UpdateCandidateRequest request) {
-        Candidate candidate = this.candidateService.updateCandidatePersonal(id, request);
+                            @RequestBody UpdateCandidateStatusRequest request) {
+        Candidate candidate = this.candidateService.updateCandidateStatus(id, request);
         return candidateDto().build(candidate);
     }
 
-    @PutMapping("{id}/contact")
+    @PutMapping("{id}")
     public Map<String, Object> updateContactDetails(@PathVariable("id") long id,
                                       @RequestBody UpdateCandidateContactRequest request) {
-        Candidate candidate = this.candidateService.updateCandidateContact(id, request);
+        Candidate candidate = this.candidateService.updateCandidate(id, request);
         return candidateDto().build(candidate);
     }
 
@@ -65,6 +65,7 @@ public class CandidateAdminApi {
     private DtoBuilder candidateDto() {
         return new DtoBuilder()
                 .add("id")
+                .add("status")
                 .add("candidateNumber")
                 .add("gender")
                 .add("dob")

@@ -1,17 +1,15 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
 import {CandidateService} from '../../../../services/candidate.service';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {LanguageLevel} from "../../../../model/language-level";
 import {Candidate} from "../../../../model/candidate";
 
 @Component({
   selector: 'app-edit-candidate',
-  templateUrl: './edit-candidate.component.html',
-  styleUrls: ['./edit-candidate.component.scss']
+  templateUrl: './edit-candidate-status.component.html',
+  styleUrls: ['./edit-candidate-status.component.scss']
 })
-export class EditCandidateComponent implements OnInit {
+export class EditCandidateStatusComponent implements OnInit {
 
   candidateId: number;
   candidateForm: FormGroup;
@@ -28,9 +26,8 @@ export class EditCandidateComponent implements OnInit {
       this.loading = true;
       this.candidateService.get(this.candidateId).subscribe(candidate => {
         this.candidateForm = this.fb.group({
-          firstName: [candidate.user.firstName],
-          lastName: [candidate.user.lastName],
-          gender: [candidate.gender],
+          status: [candidate.status, Validators.required],
+          comment: [null, Validators.required],
         });
         this.loading = false;
       });
@@ -38,7 +35,7 @@ export class EditCandidateComponent implements OnInit {
 
   onSave() {
     this.saving = true;
-    this.candidateService.update(this.candidateId, this.candidateForm.value).subscribe(
+    this.candidateService.updateStatus(this.candidateId, this.candidateForm.value).subscribe(
       (candidate) => {
         this.saving = false;
         this.closeModal(candidate);

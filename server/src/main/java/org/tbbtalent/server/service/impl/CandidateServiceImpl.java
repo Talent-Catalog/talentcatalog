@@ -14,8 +14,10 @@ import org.tbbtalent.server.model.*;
 import org.tbbtalent.server.repository.*;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.candidate.*;
+import org.tbbtalent.server.request.note.CreateCandidateNoteRequest;
 import org.tbbtalent.server.security.PasswordHelper;
 import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.service.CandidateNoteService;
 import org.tbbtalent.server.service.CandidateService;
 import org.tbbtalent.server.service.SavedSearchService;
 
@@ -36,6 +38,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final PasswordHelper passwordHelper;
     private final UserContext userContext;
     private final SavedSearchService savedSearchService;
+    private final CandidateNoteService candidateNoteService;
 
     @Autowired
     public CandidateServiceImpl(UserRepository userRepository, CandidateRepository candidateRepository,
@@ -43,7 +46,7 @@ public class CandidateServiceImpl implements CandidateService {
                                 EducationLevelRepository educationLevelRepository,
                                 NationalityRepository nationalityRepository,
                                 PasswordHelper passwordHelper,
-                                UserContext userContext, SavedSearchService savedSearchService) {
+                                UserContext userContext, SavedSearchService savedSearchService, CandidateNoteService candidateNoteService) {
         this.userRepository = userRepository;
         this.candidateRepository = candidateRepository;
         this.countryRepository = countryRepository;
@@ -52,6 +55,7 @@ public class CandidateServiceImpl implements CandidateService {
         this.passwordHelper = passwordHelper;
         this.userContext = userContext;
         this.savedSearchService = savedSearchService;
+        this.candidateNoteService = candidateNoteService;
     }
 
     @Override
@@ -132,22 +136,19 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     @Transactional
-    public Candidate updateCandidatePersonal(long id, UpdateCandidateRequest request) {
+    public Candidate updateCandidateStatus(long id, UpdateCandidateStatusRequest request) {
         Candidate candidate = this.candidateRepository.findByIdLoadUser(id)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
-
-        User user = candidate.getUser();
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        userRepository.save(user);
-
-        candidate.setUser(user);
-        candidate.setGender(request.getGender());
-        return candidateRepository.save(candidate);
+        if (!request.getStatus().equals(candidate.getStatus())){
+            candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(id, "Status change from "+candidate.getStatus()+" to "+request.getStatus(), request.getComment()));
+            candidate.setStatus(request.getStatus());
+            candidate =  candidateRepository.save(candidate);
+        }
+        return candidate;
     }
 
     @Override
-    public Candidate updateCandidateContact(long id, UpdateCandidateContactRequest request) {
+    public Candidate updateCandidate(long id, UpdateCandidateContactRequest request) {
 
         Candidate candidate = this.candidateRepository.findByIdLoadUser(id)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
@@ -167,6 +168,8 @@ public class CandidateServiceImpl implements CandidateService {
             if (exists != null && !exists.getId().equals(user.getId())) {
                 throw new UsernameTakenException("email");
             }
+            user.setFirstName(request.getFirstName());
+            user.setLastName(request.getLastName());
             user.setEmail(request.getEmail());
             userRepository.save(user);
         }
@@ -187,6 +190,7 @@ public class CandidateServiceImpl implements CandidateService {
             }
         }
         candidate.setUser(user);
+        candidate.setGender(request.getGender());
         candidate.setPhone(request.getPhone());
         candidate.setWhatsapp(request.getWhatsapp());
         candidate.setAddress1(request.getAddress1());

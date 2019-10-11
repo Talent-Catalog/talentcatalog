@@ -67,7 +67,9 @@ public class SavedSearchAdminApi {
         return new DtoBuilder()
                 .add("id")
                 .add("name")
-                .add("status")
+                .add("keyword")
+                .add("statuses")
+                .add("gender")
                 ;
     }
 
