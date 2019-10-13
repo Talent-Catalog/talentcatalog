@@ -1,11 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Candidate } from '../model/candidate';
 import { Observable } from 'rxjs/index';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { SearchResults } from '../model/search-results';
 import {CandidateNote} from "../model/candidate-note";
-import {Country} from "../model/country";
 
 @Injectable({providedIn: 'root'})
 export class CandidateNoteService {
@@ -26,8 +24,8 @@ export class CandidateNoteService {
     return this.http.post<CandidateNote>(`${this.apiUrl}`, details);
   }
 
-  update(id: number, details): Observable<CandidateEducation>  {
-    return this.http.put<CandidateEducation>(`${this.apiUrl}/${id}`, details);
+  update(id: number, details): Observable<CandidateNote>  {
+    return this.http.put<CandidateNote>(`${this.apiUrl}/${id}`, details);
   }
 
 }

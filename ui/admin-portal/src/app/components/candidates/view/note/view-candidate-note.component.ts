@@ -1,13 +1,12 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from "../../../../model/candidate";
 import {CandidateNote} from "../../../../model/candidate-note";
 import {CandidateNoteService} from "../../../../services/candidate-note.service";
 import {EditCandidateNoteComponent} from "./edit/edit-candidate-note.component";
 import {CreateCandidateNoteComponent} from "./create/create-candidate-note.component";
-import {FormArray, FormBuilder, FormControl, FormGroup} from "@angular/forms";
-import {SearchResults} from '../../../model/search-results';
+import {FormBuilder, FormGroup} from "@angular/forms";
+import {SearchResults} from "../../../../model/search-results";
 
 @Component({
   selector: 'app-view-candidate-note',

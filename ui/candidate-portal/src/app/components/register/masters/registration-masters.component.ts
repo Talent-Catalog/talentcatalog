@@ -60,7 +60,7 @@ export class RegistrationMastersComponent implements OnInit {
              countryId: this.masters[0].country.id,
              institution: this.masters[0].institution,
              lengthOfCourseYears: this.masters[0].lengthOfCourseYears,
-             dateCompleted: this.masters[0].dateCompleted,
+             dateCompleted: this.masters[0].yearCompleted,
            });
          }
 

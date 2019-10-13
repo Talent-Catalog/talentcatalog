@@ -61,7 +61,7 @@ export class RegistrationSchoolComponent implements OnInit {
              countryId: this.school[0].country.id,
              institution: this.school[0].institution,
              lengthOfCourseYears: this.school[0].lengthOfCourseYears,
-             dateCompleted: this.school[0].dateCompleted,
+             dateCompleted: this.school[0].yearCompleted,
            });
          }
 
