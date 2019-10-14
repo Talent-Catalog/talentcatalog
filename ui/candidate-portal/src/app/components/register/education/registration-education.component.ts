@@ -54,7 +54,7 @@ export class RegistrationEducationComponent implements OnInit {
         this.loading = false;
       }
     );
-  };
+  }
 
     save() {
       console.log(this.form);

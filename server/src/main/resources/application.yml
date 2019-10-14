@@ -21,3 +21,8 @@ jwt:
 
 web:
   portal: http://localhost:4200
+  
+flyway:
+  ignoreMissingMigrations: true
+  repair: true
+

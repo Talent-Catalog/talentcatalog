@@ -1,6 +1,7 @@
 package org.tbbtalent.server.service.impl;
 
-import io.jsonwebtoken.lang.Collections;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,15 +14,17 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.CandidateLanguage;
 import org.tbbtalent.server.model.Language;
 import org.tbbtalent.server.model.Status;
+import org.tbbtalent.server.model.SystemLanguage;
 import org.tbbtalent.server.repository.CandidateLanguageRepository;
 import org.tbbtalent.server.repository.LanguageRepository;
 import org.tbbtalent.server.repository.LanguageSpecification;
+import org.tbbtalent.server.repository.SystemLanguageRepository;
 import org.tbbtalent.server.request.language.CreateLanguageRequest;
 import org.tbbtalent.server.request.language.SearchLanguageRequest;
 import org.tbbtalent.server.request.language.UpdateLanguageRequest;
 import org.tbbtalent.server.service.LanguageService;
 
-import java.util.List;
+import io.jsonwebtoken.lang.Collections;
 
 @Service
 public class LanguageServiceImpl implements LanguageService {
@@ -30,17 +33,25 @@ public class LanguageServiceImpl implements LanguageService {
 
     private final LanguageRepository languageRepository;
     private final CandidateLanguageRepository candidateLanguageRepository;
+    private final SystemLanguageRepository systemLanguageRepository;
 
     @Autowired
     public LanguageServiceImpl(CandidateLanguageRepository candidateLanguageRepository,
-                               LanguageRepository languageRepository) {
+                               LanguageRepository languageRepository,
+                               SystemLanguageRepository systemLanguageRepository) {
         this.candidateLanguageRepository = candidateLanguageRepository;
         this.languageRepository = languageRepository;
+        this.systemLanguageRepository = systemLanguageRepository;
     }
 
     @Override
     public List<Language> listLanguages() {
         return languageRepository.findByStatus(Status.active);
+    }
+    
+    @Override
+    public List<SystemLanguage> listSystemLanguages() {
+        return systemLanguageRepository.findByStatus(Status.active);
     }
 
     @Override

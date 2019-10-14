@@ -7,9 +7,8 @@ import javax.persistence.*;
 @SequenceGenerator(name = "seq_gen", sequenceName = "occupation_id_seq", allocationSize = 1)
 public class Occupation extends AbstractDomainObject<Long> {
 
-    private Long id;
-
     private String name;
+    
     @Enumerated(EnumType.STRING)
     private Status status;
 
@@ -19,14 +18,6 @@ public class Occupation extends AbstractDomainObject<Long> {
     public Occupation(String name, Status status) {
         this.name = name;
         this.status = status;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {
