@@ -95,7 +95,8 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
   }
 
   loadMore(){
-    if(this.results.totalElements > this.results.numberOfElements){
+    console.log(this.results);
+    if(this.results.totalElements > this.results.content.length){
       this.candidateNoteForm.value.pageSize += 2;
       this.moreNotes = true;
       this.getNotes();

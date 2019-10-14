@@ -76,6 +76,8 @@ import {CreateUserComponent} from './components/settings/users/create/create-use
 import {CandidateEducationTabComponent} from "./components/candidates/view/tab/candidate-education-tab/candidate-education-tab.component";
 import {JoinSavedSearchComponent} from "./components/candidates/search/join-search/join-saved-search.component";
 import {SavedSearchComponent} from "./components/util/saved-search/saved-search.component";
+import { ViewCandidateOccupationComponent } from './components/candidates/view/occupation/view-candidate-occupation.component';
+import { ViewCandidateExperienceComponent } from './components/candidates/view/occupation/experience/view-candidate-experience.component';
 
 
 @NgModule({
@@ -141,7 +143,9 @@ import {SavedSearchComponent} from "./components/util/saved-search/saved-search.
     CreateCandidateCertificationComponent,
     EditCandidateCertificationComponent,
     JoinSavedSearchComponent,
-    SavedSearchComponent
+    SavedSearchComponent,
+    ViewCandidateOccupationComponent,
+    ViewCandidateExperienceComponent
   ],
   imports: [
     BrowserModule,

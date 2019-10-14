@@ -29,6 +29,11 @@
   <div class="card">
     <div class="card-header">
       <div class="row">
+        <div class="col-12">
+          <p class="card-title" style="font-size: 12px">{{candidateNote.createdBy.firstName}} {{candidateNote.createdBy.lastName}}</p>
+        </div>
+      </div>
+      <div class="row">
         <div class="col-6">
           <h6 class="card-title">{{candidateNote.title}}</h6>
         </div>
@@ -50,7 +55,7 @@
 
       <div class="row">
         <div>
-          <label class="col-form-label text-muted">{{candidateNote.createdDate}}</label>
+          <label class="col-form-label text-muted">{{candidateNote.createdDate | date: 'medium' }}</label>
         </div>
       </div>
 
