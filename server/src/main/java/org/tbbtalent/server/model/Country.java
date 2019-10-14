@@ -20,6 +20,12 @@ public class Country extends AbstractDomainObject<Long> {
         this.status = status;
     }
 
+    public Country(Country original) {
+        setId(original.getId());
+        this.name = original.getName();
+        this.status = original.getStatus();
+    }
+
     public String getName() {
         return name;
     }

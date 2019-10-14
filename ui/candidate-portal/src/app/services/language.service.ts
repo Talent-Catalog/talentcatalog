@@ -28,7 +28,6 @@ export class LanguageService {
   }
   
   setSelectedLanguage(selectedLanguage: string) {
-  console.log('setting lang to :' + selectedLanguage);
     this.selectedLanguage = selectedLanguage;
   }
 }

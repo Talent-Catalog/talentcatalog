@@ -24,16 +24,18 @@ public class UserContext {
     public User getLoggedInUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.getPrincipal() instanceof AuthenticatedUser) {
-            // we have to look the user up in order to attach it to the current Hibernate session
-            long userId = ((AuthenticatedUser) auth.getPrincipal()).getUser().getId();
-            return this.userRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("Missing user with ID: " + userId));
+            return ((AuthenticatedUser) auth.getPrincipal()).getUser();
         }
         return null;
     }
 
     public Candidate getLoggedInCandidate(){
         User user = getLoggedInUser();
-        return candidateRepository.findByUserId(user.getId());
+        return user.getCandidate();
+    }
+    
+    public String getUserLanguage() {
+        User user = getLoggedInUser();
+        return user.getSelectedLanguage();
     }
 }

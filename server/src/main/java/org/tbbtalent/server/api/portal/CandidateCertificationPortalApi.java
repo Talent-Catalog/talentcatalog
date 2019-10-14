@@ -34,8 +34,6 @@ public class CandidateCertificationPortalApi {
         return ResponseEntity.ok().build();
     }
 
-
-
     private DtoBuilder candidateCertificationDto() {
         return new DtoBuilder()
                 .add("id")
