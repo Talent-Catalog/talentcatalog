@@ -43,8 +43,8 @@ export class RegistrationNationalityComponent implements OnInit {
 
     this.form = this.fb.group({
       nationality: ['', Validators.required],
-      registeredWithUN: ['', Validators.required],
-      registrationId: ['', Validators.required]
+      // registeredWithUN: ['', Validators.required],
+      // registrationId: ['', Validators.required]
     });
 
     this.candidateService.getCandidateNationality().subscribe(
@@ -52,8 +52,8 @@ export class RegistrationNationalityComponent implements OnInit {
         if(response.nationality){
           this.form.patchValue({
             nationality: response.nationality.id,
-            registeredWithUN: response.registeredWithUN,
-            registrationId: response.registrationId
+            // registeredWithUN: response.registeredWithUN,
+            // registrationId: response.registrationId
           });
           this.loading = false;
         }
@@ -67,7 +67,7 @@ export class RegistrationNationalityComponent implements OnInit {
 
   formValid() {
     const form = this.form.value;
-    return form.nationality && form.registeredWithUN && (form.registeredWithUN === 'true' ? form.registrationId : true);
+    return form.nationality;
   }
 
   save() {
