@@ -147,7 +147,7 @@ import { ViewCandidateExperienceComponent } from './components/candidates/view/o
     JoinSavedSearchComponent,
     SavedSearchComponent,
     DateRangePickerComponent,
-    LanguageProficiencyControlComponent
+    LanguageProficiencyControlComponent,
     SavedSearchComponent,
     ViewCandidateOccupationComponent,
     ViewCandidateExperienceComponent
