@@ -43,7 +43,16 @@
       <label>Occupation
         <small>(TBB vetted)</small>
       </label>
-      <input type="text" class="form-control">
+      <ng-multiselect-dropdown
+        name="verifiedOccupationIds"
+        [placeholder]="''"
+        [data]="verifiedOccupations"
+        [settings]="dropdownSettings"
+        (onSelect)="onItemSelect($event, 'verifiedOccupationIds')"
+        (onDeSelect)="onItemDeSelect($event, 'verifiedOccupationIds')"
+        (onSelectAll)="onSelectAll($event, 'verifiedOccupationIds')"
+        (onDeSelectAll)="onDeSelectAll('verifiedOccupationIds')">
+      </ng-multiselect-dropdown>
     </div>
 
     <!-- ENGLISH LANGUAGE -->
@@ -75,9 +84,9 @@
           <div class="form-group col-12">
             <label>Occupation (candidate specified)</label>
             <ng-multiselect-dropdown
-              name="status"
+              name="occupationIds"
               [placeholder]="''"
-              [data]="occupations"
+              [data]="candidateOccupations"
               [settings]="dropdownSettings"
               (onSelect)="onItemSelect($event, 'occupationIds')"
               (onDeSelect)="onItemDeSelect($event, 'occupationIds')"

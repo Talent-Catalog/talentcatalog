@@ -16,4 +16,8 @@ export class CandidateOccupationService {
     return this.http.get<Occupation[]>(`${this.apiUrl}/verified`);
   }
 
+  /* Note: This endpoint returns a list of Occupation objects, not CandidateOccupations */
+  listOccupations(): Observable<Occupation[]> {
+    return this.http.get<Occupation[]>(`${this.apiUrl}/occupation`);
+  }
 }

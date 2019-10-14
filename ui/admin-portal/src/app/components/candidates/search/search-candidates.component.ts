@@ -57,7 +57,8 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   languages: Language[];
   educationLevels: EducationLevel[];
   educationMajors: EducationMajor[];
-  occupations: Occupation[];
+  verifiedOccupations: Occupation[];
+  candidateOccupations: Occupation[];
 
   statuses: { id: string, name: string }[] = [
     {id: 'pending', name: 'pending'},
@@ -180,7 +181,18 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     /* LOAD VERIFIED OCCUPATIONS */
     this.candidateOccupationService.listVerifiedOccupations().subscribe(
       (response) => {
-        this.occupations = response;
+        this.verifiedOccupations = response;
+        this.loading = false;
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      });
+
+    /* LOAD CANDIDATE OCCUPATIONS (includes unverified) */
+    this.candidateOccupationService.listOccupations().subscribe(
+      (response) => {
+        this.candidateOccupations = response;
         this.loading = false;
       },
       (error) => {

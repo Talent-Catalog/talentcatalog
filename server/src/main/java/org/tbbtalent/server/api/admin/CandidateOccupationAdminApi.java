@@ -23,8 +23,14 @@ public class CandidateOccupationAdminApi {
     }
 
     @GetMapping("verified")
-    public List<Map<String, Object>> get() {
+    public List<Map<String, Object>> getVerifiedOccupations() {
         List<Occupation> candidateOccupations = this.candidateOccupationService.listVerifiedOccupations();
+        return occupationDto().buildList(candidateOccupations);
+    }
+
+    @GetMapping("occupation")
+    public List<Map<String, Object>> getAllOccupations() {
+        List<Occupation> candidateOccupations = this.candidateOccupationService.listOccupations();
         return occupationDto().buildList(candidateOccupations);
     }
 

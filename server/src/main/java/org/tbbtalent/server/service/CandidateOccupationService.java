@@ -14,5 +14,9 @@ public interface CandidateOccupationService {
 
     List<CandidateOccupation> listMyOccupations();
 
+    /* Lists only verified occupations */
     List<Occupation> listVerifiedOccupations();
+
+    /* Lists all occupations elected by candidates, regardless of verified flag */
+    List<Occupation> listOccupations();
 }
