@@ -23,6 +23,7 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
   loading: boolean;
   error;
   results: SearchResults<CandidateNote>;
+  moreNotes: boolean;
 
   constructor(private candidateNoteService: CandidateNoteService,
               private modalService: NgbModal,
@@ -35,29 +36,34 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     this.editable = true;
-    console.log(changes);
+    this.setUpForm();
+    if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
+      this.loading = true;
+      this.getNotes();
+    }
+  }
 
+  setUpForm(){
     this.candidateNoteForm = this.fb.group({
       candidateId: [this.candidate.id],
-      pageSize: 10,
+      pageSize: 2,
+      pageNumber: 0,
       sortDirection: 'DESC',
       sortFields: [['createdDate']]
     });
+  };
 
-    if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
-      this.loading = true;
-      console.log(this.candidateNoteForm.value);
-      this.candidateNoteService.search(this.candidateNoteForm.value).subscribe(
-        results => {
-          this.results = results;
-          this.loading = false;
-        },
-        error => {
-          this.error = error;
-          this.loading = false;
-        })
-      ;
-    }
+  getNotes(){
+    this.candidateNoteService.search(this.candidateNoteForm.value).subscribe(
+      results => {
+        this.results = results;
+        this.loading = false;
+      },
+      error => {
+        this.error = error;
+        this.loading = false;
+      })
+    ;
   }
 
   editCandidateNote(candidateNote: CandidateNote) {
@@ -88,6 +94,14 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
 
   }
 
-
+  loadMore(){
+    if(this.results.totalElements > this.results.numberOfElements){
+      this.candidateNoteForm.value.pageSize += 2;
+      this.moreNotes = true;
+      this.getNotes();
+    }else{
+      this.moreNotes = false;
+    };
+  }
 
 }
