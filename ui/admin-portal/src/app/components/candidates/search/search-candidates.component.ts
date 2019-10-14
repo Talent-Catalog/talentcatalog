@@ -18,6 +18,12 @@ import {SavedSearchService} from "../../../services/saved-search.service";
 import {IDropdownSettings} from 'ng-multiselect-dropdown';
 import {Subscription} from "rxjs";
 import {JoinSavedSearchComponent} from "./join-search/join-saved-search.component";
+import {EducationLevel} from "../../../model/education-level";
+import {EducationLevelService} from "../../../services/education-level.service";
+import {EducationMajor} from "../../../model/education-major";
+import {EducationMajorService} from "../../../services/education-major.service";
+import {Occupation} from "../../../model/occupation";
+import {CandidateOccupationService} from "../../../services/candidate-occupation.service";
 
 @Component({
   selector: 'app-search-candidates',
@@ -49,16 +55,9 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   nationalities: Nationality[];
   countries: Country[];
   languages: Language[];
-  educationLevels: { id: string, label: string }[] = [
-    {id: 'lessHighSchool', label: 'Less than High School'},
-    {id: 'highSchool', label: 'Completed High School'},
-    {id: 'bachelorsDegree', label: "Have a Bachelor's Degree"},
-    {id: 'mastersDegree', label: "Have a Master's Degree"},
-    {id: 'doctorateDegree', label: 'Have a Doctorate Degree'}
-  ];
-  occupations: { id: string, name: string }[] = [
-    {id: 'tester', name: 'Tester'}
-  ];
+  educationLevels: EducationLevel[];
+  educationMajors: EducationMajor[];
+  occupations: Occupation[];
 
   statuses: { id: string, name: string }[] = [
     {id: 'pending', name: 'pending'},
@@ -78,6 +77,9 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
               private countryService: CountryService,
               private languageService: LanguageService,
               private savedSearchService: SavedSearchService,
+              private educationLevelService: EducationLevelService,
+              private educationMajorService: EducationMajorService,
+              private candidateOccupationService: CandidateOccupationService,
               private modalService: NgbModal) {
   }
 
@@ -115,7 +117,6 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       searchJoinRequests: this.fb.array([]),
       page: 1,
       size: 50
-
     });
 
     /* LOAD NATIONALITIES */
@@ -153,6 +154,39 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
         this.loading = false;
       }
     );
+
+    /* LOAD EDUCATIONAL LEVELS */
+    this.educationLevelService.listEducationLevels().subscribe(
+      (response) => {
+        this.educationLevels = response;
+        this.loading = false;
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      });
+
+    /* LOAD EDUCATIONAL MAJORS */
+    this.educationMajorService.listMajors().subscribe(
+      (response) => {
+        this.educationMajors = response;
+        this.loading = false;
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      });
+
+    /* LOAD VERIFIED OCCUPATIONS */
+    this.candidateOccupationService.listVerifiedOccupations().subscribe(
+      (response) => {
+        this.occupations = response;
+        this.loading = false;
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      });
 
     this.search();
   }

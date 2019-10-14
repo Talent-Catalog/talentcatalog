@@ -76,7 +76,8 @@ import {CreateUserComponent} from './components/settings/users/create/create-use
 import {CandidateEducationTabComponent} from "./components/candidates/view/tab/candidate-education-tab/candidate-education-tab.component";
 import {JoinSavedSearchComponent} from "./components/candidates/search/join-search/join-saved-search.component";
 import {SavedSearchComponent} from "./components/util/saved-search/saved-search.component";
-import {DateRangePickerComponent} from './components/util/date-range-picker/date-range-picker.component';
+import {DateRangePickerComponent} from './components/util/form/date-range-picker/date-range-picker.component';
+import {LanguageProficiencyControlComponent} from './components/util/form/language-proficiency/language-proficiency-control.component';
 
 
 @NgModule({
@@ -143,7 +144,8 @@ import {DateRangePickerComponent} from './components/util/date-range-picker/date
     EditCandidateCertificationComponent,
     JoinSavedSearchComponent,
     SavedSearchComponent,
-    DateRangePickerComponent
+    DateRangePickerComponent,
+    LanguageProficiencyControlComponent
   ],
   imports: [
     BrowserModule,

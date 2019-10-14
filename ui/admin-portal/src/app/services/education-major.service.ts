@@ -4,8 +4,6 @@ import {HttpClient} from "@angular/common/http";
 import {EducationMajor} from "../model/education-major";
 import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
-import {User} from "../model/user";
-import {Candidate} from "../model/candidate";
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +14,7 @@ export class EducationMajorService {
 
   constructor(private http: HttpClient) { }
 
-  listNationalities(): Observable<EducationMajor[]> {
+  listMajors(): Observable<EducationMajor[]> {
     return this.http.get<EducationMajor[]>(`${this.apiUrl}`);
   }
 
