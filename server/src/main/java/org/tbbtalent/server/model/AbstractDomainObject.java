@@ -17,7 +17,6 @@ public abstract class AbstractDomainObject<IdType extends Serializable>  impleme
     @Column(name = "id")
     private IdType id;
 
-
     protected AbstractDomainObject() {
     }
 

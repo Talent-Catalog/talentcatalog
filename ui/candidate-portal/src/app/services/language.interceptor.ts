@@ -11,7 +11,6 @@ export class LanguageInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // add selected language header
     let selectedLanguage = this.languageService.getSelectedLanguage();
-    console.log(selectedLanguage);
     if (selectedLanguage) {
       request = request.clone({
         setHeaders: {

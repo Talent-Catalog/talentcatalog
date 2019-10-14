@@ -28,10 +28,12 @@ public class LanguageFilter extends OncePerRequestFilter {
                 selectedLanguage = "en";
             }
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            Object principal = authentication.getPrincipal();
-            if (principal instanceof AuthenticatedUser) {
-                User user = ((AuthenticatedUser) principal).getUser();
-                user.setSelectedLanguage(selectedLanguage);
+            if (authentication != null) {
+                Object principal = authentication.getPrincipal();
+                if (principal instanceof AuthenticatedUser) {
+                    User user = ((AuthenticatedUser) principal).getUser();
+                    user.setSelectedLanguage(selectedLanguage);
+                }
             }
 
         } catch (Exception ex) {

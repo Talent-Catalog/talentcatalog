@@ -22,7 +22,6 @@ public class AuthenticatedUser implements UserDetails {
             this.authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
         } else {
             this.authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-
         }
     }
 

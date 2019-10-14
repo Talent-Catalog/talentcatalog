@@ -55,6 +55,8 @@ import {EditEducationLevelComponent} from './components/settings/education-level
 import {SearchEducationMajorsComponent} from './components/settings/education-majors/search-education-majors.component';
 import {CreateEducationMajorComponent} from './components/settings/education-majors/create/create-education-major.component';
 import {EditEducationMajorComponent} from './components/settings/education-majors/edit/edit-education-major.component';
+import {TranslationsComponent} from './components/settings/translations/translations.component';
+
 import {ViewCandidateContactComponent} from "./components/candidates/view/contact/view-candidate-contact.component";
 import {ViewCandidateLanguageComponent} from "./components/candidates/view/language/view-candidate-language.component";
 import {EditCandidateContactComponent} from "./components/candidates/view/contact/edit/edit-candidate-contact.component";
@@ -143,7 +145,8 @@ import {DateRangePickerComponent} from './components/util/date-range-picker/date
     EditCandidateCertificationComponent,
     JoinSavedSearchComponent,
     SavedSearchComponent,
-    DateRangePickerComponent
+    DateRangePickerComponent,
+    TranslationsComponent
   ],
   imports: [
     BrowserModule,
@@ -195,7 +198,8 @@ import {DateRangePickerComponent} from './components/util/date-range-picker/date
     CreateCandidateEducationComponent,
     EditCandidateEducationComponent,
     CreateCandidateCertificationComponent,
-    EditCandidateCertificationComponent
+    EditCandidateCertificationComponent,
+    TranslationsComponent
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},

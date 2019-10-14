@@ -25,7 +25,6 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
     private final CandidateRepository candidateRepository;
     private final UserContext userContext;
 
-
     @Autowired
     public CandidateEducationServiceImpl(CandidateEducationRepository candidateEducationRepository,
                                          CountryRepository countryRepository,
@@ -36,7 +35,6 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
         this.candidateRepository = candidateRepository;
         this.userContext = userContext;
     }
-
 
     @Override
     public CandidateEducation createCandidateEducation(CreateCandidateEducationRequest request) {

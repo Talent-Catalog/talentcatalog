@@ -1,6 +1,7 @@
 package org.tbbtalent.server.service.impl;
 
-import io.jsonwebtoken.lang.Collections;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +21,9 @@ import org.tbbtalent.server.request.country.CreateCountryRequest;
 import org.tbbtalent.server.request.country.SearchCountryRequest;
 import org.tbbtalent.server.request.country.UpdateCountryRequest;
 import org.tbbtalent.server.service.CountryService;
+import org.tbbtalent.server.service.TranslationService;
 
-import java.util.List;
+import io.jsonwebtoken.lang.Collections;
 
 @Service
 public class CountryServiceImpl implements CountryService {
@@ -30,16 +32,21 @@ public class CountryServiceImpl implements CountryService {
 
     private final CandidateRepository candidateRepository;
     private final CountryRepository countryRepository;
+    private final TranslationService translationService;
 
     @Autowired
-    public CountryServiceImpl(CandidateRepository candidateRepository, CountryRepository countryRepository) {
+    public CountryServiceImpl(CandidateRepository candidateRepository,
+                              CountryRepository countryRepository,
+                              TranslationService translationService) {
         this.candidateRepository = candidateRepository;
         this.countryRepository = countryRepository;
+        this.translationService = translationService;
     }
 
     @Override
     public List<Country> listCountries() {
-        return countryRepository.findByStatus(Status.active);
+        List<Country> countries = countryRepository.findByStatus(Status.active);
+        return translationService.translate(countries);
     }
 
     @Override

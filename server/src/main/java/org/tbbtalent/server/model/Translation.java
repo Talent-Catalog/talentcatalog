@@ -5,13 +5,14 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "system_language")
-@SequenceGenerator(name = "seq_gen", sequenceName = "system_language_id_seq", allocationSize = 1)
+@Table(name = "translation")
+@SequenceGenerator(name = "seq_gen", sequenceName = "translation_id_seq", allocationSize = 1)
 public class Translation extends AbstractAuditableDomainObject<Long> {
 
     private Long objectId;
     private String objectType;
     private String language;
+    private String value;
 
     public Long getObjectId() {
         return objectId;
@@ -35,6 +36,14 @@ public class Translation extends AbstractAuditableDomainObject<Long> {
 
     public void setLanguage(String language) {
         this.language = language;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 
 }
