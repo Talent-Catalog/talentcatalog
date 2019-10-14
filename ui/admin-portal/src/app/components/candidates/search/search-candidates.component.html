@@ -49,6 +49,7 @@
     <!-- ENGLISH LANGUAGE -->
     <div class="form-group col-12 col-md-2">
       <label>English Proficiency</label>
+      <app-language-proficiency-control></app-language-proficiency-control>
       <!-- TODO: Grouped select component -->
       <select class="form-control" name="englishLanguage" id="englishLanguage"></select>
     </div>
@@ -123,15 +124,13 @@
           <!-- REGISTERED BETWEEN -->
           <div class="form-group col-12 col-md-4">
             <label>Registered On</label>
-            <app-date-range-picker (dateSelected)="handleDateSelected($event, 'created')">
-            </app-date-range-picker>
+            <app-date-range-picker (dateSelected)="handleDateSelected($event, 'created')"></app-date-range-picker>
           </div>
 
           <!-- MODIFIED BETWEEN -->
           <div class="form-group col-12 col-md-4">
             <label>Last Modified</label>
-            <app-date-range-picker (dateSelected)="handleDateSelected($event, 'lastModified')">
-            </app-date-range-picker>
+            <app-date-range-picker (dateSelected)="handleDateSelected($event, 'lastModified')"></app-date-range-picker>
           </div>
 
           <!-- COUNTRIES  -->
@@ -148,22 +147,30 @@
             </ng-multiselect-dropdown>
           </div>
 
-          <!-- TODO EDUCATION LEVEL -->
+          <!-- EDUCATION LEVEL -->
           <div class="form-group col-12 col-md-4">
             <label for="minEducationLevelId">Education Level (minimum)</label>
             <select class="form-control" id="minEducationLevelId" name="minEducationLevelId"
                     [formControlName]="'minEducationLevelId'">
               <option value=""></option>
-              <option *ngFor="let candidateEducation of educationLevels" [value]="candidateEducation.id">
-                {{candidateEducation.label}}
+              <option *ngFor="let level of educationLevels" [value]="level.id">
+                {{level.name}}
               </option>
             </select>
           </div>
 
-          <!-- TODO EDUCATION MAJOR -->
+          <!-- EDUCATION MAJOR -->
           <div class="form-group col-12 col-md-4">
-            <label for="">Education major</label>
-            <input type="text" class="form-control">
+            <label>Education major</label>
+            <ng-multiselect-dropdown
+              name="educationMajorIds"
+              [data]="educationMajors"
+              [settings]="dropdownSettings"
+              (onSelect)="onItemSelect($event, 'educationMajorIds')"
+              (onDeSelect)="onItemDeSelect($event, 'educationMajorIds')"
+              (onSelectAll)="onSelectAll($event, 'educationMajorIds')"
+              (onDeSelectAll)="onDeSelectAll('educationMajorIds')">
+            </ng-multiselect-dropdown>
           </div>
 
         </div>
