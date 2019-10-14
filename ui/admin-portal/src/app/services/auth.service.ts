@@ -53,15 +53,9 @@ export class AuthService {
   }
 
   logout() {
-    return this.http.post(`${this.apiUrl}/logout`, null).pipe(
-      map(() => {
-        this.localStorageService.remove('user');
-        this.localStorageService.remove('access-token');
-        this.user = null;
-        this.router.navigate(['login']);
-      }),
-      catchError((error) => {return throwError(error)})
-    );
+    this.http.post(`${this.apiUrl}/logout`, null);
+    this.localStorageService.remove('user');
+    this.localStorageService.remove('access-token');
   }
 
   register(request: any) {

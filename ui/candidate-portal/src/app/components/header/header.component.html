@@ -51,7 +51,12 @@
 
         </li>
       </ul>
-
+      
+      <div class="d-flex">
+          <button *ngFor="let lang of languages"
+            (click)="useLanguage(lang.language)">{{lang.label}}</button>
+      </div>
+ 
     </div>
   </div>
 </nav>

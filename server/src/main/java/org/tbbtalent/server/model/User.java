@@ -35,6 +35,9 @@ public class User extends AbstractAuditableDomainObject<Long> {
     @OneToOne(mappedBy = "user")
     private Candidate candidate;
 
+    @Transient
+    private String selectedLanguage = "en";
+    
     public User() {
     }
 
@@ -141,6 +144,14 @@ public class User extends AbstractAuditableDomainObject<Long> {
 
     public void setPasswordUpdatedDate(LocalDateTime passwordUpdatedDate) {
         this.passwordUpdatedDate = passwordUpdatedDate;
+    }
+
+    public String getSelectedLanguage() {
+        return selectedLanguage;
+    }
+
+    public void setSelectedLanguage(String selectedLanguage) {
+        this.selectedLanguage = selectedLanguage;
     }
     
 }

@@ -1,11 +1,8 @@
-import { Injectable } from '@angular/core';
-import { Candidate } from '../model/candidate';
-import { Observable } from 'rxjs/index';
-import { environment } from '../../environments/environment';
-import { HttpClient } from '@angular/common/http';
-import { SearchResults } from '../model/search-results';
+import {Injectable} from '@angular/core';
+import {Observable} from 'rxjs/index';
+import {environment} from '../../environments/environment';
+import {HttpClient} from '@angular/common/http';
 import {CandidateEducation} from "../model/candidate-education";
-import {Country} from "../model/country";
 
 @Injectable({providedIn: 'root'})
 export class CandidateEducationService {

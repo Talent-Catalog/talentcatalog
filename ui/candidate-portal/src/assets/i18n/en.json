@@ -1,0 +1,9 @@
+{
+ "HOME": {
+    "WELCOME": "Welcome to TBB",
+    "INTRO": "Landing page - the what and the why",
+    "REGISTER": "Register",
+    "LOGIN": "Login",
+    "TEST": "hello {{value}}"
+  }
+}

@@ -10,17 +10,20 @@ import {Language} from "../../../model/language";
 import {LanguageService} from "../../../services/language.service";
 import {SearchResults} from '../../../model/search-results';
 
-import {FormArray, FormBuilder, FormControl, FormGroup} from "@angular/forms";
-import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from "rxjs/operators";
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {FormArray, FormBuilder, FormGroup} from "@angular/forms";
+import {NgbDateStruct, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {SearchSavedSearchesComponent} from "./saved/search-saved-searches.component";
 import {SaveSearchComponent} from "./save/save-search.component";
 import {SavedSearchService} from "../../../services/saved-search.service";
-import {SavedSearch, SavedSearchJoin} from "../../../model/saved-search";
 import {IDropdownSettings} from 'ng-multiselect-dropdown';
 import {Subscription} from "rxjs";
-import {Observable, of} from "rxjs";
 import {JoinSavedSearchComponent} from "./join-search/join-saved-search.component";
+import {EducationLevel} from "../../../model/education-level";
+import {EducationLevelService} from "../../../services/education-level.service";
+import {EducationMajor} from "../../../model/education-major";
+import {EducationMajorService} from "../../../services/education-major.service";
+import {Occupation} from "../../../model/occupation";
+import {CandidateOccupationService} from "../../../services/candidate-occupation.service";
 
 @Component({
   selector: 'app-search-candidates',
@@ -52,16 +55,9 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   nationalities: Nationality[];
   countries: Country[];
   languages: Language[];
-  educationLevels: { id: string, label: string }[] = [
-    {id: 'lessHighSchool', label: 'Less than High School'},
-    {id: 'highSchool', label: 'Completed High School'},
-    {id: 'bachelorsDegree', label: "Have a Bachelor's Degree"},
-    {id: 'mastersDegree', label: "Have a Master's Degree"},
-    {id: 'doctorateDegree', label: 'Have a Doctorate Degree'}
-  ];
-  occupations: { id: string, name: string }[] = [
-    {id: 'tester', name: 'Tester'}
-  ];
+  educationLevels: EducationLevel[];
+  educationMajors: EducationMajor[];
+  occupations: Occupation[];
 
   statuses: { id: string, name: string }[] = [
     {id: 'pending', name: 'pending'},
@@ -75,13 +71,15 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   ];
   selectedCandidate: Candidate;
 
-
   constructor(private fb: FormBuilder,
               private candidateService: CandidateService,
               private nationalityService: NationalityService,
               private countryService: CountryService,
               private languageService: LanguageService,
               private savedSearchService: SavedSearchService,
+              private educationLevelService: EducationLevelService,
+              private educationMajorService: EducationMajorService,
+              private candidateOccupationService: CandidateOccupationService,
               private modalService: NgbModal) {
   }
 
@@ -119,7 +117,6 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       searchJoinRequests: this.fb.array([]),
       page: 1,
       size: 50
-
     });
 
     /* LOAD NATIONALITIES */
@@ -158,7 +155,38 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       }
     );
 
+    /* LOAD EDUCATIONAL LEVELS */
+    this.educationLevelService.listEducationLevels().subscribe(
+      (response) => {
+        this.educationLevels = response;
+        this.loading = false;
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      });
 
+    /* LOAD EDUCATIONAL MAJORS */
+    this.educationMajorService.listMajors().subscribe(
+      (response) => {
+        this.educationMajors = response;
+        this.loading = false;
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      });
+
+    /* LOAD VERIFIED OCCUPATIONS */
+    this.candidateOccupationService.listVerifiedOccupations().subscribe(
+      (response) => {
+        this.occupations = response;
+        this.loading = false;
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      });
 
     this.search();
   }
@@ -169,11 +197,8 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   /* MULTI SELECT METHODS */
   onItemSelect(item: any, formControlName: string) {
-    /* DEBUG */
-    console.log('item', item);
     const values = this.searchForm.controls[formControlName].value || [];
     const addValue = item.id || item;
-    /* DEBUG */
     values.push(addValue);
     this.searchForm.controls[formControlName].patchValue(values);
   }
@@ -305,5 +330,16 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     this.selectedCandidate = candidate;
   }
 
-
+  handleDateSelected(e: {fromDate: NgbDateStruct, toDate: NgbDateStruct}, control: string) {
+    if (e.fromDate) {
+      this.searchForm.controls[control + 'From'].patchValue(e.fromDate.year + '-' + e.fromDate.month + '-' + e.fromDate.day);
+    } else {
+      this.searchForm.controls[control + 'From'].patchValue(null);
+    }
+    if (e.toDate) {
+      this.searchForm.controls[control + 'To'].patchValue(e.toDate.year + '-' + e.toDate.month + '-' + e.toDate.day);
+    } else {
+      this.searchForm.controls[control + 'To'].patchValue(null);
+    }
+  }
 }

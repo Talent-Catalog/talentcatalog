@@ -11,7 +11,7 @@ import {SearchCandidatesComponent} from './components/candidates/search/search-c
 import {HomeComponent} from './components/home/home.component';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {CreateCandidateComponent} from './components/candidates/create/create-candidate.component';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {ReactiveFormsModule} from '@angular/forms';
 import {ViewCandidateComponent} from './components/candidates/view/view-candidate.component';
 import {EditCandidateStatusComponent} from './components/candidates/view/status/edit-candidate-status.component';
 import {DeleteCandidateComponent} from './components/candidates/view/delete/delete-candidate.component';
@@ -76,6 +76,8 @@ import {CreateUserComponent} from './components/settings/users/create/create-use
 import {CandidateEducationTabComponent} from "./components/candidates/view/tab/candidate-education-tab/candidate-education-tab.component";
 import {JoinSavedSearchComponent} from "./components/candidates/search/join-search/join-saved-search.component";
 import {SavedSearchComponent} from "./components/util/saved-search/saved-search.component";
+import {DateRangePickerComponent} from './components/util/form/date-range-picker/date-range-picker.component';
+import {LanguageProficiencyControlComponent} from './components/util/form/language-proficiency/language-proficiency-control.component';
 import { ViewCandidateOccupationComponent } from './components/candidates/view/occupation/view-candidate-occupation.component';
 import { ViewCandidateExperienceComponent } from './components/candidates/view/occupation/experience/view-candidate-experience.component';
 
@@ -143,6 +145,9 @@ import { ViewCandidateExperienceComponent } from './components/candidates/view/o
     CreateCandidateCertificationComponent,
     EditCandidateCertificationComponent,
     JoinSavedSearchComponent,
+    SavedSearchComponent,
+    DateRangePickerComponent,
+    LanguageProficiencyControlComponent
     SavedSearchComponent,
     ViewCandidateOccupationComponent,
     ViewCandidateExperienceComponent

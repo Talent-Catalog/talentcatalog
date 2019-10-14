@@ -1,0 +1,9 @@
+{
+ "HOME": {
+    "WELCOME": "Welcome to TBB",
+    "INTRO": "الصفحة المقصودة - ماذا ولماذا",
+    "REGISTER": "تسجيل",
+    "LOGIN": "تسجيل الدخول",
+    "TEST": "{{value}} مرحبا بالعالم"
+  }
+}

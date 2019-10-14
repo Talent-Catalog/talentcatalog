@@ -7,7 +7,6 @@ import javax.persistence.*;
 @SequenceGenerator(name = "seq_gen", sequenceName = "language_id_seq", allocationSize = 1)
 public class Language  extends AbstractDomainObject<Long> {
 
-
     private String name;
 
     @Enumerated(EnumType.STRING)

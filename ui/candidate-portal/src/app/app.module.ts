@@ -1,12 +1,14 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
-
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './components/app.component';
 import {LandingComponent} from './components/landing/landing.component';
 import {ReactiveFormsModule} from "@angular/forms";
-import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClientModule, HttpClient} from "@angular/common/http";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
+import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
+import {TranslateHttpLoader} from '@ngx-translate/http-loader';
+
 import {RegistrationLandingComponent} from './components/register/landing/registration-landing.component';
 import {RegistrationContactComponent} from './components/register/contact/registration-contact.component';
 import {RegistrationAlternateContactComponent} from './components/register/contact/alternate/registration-alternate-contact.component';
@@ -25,6 +27,7 @@ import {RegistrationAdditionalInfoComponent} from './components/register/additio
 import {RegistrationAdditionalContactComponent} from './components/register/contact/additional/registration-additional-contact.component';
 import {LocalStorageModule} from "angular-2-local-storage";
 import {JwtInterceptor} from "./services/jwt.interceptor";
+import {LanguageInterceptor} from "./services/language.interceptor";
 import {AuthService} from "./services/auth.service";
 import {UserService} from "./services/user.service";
 import {CandidateService} from "./services/candidate.service";
@@ -34,6 +37,10 @@ import {ErrorInterceptor} from "./services/error.interceptor";
 import {ResetPasswordComponent} from './components/reset-password/reset-password.component';
 import {ChangePasswordComponent} from './components/change-password/change-password.component';
 import {HeaderComponent} from "./components/header/header.component";
+
+export function createTranslateLoader(http: HttpClient) {
+    return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+}
 
 @NgModule({
   declarations: [
@@ -70,11 +77,19 @@ import {HeaderComponent} from "./components/header/header.component";
     LocalStorageModule.forRoot({
       prefix: 'tbb-candidate-portal',
       storageType: 'localStorage'
+    }),
+    TranslateModule.forRoot({
+        loader: {
+            provide: TranslateLoader,
+            useFactory: (createTranslateLoader),
+            deps: [HttpClient]
+        }
     })
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
-    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+    {provide: HTTP_INTERCEPTORS, useClass: LanguageInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
   ],
   bootstrap: [AppComponent]
 })
