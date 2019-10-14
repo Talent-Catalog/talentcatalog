@@ -4,8 +4,6 @@ import {HttpClient} from "@angular/common/http";
 import {LanguageLevel} from "../model/language-level";
 import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
-import {User} from "../model/user";
-import {Candidate} from "../model/candidate";
 
 @Injectable({
   providedIn: 'root'
