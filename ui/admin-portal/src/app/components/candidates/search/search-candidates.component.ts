@@ -10,16 +10,13 @@ import {Language} from "../../../model/language";
 import {LanguageService} from "../../../services/language.service";
 import {SearchResults} from '../../../model/search-results';
 
-import {FormArray, FormBuilder, FormControl, FormGroup} from "@angular/forms";
-import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from "rxjs/operators";
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {FormArray, FormBuilder, FormGroup} from "@angular/forms";
+import {NgbDateStruct, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {SearchSavedSearchesComponent} from "./saved/search-saved-searches.component";
 import {SaveSearchComponent} from "./save/save-search.component";
 import {SavedSearchService} from "../../../services/saved-search.service";
-import {SavedSearch, SavedSearchJoin} from "../../../model/saved-search";
 import {IDropdownSettings} from 'ng-multiselect-dropdown';
 import {Subscription} from "rxjs";
-import {Observable, of} from "rxjs";
 import {JoinSavedSearchComponent} from "./join-search/join-saved-search.component";
 
 @Component({
@@ -74,7 +71,6 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     {id: 'inactive', name: 'inactive'},
   ];
   selectedCandidate: Candidate;
-
 
   constructor(private fb: FormBuilder,
               private candidateService: CandidateService,
@@ -158,8 +154,6 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       }
     );
 
-
-
     this.search();
   }
 
@@ -169,11 +163,8 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   /* MULTI SELECT METHODS */
   onItemSelect(item: any, formControlName: string) {
-    /* DEBUG */
-    console.log('item', item);
     const values = this.searchForm.controls[formControlName].value || [];
     const addValue = item.id || item;
-    /* DEBUG */
     values.push(addValue);
     this.searchForm.controls[formControlName].patchValue(values);
   }
@@ -305,5 +296,16 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     this.selectedCandidate = candidate;
   }
 
-
+  handleDateSelected(e: {fromDate: NgbDateStruct, toDate: NgbDateStruct}, control: string) {
+    if (e.fromDate) {
+      this.searchForm.controls[control + 'From'].patchValue(e.fromDate.year + '-' + e.fromDate.month + '-' + e.fromDate.day);
+    } else {
+      this.searchForm.controls[control + 'From'].patchValue(null);
+    }
+    if (e.toDate) {
+      this.searchForm.controls[control + 'To'].patchValue(e.toDate.year + '-' + e.toDate.month + '-' + e.toDate.day);
+    } else {
+      this.searchForm.controls[control + 'To'].patchValue(null);
+    }
+  }
 }

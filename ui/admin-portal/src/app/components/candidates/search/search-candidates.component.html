@@ -1,13 +1,13 @@
 <nav aria-label="breadcrumb">
-  <div class="pull-right">
-    <button class="btn btn-primary" [routerLink]="['create']">Add</button>
-  </div>
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a [routerLink]="['/candidates']">Candidates</a></li>
     <li class="breadcrumb-item active" aria-current="page">{{savedSearch ? savedSearch.name : 'Search'}}</li>
   </ol>
-
 </nav>
+
+<div class="d-flex justify-content-end">
+  <button class="btn btn-primary" [routerLink]="['create']">Add</button>
+</div>
 
 <div>
   <div class="alert alert-danger" *ngIf="error">
@@ -120,16 +120,18 @@
 
           </div>
 
-          <!-- TODO: REGISTERED BETWEEN -->
+          <!-- REGISTERED BETWEEN -->
           <div class="form-group col-12 col-md-4">
-            <label for="">Registered On</label>
-            <input type="text" class="form-control">
+            <label>Registered On</label>
+            <app-date-range-picker (dateSelected)="handleDateSelected($event, 'created')">
+            </app-date-range-picker>
           </div>
 
-          <!-- TODO: MODIFIED BETWEEN -->
+          <!-- MODIFIED BETWEEN -->
           <div class="form-group col-12 col-md-4">
-            <label for="">Last Modified</label>
-            <input type="text" class="form-control">
+            <label>Last Modified</label>
+            <app-date-range-picker (dateSelected)="handleDateSelected($event, 'lastModified')">
+            </app-date-range-picker>
           </div>
 
           <!-- COUNTRIES  -->
@@ -160,7 +162,7 @@
 
           <!-- TODO EDUCATION MAJOR -->
           <div class="form-group col-12 col-md-4">
-            <label for="">Education major (minimum)</label>
+            <label for="">Education major</label>
             <input type="text" class="form-control">
           </div>
 
