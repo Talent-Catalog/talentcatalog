@@ -41,5 +41,6 @@ export class HeaderComponent implements OnInit {
 
   useLanguage(language: string) {
     this.translate.use(language);
+    this.languageService.setSelectedLanguage(language);
   }
 }

@@ -27,6 +27,7 @@ import {RegistrationAdditionalInfoComponent} from './components/register/additio
 import {RegistrationAdditionalContactComponent} from './components/register/contact/additional/registration-additional-contact.component';
 import {LocalStorageModule} from "angular-2-local-storage";
 import {JwtInterceptor} from "./services/jwt.interceptor";
+import {LanguageInterceptor} from "./services/language.interceptor";
 import {AuthService} from "./services/auth.service";
 import {UserService} from "./services/user.service";
 import {CandidateService} from "./services/candidate.service";
@@ -87,7 +88,8 @@ export function createTranslateLoader(http: HttpClient) {
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
-    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+    {provide: HTTP_INTERCEPTORS, useClass: LanguageInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
   ],
   bootstrap: [AppComponent]
 })

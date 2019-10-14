@@ -11,6 +11,8 @@ export class LanguageService {
 
   private apiUrl: string = environment.apiUrl + '/language';
 
+  selectedLanguage: string = 'en';
+
   constructor(private http: HttpClient) { }
 
   listLanguages(): Observable<Language[]> {
@@ -20,5 +22,13 @@ export class LanguageService {
   listSystemLanguages(): Observable<SystemLanguage[]> {
     return this.http.get<SystemLanguage[]>(`${this.apiUrl}/system`);
   }
-
+  
+  getSelectedLanguage(): string {
+    return this.selectedLanguage;
+  }
+  
+  setSelectedLanguage(selectedLanguage: string) {
+  console.log('setting lang to :' + selectedLanguage);
+    this.selectedLanguage = selectedLanguage;
+  }
 }

@@ -15,10 +15,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.tbbtalent.server.security.TbbAuthenticationProvider;
 import org.tbbtalent.server.security.CandidateUserDetailsService;
 import org.tbbtalent.server.security.JwtAuthenticationEntryPoint;
 import org.tbbtalent.server.security.JwtAuthenticationFilter;
+import org.tbbtalent.server.security.LanguageFilter;
+import org.tbbtalent.server.security.TbbAuthenticationProvider;
 
 @Configuration
 @EnableWebSecurity
@@ -36,12 +37,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private JwtAuthenticationEntryPoint unauthorizedHandler;
-
-    @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter();
-    }
-
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -66,6 +61,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         // Add the JWT security filter
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAfter(languageFilter(), UsernamePasswordAuthenticationFilter.class);
+    }
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter();
+    }
+
+    @Bean
+    public LanguageFilter languageFilter() {
+        return new LanguageFilter();
     }
 
     @Bean
