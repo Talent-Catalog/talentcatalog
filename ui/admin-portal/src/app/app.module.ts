@@ -79,7 +79,7 @@ import {CandidateEducationTabComponent} from "./components/candidates/view/tab/c
 import {JoinSavedSearchComponent} from "./components/candidates/search/join-search/join-saved-search.component";
 import {SavedSearchComponent} from "./components/util/saved-search/saved-search.component";
 import {DateRangePickerComponent} from './components/util/form/date-range-picker/date-range-picker.component';
-import {LanguageProficiencyControlComponent} from './components/util/form/language-proficiency/language-proficiency-control.component';
+import {LanguageLevelFormControlComponent} from './components/util/form/language-proficiency/language-level-form-control.component';
 
 
 @NgModule({
@@ -148,7 +148,7 @@ import {LanguageProficiencyControlComponent} from './components/util/form/langua
     SavedSearchComponent,
     DateRangePickerComponent,
     TranslationsComponent,
-    LanguageProficiencyControlComponent
+    LanguageLevelFormControlComponent
   ],
   imports: [
     BrowserModule,

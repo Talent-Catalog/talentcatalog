@@ -354,4 +354,8 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       this.searchForm.controls[control + 'To'].patchValue(null);
     }
   }
+
+  handleLanguageProficiencyChange($event: Event, english: string) {
+    
+  }
 }

@@ -5,7 +5,8 @@
   </ol>
 </nav>
 
-<div class="d-flex justify-content-end">
+<div class="d-flex justify-content-between mb-4">
+  <h3 class="m-0">Candidate Search</h3>
   <button class="btn btn-primary" [routerLink]="['create']">Add</button>
 </div>
 
@@ -58,7 +59,9 @@
     <!-- ENGLISH LANGUAGE -->
     <div class="form-group col-12 col-md-2">
       <label>English Proficiency</label>
-      <app-language-proficiency-control></app-language-proficiency-control>
+      <app-language-level-form-control [languages]="languages"
+                                        (change)="handleLanguageProficiencyChange($event, 'english')">
+      </app-language-level-form-control>
       <!-- TODO: Grouped select component -->
       <select class="form-control" name="englishLanguage" id="englishLanguage"></select>
     </div>
