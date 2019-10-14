@@ -7,7 +7,6 @@ import javax.persistence.*;
 @SequenceGenerator(name = "seq_gen", sequenceName = "education_level_id_seq", allocationSize = 1)
 public class EducationLevel extends AbstractDomainObject<Long> {
 
-    private Long id;
     private String name;
     private int sortOrder;
     @Enumerated(EnumType.STRING)
@@ -19,14 +18,6 @@ public class EducationLevel extends AbstractDomainObject<Long> {
     public EducationLevel(String name, Status status) {
         this.name = name;
         this.status = status;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {
