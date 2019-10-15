@@ -20,7 +20,7 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
 
   candidateNoteForm: FormGroup;
   loading: boolean;
-  hideComment: boolean;
+  expanded: boolean;
   error;
   results: SearchResults<CandidateNote>;
 
@@ -30,12 +30,11 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-
   }
 
   ngOnChanges(changes: SimpleChanges) {
     this.editable = true;
-    this.hideComment = true;
+    this.expanded = false;
 
     this.candidateNoteForm = this.fb.group({
       candidateId: [this.candidate.id],
@@ -47,6 +46,7 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
     if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
       this.doSearch();
     }
+
   }
 
   doSearch() {
@@ -61,10 +61,7 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
         this.loading = false;
       })
     ;
-  }
 
-  seeMore() {
-    this.hideComment = false;
   }
 
   editCandidateNote(candidateNote: CandidateNote) {
@@ -96,8 +93,5 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
       });
 
   }
-
-
-
 
 }

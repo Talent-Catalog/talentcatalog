@@ -23,7 +23,7 @@
 </div>
 
 
-<div *ngFor="let candidateNote of results?.content">
+<div *ngFor="let candidateNote of results?.content; let i = index">
   <div class="card">
     <div class="card-header">
       <div class="pull-right" *ngIf="editable">
@@ -34,10 +34,15 @@
     </div>
 
     <div class="card-body">
-      <div *ngIf="candidateNote.comment && hideComment">
+      <div *ngIf="candidateNote.comment">
+        <div *ngIf="!expanded">
           {{ (candidateNote.comment | slice:0:50) + (candidateNote.comment.length > 50 ? ' ...' : '')}}
-        <button *ngIf="hideComment" type="button" class="btn btn-sm btn-default" (click)="hideComment = !hideComment">See more</button>
-        <button *ngIf="!hideComment" type="button" class="btn btn-sm btn-default" (click)="hideComment = !hideComment">See less</button>
+          <button *ngIf="candidateNote.comment.length > 50" type="button" class="btn btn-sm btn-default" (click)="expanded = true">See more</button>
+        </div>
+        <div *ngIf="expanded">
+          {{ candidateNote.comment }}
+          <button type="button" class="btn btn-sm btn-default" (click)="expanded = false">See less</button>
+        </div>
       </div>
 
       <div>
