@@ -80,6 +80,7 @@ import {JoinSavedSearchComponent} from "./components/candidates/search/join-sear
 import {SavedSearchComponent} from "./components/util/saved-search/saved-search.component";
 import {DateRangePickerComponent} from './components/util/form/date-range-picker/date-range-picker.component';
 import {LanguageLevelFormControlComponent} from './components/util/form/language-proficiency/language-level-form-control.component';
+import {CandidatePipe} from './pipes/candidate.pipe';
 
 
 @NgModule({
@@ -148,7 +149,8 @@ import {LanguageLevelFormControlComponent} from './components/util/form/language
     SavedSearchComponent,
     DateRangePickerComponent,
     TranslationsComponent,
-    LanguageLevelFormControlComponent
+    LanguageLevelFormControlComponent,
+    CandidatePipe
   ],
   imports: [
     BrowserModule,

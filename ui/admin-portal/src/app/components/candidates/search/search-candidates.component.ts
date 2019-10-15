@@ -24,6 +24,10 @@ import {EducationMajor} from "../../../model/education-major";
 import {EducationMajorService} from "../../../services/education-major.service";
 import {Occupation} from "../../../model/occupation";
 import {CandidateOccupationService} from "../../../services/candidate-occupation.service";
+import {
+  emptyLanguageLevelFormControlModel,
+  LanguageLevelFormControlModel
+} from "../../util/form/language-proficiency/language-level-form-control-model";
 
 @Component({
   selector: 'app-search-candidates',
@@ -39,6 +43,8 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   results: SearchResults<Candidate>;
   savedSearch;
   subscription: Subscription;
+  pageNumber: number;
+  pageSize: number;
 
   /* MULTI SELECT */
   dropdownSettings: IDropdownSettings = {
@@ -70,7 +76,10 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     {id: 'active', name: 'active'},
     {id: 'inactive', name: 'inactive'},
   ];
+
   selectedCandidate: Candidate;
+  englishLanguageModel: LanguageLevelFormControlModel;
+  otherLanguageModel: LanguageLevelFormControlModel;
 
   constructor(private fb: FormBuilder,
               private candidateService: CandidateService,
@@ -87,6 +96,8 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.moreFilters = false;
     this.selectedCandidate = null;
+    this.pageNumber = 1;
+    this.pageSize = 1;
 
     /* SET UP FORM */
     this.searchForm = this.fb.group({
@@ -115,9 +126,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       maxAge: [null],
       minEducationLevelId: [null],
       educationMajorIds: [[]],
-      searchJoinRequests: this.fb.array([]),
-      page: 1,
-      size: 50
+      searchJoinRequests: this.fb.array([])
     });
 
     /* LOAD NATIONALITIES */
@@ -148,6 +157,8 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     this.languageService.listLanguages().subscribe(
       (response) => {
         this.languages = response;
+        const englishLanguageObj = this.languages.find(l => l.name.toLowerCase() === 'english');
+        this.englishLanguageModel = Object.assign(emptyLanguageLevelFormControlModel, {languageId: englishLanguageObj.id || null});
         this.loading = false;
       },
       (error) => {
@@ -240,7 +251,8 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   search() {
     this.loading = true;
     const request = this.searchForm.value;
-    request.page = request.page - 1;
+    request.pageNumber = this.pageNumber - 1;
+    request.pageSize = this.pageSize;
     this.subscription = this.candidateService.search(request).subscribe(
       results => {
         this.results = results;
@@ -355,7 +367,15 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     }
   }
 
-  handleLanguageProficiencyChange($event: Event, english: string) {
-    
+  handleLanguageLevelChange(model: LanguageLevelFormControlModel, languageKey: string) {
+    if (languageKey === 'english') {
+      this.searchForm.controls['englishMinWrittenLevelId'].patchValue(model.writtenLevelId);
+      this.searchForm.controls['englishMinSpokenLevelId'].patchValue(model.spokenLevelId);
+    } else {
+      // Update other language form values
+      this.searchForm.controls['otherLanguageId'].patchValue(model.languageId);
+      this.searchForm.controls['otherMinWrittenLevelId'].patchValue(model.writtenLevelId);
+      this.searchForm.controls['otherMinSpokenLevelId'].patchValue(model.spokenLevelId);
+    }
   }
 }
