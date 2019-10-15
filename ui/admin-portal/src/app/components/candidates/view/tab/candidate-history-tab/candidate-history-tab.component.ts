@@ -33,4 +33,7 @@ export class CandidateHistoryTabComponent implements OnInit, OnChanges {
     }
   }
 
+  onAddNote($event) {
+    // TODO
+  }
 }

@@ -7,7 +7,8 @@ import {NavigationStart, Router} from "@angular/router";
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  private showHeader: boolean = true;
+
+  showHeader: boolean = true;
 
   constructor(private router: Router) {
 

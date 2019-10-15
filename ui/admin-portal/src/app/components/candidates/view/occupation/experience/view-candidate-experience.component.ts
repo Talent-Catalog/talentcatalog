@@ -1,10 +1,6 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {Component, Input, OnInit} from '@angular/core';
 import {Candidate} from "../../../../../model/candidate";
 import {Occupation} from "../../../../../model/occupation";
-import {CandidateJobExperience} from "../../../../../model/candidate-job-experience";
-import {CandidateOccupation} from "../../../../../model/candidate-occupation";
 
 @Component({
   selector: 'app-view-candidate-experience',
@@ -16,6 +12,9 @@ export class ViewCandidateExperienceComponent implements OnInit {
   @Input() candidate: Candidate;
   @Input() occupation: Occupation;
   @Input() editable: boolean;
+
+  loading: boolean;
+  error: any;
 
   constructor() { }
 

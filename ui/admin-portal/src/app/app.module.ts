@@ -161,7 +161,7 @@ import {DateRangePickerComponent} from './components/util/form/date-range-picker
     UpdatedByComponent,
     SavedSearchComponent,
     ViewCandidateOccupationComponent,
-    ViewCandidateExperienceComponent
+    ViewCandidateExperienceComponent,
     LanguageLevelFormControlComponent,
     CandidatePipe
   ],
