@@ -32,7 +32,6 @@ export class CandidateShortlistItemComponent implements OnInit {
 
 
   editShortlistItem() {
-    console.log('here');
     const editModal = this.modalService.open(EditCandidateShortlistItemComponent, {
       centered: true,
       backdrop: 'static'

@@ -21,7 +21,7 @@ export class EditCandidateShortlistItemComponent implements OnInit {
   error;
   loading: boolean;
   saving: boolean;
-  candidateShortListItem;
+  candidateShortListItem : CandidateShortlistItem;
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
@@ -40,7 +40,6 @@ export class EditCandidateShortlistItemComponent implements OnInit {
     });
 
     if (this.candidateShortListItemId){
-      console.log('here');
       this.candidateShortlistService.get(this.candidateShortListItemId).subscribe(item => {
         this.candidateShortListItem = item;
         this.form.controls["shortlistStatus"].patchValue(item.shortlistStatus);

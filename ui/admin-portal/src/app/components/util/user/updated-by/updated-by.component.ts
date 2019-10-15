@@ -18,6 +18,8 @@ export class UpdatedByComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log('createdBy', this.createdBy);
+    console.log('updatedBy', this.updatedBy);
 
 
   }
