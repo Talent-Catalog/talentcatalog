@@ -20,6 +20,7 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
 
   candidateNoteForm: FormGroup;
   loading: boolean;
+  hideComment: boolean;
   error;
   results: SearchResults<CandidateNote>;
 
@@ -34,6 +35,7 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     this.editable = true;
+    this.hideComment = true;
 
     this.candidateNoteForm = this.fb.group({
       candidateId: [this.candidate.id],
@@ -59,6 +61,10 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
         this.loading = false;
       })
     ;
+  }
+
+  seeMore() {
+    this.hideComment = false;
   }
 
   editCandidateNote(candidateNote: CandidateNote) {

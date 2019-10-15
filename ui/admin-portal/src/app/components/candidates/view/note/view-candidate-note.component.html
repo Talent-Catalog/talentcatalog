@@ -34,9 +34,12 @@
     </div>
 
     <div class="card-body">
-      <div>
-        {{candidateNote.comment}}
+      <div *ngIf="candidateNote.comment && hideComment">
+          {{ (candidateNote.comment | slice:0:50) + (candidateNote.comment.length > 50 ? ' ...' : '')}}
+        <button *ngIf="hideComment" type="button" class="btn btn-sm btn-default" (click)="hideComment = !hideComment">See more</button>
+        <button *ngIf="!hideComment" type="button" class="btn btn-sm btn-default" (click)="hideComment = !hideComment">See less</button>
       </div>
+
       <div>
         <app-updated-by *ngIf="candidateNote"
                         [createdBy]="candidateNote.createdBy"

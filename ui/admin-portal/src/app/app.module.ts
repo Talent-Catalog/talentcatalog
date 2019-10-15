@@ -72,7 +72,8 @@ import {EditCandidateEducationComponent} from "./components/candidates/view/educ
 import {ViewCandidateCertificationComponent} from "./components/candidates/view/certification/view-candidate-certification.component";
 import {CreateCandidateCertificationComponent} from "./components/candidates/view/certification/create/create-candidate-certification.component";
 import {EditCandidateCertificationComponent} from "./components/candidates/view/certification/edit/edit-candidate-certification.component";
-
+import {ViewCandidateOccupationComponent} from './components/candidates/view/occupation/view-candidate-occupation.component';
+import {ViewCandidateExperienceComponent} from './components/candidates/view/occupation/experience/view-candidate-experience.component';
 import {EditUserComponent} from './components/settings/users/edit/edit-user.component';
 import {CreateUserComponent} from './components/settings/users/create/create-user.component';
 import {CandidateEducationTabComponent} from "./components/candidates/view/tab/candidate-education-tab/candidate-education-tab.component";
@@ -81,14 +82,9 @@ import {SavedSearchComponent} from "./components/util/saved-search/saved-search.
 import {LanguageLevelFormControlComponent} from './components/util/form/language-proficiency/language-level-form-control.component';
 import {EditCandidateShortlistItemComponent} from "./components/candidates/search/shortlist/edit/edit-candidate-shortlist-item.component";
 import {CandidateShortlistItemComponent} from "./components/candidates/search/shortlist/candidate-shortlist-item.component";
-import {DateRangePickerComponent} from "./components/util/form/date-range-picker/date-range-picker.component";
 import {UserPipe} from "./components/util/user/user.pipe";
 import {UpdatedByComponent} from "./components/util/user/updated-by/updated-by.component";
 import {DateRangePickerComponent} from './components/util/form/date-range-picker/date-range-picker.component';
-import {LanguageProficiencyControlComponent} from './components/util/form/language-proficiency/language-proficiency-control.component';
-import { ViewCandidateOccupationComponent } from './components/candidates/view/occupation/view-candidate-occupation.component';
-import { ViewCandidateExperienceComponent } from './components/candidates/view/occupation/experience/view-candidate-experience.component';
-
 
 @NgModule({
   declarations: [
@@ -161,9 +157,7 @@ import { ViewCandidateExperienceComponent } from './components/candidates/view/o
     DateRangePickerComponent,
     SavedSearchComponent,
     UserPipe,
-    UpdatedByComponent
-    DateRangePickerComponent,
-    LanguageProficiencyControlComponent,
+    UpdatedByComponent,
     SavedSearchComponent,
     ViewCandidateOccupationComponent,
     ViewCandidateExperienceComponent
