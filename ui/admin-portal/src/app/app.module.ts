@@ -33,7 +33,7 @@ import {EditCountryComponent} from "./components/settings/countries/edit/edit-co
 import {SearchLanguagesComponent} from './components/settings/languages/search-languages.component';
 import {CreateLanguageComponent} from './components/settings/languages/create/create-language.component';
 import {EditLanguageComponent} from './components/settings/languages/edit/edit-language.component';
-import {SearchSavedSearchesComponent} from "./components/candidates/search/saved/search-saved-searches.component";
+import {SearchSavedSearchesComponent} from "./components/candidates/search/saved-search/search-saved-searches.component";
 import {SaveSearchComponent} from "./components/candidates/search/save/save-search.component";
 import {CandidateSearchCardComponent} from './components/candidates/search/candidate-search-card/candidate-search-card.component';
 import {CandidateGeneralTabComponent} from './components/candidates/view/tab/candidate-general-tab/candidate-general-tab.component';
@@ -78,8 +78,12 @@ import {CreateUserComponent} from './components/settings/users/create/create-use
 import {CandidateEducationTabComponent} from "./components/candidates/view/tab/candidate-education-tab/candidate-education-tab.component";
 import {JoinSavedSearchComponent} from "./components/candidates/search/join-search/join-saved-search.component";
 import {SavedSearchComponent} from "./components/util/saved-search/saved-search.component";
-import {DateRangePickerComponent} from './components/util/form/date-range-picker/date-range-picker.component';
 import {LanguageLevelFormControlComponent} from './components/util/form/language-proficiency/language-level-form-control.component';
+import {EditCandidateShortlistItemComponent} from "./components/candidates/search/shortlist/edit/edit-candidate-shortlist-item.component";
+import {CandidateShortlistItemComponent} from "./components/candidates/search/shortlist/candidate-shortlist-item.component";
+import {DateRangePickerComponent} from "./components/util/form/date-range-picker/date-range-picker.component";
+import {UserPipe} from "./components/util/user/user.pipe";
+import {UpdatedByComponent} from "./components/util/user/updated-by/updated-by.component";
 
 
 @NgModule({
@@ -145,10 +149,15 @@ import {LanguageLevelFormControlComponent} from './components/util/form/language
     CreateCandidateCertificationComponent,
     EditCandidateCertificationComponent,
     JoinSavedSearchComponent,
-    SavedSearchComponent,
+    CandidateShortlistItemComponent,
+    EditCandidateShortlistItemComponent,
     DateRangePickerComponent,
     TranslationsComponent,
-    LanguageLevelFormControlComponent
+    LanguageLevelFormControlComponent,
+    DateRangePickerComponent,
+    SavedSearchComponent,
+    UserPipe,
+    UpdatedByComponent
   ],
   imports: [
     BrowserModule,
@@ -201,7 +210,9 @@ import {LanguageLevelFormControlComponent} from './components/util/form/language
     EditCandidateEducationComponent,
     CreateCandidateCertificationComponent,
     EditCandidateCertificationComponent,
-    TranslationsComponent
+    TranslationsComponent,
+    EditCandidateCertificationComponent,
+    EditCandidateShortlistItemComponent
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},

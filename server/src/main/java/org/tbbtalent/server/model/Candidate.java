@@ -58,6 +58,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     private Set<CandidateCertification> candidateCertifications = new HashSet<>();
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    private Set<CandidateShortlistItem> candidateShortlistItems = new HashSet<>();
+
     public Candidate() {
     }
 
@@ -235,5 +238,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setCandidateCertifications(Set<CandidateCertification> candidateCertifications) {
         this.candidateCertifications = candidateCertifications;
+    }
+
+    public Set<CandidateShortlistItem> getCandidateShortlistItems() {
+        return candidateShortlistItems;
+    }
+
+    public void setCandidateShortlistItems(Set<CandidateShortlistItem> candidateShortlistItems) {
+        this.candidateShortlistItems = candidateShortlistItems;
     }
 }

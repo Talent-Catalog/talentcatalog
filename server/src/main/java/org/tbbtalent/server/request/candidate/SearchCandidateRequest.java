@@ -33,6 +33,7 @@ public class SearchCandidateRequest extends SearchRequest {
     private Integer maxAge;
     private Long minEducationLevelId;
     private List<Long> educationMajorIds;
+    private ShortlistStatus shortlistStatus;
 
     private List<SearchJoinRequest> searchJoinRequests;
 
@@ -244,5 +245,12 @@ public class SearchCandidateRequest extends SearchRequest {
         this.searchJoinRequests = searchJoinRequests;
     }
 
+    public ShortlistStatus getShortlistStatus() {
+        return shortlistStatus;
+    }
+
+    public void setShortlistStatus(ShortlistStatus shortlistStatus) {
+        this.shortlistStatus = shortlistStatus;
+    }
 }
 
