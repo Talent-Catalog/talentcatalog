@@ -80,6 +80,7 @@ import {CandidateEducationTabComponent} from "./components/candidates/view/tab/c
 import {JoinSavedSearchComponent} from "./components/candidates/search/join-search/join-saved-search.component";
 import {SavedSearchComponent} from "./components/util/saved-search/saved-search.component";
 import {LanguageLevelFormControlComponent} from './components/util/form/language-proficiency/language-level-form-control.component';
+import {CandidatePipe} from './pipes/candidate.pipe';
 import {EditCandidateShortlistItemComponent} from "./components/candidates/search/shortlist/edit/edit-candidate-shortlist-item.component";
 import {CandidateShortlistItemComponent} from "./components/candidates/search/shortlist/candidate-shortlist-item.component";
 import {UserPipe} from "./components/util/user/user.pipe";
@@ -160,7 +161,9 @@ import {DateRangePickerComponent} from './components/util/form/date-range-picker
     UpdatedByComponent,
     SavedSearchComponent,
     ViewCandidateOccupationComponent,
-    ViewCandidateExperienceComponent
+    ViewCandidateExperienceComponent,
+    LanguageLevelFormControlComponent,
+    CandidatePipe
   ],
   imports: [
     BrowserModule,

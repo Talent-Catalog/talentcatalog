@@ -1,11 +1,13 @@
-<div class="backdrop d-none" (click)="close()"></div>
+<div class="backdrop" *ngIf="showMenu" (click)="close()"></div>
 
 <div class="position-relative">
 
   <div class="input-group" (click)="toggle()">
 
     <div class="form-control">
-      {{renderLevel()}}
+      <div class="language-label">
+        {{renderLevel()}}
+      </div>
     </div>
 
     <div class="input-group-append">
@@ -14,8 +16,35 @@
 
   </div>
 
-  <div class="dropdown">
+  <form [formGroup]="form" class="language-dropdown" *ngIf="showMenu">
 
-  </div>
+    <!-- LANGUAGE -->
+    <div class="form-group">
+      <label>Language</label>
+
+      <select class="form-control" name="language" [formControlName]="'languageId'" [disabled]="languageDisabled">
+        <option [value]="language.id" *ngFor="let language of languages">{{language.name}}</option>
+      </select>
+    </div>
+
+    <!-- WRITTEN LEVEL -->
+    <div class="form-group">
+      <label>Written Level</label>
+
+      <div class="radio" *ngFor="let level of languageLevels">
+        <label><input type="radio" [formControlName]="'writtenLevelId'" [value]="level.id">{{level.level}}</label>
+      </div>
+    </div>
+
+    <!-- SPOKEN LEVEL -->
+    <div class="form-group">
+      <label>Spoken Level</label>
+
+      <div class="radio" *ngFor="let level of languageLevels">
+        <label><input type="radio" [formControlName]="'spokenLevelId'" [value]="level.id">{{level.level}}</label>
+      </div>
+    </div>
+
+  </form>
 
 </div>

@@ -5,3 +5,39 @@
   left: 0;
   right: 0;
 }
+
+.language-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 10;
+  background: white;
+  padding: 1em;
+  border-radius: 8px;
+  border: 1px solid black;
+  min-width: 100%;
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+
+    label {
+      white-space: pre;
+    }
+
+    input[type="radio"] {
+      margin-right: 1em;
+    }
+
+  }
+}
+
+.language-label {
+  height: 24px;
+  font-size: 12px;
+  line-height: 24px;
+  overflow-x: hidden;
+  -ms-text-overflow: ellipsis;
+  text-overflow: ellipsis;
+}
+

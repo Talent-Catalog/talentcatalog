@@ -7,10 +7,7 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {Occupation} from "../../../model/occupation";
 import {OccupationService} from "../../../services/occupation.service";
-import {CreateOccupationComponent} from "./create/create-occupation.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {EditOccupationComponent} from "./edit/edit-occupation.component";
-import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 
 @Component({
   selector: 'app-search-occupations',
@@ -71,4 +68,15 @@ export class SearchOccupationsComponent implements OnInit {
   }
 
 
+  addOccupation() {
+    // TODO
+  }
+
+  editOccupation(occupation: Occupation) {
+    // TODO
+  }
+
+  deleteOccupation(occupation: Occupation) {
+    // TODO
+  }
 }

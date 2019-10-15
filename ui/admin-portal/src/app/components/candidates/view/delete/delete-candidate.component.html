@@ -6,7 +6,7 @@
   </button>
 </div>
 <div class="modal-body">
-  <p>Are you sure you want to delete <b>{{candidate.displayName}}</b>?</p>
+  <p>Are you sure you want to delete <b>{{candidate | candidate: 'name'}}</b>?</p>
 </div>
 <div class="modal-footer">
   <span *ngIf="deleting"><i class="fa fa-spinner fa-spin"></i> deleting...</span>

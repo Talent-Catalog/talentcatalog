@@ -59,11 +59,11 @@
     <!-- ENGLISH LANGUAGE -->
     <div class="form-group col-12 col-md-2">
       <label>English Proficiency</label>
-      <app-language-level-form-control [languages]="languages"
-                                        (change)="handleLanguageProficiencyChange($event, 'english')">
+      <app-language-level-form-control [model]="englishLanguageModel"
+                                       [languages]="languages"
+                                       [languageDisabled]="true"
+                                       (modelUpdated)="handleLanguageLevelChange($event, 'english')">
       </app-language-level-form-control>
-      <!-- TODO: Grouped select component -->
-      <select class="form-control" name="englishLanguage" id="englishLanguage"></select>
     </div>
 
     <!-- TOGGLE FILTERS -->
@@ -189,13 +189,16 @@
 
       </div>
 
-      <!-- TODO OTHER LANGUAGE -->
+      <!-- OTHER LANGUAGE -->
       <div class="form-group col-12 col-md-3">
-        <label for="">Other Language</label>
-        <input type="text" class="form-control">
+        <label>Other Language</label>
+        <app-language-level-form-control [languages]="languages"
+                                         [model]="otherLanguageModel"
+                                         (modelUpdated)="handleLanguageLevelChange($event, 'other')">
+        </app-language-level-form-control>
       </div>
 
-      <!-- TODO NATIONALITY -->
+      <!-- NATIONALITY -->
       <div class="form-group col-12 col-md-3">
         <label>Nationality</label>
         <!-- TODO 'any | not' -->
@@ -266,7 +269,7 @@
     </div>
     <div *ngIf="savedSearch" class="col-4">
       <select class="form-control" name="shortlistStatus" shortlistStatus [formControlName]="'shortlistStatus'">
-        <option value="">New</option>
+        <option value="pending">New</option>
         <option value="verified">Verified</option>
         <option value="rejected">Rejected</option>
       </select>
@@ -327,7 +330,7 @@
           <td>{{candidate.user.lastName}}</td>
           <td>{{candidate.nationality?.name}}</td>
           <td>{{candidate.country?.name}}</td>
-          <td>{{candidate.gender}}</td>
+          <td>{{candidate.gender | titlecase}}</td>
           <td *ngIf="savedSearch">
             <app-candidate-shortlist-item [candidateId]="candidate.id"
                                           [candidateShortlistItem]="candidate.candidateShortlistItems && candidate.candidateShortlistItems.length > 0 ? candidate.candidateShortlistItems[0] : null"
@@ -360,3 +363,4 @@
     </app-candidate-search-card>
 
   </div>
+</div>

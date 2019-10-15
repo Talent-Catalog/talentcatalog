@@ -2,6 +2,9 @@ import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges
 import {Language} from "../../../../model/language";
 import {LanguageService} from "../../../../services/language.service";
 import {LanguageLevel} from "../../../../model/language-level";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {LanguageLevelService} from "../../../../services/language-level.service";
+import {LanguageLevelFormControlModel} from "./language-level-form-control-model";
 
 @Component({
   selector: 'app-language-level-form-control',
@@ -10,20 +13,33 @@ import {LanguageLevel} from "../../../../model/language-level";
 })
 export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
 
-  @Input() language: Language;
+  @Input() model: LanguageLevelFormControlModel;
   @Input() languageDisabled: boolean;
   @Input() languageLevels: LanguageLevel[];
   @Input() languages: Language[];
+  @Input() spokenLevel: LanguageLevel;
+  @Input() writtenLevel: LanguageLevel;
 
-  @Output() change = new EventEmitter();
+  @Output() modelUpdated = new EventEmitter<LanguageLevelFormControlModel>();
 
   showMenu: boolean;
-  spokenLevel: LanguageLevel;
-  writtenLevel: LanguageLevel;
+  form: FormGroup;
 
-  constructor(private languageService: LanguageService) { }
+  constructor(private languageService: LanguageService,
+              private languageLevelService: LanguageLevelService,
+              private fb: FormBuilder) { }
 
   ngOnInit() {
+    this.form = this.fb.group({
+      languageId: [this.model ? this.model.languageId : null, Validators.required],
+      writtenLevelId: [this.model ? this.model.writtenLevelId : null, Validators.required],
+      spokenLevelId: [this.model ? this.model.spokenLevelId : null, Validators.required],
+    });
+    if (this.languageDisabled) {
+      this.form.controls['languageId'].disable()
+    }
+
+    /* Load missing language */
     if (!this.languages) {
       this.languageService.listLanguages().subscribe(
         (response) => {
@@ -33,16 +49,31 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
           console.error(error);
         });
     }
+
+    /* Load missing language levels */
+    if (!this.languageLevels) {
+      this.languageLevelService.listLanguageLevels().subscribe(
+        (response) => {
+          this.languageLevels = response;
+        },
+        (error) => {
+          console.log('error', error);
+        });
+    }
+
+    /* Subscribe to form value changes to emit updates to parent component */
+    this.form.valueChanges.subscribe(
+      () => {
+        this.modelUpdated.emit(this.form.value);
+      },
+      (error) => {
+          console.log('error', error);
+      });
   }
 
   ngOnChanges(c: SimpleChanges) {
-    if (c.language.currentValue !== c.language.previousValue
-      || c.writtenLevel.currentValue !== c.writtenLevel.previousValue
-      || c.spokenLevel.currentValue !== c.spokenLevel.previousValue) {
-      // const result = {
-      //   language: this.selectedLanguage,
-      //   writtenLevel:
-      // }
+    if (c.model && c.model.currentValue !== c.model.previousValue) {
+      this.form.patchValue(c.model.currentValue);
     }
   }
 
@@ -59,14 +90,11 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
   }
 
   renderLevel() {
-    return 'TODO: Render proficiency';
-  }
-
-  selectLanguage(language: Language) {
-    // this.selectedLanguage =
-  }
-
-  selectLanguageLevel(level: LanguageLevel) {
-
+    const val = (this.form.value as LanguageLevelFormControlModel);
+    const language = val.languageId ? this.languages.find(l => l.id == val.languageId).name : '';
+    const written = val.writtenLevelId ? 'Written: ' + this.languageLevels.find(l => l.id == val.writtenLevelId).level : '';
+    const spoken = val.spokenLevelId ? 'Spoken: ' + this.languageLevels.find(l => l.id == val.spokenLevelId).level : '';
+    const proficiencyString = written && spoken ? written + ', ' + spoken : written || spoken;
+    return language && proficiencyString ? `${language} (${proficiencyString})` : language ? language : proficiencyString;
   }
 }
