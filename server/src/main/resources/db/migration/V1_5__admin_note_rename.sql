@@ -8,9 +8,9 @@ note_type               text not null,
 title                   text not null,
 comment                 text,
 created_by              bigint references users,
-created_date            timestamp,
+created_date            timestamptz,
 updated_by              bigint references users,
-updated_date            timestamp
+updated_date            timestamptz
 );
 
 

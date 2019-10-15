@@ -3,19 +3,20 @@ package org.tbbtalent.server.model;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @MappedSuperclass
 public abstract class AbstractAuditableDomainObject<IdType extends Serializable>  extends AbstractDomainObject<IdType> {
 
     @Column(name = "created_date")
-    private LocalDateTime createdDate;
+    private OffsetDateTime createdDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by")
     private User createdBy;
 
     @Column(name = "updated_date")
-    private LocalDateTime updatedDate;
+    private OffsetDateTime updatedDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "updated_by")
@@ -28,11 +29,11 @@ public abstract class AbstractAuditableDomainObject<IdType extends Serializable>
         setAuditFields(createdBy);
     }
 
-    public LocalDateTime getCreatedDate() {
+    public OffsetDateTime getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(LocalDateTime createdDate) {
+    public void setCreatedDate(OffsetDateTime createdDate) {
         this.createdDate = createdDate;
     }
 
@@ -44,11 +45,11 @@ public abstract class AbstractAuditableDomainObject<IdType extends Serializable>
         this.createdBy = createdBy;
     }
 
-    public LocalDateTime getUpdatedDate() {
+    public OffsetDateTime getUpdatedDate() {
         return updatedDate;
     }
 
-    public void setUpdatedDate(LocalDateTime updatedDate) {
+    public void setUpdatedDate(OffsetDateTime updatedDate) {
         this.updatedDate = updatedDate;
     }
 
@@ -65,9 +66,9 @@ public abstract class AbstractAuditableDomainObject<IdType extends Serializable>
             this.createdBy = modifiedBy;
         }
         if(createdDate == null){
-            this.createdDate = LocalDateTime.now();
+            this.createdDate = OffsetDateTime.now();
         }
         this.updatedBy = modifiedBy;
-        this.updatedDate = LocalDateTime.now();
+        this.updatedDate = OffsetDateTime.now();
     }
 }
