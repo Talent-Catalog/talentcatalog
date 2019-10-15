@@ -12,6 +12,7 @@
 
     <div [ngbCollapse]="isNavbarCollapsed" class="collapse navbar-collapse" id="navbarsDefault">
 
+      <!-- JUMP TO -->
       <ul class="navbar-nav">
         <li class="nav-item dropdown" ngbDropdown>
 
@@ -33,16 +34,25 @@
         </li>
       </ul>
 
-      <div class="d-flex">
-        <button *ngFor="let lang of languages"
-                (click)="useLanguage(lang.language)">{{lang.label}}</button>
-      </div>
+      <!-- TRANSLATION -->
+      <ul class="navbar-nav">
+        <div class="nav-item dropdown" ngbDropdown>
+          <a class="dropdown-toggle translation-toggle" ngbDropdownToggle>
+            {{languageService.getSelectedLanguage()}}
+          </a>
 
-      <ul class="navbar-nav" *ngIf="candidate">
+          <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
+            <a class="dropdown-item" *ngFor="let lang of languages" (click)="useLanguage(lang.language)">{{lang.label}}</a>
+          </div>
+        </div>
+      </ul>
+
+      <!-- ACCOUNT -->
+      <ul class="navbar-nav" *ngIf="user">
         <li class="nav-item dropdown" ngbDropdown>
 
           <a class="nav-link dropdown-toggle" ngbDropdownToggle>
-            {{candidate?.username}}
+            {{user?.username}}
           </a>
           <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
             <a class="dropdown-item" (click)="logout()">Logout</a>
@@ -51,9 +61,8 @@
         </li>
       </ul>
 
-      <a class="btn btn-link" routerLink="/login" *ngIf="!candidate">Sign In</a>
-
-
+      <!-- LOGIN -->
+      <a class="btn btn-link" routerLink="/login" *ngIf="!user">Sign In</a>
 
     </div>
   </div>
