@@ -1,0 +1,3 @@
+<div class="text-muted small">
+  <label>Last updated By: </label><span> {{(updatedBy ? updatedBy : createdBy) | user: 'fullName'}} ({{updatedDate ? updatedDate : createdDate | date: 'long'}})</span>
+</div>

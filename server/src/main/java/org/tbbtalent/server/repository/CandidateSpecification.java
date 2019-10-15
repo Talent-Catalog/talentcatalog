@@ -3,11 +3,10 @@ package org.tbbtalent.server.repository;
 import io.jsonwebtoken.lang.Collections;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
-import org.tbbtalent.server.model.Candidate;
-import org.tbbtalent.server.model.CandidateLanguage;
-import org.tbbtalent.server.model.User;
+import org.tbbtalent.server.model.*;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 
+import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
@@ -21,6 +20,10 @@ public class CandidateSpecification {
             Join<Candidate, CandidateLanguage> candidateLanguages = candidate.join("candidateLanguages", JoinType.LEFT);
             Join<Candidate, User> user = candidate.join("user");
 
+            if (request.getSavedSearchId() != null){
+                Fetch<Candidate, CandidateShortlistItem> candidateShortlistItem = candidate.fetch("candidateShortlistItems", JoinType.LEFT);
+                Fetch<CandidateShortlistItem, SavedSearch> savedSearch = candidateShortlistItem.fetch("savedSearch", JoinType.LEFT);
+            }
             // KEYWORD SEARCH
             if (!StringUtils.isBlank(request.getKeyword())){
                 String lowerCaseMatchTerm = request.getKeyword().toLowerCase();

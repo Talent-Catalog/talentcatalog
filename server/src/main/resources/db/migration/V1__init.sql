@@ -76,11 +76,11 @@ create table users
   role                    text not null,
   status                  text not null,
   password_enc            text,
-  last_login              timestamp,
+  last_login              timestamptz,
   created_by              bigint references users,
-  created_date            timestamp,
+  created_date            timestamptz,
   updated_by              bigint references users,
-  updated_date            timestamp
+  updated_date            timestamptz
 );
 
 create table candidate
@@ -103,9 +103,9 @@ create table candidate
   additional_info         text,
   max_education_level_id     bigint references education_level,
   created_by              bigint not null references users,
-  created_date            timestamp not null,
+  created_date            timestamptz not null,
   updated_by              bigint references users,
-  updated_date            timestamp
+  updated_date            timestamptz
 );
 
 
@@ -174,7 +174,7 @@ name                    text,
 url                     text,
 file_name               text,
 created_by              bigint references users,
-created_date            timestamp
+created_date            timestamptz
 );
 
 create table admin_note
@@ -183,9 +183,27 @@ id                      bigserial not null primary key,
 candidate_id            bigint not null references candidate,
 comment                 text,
 created_by              bigint references users,
-created_date            timestamp
+created_date            timestamptz
 );
 
+
+insert into users (username, password_enc, role, first_name, last_name, email, status)
+values('jo', '$2a$10$LxKSxD8HD3Dy1ZSEpo8rV.FFehgd.lILL002epXj41ITvg9askvv6', 'admin','Jo', 'Thatcher', 'jo@digitalpurpose.com.au', 'active');
+
+insert into users (username, password_enc, role, first_name, last_name, email, status)
+values('dan', '$2a$10$LxKSxD8HD3Dy1ZSEpo8rV.FFehgd.lILL002epXj41ITvg9askvv6', 'admin','Dan', 'Zwolenski', 'dan@digitalpurpose.com.au', 'active');
+
+insert into users (username, password_enc, role, first_name, last_name, email, status)
+values('martina', '$2a$10$LxKSxD8HD3Dy1ZSEpo8rV.FFehgd.lILL002epXj41ITvg9askvv6', 'admin','Martina', 'Kainberger', 'martina@digitalpurpose.com.au', 'active');
+
+insert into users (username, password_enc, role, first_name, last_name, email, status)
+values('louise', '$2a$10$LxKSxD8HD3Dy1ZSEpo8rV.FFehgd.lILL002epXj41ITvg9askvv6', 'admin','Louise', 'Muszynkski', 'louise@digitalpurpose.com.au', 'active');
+
+insert into users (username, password_enc, role, first_name, last_name, email, status)
+values('dean', '$2a$10$LxKSxD8HD3Dy1ZSEpo8rV.FFehgd.lILL002epXj41ITvg9askvv6', 'admin','Dean', 'El-Mouslimani', 'dean@digitalpurpose.com.au', 'active');
+
+insert into users (username, password_enc, role, first_name, last_name, email, status)
+values('caroline', '$2a$10$LxKSxD8HD3Dy1ZSEpo8rV.FFehgd.lILL002epXj41ITvg9askvv6', 'admin','Caroline', 'Cameron', 'caroline@cameronfoundation.org', 'active');
 
 
 

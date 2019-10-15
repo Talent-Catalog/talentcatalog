@@ -1,6 +1,7 @@
 import {User} from "./user";
 import {Country} from "./country";
 import {Nationality} from "./nationality";
+import {CandidateShortlistItem} from "./candidate-shortlist-item";
 
 export interface Candidate {
   id: number;
@@ -16,4 +17,5 @@ export interface Candidate {
   phone: string;
   whatsapp: string;
   user: User;
+  candidateShortlistItems: CandidateShortlistItem[];
 }

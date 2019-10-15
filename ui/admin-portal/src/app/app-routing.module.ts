@@ -9,7 +9,7 @@ import {AuthGuard} from "./services/auth.guard";
 import {LoginComponent} from "./components/login/login.component";
 import {SearchUsersComponent} from "./components/settings/users/search-users.component";
 import {SettingsComponent} from "./components/settings/settings.component";
-import {SearchSavedSearchesComponent} from "./components/candidates/search/saved/search-saved-searches.component";
+import {SearchSavedSearchesComponent} from "./components/candidates/search/saved-search/search-saved-searches.component";
 
 const routes: Routes = [
   {
