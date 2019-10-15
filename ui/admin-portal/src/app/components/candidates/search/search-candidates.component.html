@@ -269,7 +269,7 @@
     </div>
     <div *ngIf="savedSearch" class="col-4">
       <select class="form-control" name="shortlistStatus" shortlistStatus [formControlName]="'shortlistStatus'">
-        <option value="">New</option>
+        <option value="pending">New</option>
         <option value="verified">Verified</option>
         <option value="rejected">Rejected</option>
       </select>
@@ -330,7 +330,7 @@
           <td>{{candidate.user.lastName}}</td>
           <td>{{candidate.nationality?.name}}</td>
           <td>{{candidate.country?.name}}</td>
-          <td>{{candidate.gender}}</td>
+          <td>{{candidate.gender | titlecase}}</td>
           <td *ngIf="savedSearch">
             <app-candidate-shortlist-item [candidateId]="candidate.id"
                                           [candidateShortlistItem]="candidate.candidateShortlistItems && candidate.candidateShortlistItems.length > 0 ? candidate.candidateShortlistItems[0] : null"
@@ -363,3 +363,4 @@
     </app-candidate-search-card>
 
   </div>
+</div>

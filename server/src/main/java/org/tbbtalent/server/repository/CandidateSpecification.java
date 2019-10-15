@@ -20,9 +20,23 @@ public class CandidateSpecification {
             Join<Candidate, CandidateLanguage> candidateLanguages = candidate.join("candidateLanguages", JoinType.LEFT);
             Join<Candidate, User> user = candidate.join("user");
 
-            if (request.getSavedSearchId() != null){
-                Fetch<Candidate, CandidateShortlistItem> candidateShortlistItem = candidate.fetch("candidateShortlistItems", JoinType.LEFT);
-                Fetch<CandidateShortlistItem, SavedSearch> savedSearch = candidateShortlistItem.fetch("savedSearch", JoinType.LEFT);
+            if (request.getSavedSearchId() != null) {
+                if (request.getShortlistStatus() != null) {
+                    Join<Candidate, CandidateShortlistItem> candidateShortlistItem = candidate.join("candidateShortlistItems", JoinType.LEFT);
+                    Join<CandidateShortlistItem, SavedSearch> savedSearch = candidateShortlistItem.join("savedSearch", JoinType.LEFT);
+                    if (request.getShortlistStatus().equals(ShortlistStatus.pending)){
+                        conjunction.getExpressions().add(builder.notEqual(savedSearch.get("id"), request.getSavedSearchId()));
+                    }else {
+                        conjunction.getExpressions().add(
+                                builder.and(builder.equal(candidateShortlistItem.get("shortlistStatus"), request.getShortlistStatus()),
+                                        builder.equal(savedSearch.get("id"), request.getSavedSearchId())));
+                    }
+
+                } else if (query.getResultType().equals(Candidate.class)) {
+                    Fetch<Candidate, CandidateShortlistItem> candidateShortlistItem = candidate.fetch("candidateShortlistItems", JoinType.LEFT);
+                     Fetch<CandidateShortlistItem, SavedSearch> savedSearch = candidateShortlistItem.fetch("savedSearch", JoinType.LEFT);
+                }
+
             }
             // KEYWORD SEARCH
             if (!StringUtils.isBlank(request.getKeyword())){

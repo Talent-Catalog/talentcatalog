@@ -28,6 +28,7 @@ import {
   emptyLanguageLevelFormControlModel,
   LanguageLevelFormControlModel
 } from "../../util/form/language-proficiency/language-level-form-control-model";
+import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 
 @Component({
   selector: 'app-search-candidates',
@@ -214,6 +215,15 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
         this.loading = false;
       });
 
+    /* SEARCH ON CHANGE*/
+    this.searchForm.get('shortlistStatus').valueChanges
+      .pipe(
+        debounceTime(400),
+        distinctUntilChanged()
+      )
+      .subscribe(res => {
+        this.search();
+      });
     this.search();
   }
 
