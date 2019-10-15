@@ -10,9 +10,9 @@ import {Language} from "../../../model/language";
 import {LanguageService} from "../../../services/language.service";
 import {SearchResults} from '../../../model/search-results';
 
-import {FormArray, FormBuilder, FormGroup} from "@angular/forms";
 import {NgbDateStruct, NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {SearchSavedSearchesComponent} from "./saved/search-saved-searches.component";
+import {FormArray, FormBuilder, FormGroup} from "@angular/forms";
+import {SearchSavedSearchesComponent} from "./saved-search/search-saved-searches.component";
 import {SaveSearchComponent} from "./save/save-search.component";
 import {SavedSearchService} from "../../../services/saved-search.service";
 import {IDropdownSettings} from 'ng-multiselect-dropdown';
@@ -57,7 +57,8 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   languages: Language[];
   educationLevels: EducationLevel[];
   educationMajors: EducationMajor[];
-  occupations: Occupation[];
+  verifiedOccupations: Occupation[];
+  candidateOccupations: Occupation[];
 
   statuses: { id: string, name: string }[] = [
     {id: 'pending', name: 'pending'},
@@ -116,7 +117,8 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       educationMajorIds: [[]],
       searchJoinRequests: this.fb.array([]),
       page: 1,
-      size: 50
+      size: 50,
+      shortlistStatus: null
     });
 
     /* LOAD NATIONALITIES */
@@ -180,7 +182,18 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     /* LOAD VERIFIED OCCUPATIONS */
     this.candidateOccupationService.listVerifiedOccupations().subscribe(
       (response) => {
-        this.occupations = response;
+        this.verifiedOccupations = response;
+        this.loading = false;
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      });
+
+    /* LOAD CANDIDATE OCCUPATIONS (includes unverified) */
+    this.candidateOccupationService.listOccupations().subscribe(
+      (response) => {
+        this.candidateOccupations = response;
         this.loading = false;
       },
       (error) => {
@@ -341,5 +354,9 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     } else {
       this.searchForm.controls[control + 'To'].patchValue(null);
     }
+  }
+
+  handleLanguageProficiencyChange($event: Event, english: string) {
+
   }
 }

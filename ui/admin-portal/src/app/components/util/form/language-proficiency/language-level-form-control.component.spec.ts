@@ -1,20 +1,20 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {LanguageProficiencyControlComponent} from './language-proficiency-control.component';
+import {LanguageLevelFormControlComponent} from './language-level-form-control.component';
 
 describe('LanguageProficiencyControlComponent', () => {
-  let component: LanguageProficiencyControlComponent;
-  let fixture: ComponentFixture<LanguageProficiencyControlComponent>;
+  let component: LanguageLevelFormControlComponent;
+  let fixture: ComponentFixture<LanguageLevelFormControlComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ LanguageProficiencyControlComponent ]
+      declarations: [ LanguageLevelFormControlComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LanguageProficiencyControlComponent);
+    fixture = TestBed.createComponent(LanguageLevelFormControlComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

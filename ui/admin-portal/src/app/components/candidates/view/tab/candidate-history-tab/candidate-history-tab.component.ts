@@ -11,6 +11,8 @@ export class CandidateHistoryTabComponent implements OnInit, OnChanges {
   @Input() candidate: Candidate;
   @Input() editable: boolean;
 
+
+
   loading: boolean;
   error;
   result: Candidate;

@@ -16,6 +16,7 @@ create table translation
 	object_id               bigint not null,
 	object_type             text not null,
 	language                text not null,
+	value                   text not null,
 	created_by              bigint references users,
 	created_date            timestamp,
 	updated_by              bigint references users,

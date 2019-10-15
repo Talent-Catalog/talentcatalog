@@ -36,7 +36,6 @@ public class CandidateAdminApi {
         Candidate candidate = this.candidateService.getCandidate(id);
         return candidateDto().build(candidate);
     }
-
     @PostMapping
     public Map<String, Object> create(@RequestBody CreateCandidateRequest request) throws UsernameTakenException {
         Candidate candidate = this.candidateService.createCandidate(request);
@@ -77,6 +76,7 @@ public class CandidateAdminApi {
                 .add("country", countryDto())
                 .add("nationality", nationalityDto())
                 .add("user", userDto())
+                .add("candidateShortlistItems", shortlistDto())
                 ;
     }
 
@@ -100,6 +100,13 @@ public class CandidateAdminApi {
         return new DtoBuilder()
                 .add("id")
                 .add("name")
+                ;
+    }
+
+    private DtoBuilder shortlistDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("shortlistStatus")
                 ;
     }
 

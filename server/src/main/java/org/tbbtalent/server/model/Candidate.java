@@ -38,6 +38,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @JoinColumn(name = "nationality_id")
     private Nationality nationality;
 
+    // TODO: need to fetch to manyToOne to allow lazy-fetching
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
@@ -56,6 +57,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     private Set<CandidateCertification> candidateCertifications = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    private Set<CandidateShortlistItem> candidateShortlistItems = new HashSet<>();
 
     public Candidate() {
     }
@@ -234,5 +238,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setCandidateCertifications(Set<CandidateCertification> candidateCertifications) {
         this.candidateCertifications = candidateCertifications;
+    }
+
+    public Set<CandidateShortlistItem> getCandidateShortlistItems() {
+        return candidateShortlistItems;
+    }
+
+    public void setCandidateShortlistItems(Set<CandidateShortlistItem> candidateShortlistItems) {
+        this.candidateShortlistItems = candidateShortlistItems;
     }
 }

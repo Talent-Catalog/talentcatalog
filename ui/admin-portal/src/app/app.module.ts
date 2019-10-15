@@ -33,7 +33,7 @@ import {EditCountryComponent} from "./components/settings/countries/edit/edit-co
 import {SearchLanguagesComponent} from './components/settings/languages/search-languages.component';
 import {CreateLanguageComponent} from './components/settings/languages/create/create-language.component';
 import {EditLanguageComponent} from './components/settings/languages/edit/edit-language.component';
-import {SearchSavedSearchesComponent} from "./components/candidates/search/saved/search-saved-searches.component";
+import {SearchSavedSearchesComponent} from "./components/candidates/search/saved-search/search-saved-searches.component";
 import {SaveSearchComponent} from "./components/candidates/search/save/save-search.component";
 import {CandidateSearchCardComponent} from './components/candidates/search/candidate-search-card/candidate-search-card.component';
 import {CandidateGeneralTabComponent} from './components/candidates/view/tab/candidate-general-tab/candidate-general-tab.component';
@@ -55,6 +55,8 @@ import {EditEducationLevelComponent} from './components/settings/education-level
 import {SearchEducationMajorsComponent} from './components/settings/education-majors/search-education-majors.component';
 import {CreateEducationMajorComponent} from './components/settings/education-majors/create/create-education-major.component';
 import {EditEducationMajorComponent} from './components/settings/education-majors/edit/edit-education-major.component';
+import {TranslationsComponent} from './components/settings/translations/translations.component';
+
 import {ViewCandidateContactComponent} from "./components/candidates/view/contact/view-candidate-contact.component";
 import {ViewCandidateLanguageComponent} from "./components/candidates/view/language/view-candidate-language.component";
 import {EditCandidateContactComponent} from "./components/candidates/view/contact/edit/edit-candidate-contact.component";
@@ -76,6 +78,12 @@ import {CreateUserComponent} from './components/settings/users/create/create-use
 import {CandidateEducationTabComponent} from "./components/candidates/view/tab/candidate-education-tab/candidate-education-tab.component";
 import {JoinSavedSearchComponent} from "./components/candidates/search/join-search/join-saved-search.component";
 import {SavedSearchComponent} from "./components/util/saved-search/saved-search.component";
+import {LanguageLevelFormControlComponent} from './components/util/form/language-proficiency/language-level-form-control.component';
+import {EditCandidateShortlistItemComponent} from "./components/candidates/search/shortlist/edit/edit-candidate-shortlist-item.component";
+import {CandidateShortlistItemComponent} from "./components/candidates/search/shortlist/candidate-shortlist-item.component";
+import {DateRangePickerComponent} from "./components/util/form/date-range-picker/date-range-picker.component";
+import {UserPipe} from "./components/util/user/user.pipe";
+import {UpdatedByComponent} from "./components/util/user/updated-by/updated-by.component";
 import {DateRangePickerComponent} from './components/util/form/date-range-picker/date-range-picker.component';
 import {LanguageProficiencyControlComponent} from './components/util/form/language-proficiency/language-proficiency-control.component';
 import { ViewCandidateOccupationComponent } from './components/candidates/view/occupation/view-candidate-occupation.component';
@@ -145,7 +153,15 @@ import { ViewCandidateExperienceComponent } from './components/candidates/view/o
     CreateCandidateCertificationComponent,
     EditCandidateCertificationComponent,
     JoinSavedSearchComponent,
+    CandidateShortlistItemComponent,
+    EditCandidateShortlistItemComponent,
+    DateRangePickerComponent,
+    TranslationsComponent,
+    LanguageLevelFormControlComponent,
+    DateRangePickerComponent,
     SavedSearchComponent,
+    UserPipe,
+    UpdatedByComponent
     DateRangePickerComponent,
     LanguageProficiencyControlComponent,
     SavedSearchComponent,
@@ -202,7 +218,10 @@ import { ViewCandidateExperienceComponent } from './components/candidates/view/o
     CreateCandidateEducationComponent,
     EditCandidateEducationComponent,
     CreateCandidateCertificationComponent,
-    EditCandidateCertificationComponent
+    EditCandidateCertificationComponent,
+    TranslationsComponent,
+    EditCandidateCertificationComponent,
+    EditCandidateShortlistItemComponent
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},

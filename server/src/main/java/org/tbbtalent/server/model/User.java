@@ -32,6 +32,7 @@ public class User extends AbstractAuditableDomainObject<Long> {
     @Column(name = "password_updated_date")
     private LocalDateTime passwordUpdatedDate;
 
+    // TODO: needs to change to oneToMany to use lazy fetching - particularly for admin portal
     @OneToOne(mappedBy = "user")
     private Candidate candidate;
 

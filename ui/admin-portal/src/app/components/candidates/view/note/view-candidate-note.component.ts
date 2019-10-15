@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from "../../../../model/candidate";
 import {CandidateNote} from "../../../../model/candidate-note";
@@ -19,11 +19,9 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
   @Input() editable: boolean;
 
   candidateNoteForm: FormGroup;
-  candidateNote: CandidateNote;
   loading: boolean;
   error;
   results: SearchResults<CandidateNote>;
-  moreNotes: boolean;
 
   constructor(private candidateNoteService: CandidateNoteService,
               private modalService: NgbModal,
@@ -36,24 +34,21 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     this.editable = true;
-    this.setUpForm();
-    if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
-      this.loading = true;
-      this.getNotes();
-    }
-  }
 
-  setUpForm(){
     this.candidateNoteForm = this.fb.group({
       candidateId: [this.candidate.id],
-      pageSize: 2,
-      pageNumber: 0,
+      pageSize: 10,
       sortDirection: 'DESC',
       sortFields: [['createdDate']]
     });
-  };
 
-  getNotes(){
+    if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
+      this.doSearch();
+    }
+  }
+
+  doSearch() {
+    this.loading = true;
     this.candidateNoteService.search(this.candidateNoteForm.value).subscribe(
       results => {
         this.results = results;
@@ -75,8 +70,9 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
     editCandidateNoteModal.componentInstance.candidateNote = candidateNote;
 
     editCandidateNoteModal.result
-      .then((candidateNote) => this.candidateNote = candidateNote)
-      .catch(() => { /* Isn't possible */ });
+      .then((candidateNote) => this.doSearch())
+      .catch(() => { /* Isn't possible */
+      });
 
   }
 
@@ -89,20 +85,13 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
     createCandidateNoteModal.componentInstance.candidateId = this.candidate.id;
 
     createCandidateNoteModal.result
-      .then((candidateNote) => this.candidateNote = candidateNote)
-      .catch(() => { /* Isn't possible */ });
+      .then((candidateNote) => this.doSearch())
+      .catch(() => { /* Isn't possible */
+      });
 
   }
 
-  loadMore(){
-    console.log(this.results);
-    if(this.results.totalElements > this.results.content.length){
-      this.candidateNoteForm.value.pageSize += 2;
-      this.moreNotes = true;
-      this.getNotes();
-    }else{
-      this.moreNotes = false;
-    };
-  }
+
+
 
 }

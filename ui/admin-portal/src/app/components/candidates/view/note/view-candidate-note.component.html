@@ -6,11 +6,10 @@
 </div>
 
 
-
 <div class="h3" *ngIf="!loading">
   Notes
   <div class="pull-right" *ngIf="editable">
-    <button type="button" class="btn btn-primary" (click)="createCandidateNote()">Add</button>
+    <button type="button" class="btn btn-sm btn-primary" (click)="createCandidateNote()"><i class="fa fa-plus"></i></button>
   </div>
 </div>
 
@@ -18,53 +17,35 @@
 <div *ngIf="!results || results.content.length == 0">
   <div class="row">
     <div class="col-sm-12">
-      No note entered
+      No notes entered
     </div>
   </div>
 </div>
-
 
 
 <div *ngFor="let candidateNote of results?.content">
   <div class="card">
     <div class="card-header">
-      <div class="row">
-        <div class="col-12">
-          <p class="card-title" style="font-size: 12px">{{candidateNote.createdBy.firstName}} {{candidateNote.createdBy.lastName}}</p>
-        </div>
+      <div class="pull-right" *ngIf="editable">
+        <button type="button" class="btn btn-sm btn-default" (click)="editCandidateNote(candidateNote)"><i
+          class="fa fa-edit"></i></button>
       </div>
-      <div class="row">
-        <div class="col-6">
-          <h6 class="card-title">{{candidateNote.title}}</h6>
-        </div>
-        <div class="col-6">
-          <div class="pull-right" *ngIf="editable">
-            <button type="button" class="btn btn-default" (click)="editCandidateNote(candidateNote)"><i
-              class="fa fa-edit"></i></button>
-          </div>
-        </div>
-      </div>
+      {{candidateNote.title}}
     </div>
 
     <div class="card-body">
-      <div class="row">
-        <div>
-          <label class="col-form-label card-text">{{candidateNote.comment}}</label>
-        </div>
+      <div>
+        {{candidateNote.comment}}
       </div>
-
-      <div class="row">
-        <div>
-          <label class="col-form-label text-muted">{{candidateNote.createdDate | date: 'medium' }}</label>
-        </div>
+      <div>
+        <app-updated-by *ngIf="candidateNote"
+                        [createdBy]="candidateNote.createdBy"
+                        [createdDate]="candidateNote.createdDate"
+                        [updatedBy]="candidateNote.updatedBy"
+                        [updatedDate]="candidateNote.updatedDate">
+        </app-updated-by>
       </div>
-
     </div>
-
   </div>
-
 </div>
 
-<div class="pull-right">
-<button type="button" class="btn btn-primary" (click)="loadMore()" [disabled]="results?.totalPages == 1 ">Load More...</button>
-</div>

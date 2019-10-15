@@ -76,4 +76,10 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         List<Occupation> verifiedOccupations = candidateOccupationRepository.findAllVerifiedOccupations();
         return verifiedOccupations;
     }
+
+    @Override
+    public List<Occupation> listOccupations() {
+        List<Occupation> occupations = candidateOccupationRepository.findAllOccupations();
+        return occupations;
+    }
 }
