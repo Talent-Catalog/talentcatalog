@@ -19,7 +19,6 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
   @Input() editable: boolean;
-  @Input() occupation: Occupation;
   @Input() candidateOccupation: CandidateOccupation;
 
   candidateJobExperienceForm: FormGroup;
@@ -39,13 +38,14 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     this.editable = true;
     this.expanded = false;
+    console.log(this.candidateOccupation);
 
     this.candidateJobExperienceForm = this.fb.group({
-      candidateId: [this.candidate.id],
+      candidateOccupationId: [this.candidateOccupation.id],
       pageSize: 10,
       pageNumber: 0,
       sortDirection: 'DESC',
-      sortFields: [['createdDate']]
+      sortFields: [['endDate']]
     });
 
     if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
@@ -71,7 +71,6 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
 
   loadMore() {
     this.candidateJobExperienceForm.value.pageNumber += 1;
-    console.log(this.results);
   }
 
   createCandidateJobExperience() {
@@ -96,7 +95,8 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
       backdrop: 'static'
     });
 
-    editCandidateJobExperienceModal.componentInstance.candidateOccupationId = candidateOccupation.id;
+    editCandidateJobExperienceModal.componentInstance.candidateJobExperience = candidateJobExperience;
+    editCandidateJobExperienceModal.componentInstance.candidateOccupationId = this.candidateOccupation.id;
 
     editCandidateJobExperienceModal.result
       .then((candidateJobExperience) => this.doSearch())

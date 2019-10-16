@@ -4,6 +4,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateJobExperienceService} from "../../../../../../services/candidate-job-experience.service";
 import {CandidateJobExperience} from "../../../../../../model/candidate-job-experience";
 import {CountryService} from "../../../../../../services/country.service";
+import {CandidateOccupation} from "../../../../../../model/candidate-occupation";
 
 @Component({
   selector: 'app-create-candidate-job-experience',
@@ -48,7 +49,7 @@ export class CreateCandidateJobExperienceComponent implements OnInit {
     this.candidateForm = this.fb.group({
       countryId: ['', [Validators.required]],
       companyName: ['', [Validators.required]],
-      candidateOccupationId: [this.candidateOccupationId]
+      candidateOccupationId: [this.candidateOccupationId],
       role: ['', [Validators.required]],
       startDate: ['', [Validators.required]],
       endDate: ['', [Validators.required]],

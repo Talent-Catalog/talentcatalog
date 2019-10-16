@@ -14,6 +14,8 @@ public interface CandidateOccupationService {
 
     List<CandidateOccupation> listMyOccupations();
 
+    List<CandidateOccupation> listCandidateOccupations(Long candidateId);
+
     /* Lists only verified occupations */
     List<Occupation> listVerifiedOccupations();
 

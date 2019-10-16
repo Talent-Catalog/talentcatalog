@@ -1,6 +1,7 @@
 package org.tbbtalent.server.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
@@ -13,6 +14,8 @@ import org.tbbtalent.server.repository.CandidateOccupationRepository;
 import org.tbbtalent.server.repository.CandidateRepository;
 import org.tbbtalent.server.repository.CountryRepository;
 import org.tbbtalent.server.request.work.experience.CreateJobExperienceRequest;
+import org.tbbtalent.server.request.work.experience.SearchJobExperienceRequest;
+import org.tbbtalent.server.request.work.experience.UpdateJobExperienceRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.CandidateJobExperienceService;
 
@@ -38,6 +41,10 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
         this.userContext = userContext;
     }
 
+    @Override
+    public Page<CandidateJobExperience> searchCandidateJobExperience(SearchJobExperienceRequest request) {
+        return candidateJobExperienceRepository.findByCandidateOccupationId(request.getCandidateOccupationId(), request.getPageRequest());
+    }
 
     @Override
     public CandidateJobExperience createCandidateJobExperience(CreateJobExperienceRequest request) {
@@ -71,7 +78,7 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
     }
 
     @Override
-    public CandidateJobExperience createCandidateJobExperience(Long candidateId,CreateJobExperienceRequest request) {
+    public CandidateJobExperience createCandidateJobExperience(Long candidateId, CreateJobExperienceRequest request) {
         // Load the candidate from the database - throw an exception if not found
         Candidate candidate = candidateRepository.findById(candidateId)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateId));
@@ -91,6 +98,30 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
         candidateJobExperience.setCandidate(candidate);
         candidateJobExperience.setCountry(country);
         candidateJobExperience.setCandidateOccupation(occupation);
+        candidateJobExperience.setCompanyName(request.getCompanyName());
+        candidateJobExperience.setRole(request.getRole());
+        candidateJobExperience.setStartDate(request.getStartDate());
+        candidateJobExperience.setEndDate(request.getEndDate());
+        candidateJobExperience.setFullTime(request.getFullTime());
+        candidateJobExperience.setPaid(request.getPaid());
+        candidateJobExperience.setDescription(request.getDescription());
+
+        // Save the candidateOccupation
+        return candidateJobExperienceRepository.save(candidateJobExperience);
+    }
+
+    @Override
+    public CandidateJobExperience updateCandidateJobExperience(Long id, UpdateJobExperienceRequest request) {
+        // Load the candidate from the database - throw an exception if not found
+        CandidateJobExperience candidateJobExperience = candidateJobExperienceRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(CandidateJobExperience.class, id));
+
+        // Load the country from the database - throw an exception if not found
+        Country country = countryRepository.findById(request.getCountryId())
+                .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountryId()));
+
+        // Create a new candidateOccupation object to insert into the database
+        candidateJobExperience.setCountry(country);
         candidateJobExperience.setCompanyName(request.getCompanyName());
         candidateJobExperience.setRole(request.getRole());
         candidateJobExperience.setStartDate(request.getStartDate());

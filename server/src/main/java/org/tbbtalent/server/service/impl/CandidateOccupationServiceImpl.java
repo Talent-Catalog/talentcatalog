@@ -72,6 +72,11 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
     }
 
     @Override
+    public List<CandidateOccupation> listCandidateOccupations(Long candidateId) {
+        return candidateOccupationRepository.findByCandidateId(candidateId);
+    }
+
+    @Override
     public List<Occupation> listVerifiedOccupations() {
         List<Occupation> verifiedOccupations = candidateOccupationRepository.findAllVerifiedOccupations();
         return verifiedOccupations;

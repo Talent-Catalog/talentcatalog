@@ -1,10 +1,13 @@
 package org.tbbtalent.server.api.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.model.CandidateJobExperience;
 import org.tbbtalent.server.request.work.experience.CreateJobExperienceRequest;
+import org.tbbtalent.server.request.work.experience.SearchJobExperienceRequest;
+import org.tbbtalent.server.request.work.experience.UpdateJobExperienceRequest;
 import org.tbbtalent.server.service.CandidateJobExperienceService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -21,25 +24,25 @@ public class CandidateJobExperienceAdminApi {
     public CandidateJobExperienceAdminApi(CandidateJobExperienceService candidateJobExperienceService) {
         this.candidateJobExperienceService = candidateJobExperienceService;
     }
-//
-//    @PostMapping("search")
-//    public Map<String, Object> search(@RequestBody SearchCandidateJobExperienceRequest request) {
-//        Page<CandidateJobExperience> candidateJobExperiences = this.candidateJobExperienceService.searchCandidateJobExperience(request);
-//        return candidateJobExperienceDto().buildPage(candidateJobExperiences);
-//    }
+
+    @PostMapping("search")
+    public Map<String, Object> search(@RequestBody SearchJobExperienceRequest request) {
+        Page<CandidateJobExperience> candidateJobExperiences = this.candidateJobExperienceService.searchCandidateJobExperience(request);
+        return candidateJobExperienceDto().buildPage(candidateJobExperiences);
+    }
 
     @PostMapping("{id}")
-    public Map<String, Object> create(@Valid @PathVariable("id") long id, @RequestBody CreateJobExperienceRequest request) throws EntityExistsException {
-        CandidateJobExperience candidateJobExperience = this.candidateJobExperienceService.createCandidateJobExperience(id, request);
+    public Map<String, Object> create(@Valid @PathVariable("id") long candidateId, @RequestBody CreateJobExperienceRequest request) throws EntityExistsException {
+        CandidateJobExperience candidateJobExperience = this.candidateJobExperienceService.createCandidateJobExperience(candidateId, request);
         return candidateJobExperienceDto().build(candidateJobExperience);
     }
 
-//    @PutMapping("{id}")
-//    public Map<String, Object> update(@PathVariable("id") long id,
-//                                      @RequestBody UpdateCandidateJobExperienceRequest request) {
-//        CandidateJobExperience candidateJobExperience = this.candidateJobExperienceService.updateJobExperience(id, request);
-//        return candidateJobExperienceDto().build(candidateJobExperience);
-//    }
+    @PutMapping("{id}")
+    public Map<String, Object> update(@PathVariable("id") long id,
+                                      @RequestBody UpdateJobExperienceRequest request) {
+        CandidateJobExperience candidateJobExperience = this.candidateJobExperienceService.updateCandidateJobExperience(id, request);
+        return candidateJobExperienceDto().build(candidateJobExperience);
+    }
 
 
     private DtoBuilder candidateJobExperienceDto() {
@@ -79,5 +82,5 @@ public class CandidateJobExperienceAdminApi {
                 .add("name")
                 ;
     }
-    
+
 }

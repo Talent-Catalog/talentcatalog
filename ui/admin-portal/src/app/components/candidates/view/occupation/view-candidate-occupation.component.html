@@ -4,21 +4,12 @@
 <div *ngIf="error">
   {{error}}
 </div>
-<div class="card" *ngIf="!loading">
 
-  <div class="card-header">
-    {{occupation.name}}
-    <div class="pull-right" *ngIf="editable">
-      <button type="button" class="btn btn-default" (click)="addOccupation()"><i
-        class="fa fa-edit"></i>Add</button>
-    </div>
-  </div>
-
+<div *ngFor="let candidateOccupation of results">
   <app-view-candidate-job-experience
     [candidate]="candidate"
-    [occupation]="occupation"
     [candidateOccupation]="candidateOccupation"
     [editable]="editable">
   </app-view-candidate-job-experience>
-
 </div>
+
