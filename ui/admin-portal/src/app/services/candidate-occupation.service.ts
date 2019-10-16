@@ -3,6 +3,7 @@ import {Observable} from 'rxjs/index';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {Occupation} from "../model/occupation";
+import {CandidateOccupation} from "../model/candidate-occupation";
 
 @Injectable({providedIn: 'root'})
 export class CandidateOccupationService {
@@ -19,5 +20,9 @@ export class CandidateOccupationService {
   /* Note: This endpoint returns a list of Occupation objects, not CandidateOccupations */
   listOccupations(): Observable<Occupation[]> {
     return this.http.get<Occupation[]>(`${this.apiUrl}/occupation`);
+  }
+
+  get(id: number): Observable<CandidateOccupation[]> {
+    return this.http.get<CandidateOccupation[]>(`${this.apiUrl}/${id}/list`);
   }
 }

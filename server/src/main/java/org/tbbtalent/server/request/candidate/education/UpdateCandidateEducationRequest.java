@@ -4,12 +4,22 @@ import org.tbbtalent.server.model.EducationType;
 
 public class UpdateCandidateEducationRequest {
 
+    private Long id;
     private EducationType educationType;
     private Long countryId;
+    private Long majorId;
     private Integer lengthOfCourseYears;
     private String institution;
     private String courseName;
     private Integer yearCompleted;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public EducationType getEducationType() {
         return educationType;
@@ -25,6 +35,14 @@ public class UpdateCandidateEducationRequest {
 
     public void setCountryId(Long countryId) {
         this.countryId = countryId;
+    }
+
+    public Long getMajorId() {
+        return majorId;
+    }
+
+    public void setMajorId(Long majorId) {
+        this.majorId = majorId;
     }
 
     public Integer getLengthOfCourseYears() {

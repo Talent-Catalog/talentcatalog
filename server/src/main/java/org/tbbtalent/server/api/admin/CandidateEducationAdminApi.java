@@ -33,14 +33,15 @@ public class CandidateEducationAdminApi {
     @PostMapping("{id}")
     public Map<String, Object> create(@PathVariable("id") long candidateId,
                                       @RequestBody CreateCandidateEducationRequest request) throws UsernameTakenException {
-        CandidateEducation candidateEducation = this.candidateEducationService.createCandidateEducationAdmin(candidateId, request);
+        CandidateEducation candidateEducation = this.candidateEducationService.createCandidateEducation(candidateId, request);
         return candidateEducationDto().build(candidateEducation);
     }
 
     @PutMapping("{id}")
     public Map<String, Object> update(@PathVariable("id") long id,
                                       @RequestBody UpdateCandidateEducationRequest request) {
-        CandidateEducation candidateEducation = this.candidateEducationService.updateCandidateEducationAdmin(id, request);
+        request.setId(id);
+        CandidateEducation candidateEducation = this.candidateEducationService.updateCandidateEducation(request);
         return candidateEducationDto().build(candidateEducation);
     }
 
@@ -50,6 +51,7 @@ public class CandidateEducationAdminApi {
                 .add("id")
                 .add("educationType")
                 .add("country", countryDto())
+                .add("educationMajor", majorDto())
                 .add("lengthOfCourseYears")
                 .add("institution")
                 .add("courseName")
@@ -58,6 +60,14 @@ public class CandidateEducationAdminApi {
     }
 
     private DtoBuilder countryDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
+                .add("status")
+                ;
+    }
+
+    private DtoBuilder majorDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("name")

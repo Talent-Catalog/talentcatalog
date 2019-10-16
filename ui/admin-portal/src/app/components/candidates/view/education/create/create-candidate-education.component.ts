@@ -4,6 +4,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateEducationService} from "../../../../../services/candidate-education.service";
 import {CandidateEducation} from "../../../../../model/candidate-education";
 import {CountryService} from "../../../../../services/country.service";
+import {EducationMajorService} from "../../../../../services/education-major.service";
 
 @Component({
   selector: 'app-create-candidate-education',
@@ -17,6 +18,7 @@ export class CreateCandidateEducationComponent implements OnInit {
   candidateForm: FormGroup;
 
   candidateId: number;
+  majors = [];
   countries = [];
   years = [];
   error;
@@ -26,7 +28,8 @@ export class CreateCandidateEducationComponent implements OnInit {
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
               private candidateEducationService: CandidateEducationService,
-              private countryService: CountryService ) {
+              private countryService: CountryService,
+              private educationMajorService: EducationMajorService) {
   }
 
   ngOnInit() {
@@ -51,10 +54,22 @@ export class CreateCandidateEducationComponent implements OnInit {
       }
     );
 
+    /*load the countries */
+    this.educationMajorService.listMajors().subscribe(
+      (response) => {
+        this.majors = response;
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      }
+    );
+
     this.candidateForm = this.fb.group({
       courseName: ['', [Validators.required]],
       institution: ['', [Validators.required]],
       countryId: ['', [Validators.required]],
+      majorId: ['', [Validators.required]],
       yearCompleted: ['', [Validators.required]],
       educationType: ['', [Validators.required]]
     });

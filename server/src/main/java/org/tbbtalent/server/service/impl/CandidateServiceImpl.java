@@ -22,6 +22,7 @@ import org.tbbtalent.server.service.CandidateService;
 import org.tbbtalent.server.service.SavedSearchService;
 
 import javax.security.auth.login.AccountLockedException;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,6 +65,7 @@ public class CandidateServiceImpl implements CandidateService {
         if (request.getSavedSearchId() != null) {
             searchIds.add(request.getSavedSearchId());
         }
+
         Specification<Candidate> query = CandidateSpecification.buildSearchQuery(request);
         if (!request.getSearchJoinRequests().isEmpty()) {
             for (SearchJoinRequest searchJoinRequest : request.getSearchJoinRequests()) {
@@ -190,6 +192,7 @@ public class CandidateServiceImpl implements CandidateService {
             }
         }
         candidate.setUser(user);
+        candidate.setDob(request.getDob());
         candidate.setGender(request.getGender());
         candidate.setPhone(request.getPhone());
         candidate.setWhatsapp(request.getWhatsapp());

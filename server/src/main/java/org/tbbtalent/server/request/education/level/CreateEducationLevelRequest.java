@@ -13,6 +13,8 @@ public class CreateEducationLevelRequest {
     @NotNull
     private Status status;
 
+    private int level;
+
     public String getName() { return name; }
 
     public void setName(String name) {
@@ -27,4 +29,11 @@ public class CreateEducationLevelRequest {
         this.status = status;
     }
 
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
 }

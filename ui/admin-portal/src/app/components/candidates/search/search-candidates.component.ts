@@ -29,6 +29,8 @@ import {
   LanguageLevelFormControlModel
 } from "../../util/form/language-proficiency/language-level-form-control-model";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
+import * as moment from 'moment-timezone';
+
 
 @Component({
   selector: 'app-search-candidates',
@@ -98,7 +100,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     this.moreFilters = false;
     this.selectedCandidate = null;
     this.pageNumber = 1;
-    this.pageSize = 1;
+    this.pageSize = 50;
 
     /* SET UP FORM */
     this.searchForm = this.fb.group({
@@ -113,23 +115,22 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       nationalityIds: [[]],
       nationalitySearchType: [null],
       countryIds: [[]],
-      englishMinWrittenLevelId: [null],
-      englishMinSpokenLevelId: [null],
+      englishMinWrittenLevel: [null],
+      englishMinSpokenLevel: [null],
       otherLanguageId: [null],
-      otherMinWrittenLevelId: [null],
-      otherMinSpokenLevelId: [null],
+      otherMinWrittenLevel: [null],
+      otherMinSpokenLevel: [null],
       unRegistered: [null],
       lastModifiedFrom: [null],
       lastModifiedTo: [null],
       createdFrom: [null],
       createdTo: [null],
+      timezone: moment.tz.guess(),
       minAge: [null],
       maxAge: [null],
-      minEducationLevelId: [null],
+      minEducationLevel: [null],
       educationMajorIds: [[]],
       searchJoinRequests: this.fb.array([]),
-      page: 1,
-      size: 50,
       shortlistStatus: null
     });
 
@@ -263,6 +264,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   /* SEARCH FORM */
   search() {
     this.loading = true;
+    this.error = null;
     const request = this.searchForm.value;
     request.pageNumber = this.pageNumber - 1;
     request.pageSize = this.pageSize;
@@ -369,12 +371,13 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   handleDateSelected(e: {fromDate: NgbDateStruct, toDate: NgbDateStruct}, control: string) {
     if (e.fromDate) {
-      this.searchForm.controls[control + 'From'].patchValue(e.fromDate.year + '-' + e.fromDate.month + '-' + e.fromDate.day);
+      console.log(e);
+      this.searchForm.controls[control + 'From'].patchValue(e.fromDate.year + '-' + ('0' + e.fromDate.month).slice(-2)  + '-' + ('0' + e.fromDate.day).slice(-2));
     } else {
       this.searchForm.controls[control + 'From'].patchValue(null);
     }
     if (e.toDate) {
-      this.searchForm.controls[control + 'To'].patchValue(e.toDate.year + '-' + e.toDate.month + '-' + e.toDate.day);
+      this.searchForm.controls[control + 'To'].patchValue(e.toDate.year + '-' + ('0' + e.toDate.month).slice(-2) + '-' +('0' + e.toDate.day).slice(-2));
     } else {
       this.searchForm.controls[control + 'To'].patchValue(null);
     }
@@ -382,13 +385,13 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   handleLanguageLevelChange(model: LanguageLevelFormControlModel, languageKey: string) {
     if (languageKey === 'english') {
-      this.searchForm.controls['englishMinWrittenLevelId'].patchValue(model.writtenLevelId);
-      this.searchForm.controls['englishMinSpokenLevelId'].patchValue(model.spokenLevelId);
+      this.searchForm.controls['englishMinWrittenLevel'].patchValue(model.writtenLevel);
+      this.searchForm.controls['englishMinSpokenLevel'].patchValue(model.spokenLevel);
     } else {
       // Update other language form values
       this.searchForm.controls['otherLanguageId'].patchValue(model.languageId);
-      this.searchForm.controls['otherMinWrittenLevelId'].patchValue(model.writtenLevelId);
-      this.searchForm.controls['otherMinSpokenLevelId'].patchValue(model.spokenLevelId);
+      this.searchForm.controls['otherMinWrittenLevel'].patchValue(model.writtenLevel);
+      this.searchForm.controls['otherMinSpokenLevel'].patchValue(model.spokenLevel);
     }
   }
 }

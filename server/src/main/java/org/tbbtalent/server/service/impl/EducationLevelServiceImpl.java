@@ -58,7 +58,7 @@ public class EducationLevelServiceImpl implements EducationLevelService {
     @Transactional
     public EducationLevel createEducationLevel(CreateEducationLevelRequest request) throws EntityExistsException {
         EducationLevel educationLevel = new EducationLevel(
-                request.getName(), request.getStatus());
+                request.getName(), request.getStatus(), request.getLevel());
         checkDuplicates(null, request.getName());
         return this.educationLevelRepository.save(educationLevel);
     }
@@ -72,6 +72,7 @@ public class EducationLevelServiceImpl implements EducationLevelService {
         checkDuplicates(id, request.getName());
 
         educationLevel.setName(request.getName());
+        educationLevel.setLevel(request.getLevel());
         educationLevel.setStatus(request.getStatus());
         return educationLevelRepository.save(educationLevel);
     }

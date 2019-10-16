@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.model.CandidateEducation;
 import org.tbbtalent.server.request.candidate.education.CreateCandidateEducationRequest;
+import org.tbbtalent.server.request.candidate.education.UpdateCandidateEducationRequest;
 import org.tbbtalent.server.service.CandidateEducationService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -31,7 +32,7 @@ public class CandidateEducationPortalApi {
     }
 
     @PostMapping("update")
-    public Map<String, Object> updateCandidateEducation(@Valid @RequestBody CreateCandidateEducationRequest request) {
+    public Map<String, Object> updateCandidateEducation(@Valid @RequestBody UpdateCandidateEducationRequest request) {
         CandidateEducation candidateEducation = this.candidateEducationService.updateCandidateEducation(request);
         return candidateEducationDto().build(candidateEducation);
     }

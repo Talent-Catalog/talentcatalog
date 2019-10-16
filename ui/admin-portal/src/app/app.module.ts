@@ -73,7 +73,7 @@ import {ViewCandidateCertificationComponent} from "./components/candidates/view/
 import {CreateCandidateCertificationComponent} from "./components/candidates/view/certification/create/create-candidate-certification.component";
 import {EditCandidateCertificationComponent} from "./components/candidates/view/certification/edit/edit-candidate-certification.component";
 import {ViewCandidateOccupationComponent} from './components/candidates/view/occupation/view-candidate-occupation.component';
-import {ViewCandidateExperienceComponent} from './components/candidates/view/occupation/experience/view-candidate-experience.component';
+import {ViewCandidateJobExperienceComponent} from './components/candidates/view/occupation/experience/view-candidate-job-experience.component';
 import {EditUserComponent} from './components/settings/users/edit/edit-user.component';
 import {CreateUserComponent} from './components/settings/users/create/create-user.component';
 import {CandidateEducationTabComponent} from "./components/candidates/view/tab/candidate-education-tab/candidate-education-tab.component";
@@ -86,6 +86,8 @@ import {CandidateShortlistItemComponent} from "./components/candidates/search/sh
 import {UserPipe} from "./components/util/user/user.pipe";
 import {UpdatedByComponent} from "./components/util/user/updated-by/updated-by.component";
 import {DateRangePickerComponent} from './components/util/form/date-range-picker/date-range-picker.component';
+import { EditCandidateJobExperienceComponent } from './components/candidates/view/occupation/experience/edit/edit-candidate-job-experience.component';
+import { CreateCandidateJobExperienceComponent } from './components/candidates/view/occupation/experience/create/create-candidate-job-experience.component';
 
 @NgModule({
   declarations: [
@@ -161,9 +163,11 @@ import {DateRangePickerComponent} from './components/util/form/date-range-picker
     UpdatedByComponent,
     SavedSearchComponent,
     ViewCandidateOccupationComponent,
-    ViewCandidateExperienceComponent,
+    ViewCandidateJobExperienceComponent,
     LanguageLevelFormControlComponent,
-    CandidatePipe
+    CandidatePipe,
+    EditCandidateJobExperienceComponent,
+    CreateCandidateJobExperienceComponent
   ],
   imports: [
     BrowserModule,
@@ -218,7 +222,9 @@ import {DateRangePickerComponent} from './components/util/form/date-range-picker
     EditCandidateCertificationComponent,
     TranslationsComponent,
     EditCandidateCertificationComponent,
-    EditCandidateShortlistItemComponent
+    EditCandidateShortlistItemComponent,
+    CreateCandidateJobExperienceComponent,
+    EditCandidateJobExperienceComponent
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},

@@ -3,8 +3,11 @@ package org.tbbtalent.server.request.candidate;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.tbbtalent.server.model.*;
 import org.tbbtalent.server.request.SearchRequest;
+
+import javax.validation.constraints.NotNull;
 
 public class SearchCandidateRequest extends SearchRequest {
 
@@ -19,19 +22,25 @@ public class SearchCandidateRequest extends SearchRequest {
     private List<Long> nationalityIds;
     private SearchType nationalitySearchType;
     private List<Long> countryIds;
-    private Long englishMinWrittenLevelId;
-    private Long englishMinSpokenLevelId;
+    private Integer englishMinWrittenLevel;
+    private Integer englishMinSpokenLevel;
     private Long otherLanguageId;
-    private Long otherMinWrittenLevelId;
-    private Long otherMinSpokenLevelId;
+    private Integer otherMinWrittenLevel;
+    private Integer otherMinSpokenLevel;
     private Boolean unRegistered;
+    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private LocalDate lastModifiedFrom;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private LocalDate lastModifiedTo;
-    private LocalDate createdFrom;
-    private LocalDate createdTo;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    private LocalDate registeredFrom;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    private LocalDate registeredTo;
+    @NotNull
+    private String timezone;
     private Integer minAge;
     private Integer maxAge;
-    private Long minEducationLevelId;
+    private Integer minEducationLevel;
     private List<Long> educationMajorIds;
     private ShortlistStatus shortlistStatus;
 
@@ -125,20 +134,20 @@ public class SearchCandidateRequest extends SearchRequest {
         this.countryIds = countryIds;
     }
 
-    public Long getEnglishMinWrittenLevelId() {
-        return englishMinWrittenLevelId;
+    public Integer getEnglishMinWrittenLevel() {
+        return englishMinWrittenLevel;
     }
 
-    public void setEnglishMinWrittenLevelId(Long englishMinWrittenLevelId) {
-        this.englishMinWrittenLevelId = englishMinWrittenLevelId;
+    public void setEnglishMinWrittenLevel(Integer englishMinWrittenLevel) {
+        this.englishMinWrittenLevel = englishMinWrittenLevel;
     }
 
-    public Long getEnglishMinSpokenLevelId() {
-        return englishMinSpokenLevelId;
+    public Integer getEnglishMinSpokenLevel() {
+        return englishMinSpokenLevel;
     }
 
-    public void setEnglishMinSpokenLevelId(Long englishMinSpokenLevelId) {
-        this.englishMinSpokenLevelId = englishMinSpokenLevelId;
+    public void setEnglishMinSpokenLevel(Integer englishMinSpokenLevel) {
+        this.englishMinSpokenLevel = englishMinSpokenLevel;
     }
 
     public Long getOtherLanguageId() {
@@ -149,20 +158,20 @@ public class SearchCandidateRequest extends SearchRequest {
         this.otherLanguageId = otherLanguageId;
     }
 
-    public Long getOtherMinWrittenLevelId() {
-        return otherMinWrittenLevelId;
+    public Integer getOtherMinWrittenLevel() {
+        return otherMinWrittenLevel;
     }
 
-    public void setOtherMinWrittenLevelId(Long otherMinWrittenLevelId) {
-        this.otherMinWrittenLevelId = otherMinWrittenLevelId;
+    public void setOtherMinWrittenLevel(Integer otherMinWrittenLevel) {
+        this.otherMinWrittenLevel = otherMinWrittenLevel;
     }
 
-    public Long getOtherMinSpokenLevelId() {
-        return otherMinSpokenLevelId;
+    public Integer getOtherMinSpokenLevel() {
+        return otherMinSpokenLevel;
     }
 
-    public void setOtherMinSpokenLevelId(Long otherMinSpokenLevelId) {
-        this.otherMinSpokenLevelId = otherMinSpokenLevelId;
+    public void setOtherMinSpokenLevel(Integer otherMinSpokenLevel) {
+        this.otherMinSpokenLevel = otherMinSpokenLevel;
     }
 
     public Boolean getUnRegistered() {
@@ -189,20 +198,28 @@ public class SearchCandidateRequest extends SearchRequest {
         this.lastModifiedTo = lastModifiedTo;
     }
 
-    public LocalDate getCreatedFrom() {
-        return createdFrom;
+    public LocalDate getRegisteredFrom() {
+        return registeredFrom;
     }
 
-    public void setCreatedFrom(LocalDate createdFrom) {
-        this.createdFrom = createdFrom;
+    public void setRegisteredFrom(LocalDate registeredFrom) {
+        this.registeredFrom = registeredFrom;
     }
 
-    public LocalDate getCreatedTo() {
-        return createdTo;
+    public LocalDate getRegisteredTo() {
+        return registeredTo;
     }
 
-    public void setCreatedTo(LocalDate createdTo) {
-        this.createdTo = createdTo;
+    public void setRegisteredTo(LocalDate registeredTo) {
+        this.registeredTo = registeredTo;
+    }
+
+    public String getTimezone() {
+        return timezone;
+    }
+
+    public void setTimezone(String timezone) {
+        this.timezone = timezone;
     }
 
     public Integer getMinAge() {
@@ -221,12 +238,12 @@ public class SearchCandidateRequest extends SearchRequest {
         this.maxAge = maxAge;
     }
 
-    public Long getMinEducationLevelId() {
-        return minEducationLevelId;
+    public Integer getMinEducationLevel() {
+        return minEducationLevel;
     }
 
-    public void setMinEducationLevelId(Long minEducationLevelId) {
-        this.minEducationLevelId = minEducationLevelId;
+    public void setMinEducationLevel(Integer minEducationLevel) {
+        this.minEducationLevel = minEducationLevel;
     }
 
     public List<Long> getEducationMajorIds() {

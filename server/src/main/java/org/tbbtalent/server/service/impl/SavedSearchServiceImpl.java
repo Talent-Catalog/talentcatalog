@@ -136,9 +136,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     //---------------------------------------------------------------------------------------------------
     private SavedSearch convertToSavedSearch(CreateSavedSearchRequest request) {
 
-        Map<Long, LanguageLevel> languageLevelMap = languageLevelRepository.findAll()
-                .stream()
-                .collect( Collectors.toMap(LanguageLevel::getId, Function.identity()) );
 
         SavedSearch savedSearch = new SavedSearch();
         savedSearch.setName(request.getName());
@@ -152,25 +149,22 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         savedSearch.setNationalityIds(getListAsString(request.getSearchCandidateRequest().getNationalityIds()));
         savedSearch.setNationalitySearchType(request.getSearchCandidateRequest().getNationalitySearchType());
         savedSearch.setCountryIds(getListAsString(request.getSearchCandidateRequest().getCountryIds()));
-        savedSearch.setEnglishMinSpokenLevel(languageLevelMap.get(request.getSearchCandidateRequest().getEnglishMinSpokenLevelId()));
-        savedSearch.setEnglishMinWrittenLevel(languageLevelMap.get(request.getSearchCandidateRequest().getEnglishMinWrittenLevelId()));
+        savedSearch.setEnglishMinSpokenLevel(request.getSearchCandidateRequest().getEnglishMinSpokenLevel());
+        savedSearch.setEnglishMinWrittenLevel(request.getSearchCandidateRequest().getEnglishMinWrittenLevel());
         Optional<Language> language = request.getSearchCandidateRequest().getOtherLanguageId() != null ? languageRepository.findById(request.getSearchCandidateRequest().getOtherLanguageId()) : null;
         if (language != null && language.isPresent()){
             savedSearch.setOtherLanguage(language.get());
         }
-        savedSearch.setOtherMinSpokenLevel(languageLevelMap.get(request.getSearchCandidateRequest().getOtherMinSpokenLevelId()));
-        savedSearch.setOtherMinWrittenLevel(languageLevelMap.get(request.getSearchCandidateRequest().getOtherMinWrittenLevelId()));
+        savedSearch.setOtherMinSpokenLevel(request.getSearchCandidateRequest().getOtherMinSpokenLevel());
+        savedSearch.setOtherMinWrittenLevel(request.getSearchCandidateRequest().getOtherMinWrittenLevel());
         savedSearch.setUnRegistered(request.getSearchCandidateRequest().getUnRegistered());
         savedSearch.setLastModifiedFrom(request.getSearchCandidateRequest().getLastModifiedFrom());
         savedSearch.setLastModifiedTo(request.getSearchCandidateRequest().getLastModifiedTo());
-        savedSearch.setCreatedFrom(request.getSearchCandidateRequest().getCreatedFrom());
-        savedSearch.setCreatedTo(request.getSearchCandidateRequest().getCreatedTo());
+        savedSearch.setCreatedFrom(request.getSearchCandidateRequest().getRegisteredFrom());
+        savedSearch.setCreatedTo(request.getSearchCandidateRequest().getRegisteredTo());
         savedSearch.setMinAge(request.getSearchCandidateRequest().getMinAge());
         savedSearch.setMaxAge(request.getSearchCandidateRequest().getMaxAge());
-        Optional<EducationLevel> educationLevel = request.getSearchCandidateRequest().getMinEducationLevelId() != null ? educationLevelRepository.findById(request.getSearchCandidateRequest().getMinEducationLevelId()) : null;
-        if (educationLevel != null && educationLevel.isPresent()){
-            savedSearch.setMinEducationLevel(educationLevel.get());
-        }
+        savedSearch.setMinEducationLevel(request.getSearchCandidateRequest().getMinEducationLevel());
         savedSearch.setEducationMajorIds(getListAsString(request.getSearchCandidateRequest().getEducationMajorIds()));
 
         return savedSearch;
@@ -190,19 +184,19 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setNationalityIds(getIdsFromString(request.getNationalityIds()));
         searchCandidateRequest.setNationalitySearchType(request.getNationalitySearchType());
         searchCandidateRequest.setCountryIds(getIdsFromString(request.getCountryIds()));
-        searchCandidateRequest.setEnglishMinSpokenLevelId(request.getEnglishMinSpokenLevel() != null ? request.getEnglishMinSpokenLevel().getId() : null);
-        searchCandidateRequest.setEnglishMinWrittenLevelId(request.getEnglishMinWrittenLevel() != null ? request.getEnglishMinWrittenLevel().getId() : null);
+        searchCandidateRequest.setEnglishMinSpokenLevel(request.getEnglishMinSpokenLevel());
+        searchCandidateRequest.setEnglishMinWrittenLevel(request.getEnglishMinWrittenLevel());
         searchCandidateRequest.setOtherLanguageId(request.getOtherLanguage() != null ? request.getOtherLanguage().getId() : null);
-        searchCandidateRequest.setOtherMinSpokenLevelId(request.getOtherMinSpokenLevel() != null ? request.getOtherMinSpokenLevel().getId() : null);
-        searchCandidateRequest.setOtherMinWrittenLevelId(request.getOtherMinWrittenLevel() != null ? request.getOtherMinWrittenLevel().getId() : null);
+        searchCandidateRequest.setOtherMinSpokenLevel(request.getOtherMinSpokenLevel());
+        searchCandidateRequest.setOtherMinWrittenLevel(request.getOtherMinWrittenLevel());
         searchCandidateRequest.setUnRegistered(request.isUnRegistered());
         searchCandidateRequest.setLastModifiedFrom(request.getLastModifiedFrom());
         searchCandidateRequest.setLastModifiedTo(request.getLastModifiedTo());
-        searchCandidateRequest.setCreatedFrom(request.getCreatedFrom());
-        searchCandidateRequest.setCreatedTo(request.getCreatedTo());
+        searchCandidateRequest.setRegisteredFrom(request.getCreatedFrom());
+        searchCandidateRequest.setRegisteredTo(request.getCreatedTo());
         searchCandidateRequest.setMinAge(request.getMinAge());
         searchCandidateRequest.setMaxAge(request.getMaxAge());
-        searchCandidateRequest.setMinEducationLevelId(request.getMinEducationLevel() != null ? request.getMinEducationLevel().getId() : null);
+        searchCandidateRequest.setMinEducationLevel(request.getMinEducationLevel());
         searchCandidateRequest.setEducationMajorIds(getIdsFromString(request.getEducationMajorIds()));
 
         List<SearchJoinRequest> searchJoinRequests = new ArrayList<>();

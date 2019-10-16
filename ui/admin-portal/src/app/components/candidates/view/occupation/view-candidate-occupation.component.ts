@@ -5,7 +5,9 @@ import {Candidate} from "../../../../model/candidate";
 import {Occupation} from "../../../../model/occupation";
 import {CandidateOccupation} from "../../../../model/candidate-occupation";
 import {CandidateService} from "../../../../services/candidate.service";
+import {CandidateOccupationService} from "../../../../services/candidate-occupation.service";
 import {EditCountryComponent} from "../../../settings/countries/edit/edit-country.component";
+import {SearchResults} from "../../../../model/search-results";
 
 @Component({
   selector: 'app-view-candidate-occupation',
@@ -19,23 +21,16 @@ export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
 
   loading: boolean;
   error;
-  occupation: Occupation;
   candidateOccupation: CandidateOccupation;
-  candidateOccupations: CandidateOccupation[];
+  results: CandidateOccupation[];
 
   constructor(private candidateService: CandidateService,
+              private candidateOccupationService: CandidateOccupationService,
               private modalService: NgbModal) { }
 
-  ngOnInit() {
-    this.occupation = {
-      id: 1,
-      name: "Accountant",
-      status: "active"
-    }
-  }
+  ngOnInit() {}
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log(changes);
     if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
       this.loading = true;
       this.candidateService.get(this.candidate.id).subscribe(
@@ -48,6 +43,16 @@ export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
           this.loading = false;
         });
     }
-  }
 
+    this.candidateOccupationService.get(this.candidate.id).subscribe(
+      results => {
+           this.results = results;
+           this.loading = false;
+         },
+      error => {
+         this.error = error;
+         this.loading = false;
+       }
+     );
+    }
 }

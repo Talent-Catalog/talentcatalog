@@ -161,11 +161,11 @@
 
           <!-- EDUCATION LEVEL -->
           <div class="form-group col-12 col-md-4">
-            <label for="minEducationLevelId">Education Level (minimum)</label>
-            <select class="form-control" id="minEducationLevelId" name="minEducationLevelId"
-                    [formControlName]="'minEducationLevelId'">
+            <label for="minEducationLevel">Education Level (minimum)</label>
+            <select class="form-control" id="minEducationLevel" name="minEducationLevel"
+                    [formControlName]="'minEducationLevel'">
               <option value=""></option>
-              <option *ngFor="let level of educationLevels" [value]="level.id">
+              <option *ngFor="let level of educationLevels" [value]="level.level">
                 {{level.name}}
               </option>
             </select>

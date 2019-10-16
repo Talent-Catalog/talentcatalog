@@ -30,22 +30,14 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
 
     private String countryIds;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "english_min_written_level_id")
-    private LanguageLevel englishMinWrittenLevel;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "english_min_spoken_level_id")
-    private LanguageLevel englishMinSpokenLevel;
+    private Integer englishMinWrittenLevel;
+    private Integer englishMinSpokenLevel;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "other_language_id")
     private Language otherLanguage;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "other_min_written_level_id")
-    private LanguageLevel otherMinWrittenLevel;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "other_min_spoken_level_id")
-    private LanguageLevel otherMinSpokenLevel;
+    private Integer otherMinWrittenLevel;
+    private Integer otherMinSpokenLevel;
 
     private Boolean unRegistered;
 
@@ -58,9 +50,8 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
     private Integer minAge;
     private Integer maxAge;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "min_education_level_id")
-    private EducationLevel minEducationLevel;
+
+    private Integer minEducationLevel;
     private String educationMajorIds;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "savedSearch", cascade = CascadeType.MERGE)
@@ -169,19 +160,19 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
         this.countryIds = countryIds;
     }
 
-    public LanguageLevel getEnglishMinWrittenLevel() {
+    public Integer getEnglishMinWrittenLevel() {
         return englishMinWrittenLevel;
     }
 
-    public void setEnglishMinWrittenLevel(LanguageLevel englishMinWrittenLevel) {
+    public void setEnglishMinWrittenLevel(Integer englishMinWrittenLevel) {
         this.englishMinWrittenLevel = englishMinWrittenLevel;
     }
 
-    public LanguageLevel getEnglishMinSpokenLevel() {
+    public Integer getEnglishMinSpokenLevel() {
         return englishMinSpokenLevel;
     }
 
-    public void setEnglishMinSpokenLevel(LanguageLevel englishMinSpokenLevel) {
+    public void setEnglishMinSpokenLevel(Integer englishMinSpokenLevel) {
         this.englishMinSpokenLevel = englishMinSpokenLevel;
     }
 
@@ -193,19 +184,19 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
         this.otherLanguage = otherLanguage;
     }
 
-    public LanguageLevel getOtherMinWrittenLevel() {
+    public Integer getOtherMinWrittenLevel() {
         return otherMinWrittenLevel;
     }
 
-    public void setOtherMinWrittenLevel(LanguageLevel otherMinWrittenLevel) {
+    public void setOtherMinWrittenLevel(Integer otherMinWrittenLevel) {
         this.otherMinWrittenLevel = otherMinWrittenLevel;
     }
 
-    public LanguageLevel getOtherMinSpokenLevel() {
+    public Integer getOtherMinSpokenLevel() {
         return otherMinSpokenLevel;
     }
 
-    public void setOtherMinSpokenLevel(LanguageLevel otherMinSpokenLevel) {
+    public void setOtherMinSpokenLevel(Integer otherMinSpokenLevel) {
         this.otherMinSpokenLevel = otherMinSpokenLevel;
     }
 
@@ -265,11 +256,11 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
         this.maxAge = maxAge;
     }
 
-    public EducationLevel getMinEducationLevel() {
+     public Integer getMinEducationLevel() {
         return minEducationLevel;
     }
 
-    public void setMinEducationLevel(EducationLevel minEducationLevel) {
+    public void setMinEducationLevel(Integer minEducationLevel) {
         this.minEducationLevel = minEducationLevel;
     }
 

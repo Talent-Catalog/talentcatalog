@@ -1,0 +1,55 @@
+<div *ngIf="loading">
+  <i class="fa fa-spinner fa-spin"></i> loading...
+</div>
+<div *ngIf="error">
+  {{error}}
+</div>
+<div class="card" *ngIf="!loading">
+  <div class="card-header">
+    {{candidateOccupation.occupation.name}} ({{candidateOccupation.yearsExperience}} years)
+    <div class="pull-right" *ngIf="editable">
+      <button type="button" class="btn btn-sm btn-primary" (click)="createCandidateJobExperience()">Add Experience</button>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <div *ngIf="!results || results.content.length == 0">
+      <div class="row">
+        <div class="col-sm-12">
+          No job experience entered
+        </div>
+      </div>
+    </div>
+    <div *ngFor="let candidateJobExperience of results?.content">
+      <div class="row">
+        <div class="col-6">
+          <h6 class="card-title">{{candidateJobExperience.role}}</h6>
+        </div>
+        <div class="col-6">
+          <div class="pull-right" *ngIf="editable">
+            <button type="button" class="btn btn-default" (click)="editCandidateJobExperience(candidateJobExperience)"><i
+              class="fa fa-edit"></i></button>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-6">
+          <label class="col-form-label card-subtitle">{{candidateJobExperience.companyName}}, {{candidateJobExperience.country.name}}</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-6">
+          <label class="col-form-label card-subtitle text-muted">{{(candidateJobExperience.description | slice:0:50) + (candidateJobExperience.description.length > 50 ? ' ...' : '')}}</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-6">
+          <label class="col-form-label mb-2 text-muted small">{{candidateJobExperience.startDate | date }} - {{candidateJobExperience.endDate | date }}</label>
+        </div>
+      </div>
+      <hr/>
+    </div>
+
+  </div>
+
+</div>

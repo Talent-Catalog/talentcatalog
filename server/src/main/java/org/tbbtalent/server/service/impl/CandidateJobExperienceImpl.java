@@ -1,6 +1,7 @@
 package org.tbbtalent.server.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
@@ -8,10 +9,13 @@ import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.model.CandidateJobExperience;
 import org.tbbtalent.server.model.CandidateOccupation;
 import org.tbbtalent.server.model.Country;
-import org.tbbtalent.server.repository.CandidateOccupationRepository;
-import org.tbbtalent.server.repository.CountryRepository;
 import org.tbbtalent.server.repository.CandidateJobExperienceRepository;
+import org.tbbtalent.server.repository.CandidateOccupationRepository;
+import org.tbbtalent.server.repository.CandidateRepository;
+import org.tbbtalent.server.repository.CountryRepository;
 import org.tbbtalent.server.request.work.experience.CreateJobExperienceRequest;
+import org.tbbtalent.server.request.work.experience.SearchJobExperienceRequest;
+import org.tbbtalent.server.request.work.experience.UpdateJobExperienceRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.CandidateJobExperienceService;
 
@@ -20,6 +24,7 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
 
     private final CandidateJobExperienceRepository candidateJobExperienceRepository;
     private final CountryRepository countryRepository;
+    private final CandidateRepository candidateRepository;
     private final CandidateOccupationRepository candidateOccupationRepository;
     private final UserContext userContext;
 
@@ -27,16 +32,22 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
     public CandidateJobExperienceImpl(CandidateJobExperienceRepository candidateJobExperienceRepository,
                                       CandidateOccupationRepository candidateOccupationRepository,
                                       CountryRepository countryRepository,
+                                      CandidateRepository candidateRepository,
                                       UserContext userContext) {
         this.candidateJobExperienceRepository = candidateJobExperienceRepository;
         this.countryRepository = countryRepository;
+        this.candidateRepository = candidateRepository;
         this.candidateOccupationRepository = candidateOccupationRepository;
         this.userContext = userContext;
     }
 
+    @Override
+    public Page<CandidateJobExperience> searchCandidateJobExperience(SearchJobExperienceRequest request) {
+        return candidateJobExperienceRepository.findByCandidateOccupationId(request.getCandidateOccupationId(), request.getPageRequest());
+    }
 
     @Override
-    public CandidateJobExperience createJobExperience(CreateJobExperienceRequest request) {
+    public CandidateJobExperience createCandidateJobExperience(CreateJobExperienceRequest request) {
         Candidate candidate = userContext.getLoggedInCandidate();
         Long test = 3L;
 
@@ -67,7 +78,64 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
     }
 
     @Override
-    public void deleteJobExperience(Long id) {
+    public CandidateJobExperience createCandidateJobExperience(Long candidateId, CreateJobExperienceRequest request) {
+        // Load the candidate from the database - throw an exception if not found
+        Candidate candidate = candidateRepository.findById(candidateId)
+                .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateId));
+
+        Long test = 3L;
+
+        // Load the country from the database - throw an exception if not found
+        Country country = countryRepository.findById(request.getCountryId())
+                .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountryId()));
+
+        // Load the candidate occupation from the database - throw an exception if not found
+        CandidateOccupation occupation = candidateOccupationRepository.findById(request.getCandidateOccupationId())
+                .orElseThrow(() -> new NoSuchObjectException(CandidateOccupation.class, request.getCandidateOccupationId()));
+
+        // Create a new candidateOccupation object to insert into the database
+        CandidateJobExperience candidateJobExperience = new CandidateJobExperience();
+        candidateJobExperience.setCandidate(candidate);
+        candidateJobExperience.setCountry(country);
+        candidateJobExperience.setCandidateOccupation(occupation);
+        candidateJobExperience.setCompanyName(request.getCompanyName());
+        candidateJobExperience.setRole(request.getRole());
+        candidateJobExperience.setStartDate(request.getStartDate());
+        candidateJobExperience.setEndDate(request.getEndDate());
+        candidateJobExperience.setFullTime(request.getFullTime());
+        candidateJobExperience.setPaid(request.getPaid());
+        candidateJobExperience.setDescription(request.getDescription());
+
+        // Save the candidateOccupation
+        return candidateJobExperienceRepository.save(candidateJobExperience);
+    }
+
+    @Override
+    public CandidateJobExperience updateCandidateJobExperience(Long id, UpdateJobExperienceRequest request) {
+        // Load the candidate from the database - throw an exception if not found
+        CandidateJobExperience candidateJobExperience = candidateJobExperienceRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(CandidateJobExperience.class, id));
+
+        // Load the country from the database - throw an exception if not found
+        Country country = countryRepository.findById(request.getCountryId())
+                .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountryId()));
+
+        // Create a new candidateOccupation object to insert into the database
+        candidateJobExperience.setCountry(country);
+        candidateJobExperience.setCompanyName(request.getCompanyName());
+        candidateJobExperience.setRole(request.getRole());
+        candidateJobExperience.setStartDate(request.getStartDate());
+        candidateJobExperience.setEndDate(request.getEndDate());
+        candidateJobExperience.setFullTime(request.getFullTime());
+        candidateJobExperience.setPaid(request.getPaid());
+        candidateJobExperience.setDescription(request.getDescription());
+
+        // Save the candidateOccupation
+        return candidateJobExperienceRepository.save(candidateJobExperience);
+    }
+
+    @Override
+    public void deleteCandidateJobExperience(Long id) {
         Candidate candidate = userContext.getLoggedInCandidate();
         CandidateJobExperience candidateJobExperience = candidateJobExperienceRepository.findByIdLoadCandidate(id)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateJobExperience.class, id));
