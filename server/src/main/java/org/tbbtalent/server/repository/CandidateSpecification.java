@@ -20,6 +20,7 @@ public class CandidateSpecification {
             query.distinct(true);
             Join<Candidate, CandidateLanguage> candidateLanguages = candidate.join("candidateLanguages", JoinType.LEFT);
             Join<Candidate, User> user = candidate.join("user");
+            Join<Candidate, CandidateEducation> candidateEducations = null;
 
             //Short lists
             if (request.getSavedSearchId() != null) {
@@ -84,7 +85,7 @@ public class CandidateSpecification {
                         String lowerCaseMatchTerm = request.getOrProfileKeyword().toLowerCase();
                         String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
                         Join<Candidate, CandidateJobExperience> candidateJobExperiences = candidate.join("candidateJobExperiences", JoinType.LEFT);
-                        Join<Candidate, CandidateEducation> candidateEducations = candidate.join("candidateEducation", JoinType.LEFT);
+                        candidateEducations = candidateEducations == null ? candidate.join("candidateEducation", JoinType.LEFT) : candidateEducations;
 
                         conjunction.getExpressions().add(builder.or(
                                 builder.isTrue(candidateOccupations.get("id").in(request.getOccupationIds())),
@@ -140,11 +141,11 @@ public class CandidateSpecification {
 
             //Registered From - change to registered
             if (request.getRegisteredFrom() != null) {
-                conjunction.getExpressions().add(builder.greaterThanOrEqualTo(candidate.get("createdDate"), getOffsetDateTime(request.getRegisteredFrom(), LocalTime.MIN, request.getTimezone())));
+                conjunction.getExpressions().add(builder.greaterThanOrEqualTo(candidate.get("registeredDate"), getOffsetDateTime(request.getRegisteredFrom(), LocalTime.MIN, request.getTimezone())));
             }
 
             if (request.getRegisteredTo() != null) {
-                conjunction.getExpressions().add(builder.lessThanOrEqualTo(candidate.get("createdDate"), getOffsetDateTime(request.getRegisteredTo(), LocalTime.MAX, request.getTimezone())));
+                conjunction.getExpressions().add(builder.lessThanOrEqualTo(candidate.get("registeredDate"), getOffsetDateTime(request.getRegisteredTo(), LocalTime.MAX, request.getTimezone())));
             }
 
             //Min / Max Age
@@ -164,6 +165,16 @@ public class CandidateSpecification {
                 Join<Candidate, EducationLevel> educationLevel = candidate.join("maxEducationLevel", JoinType.LEFT);
                 conjunction.getExpressions().add(
                         builder.greaterThanOrEqualTo(educationLevel.get("level"), request.getMinEducationLevel())
+                );
+            }
+
+            // MAJOR SEARCH
+            if(!Collections.isEmpty(request.getEducationMajorIds())) {
+                candidateEducations = candidateEducations == null ? candidate.join("candidateEducation", JoinType.LEFT) : candidateEducations;
+                Join<Candidate, EducationMajor> major = candidateEducations.join("educationMajor", JoinType.LEFT);
+
+                conjunction.getExpressions().add(
+                        builder.isTrue(major.get("id").in(request.getEducationMajorIds()))
                 );
             }
 

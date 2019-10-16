@@ -32,21 +32,12 @@
         </select>
       </div>
 
-      <!-- COUNTRY -->
+      <!-- MAJOR -->
       <div class="form-group">
-        <label for="countryId">Country *</label>
-        <select class="form-control" name="country" id="countryId" [formControlName]="'countryId'">
+        <label for="majorId">Major *</label>
+        <select class="form-control" name="country" id="majorId" [formControlName]="'majorId'">
           <option value=""></option>
-          <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
-        </select>
-      </div>
-
-      <!-- DATE OF COMPLETION -->
-      <div class="form-group">
-        <label for="yearCompleted">Date of Completion</label>
-        <select class="form-control" name="yearCompleted" id="yearCompleted" [formControlName]="'yearCompleted'">
-          <option value=""></option>
-          <option *ngFor="let year of years" [value]="year">{{year}}</option>
+          <option *ngFor="let major of majors" [value]="major.id">{{major.name}}</option>
         </select>
       </div>
 
@@ -59,10 +50,27 @@
 
       <!-- INSTITUTION NAME -->
       <div class="form-group">
-        <label for="institution">City</label>
+        <label for="institution">Institution</label>
         <input type="text" class="form-control" id="institution" [formControlName]="'institution'">
       </div>
 
+      <!-- COUNTRY -->
+      <div class="form-group">
+        <label for="countryId">Country *</label>
+        <select class="form-control" name="country" id="countryId" [formControlName]="'countryId'">
+          <option value=""></option>
+          <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
+        </select>
+      </div>
+
+      <!-- Year -->
+      <div class="form-group">
+        <label for="yearCompleted">Year of completion *</label>
+        <select class="form-control" name="yearCompleted" id="yearCompleted" [formControlName]="'yearCompleted'">
+          <option value=""></option>
+          <option *ngFor="let year of years" [value]="year">{{year}}</option>
+        </select>
+      </div>
 
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="onSave()"
