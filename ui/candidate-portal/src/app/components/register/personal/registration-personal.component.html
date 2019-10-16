@@ -121,13 +121,13 @@
 
     <button class="btn btn-outline-primary"
             [disabled]="registrationService.currentStepIndex == 0"
-            (click)="registrationService.back()">
+            (click)="back()">
       Back
     </button>
 
     <button class="btn btn-primary"
             [disabled]="registrationService.currentStepIndex >= registrationService.steps.length - 1"
-            (click)="registrationService.next()">
+            (click)="next()">
       Next
     </button>
 

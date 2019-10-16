@@ -8,7 +8,7 @@ import {Subscription} from "rxjs";
 })
 export class RegistrationService {
 
-  subscription: Subscription;
+  private subscription: Subscription;
 
   public steps: RegistrationStep[] = [
     {
@@ -78,7 +78,7 @@ export class RegistrationService {
       section: 7
     },
     {
-      key: 'additional-information',
+      key: 'submit',
       title: 'Are you ready to submit your application?',
       section: 8
     }
@@ -94,7 +94,7 @@ export class RegistrationService {
   start() {
     if (!this.subscription) {
       this.subscription = this.route.queryParams.subscribe(
-        params => this.goToStep(params['step'])
+        params => this.openStep(params['step'])
       );
     }
   }
@@ -103,12 +103,10 @@ export class RegistrationService {
   stop() {
     if (this.subscription) {
       this.subscription.unsubscribe();
-      /* DEBUG */
-      console.log('this.subscription', this.subscription);
     }
   }
 
-  goToStep(stepKey: string) {
+  openStep(stepKey: string) {
     stepKey = stepKey || 'landing';
     this.currentStepIndex = this.steps.findIndex(step => step.key === stepKey);
     this.setStep();
@@ -125,6 +123,9 @@ export class RegistrationService {
   }
 
   setStep() {
+    if (this.currentStepIndex < 1 || this.currentStepIndex > this.steps.length - 1) {
+      this.currentStepIndex = 0;
+    }
     this.currentStep = this.steps[this.currentStepIndex];
     this.currentStepKey = this.currentStep.key;
     this.routeToStep(this.currentStepKey);

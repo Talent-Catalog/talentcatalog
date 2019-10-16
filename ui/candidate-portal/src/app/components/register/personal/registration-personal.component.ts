@@ -22,6 +22,7 @@ export class RegistrationPersonalComponent implements OnInit {
   // Component states
   loading: boolean;
   saving: boolean;
+
   candidate: Candidate;
   countries: Country[];
   nationalities: Nationality[];
@@ -104,15 +105,30 @@ export class RegistrationPersonalComponent implements OnInit {
     );
   }
 
-  save() {
+  save(dir: string) {
+    this.saving = true;
     this.candidateService.updateCandidatePersonal(this.form.value).subscribe(
-      (response) => {
-        this.router.navigate(['register', 'location']);
+      () => {
+        this.saving = false;
+        if (dir === 'next') {
+          this.registrationService.next();
+        } else {
+          this.registrationService.back();
+        }
       },
       (error) => {
         this.error = error;
+        this.saving = false;
       }
     );
+  }
+
+  back() {
+    this.save('back');
+  }
+
+  next() {
+    this.save('next');
   }
 
 }
