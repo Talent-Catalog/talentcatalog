@@ -19,6 +19,10 @@ public class CandidateEducation extends AbstractDomainObject<Long> {
     @JoinColumn(name = "country_id")
     private Country country;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "major_id")
+    private EducationMajor educationMajor;
+
     private Integer lengthOfCourseYears;
     private String institution;
     private String courseName;
@@ -76,5 +80,13 @@ public class CandidateEducation extends AbstractDomainObject<Long> {
 
     public void setYearCompleted(Integer yearCompleted) {
         this.yearCompleted = yearCompleted;
+    }
+
+    public EducationMajor getEducationMajor() {
+        return educationMajor;
+    }
+
+    public void setEducationMajor(EducationMajor educationMajor) {
+        this.educationMajor = educationMajor;
     }
 }

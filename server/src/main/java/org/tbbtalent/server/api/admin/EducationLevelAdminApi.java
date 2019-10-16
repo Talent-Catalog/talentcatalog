@@ -69,6 +69,7 @@ public class EducationLevelAdminApi {
                 .add("id")
                 .add("name")
                 .add("status")
+                .add("level")
                 ;
     }
 

@@ -58,9 +58,8 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
     private Integer minAge;
     private Integer maxAge;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "min_education_level_id")
-    private EducationLevel minEducationLevel;
+
+    private Integer minEducationLevel;
     private String educationMajorIds;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "savedSearch", cascade = CascadeType.MERGE)
@@ -265,11 +264,11 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
         this.maxAge = maxAge;
     }
 
-    public EducationLevel getMinEducationLevel() {
+     public Integer getMinEducationLevel() {
         return minEducationLevel;
     }
 
-    public void setMinEducationLevel(EducationLevel minEducationLevel) {
+    public void setMinEducationLevel(Integer minEducationLevel) {
         this.minEducationLevel = minEducationLevel;
     }
 

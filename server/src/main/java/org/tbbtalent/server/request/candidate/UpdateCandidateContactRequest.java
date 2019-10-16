@@ -4,6 +4,7 @@ import org.tbbtalent.server.model.Gender;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 
 public class UpdateCandidateContactRequest {
 
@@ -23,6 +24,7 @@ public class UpdateCandidateContactRequest {
     private String phone;
     private String whatsapp;
     private String email;
+    private LocalDate dob;
 
     public String getFirstName() {
         return firstName;
@@ -110,5 +112,13 @@ public class UpdateCandidateContactRequest {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public LocalDate getDob() {
+        return dob;
+    }
+
+    public void setDob(LocalDate dob) {
+        this.dob = dob;
     }
 }

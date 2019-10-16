@@ -3,13 +3,11 @@ package org.tbbtalent.server.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.Candidate;
-import org.tbbtalent.server.model.CandidateEducation;
-import org.tbbtalent.server.model.Country;
-import org.tbbtalent.server.model.EducationType;
+import org.tbbtalent.server.model.*;
 import org.tbbtalent.server.repository.CandidateEducationRepository;
 import org.tbbtalent.server.repository.CandidateRepository;
 import org.tbbtalent.server.repository.CountryRepository;
+import org.tbbtalent.server.repository.EducationMajorRepository;
 import org.tbbtalent.server.request.candidate.education.CreateCandidateEducationRequest;
 import org.tbbtalent.server.request.candidate.education.UpdateCandidateEducationRequest;
 import org.tbbtalent.server.security.UserContext;
@@ -22,16 +20,18 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
 
     private final CandidateEducationRepository candidateEducationRepository;
     private final CountryRepository countryRepository;
+    private final EducationMajorRepository educationMajorRepository;
     private final CandidateRepository candidateRepository;
     private final UserContext userContext;
 
     @Autowired
     public CandidateEducationServiceImpl(CandidateEducationRepository candidateEducationRepository,
                                          CountryRepository countryRepository,
-                                         CandidateRepository candidateRepository,
+                                         EducationMajorRepository educationMajorRepository, CandidateRepository candidateRepository,
                                          UserContext userContext) {
         this.candidateEducationRepository = candidateEducationRepository;
         this.countryRepository = countryRepository;
+        this.educationMajorRepository = educationMajorRepository;
         this.candidateRepository = candidateRepository;
         this.userContext = userContext;
     }
@@ -39,34 +39,13 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
     @Override
     public CandidateEducation createCandidateEducation(CreateCandidateEducationRequest request) {
         Candidate candidate = userContext.getLoggedInCandidate();
-
-        // Load the country from the database - throw an exception if not found
-        Country country = countryRepository.findById(request.getCountryId())
-                .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountryId()));
-
-        // Get ENUM for education type
-        EducationType educationType = request.getEducationType();
-
-        // Create a new candidateOccupation object to insert into the database
-        CandidateEducation candidateEducation = new CandidateEducation();
-        candidateEducation.setCandidate(candidate);
-        candidateEducation.setEducationType(educationType);
-        candidateEducation.setCountry(country);
-        candidateEducation.setLengthOfCourseYears(request.getLengthOfCourseYears());
-        candidateEducation.setInstitution(request.getInstitution());
-        candidateEducation.setCourseName(request.getCourseName());
-        candidateEducation.setYearCompleted(request.getYearCompleted());
-
-        // Save the candidateOccupation
-        return candidateEducationRepository.save(candidateEducation);
+        return createCandidateEducation(candidate, request);
     }
 
     @Override
-    public CandidateEducation updateCandidateEducation(CreateCandidateEducationRequest request) {
+    public CandidateEducation updateCandidateEducation(UpdateCandidateEducationRequest request) {
         // Get ENUM for education type
         EducationType educationType = request.getEducationType();
-
-        Candidate candidate = userContext.getLoggedInCandidate();
 
         CandidateEducation candidateEducation = candidateEducationRepository.findByIdLoadEducationType(educationType);
 
@@ -74,11 +53,13 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
         Country country = countryRepository.findById(request.getCountryId())
                 .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountryId()));
 
+        EducationMajor educationMajor = educationMajorRepository.findById(request.getMajorId())
+                .orElseThrow(() -> new NoSuchObjectException(EducationMajor.class, request.getMajorId()));
 
         // Update education object to insert into the database
-        candidateEducation.setCandidate(candidate);
         candidateEducation.setEducationType(educationType);
         candidateEducation.setCountry(country);
+        candidateEducation.setEducationMajor(educationMajor);
         candidateEducation.setLengthOfCourseYears(request.getLengthOfCourseYears());
         candidateEducation.setInstitution(request.getInstitution());
         candidateEducation.setCourseName(request.getCourseName());
@@ -94,13 +75,19 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
     }
 
     @Override
-    public CandidateEducation createCandidateEducationAdmin(long candidateId, CreateCandidateEducationRequest request) {
+    public CandidateEducation createCandidateEducation(long candidateId, CreateCandidateEducationRequest request) {
         Candidate candidate = this.candidateRepository.findById(candidateId)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateId));
+        return createCandidateEducation(candidate, request);
+    }
 
-        // Load the country from the database - throw an exception if not found
+
+    private CandidateEducation createCandidateEducation(Candidate candidate, CreateCandidateEducationRequest request) {
         Country country = countryRepository.findById(request.getCountryId())
                 .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountryId()));
+
+        EducationMajor educationMajor = educationMajorRepository.findById(request.getMajorId())
+                .orElseThrow(() -> new NoSuchObjectException(EducationMajor.class, request.getMajorId()));
 
         // Get ENUM for education type
         EducationType educationType = request.getEducationType();
@@ -110,6 +97,7 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
         candidateEducation.setCandidate(candidate);
         candidateEducation.setEducationType(educationType);
         candidateEducation.setCountry(country);
+        candidateEducation.setEducationMajor(educationMajor);
         candidateEducation.setLengthOfCourseYears(request.getLengthOfCourseYears());
         candidateEducation.setInstitution(request.getInstitution());
         candidateEducation.setCourseName(request.getCourseName());
@@ -119,26 +107,6 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
         return candidateEducationRepository.save(candidateEducation);
     }
 
-    @Override
-    public CandidateEducation updateCandidateEducationAdmin(long id, UpdateCandidateEducationRequest request) {
-
-        CandidateEducation candidateEducation = this.candidateEducationRepository.findById(id)
-                .orElseThrow(() -> new NoSuchObjectException(CandidateEducation.class, id));
-
-        // Load the country from the database - throw an exception if not found
-        Country country = countryRepository.findById(request.getCountryId())
-                .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountryId()));
 
 
-        // Update education object to insert into the database
-        candidateEducation.setCountry(country);
-        candidateEducation.setLengthOfCourseYears(request.getLengthOfCourseYears());
-        candidateEducation.setInstitution(request.getInstitution());
-        candidateEducation.setCourseName(request.getCourseName());
-        candidateEducation.setYearCompleted(request.getYearCompleted());
-
-        // Save the candidateOccupation
-        return candidateEducationRepository.save(candidateEducation);
-
-    }
 }
