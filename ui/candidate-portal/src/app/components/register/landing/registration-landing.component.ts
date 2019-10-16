@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import {RegistrationService} from "../../../services/registration.service";
 
 @Component({
   selector: 'app-registration-landing',
@@ -7,9 +8,12 @@ import {Component, OnInit} from '@angular/core';
 })
 export class RegistrationLandingComponent implements OnInit {
 
-  constructor() { }
+  constructor(private registrationService: RegistrationService) { }
 
   ngOnInit() {
   }
 
+  next() {
+    this.registrationService.next();
+  }
 }

@@ -1,0 +1,19 @@
+<div class="container-fluid step-footer">
+
+  <div class="container">
+
+    <button class="btn btn-outline-primary"
+            [disabled]="registrationService.currentStepIndex == 0"
+            (click)="back()">
+      Back
+    </button>
+
+    <button class="btn btn-primary"
+            [disabled]="registrationService.currentStepIndex >= registrationService.steps.length - 1"
+            (click)="next()">
+      Next
+    </button>
+
+  </div>
+
+</div>

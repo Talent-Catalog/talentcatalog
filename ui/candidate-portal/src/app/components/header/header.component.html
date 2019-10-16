@@ -32,8 +32,11 @@
             <a class="dropdown-item" [routerLink]="'/register'" [queryParams]="{step: 'contact/additional'}">
               Additional
             </a>
-            <a class="dropdown-item" [routerLink]="'/register'" [queryParams]="{step: 'personal'}">
+            <a class="dropdown-item alert-success" [routerLink]="'/register'" [queryParams]="{step: 'personal'}">
               Personal
+            </a>
+            <a class="dropdown-item" [routerLink]="'/register'" [queryParams]="{step: 'occupation'}">
+              Occupation
             </a>
             <a class="dropdown-item" [routerLink]="'/register'" [queryParams]="{step: 'experience'}">
               Experience

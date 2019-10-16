@@ -2,7 +2,7 @@
 
   <div class="container">
 
-    <h4>Step {{registrationService?.currentStepIndex + 1}} of {{registrationService?.steps?.length}}</h4>
+    <h4>Step {{registrationService?.currentStep.section}} of {{registrationService?.totalSections}}</h4>
 
     <h1>{{registrationService?.currentStep?.title}}</h1>
 
@@ -39,7 +39,7 @@
   <app-registration-personal *ngSwitchCase="'personal'">
   </app-registration-personal>
 
-  <app-registration-candidate-occupation *ngSwitchCase="'candidateOccupation'">
+  <app-registration-candidate-occupation *ngSwitchCase="'occupation'">
   </app-registration-candidate-occupation>
 
   <app-registration-job-experience *ngSwitchCase="'experience'">

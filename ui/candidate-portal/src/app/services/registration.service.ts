@@ -38,7 +38,7 @@ export class RegistrationService {
       section: 2
     },
     {
-      key: 'candidateOccupation',
+      key: 'occupation',
       title: 'Tell us about your occupation',
       section: 3
     },
@@ -83,6 +83,7 @@ export class RegistrationService {
       section: 8
     }
   ];
+  public totalSections: number = Math.max(...this.steps.map(s => s.section));
   public currentStepKey: string;
   public currentStep: RegistrationStep;
   public currentStepIndex: number;
@@ -99,7 +100,7 @@ export class RegistrationService {
     }
   }
 
-  // Stop observing the url
+  // Stop observing the url changes
   stop() {
     if (this.subscription) {
       this.subscription.unsubscribe();

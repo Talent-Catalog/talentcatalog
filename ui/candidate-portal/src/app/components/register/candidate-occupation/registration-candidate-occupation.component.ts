@@ -6,6 +6,7 @@ import {CandidateOccupationService} from "../../../services/candidate-occupation
 import {CandidateOccupation} from "../../../model/candidate-occupation";
 import {Occupation} from "../../../model/occupation";
 import {OccupationService} from "../../../services/occupation.service";
+import {RegistrationService} from "../../../services/registration.service";
 
 @Component({
   selector: 'app-registration-candidate-occupation',
@@ -20,17 +21,20 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
   form: FormGroup;
   candidateOccupations: CandidateOccupation[];
   occupations: Occupation[];
+  occupationRequests: {occupationId: number, yearsExperience: number}[];
 
   constructor(private fb: FormBuilder,
               private router: Router,
               private candidateService: CandidateService,
               private occupationService: OccupationService,
-              private candidateOccupationService: CandidateOccupationService) { }
+              private candidateOccupationService: CandidateOccupationService,
+              public registrationService: RegistrationService) { }
 
   ngOnInit() {
     this.candidateOccupations = [];
     this.saving = false;
     this.loading = true;
+    this.occupationRequests = [];
 
     /* Load the candidate data */
     this.candidateService.getCandidateCandidateOccupations().subscribe(
@@ -64,40 +68,37 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
     });
   }
 
-  addMore(){
-    this.saving = true;
-    this.candidateOccupationService.createCandidateOccupation(this.form.value).subscribe(
-      (response) => {
-        this.candidateOccupations.push(response);
-        this.saving = false;
-      },
-      (error) => {
-        this.error = error;
-        this.saving = false;
-      }
-    );
-    console.log(this.form.value)
+  addOccupationToRequest() {
+    this.occupationRequests.push(this.form.value);
     this.setUpForm();
   }
 
-  delete(candidateOccupation){
-    this.saving = true;
-    this.candidateOccupationService.deleteCandidateOccupation(candidateOccupation.id).subscribe(
+  save(dir: string) {
+    if (this.form.valid) {
+      this.addOccupationToRequest();
+    }
+    this.candidateOccupationService.updateCandidateOccupations(this.occupationRequests).subscribe(
       () => {
-        this.candidateOccupations = this.candidateOccupations.filter(p => p !== candidateOccupation);
-        this.saving = false;
+        if (dir === 'next') {
+          this.registrationService.next();
+        } else {
+          this.registrationService.back();
+        }
       },
       (error) => {
-        this.error = error;
-        this.saving = false;
-      }
-    );
+        console.log('error', error);
+      });
+  }
+
+  back() {
+    this.save('back');
   }
 
   next() {
-    console.log(this.candidateOccupations);
-    // TODO check if the form is not empty and warn the user
-    this.router.navigate(['register', 'experience']);
+    this.save('next');
   }
 
+  deleteOccupation(index: number) {
+    this.occupationRequests.splice(index, 1);
+  }
 }
