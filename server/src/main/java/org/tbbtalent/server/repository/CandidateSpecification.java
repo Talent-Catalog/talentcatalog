@@ -18,7 +18,6 @@ public class CandidateSpecification {
         return (candidate, query, builder) -> {
             Predicate conjunction = builder.conjunction();
             query.distinct(true);
-            Join<Candidate, CandidateLanguage> candidateLanguages = candidate.join("candidateLanguages", JoinType.LEFT);
             Join<Candidate, User> user = candidate.join("user");
             Join<Candidate, CandidateEducation> candidateEducations = null;
 
@@ -179,12 +178,23 @@ public class CandidateSpecification {
             }
 
             // LANGUAGE SEARCH
-//            if(request.getCandidateLanguageId() != null) {
-//                System.out.println(request.getCandidateLanguageId());
-//                conjunction.getExpressions().add(
-//                        builder.equal(candidateLanguages.get("id"), request.getCandidateLanguageId())
-//                );
-//            }
+            if(request.getEnglishMinSpokenLevel() != null || request.getEnglishMinWrittenLevel() != null || request.getOtherLanguageId() != null
+                        || request.getOtherMinSpokenLevel() != null || request.getOtherMinWrittenLevel() != null) {
+                Join<Candidate, CandidateLanguage> candidateLanguages = candidate.join("candidateLanguages", JoinType.LEFT);
+                Join<CandidateLanguage, LanguageLevel> writtenLevel = candidateLanguages.join("writtenLevel", JoinType.LEFT);
+                Join<CandidateLanguage, LanguageLevel> spokenLevel = candidateLanguages.join("spokenLevel", JoinType.LEFT);
+                Join<CandidateLanguage, Language> language = candidateLanguages.join("language", JoinType.LEFT);
+                if (request.getEnglishMinWrittenLevel() != null && request.getEnglishMinSpokenLevel() != null){
+                    conjunction.getExpressions().add(builder.and(builder.equal(builder.lower(language.get("name")), "english"),
+                            builder.greaterThanOrEqualTo(writtenLevel.get("level"), request.getEnglishMinSpokenLevel()),
+                            builder.greaterThanOrEqualTo(spokenLevel.get("level"), request.getEnglishMinWrittenLevel())));
+                }
+                if (request.getOtherLanguageId() != null && request.getOtherMinSpokenLevel() != null && request.getOtherMinWrittenLevel() != null){
+                    conjunction.getExpressions().add(builder.and(builder.equal(language.get("id"), request.getOtherLanguageId()),
+                            builder.greaterThanOrEqualTo(writtenLevel.get("level"), request.getOtherMinWrittenLevel()),
+                            builder.greaterThanOrEqualTo(spokenLevel.get("level"), request.getOtherMinSpokenLevel())));
+                }
+            }
             
 
             return conjunction;

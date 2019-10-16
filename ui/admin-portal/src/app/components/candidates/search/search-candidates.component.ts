@@ -115,11 +115,11 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       nationalityIds: [[]],
       nationalitySearchType: [null],
       countryIds: [[]],
-      englishMinWrittenLevelId: [null],
-      englishMinSpokenLevelId: [null],
+      englishMinWrittenLevel: [null],
+      englishMinSpokenLevel: [null],
       otherLanguageId: [null],
-      otherMinWrittenLevelId: [null],
-      otherMinSpokenLevelId: [null],
+      otherMinWrittenLevel: [null],
+      otherMinSpokenLevel: [null],
       unRegistered: [null],
       lastModifiedFrom: [null],
       lastModifiedTo: [null],
@@ -385,13 +385,13 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   handleLanguageLevelChange(model: LanguageLevelFormControlModel, languageKey: string) {
     if (languageKey === 'english') {
-      this.searchForm.controls['englishMinWrittenLevelId'].patchValue(model.writtenLevelId);
-      this.searchForm.controls['englishMinSpokenLevelId'].patchValue(model.spokenLevelId);
+      this.searchForm.controls['englishMinWrittenLevel'].patchValue(model.writtenLevel);
+      this.searchForm.controls['englishMinSpokenLevel'].patchValue(model.spokenLevel);
     } else {
       // Update other language form values
       this.searchForm.controls['otherLanguageId'].patchValue(model.languageId);
-      this.searchForm.controls['otherMinWrittenLevelId'].patchValue(model.writtenLevelId);
-      this.searchForm.controls['otherMinSpokenLevelId'].patchValue(model.spokenLevelId);
+      this.searchForm.controls['otherMinWrittenLevel'].patchValue(model.writtenLevel);
+      this.searchForm.controls['otherMinSpokenLevel'].patchValue(model.spokenLevel);
     }
   }
 }

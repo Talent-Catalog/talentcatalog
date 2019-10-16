@@ -31,6 +31,7 @@ public class LanguageLevelPortalApi {
     private DtoBuilder languageLevelDto() {
         return new DtoBuilder()
                 .add("id")
+                .add("name")
                 .add("level")
                 ;
     }

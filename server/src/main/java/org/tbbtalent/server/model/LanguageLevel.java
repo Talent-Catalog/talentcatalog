@@ -7,33 +7,34 @@ import javax.persistence.*;
 @SequenceGenerator(name = "language_level_gen", sequenceName = "language_level_id_seq", allocationSize = 1)
 public class LanguageLevel extends AbstractDomainObject<Long> {
 
-    private String level;
-    private int sortOrder;
+    private String name;
+    private int level;
     @Enumerated(EnumType.STRING)
     private Status status;
 
     public LanguageLevel() {
     }
 
-    public LanguageLevel(String level, Status status) {
-        this.level = level;
+    public LanguageLevel(String name, Status status, int level) {
+        this.name = name;
         this.status = status;
+        this.level = level;
     }
 
-    public String getLevel() {
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getLevel() {
         return level;
     }
 
-    public void setLevel(String level) {
+    public void setLevel(int level) {
         this.level = level;
-    }
-
-    public int getSortOrder() {
-        return sortOrder;
-    }
-
-    public void setSortOrder(int sortOrder) {
-        this.sortOrder = sortOrder;
     }
 
     public Status getStatus() {

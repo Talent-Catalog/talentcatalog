@@ -8,15 +8,25 @@ import javax.validation.constraints.NotNull;
 public class UpdateLanguageLevelRequest {
 
     @NotBlank
-    private String level;
+    private String name;
     @NotNull
     private Status status;
 
-    public String getLevel() {
+    private int level;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getLevel() {
         return level;
     }
 
-    public void setLevel(String level) {
+    public void setLevel(int level) {
         this.level = level;
     }
 
