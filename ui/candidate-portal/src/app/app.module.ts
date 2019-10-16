@@ -3,7 +3,7 @@ import {NgModule} from '@angular/core';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './components/app.component';
 import {LandingComponent} from './components/landing/landing.component';
-import {ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from "@angular/common/http";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
@@ -33,6 +33,7 @@ import {ResetPasswordComponent} from './components/reset-password/reset-password
 import {ChangePasswordComponent} from './components/change-password/change-password.component';
 import {HeaderComponent} from "./components/header/header.component";
 import {RegisterComponent} from './components/register/register.component';
+import {RegistrationFooterComponent} from './components/register/registration-footer/registration-footer.component';
 
 export function createTranslateLoader(http: HttpClient) {
     return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -61,13 +62,15 @@ export function createTranslateLoader(http: HttpClient) {
     HomeComponent,
     ResetPasswordComponent,
     ChangePasswordComponent,
-    RegisterComponent
+    RegisterComponent,
+    RegistrationFooterComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
     HttpClientModule,
+    FormsModule,
     NgbModule,
     LocalStorageModule.forRoot({
       prefix: 'tbb-candidate-portal',

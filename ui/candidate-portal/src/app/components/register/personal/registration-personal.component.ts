@@ -8,6 +8,7 @@ import {Nationality} from "../../../model/nationality";
 import {CountryService} from "../../../services/country.service";
 import {Country} from "../../../model/country";
 import {years} from "../../../model/years";
+import {RegistrationService} from "../../../services/registration.service";
 
 @Component({
   selector: 'app-registration-personal',
@@ -21,6 +22,7 @@ export class RegistrationPersonalComponent implements OnInit {
   // Component states
   loading: boolean;
   saving: boolean;
+
   candidate: Candidate;
   countries: Country[];
   nationalities: Nationality[];
@@ -30,7 +32,8 @@ export class RegistrationPersonalComponent implements OnInit {
               private router: Router,
               private candidateService: CandidateService,
               private countryService: CountryService,
-              private nationalityService: NationalityService) { }
+              private nationalityService: NationalityService,
+              public registrationService: RegistrationService) { }
 
   ngOnInit() {
     this.loading = true;
@@ -102,15 +105,30 @@ export class RegistrationPersonalComponent implements OnInit {
     );
   }
 
-  save() {
+  save(dir: string) {
+    this.saving = true;
     this.candidateService.updateCandidatePersonal(this.form.value).subscribe(
-      (response) => {
-        this.router.navigate(['register', 'location']);
+      () => {
+        this.saving = false;
+        if (dir === 'next') {
+          this.registrationService.next();
+        } else {
+          this.registrationService.back();
+        }
       },
       (error) => {
         this.error = error;
+        this.saving = false;
       }
     );
+  }
+
+  back() {
+    this.save('back');
+  }
+
+  next() {
+    this.save('next');
   }
 
 }

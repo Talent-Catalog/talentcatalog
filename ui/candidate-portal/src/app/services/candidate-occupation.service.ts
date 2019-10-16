@@ -24,4 +24,10 @@ export class CandidateOccupationService {
   listMyOccupations(): Observable<CandidateOccupation[]> {
     return this.http.get<CandidateOccupation[]>(`${this.apiUrl}/list`);
   }
+
+  // TODO
+  updateCandidateOccupations(request): Observable<CandidateOccupation[]> {
+    alert('TODO');
+    return Observable.create(null);
+  }
 }

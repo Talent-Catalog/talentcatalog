@@ -1,7 +1,5 @@
 <div class="container">
 
-  <h1 class="text-center">Tell us about yourself</h1>
-
   <form class="row" [formGroup]="form">
 
     <!-- FIRST NAME -->
@@ -38,7 +36,9 @@
     <div class="col-12 col-md-6">
       <div class="form-group">
         <label for="dob">Date of birth</label>
-        <input type="date" id="dob" class="form-control" [formControlName]="'dob'" datepicker-popup is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
+        <input type="date" id="dob" class="form-control" [formControlName]="'dob'" datepicker-popup
+               is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions"
+               date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
       </div>
     </div>
 
@@ -113,12 +113,8 @@
 
   </form>
 
-  <div class="text-right">
-    <button class="btn btn-primary"
-            [disabled]="form.invalid"
-            (click)="save()">
-      Next
-    </button>
-  </div>
-
 </div>
+
+<app-registration-footer (backClicked)="back()"
+                         (nextClicked)="next()">
+</app-registration-footer>

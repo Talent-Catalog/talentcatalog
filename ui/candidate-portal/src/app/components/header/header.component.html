@@ -25,14 +25,34 @@
           </a>
           <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
             <a class="dropdown-item" [routerLink]="'/'">Home</a>
-            <a class="dropdown-item" [routerLink]="'/register/contact'">Contact</a>
-            <a class="dropdown-item" [routerLink]="'/register/contact/additional'">Alternative</a>
-            <a class="dropdown-item" [routerLink]="'/register/personal'">Personal</a>
-            <a class="dropdown-item" [routerLink]="'/register/nationality'">Nationality</a>
-            <a class="dropdown-item" [routerLink]="'/register/experience'">Experience</a>
-            <a class="dropdown-item" [routerLink]="'/register/language'">Language</a>
-            <a class="dropdown-item" [routerLink]="'/register/certifications'">Certifications</a>
-            <a class="dropdown-item" [routerLink]="'/register/additional-information'">Additional Info</a>
+            <a class="dropdown-item" [routerLink]="'/register'" [queryParams]="{step: 'landing'}">Register</a>
+            <a class="dropdown-item" [routerLink]="'/register'" [queryParams]="{step: 'contact'}">
+              Contact
+            </a>
+            <a class="dropdown-item" [routerLink]="'/register'" [queryParams]="{step: 'contact/additional'}">
+              Additional
+            </a>
+            <a class="dropdown-item alert-success" [routerLink]="'/register'" [queryParams]="{step: 'personal'}">
+              Personal
+            </a>
+            <a class="dropdown-item" [routerLink]="'/register'" [queryParams]="{step: 'occupation'}">
+              Occupation
+            </a>
+            <a class="dropdown-item" [routerLink]="'/register'" [queryParams]="{step: 'experience'}">
+              Experience
+            </a>
+            <a class="dropdown-item" [routerLink]="'/register'" [queryParams]="{step: 'education'}">
+              Education
+            </a>
+            <a class="dropdown-item" [routerLink]="'/register'" [queryParams]="{step: 'language'}">
+              Language
+            </a>
+            <a class="dropdown-item" [routerLink]="'/register'" [queryParams]="{step: 'certifications'}">
+              Certifications
+            </a>
+            <a class="dropdown-item" [routerLink]="'/register'" [queryParams]="{step: 'submit'}">
+              Additional Info
+            </a>
           </div>
 
         </li>
