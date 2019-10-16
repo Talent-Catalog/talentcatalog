@@ -8,6 +8,7 @@ import {Nationality} from "../../../model/nationality";
 import {CountryService} from "../../../services/country.service";
 import {Country} from "../../../model/country";
 import {years} from "../../../model/years";
+import {RegistrationService} from "../../../services/registration.service";
 
 @Component({
   selector: 'app-registration-personal',
@@ -30,7 +31,8 @@ export class RegistrationPersonalComponent implements OnInit {
               private router: Router,
               private candidateService: CandidateService,
               private countryService: CountryService,
-              private nationalityService: NationalityService) { }
+              private nationalityService: NationalityService,
+              public registrationService: RegistrationService) { }
 
   ngOnInit() {
     this.loading = true;

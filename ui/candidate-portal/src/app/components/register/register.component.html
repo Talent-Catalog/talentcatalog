@@ -1,17 +1,17 @@
-<div class="container-fluid step-header" [hidden]="currentStep.hideHeader">
+<div class="container-fluid step-header" [hidden]="registrationService?.currentStep?.hideHeader">
 
   <div class="container">
 
-    <h4>Step {{currentStepIndex + 1}} of {{steps.length}}</h4>
+    <h4>Step {{registrationService?.currentStepIndex + 1}} of {{registrationService?.steps?.length}}</h4>
 
-    <h1>{{currentStep.title}}</h1>
+    <h1>{{registrationService?.currentStep.title}}</h1>
 
   </div>
 
   <div class="step-progress">
 
     <div class="step-progress-bar" *ngFor="let x of [1, 2, 3, 4, 5, 6, 7, 8];let i = index;"
-         [class.selected]="currentStep?.section === i + 1"></div>
+         [class.selected]="registrationService?.currentStep?.section === i + 1"></div>
 
   </div>
 
@@ -21,7 +21,7 @@
   {{error.error?.message || error.message || error}}
 </div>
 
-<div class="step-body" [ngSwitch]="currentStepKey">
+<div class="step-body" [ngSwitch]="registrationService?.currentStepKey">
 
   <app-registration-landing *ngSwitchCase="'landing'">
   </app-registration-landing>
@@ -65,25 +65,5 @@
 
   <app-registration-additional-info *ngSwitchCase="'additional-information'">
   </app-registration-additional-info>
-
-</div>
-
-<div class="container-fluid step-footer">
-
-  <div class="container">
-
-    <button class="btn btn-outline-primary"
-            [disabled]="currentStepIndex == 0"
-            (click)="back()">
-      Back
-    </button>
-
-    <button class="btn btn-primary"
-            [disabled]="currentStepIndex >= steps.length - 1"
-            (click)="next()">
-      Next
-    </button>
-
-  </div>
 
 </div>
