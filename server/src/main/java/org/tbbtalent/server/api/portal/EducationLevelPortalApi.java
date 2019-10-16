@@ -32,6 +32,7 @@ public class EducationLevelPortalApi {
         return new DtoBuilder()
                 .add("id")
                 .add("name")
+                .add("sortOrder")
                 ;
     }
 

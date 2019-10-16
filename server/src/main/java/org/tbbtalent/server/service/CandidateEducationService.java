@@ -10,11 +10,9 @@ public interface CandidateEducationService {
 
     CandidateEducation createCandidateEducation(CreateCandidateEducationRequest request);
 
-    CandidateEducation updateCandidateEducation(CreateCandidateEducationRequest request);
+    CandidateEducation updateCandidateEducation(UpdateCandidateEducationRequest request);
 
-    CandidateEducation createCandidateEducationAdmin(long id, CreateCandidateEducationRequest request);
-
-    CandidateEducation updateCandidateEducationAdmin(long id, UpdateCandidateEducationRequest request);
+    CandidateEducation createCandidateEducation(long id, CreateCandidateEducationRequest request);
 
     List<CandidateEducation> list(long id);
 

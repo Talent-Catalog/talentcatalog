@@ -3,8 +3,11 @@ package org.tbbtalent.server.request.candidate;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.tbbtalent.server.model.*;
 import org.tbbtalent.server.request.SearchRequest;
+
+import javax.validation.constraints.NotNull;
 
 public class SearchCandidateRequest extends SearchRequest {
 
@@ -25,13 +28,19 @@ public class SearchCandidateRequest extends SearchRequest {
     private Long otherMinWrittenLevelId;
     private Long otherMinSpokenLevelId;
     private Boolean unRegistered;
+    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private LocalDate lastModifiedFrom;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private LocalDate lastModifiedTo;
-    private LocalDate createdFrom;
-    private LocalDate createdTo;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    private LocalDate registeredFrom;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    private LocalDate registeredTo;
+    @NotNull
+    private String timezone;
     private Integer minAge;
     private Integer maxAge;
-    private Long minEducationLevelId;
+    private Integer minEducationLevel;
     private List<Long> educationMajorIds;
     private ShortlistStatus shortlistStatus;
 
@@ -189,20 +198,28 @@ public class SearchCandidateRequest extends SearchRequest {
         this.lastModifiedTo = lastModifiedTo;
     }
 
-    public LocalDate getCreatedFrom() {
-        return createdFrom;
+    public LocalDate getRegisteredFrom() {
+        return registeredFrom;
     }
 
-    public void setCreatedFrom(LocalDate createdFrom) {
-        this.createdFrom = createdFrom;
+    public void setRegisteredFrom(LocalDate registeredFrom) {
+        this.registeredFrom = registeredFrom;
     }
 
-    public LocalDate getCreatedTo() {
-        return createdTo;
+    public LocalDate getRegisteredTo() {
+        return registeredTo;
     }
 
-    public void setCreatedTo(LocalDate createdTo) {
-        this.createdTo = createdTo;
+    public void setRegisteredTo(LocalDate registeredTo) {
+        this.registeredTo = registeredTo;
+    }
+
+    public String getTimezone() {
+        return timezone;
+    }
+
+    public void setTimezone(String timezone) {
+        this.timezone = timezone;
     }
 
     public Integer getMinAge() {
@@ -221,12 +238,12 @@ public class SearchCandidateRequest extends SearchRequest {
         this.maxAge = maxAge;
     }
 
-    public Long getMinEducationLevelId() {
-        return minEducationLevelId;
+    public Integer getMinEducationLevel() {
+        return minEducationLevel;
     }
 
-    public void setMinEducationLevelId(Long minEducationLevelId) {
-        this.minEducationLevelId = minEducationLevelId;
+    public void setMinEducationLevel(Integer minEducationLevel) {
+        this.minEducationLevel = minEducationLevel;
     }
 
     public List<Long> getEducationMajorIds() {

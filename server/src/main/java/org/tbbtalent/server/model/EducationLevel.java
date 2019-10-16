@@ -8,16 +8,17 @@ import javax.persistence.*;
 public class EducationLevel extends AbstractDomainObject<Long> {
 
     private String name;
-    private int sortOrder;
+    private int level;
     @Enumerated(EnumType.STRING)
     private Status status;
 
     public EducationLevel() {
     }
 
-    public EducationLevel(String name, Status status) {
+    public EducationLevel(String name, Status status, int level) {
         this.name = name;
         this.status = status;
+        this.level = level;
     }
 
     public String getName() {
@@ -28,12 +29,12 @@ public class EducationLevel extends AbstractDomainObject<Long> {
         this.name = name;
     }
 
-    public int getSortOrder() {
-        return sortOrder;
+    public int getLevel() {
+        return level;
     }
 
-    public void setSortOrder(int sortOrder) {
-        this.sortOrder = sortOrder;
+    public void setLevel(int level) {
+        this.level = level;
     }
 
     public Status getStatus() {
@@ -43,4 +44,5 @@ public class EducationLevel extends AbstractDomainObject<Long> {
     public void setStatus(Status status) {
         this.status = status;
     }
+
 }

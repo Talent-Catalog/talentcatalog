@@ -163,14 +163,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         savedSearch.setUnRegistered(request.getSearchCandidateRequest().getUnRegistered());
         savedSearch.setLastModifiedFrom(request.getSearchCandidateRequest().getLastModifiedFrom());
         savedSearch.setLastModifiedTo(request.getSearchCandidateRequest().getLastModifiedTo());
-        savedSearch.setCreatedFrom(request.getSearchCandidateRequest().getCreatedFrom());
-        savedSearch.setCreatedTo(request.getSearchCandidateRequest().getCreatedTo());
+        savedSearch.setCreatedFrom(request.getSearchCandidateRequest().getRegisteredFrom());
+        savedSearch.setCreatedTo(request.getSearchCandidateRequest().getRegisteredTo());
         savedSearch.setMinAge(request.getSearchCandidateRequest().getMinAge());
         savedSearch.setMaxAge(request.getSearchCandidateRequest().getMaxAge());
-        Optional<EducationLevel> educationLevel = request.getSearchCandidateRequest().getMinEducationLevelId() != null ? educationLevelRepository.findById(request.getSearchCandidateRequest().getMinEducationLevelId()) : null;
-        if (educationLevel != null && educationLevel.isPresent()){
-            savedSearch.setMinEducationLevel(educationLevel.get());
-        }
+        savedSearch.setMinEducationLevel(request.getSearchCandidateRequest().getMinEducationLevel());
         savedSearch.setEducationMajorIds(getListAsString(request.getSearchCandidateRequest().getEducationMajorIds()));
 
         return savedSearch;
@@ -198,11 +195,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setUnRegistered(request.isUnRegistered());
         searchCandidateRequest.setLastModifiedFrom(request.getLastModifiedFrom());
         searchCandidateRequest.setLastModifiedTo(request.getLastModifiedTo());
-        searchCandidateRequest.setCreatedFrom(request.getCreatedFrom());
-        searchCandidateRequest.setCreatedTo(request.getCreatedTo());
+        searchCandidateRequest.setRegisteredFrom(request.getCreatedFrom());
+        searchCandidateRequest.setRegisteredTo(request.getCreatedTo());
         searchCandidateRequest.setMinAge(request.getMinAge());
         searchCandidateRequest.setMaxAge(request.getMaxAge());
-        searchCandidateRequest.setMinEducationLevelId(request.getMinEducationLevel() != null ? request.getMinEducationLevel().getId() : null);
+        searchCandidateRequest.setMinEducationLevel(request.getMinEducationLevel());
         searchCandidateRequest.setEducationMajorIds(getIdsFromString(request.getEducationMajorIds()));
 
         List<SearchJoinRequest> searchJoinRequests = new ArrayList<>();
