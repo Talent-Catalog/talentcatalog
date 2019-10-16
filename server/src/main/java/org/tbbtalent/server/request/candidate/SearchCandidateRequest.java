@@ -22,11 +22,11 @@ public class SearchCandidateRequest extends SearchRequest {
     private List<Long> nationalityIds;
     private SearchType nationalitySearchType;
     private List<Long> countryIds;
-    private Long englishMinWrittenLevelId;
-    private Long englishMinSpokenLevelId;
+    private Integer englishMinWrittenLevel;
+    private Integer englishMinSpokenLevel;
     private Long otherLanguageId;
-    private Long otherMinWrittenLevelId;
-    private Long otherMinSpokenLevelId;
+    private Integer otherMinWrittenLevel;
+    private Integer otherMinSpokenLevel;
     private Boolean unRegistered;
     @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private LocalDate lastModifiedFrom;
@@ -134,20 +134,20 @@ public class SearchCandidateRequest extends SearchRequest {
         this.countryIds = countryIds;
     }
 
-    public Long getEnglishMinWrittenLevelId() {
-        return englishMinWrittenLevelId;
+    public Integer getEnglishMinWrittenLevel() {
+        return englishMinWrittenLevel;
     }
 
-    public void setEnglishMinWrittenLevelId(Long englishMinWrittenLevelId) {
-        this.englishMinWrittenLevelId = englishMinWrittenLevelId;
+    public void setEnglishMinWrittenLevel(Integer englishMinWrittenLevel) {
+        this.englishMinWrittenLevel = englishMinWrittenLevel;
     }
 
-    public Long getEnglishMinSpokenLevelId() {
-        return englishMinSpokenLevelId;
+    public Integer getEnglishMinSpokenLevel() {
+        return englishMinSpokenLevel;
     }
 
-    public void setEnglishMinSpokenLevelId(Long englishMinSpokenLevelId) {
-        this.englishMinSpokenLevelId = englishMinSpokenLevelId;
+    public void setEnglishMinSpokenLevel(Integer englishMinSpokenLevel) {
+        this.englishMinSpokenLevel = englishMinSpokenLevel;
     }
 
     public Long getOtherLanguageId() {
@@ -158,20 +158,20 @@ public class SearchCandidateRequest extends SearchRequest {
         this.otherLanguageId = otherLanguageId;
     }
 
-    public Long getOtherMinWrittenLevelId() {
-        return otherMinWrittenLevelId;
+    public Integer getOtherMinWrittenLevel() {
+        return otherMinWrittenLevel;
     }
 
-    public void setOtherMinWrittenLevelId(Long otherMinWrittenLevelId) {
-        this.otherMinWrittenLevelId = otherMinWrittenLevelId;
+    public void setOtherMinWrittenLevel(Integer otherMinWrittenLevel) {
+        this.otherMinWrittenLevel = otherMinWrittenLevel;
     }
 
-    public Long getOtherMinSpokenLevelId() {
-        return otherMinSpokenLevelId;
+    public Integer getOtherMinSpokenLevel() {
+        return otherMinSpokenLevel;
     }
 
-    public void setOtherMinSpokenLevelId(Long otherMinSpokenLevelId) {
-        this.otherMinSpokenLevelId = otherMinSpokenLevelId;
+    public void setOtherMinSpokenLevel(Integer otherMinSpokenLevel) {
+        this.otherMinSpokenLevel = otherMinSpokenLevel;
     }
 
     public Boolean getUnRegistered() {

@@ -21,21 +21,24 @@
 
     <form [formGroup]="candidateForm">
 
-      <!-- COUNTRY -->
+      <!-- EDUCATION TYPE -->
       <div class="form-group">
-        <label for="countryId">Country *</label>
-        <select class="form-control" name="country" id="countryId" [formControlName]="'countryId'">
+        <label for="educationType">Education Type</label>
+        <select class="form-control" name="educationType" id="educationType" [formControlName]="'educationType'">
           <option value=""></option>
-          <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
+          <option value="School">School</option>
+          <option value="University">University</option>
+          <option value="Masters">Masters</option>
         </select>
       </div>
 
-      <!-- DATE OF COMPLETION -->
+      <!-- MAJOR -->
       <div class="form-group">
-        <label for="yearCompleted">Date of Completion</label>
-        <input type="date" id="yearCompleted" class="form-control" [formControlName]="'yearCompleted'" datepicker-popup
-               is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions"
-               date-disabled="disabled(date, mode)" ng-required="true" close-text="Close"/>
+        <label for="majorId">Major *</label>
+        <select class="form-control" name="country" id="majorId" [formControlName]="'majorId'">
+          <option value=""></option>
+          <option *ngFor="let major of majors" [value]="major.id">{{major.name}}</option>
+        </select>
       </div>
 
       <!-- COURSE NAME -->
@@ -47,8 +50,26 @@
 
       <!-- INSTITUTION NAME -->
       <div class="form-group">
-        <label for="institution">City</label>
+        <label for="institution">Institution</label>
         <input type="text" class="form-control" id="institution" [formControlName]="'institution'">
+      </div>
+
+      <!-- COUNTRY -->
+      <div class="form-group">
+        <label for="countryId">Country *</label>
+        <select class="form-control" name="country" id="countryId" [formControlName]="'countryId'">
+          <option value=""></option>
+          <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
+        </select>
+      </div>
+
+      <!-- YEAR -->
+      <div class="form-group">
+        <label for="yearCompleted">Year of completion *</label>
+        <select class="form-control" name="yearCompleted" id="yearCompleted" [formControlName]="'yearCompleted'">
+          <option value=""></option>
+          <option *ngFor="let year of years" [value]="year">{{year}}</option>
+        </select>
       </div>
 
 

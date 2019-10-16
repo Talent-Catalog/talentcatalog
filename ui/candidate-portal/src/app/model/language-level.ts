@@ -1,4 +1,5 @@
 export interface LanguageLevel {
   id: number;
-  level: string;
+  name: string;
+  level: number;
 }

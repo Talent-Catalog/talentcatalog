@@ -18,7 +18,6 @@ export class ViewCandidateEducationComponent implements OnInit, OnChanges {
   @Input() editable: boolean;
 
   candidateEducations: CandidateEducation[];
-  candidateEducation: CandidateEducation;
   loading: boolean;
   error;
 
@@ -31,20 +30,23 @@ export class ViewCandidateEducationComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     this.editable = true;
-    console.log(changes);
     if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
-      this.loading = true;
-      this.candidateEducationService.list(this.candidate.id).subscribe(
-        candidateEducations => {
-          this.candidateEducations = candidateEducations;
-          this.loading = false;
-        },
-        error => {
-          this.error = error;
-          this.loading = false;
-        })
-      ;
+       this.search();
     }
+  }
+
+  search(){
+    this.loading = true;
+    this.candidateEducationService.list(this.candidate.id).subscribe(
+      candidateEducations => {
+        this.candidateEducations = candidateEducations;
+        this.loading = false;
+      },
+      error => {
+        this.error = error;
+        this.loading = false;
+      })
+    ;
   }
 
   editCandidateEducation(candidateEducation: CandidateEducation) {
@@ -56,7 +58,7 @@ export class ViewCandidateEducationComponent implements OnInit, OnChanges {
     editCandidateEducationModal.componentInstance.candidateEducation = candidateEducation;
 
     editCandidateEducationModal.result
-      .then((candidateEducation) => this.candidateEducation = candidateEducation)
+      .then((candidateEducation) => this.search())
       .catch(() => { /* Isn't possible */ });
 
   }
@@ -70,7 +72,7 @@ export class ViewCandidateEducationComponent implements OnInit, OnChanges {
     createCandidateEducationModal.componentInstance.candidateId = this.candidate.id;
 
     createCandidateEducationModal.result
-      .then((candidateEducation) => this.candidateEducation = candidateEducation)
+      .then((candidateEducation) => this.search())
       .catch(() => { /* Isn't possible */ });
 
   }

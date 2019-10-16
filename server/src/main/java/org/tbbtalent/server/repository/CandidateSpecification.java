@@ -18,8 +18,8 @@ public class CandidateSpecification {
         return (candidate, query, builder) -> {
             Predicate conjunction = builder.conjunction();
             query.distinct(true);
-            Join<Candidate, CandidateLanguage> candidateLanguages = candidate.join("candidateLanguages", JoinType.LEFT);
             Join<Candidate, User> user = candidate.join("user");
+            Join<Candidate, CandidateEducation> candidateEducations = null;
 
             //Short lists
             if (request.getSavedSearchId() != null) {
@@ -84,7 +84,7 @@ public class CandidateSpecification {
                         String lowerCaseMatchTerm = request.getOrProfileKeyword().toLowerCase();
                         String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
                         Join<Candidate, CandidateJobExperience> candidateJobExperiences = candidate.join("candidateJobExperiences", JoinType.LEFT);
-                        Join<Candidate, CandidateEducation> candidateEducations = candidate.join("candidateEducation", JoinType.LEFT);
+                        candidateEducations = candidateEducations == null ? candidate.join("candidateEducation", JoinType.LEFT) : candidateEducations;
 
                         conjunction.getExpressions().add(builder.or(
                                 builder.isTrue(candidateOccupations.get("id").in(request.getOccupationIds())),
@@ -140,11 +140,11 @@ public class CandidateSpecification {
 
             //Registered From - change to registered
             if (request.getRegisteredFrom() != null) {
-                conjunction.getExpressions().add(builder.greaterThanOrEqualTo(candidate.get("createdDate"), getOffsetDateTime(request.getRegisteredFrom(), LocalTime.MIN, request.getTimezone())));
+                conjunction.getExpressions().add(builder.greaterThanOrEqualTo(candidate.get("registeredDate"), getOffsetDateTime(request.getRegisteredFrom(), LocalTime.MIN, request.getTimezone())));
             }
 
             if (request.getRegisteredTo() != null) {
-                conjunction.getExpressions().add(builder.lessThanOrEqualTo(candidate.get("createdDate"), getOffsetDateTime(request.getRegisteredTo(), LocalTime.MAX, request.getTimezone())));
+                conjunction.getExpressions().add(builder.lessThanOrEqualTo(candidate.get("registeredDate"), getOffsetDateTime(request.getRegisteredTo(), LocalTime.MAX, request.getTimezone())));
             }
 
             //Min / Max Age
@@ -167,13 +167,34 @@ public class CandidateSpecification {
                 );
             }
 
+            // MAJOR SEARCH
+            if(!Collections.isEmpty(request.getEducationMajorIds())) {
+                candidateEducations = candidateEducations == null ? candidate.join("candidateEducation", JoinType.LEFT) : candidateEducations;
+                Join<Candidate, EducationMajor> major = candidateEducations.join("educationMajor", JoinType.LEFT);
+
+                conjunction.getExpressions().add(
+                        builder.isTrue(major.get("id").in(request.getEducationMajorIds()))
+                );
+            }
+
             // LANGUAGE SEARCH
-//            if(request.getCandidateLanguageId() != null) {
-//                System.out.println(request.getCandidateLanguageId());
-//                conjunction.getExpressions().add(
-//                        builder.equal(candidateLanguages.get("id"), request.getCandidateLanguageId())
-//                );
-//            }
+            if(request.getEnglishMinSpokenLevel() != null || request.getEnglishMinWrittenLevel() != null || request.getOtherLanguageId() != null
+                        || request.getOtherMinSpokenLevel() != null || request.getOtherMinWrittenLevel() != null) {
+                Join<Candidate, CandidateLanguage> candidateLanguages = candidate.join("candidateLanguages", JoinType.LEFT);
+                Join<CandidateLanguage, LanguageLevel> writtenLevel = candidateLanguages.join("writtenLevel", JoinType.LEFT);
+                Join<CandidateLanguage, LanguageLevel> spokenLevel = candidateLanguages.join("spokenLevel", JoinType.LEFT);
+                Join<CandidateLanguage, Language> language = candidateLanguages.join("language", JoinType.LEFT);
+                if (request.getEnglishMinWrittenLevel() != null && request.getEnglishMinSpokenLevel() != null){
+                    conjunction.getExpressions().add(builder.and(builder.equal(builder.lower(language.get("name")), "english"),
+                            builder.greaterThanOrEqualTo(writtenLevel.get("level"), request.getEnglishMinSpokenLevel()),
+                            builder.greaterThanOrEqualTo(spokenLevel.get("level"), request.getEnglishMinWrittenLevel())));
+                }
+                if (request.getOtherLanguageId() != null && request.getOtherMinSpokenLevel() != null && request.getOtherMinWrittenLevel() != null){
+                    conjunction.getExpressions().add(builder.and(builder.equal(language.get("id"), request.getOtherLanguageId()),
+                            builder.greaterThanOrEqualTo(writtenLevel.get("level"), request.getOtherMinWrittenLevel()),
+                            builder.greaterThanOrEqualTo(spokenLevel.get("level"), request.getOtherMinSpokenLevel())));
+                }
+            }
             
 
             return conjunction;

@@ -32,8 +32,8 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.form = this.fb.group({
       languageId: [this.model ? this.model.languageId : null, Validators.required],
-      writtenLevelId: [this.model ? this.model.writtenLevelId : null, Validators.required],
-      spokenLevelId: [this.model ? this.model.spokenLevelId : null, Validators.required],
+      writtenLevel: [this.model ? this.model.writtenLevel : null, Validators.required],
+      spokenLevel: [this.model ? this.model.spokenLevel : null, Validators.required],
     });
     if (this.languageDisabled) {
       this.form.controls['languageId'].disable()
@@ -92,8 +92,8 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
   renderLevel() {
     const val = (this.form.value as LanguageLevelFormControlModel);
     const language = val.languageId ? this.languages.find(l => l.id == val.languageId).name : '';
-    const written = val.writtenLevelId ? 'Written: ' + this.languageLevels.find(l => l.id == val.writtenLevelId).level : '';
-    const spoken = val.spokenLevelId ? 'Spoken: ' + this.languageLevels.find(l => l.id == val.spokenLevelId).level : '';
+    const written = val.writtenLevel ? 'Written: ' + this.languageLevels.find(l => l.level == val.writtenLevel).name : '';
+    const spoken = val.spokenLevel ? 'Spoken: ' + this.languageLevels.find(l => l.level == val.spokenLevel).name : '';
     const proficiencyString = written && spoken ? written + ', ' + spoken : written || spoken;
     return language && proficiencyString ? `${language} (${proficiencyString})` : language ? language : proficiencyString;
   }

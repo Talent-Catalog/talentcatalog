@@ -40,6 +40,7 @@ public class CandidateEducationAdminApi {
     @PutMapping("{id}")
     public Map<String, Object> update(@PathVariable("id") long id,
                                       @RequestBody UpdateCandidateEducationRequest request) {
+        request.setId(id);
         CandidateEducation candidateEducation = this.candidateEducationService.updateCandidateEducation(request);
         return candidateEducationDto().build(candidateEducation);
     }
@@ -50,7 +51,7 @@ public class CandidateEducationAdminApi {
                 .add("id")
                 .add("educationType")
                 .add("country", countryDto())
-                .add("major", majorDto())
+                .add("educationMajor", majorDto())
                 .add("lengthOfCourseYears")
                 .add("institution")
                 .add("courseName")
