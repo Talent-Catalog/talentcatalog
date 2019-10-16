@@ -1,7 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
 @import "scss/typography";
 @import "scss/btn";
+// TODO remove
 @import "scss/slider";
+
+/* Component specific styles */
+@import "scss/component/registration-step";
 
 .flex-center {
   display: flex;

@@ -5,7 +5,7 @@
 @import "~bootstrap/scss/buttons";
 
 .btn {
-  @include button-size(11px, 1em, 18px, 1.2, 0);
+  @include button-size(8px, 1em, 18px, 1.25, 0);
 }
 
 .btn-primary {
@@ -38,7 +38,7 @@
 
   &:hover {
     color: $color-primary-dark;
-    text-decoration: $link-hover-decoration;
+    text-decoration: none;
     background-color: transparent;
     border-color: transparent;
   }
@@ -73,3 +73,12 @@ a {
     color: $color-text-inactive;
   }
 }
+
+/* Disabled styles are last so that they always take precedence */
+.btn.disabled,
+.btn:disabled {
+  @include background-color("border");
+  @include border-color("border");
+  @include color("text-inactive");
+}
+

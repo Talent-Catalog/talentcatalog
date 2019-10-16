@@ -1,7 +1,6 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {LandingComponent} from "./components/landing/landing.component";
-import {RegistrationLandingComponent} from "./components/register/landing/registration-landing.component";
 import {RegistrationContactComponent} from "./components/register/contact/registration-contact.component";
 import {RegistrationAlternateContactComponent} from "./components/register/contact/alternate/registration-alternate-contact.component";
 import {RegistrationPersonalComponent} from "./components/register/personal/registration-personal.component";
@@ -21,15 +20,12 @@ import {LoginComponent} from "./components/login/login.component";
 import {HomeComponent} from "./components/home/home.component";
 import {ResetPasswordComponent} from './components/reset-password/reset-password.component';
 import {ChangePasswordComponent} from './components/change-password/change-password.component';
+import {RegisterComponent} from "./components/register/register.component";
 
 const routes: Routes = [
   {
     path: '',
     component: LandingComponent
-  },
-  {
-    path: 'register',
-    component: RegistrationLandingComponent
   },
   {
     path: 'login',
@@ -49,6 +45,10 @@ const routes: Routes = [
   {
     path: 'home',
     component: HomeComponent
+  },
+  {
+    path: 'register',
+    component: RegisterComponent
   },
   {
     path: 'register/contact',

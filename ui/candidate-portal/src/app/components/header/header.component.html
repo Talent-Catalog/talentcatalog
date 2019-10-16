@@ -1,9 +1,13 @@
 <nav class="navbar navbar-expand-md navbar-light fixed-top bg-light">
+
   <div class="container">
-    <a class="navbar-brand" [routerLink]="'/'">
+
+    <!-- LOGO -->
+    <a [routerLink]="'/'">
       <img class="logo" src="../../../assets/images/logo.png" alt="Logo">
     </a>
 
+    <!-- MOBILE NAV TOGGLE -->
     <button class="navbar-toggler hidden-sm-up" type="button"
             data-target="#headerNav" aria-controls="headerNav" aria-expanded="false" aria-label="Toggle navigation"
             (click)="isNavbarCollapsed = !isNavbarCollapsed">
@@ -65,5 +69,7 @@
       <a class="btn btn-link" routerLink="/login" *ngIf="!user">Sign In</a>
 
     </div>
+
   </div>
+
 </nav>
