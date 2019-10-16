@@ -24,13 +24,13 @@ public class CandidateJobExperiencePortalApi {
 
     @PostMapping()
     public Map<String, Object> createJobExperience(@Valid @RequestBody CreateJobExperienceRequest request) {
-        CandidateJobExperience candidateJobExperience = this.candidateJobExperienceService.createJobExperience(request);
+        CandidateJobExperience candidateJobExperience = this.candidateJobExperienceService.createCandidateJobExperience(request);
         return jobExperienceDto().build(candidateJobExperience);
     }
 
     @DeleteMapping("{id}")
     public ResponseEntity deleteJobExperience(@PathVariable("id") Long id) {
-        candidateJobExperienceService.deleteJobExperience(id);
+        candidateJobExperienceService.deleteCandidateJobExperience(id);
         return ResponseEntity.ok().build();
     }
 

@@ -32,6 +32,11 @@ export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
       name: "Accountant",
       status: "active"
     }
+    this.candidateOccupation = {
+      id: 1,
+      occupation: this.occupation,
+      yearsExperience: 3
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {

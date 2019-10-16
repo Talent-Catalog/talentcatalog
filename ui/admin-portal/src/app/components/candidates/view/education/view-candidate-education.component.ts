@@ -36,7 +36,6 @@ export class ViewCandidateEducationComponent implements OnInit, OnChanges {
       this.loading = true;
       this.candidateEducationService.list(this.candidate.id).subscribe(
         candidateEducations => {
-          console.log(candidateEducations);
           this.candidateEducations = candidateEducations;
           this.loading = false;
         },

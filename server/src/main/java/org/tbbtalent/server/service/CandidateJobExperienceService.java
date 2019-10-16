@@ -5,7 +5,9 @@ import org.tbbtalent.server.request.work.experience.CreateJobExperienceRequest;
 
 public interface CandidateJobExperienceService {
 
-    CandidateJobExperience createJobExperience(CreateJobExperienceRequest request);
+    CandidateJobExperience createCandidateJobExperience(CreateJobExperienceRequest request);
 
-    void deleteJobExperience(Long id);
+    CandidateJobExperience createCandidateJobExperience(Long id, CreateJobExperienceRequest request);
+
+    void deleteCandidateJobExperience(Long id);
 }

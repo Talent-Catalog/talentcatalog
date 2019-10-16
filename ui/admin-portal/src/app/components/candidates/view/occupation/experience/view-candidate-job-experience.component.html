@@ -1,0 +1,48 @@
+<div *ngIf="loading">
+  <i class="fa fa-spinner fa-spin"></i> loading...
+</div>
+<div *ngIf="error">
+  {{error}}
+</div>
+<div class="card" *ngIf="!loading">
+
+  <div class="pull-right" *ngIf="editable">
+    <button type="button" class="btn btn-primary" (click)="createCandidateJobExperience()">Add</button>
+  </div>
+
+  <div class="card-body">
+    <div *ngIf="!candidateJobExperiences || candidateJobExperiences.length == 0">
+      <div class="row">
+        <div class="col-sm-12">
+          No job experience entered
+        </div>
+      </div>
+    </div>
+    <div *ngFor="let candidateJobExperience of candidateJobExperiences">
+      <div class="row">
+        <div class="col-6">
+          <h6 class="card-title">{{candidateJobExperience.companyName}}: {{candidateJobExperience.role}}</h6>
+        </div>
+        <div class="col-6">
+          <div class="pull-right" *ngIf="editable">
+            <button type="button" class="btn btn-default" (click)="editCandidateJobExperience(candidateJobExperience)"><i
+              class="fa fa-edit"></i></button>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-6">
+          <label class="col-form-label card-subtitle text-muted">{{candidateJobExperience.description}}, {{candidateJobExperience.country.name}}</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-6">
+          <label class="col-form-label mb-2 text-muted">{{candidateJobExperience.startDate}}</label>
+        </div>
+      </div>
+      <hr/>
+    </div>
+
+  </div>
+
+</div>
