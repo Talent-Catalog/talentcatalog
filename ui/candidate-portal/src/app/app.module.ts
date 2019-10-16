@@ -4,17 +4,15 @@ import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './components/app.component';
 import {LandingComponent} from './components/landing/landing.component';
 import {ReactiveFormsModule} from "@angular/forms";
-import {HTTP_INTERCEPTORS, HttpClientModule, HttpClient} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from "@angular/common/http";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
-import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
+import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 
 import {RegistrationLandingComponent} from './components/register/landing/registration-landing.component';
 import {RegistrationContactComponent} from './components/register/contact/registration-contact.component';
 import {RegistrationAlternateContactComponent} from './components/register/contact/alternate/registration-alternate-contact.component';
 import {RegistrationPersonalComponent} from './components/register/personal/registration-personal.component';
-import {RegistrationLocationComponent} from './components/register/location/registration-location.component';
-import {RegistrationNationalityComponent} from './components/register/nationality/registration-nationality.component';
 import {RegistrationCandidateOccupationComponent} from './components/register/candidate-occupation/registration-candidate-occupation.component';
 import {RegistrationJobExperienceComponent} from './components/register/job-experience/registration-job-experience.component';
 import {RegistrationEducationComponent} from './components/register/education/registration-education.component';
@@ -28,15 +26,13 @@ import {RegistrationAdditionalContactComponent} from './components/register/cont
 import {LocalStorageModule} from "angular-2-local-storage";
 import {JwtInterceptor} from "./services/jwt.interceptor";
 import {LanguageInterceptor} from "./services/language.interceptor";
-import {AuthService} from "./services/auth.service";
-import {UserService} from "./services/user.service";
-import {CandidateService} from "./services/candidate.service";
 import {LoginComponent} from "./components/login/login.component";
 import {HomeComponent} from "./components/home/home.component";
 import {ErrorInterceptor} from "./services/error.interceptor";
 import {ResetPasswordComponent} from './components/reset-password/reset-password.component';
 import {ChangePasswordComponent} from './components/change-password/change-password.component';
 import {HeaderComponent} from "./components/header/header.component";
+import {RegisterComponent} from './components/register/register.component';
 
 export function createTranslateLoader(http: HttpClient) {
     return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -51,8 +47,6 @@ export function createTranslateLoader(http: HttpClient) {
     RegistrationContactComponent,
     RegistrationAlternateContactComponent,
     RegistrationPersonalComponent,
-    RegistrationLocationComponent,
-    RegistrationNationalityComponent,
     RegistrationCandidateOccupationComponent,
     RegistrationJobExperienceComponent,
     RegistrationEducationComponent,
@@ -66,7 +60,8 @@ export function createTranslateLoader(http: HttpClient) {
     LoginComponent,
     HomeComponent,
     ResetPasswordComponent,
-    ChangePasswordComponent
+    ChangePasswordComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,

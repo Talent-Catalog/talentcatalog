@@ -313,6 +313,14 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updatePersonal(UpdateCandidatePersonalRequest request) {
+        // Load the country from the database - throw an exception if not found
+        Country country = countryRepository.findById(request.getCountryId())
+                .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountryId()));
+
+        // Load the nationality from the database - throw an exception if not found
+        Nationality nationality = nationalityRepository.findById(request.getNationality())
+                .orElseThrow(() -> new NoSuchObjectException(Nationality.class, request.getNationality()));
+
         User user = userContext.getLoggedInUser();
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
@@ -321,35 +329,13 @@ public class CandidateServiceImpl implements CandidateService {
         if (candidate != null) {
             candidate.setGender(request.getGender());
             candidate.setDob(request.getDob());
+            candidate.setCountry(country);
+            candidate.setCity(request.getCity());
+            candidate.setYearOfArrival(request.getYearOfArrival());
+            candidate.setNationality(nationality);
+            candidate.setUnRegistered(request.getRegisteredWithUN());
+            candidate.setUnRegistrationNumber(request.getRegistrationId());
         }
-        return candidateRepository.save(candidate);
-    }
-
-    @Override
-    public Candidate updateLocation(UpdateCandidateLocationRequest request) {
-
-        // Load the country from the database - throw an exception if not found
-        Country country = countryRepository.findById(request.getCountryId())
-                .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountryId()));
-
-        Candidate candidate = getLoggedInCandidate();
-        candidate.setCountry(country);
-        candidate.setCity(request.getCity());
-        candidate.setYearOfArrival(request.getYearOfArrival());
-        return candidateRepository.save(candidate);
-    }
-
-    @Override
-    public Candidate updateNationality(UpdateCandidateNationalityRequest request) {
-
-        // Load the nationality from the database - throw an exception if not found
-        Nationality nationality = nationalityRepository.findById(request.getNationality())
-                .orElseThrow(() -> new NoSuchObjectException(Nationality.class, request.getNationality()));
-
-        Candidate candidate = getLoggedInCandidate();
-        candidate.setNationality(nationality);
-        candidate.setUnRegistered(request.getRegisteredWithUN());
-        candidate.setUnRegistrationNumber(request.getRegistrationId());
         return candidateRepository.save(candidate);
     }
 

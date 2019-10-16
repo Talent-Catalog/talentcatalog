@@ -75,30 +75,6 @@ public class CandidatePortalApi {
         return candidateWithCandidateOccupationsDto().build(candidate);
     }
 
-    @GetMapping("location")
-    public Map<String, Object> getCandidateLocation() {
-        Candidate candidate = this.candidateService.getLoggedInCandidate();
-        return candidateLocationDto().build(candidate);
-    }
-
-    @PostMapping("location")
-    public Map<String, Object> updateCandidateLocation(@Valid @RequestBody UpdateCandidateLocationRequest request) {
-        Candidate candidate = this.candidateService.updateLocation(request);
-        return candidateLocationDto().build(candidate);
-    }
-
-    @GetMapping("nationality")
-    public Map<String, Object> getCandidateNationality() {
-        Candidate candidate = this.candidateService.getLoggedInCandidate();
-        return candidateNationalityDto().build(candidate);
-    }
-
-    @PostMapping("nationality")
-    public Map<String, Object> updateCandidateNationality(@Valid @RequestBody UpdateCandidateNationalityRequest request) {
-        Candidate candidate = this.candidateService.updateNationality(request);
-        return candidateNationalityDto().build(candidate);
-    }
-
     @GetMapping("education")
     public Map<String, Object> getCandidateEducationLevel() {
         Candidate candidate = this.candidateService.getLoggedInCandidate();
@@ -182,6 +158,12 @@ public class CandidatePortalApi {
                 .add("user", userDto())
                 .add("gender")
                 .add("dob")
+                .add("country", countryDto())
+                .add("city")
+                .add("yearOfArrival")
+                .add("nationality", nationalityDto())
+                .add("unRegistered")
+                .add("unRegistrationNumber")
                 ;
     }
 
@@ -196,22 +178,6 @@ public class CandidatePortalApi {
                 .add("id")
                 .add("occupation", occupationDto())
                 .add("yearsExperience")
-                ;
-    }
-
-    private DtoBuilder candidateLocationDto() {
-        return new DtoBuilder()
-                .add("country", countryDto())
-                .add("city")
-                .add("yearOfArrival")
-                ;
-    }
-
-    private DtoBuilder candidateNationalityDto() {
-        return new DtoBuilder()
-                .add("nationality", nationalityDto())
-                .add("unRegistered")
-                .add("unRegistrationNumber")
                 ;
     }
 
