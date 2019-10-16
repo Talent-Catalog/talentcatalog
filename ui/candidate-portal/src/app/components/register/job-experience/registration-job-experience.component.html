@@ -1,7 +1,5 @@
 <div class="container">
 
-  <h1 class="text-center">Work Experience</h1>
-
   <form [formGroup]="form" *ngIf="!loading">
 
     <!-- COMPANY NAME -->
@@ -133,14 +131,6 @@
     </table>
   </div>
 
-<!--  <pre>{{form.value | json}}</pre>-->
-
-  <div class="text-right">
-    <button class="btn btn-primary"
-            [disabled]="candidateJobExperiences.length == '0'"
-            (click)="save()">
-      Submit & Next
-    </button>
-  </div>
-
 </div>
+
+<app-registration-footer (backClicked)="back()" (nextClicked)="next()"></app-registration-footer>

@@ -68,26 +68,35 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
     });
   }
 
-  addOccupationToRequest() {
+  addOccupation() {
     this.occupationRequests.push(this.form.value);
     this.setUpForm();
   }
 
+  deleteOccupation(index: number) {
+    this.occupationRequests.splice(index, 1);
+  }
+
   save(dir: string) {
     if (this.form.valid) {
-      this.addOccupationToRequest();
+      this.addOccupation();
     }
-    this.candidateOccupationService.updateCandidateOccupations(this.occupationRequests).subscribe(
-      () => {
-        if (dir === 'next') {
-          this.registrationService.next();
-        } else {
-          this.registrationService.back();
-        }
-      },
-      (error) => {
-        console.log('error', error);
-      });
+    if (dir === 'next') {
+      this.registrationService.next();
+    } else {
+      this.registrationService.back();
+    }
+    // this.candidateOccupationService.updateCandidateOccupations(this.occupationRequests).subscribe(
+    //   () => {
+    //     if (dir === 'next') {
+    //       this.registrationService.next();
+    //     } else {
+    //       this.registrationService.back();
+    //     }
+    //   },
+    //   (error) => {
+    //     console.log('error', error);
+    //   });
   }
 
   back() {
@@ -98,7 +107,4 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
     this.save('next');
   }
 
-  deleteOccupation(index: number) {
-    this.occupationRequests.splice(index, 1);
-  }
 }

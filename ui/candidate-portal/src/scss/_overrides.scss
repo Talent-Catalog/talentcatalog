@@ -1,6 +1,38 @@
+@import "mixins";
+
 /* Overrides for third party library styles */
 .card {
   box-shadow: 0 1px 0 0 #d7d8d8;
   border-radius: 0px;
   border-color: transparent;
+  padding: 24px;
+
+  @media screen and (min-width: 768px) {
+    padding: 32px 40px;
+  }
+}
+
+.form-group {
+  margin: 0 0 24px 0;
+
+  @media screen and (min-width: 768px) {
+    margin: 0 0 40px 0;
+  }
+
+  label {
+    margin: 0 0 16px 0;
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  .form-control {
+    @include border-color("border");
+    border-radius: 0;
+
+  }
+
+}
+
+.text-muted {
+  @include color("text-inactive");
 }

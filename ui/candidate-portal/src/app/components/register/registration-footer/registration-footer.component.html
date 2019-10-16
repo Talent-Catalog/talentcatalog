@@ -2,16 +2,16 @@
 
   <div class="container">
 
-    <button class="btn btn-outline-primary"
+    <button class="btn btn-outline-primary" translate dir="auto"
             [disabled]="registrationService.currentStepIndex == 0"
             (click)="back()">
-      Back
+      REGISTRATION.FOOTER.BACK
     </button>
 
-    <button class="btn btn-primary"
+    <button class="btn btn-primary" translate dir="auto"
             [disabled]="registrationService.currentStepIndex >= registrationService.steps.length - 1"
             (click)="next()">
-      Next
+      REGISTRATION.FOOTER.NEXT
     </button>
 
   </div>
