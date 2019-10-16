@@ -1,9 +1,7 @@
 package org.tbbtalent.server.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
@@ -102,17 +100,19 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
 
     @Override
     public List<CandidateOccupation> updateCandidateOccupations(UpdateCandidateOccupationsRequest request) {
+        Candidate candidate = userContext.getLoggedInCandidate();
         List<CandidateOccupation> updatedOccupations = new ArrayList<>();
         List<Long> updatedOccupationIds = new ArrayList<>();
-        Candidate candidate = userContext.getLoggedInCandidate();
 
         List<CandidateOccupation> candidateOccupations = candidateOccupationRepository.findByCandidateId(candidate.getId());
         Map<Long, CandidateOccupation> map = candidateOccupations.stream().collect( Collectors.toMap(CandidateOccupation::getId,
                 Function.identity()) );
 
         for (UpdateCandidateOccupationRequest update : request.getUpdates()) {
-            CandidateOccupation candidateOccupation = update.getCandidateOccupationId() != null ? map.get(update.getCandidateOccupationId()) : null;
+            /* Check if occupation has been previously saved */
+            CandidateOccupation candidateOccupation = update.getId() != null ? map.get(update.getId()) : null;
             if (candidateOccupation != null){
+                /* Check if the occupation has changed */
                 if (!update.getOccupationId().equals(candidateOccupation.getOccupation().getId())){
                     Occupation occupation = occupationRepository.findById(update.getOccupationId())
                             .orElseThrow(() -> new NoSuchObjectException(Occupation.class, update.getOccupationId()));
@@ -120,6 +120,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
                 }
                 candidateOccupation.setYearsExperience(update.getYearsExperience());
             } else {
+                /* Create a new candidate occupation */
                 Occupation occupation = occupationRepository.findById(update.getOccupationId())
                         .orElseThrow(() -> new NoSuchObjectException(Occupation.class, update.getOccupationId()));
                 candidateOccupation = new CandidateOccupation(candidate, occupation, update.getYearsExperience());
@@ -129,7 +130,9 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         }
 
         for (Long existingCandidateOccupationId : map.keySet()) {
+            /* Check if the candidate occupation hsa been removed */
             if (!updatedOccupationIds.contains(existingCandidateOccupationId)){
+                /* Check if the candidate has job experience linked to the occupation */
                 int count = candidateJobExperienceRepository.countByCandidateOccupationId(existingCandidateOccupationId);
                 if (count > 0){
                     throw new EntityReferencedException("occupation");

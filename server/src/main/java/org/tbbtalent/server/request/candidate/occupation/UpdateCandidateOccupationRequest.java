@@ -2,16 +2,16 @@ package org.tbbtalent.server.request.candidate.occupation;
 
 public class UpdateCandidateOccupationRequest {
 
-    private Long candidateOccupationId;
+    private Long id;
     private Long occupationId;
     private Long yearsExperience;
 
-    public Long getCandidateOccupationId() {
-        return candidateOccupationId;
+    public Long getId() {
+        return id;
     }
 
-    public void setCandidateOccupationId(Long candidateOccupationId) {
-        this.candidateOccupationId = candidateOccupationId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Long getOccupationId() {

@@ -5,3 +5,9 @@ export interface CandidateOccupation {
   occupation: Occupation;
   yearsExperience: number;
 }
+
+export interface CandidateOccupationRequest {
+  id: number;
+  occupationId: number;
+  yearsExperience: number;
+}

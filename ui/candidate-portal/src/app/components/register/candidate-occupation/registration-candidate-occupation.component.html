@@ -4,7 +4,8 @@
     Loading...
   </div>
 
-  <div class="card" *ngFor="let occupation of occupationRequests; let i = index;">
+  <!-- REVIEW -->
+  <div class="card" *ngFor="let occupation of candidateOccupations; let i = index;">
 
     <div class="text-right">
       <button class="btn btn-danger" (click)="deleteOccupation(i)">&times;</button>
@@ -26,6 +27,7 @@
 
   </div>
 
+  <!-- CREATE -->
   <form class="card" [formGroup]="form" *ngIf="!loading">
 
     <!-- FIELD -->
