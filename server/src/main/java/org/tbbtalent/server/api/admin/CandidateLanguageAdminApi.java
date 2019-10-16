@@ -49,6 +49,7 @@ public class CandidateLanguageAdminApi {
     private DtoBuilder languageLevelDto() {
         return new DtoBuilder()
                 .add("id")
+                .add("name")
                 .add("level")
                 ;
     }
