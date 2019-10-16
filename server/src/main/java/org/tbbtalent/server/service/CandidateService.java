@@ -32,10 +32,6 @@ public interface CandidateService {
 
     Candidate updatePersonal(UpdateCandidatePersonalRequest request);
 
-    Candidate updateLocation(UpdateCandidateLocationRequest request);
-
-    Candidate updateNationality(UpdateCandidateNationalityRequest request);
-
     Candidate updateEducationLevel(UpdateCandidateEducationLevelRequest request);
 
     Candidate updateAdditionalInfo(UpdateCandidateAdditionalInfoRequest request);

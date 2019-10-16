@@ -13,8 +13,6 @@ import {RegistrationLandingComponent} from './components/register/landing/regist
 import {RegistrationContactComponent} from './components/register/contact/registration-contact.component';
 import {RegistrationAlternateContactComponent} from './components/register/contact/alternate/registration-alternate-contact.component';
 import {RegistrationPersonalComponent} from './components/register/personal/registration-personal.component';
-import {RegistrationLocationComponent} from './components/register/location/registration-location.component';
-import {RegistrationNationalityComponent} from './components/register/nationality/registration-nationality.component';
 import {RegistrationCandidateOccupationComponent} from './components/register/candidate-occupation/registration-candidate-occupation.component';
 import {RegistrationJobExperienceComponent} from './components/register/job-experience/registration-job-experience.component';
 import {RegistrationEducationComponent} from './components/register/education/registration-education.component';
@@ -49,8 +47,6 @@ export function createTranslateLoader(http: HttpClient) {
     RegistrationContactComponent,
     RegistrationAlternateContactComponent,
     RegistrationPersonalComponent,
-    RegistrationLocationComponent,
-    RegistrationNationalityComponent,
     RegistrationCandidateOccupationComponent,
     RegistrationJobExperienceComponent,
     RegistrationEducationComponent,

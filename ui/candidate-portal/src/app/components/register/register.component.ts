@@ -40,16 +40,6 @@ export class RegisterComponent implements OnInit {
       section: 2
     },
     {
-      key: 'location',
-      title: 'Tell us about yourself',
-      section: 2
-    },
-    {
-      key: 'nationality',
-      title: 'Tell us about yourself',
-      section: 2
-    },
-    {
       key: 'candidateOccupation',
       title: 'Tell us about your occupation',
       section: 3
