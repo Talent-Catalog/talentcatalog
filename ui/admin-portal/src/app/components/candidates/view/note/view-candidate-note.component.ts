@@ -22,7 +22,8 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
   loading: boolean;
   expanded: boolean;
   error;
-  results: SearchResults<CandidateNote>;
+  notes: CandidateNote[];
+  hasMore: boolean;
 
   constructor(private candidateNoteService: CandidateNoteService,
               private modalService: NgbModal,
@@ -35,10 +36,11 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     this.editable = true;
     this.expanded = false;
+    this.notes = [];
 
     this.candidateNoteForm = this.fb.group({
       candidateId: [this.candidate.id],
-      pageSize: 10,
+      pageSize: 1,
       pageNumber: 0,
       sortDirection: 'DESC',
       sortFields: [['createdDate']]
@@ -54,7 +56,8 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
     this.loading = true;
     this.candidateNoteService.search(this.candidateNoteForm.value).subscribe(
       results => {
-        this.results = results;
+        this.notes.push(...results.content);
+        this.hasMore = results.totalPages > results.number+1;
         this.loading = false;
       },
       error => {
@@ -66,8 +69,8 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
   }
 
   loadMore() {
-    this.candidateNoteForm.value.pageNumber += 1;
-    console.log(this.results);
+    this.candidateNoteForm.controls['pageNumber'].patchValue(this.candidateNoteForm.value.pageNumber+1);
+    this.doSearch();
   }
 
   editCandidateNote(candidateNote: CandidateNote) {

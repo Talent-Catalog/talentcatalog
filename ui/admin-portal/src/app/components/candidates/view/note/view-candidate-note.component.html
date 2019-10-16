@@ -14,7 +14,7 @@
 </div>
 
 
-<div *ngIf="!results || results.content.length == 0">
+<div *ngIf="!notes || notes.length == 0">
   <div class="row">
     <div class="col-sm-12">
       No notes entered
@@ -23,7 +23,7 @@
 </div>
 
 
-<div *ngFor="let candidateNote of results?.content; let i = index">
+<div *ngFor="let candidateNote of notes; let i = index">
   <div class="card">
     <div class="card-header">
       <div class="pull-right" *ngIf="editable">
@@ -37,11 +37,11 @@
       <div *ngIf="candidateNote.comment">
         <div *ngIf="!expanded">
           {{ (candidateNote.comment | slice:0:50) + (candidateNote.comment.length > 50 ? ' ...' : '')}}
-          <button *ngIf="candidateNote.comment.length > 50" type="button" class="btn btn-sm btn-default" (click)="expanded = true">See more</button>
+          <button *ngIf="candidateNote.comment.length > 50" type="button" class="btn btn-sm btn-default" (click)="expanded = true"><i class="fa fa-toggle-down"></i></button>
         </div>
         <div *ngIf="expanded">
           {{ candidateNote.comment }}
-          <button type="button" class="btn btn-sm btn-default" (click)="expanded = false">See less</button>
+          <button type="button" class="btn btn-sm btn-default" (click)="expanded = false"><i class="fa fa-toggle-up"></i></button>
         </div>
       </div>
 
@@ -57,8 +57,8 @@
   </div>
 </div>
 
-<div>
-  <button type="button" class="btn btn-sm btn-primary" (click)="loadMore()" [disabled]="!results?.hasNext">Load More</button>
+<div class="text-center" *ngIf="hasMore">
+  <button type="button" class="btn btn-sm btn-outline-dark" (click)="loadMore()">Load More</button>
 </div>
 
 
