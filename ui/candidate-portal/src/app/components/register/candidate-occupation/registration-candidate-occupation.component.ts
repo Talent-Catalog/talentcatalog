@@ -3,7 +3,7 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
 import {CandidateOccupationService} from "../../../services/candidate-occupation.service";
-import {CandidateOccupation} from "../../../model/candidate-occupation";
+import {CandidateOccupationRequest} from "../../../model/candidate-occupation";
 import {Occupation} from "../../../model/occupation";
 import {OccupationService} from "../../../services/occupation.service";
 import {RegistrationService} from "../../../services/registration.service";
@@ -19,9 +19,8 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
   loading: boolean;
   saving: boolean;
   form: FormGroup;
-  candidateOccupations: CandidateOccupation[];
+  candidateOccupations: CandidateOccupationRequest[];
   occupations: Occupation[];
-  occupationRequests: {occupationId: number, yearsExperience: number}[];
 
   constructor(private fb: FormBuilder,
               private router: Router,
@@ -34,12 +33,17 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
     this.candidateOccupations = [];
     this.saving = false;
     this.loading = true;
-    this.occupationRequests = [];
 
     /* Load the candidate data */
     this.candidateService.getCandidateCandidateOccupations().subscribe(
       (candidate) => {
-        this.candidateOccupations = candidate.candidateOccupations || [];
+        this.candidateOccupations = candidate.candidateOccupations.map(occ => {
+          return {
+            id: occ.id,
+            occupationId: occ.occupation.id,
+            yearsExperience: occ.yearsExperience
+          }
+        });
 
         /* Wait for the candidate then load the industries */
         this.occupationService.listOccupations().subscribe(
@@ -63,22 +67,30 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
 
   setUpForm(){
     this.form = this.fb.group({
+      id: [null],
       occupationId: [null, Validators.required],
       yearsExperience: [null, Validators.required],
     });
   }
 
-  addOccupationToRequest() {
-    this.occupationRequests.push(this.form.value);
+  addOccupation() {
+    this.candidateOccupations.push(this.form.value);
     this.setUpForm();
+  }
+
+  deleteOccupation(index: number) {
+    this.candidateOccupations.splice(index, 1);
   }
 
   save(dir: string) {
     if (this.form.valid) {
-      this.addOccupationToRequest();
+      this.addOccupation();
     }
-    this.candidateOccupationService.updateCandidateOccupations(this.occupationRequests).subscribe(
-      () => {
+    const request = {
+      updates: this.candidateOccupations
+    };
+    this.candidateOccupationService.updateCandidateOccupations(request).subscribe(
+      (response) => {
         if (dir === 'next') {
           this.registrationService.next();
         } else {
@@ -86,7 +98,8 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
         }
       },
       (error) => {
-        console.log('error', error);
+        this.error = error;
+        this.loading = false;
       });
   }
 
@@ -98,7 +111,4 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
     this.save('next');
   }
 
-  deleteOccupation(index: number) {
-    this.occupationRequests.splice(index, 1);
-  }
 }

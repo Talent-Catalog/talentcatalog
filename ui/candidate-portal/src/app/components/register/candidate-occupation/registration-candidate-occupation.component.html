@@ -4,7 +4,8 @@
     Loading...
   </div>
 
-  <div class="card" *ngFor="let occupation of occupationRequests; let i = index;">
+  <!-- REVIEW -->
+  <div class="card" *ngFor="let occupation of candidateOccupations; let i = index;">
 
     <div class="text-right">
       <button class="btn btn-danger" (click)="deleteOccupation(i)">&times;</button>
@@ -20,14 +21,13 @@
     <!-- YEARS OF EXPERIENCE -->
     <div class="form-group">
       <label>How many years of work experience do you have in this field?</label>
+      <p class="text-muted">Do not include years spent studying in this occupation</p>
       <input type="number" class="form-control" [(ngModel)]="occupation.yearsExperience">
-      <p class="text-muted">
-        Do not include years spent studying in this occupation
-      </p>
     </div>
 
   </div>
 
+  <!-- CREATE -->
   <form class="card" [formGroup]="form" *ngIf="!loading">
 
     <!-- FIELD -->
@@ -41,18 +41,16 @@
 
     <!-- YEARS OF EXPERIENCE -->
     <div class="form-group">
-      <label for="yearsExperience">How many years of work experience do you have in this field?</label>
+      <label class="m-0" for="yearsExperience">How many years of work experience do you have in this field?</label>
+      <p class="text-muted">Do not include years spent studying in this occupation</p>
       <input type="number" class="form-control" name="yearsExperience" id="yearsExperience" [formControlName]="'yearsExperience'">
-      <p class="text-muted">
-        Do not include years spent studying in this occupation
-      </p>
     </div>
 
   </form>
 
   <div class="text-center mt-4">
     <button class="btn btn-outline-primary"
-            (click)="addOccupationToRequest()"
+            (click)="addOccupation()"
             [disabled]="form.invalid || loading || saving">
       Add occupation
     </button>

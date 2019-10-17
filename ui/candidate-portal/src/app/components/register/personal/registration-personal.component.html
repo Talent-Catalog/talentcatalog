@@ -5,7 +5,7 @@
     <!-- FIRST NAME -->
     <div class="col-12 col-md-6">
       <div class="form-group">
-        <label for="firstName">First name</label>
+        <label for="firstName" translate dir="auto">REGISTRATION.PERSONAL.LABEL.FIRSTNAME</label>
         <input type="text" class="form-control" id="firstName" placeholder="Enter first name" [formControlName]="'firstName'">
       </div>
     </div>
@@ -13,7 +13,7 @@
     <!-- LAST NAME -->
     <div class="col-12 col-md-6">
       <div class="form-group">
-        <label for="lastName">Last name</label>
+        <label for="lastName" translate dir="auto">REGISTRATION.PERSONAL.LABEL.LASTNAME</label>
         <input type="text" class="form-control" id="lastName" placeholder="Enter last name" [formControlName]="'lastName'">
       </div>
     </div>
@@ -21,7 +21,7 @@
     <!-- GENDER -->
     <div class="col-12 col-md-6">
       <div class="form-group">
-        <label for="gender">Gender</label>
+        <label for="gender" translate dir="auto">REGISTRATION.PERSONAL.LABEL.GENDER</label>
 
         <select class="form-control" name="gender" id="gender" [formControlName]="'gender'">
           <option value=""></option>
@@ -35,7 +35,7 @@
     <!-- DOB -->
     <div class="col-12 col-md-6">
       <div class="form-group">
-        <label for="dob">Date of birth</label>
+        <label for="dob" translate dir="auto">REGISTRATION.PERSONAL.LABEL.DOB</label>
         <input type="date" id="dob" class="form-control" [formControlName]="'dob'" datepicker-popup
                is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions"
                date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
@@ -51,7 +51,7 @@
     <!-- COUNTRY -->
     <div class="col-12 col-md-6">
       <div class="form-group">
-        <label for="countryId">Country</label>
+        <label for="countryId" translate dir="auto">REGISTRATION.PERSONAL.LABEL.COUNTRYID</label>
         <select class="form-control" name="countryId" id="countryId" [formControlName]="'countryId'">
           <option value=""></option>
           <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
@@ -62,7 +62,7 @@
     <!-- CITY -->
     <div class="col-12 col-md-6">
       <div class="form-group">
-        <label for="city">City</label>
+        <label for="city" translate dir="auto">REGISTRATION.PERSONAL.LABEL.CITY</label>
         <input type="text" class="form-control" id="city" placeholder="" [formControlName]="'city'">
       </div>
     </div>
@@ -70,7 +70,7 @@
     <!-- YEAR OF ARRIVAL -->
     <div class="col-12">
       <div class="form-group">
-        <label for="yearOfArrival">What year did you arrive in this country?</label>
+        <label for="yearOfArrival" translate dir="auto">REGISTRATION.PERSONAL.LABEL.YEAROFARRIVAL</label>
         <select class="form-control" name="yearOfArrival" id="yearOfArrival" [formControlName]="'yearOfArrival'">
           <option value=""></option>
           <option *ngFor="let year of years" [value]="year">{{year}}</option>
@@ -83,7 +83,7 @@
     <!-- NATIONALITY -->
     <div class="col-12">
       <div class="form-group">
-        <label for="nationality">Nationality</label>
+        <label for="nationality" translate dir="auto">REGISTRATION.PERSONAL.LABEL.NATIONALITY</label>
         <select class="form-control" name="nationality" id="nationality" [formControlName]="'nationality'">
           <option value=""></option>
           <option *ngFor="let nationality of nationalities" [value]="nationality.id">{{nationality.name}}</option>
@@ -93,7 +93,7 @@
 
     <!-- UN REGISTRATION - removed for now -->
     <!--    <div class="form-group">-->
-    <!--      <label for="registeredWithUN">Are you registered with UNHCR or UNRWA?</label>-->
+    <!--      <label for="registeredWithUN" translate dir="auto">REGISTRATION.PERSONAL.LABEL.REGISTEREDWITHUN</label>-->
     <!--      <select class="form-control" name="nationality" id="registeredWithUN" [formControlName]="'registeredWithUN'">-->
     <!--        <option value=""></option>-->
     <!--        <option [value]="true">Yes</option>-->
@@ -107,7 +107,7 @@
 
     <!--    &lt;!&ndash; REGISTRATION NUMBER &ndash;&gt;-->
     <!--    <div class="form-group" *ngIf="form.value.registeredWithUN === 'true'">-->
-    <!--      <label for="registrationId">UNHCR or UNRWA registration number</label>-->
+    <!--      <label for="registrationId" translate dir="auto">REGISTRATION.PERSONAL.LABEL.REGISTRATIONID</label>-->
     <!--      <input type="text" class="form-control" id="registrationId" placeholder="" [formControlName]="'registrationId'">-->
     <!--    </div>-->
 

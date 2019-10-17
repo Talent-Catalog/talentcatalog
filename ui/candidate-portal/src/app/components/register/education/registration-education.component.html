@@ -1,26 +1,29 @@
 <div class="container">
 
-  <h1 class="text-center">Tell us about your Education</h1>
+  <div *ngIf="loading">
+    <span>Loading...</span>
 
-  <form [formGroup]="form">
-
-    <div class="form-group">
-      <label for="maxEducationLevelId">What is the highest level of candidateEducation you've obtained?</label>
-      <select class="form-control" id="maxEducationLevelId" name="maxEducationLevelId" [formControlName]="'maxEducationLevelId'">
-        <option value=""></option>
-        <option *ngFor="let educationLevel of educationLevels" [value]="educationLevel.id">{{educationLevel.name}}</option>
-      </select>
-    </div>
-
-  </form>
-
-  <div class="text-right">
-    <button class="btn btn-primary"
-            [disabled]="form.invalid"
-            (click)="save()">
-      Next
-    </button>
-
+    {{this._loading | json}}
   </div>
 
+  <ng-container *ngIf="!loading">
+
+    <form [formGroup]="form">
+
+      <div class="form-group">
+        <label for="maxEducationLevelId">What is the highest level of candidateEducation you've obtained?</label>
+        <select class="form-control" id="maxEducationLevelId" name="maxEducationLevelId" [formControlName]="'maxEducationLevelId'">
+          <option value=""></option>
+          <option *ngFor="let educationLevel of educationLevels"
+                  [value]="educationLevel.id">{{educationLevel.name}}</option>
+        </select>
+      </div>
+
+    </form>
+
+  </ng-container>
+
+
 </div>
+
+<app-registration-footer (backClicked)="back()" (nextClicked)="next()"></app-registration-footer>

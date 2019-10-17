@@ -13,68 +13,86 @@ import {EducationLevel} from "../../../model/education-level";
 export class RegistrationEducationComponent implements OnInit {
 
   form: FormGroup;
-  maxEducationLevelId: number;
   educationLevels: EducationLevel[];
   error: any;
   // Component states
-  loading: boolean;
+  _loading = {
+    levels: true,
+    candidate: true
+  };
   saving: boolean;
 
   constructor(private fb: FormBuilder,
               private router: Router,
               private educationLevelService: EducationLevelService,
-              private candidateService: CandidateService) { }
+              private candidateService: CandidateService) {
+  }
 
   ngOnInit() {
-    this.loading = true;
     this.saving = false;
     this.form = this.fb.group({
       maxEducationLevelId: ['', Validators.required]
     });
-    this.candidateService.getCandidateEducationLevel().subscribe(
+
+    this._loading.levels = true;
+    this.educationLevelService.listEducationLevels().subscribe(
       (response) => {
-        this.form.patchValue({
-          maxEducationLevelId: response.maxEducationLevel.id,
-        });
-        this.loading = false;
-        /* Wait for the candidate then load the countries */
-        this.educationLevelService.listEducationLevels().subscribe(
-          (response) => {
-            this.educationLevels = response;
-            this.loading = false;
-          },
-          (error) => {
-            this.error = error;
-            this.loading = false;
-          }
-        );
+        this.educationLevels = response;
+        this._loading.levels = false;
       },
       (error) => {
         this.error = error;
-        this.loading = false;
+        this._loading.levels = false;
+      }
+    );
+
+    this._loading.candidate = true;
+    this.candidateService.getCandidateEducation().subscribe(
+      (response) => {
+        /* DEBUG */
+        console.log('response', response);
+        this.form.patchValue({
+          maxEducationLevelId: response.maxEducationLevel ? response.maxEducationLevel.id : null,
+        });
+        this._loading.candidate = false;
+      },
+      (error) => {
+        this.error = error;
+        this._loading.candidate = false;
       }
     );
   }
 
-    save() {
-      console.log(this.form);
+  save(dir: string) {
+    console.log(this.form);
 
-      this.candidateService.updateCandidateEducationLevel(this.form.value).subscribe(
-        (response) => {
+    this.candidateService.updateCandidateEducationLevel(this.form.value).subscribe(
+      (response) => {
 
-          let maxEducationLevel = response.maxEducationLevel;
-          if(maxEducationLevel.name == 'mastersDegree' || maxEducationLevel.name == 'doctorateDegree'){
-            this.router.navigate(['register', 'education', 'masters']);
-          }else if(maxEducationLevel.name == 'bachelorsDegree'){
-            this.router.navigate(['register', 'education', 'university']);
-          }else{
-            this.router.navigate(['register', 'education', 'school']);
-          }
-        },
-        (error) => {
-          this.error = error;
+        let maxEducationLevel = response.maxEducationLevel;
+        if (maxEducationLevel.name == 'mastersDegree' || maxEducationLevel.name == 'doctorateDegree') {
+          this.router.navigate(['register', 'education', 'masters']);
+        } else if (maxEducationLevel.name == 'bachelorsDegree') {
+          this.router.navigate(['register', 'education', 'university']);
+        } else {
+          this.router.navigate(['register', 'education', 'school']);
         }
-      );
-    };
+      },
+      (error) => {
+        this.error = error;
+      }
+    );
+  };
 
+  back() {
+    this.save('back');
+  }
+
+  next() {
+    this.save('next');
+  }
+
+  get loading() {
+    return this._loading.levels || this._loading.candidate;
+  }
 }

@@ -3,6 +3,7 @@ package org.tbbtalent.server.service;
 import org.tbbtalent.server.model.CandidateOccupation;
 import org.tbbtalent.server.model.Occupation;
 import org.tbbtalent.server.request.candidate.occupation.CreateCandidateOccupationRequest;
+import org.tbbtalent.server.request.candidate.occupation.UpdateCandidateOccupationsRequest;
 
 import java.util.List;
 
@@ -21,4 +22,6 @@ public interface CandidateOccupationService {
 
     /* Lists all occupations elected by candidates, regardless of verified flag */
     List<Occupation> listOccupations();
+
+    List<CandidateOccupation> updateCandidateOccupations(UpdateCandidateOccupationsRequest request);
 }

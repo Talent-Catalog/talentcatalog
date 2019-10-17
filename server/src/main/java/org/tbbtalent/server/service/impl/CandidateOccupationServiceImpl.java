@@ -2,31 +2,41 @@ package org.tbbtalent.server.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.model.CandidateOccupation;
 import org.tbbtalent.server.model.Occupation;
+import org.tbbtalent.server.repository.CandidateJobExperienceRepository;
 import org.tbbtalent.server.repository.CandidateOccupationRepository;
 import org.tbbtalent.server.repository.OccupationRepository;
 import org.tbbtalent.server.request.candidate.occupation.CreateCandidateOccupationRequest;
+import org.tbbtalent.server.request.candidate.occupation.UpdateCandidateOccupationRequest;
+import org.tbbtalent.server.request.candidate.occupation.UpdateCandidateOccupationsRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.CandidateOccupationService;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class CandidateOccupationServiceImpl implements CandidateOccupationService {
 
     private final CandidateOccupationRepository candidateOccupationRepository;
+    private final CandidateJobExperienceRepository candidateJobExperienceRepository;
     private final OccupationRepository occupationRepository;
     private final UserContext userContext;
 
     @Autowired
     public CandidateOccupationServiceImpl(CandidateOccupationRepository candidateOccupationRepository,
-                                          OccupationRepository occupationRepository,
+                                          CandidateJobExperienceRepository candidateJobExperienceRepository, OccupationRepository occupationRepository,
                                           UserContext userContext) {
         this.candidateOccupationRepository = candidateOccupationRepository;
+        this.candidateJobExperienceRepository = candidateJobExperienceRepository;
         this.occupationRepository = occupationRepository;
         this.userContext = userContext;
     }
@@ -86,5 +96,50 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
     public List<Occupation> listOccupations() {
         List<Occupation> occupations = candidateOccupationRepository.findAllOccupations();
         return occupations;
+    }
+
+    @Override
+    public List<CandidateOccupation> updateCandidateOccupations(UpdateCandidateOccupationsRequest request) {
+        Candidate candidate = userContext.getLoggedInCandidate();
+        List<CandidateOccupation> updatedOccupations = new ArrayList<>();
+        List<Long> updatedOccupationIds = new ArrayList<>();
+
+        List<CandidateOccupation> candidateOccupations = candidateOccupationRepository.findByCandidateId(candidate.getId());
+        Map<Long, CandidateOccupation> map = candidateOccupations.stream().collect( Collectors.toMap(CandidateOccupation::getId,
+                Function.identity()) );
+
+        for (UpdateCandidateOccupationRequest update : request.getUpdates()) {
+            /* Check if occupation has been previously saved */
+            CandidateOccupation candidateOccupation = update.getId() != null ? map.get(update.getId()) : null;
+            if (candidateOccupation != null){
+                /* Check if the occupation has changed */
+                if (!update.getOccupationId().equals(candidateOccupation.getOccupation().getId())){
+                    Occupation occupation = occupationRepository.findById(update.getOccupationId())
+                            .orElseThrow(() -> new NoSuchObjectException(Occupation.class, update.getOccupationId()));
+                    candidateOccupation.setOccupation(occupation);
+                }
+                candidateOccupation.setYearsExperience(update.getYearsExperience());
+            } else {
+                /* Create a new candidate occupation */
+                Occupation occupation = occupationRepository.findById(update.getOccupationId())
+                        .orElseThrow(() -> new NoSuchObjectException(Occupation.class, update.getOccupationId()));
+                candidateOccupation = new CandidateOccupation(candidate, occupation, update.getYearsExperience());
+            }
+            updatedOccupations.add(candidateOccupationRepository.save(candidateOccupation));
+            updatedOccupationIds.add(candidateOccupation.getOccupation().getId());
+        }
+
+        for (Long existingCandidateOccupationId : map.keySet()) {
+            /* Check if the candidate occupation hsa been removed */
+            if (!updatedOccupationIds.contains(existingCandidateOccupationId)){
+                /* Check if the candidate has job experience linked to the occupation */
+                int count = candidateJobExperienceRepository.countByCandidateOccupationId(existingCandidateOccupationId);
+                if (count > 0){
+                    throw new EntityReferencedException("occupation");
+                }
+                candidateOccupationRepository.deleteById(existingCandidateOccupationId);
+            }
+        }
+        return candidateOccupations;
     }
 }

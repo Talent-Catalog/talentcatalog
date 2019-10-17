@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
@@ -12,6 +12,10 @@ export class CandidateEducationService {
   private apiUrl: string = environment.apiUrl + '/candidate-education';
 
   constructor(private http: HttpClient) { }
+
+  listMyEducation() {
+    return this.http.get<CandidateEducation>(`${this.apiUrl}`);
+  }
 
   createCandidateEducation(request): Observable<CandidateEducation> {
     return this.http.post<CandidateEducation>(`${this.apiUrl}`, request);

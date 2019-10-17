@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.model.CandidateOccupation;
 import org.tbbtalent.server.request.candidate.occupation.CreateCandidateOccupationRequest;
+import org.tbbtalent.server.request.candidate.occupation.UpdateCandidateOccupationsRequest;
 import org.tbbtalent.server.service.CandidateOccupationService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -33,6 +34,13 @@ public class CandidateOccupationPortalApi {
     public Map<String, Object> createCandidateOccupation(@Valid @RequestBody CreateCandidateOccupationRequest request) {
         CandidateOccupation candidateOccupation = candidateOccupationService.createCandidateOccupation(request);
         return candidateOccupationDto().build(candidateOccupation);
+    }
+
+
+    @PostMapping("/update")
+    public List<Map<String, Object>> createUpdateCandidateOccupation(@Valid @RequestBody UpdateCandidateOccupationsRequest request) {
+        List<CandidateOccupation> candidateOccupations = candidateOccupationService.updateCandidateOccupations(request);
+        return candidateOccupationDto().buildList(candidateOccupations);
     }
 
 

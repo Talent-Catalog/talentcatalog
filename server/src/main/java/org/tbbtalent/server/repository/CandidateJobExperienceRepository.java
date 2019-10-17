@@ -20,4 +20,6 @@ public interface CandidateJobExperienceRepository extends JpaRepository<Candidat
             + " left join w.candidateOccupation o "
             + " where o.id = :candidateOccupationId")
     Page<CandidateJobExperience> findByCandidateOccupationId(@Param("candidateOccupationId") Long candidateOccupationId, Pageable request);
+
+    int countByCandidateOccupationId(Long candidateOccupationId);
 }

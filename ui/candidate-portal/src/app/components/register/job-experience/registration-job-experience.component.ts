@@ -8,6 +8,7 @@ import {Country} from "../../../model/country";
 import {CountryService} from "../../../services/country.service";
 import {CandidateOccupation} from "../../../model/candidate-occupation";
 import {CandidateOccupationService} from "../../../services/candidate-occupation.service";
+import {RegistrationService} from "../../../services/registration.service";
 
 @Component({
   selector: 'app-registration-job-experience',
@@ -31,7 +32,8 @@ export class RegistrationJobExperienceComponent implements OnInit {
               private candidateService: CandidateService,
               private candidateOccupationService: CandidateOccupationService,
               private jobExperienceService: CandidateJobExperienceService,
-              private countryService: CountryService) { }
+              private countryService: CountryService,
+              public registrationService: RegistrationService) { }
 
 
   ngOnInit() {
@@ -123,10 +125,19 @@ export class RegistrationJobExperienceComponent implements OnInit {
     );
   }
 
-  save() {
-    // TODO save
-    console.log(this.candidateJobExperiences);
-    this.router.navigate(['register', 'education']);
+  save(dir: string) {
+    if (dir === 'next') {
+      this.registrationService.next();
+    } else {
+      this.registrationService.back();
+    }
   }
 
+  back() {
+    this.save('back');
+  }
+
+  next() {
+    this.save('next');
+  }
 }

@@ -25,6 +25,11 @@ public class CandidateOccupation extends AbstractDomainObject<Long> {
     public CandidateOccupation() {
     }
 
+    public CandidateOccupation(Candidate candidate, Occupation occupation, Long yearsExperience) {
+        this.candidate = candidate;
+        this.occupation = occupation;
+        this.yearsExperience = yearsExperience;
+    }
 
     public Candidate getCandidate() {
         return candidate;

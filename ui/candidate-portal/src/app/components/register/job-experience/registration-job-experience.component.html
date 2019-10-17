@@ -1,7 +1,5 @@
 <div class="container">
 
-  <h1 class="text-center">Work Experience</h1>
-
   <form [formGroup]="form" *ngIf="!loading">
 
     <!-- COMPANY NAME -->
@@ -44,15 +42,7 @@
 
     <!-- START DATE -->
     <div class="col-12 col-md-6">
-      <!-- TODO month picker -->
       <div class="form-group">
-<!--        <mat-form-field>-->
-<!--          <input matInput [matDatepicker]="picker1" placeholder="Angular forms" [formControl]="date">-->
-<!--          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>-->
-<!--          <mat-datepicker #picker1></mat-datepicker>-->
-<!--        </mat-form-field>-->
-
-<!--        <input class="form-control" type="text" id="date" placeholder="yyyy-mm" name="dp" ngbDatepicker #d="ngbDatepicker" [navigation]="navigation" min-mode="'month'" max-mode="'year'" show-weeks="false" startView="0, month" [formControlName]="'startDate'" (click)="d.toggle()"><i class="form-icon icon icon-calendar calendar-icon" (click)="d.toggle()"></i><h6 class="text-gray mt-2">xxxxx</h6>-->
         <label for="startDate">Started (month / year)</label>
         <input type="month" id="startDate" class="form-control" [formControlName]="'startDate'"
                datepicker-popup is-open="status.opened" min-date="minDate" max-date="maxDate"
@@ -63,7 +53,6 @@
 
     <!-- END DATE -->
     <div class="col-12 col-md-6">
-      <!-- TODO month picker -->
       <div class="form-group">
         <label for="endDate">Finished (month / year)</label>
         <input type="month" id="endDate" class="form-control" [formControlName]="'endDate'"
@@ -98,7 +87,7 @@
       </div>
     </div>
 
-    <div>
+    <div class="text-right">
       <button class="btn btn-outline-primary"
               [disabled]="form.invalid || loading || saving"
               (click)="addMore()">
@@ -133,14 +122,6 @@
     </table>
   </div>
 
-<!--  <pre>{{form.value | json}}</pre>-->
-
-  <div class="text-right">
-    <button class="btn btn-primary"
-            [disabled]="candidateJobExperiences.length == '0'"
-            (click)="save()">
-      Submit & Next
-    </button>
-  </div>
-
 </div>
+
+<app-registration-footer (backClicked)="back()" (nextClicked)="next()"></app-registration-footer>

@@ -1,9 +1,67 @@
 {
- "HOME": {
+  "HOME": {
     "WELCOME": "Welcome to TBB",
     "INTRO": "Landing page - the what and the why",
     "REGISTER": "Register",
     "LOGIN": "Login",
     "TEST": "hello {{value}}"
+  },
+  "REGISTRATION": {
+    "HEADER": {
+      "STEP": "Step {{registrationService?.currentStep.section}} of {{registrationService?.totalSections}}",
+      "TITLE": {
+        "CONTACT": "How can we contact you?",
+        "CONTACT/ALTERNATE": "How can we contact you?",
+        "CONTACT/ADDITIONAL": "How can we contact you?",
+        "PERSONAL": "Tell us about yourself",
+        "OCCUPATION": "Tell us about your occupation",
+        "EXPERIENCE": "Tell us about your working history",
+        "EDUCATION": "Tell us about your education",
+        "EDUCATION/MASTERS": "Tell us about your education",
+        "EDUCATION/UNIVERSITY": "Tell us about your education",
+        "EDUCATION/SCHOOL": "Tell us about your education",
+        "LANGUAGE": "What languages do you speak?",
+        "CERTIFICATIONS": "Do you have any other professional certifications?",
+        "SUBMIT": "Are you ready to submit your application?"
+      }
+    },
+    "FOOTER": {
+      "BACK": "Back",
+      "NEXT": "Next"
+    },
+    "LANDING": {
+      "TITLE": "Let's get started",
+      "PARA1": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid consequatur cupiditate, doloremque fugiat quam quia sit suscipit totam! Beatae debitis, exercitationem incidunt ipsum numquam officiis ullam. Delectus enim necessitatibus soluta. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Atque beatae blanditiis cupiditate, dolor dolorem ea eos exercitationem illum ipsum itaque iure, labore non perspiciatis porro quaerat quam quos sit veniam.",
+      "BUTTON1": "Register now"
+    },
+    "CONTACT": {
+      "LABEL": {
+        "EMAIL": "Email",
+        "USERNAME": "Username",
+        "PASSWORD": "Password",
+        "PASSWORDCONFIRMATION": "Confirmation password"
+      }
+    },
+    "PERSONAL": {
+      "LABEL" : {
+        "FIRSTNAME": "First name",
+        "LASTNAME": "Last name",
+        "GENDER": "Gender",
+        "DOB": "Date of birth",
+        "COUNTRYID": "Country",
+        "CITY": "City",
+        "YEAROFARRIVAL": "What year did you arrive in this country?",
+        "NATIONALITY": "Nationality",
+        "REGISTEREDWITHUN": "Are you registered with UNHCR or UNRWA?",
+        "REGISTRATIONID": "UNHCR or UNRWA registration number"
+      }
+    },
+    "EXPERIENCE": {
+
+    },
+    "EDUCATION": {
+      "TITLE": ""
+    }
+
   }
 }
