@@ -54,7 +54,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private Set<CandidateOccupation> candidateOccupations = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
-    private Set<CandidateEducation> candidateEducation = new HashSet<>();
+    private Set<CandidateEducation> candidateEducations = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     private Set<CandidateLanguage> candidateLanguages = new HashSet<>();
@@ -231,12 +231,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.candidateOccupations = candidateOccupations;
     }
 
-    public Set<CandidateEducation> getCandidateEducation() {
-        return candidateEducation;
+    public Set<CandidateEducation> getCandidateEducations() {
+        return candidateEducations;
     }
 
-    public void setCandidateEducation(Set<CandidateEducation> candidateEducation) {
-        this.candidateEducation = candidateEducation;
+    public void setCandidateEducations(Set<CandidateEducation> candidateEducations) {
+        this.candidateEducations = candidateEducations;
     }
 
     public Set<CandidateLanguage> getCandidateLanguages() {

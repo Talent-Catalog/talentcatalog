@@ -1,6 +1,6 @@
 package org.tbbtalent.server.request.candidate;
 
-public class UpdateCandidateEducationLevelRequest {
+public class UpdateCandidateEducationRequest {
 
     private Long maxEducationLevelId;
 

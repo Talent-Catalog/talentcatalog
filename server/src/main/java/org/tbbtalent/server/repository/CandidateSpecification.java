@@ -84,7 +84,7 @@ public class CandidateSpecification {
                         String lowerCaseMatchTerm = request.getOrProfileKeyword().toLowerCase();
                         String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
                         Join<Candidate, CandidateJobExperience> candidateJobExperiences = candidate.join("candidateJobExperiences", JoinType.LEFT);
-                        candidateEducations = candidateEducations == null ? candidate.join("candidateEducation", JoinType.LEFT) : candidateEducations;
+                        candidateEducations = candidateEducations == null ? candidate.join("candidateEducations", JoinType.LEFT) : candidateEducations;
 
                         conjunction.getExpressions().add(builder.or(
                                 builder.isTrue(candidateOccupations.get("id").in(request.getOccupationIds())),
@@ -169,7 +169,7 @@ public class CandidateSpecification {
 
             // MAJOR SEARCH
             if(!Collections.isEmpty(request.getEducationMajorIds())) {
-                candidateEducations = candidateEducations == null ? candidate.join("candidateEducation", JoinType.LEFT) : candidateEducations;
+                candidateEducations = candidateEducations == null ? candidate.join("candidateEducations", JoinType.LEFT) : candidateEducations;
                 Join<Candidate, EducationMajor> major = candidateEducations.join("educationMajor", JoinType.LEFT);
 
                 conjunction.getExpressions().add(
@@ -195,7 +195,7 @@ public class CandidateSpecification {
                             builder.greaterThanOrEqualTo(spokenLevel.get("level"), request.getOtherMinSpokenLevel())));
                 }
             }
-            
+
 
             return conjunction;
         };

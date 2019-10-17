@@ -25,17 +25,14 @@
           </a>
           <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
             <a class="dropdown-item" [routerLink]="'/'">Home</a>
-            <a class="dropdown-item" [routerLink]="'/register'" [queryParams]="{step: 'landing'}">Register</a>
-            <a class="dropdown-item" [routerLink]="'/register'" [queryParams]="{step: 'contact'}">
+            <a class="dropdown-item alert-success" [routerLink]="'/register'" [queryParams]="{step: 'landing'}">Register</a>
+            <a class="dropdown-item alert-success" [routerLink]="'/register'" [queryParams]="{step: 'contact'}">
               Contact
-            </a>
-            <a class="dropdown-item" [routerLink]="'/register'" [queryParams]="{step: 'contact/additional'}">
-              Additional
             </a>
             <a class="dropdown-item alert-success" [routerLink]="'/register'" [queryParams]="{step: 'personal'}">
               Personal
             </a>
-            <a class="dropdown-item" [routerLink]="'/register'" [queryParams]="{step: 'occupation'}">
+            <a class="dropdown-item alert-success" [routerLink]="'/register'" [queryParams]="{step: 'occupation'}">
               Occupation
             </a>
             <a class="dropdown-item" [routerLink]="'/register'" [queryParams]="{step: 'experience'}">

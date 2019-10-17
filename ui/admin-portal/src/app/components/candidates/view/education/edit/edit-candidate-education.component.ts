@@ -67,7 +67,7 @@ export class EditCandidateEducationComponent implements OnInit {
       courseName: [this.candidateEducation.courseName],
       institution: [this.candidateEducation.institution],
       countryId: [this.candidateEducation.country ? this.candidateEducation.country.id : null, Validators.required],
-      majorId: [this.candidateEducation.educationMajor ? this.candidateEducation.educationMajor.id : null, Validators.required],
+      educationMajorId: [this.candidateEducation.educationMajor ? this.candidateEducation.educationMajor.id : null, Validators.required],
       yearCompleted: [this.candidateEducation.yearCompleted],
       educationType: [this.candidateEducation.educationType, [Validators.required]]
 

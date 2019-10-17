@@ -87,8 +87,8 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
         Country country = countryRepository.findById(request.getCountryId())
                 .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountryId()));
 
-        EducationMajor educationMajor = educationMajorRepository.findById(request.getMajorId())
-                .orElseThrow(() -> new NoSuchObjectException(EducationMajor.class, request.getMajorId()));
+        EducationMajor educationMajor = educationMajorRepository.findById(request.getEducationMajorId())
+                .orElseThrow(() -> new NoSuchObjectException(EducationMajor.class, request.getEducationMajorId()));
 
         // Get ENUM for education type
         EducationType educationType = request.getEducationType();

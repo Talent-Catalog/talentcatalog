@@ -319,10 +319,10 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Candidate updateEducationLevel(UpdateCandidateEducationLevelRequest request) {
+    public Candidate updateEducation(UpdateCandidateEducationRequest request) {
         Candidate candidate = getLoggedInCandidate();
 
-        // Load the nationality from the database - throw an exception if not found
+        // Load the education level from the database - throw an exception if not found
         EducationLevel educationLevel = educationLevelRepository.findById(request.getMaxEducationLevelId())
                 .orElseThrow(() -> new NoSuchObjectException(EducationLevel.class, request.getMaxEducationLevelId()));
 

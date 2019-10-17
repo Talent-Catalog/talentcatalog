@@ -27,6 +27,6 @@ export interface Candidate {
   candidateLanguages: CandidateLanguage[];
   registrationId: string;
   maxEducationLevel: EducationLevel;
-  educations: CandidateEducation[];
+  candidateEducations: CandidateEducation[];
   additionalInfo: string;
 }

@@ -28,7 +28,7 @@ public interface CandidateService {
 
     Candidate updatePersonal(UpdateCandidatePersonalRequest request);
 
-    Candidate updateEducationLevel(UpdateCandidateEducationLevelRequest request);
+    Candidate updateEducation(UpdateCandidateEducationRequest request);
 
     Candidate updateAdditionalInfo(UpdateCandidateAdditionalInfoRequest request);
 

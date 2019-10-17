@@ -43,21 +43,6 @@ export class RegistrationService {
       section: 5
     },
     {
-      key: 'education/masters',
-      title: 'Tell us about your education',
-      section: 5
-    },
-    {
-      key: 'education/university',
-      title: 'Tell us about your education',
-      section: 5
-    },
-    {
-      key: 'education/school',
-      title: 'Tell us about your education',
-      section: 5
-    },
-    {
       key: 'language',
       title: 'What languages do you speak?',
       section: 6

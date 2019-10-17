@@ -74,6 +74,12 @@
     "EDUCATION": {
       "LABEL": {
         "MAXEDUCATIONLEVELID": "What is the highest level of education you've obtained?"
+      },
+      "BUTTON": {
+        "ADD": "Add education"
+      },
+      "HISTORY": {
+        "TITLE": "Education History"
       }
     }
 

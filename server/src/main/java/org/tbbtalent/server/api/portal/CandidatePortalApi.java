@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateContactRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateEducationLevelRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateEducationRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tbbtalent.server.service.CandidateService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
@@ -61,8 +61,8 @@ public class CandidatePortalApi {
     }
 
     @PostMapping("education")
-    public Map<String, Object> updateCandidateEducationLevel(@Valid @RequestBody UpdateCandidateEducationLevelRequest request) {
-        Candidate candidate = this.candidateService.updateEducationLevel(request);
+    public Map<String, Object> updateCandidateEducationLevel(@Valid @RequestBody UpdateCandidateEducationRequest request) {
+        Candidate candidate = this.candidateService.updateEducation(request);
         return candidateEducationLevelDto().build(candidate);
     }
 
@@ -157,10 +157,21 @@ public class CandidatePortalApi {
     private DtoBuilder educationDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("educationType")
-                .add("country", countryDto())
                 .add("courseName")
-                .add("dateCompleted")
+                .add("educationType")
+                .add("lengthOfCourseYears")
+                .add("institution")
+                .add("courseName")
+                .add("yearCompleted")
+                .add("country", countryDto())
+                .add("educationMajor", majorDto())
+                ;
+    }
+
+    private DtoBuilder majorDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
                 ;
     }
 
@@ -181,7 +192,7 @@ public class CandidatePortalApi {
     private DtoBuilder candidateWithEducationDto() {
         return new DtoBuilder()
                 .add("maxEducationLevel", educationLevelDto())
-                .add("candidateEducation", educationDto())
+                .add("candidateEducations", educationDto())
                 ;
     }
 

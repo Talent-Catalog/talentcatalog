@@ -23,10 +23,25 @@
 
     </form>
 
-    <ng-container *ngIf="form.valid || candidateEducationItems.length">
-      <h3>Education</h3>
+    <!-- EDUCATION HISTORY -->
+    <app-candidate-education-form *ngIf="addingEducation"
+                                  [countries]="countries"
+                                  [majors]="majors"
+                                  (saved)="handleCandidateEducationSaved()">
+    </app-candidate-education-form>
 
+    <div class="text-center mt-4">
+      <button class="btn btn-outline-primary" translate dir="auto"
+              (click)="addEducation()"
+              [disabled]="loading || saving">
+        REGISTRATION.EDUCATION.BUTTON.ADD
+      </button>
+    </div>
 
+    <ng-container *ngIf="candidateEducationItems.length">
+      <h3 translate dir="auto">REGISTRATION.EDUCATION.HISTORY.TITLE</h3>
+
+      <pre class="mb-4" *ngFor="let item of candidateEducationItems">{{item | json}}</pre>
     </ng-container>
 
   </ng-container>
