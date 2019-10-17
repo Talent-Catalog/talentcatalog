@@ -46,6 +46,7 @@
     <thead>
     <tr>
       <th>Level</th>
+      <th>Name</th>
       <th>Status</th>
       <th>Translation count</th>
       <th></th>
@@ -55,6 +56,7 @@
     <tbody>
     <tr *ngFor="let languageLevel of results?.content">
       <td>{{languageLevel.level}}</td>
+      <td>{{languageLevel.name}}</td>
       <td>{{languageLevel.status}}</td>
       <td></td>
       <td>

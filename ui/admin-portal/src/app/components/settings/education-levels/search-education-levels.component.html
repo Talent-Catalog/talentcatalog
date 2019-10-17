@@ -45,6 +45,7 @@
 
     <thead>
     <tr>
+      <th>Level</th>
       <th>Name</th>
       <th>Status</th>
       <th>Translation count</th>
@@ -54,6 +55,7 @@
 
     <tbody>
     <tr *ngFor="let educationLevel of results?.content">
+      <td>{{educationLevel.level}}</td>
       <td>{{educationLevel.name}}</td>
       <td>{{educationLevel.status}}</td>
       <td></td>

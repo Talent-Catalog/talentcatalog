@@ -59,7 +59,7 @@ public class EducationLevelServiceImpl implements EducationLevelService {
     public EducationLevel createEducationLevel(CreateEducationLevelRequest request) throws EntityExistsException {
         EducationLevel educationLevel = new EducationLevel(
                 request.getName(), request.getStatus(), request.getLevel());
-        checkDuplicates(null, request.getName());
+        checkDuplicates(null, request.getName(), request.getLevel());
         return this.educationLevelRepository.save(educationLevel);
     }
 
@@ -69,7 +69,7 @@ public class EducationLevelServiceImpl implements EducationLevelService {
     public EducationLevel updateEducationLevel(long id, UpdateEducationLevelRequest request) throws EntityExistsException {
         EducationLevel educationLevel = this.educationLevelRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(EducationLevel.class, id));
-        checkDuplicates(id, request.getName());
+        checkDuplicates(id, request.getName(), request.getLevel());
 
         educationLevel.setName(request.getName());
         educationLevel.setLevel(request.getLevel());
@@ -94,10 +94,15 @@ public class EducationLevelServiceImpl implements EducationLevelService {
         return false;
     }
 
-    private void checkDuplicates(Long id, String name) {
-        EducationLevel existing = educationLevelRepository.findByNameIgnoreCase(name);
-        if (existing != null && !existing.getId().equals(id) || (existing != null && id == null)){
-            throw new EntityExistsException("country");
+    private void checkDuplicates(Long id, String name, int level) {
+        EducationLevel existingName = educationLevelRepository.findByNameIgnoreCase(name);
+        if (existingName != null && !existingName.getId().equals(id) || (existingName != null && id == null)){
+            throw new EntityExistsException("education level");
+        }
+
+        EducationLevel existingLevel = educationLevelRepository.findByLevelIgnoreCase(level);
+        if (existingLevel != null && !existingLevel.getId().equals(id) || (existingLevel != null && id == null)){
+            throw new EntityExistsException("education level");
         }
     }
 }

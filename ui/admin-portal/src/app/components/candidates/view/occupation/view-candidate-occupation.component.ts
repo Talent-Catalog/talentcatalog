@@ -33,26 +33,33 @@ export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
       this.loading = true;
-      this.candidateService.get(this.candidate.id).subscribe(
-        candidate => {
-            this.candidate = candidate;
-            this.loading = false;
-          },
-        error => {
+      this.doSearch();
+    }
+  }
+
+  doSearch() {
+    /* GET CANDIDATE */
+    this.candidateService.get(this.candidate.id).subscribe(
+      candidate => {
+          this.candidate = candidate;
+          this.loading = false;
+        },
+      error => {
           this.error = error;
           this.loading = false;
         });
-    }
 
+    /* GET CANDIDATE OCCUPATIONS */
     this.candidateOccupationService.get(this.candidate.id).subscribe(
       results => {
-           this.results = results;
-           this.loading = false;
+         this.results = results;
+         this.loading = false;
          },
       error => {
          this.error = error;
          this.loading = false;
        }
-     );
-    }
+    );
+  }
 }
+
