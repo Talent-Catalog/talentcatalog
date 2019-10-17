@@ -5,6 +5,7 @@ import {CandidateService} from "../../../services/candidate.service";
 import {EducationLevelService} from "../../../services/education-level.service";
 import {EducationLevel} from "../../../model/education-level";
 import {RegistrationService} from "../../../services/registration.service";
+import {CandidateEducation} from "../../../model/candidate-education";
 
 @Component({
   selector: 'app-registration-education',
@@ -13,8 +14,6 @@ import {RegistrationService} from "../../../services/registration.service";
 })
 export class RegistrationEducationComponent implements OnInit {
 
-  educationLevelForm: FormGroup;
-  educationLevels: EducationLevel[];
   error: any;
   // Component states
   _loading = {
@@ -22,6 +21,11 @@ export class RegistrationEducationComponent implements OnInit {
     candidate: true
   };
   saving: boolean;
+
+  educationLevelForm: FormGroup;
+  educationLevels: EducationLevel[];
+  candidateEducationItems: CandidateEducation[];
+
 
   constructor(private fb: FormBuilder,
               private router: Router,

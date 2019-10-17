@@ -10,4 +10,7 @@ export interface CandidateEducation {
   institution: string;
   courseName: string;
   yearCompleted: string;
-};
+  // Request object variables
+  countryId?: number;
+  educationMajorId?: number;
+}

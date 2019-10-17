@@ -3,7 +3,7 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
 import {CandidateOccupationService} from "../../../services/candidate-occupation.service";
-import {CandidateOccupationRequest} from "../../../model/candidate-occupation";
+import {CandidateOccupation} from "../../../model/candidate-occupation";
 import {Occupation} from "../../../model/occupation";
 import {OccupationService} from "../../../services/occupation.service";
 import {RegistrationService} from "../../../services/registration.service";
@@ -19,7 +19,7 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
   loading: boolean;
   saving: boolean;
   form: FormGroup;
-  candidateOccupations: CandidateOccupationRequest[];
+  candidateOccupations: CandidateOccupation[];
   occupations: Occupation[];
 
   constructor(private fb: FormBuilder,
@@ -33,6 +33,7 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
     this.candidateOccupations = [];
     this.saving = false;
     this.loading = true;
+    this.setUpForm();
 
     /* Load the candidate data */
     this.candidateService.getCandidateCandidateOccupations().subscribe(
@@ -50,7 +51,6 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
           (response) => {
             this.occupations = response;
             this.loading = false;
-            this.setUpForm();
           },
           (error) => {
             this.error = error;

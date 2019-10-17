@@ -51,7 +51,7 @@
   <div class="text-center mt-4">
     <button class="btn btn-outline-primary"
             (click)="addOccupation()"
-            [disabled]="form.invalid || loading || saving">
+            [disabled]="form?.invalid || loading || saving">
       Add occupation
     </button>
   </div>
