@@ -11,7 +11,6 @@ import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 
 import {RegistrationLandingComponent} from './components/register/landing/registration-landing.component';
 import {RegistrationContactComponent} from './components/register/contact/registration-contact.component';
-import {RegistrationAlternateContactComponent} from './components/register/contact/alternate/registration-alternate-contact.component';
 import {RegistrationPersonalComponent} from './components/register/personal/registration-personal.component';
 import {RegistrationCandidateOccupationComponent} from './components/register/candidate-occupation/registration-candidate-occupation.component';
 import {RegistrationJobExperienceComponent} from './components/register/job-experience/registration-job-experience.component';
@@ -22,7 +21,6 @@ import {RegistrationSchoolComponent} from './components/register/school/registra
 import {RegistrationLanguageComponent} from './components/register/language/registration-language.component';
 import {RegistrationCertificationsComponent} from './components/register/certifications/registration-certifications.component';
 import {RegistrationAdditionalInfoComponent} from './components/register/additional-info/registration-additional-info.component';
-import {RegistrationAdditionalContactComponent} from './components/register/contact/additional/registration-additional-contact.component';
 import {LocalStorageModule} from "angular-2-local-storage";
 import {JwtInterceptor} from "./services/jwt.interceptor";
 import {LanguageInterceptor} from "./services/language.interceptor";
@@ -46,7 +44,6 @@ export function createTranslateLoader(http: HttpClient) {
     LandingComponent,
     RegistrationLandingComponent,
     RegistrationContactComponent,
-    RegistrationAlternateContactComponent,
     RegistrationPersonalComponent,
     RegistrationCandidateOccupationComponent,
     RegistrationJobExperienceComponent,
@@ -57,7 +54,6 @@ export function createTranslateLoader(http: HttpClient) {
     RegistrationLanguageComponent,
     RegistrationCertificationsComponent,
     RegistrationAdditionalInfoComponent,
-    RegistrationAdditionalContactComponent,
     LoginComponent,
     HomeComponent,
     ResetPasswordComponent,

@@ -4,6 +4,8 @@ import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
 import {EducationLevelService} from "../../../services/education-level.service";
 import {EducationLevel} from "../../../model/education-level";
+import {RegistrationService} from "../../../services/registration.service";
+import {CandidateEducation} from "../../../model/candidate-education";
 
 @Component({
   selector: 'app-registration-education',
@@ -12,69 +14,88 @@ import {EducationLevel} from "../../../model/education-level";
 })
 export class RegistrationEducationComponent implements OnInit {
 
-  form: FormGroup;
-  maxEducationLevelId: number;
-  educationLevels: EducationLevel[];
   error: any;
-  // Component states
-  loading: boolean;
   saving: boolean;
+  _loading = {
+    levels: true,
+    candidate: true
+  };
+
+  form: FormGroup;
+  educationLevels: EducationLevel[];
+  candidateEducationItems: CandidateEducation[];
+
 
   constructor(private fb: FormBuilder,
               private router: Router,
               private educationLevelService: EducationLevelService,
-              private candidateService: CandidateService) { }
+              private candidateService: CandidateService,
+              public registrationService: RegistrationService) {
+  }
 
   ngOnInit() {
-    this.loading = true;
     this.saving = false;
+    this.candidateEducationItems = [];
     this.form = this.fb.group({
       maxEducationLevelId: ['', Validators.required]
     });
-    this.candidateService.getCandidateEducationLevel().subscribe(
+
+    this._loading.levels = true;
+    this.educationLevelService.listEducationLevels().subscribe(
       (response) => {
-        this.form.patchValue({
-          maxEducationLevelId: response.maxEducationLevel.id,
-        });
-        this.loading = false;
-        /* Wait for the candidate then load the countries */
-        this.educationLevelService.listEducationLevels().subscribe(
-          (response) => {
-            this.educationLevels = response;
-            this.loading = false;
-          },
-          (error) => {
-            this.error = error;
-            this.loading = false;
-          }
-        );
+        this.educationLevels = response;
+        this._loading.levels = false;
       },
       (error) => {
         this.error = error;
-        this.loading = false;
+        this._loading.levels = false;
+      }
+    );
+
+    this._loading.candidate = true;
+    this.candidateService.getCandidateEducation().subscribe(
+      (response) => {
+        /* DEBUG */
+        console.log('response', response);
+        this.form.patchValue({
+          maxEducationLevelId: response.maxEducationLevel ? response.maxEducationLevel.id : null,
+        });
+        this._loading.candidate = false;
+      },
+      (error) => {
+        this.error = error;
+        this._loading.candidate = false;
       }
     );
   }
 
-    save() {
-      console.log(this.form);
-
-      this.candidateService.updateCandidateEducationLevel(this.form.value).subscribe(
-        (response) => {
-
-          let maxEducationLevel = response.maxEducationLevel;
-          if(maxEducationLevel.name == 'mastersDegree' || maxEducationLevel.name == 'doctorateDegree'){
-            this.router.navigate(['register', 'education', 'masters']);
-          }else if(maxEducationLevel.name == 'bachelorsDegree'){
-            this.router.navigate(['register', 'education', 'university']);
-          }else{
-            this.router.navigate(['register', 'education', 'school']);
-          }
-        },
-        (error) => {
-          this.error = error;
+  save(dir: string) {
+    this.saving = true;
+    this.candidateService.updateCandidateEducation(this.form.value).subscribe(
+      (response) => {
+        this.saving = false;
+        if (dir === 'next') {
+          this.registrationService.next();
+        } else {
+          this.registrationService.back();
         }
-      );
-    };
+      },
+      (error) => {
+        this.error = error;
+        this.saving = false;
+      }
+    );
+  };
 
+  back() {
+    this.save('back');
+  }
+
+  next() {
+    this.save('next');
+  }
+
+  get loading() {
+    return this._loading.levels || this._loading.candidate;
+  }
 }

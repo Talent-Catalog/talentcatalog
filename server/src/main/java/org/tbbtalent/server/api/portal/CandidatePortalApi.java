@@ -3,7 +3,10 @@ package org.tbbtalent.server.api.portal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.model.Candidate;
-import org.tbbtalent.server.request.candidate.*;
+import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateContactRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateEducationLevelRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tbbtalent.server.service.CandidateService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -21,40 +24,16 @@ public class CandidatePortalApi {
         this.candidateService = candidateService;
     }
 
-    @GetMapping("contact/email")
+    @GetMapping("contact")
     public Map<String, Object> getCandidateEmail() {
         Candidate candidate = this.candidateService.getLoggedInCandidate();
         return candidateContactDto().build(candidate);
     }
 
-    @PostMapping("contact/email")
-    public Map<String, Object> updateCandidateEmail(@Valid @RequestBody UpdateCandidateEmailRequest request) {
-        Candidate candidate = this.candidateService.updateEmail(request);
+    @PostMapping("contact")
+    public Map<String, Object> updateCandidateEmail(@Valid @RequestBody UpdateCandidateContactRequest request) {
+        Candidate candidate = this.candidateService.updateContact(request);
         return candidateContactDto().build(candidate);
-    }
-
-    @GetMapping("contact/alternate")
-    public Map<String, Object> getCandidateAlternateContact() {
-        Candidate candidate = this.candidateService.getLoggedInCandidate();
-        return candidateAlternateContactDto().build(candidate);
-    }
-
-    @PostMapping("contact/alternate")
-    public Map<String, Object> updateCandidateAlternateContact(@Valid @RequestBody UpdateCandidateAlternateContactRequest request) {
-        Candidate candidate = this.candidateService.updateAlternateContacts(request);
-        return candidateAlternateContactDto().build(candidate);
-    }
-
-    @GetMapping("contact/additional")
-    public Map<String, Object> getCandidateAdditionalContact() {
-        Candidate candidate = this.candidateService.getLoggedInCandidate();
-        return candidateAdditionalContactDto().build(candidate);
-    }
-
-    @PostMapping("contact/additional")
-    public Map<String, Object> updateCandidateAdditionalContact(@Valid @RequestBody UpdateCandidateAdditionalContactRequest request) {
-        Candidate candidate = this.candidateService.updateAdditionalContacts(request);
-        return candidateAlternateContactDto().build(candidate);
     }
 
     @GetMapping("personal")
@@ -69,28 +48,22 @@ public class CandidatePortalApi {
         return candidatePersonalDto().build(candidate);
     }
 
-    @GetMapping("candidateOccupation")
+    @GetMapping("occupation")
     public Map<String, Object> getCandidateCandidateOccupations() {
         Candidate candidate = this.candidateService.getLoggedInCandidateLoadCandidateOccupations();
         return candidateWithCandidateOccupationsDto().build(candidate);
     }
 
     @GetMapping("education")
-    public Map<String, Object> getCandidateEducationLevel() {
-        Candidate candidate = this.candidateService.getLoggedInCandidate();
-        return candidateEducationLevelDto().build(candidate);
+    public Map<String, Object> getCandidateEducation() {
+        Candidate candidate = this.candidateService.getLoggedInCandidateLoadEducations();
+        return candidateWithEducationDto().build(candidate);
     }
 
     @PostMapping("education")
     public Map<String, Object> updateCandidateEducationLevel(@Valid @RequestBody UpdateCandidateEducationLevelRequest request) {
         Candidate candidate = this.candidateService.updateEducationLevel(request);
         return candidateEducationLevelDto().build(candidate);
-    }
-
-    @GetMapping("educations")
-    public Map<String, Object> getCandidateEducations() {
-        Candidate candidate = this.candidateService.getLoggedInCandidateLoadEducations();
-        return candidateWithEducationsDto().build(candidate);
     }
 
     @GetMapping("additional-info")
@@ -126,6 +99,8 @@ public class CandidatePortalApi {
     private DtoBuilder candidateContactDto() {
         return new DtoBuilder()
                 .add("user", userDto())
+                .add("phone")
+                .add("whatsapp")
                 ;
     }
 
@@ -135,21 +110,6 @@ public class CandidatePortalApi {
                 .add("email")
                 .add("firstName")
                 .add("lastName")
-                ;
-    }
-
-    private DtoBuilder candidateAdditionalContactDto() {
-        return new DtoBuilder()
-                .add("user", userDto())
-                .add("phone")
-                .add("whatsapp")
-                ;
-    }
-
-    private DtoBuilder candidateAlternateContactDto() {
-        return new DtoBuilder()
-                .add("phone")
-                .add("whatsapp")
                 ;
     }
 
@@ -218,8 +178,9 @@ public class CandidatePortalApi {
                 ;
     }
 
-    private DtoBuilder candidateWithEducationsDto() {
+    private DtoBuilder candidateWithEducationDto() {
         return new DtoBuilder()
+                .add("maxEducationLevel", educationLevelDto())
                 .add("candidateEducation", educationDto())
                 ;
     }

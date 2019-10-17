@@ -6,10 +6,8 @@
     "LOGIN": "Login",
     "TEST": "hello {{value}}"
   },
-
   "REGISTRATION": {
-
-    "HEADER":  {
+    "HEADER": {
       "STEP": "Step {{registrationService?.currentStep.section}} of {{registrationService?.totalSections}}",
       "TITLE": {
         "CONTACT": "How can we contact you?",
@@ -27,16 +25,57 @@
         "SUBMIT": "Are you ready to submit your application?"
       }
     },
-
+    "FOOTER": {
+      "BACK": "Back",
+      "NEXT": "Next"
+    },
     "LANDING": {
       "TITLE": "Let's get started",
       "PARA1": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid consequatur cupiditate, doloremque fugiat quam quia sit suscipit totam! Beatae debitis, exercitationem incidunt ipsum numquam officiis ullam. Delectus enim necessitatibus soluta. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Atque beatae blanditiis cupiditate, dolor dolorem ea eos exercitationem illum ipsum itaque iure, labore non perspiciatis porro quaerat quam quos sit veniam.",
       "BUTTON1": "Register now"
     },
+    "CONTACT": {
+      "LABEL": {
+        "EMAIL": "Email",
+        "PHONE": "Phone",
+        "WHATSAPP": "Whatsapp",
+        "USERNAME": "Username",
+        "PASSWORD": "Password",
+        "PASSWORDCONFIRMATION": "Confirmation password"
+      }
+    },
+    "PERSONAL": {
+      "LABEL" : {
+        "FIRSTNAME": "First name",
+        "LASTNAME": "Last name",
+        "GENDER": "Gender",
+        "DOB": "Date of birth",
+        "COUNTRYID": "Country",
+        "CITY": "City",
+        "YEAROFARRIVAL": "What year did you arrive in this country?",
+        "NATIONALITY": "Nationality",
+        "REGISTEREDWITHUN": "Are you registered with UNHCR or UNRWA?",
+        "REGISTRATIONID": "UNHCR or UNRWA registration number"
+      }
+    },
+    "OCCUPATION": {
+      "LABEL": {
+        "OCCUPATION": "What is the main field that you have skills in?",
+        "YEARSEXPERIENCE": "How many years of work experience do you have in this field?",
+        "DISCLAIMER": "Do not include years spent studying in this occupation"
+      },
+      "BUTTON": {
+        "ADD": "Add occupation"
+      }
+    },
+    "EXPERIENCE": {
 
-    "FOOTER": {
-      "BACK": "Back",
-      "NEXT": "Next"
+    },
+    "EDUCATION": {
+      "LABEL": {
+        "MAXEDUCATIONLEVELID": "What is the highest level of education you've obtained?"
+      }
     }
+
   }
 }

@@ -16,12 +16,14 @@ import {RegistrationService} from "../../../services/registration.service";
 export class RegistrationCandidateOccupationComponent implements OnInit {
 
   error: any;
-  loading: boolean;
+  _loading = {
+    candidate: true,
+    occupations: true
+  };
   saving: boolean;
   form: FormGroup;
   candidateOccupations: CandidateOccupation[];
   occupations: Occupation[];
-  occupationRequests: {occupationId: number, yearsExperience: number}[];
 
   constructor(private fb: FormBuilder,
               private router: Router,
@@ -33,70 +35,72 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
   ngOnInit() {
     this.candidateOccupations = [];
     this.saving = false;
-    this.loading = true;
-    this.occupationRequests = [];
+    this.setUpForm();
 
-    /* Load the candidate data */
-    this.candidateService.getCandidateCandidateOccupations().subscribe(
-      (candidate) => {
-        this.candidateOccupations = candidate.candidateOccupations || [];
-
-        /* Wait for the candidate then load the industries */
-        this.occupationService.listOccupations().subscribe(
-          (response) => {
-            this.occupations = response;
-            this.loading = false;
-            this.setUpForm();
-          },
-          (error) => {
-            this.error = error;
-            this.loading = false;
-          }
-        );
+    this.occupationService.listOccupations().subscribe(
+      (response) => {
+        this.occupations = response;
+        this._loading.occupations = false;
       },
       (error) => {
         this.error = error;
-        this.loading = false;
+        this._loading.occupations = false;
+      }
+    );
+
+    this.candidateService.getCandidateCandidateOccupations().subscribe(
+      (candidate) => {
+        this.candidateOccupations = candidate.candidateOccupations.map(occ => {
+          return {
+            id: occ.id,
+            occupationId: occ.occupation.id,
+            yearsExperience: occ.yearsExperience
+          }
+        });
+        this._loading.candidate = false;
+      },
+      (error) => {
+        this.error = error;
+        this._loading.candidate = false;
       }
     );
   }
 
   setUpForm(){
     this.form = this.fb.group({
+      id: [null],
       occupationId: [null, Validators.required],
       yearsExperience: [null, Validators.required],
     });
   }
 
   addOccupation() {
-    this.occupationRequests.push(this.form.value);
+    this.candidateOccupations.push(this.form.value);
     this.setUpForm();
   }
 
   deleteOccupation(index: number) {
-    this.occupationRequests.splice(index, 1);
+    this.candidateOccupations.splice(index, 1);
   }
 
   save(dir: string) {
     if (this.form.valid) {
       this.addOccupation();
     }
-    if (dir === 'next') {
-      this.registrationService.next();
-    } else {
-      this.registrationService.back();
-    }
-    // this.candidateOccupationService.updateCandidateOccupations(this.occupationRequests).subscribe(
-    //   () => {
-    //     if (dir === 'next') {
-    //       this.registrationService.next();
-    //     } else {
-    //       this.registrationService.back();
-    //     }
-    //   },
-    //   (error) => {
-    //     console.log('error', error);
-    //   });
+    const request = {
+      updates: this.candidateOccupations
+    };
+    this.candidateOccupationService.updateCandidateOccupations(request).subscribe(
+      (response) => {
+        if (dir === 'next') {
+          this.registrationService.next();
+        } else {
+          this.registrationService.back();
+        }
+      },
+      (error) => {
+        this.error = error;
+      });
   }
 
   back() {
@@ -107,4 +111,7 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
     this.save('next');
   }
 
+  get loading() {
+    return this._loading.candidate || this._loading.occupations;
+  }
 }

@@ -26,6 +26,7 @@ export class EditEducationLevelComponent implements OnInit {
     this.loading = true;
     this.educationLevelService.get(this.educationLevelId).subscribe(educationLevel => {
       this.educationLevelForm = this.fb.group({
+        level: [educationLevel.level, Validators.required],
         name: [educationLevel.name, Validators.required],
         status: [educationLevel.status, Validators.required],
       });

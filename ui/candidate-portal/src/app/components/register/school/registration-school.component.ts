@@ -48,7 +48,7 @@ export class RegistrationSchoolComponent implements OnInit {
      });
 
      /* Load & update the candidate data */
-     this.candidateService.getCandidateEducations().subscribe(
+     this.candidateService.getCandidateEducation().subscribe(
        (candidate) => {
          this.educations = candidate.educations || [];
 

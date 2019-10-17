@@ -23,16 +23,6 @@ export class RegistrationService {
       section: 1
     },
     {
-      key: 'contact/alternate',
-      title: 'How can we contact you?',
-      section: 1
-    },
-    {
-      key: 'contact/additional',
-      title: 'How can we contact you?',
-      section: 1
-    },
-    {
       key: 'personal',
       title: 'Tell us about yourself',
       section: 2

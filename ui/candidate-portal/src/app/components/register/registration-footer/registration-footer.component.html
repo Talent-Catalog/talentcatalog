@@ -3,13 +3,13 @@
   <div class="container">
 
     <button class="btn btn-outline-primary" translate dir="auto"
-            [disabled]="registrationService.currentStepIndex == 0"
+            [disabled]="registrationService.currentStepIndex == 0 || disabled"
             (click)="back()">
       REGISTRATION.FOOTER.BACK
     </button>
 
     <button class="btn btn-primary" translate dir="auto"
-            [disabled]="registrationService.currentStepIndex >= registrationService.steps.length - 1"
+            [disabled]="registrationService.currentStepIndex >= registrationService.steps.length - 1 || disabled"
             (click)="next()">
       REGISTRATION.FOOTER.NEXT
     </button>

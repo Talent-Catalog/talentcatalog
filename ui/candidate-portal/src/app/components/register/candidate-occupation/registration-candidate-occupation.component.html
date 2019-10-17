@@ -4,14 +4,15 @@
     Loading...
   </div>
 
-  <div class="card" *ngFor="let occupation of occupationRequests; let i = index;">
+  <!-- REVIEW -->
+  <div class="card" *ngFor="let occupation of candidateOccupations; let i = index;">
 
     <div class="text-right">
       <button class="btn btn-danger" (click)="deleteOccupation(i)">&times;</button>
     </div>
 
     <div class="form-group">
-      <label>What is the main field that you have skills in?</label>
+      <label translate dir="auto">REGISTRATION.OCCUPATION.LABEL.OCCUPATION</label>
       <select class="form-control" [(ngModel)]="occupation.occupationId">
         <option *ngFor="let occupation of occupations" [value]="occupation.id">{{occupation.name}}</option>
       </select>
@@ -19,18 +20,19 @@
 
     <!-- YEARS OF EXPERIENCE -->
     <div class="form-group">
-      <label>How many years of work experience do you have in this field?</label>
-      <p class="text-muted">Do not include years spent studying in this occupation</p>
+      <label translate dir="auto">REGISTRATION.OCCUPATION.LABEL.YEARSEXPERIENCE</label>
+      <p class="text-muted" translate dir="auto">REGISTRATION.OCCUPATION.LABEL.DISCLAIMER</p>
       <input type="number" class="form-control" [(ngModel)]="occupation.yearsExperience">
     </div>
 
   </div>
 
+  <!-- CREATE -->
   <form class="card" [formGroup]="form" *ngIf="!loading">
 
     <!-- FIELD -->
     <div class="form-group">
-      <label for="occupation">What is the main field that you have skills in?</label>
+      <label for="occupation" translate dir="auto">REGISTRATION.OCCUPATION.LABEL.OCCUPATION</label>
       <select class="form-control" name="occupation" id="occupation" [formControlName]="'occupationId'">
         <option value=""></option>
         <option *ngFor="let occupation of occupations" [value]="occupation.id">{{occupation.name}}</option>
@@ -39,18 +41,18 @@
 
     <!-- YEARS OF EXPERIENCE -->
     <div class="form-group">
-      <label class="m-0" for="yearsExperience">How many years of work experience do you have in this field?</label>
-      <p class="text-muted">Do not include years spent studying in this occupation</p>
+      <label class="m-0" for="yearsExperience" translate dir="auto">REGISTRATION.OCCUPATION.LABEL.YEARSEXPERIENCE</label>
+      <p class="text-muted" translate dir="auto">REGISTRATION.OCCUPATION.LABEL.DISCLAIMER</p>
       <input type="number" class="form-control" name="yearsExperience" id="yearsExperience" [formControlName]="'yearsExperience'">
     </div>
 
   </form>
 
   <div class="text-center mt-4">
-    <button class="btn btn-outline-primary"
+    <button class="btn btn-outline-primary"  translate dir="auto"
             (click)="addOccupation()"
-            [disabled]="form.invalid || loading || saving">
-      Add occupation
+            [disabled]="form?.invalid || loading || saving">
+      REGISTRATION.OCCUPATION.BUTTON.ADD
     </button>
   </div>
 
