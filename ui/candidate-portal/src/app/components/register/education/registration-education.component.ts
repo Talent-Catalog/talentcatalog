@@ -15,14 +15,13 @@ import {CandidateEducation} from "../../../model/candidate-education";
 export class RegistrationEducationComponent implements OnInit {
 
   error: any;
-  // Component states
+  saving: boolean;
   _loading = {
     levels: true,
     candidate: true
   };
-  saving: boolean;
 
-  educationLevelForm: FormGroup;
+  form: FormGroup;
   educationLevels: EducationLevel[];
   candidateEducationItems: CandidateEducation[];
 
@@ -36,7 +35,8 @@ export class RegistrationEducationComponent implements OnInit {
 
   ngOnInit() {
     this.saving = false;
-    this.educationLevelForm = this.fb.group({
+    this.candidateEducationItems = [];
+    this.form = this.fb.group({
       maxEducationLevelId: ['', Validators.required]
     });
 
@@ -57,7 +57,7 @@ export class RegistrationEducationComponent implements OnInit {
       (response) => {
         /* DEBUG */
         console.log('response', response);
-        this.educationLevelForm.patchValue({
+        this.form.patchValue({
           maxEducationLevelId: response.maxEducationLevel ? response.maxEducationLevel.id : null,
         });
         this._loading.candidate = false;
@@ -71,7 +71,7 @@ export class RegistrationEducationComponent implements OnInit {
 
   save(dir: string) {
     this.saving = true;
-    this.candidateService.updateCandidateEducationLevel(this.educationLevelForm.value).subscribe(
+    this.candidateService.updateCandidateEducation(this.form.value).subscribe(
       (response) => {
         this.saving = false;
         if (dir === 'next') {

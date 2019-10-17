@@ -126,11 +126,11 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
                 candidateOccupation = new CandidateOccupation(candidate, occupation, update.getYearsExperience());
             }
             updatedOccupations.add(candidateOccupationRepository.save(candidateOccupation));
-            updatedOccupationIds.add(candidateOccupation.getOccupation().getId());
+            updatedOccupationIds.add(candidateOccupation.getId());
         }
 
         for (Long existingCandidateOccupationId : map.keySet()) {
-            /* Check if the candidate occupation hsa been removed */
+            /* Check if the candidate occupation has been removed */
             if (!updatedOccupationIds.contains(existingCandidateOccupationId)){
                 /* Check if the candidate has job experience linked to the occupation */
                 int count = candidateJobExperienceRepository.countByCandidateOccupationId(existingCandidateOccupationId);

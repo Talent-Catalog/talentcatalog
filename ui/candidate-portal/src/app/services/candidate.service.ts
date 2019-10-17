@@ -15,7 +15,7 @@ export class CandidateService {
   }
 
   /* Contact */
-  getCandidateContactInfo(): Observable<Candidate> {
+  getCandidateContact(): Observable<Candidate> {
     return this.http.get<Candidate>(`${this.apiUrl}/contact`);
   }
 
@@ -23,7 +23,7 @@ export class CandidateService {
     return this.http.post<Candidate>(`${this.apiUrl}/contact`, request);
   }
 
-  /* Candidate Personal */
+  /* Personal */
   getCandidatePersonal(): Observable<Candidate> {
     return this.http.get<Candidate>(`${this.apiUrl}/personal`);
   }
@@ -32,8 +32,12 @@ export class CandidateService {
     return this.http.post<Candidate>(`${this.apiUrl}/personal`, request);
   }
 
-  /* Candidate Education Level*/
-  updateCandidateEducationLevel(request): Observable<Candidate> {
+  /* Education */
+  getCandidateEducation(): Observable<Candidate> {
+    return this.http.get<Candidate>(`${this.apiUrl}/education`);
+  }
+
+  updateCandidateEducation(request): Observable<Candidate> {
     return this.http.post<Candidate>(`${this.apiUrl}/education`, request);
   }
 
@@ -47,11 +51,7 @@ export class CandidateService {
   }
 
   getCandidateCandidateOccupations(): Observable<Candidate> {
-    return this.http.get<Candidate>(`${this.apiUrl}/candidateOccupation`);
-  }
-
-  getCandidateEducation(): Observable<Candidate> {
-    return this.http.get<Candidate>(`${this.apiUrl}/education`);
+    return this.http.get<Candidate>(`${this.apiUrl}/occupation`);
   }
 
   getCandidateLanguages(): Observable<Candidate> {

@@ -48,28 +48,22 @@ public class CandidatePortalApi {
         return candidatePersonalDto().build(candidate);
     }
 
-    @GetMapping("candidateOccupation")
+    @GetMapping("occupation")
     public Map<String, Object> getCandidateCandidateOccupations() {
         Candidate candidate = this.candidateService.getLoggedInCandidateLoadCandidateOccupations();
         return candidateWithCandidateOccupationsDto().build(candidate);
-    }
-
-//    @GetMapping("education")
-//    public Map<String, Object> getCandidateEducationLevel() {
-//        Candidate candidate = this.candidateService.getLoggedInCandidate();
-//        return candidateEducationLevelDto().build(candidate);
-//    }
-
-    @PostMapping("education")
-    public Map<String, Object> updateCandidateEducationLevel(@Valid @RequestBody UpdateCandidateEducationLevelRequest request) {
-        Candidate candidate = this.candidateService.updateEducationLevel(request);
-        return candidateEducationLevelDto().build(candidate);
     }
 
     @GetMapping("education")
     public Map<String, Object> getCandidateEducation() {
         Candidate candidate = this.candidateService.getLoggedInCandidateLoadEducations();
         return candidateWithEducationDto().build(candidate);
+    }
+
+    @PostMapping("education")
+    public Map<String, Object> updateCandidateEducationLevel(@Valid @RequestBody UpdateCandidateEducationLevelRequest request) {
+        Candidate candidate = this.candidateService.updateEducationLevel(request);
+        return candidateEducationLevelDto().build(candidate);
     }
 
     @GetMapping("additional-info")

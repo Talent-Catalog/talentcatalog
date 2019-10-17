@@ -10,7 +10,7 @@
       {{error.error?.message || error.message || error}}
     </div>
 
-    <form [formGroup]="educationLevelForm">
+    <form [formGroup]="form">
 
       <!-- MAX EDUCATION LEVEL -->
       <div class="form-group">
@@ -23,7 +23,7 @@
 
     </form>
 
-    <ng-container *ngIf="educationLevelForm.valid || candidateEducationItems.length">
+    <ng-container *ngIf="form.valid || candidateEducationItems.length">
       <h3>Education</h3>
 
 

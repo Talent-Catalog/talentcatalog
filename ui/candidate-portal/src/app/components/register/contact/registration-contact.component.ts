@@ -41,7 +41,7 @@ export class RegistrationContactComponent implements OnInit {
 
     if (this.authService.isAuthenticated()) {
       this.authenticated = true;
-      this.candidateService.getCandidateContactInfo().subscribe(
+      this.candidateService.getCandidateContact().subscribe(
         (candidate) => {
           this.candidate = candidate;
           this.form.patchValue({email: candidate.user.email});

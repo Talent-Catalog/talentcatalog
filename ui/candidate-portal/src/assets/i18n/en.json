@@ -58,6 +58,16 @@
         "REGISTRATIONID": "UNHCR or UNRWA registration number"
       }
     },
+    "OCCUPATION": {
+      "LABEL": {
+        "OCCUPATION": "What is the main field that you have skills in?",
+        "YEARSEXPERIENCE": "How many years of work experience do you have in this field?",
+        "DISCLAIMER": "Do not include years spent studying in this occupation"
+      },
+      "BUTTON": {
+        "ADD": "Add occupation"
+      }
+    },
     "EXPERIENCE": {
 
     },
