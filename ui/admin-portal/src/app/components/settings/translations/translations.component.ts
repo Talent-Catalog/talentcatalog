@@ -4,6 +4,8 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
+import {LanguageService} from "../../../services/language.service";
+import {Language} from '../../../model/language';
 
 @Component({
   selector: 'app-translations',
@@ -18,9 +20,11 @@ export class TranslationsComponent implements OnInit {
   pageNumber: number;
   pageSize: number;
 //  results: SearchResults<Country>;
+  languages: Language[];
 
   constructor(private fb: FormBuilder,
-              private modalService: NgbModal) {
+              private modalService: NgbModal,
+              private languageService: LanguageService ) {
   }
 
   ngOnInit() {
@@ -28,12 +32,24 @@ export class TranslationsComponent implements OnInit {
     /* SET UP FORM */
     this.searchForm = this.fb.group({
       keyword: [''],
-      status: ['active'],
+      type: [''],
+      languageId: [''],
     });
     this.pageNumber = 1;
     this.pageSize = 50;
 
     this.onChanges();
+    this.getLanguages();
+  }
+
+  getLanguages() {
+    this.languageService.listLanguages().subscribe(
+      (response) => {
+        this.languages = response;
+      },
+      (error) => {
+        console.error(error);
+    });
   }
 
   onChanges(): void {
