@@ -37,6 +37,8 @@
     "CONTACT": {
       "LABEL": {
         "EMAIL": "Email",
+        "PHONE": "Phone",
+        "WHATSAPP": "Whatsapp",
         "USERNAME": "Username",
         "PASSWORD": "Password",
         "PASSWORDCONFIRMATION": "Confirmation password"
@@ -60,7 +62,9 @@
 
     },
     "EDUCATION": {
-      "TITLE": ""
+      "LABEL": {
+        "MAXEDUCATIONLEVELID": "What is the highest level of education you've obtained?"
+      }
     }
 
   }

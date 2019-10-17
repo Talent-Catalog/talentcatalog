@@ -4,6 +4,7 @@ import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
 import {AuthService} from "../../../services/auth.service";
 import {Candidate} from "../../../model/candidate";
+import {RegistrationService} from "../../../services/registration.service";
 
 @Component({
   selector: 'app-registration-contact',
@@ -18,26 +19,35 @@ export class RegistrationContactComponent implements OnInit {
   loading: boolean;
   saving: boolean;
   // Candidate data
+  authenticated: boolean;
   candidate: Candidate;
 
   constructor(private fb: FormBuilder,
               private router: Router,
               private candidateService: CandidateService,
-              private authService: AuthService) { }
+              private authService: AuthService,
+              private registrationService: RegistrationService) { }
 
   ngOnInit() {
+    this.authenticated = false;
     this.loading = true;
     this.candidate = null;
     this.form = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      username: ['', [Validators.required]]
+      email: ['', Validators.email],
+      phone: [''],
+      whatsapp: [''],
+      // username: ['']
     });
+
     if (this.authService.isAuthenticated()) {
+      this.authenticated = true;
       this.candidateService.getCandidateContactInfo().subscribe(
-        (response) => {
-          this.candidate = response;
-          this.form.patchValue({email: response.user.email});
-          this.form.patchValue({username: response.user.username});
+        (candidate) => {
+          this.candidate = candidate;
+          this.form.patchValue({email: candidate.user.email});
+          this.form.patchValue({phone: candidate.phone});
+          this.form.patchValue({whatsapp: candidate.whatsapp});
+          // this.form.patchValue({username: response.user.username});
           this.loading = false;
         },
         (error) => {
@@ -57,10 +67,9 @@ export class RegistrationContactComponent implements OnInit {
     this.saving = true;
     if (this.authService.isAuthenticated()) {
       // The user has already registered and is revisiting this page
-      this.candidateService.updateCandidateContactInfo(this.form.value).subscribe(
+      this.candidateService.updateCandidateContact(this.form.value).subscribe(
         (response) => {
-          // Success - navigate to next step
-          this.navigateToNextStep();
+          this.registrationService.next();
         },
         (error) => {
           this.error = error;
@@ -71,8 +80,7 @@ export class RegistrationContactComponent implements OnInit {
       // The user has not yet registered - create an account for them
       this.authService.register(this.form.value).subscribe(
         (response) => {
-          // Success - navigate to next step
-          this.navigateToNextStep();
+          this.registrationService.next();
         },
         (error) => {
           this.error = error;
@@ -82,8 +90,12 @@ export class RegistrationContactComponent implements OnInit {
     }
   }
 
-  navigateToNextStep() {
-    this.saving = false;
-    this.router.navigate(['register', 'contact', 'additional']);
+  get formValid() {
+    const value = this.form.value;
+    const control = this.form.controls;
+
+    const hasContactField = (value.email && control.email.valid) || value.phone || value.whatsapp;
+    const hasPassword = !this.authenticated && control.password.valid && control.passwordConfirmation.valid || true;
+    return hasContactField && hasPassword;
   }
 }

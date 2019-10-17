@@ -2,27 +2,34 @@
 
   <div *ngIf="loading">
     <span>Loading...</span>
-
-    {{this._loading | json}}
   </div>
 
   <ng-container *ngIf="!loading">
 
-    <form [formGroup]="form">
+    <div class="alert alert-danger" *ngIf="error">
+      {{error.error?.message || error.message || error}}
+    </div>
 
+    <form [formGroup]="educationLevelForm">
+
+      <!-- MAX EDUCATION LEVEL -->
       <div class="form-group">
-        <label for="maxEducationLevelId">What is the highest level of candidateEducation you've obtained?</label>
-        <select class="form-control" id="maxEducationLevelId" name="maxEducationLevelId" [formControlName]="'maxEducationLevelId'">
+        <label for="maxEducationLevelId" translate dir="auto">REGISTRATION.EDUCATION.LABEL.MAXEDUCATIONLEVELID</label>
+        <select class="form-control" id="maxEducationLevelId" [formControlName]="'maxEducationLevelId'">
           <option value=""></option>
-          <option *ngFor="let educationLevel of educationLevels"
-                  [value]="educationLevel.id">{{educationLevel.name}}</option>
+          <option *ngFor="let educationLevel of educationLevels" [value]="educationLevel.id">{{educationLevel.name}}</option>
         </select>
       </div>
 
     </form>
 
-  </ng-container>
+    <ng-container *ngIf="educationLevelForm.valid || education.length">
+      <h3>Education</h3>
 
+
+    </ng-container>
+
+  </ng-container>
 
 </div>
 

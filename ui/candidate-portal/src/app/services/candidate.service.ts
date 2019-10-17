@@ -16,28 +16,11 @@ export class CandidateService {
 
   /* Contact */
   getCandidateContactInfo(): Observable<Candidate> {
-    return this.http.get<Candidate>(`${this.apiUrl}/contact/email`);
+    return this.http.get<Candidate>(`${this.apiUrl}/contact`);
   }
 
-  updateCandidateContactInfo(request): Observable<Candidate> {
-    return this.http.post<Candidate>(`${this.apiUrl}/contact/email`, request);
-  }
-
-  /* Contact - alternate */
-  getCandidateAlternateContacts(): Observable<Candidate> {
-    return this.http.get<Candidate>(`${this.apiUrl}/contact/alternate`);
-  }
-
-  updateCandidateAlternateContacts(request): Observable<Candidate> {
-    return this.http.post<Candidate>(`${this.apiUrl}/contact/alternate`, request);
-  }
-
-  getCandidateAdditionalContacts(): Observable<Candidate> {
-    return this.http.get<Candidate>(`${this.apiUrl}/contact/additional`);
-  }
-
-  updateCandidateAdditionalContacts(request): Observable<Candidate> {
-    return this.http.post<Candidate>(`${this.apiUrl}/contact/additional`, request);
+  updateCandidateContact(request): Observable<Candidate> {
+    return this.http.post<Candidate>(`${this.apiUrl}/contact`, request);
   }
 
   /* Candidate Personal */

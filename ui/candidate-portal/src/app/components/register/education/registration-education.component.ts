@@ -4,6 +4,7 @@ import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
 import {EducationLevelService} from "../../../services/education-level.service";
 import {EducationLevel} from "../../../model/education-level";
+import {RegistrationService} from "../../../services/registration.service";
 
 @Component({
   selector: 'app-registration-education',
@@ -12,7 +13,7 @@ import {EducationLevel} from "../../../model/education-level";
 })
 export class RegistrationEducationComponent implements OnInit {
 
-  form: FormGroup;
+  educationLevelForm: FormGroup;
   educationLevels: EducationLevel[];
   error: any;
   // Component states
@@ -25,12 +26,13 @@ export class RegistrationEducationComponent implements OnInit {
   constructor(private fb: FormBuilder,
               private router: Router,
               private educationLevelService: EducationLevelService,
-              private candidateService: CandidateService) {
+              private candidateService: CandidateService,
+              public registrationService: RegistrationService) {
   }
 
   ngOnInit() {
     this.saving = false;
-    this.form = this.fb.group({
+    this.educationLevelForm = this.fb.group({
       maxEducationLevelId: ['', Validators.required]
     });
 
@@ -51,7 +53,7 @@ export class RegistrationEducationComponent implements OnInit {
       (response) => {
         /* DEBUG */
         console.log('response', response);
-        this.form.patchValue({
+        this.educationLevelForm.patchValue({
           maxEducationLevelId: response.maxEducationLevel ? response.maxEducationLevel.id : null,
         });
         this._loading.candidate = false;
@@ -64,22 +66,19 @@ export class RegistrationEducationComponent implements OnInit {
   }
 
   save(dir: string) {
-    console.log(this.form);
-
-    this.candidateService.updateCandidateEducationLevel(this.form.value).subscribe(
+    this.saving = true;
+    this.candidateService.updateCandidateEducationLevel(this.educationLevelForm.value).subscribe(
       (response) => {
-
-        let maxEducationLevel = response.maxEducationLevel;
-        if (maxEducationLevel.name == 'mastersDegree' || maxEducationLevel.name == 'doctorateDegree') {
-          this.router.navigate(['register', 'education', 'masters']);
-        } else if (maxEducationLevel.name == 'bachelorsDegree') {
-          this.router.navigate(['register', 'education', 'university']);
+        this.saving = false;
+        if (dir === 'next') {
+          this.registrationService.next();
         } else {
-          this.router.navigate(['register', 'education', 'school']);
+          this.registrationService.back();
         }
       },
       (error) => {
         this.error = error;
+        this.saving = false;
       }
     );
   };

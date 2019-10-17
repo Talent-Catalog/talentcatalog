@@ -1,28 +1,34 @@
 <div class="container">
 
-  <h1 class="text-center">How can we contact you?</h1>
-
   <div class="d-flex justify-content-center" *ngIf="loading">
     Loading...
   </div>
 
   <form [formGroup]="form" *ngIf="!loading">
 
+    <!-- EMAIL -->
     <div class="form-group">
       <label for="email" translate dir="auto">REGISTRATION.CONTACT.LABEL.EMAIL</label>
       <input type="email" class="form-control" id="email" placeholder="Enter email" [formControlName]="'email'">
     </div>
 
-    <ng-container *ngIf="form.controls['password']">
+    <!-- PHONE # -->
+    <div class="form-group">
+      <label for="phone" translate dir="auto">REGISTRATION.CONTACT.LABEL.PHONE</label>
+      <input type="text" class="form-control" id="phone" placeholder="Enter phone number" [formControlName]="'phone'">
+    </div>
 
-      <p>
-        If you do not have an email address, <a [routerLink]="['/register', 'contact', 'alternate']">click here</a>.
-      </p>
+    <!-- WHATSAPP -->
+    <div class="form-group">
+      <label for="whatsapp" translate dir="auto">REGISTRATION.CONTACT.LABEL.WHATSAPP</label>
+      <input type="text" class="form-control" id="whatsapp" placeholder="Enter WhatsApp" [formControlName]="'whatsapp'">
+    </div>
 
-      <div class="form-group">
-        <label for="username" translate dir="auto">REGISTRATION.CONTACT.LABEL.USERNAME</label>
-        <input type="username" class="form-control" id="username" placeholder="Enter username" [formControlName]="'username'">
-      </div>
+    <ng-container *ngIf="!authenticated">
+<!--      <div class="form-group">-->
+<!--        <label for="username" translate dir="auto">REGISTRATION.CONTACT.LABEL.USERNAME</label>-->
+<!--        <input type="username" class="form-control" id="username" placeholder="Enter username" [formControlName]="'username'">-->
+<!--      </div>-->
 
       <div class="form-group">
         <label for="password" translate dir="auto">REGISTRATION.CONTACT.LABEL.PASSWORD</label>
@@ -44,12 +50,10 @@
     {{error.error?.message || error.message || error}}
   </div>
 
-  <div class="text-right">
-    <button class="btn btn-primary"
-            [disabled]="form.invalid || loading || saving"
-            (click)="save()">
-      Next
-    </button>
-  </div>
-
 </div>
+
+
+<app-registration-footer [disabled]="!formValid"
+                         (nextClicked)="save()">
+</app-registration-footer>
+
