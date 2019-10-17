@@ -55,6 +55,13 @@
         "REGISTEREDWITHUN": "Are you registered with UNHCR or UNRWA?",
         "REGISTRATIONID": "UNHCR or UNRWA registration number"
       }
+    },
+    "EXPERIENCE": {
+
+    },
+    "EDUCATION": {
+      "TITLE": ""
     }
+
   }
 }

@@ -37,7 +37,6 @@ public class CandidateEducationPortalApi {
         return candidateEducationDto().build(candidateEducation);
     }
 
-
     private DtoBuilder candidateEducationDto() {
         return new DtoBuilder()
                 .add("id")
