@@ -35,6 +35,7 @@ dependencies {
     implementation("org.apache.commons:commons-lang3:3.0")
 
     runtimeOnly('org.postgresql:postgresql')
+    runtimeOnly('mysql:mysql-connector-java:8.0.15')
 
     testCompile("junit:junit")
 }
