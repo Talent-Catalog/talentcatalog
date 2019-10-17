@@ -2,7 +2,6 @@ package org.tbbtalent.server.request.language.level;
 
 import org.tbbtalent.server.model.Status;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -11,7 +10,6 @@ public class CreateLanguageLevelRequest {
     @NotBlank
     private String name;
 
-    @Min(value = 0L, message = "The value must be positive")
     private int level;
 
     @NotNull

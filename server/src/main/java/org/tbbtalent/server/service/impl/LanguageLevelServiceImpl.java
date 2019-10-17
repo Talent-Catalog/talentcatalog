@@ -62,7 +62,7 @@ public class LanguageLevelServiceImpl implements LanguageLevelService {
     public LanguageLevel createLanguageLevel(CreateLanguageLevelRequest request) throws EntityExistsException {
         LanguageLevel languageLevel = new LanguageLevel(
                 request.getName(), request.getStatus(), request.getLevel());
-        checkDuplicates(null, request.getName());
+        checkDuplicates(null, request.getName(), request.getLevel());
         return this.languageLevelRepository.save(languageLevel);
     }
 
@@ -72,7 +72,7 @@ public class LanguageLevelServiceImpl implements LanguageLevelService {
     public LanguageLevel updateLanguageLevel(long id, UpdateLanguageLevelRequest request) throws EntityExistsException {
         LanguageLevel languageLevel = this.languageLevelRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(LanguageLevel.class, id));
-        checkDuplicates(id, request.getName());
+        checkDuplicates(id, request.getName(), request.getLevel());
 
         languageLevel.setName(request.getName());
         languageLevel.setLevel(request.getLevel());
@@ -96,10 +96,16 @@ public class LanguageLevelServiceImpl implements LanguageLevelService {
         return false;
     }
 
-    private void checkDuplicates(Long id, String name) {
-        LanguageLevel existing = languageLevelRepository.findByNameIgnoreCase(name);
-        if (existing != null && !existing.getId().equals(id) || (existing != null && id == null)){
-            throw new EntityExistsException("country");
+    private void checkDuplicates(Long id, String name, int level) {
+        LanguageLevel existingName = languageLevelRepository.findByNameIgnoreCase(name);
+        if (existingName != null && !existingName.getId().equals(id) || (existingName != null && id == null)){
+            throw new EntityExistsException("language level");
         }
+
+        LanguageLevel existingLevel = languageLevelRepository.findByLevelIgnoreCase(level);
+        if (existingLevel != null && !existingLevel.getId().equals(id) || (existingLevel != null && id == null)){
+            throw new EntityExistsException("language level");
+        }
+
     }
 }

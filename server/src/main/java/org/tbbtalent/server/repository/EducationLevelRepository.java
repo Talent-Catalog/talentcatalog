@@ -18,5 +18,11 @@ public interface EducationLevelRepository extends JpaRepository<EducationLevel, 
     @Query(" select distinct l from EducationLevel l "
             + " where lower(l.name) = lower(:name)"
             + " and l.status != 'deleted'" )
-    EducationLevel findByNameIgnoreCase(@Param("name") String level);
+    EducationLevel findByNameIgnoreCase(@Param("name") String name);
+
+
+    @Query(" select distinct l from EducationLevel l "
+            + " where l.level = :level"
+            + " and l.status != 'deleted'" )
+    EducationLevel findByLevelIgnoreCase(@Param("level") int level);
 }
