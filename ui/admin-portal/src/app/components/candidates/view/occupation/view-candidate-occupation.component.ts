@@ -33,6 +33,7 @@ export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
       this.loading = true;
+
       this.candidateService.get(this.candidate.id).subscribe(
         candidate => {
             this.candidate = candidate;

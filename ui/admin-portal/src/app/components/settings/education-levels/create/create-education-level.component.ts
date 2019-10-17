@@ -23,6 +23,7 @@ export class CreateEducationLevelComponent implements OnInit {
 
   ngOnInit() {
     this.educationLevelForm = this.fb.group({
+      level: [null, Validators.required],
       name: [null, Validators.required],
       status: [null, Validators.required],
     });

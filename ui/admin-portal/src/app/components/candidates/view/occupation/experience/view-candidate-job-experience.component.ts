@@ -26,6 +26,8 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
   expanded: boolean;
   error;
   results: SearchResults<CandidateJobExperience>;
+  experiences: CandidateJobExperience[];
+  hasMore: boolean;
 
   constructor(private candidateJobExperienceService: CandidateJobExperienceService,
               private modalService: NgbModal,
@@ -38,11 +40,11 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     this.editable = true;
     this.expanded = false;
-    console.log(this.candidateOccupation);
+    this.experiences = [];
 
     this.candidateJobExperienceForm = this.fb.group({
       candidateOccupationId: [this.candidateOccupation.id],
-      pageSize: 10,
+      pageSize: 1,
       pageNumber: 0,
       sortDirection: 'DESC',
       sortFields: [['endDate']]
@@ -58,7 +60,8 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
     this.loading = true;
     this.candidateJobExperienceService.search(this.candidateJobExperienceForm.value).subscribe(
       results => {
-        this.results = results;
+        this.experiences.push(...results.content);
+        this.hasMore = results.totalPages > results.number+1;
         this.loading = false;
       },
       error => {
@@ -70,7 +73,8 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
   }
 
   loadMore() {
-    this.candidateJobExperienceForm.value.pageNumber += 1;
+   this.candidateJobExperienceForm.controls['pageNumber'].patchValue(this.candidateJobExperienceForm.value.pageNumber+1);
+   this.doSearch();
   }
 
   createCandidateJobExperience() {

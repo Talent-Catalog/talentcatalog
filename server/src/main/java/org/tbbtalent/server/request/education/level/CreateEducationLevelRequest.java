@@ -2,6 +2,7 @@ package org.tbbtalent.server.request.education.level;
 
 import org.tbbtalent.server.model.Status;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -13,6 +14,7 @@ public class CreateEducationLevelRequest {
     @NotNull
     private Status status;
 
+    @Min(value = 0L, message = "The value must be positive")
     private int level;
 
     public String getName() { return name; }
