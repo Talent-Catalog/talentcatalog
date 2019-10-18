@@ -16,8 +16,6 @@ import {RegistrationCandidateOccupationComponent} from './components/register/ca
 import {RegistrationJobExperienceComponent} from './components/register/job-experience/registration-job-experience.component';
 import {RegistrationEducationComponent} from './components/register/education/registration-education.component';
 import {CandidateEducationFormComponent} from './components/register/education/candidate-education-form/candidate-education-form.component';
-import {RegistrationUniversityComponent} from './components/register/university/registration-university.component';
-import {RegistrationSchoolComponent} from './components/register/school/registration-school.component';
 import {RegistrationLanguageComponent} from './components/register/language/registration-language.component';
 import {RegistrationCertificationsComponent} from './components/register/certifications/registration-certifications.component';
 import {RegistrationAdditionalInfoComponent} from './components/register/additional-info/registration-additional-info.component';
@@ -49,8 +47,6 @@ export function createTranslateLoader(http: HttpClient) {
     RegistrationJobExperienceComponent,
     RegistrationEducationComponent,
     CandidateEducationFormComponent,
-    RegistrationUniversityComponent,
-    RegistrationSchoolComponent,
     RegistrationLanguageComponent,
     RegistrationCertificationsComponent,
     RegistrationAdditionalInfoComponent,
