@@ -1,6 +1,6 @@
 <div class="container">
 
-  <h1 class="text-center">Any other occupational candidateCertifications?</h1>
+  <div class="alert alert-warning">Not yet brought over to new UX</div>
 
   <div class="d-flex justify-content-center" *ngIf="loading">
     Loading...
@@ -63,13 +63,15 @@
     {{error.error?.message || error.message || error}}
   </div>
 
-  <div class="text-right">
-    <button class="btn btn-primary"
-            [disabled]="candidateOccupations?.length === 0 || loading || saving"
-            (click)="next()">
-      Next
-    </button>
-  </div>
+<!--  <div class="text-right">-->
+<!--    <button class="btn btn-primary"-->
+<!--            [disabled]="candidateOccupations?.length === 0 || loading || saving"-->
+<!--            (click)="next()">-->
+<!--      Next-->
+<!--    </button>-->
+<!--  </div>-->
 
 
 </div>
+
+<app-registration-footer (backClicked)="registrationService.back()" (nextClicked)="registrationService.next()"></app-registration-footer>

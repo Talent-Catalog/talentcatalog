@@ -1,6 +1,6 @@
 <div class="container">
 
-  <h1 class="text-center">Anything else we should know?</h1>
+  <div class="alert alert-warning">Not yet brought over to new UX</div>
 
   <form [formGroup]="form">
 
@@ -17,6 +17,8 @@
             (click)="save()">
       Next
     </button>
+  </div>
 
 </div>
 
+<app-registration-footer (backClicked)="registrationService.back()" (nextClicked)="registrationService.next()"></app-registration-footer>

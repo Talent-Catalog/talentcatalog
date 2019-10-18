@@ -4,6 +4,7 @@ import {Router} from "@angular/router";
 import {CandidateCertification} from "../../../model/candidate-certification";
 import {CandidateService} from "../../../services/candidate.service";
 import {CandidateCertificationService} from "../../../services/candidate-certification.service";
+import {RegistrationService} from "../../../services/registration.service";
 
 @Component({
   selector: 'app-registration-certifications',
@@ -21,7 +22,8 @@ export class RegistrationCertificationsComponent implements OnInit {
   constructor(private fb: FormBuilder,
               private router: Router,
               private candidateService: CandidateService,
-              private candidateCertificationService: CandidateCertificationService ) { }
+              private candidateCertificationService: CandidateCertificationService,
+              public registrationService: RegistrationService) { }
 
   ngOnInit() {
     this.candidateCertifications = [];

@@ -66,6 +66,12 @@ public class CandidatePortalApi {
         return candidateEducationLevelDto().build(candidate);
     }
 
+    @GetMapping("languages")
+    public Map<String, Object> getCandidateLanguages() {
+        Candidate candidate = this.candidateService.getLoggedInCandidateLoadCandidateLanguages();
+        return candidateWithCandidateLanguagesDto().build(candidate);
+    }
+
     @GetMapping("additional-info")
     public Map<String, Object> getCandidateAdditionalInfo() {
         Candidate candidate = this.candidateService.getLoggedInCandidate();
@@ -88,12 +94,6 @@ public class CandidatePortalApi {
     public Map<String, Object> getCandidateCertifications() {
         Candidate candidate = this.candidateService.getLoggedInCandidateLoadCertifications();
         return candidateWithCertificationsDto().build(candidate);
-    }
-
-    @GetMapping("languages")
-    public Map<String, Object> getCandidateLanguages() {
-        Candidate candidate = this.candidateService.getLoggedInCandidateLoadCandidateLanguages();
-        return candidateWithCandidateLanguagesDto().build(candidate);
     }
 
     private DtoBuilder candidateContactDto() {

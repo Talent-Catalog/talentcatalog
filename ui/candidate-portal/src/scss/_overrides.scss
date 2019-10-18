@@ -12,6 +12,10 @@
   }
 }
 
+.card + .card {
+  margin: 1em 0 0 0;
+}
+
 .form-group {
   margin: 0 0 20px 0;
 

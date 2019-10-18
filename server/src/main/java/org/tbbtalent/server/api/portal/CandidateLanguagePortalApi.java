@@ -5,10 +5,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.model.CandidateLanguage;
 import org.tbbtalent.server.request.candidate.language.CreateCandidateLanguageRequest;
+import org.tbbtalent.server.request.candidate.language.UpdateCandidateLanguagesRequest;
 import org.tbbtalent.server.service.CandidateLanguageService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Map;
 
 @RestController()
@@ -26,6 +28,12 @@ public class CandidateLanguagePortalApi {
     public Map<String, Object> createCandidateLanguage(@Valid @RequestBody CreateCandidateLanguageRequest request) {
         CandidateLanguage candidateLanguage = candidateLanguageService.createCandidateLanguage(request);
         return candidateLanguageDto().build(candidateLanguage);
+    }
+
+    @PostMapping("update")
+    public List<Map<String, Object>> updateCandidateLanguage(@Valid @RequestBody UpdateCandidateLanguagesRequest request) {
+        List<CandidateLanguage> candidateLanguage = candidateLanguageService.updateCandidateLanguages(request);
+        return candidateLanguageDto().buildList(candidateLanguage);
     }
 
     @DeleteMapping("{id}")

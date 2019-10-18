@@ -1,14 +1,14 @@
 package org.tbbtalent.server.request.candidate.language;
 
-public class CreateCandidateLanguageRequest {
+public class UpdateCandidateLanguageRequest {
 
-    private Long id;
+    private Long languageId;
     private Long writtenLevelId;
     private Long spokenLevelId;
 
-    public Long getId() { return id; }
+    public Long getLanguageId() { return languageId; }
 
-    public void setId(Long languageId) { this.id = languageId; }
+    public void setLanguageId(Long languageId) { this.languageId = languageId; }
 
     public Long getWrittenLevelId() { return writtenLevelId; }
 
@@ -16,6 +16,5 @@ public class CreateCandidateLanguageRequest {
 
     public Long getSpokenLevelId() { return spokenLevelId; }
 
-    public void setSpokenLevelId(Long spokenLevelId) { this.spokenLevelId = spokenLevelId;
-    }
+    public void setSpokenLevelId(Long spokenLevelId) { this.spokenLevelId = spokenLevelId; }
 }

@@ -9,6 +9,7 @@ import {LanguageService} from "../../../services/language.service";
 import {LanguageLevel} from "../../../model/language-level";
 import {LanguageLevelService} from "../../../services/language-level.service";
 import {RegistrationService} from "../../../services/registration.service";
+import {TranslateService} from "@ngx-translate/core";
 
 
 @Component({
@@ -26,6 +27,7 @@ export class RegistrationLanguageComponent implements OnInit {
   };
   saving: boolean;
 
+  addingLanguage: boolean;
   form: FormGroup;
   candidateLanguages: CandidateLanguage[];
   languages: Language[];
@@ -37,13 +39,15 @@ export class RegistrationLanguageComponent implements OnInit {
               private candidateLanguageService: CandidateLanguageService,
               private languageService: LanguageService,
               private languageLevelService: LanguageLevelService,
-              private registrationService: RegistrationService) { }
+              private registrationService: RegistrationService,
+              private translate: TranslateService) { }
 
   ngOnInit() {
     this.candidateLanguages = [];
+    this.addingLanguage = false;
     this.saving = false;
     this.form = this.fb.group({
-      id: ['', Validators.required],
+      languageId: ['', Validators.required],
       spokenLevelId: ['', Validators.required],
       writtenLevelId: ['', Validators.required]
     });
@@ -74,28 +78,40 @@ export class RegistrationLanguageComponent implements OnInit {
     );
   }
 
-  patchForm(lang: CandidateLanguage) {
+  patchForm(lang?: CandidateLanguage) {
     this.form.patchValue({
-      id: lang.language ? lang.language.id : null,
-      spokenLevelId: lang.spokenLevel ? lang.spokenLevel.id : null,
-      writtenLevelId: lang.writtenLevel ? lang.writtenLevel.id : null
+      languageId: lang && lang.language ? lang.language.id : null,
+      spokenLevelId: lang && lang.spokenLevel ? lang.spokenLevel.id : null,
+      writtenLevelId: lang && lang.writtenLevel ? lang.writtenLevel.id : null
     });
   };
 
   loadCandidateLanguages() {
     this.candidateService.getCandidateLanguages().subscribe(
       (candidate) => {
-        this.candidateLanguages = candidate.candidateLanguages || [];
-        /* Check if the candidate has already filled in their english form, otherwise populate the initial form with English */
-        let english: CandidateLanguage | Language = this.candidateLanguages.find(l => l.language.name.toLowerCase() == "english");
+        if (candidate.candidateLanguages && candidate.candidateLanguages.length) {
+          // Sort the languages so that english is always at the top
+          candidate.candidateLanguages
+            .sort((a, b) => a.id > b.id ? -1 : 1) // Order by candidateLangauge id
+            .sort((a, b) => b.language.name.toLowerCase().trim() == 'english' ? 1 : -1); // Float english to the top
 
-        if (english) {
-          /* Path the form with the saved candidate language */
-          this.patchForm(english);
+          this.candidateLanguages = candidate.candidateLanguages.map(lang => {
+            return {
+              id: lang.id,
+              language: lang.language,
+              spokenLevel: lang.spokenLevel,
+              writtenLevel: lang.writtenLevel,
+              // Request object variables
+              languageId: lang.language ? lang.language.id : null,
+              spokenLevelId: lang.spokenLevel ? lang.spokenLevel.id : null,
+              writtenLevelId: lang.writtenLevel ? lang.writtenLevel.id : null,
+            }
+          }) || [];
         } else {
-          /* Path the form with the english language id */
-          english = this.languages.find(lang => lang.name.toLowerCase() === 'english');
-          this.form.patchValue({id: english.id});
+          // Patch the form with the english language id
+          const english = this.languages.find(lang => lang.name.toLowerCase().trim() === 'english');
+          this.form.patchValue({languageId: english.id});
+          this.addingLanguage = true;
         }
         this._loading.candidate = false;
       },
@@ -106,33 +122,41 @@ export class RegistrationLanguageComponent implements OnInit {
     );
   }
 
-  // ADD ANOTHER LANGUAGE
-  addMore() {
+  addLanguage() {
+    if (this.addingLanguage) {
+      this.candidateLanguages.push(this.form.value);
+      this.addingLanguage = false;
+      this.patchForm();
+    } else {
+      this.addingLanguage = true;
+    }
+  }
+
+  deleteCandidateLanguage(index: number) {
+    this.candidateLanguages.splice(index, 1);
+  }
+
+  save(dir: string) {
     this.saving = true;
-    this.candidateLanguageService.createCandidateLanguage(this.form.value).subscribe(
-      (response) => {
-        this.candidateLanguages.push(response);
+    if (this.addingLanguage && this.form.valid) {
+      this.addLanguage();
+    }
+    const request = {
+      updates: this.candidateLanguages
+    };
+    this.candidateLanguageService.updateCandidateLanguages(request).subscribe(
+      (val) => {
+        if (dir === 'next') {
+          this.registrationService.next();
+        } else {
+          this.registrationService.back();
+        }
         this.saving = false;
       },
       (error) => {
         this.error = error;
         this.saving = false;
-      }
-    );
-  }
-
-  //DELETE LANGUAGE
-  deleteCandidateLanguage(index: number) {
-    this.candidateLanguages.splice(index, 1);
-  }
-
-  // SAVE FORM
-  save(dir: string) {
-    if (dir === 'next') {
-      this.registrationService.next();
-    } else {
-      this.registrationService.back();
-    }
+      });
   }
 
   back() {
@@ -148,15 +172,25 @@ export class RegistrationLanguageComponent implements OnInit {
     return l.candidate ||  l.languages || l.lanuageLevels;
   }
 
+  get formLanguage() {
+    return this.form.value.languageId;
+  }
+
   /* Takes an optional language ID as param, otherwise assumes it's the forms value */
   getLanguageName(id?: number) {
-    id = id || this.form.value.id;
-    /* DEBUG */
-    console.log('this.form.value', this.form.value);
-    console.log('id', id);
+    id = id || this.form.value.languageId;
     if (id) {
       return this.languages.find(lang => lang.id == id).name;
     }
     return '';
+  }
+
+  /* Takes an optional language ID as param, otherwise assumes it's the forms value */
+  isEnglish(id?: number) {
+    id = id || this.form.value.languageId;
+    if (id) {
+      return this.languages.find(lang => lang.id == id).name.toLowerCase().trim() === 'english';
+    }
+    return false;
   }
 }

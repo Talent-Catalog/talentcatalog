@@ -6,29 +6,65 @@
 
   <ng-container *ngIf="!loading">
 
+    <!-- ADDED LANGUAGES -->
     <div class="card" *ngFor="let language of candidateLanguages; let i = index;">
-      <div class="text-right">
-        <button class="btn btn-danger" (click)="deleteCandidateLanguage(i)"></button>
-      </div>
-      <pre>{{language}}</pre>
-    </div>
 
-    <form class="card" [formGroup]="form">
+      <div class="text-right" *ngIf="!isEnglish(language.languageId)">
+        <button class="btn btn-danger" (click)="deleteCandidateLanguage(i)">&times;</button>
+      </div>
 
       <!-- WHICH LANGUAGE -->
-      <div class="form-group">
-        <label for="id">Which language?</label>
-        <select class="form-control" name="id" id="id" [disabled]="" [formControlName]="'id'">
+      <div class="form-group" *ngIf="!isEnglish(language.languageId)">
+        <label>{{ 'REGISTRATION.LANGUAGE.LABEL.LANGUAGE' | translate }}</label>
+        <select class="form-control" [disabled]="" [(ngModel)]="language.languageId">
           <option value=""></option>
           <option *ngFor="let l of languages" [value]="l.id">{{l.name}}</option>
         </select>
       </div>
 
-      <ng-container *ngIf="">
+      <!-- HOW WELL DO YOU SPEAK -->
+      <div class="form-group">
+        <label translate dir="auto">
+          {{ 'REGISTRATION.LANGUAGE.LABEL.SPEAK' | translate:{languageName: getLanguageName(language.languageId)} }}
+        </label>
+        <select class="form-control" [(ngModel)]="language.spokenLevelId">
+          <option value=""></option>
+          <option *ngFor="let l of languageLevels" [value]="l.id">{{l.name}}</option>
+        </select>
+      </div>
+
+      <!-- HOW WELL DO YOU READ AND WRITE -->
+      <div class="form-group">
+        <label translate dir="auto" [translateParams]="{languageName: getLanguageName(language.languageId)}">
+          {{ 'REGISTRATION.LANGUAGE.LABEL.WRITTEN' | translate:{languageName: getLanguageName(language.languageId)} }}
+        </label>
+        <select class="form-control" [(ngModel)]="language.writtenLevelId">
+          <option value=""></option>
+          <option *ngFor="let l of languageLevels" [value]="l.id">{{l.name}}</option>
+        </select>
+      </div>
+
+    </div>
+
+    <!-- LANGUAGE FORM -->
+    <form class="card" [formGroup]="form" *ngIf="addingLanguage">
+
+      <!-- WHICH LANGUAGE -->
+      <div class="form-group" *ngIf="!isEnglish()">
+        <label for="id">{{ 'REGISTRATION.LANGUAGE.LABEL.LANGUAGE' | translate }}</label>
+        <select class="form-control" name="id" id="id" [disabled]="" [formControlName]="'languageId'">
+          <option value=""></option>
+          <option *ngFor="let l of languages" [value]="l.id">{{l.name}}</option>
+        </select>
+      </div>
+
+      <ng-container *ngIf="formLanguage">
 
         <!-- HOW WELL DO YOU SPEAK -->
         <div class="form-group">
-          <label for="spokenLevelId">How well do you speak {{getLanguageName()}}?</label>
+          <label for="spokenLevelId">
+            {{ 'REGISTRATION.LANGUAGE.LABEL.SPEAK' | translate:{languageName: getLanguageName()} }}
+          </label>
           <select class="form-control" name="spokenLevelId" id="spokenLevelId" [formControlName]="'spokenLevelId'">
             <option value=""></option>
             <option *ngFor="let l of languageLevels" [value]="l.id">{{l.name}}</option>
@@ -37,7 +73,9 @@
 
         <!-- HOW WELL DO YOU READ AND WRITE -->
         <div class="form-group">
-          <label for="writtenLevelId">How well do you read and write in {{getLanguageName()}}?</label>
+          <label for="writtenLevelId">
+            {{ 'REGISTRATION.LANGUAGE.LABEL.SPEAK' | translate:{languageName: getLanguageName()} }}
+          </label>
           <select class="form-control" name="writtenLevelId" id="writtenLevelId" [formControlName]="'writtenLevelId'">
             <option value=""></option>
             <option *ngFor="let l of languageLevels" [value]="l.id">{{l.name}}</option>
@@ -48,13 +86,13 @@
 
     </form>
 
-    <pre>{{form.value | json}}</pre>
-
     <div class="text-center mt-4">
-      <button class="btn btn-outline-primary"
-              [disabled]="form.invalid"
-              (click)="addMore()">
-        Add additional language
+      <button class="btn"
+              [class.btn-outline-primary]="!addingLanguage"
+              [class.btn-primary]="addingLanguage"
+              [disabled]="addingLanguage && form.invalid || saving || loading"
+              (click)="addLanguage()">
+        {{ 'REGISTRATION.LANGUAGE.BUTTON.ADD' | translate }}
       </button>
     </div>
 
@@ -66,4 +104,7 @@
 
 </div>
 
-<app-registration-footer (backClicked)="back()" (nextClicked)="next()"></app-registration-footer>
+<app-registration-footer [disabled]="loading || saving"
+                         (backClicked)="back()"
+                         (nextClicked)="next()">
+</app-registration-footer>

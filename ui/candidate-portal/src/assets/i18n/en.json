@@ -78,6 +78,16 @@
       "BUTTON": {
         "ADD": "Add education"
       }
+    },
+    "LANGUAGE": {
+      "LABEL": {
+        "LANGUAGE": "Which language?",
+        "SPEAK": "How well do you speak {{languageName}}?",
+        "WRITTEN": "How well do you read and write in {{languageName}}?"
+      },
+      "BUTTON": {
+        "ADD": "Add additional language"
+      }
     }
 
   },

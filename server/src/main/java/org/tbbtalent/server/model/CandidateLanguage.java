@@ -26,6 +26,13 @@ public class CandidateLanguage  extends AbstractDomainObject<Long> {
     public CandidateLanguage() {
     }
 
+    public CandidateLanguage(Candidate candidate, Language language, LanguageLevel writtenLevel, LanguageLevel spokenLevel) {
+        this.candidate = candidate;
+        this.language = language;
+        this.writtenLevel = writtenLevel;
+        this.spokenLevel = spokenLevel;
+    }
+
     public Candidate getCandidate() {
         return candidate;
     }

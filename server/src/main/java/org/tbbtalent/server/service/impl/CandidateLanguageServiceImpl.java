@@ -4,18 +4,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.Candidate;
-import org.tbbtalent.server.model.CandidateLanguage;
-import org.tbbtalent.server.model.Language;
-import org.tbbtalent.server.model.LanguageLevel;
+import org.tbbtalent.server.model.*;
 import org.tbbtalent.server.repository.CandidateLanguageRepository;
 import org.tbbtalent.server.repository.LanguageLevelRepository;
 import org.tbbtalent.server.repository.LanguageRepository;
 import org.tbbtalent.server.request.candidate.language.CreateCandidateLanguageRequest;
+import org.tbbtalent.server.request.candidate.language.UpdateCandidateLanguageRequest;
+import org.tbbtalent.server.request.candidate.language.UpdateCandidateLanguagesRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.CandidateLanguageService;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class CandidateLanguageServiceImpl implements CandidateLanguageService {
@@ -41,8 +44,8 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
         Candidate candidate = userContext.getLoggedInCandidate();
 
         // Load the industry from the database - throw an exception if not found
-        Language language = languageRepository.findById(request.getLanguageId())
-                .orElseThrow(() -> new NoSuchObjectException(Language.class, request.getLanguageId()));
+        Language language = languageRepository.findById(request.getId())
+                .orElseThrow(() -> new NoSuchObjectException(Language.class, request.getId()));
 
         // Load the languageLevels from the database - throw an exception if not found
         LanguageLevel languageSpeak = languageLevelRepository.findById(request.getSpokenLevelId())
@@ -79,5 +82,54 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
     @Override
     public List<CandidateLanguage> list(long id) {
         return candidateLanguageRepository.findByCandidateId(id);
+    }
+
+    @Override
+    public List<CandidateLanguage> updateCandidateLanguages(UpdateCandidateLanguagesRequest request) {
+        Candidate candidate = userContext.getLoggedInCandidate();
+        List<CandidateLanguage> updatedLanguages = new ArrayList<>();
+        List<Long> updatedLanguageIds = new ArrayList<>();
+
+        List<CandidateLanguage> candidateLanguages = candidateLanguageRepository.findByCandidateId(candidate.getId());
+        Map<Long, CandidateLanguage> map = candidateLanguages.stream().collect( Collectors.toMap(CandidateLanguage::getId,
+                Function.identity()) );
+
+        Map<Long, LanguageLevel> languageLevels = languageLevelRepository.findByStatus(Status.active).stream()
+                .collect(Collectors.toMap(LanguageLevel::getId, Function.identity()));
+
+        for (UpdateCandidateLanguageRequest update : request.getUpdates()) {
+            /* Check if language has been previously saved */
+            CandidateLanguage candidateLanguage = update.getLanguageId() != null ? map.get(update.getLanguageId()) : null;
+            if (candidateLanguage != null){
+                /* Check if the language has changed */
+                if (!update.getLanguageId().equals(candidateLanguage.getLanguage().getId())){
+                    Language language = languageRepository.findById(update.getLanguageId())
+                            .orElseThrow(() -> new NoSuchObjectException(Language.class, update.getLanguageId()));
+                    candidateLanguage.setLanguage(language);
+                }
+                candidateLanguage.setSpokenLevel(languageLevels.get(update.getSpokenLevelId()));
+                candidateLanguage.setWrittenLevel(languageLevels.get(update.getWrittenLevelId()));
+            } else {
+                /* Create a new candidate language */
+                Language language = languageRepository.findById(update.getLanguageId())
+                        .orElseThrow(() -> new NoSuchObjectException(Language.class, update.getLanguageId()));
+                candidateLanguage = new CandidateLanguage(
+                        candidate,
+                        language,
+                        languageLevels.get(update.getSpokenLevelId()),
+                        languageLevels.get(update.getWrittenLevelId())
+                );
+            }
+            updatedLanguages.add(candidateLanguageRepository.save(candidateLanguage));
+            updatedLanguageIds.add(candidateLanguage.getId());
+        }
+
+        for (Long existingCandidateLanguageId : map.keySet()) {
+            /* Remove existing database entries that aren't present in the request */
+            if (!updatedLanguageIds.contains(existingCandidateLanguageId)){
+                candidateLanguageRepository.deleteById(existingCandidateLanguageId);
+            }
+        }
+        return candidateLanguages;
     }
 }
