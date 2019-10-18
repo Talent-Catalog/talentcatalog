@@ -9,6 +9,8 @@ import {RegistrationService} from "../../../services/registration.service";
 export class RegistrationFooterComponent implements OnInit {
 
   @Input() disabled: boolean;
+  @Input() hideBack: boolean;
+  @Input() hideNext: boolean;
 
   @Output() backClicked = new EventEmitter();
   @Output() nextClicked = new EventEmitter();
