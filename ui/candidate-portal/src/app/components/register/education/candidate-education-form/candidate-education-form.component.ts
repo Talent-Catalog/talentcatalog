@@ -53,8 +53,17 @@ export class CandidateEducationFormComponent implements OnInit {
       institution: [edu ? edu.institution : null, Validators.required],
       lengthOfCourseYears: [edu ? edu.lengthOfCourseYears : null, Validators.required],
       dateCompleted: [edu ? edu.yearCompleted : null, Validators.required],
-      educationMajorId: [edu && edu.educationMajor ? edu.educationMajor.id : null, Validators.required]
+      educationMajorId: [edu && edu.educationMajor ? edu.educationMajor.id : null, edu && this.educationTypeHasMajor(edu.educationType) ? Validators.required : null]
     });
+    /* Observe form educationType control and add required validator for university (and above) education types */
+    this.form.controls['educationType'].valueChanges.subscribe(
+      (value) => {
+        if (this.educationTypeHasMajor(value)) {
+          this.form.controls['educationMajorId'].setValidators(Validators.required);
+        } else {
+          this.form.controls['educationMajorId'].clearValidators();
+        }
+      });
 
     /* Load countries if absent */
     if (!this.countries) {
@@ -99,7 +108,12 @@ export class CandidateEducationFormComponent implements OnInit {
 
   get requiresEducationMajor() {
     if (!this.form.value.educationType) {return false;}
-    return ['masters', 'university'].includes(this.form.value.educationType.toLowerCase());
+    return this.educationTypeHasMajor(this.form.value.educationType);
+  }
+
+  private educationTypeHasMajor(educationType) {
+    if (!educationType) {return false;}
+    return ['masters', 'university'].includes(educationType.toLowerCase());
   }
 
   save() {
@@ -120,7 +134,7 @@ export class CandidateEducationFormComponent implements OnInit {
     } else {
       this.candidateEducationService.updateCandidateEducation(this.form.value).subscribe(
         (response) => {
-          this.router.navigate(['register', 'education', 'university']);
+          this.saved.emit(response);
         },
         (error) => {
           this.error = error;

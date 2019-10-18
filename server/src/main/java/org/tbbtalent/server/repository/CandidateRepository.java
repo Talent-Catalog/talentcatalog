@@ -34,6 +34,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
 
     @Query(" select distinct c from Candidate c "
             + " left join c.candidateEducations e"
+            + " left join e.educationMajor m"
             + " where c.id = :id ")
     Candidate findByIdLoadEducations(@Param("id") Long id);
 

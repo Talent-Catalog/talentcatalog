@@ -77,11 +77,20 @@
       },
       "BUTTON": {
         "ADD": "Add education"
-      },
-      "HISTORY": {
-        "TITLE": "Education History"
       }
     }
 
+  },
+  "COMMON": {
+    "CANDIDATE": {
+      "EDUCATION": {
+        "FORM": {
+          "LABEL": {
+            "EDUCATIONTYPE": "Education Level"
+
+          }
+        }
+      }
+    }
   }
 }

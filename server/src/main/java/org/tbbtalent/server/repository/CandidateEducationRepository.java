@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tbbtalent.server.model.CandidateEducation;
-import org.tbbtalent.server.model.EducationType;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,4 +25,11 @@ public interface CandidateEducationRepository extends JpaRepository<CandidateEdu
             + " join e.educationMajor "
             + " where e.candidate.id = :candidateId ")
     List<CandidateEducation> findByCandidateId(@Param("candidateId") Long candidateId);
+
+    @Query(" select e from CandidateEducation e "
+            + " left join e.candidate c "
+            + " where e.id = :id "
+            + " and c.id = :candidateId ")
+    CandidateEducation findByIdAndCandidateId(@Param("id") Long id,
+                                              @Param("candidateId") Long candidateId);
 }

@@ -21,4 +21,7 @@ export class CandidateEducationService {
      return this.http.post<CandidateEducation>(`${this.apiUrl}/update`, request);
   }
 
+  deleteCandidateEducation(id: number) {
+    return this.http.delete<CandidateEducation>(`${this.apiUrl}/${id}`);
+  }
 }

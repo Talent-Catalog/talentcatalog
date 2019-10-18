@@ -16,4 +16,5 @@ public interface CandidateEducationService {
 
     List<CandidateEducation> list(long id);
 
+    void deleteCandidateEducation(Long id);
 }

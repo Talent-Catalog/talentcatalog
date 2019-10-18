@@ -8,19 +8,19 @@
   padding: 24px;
 
   @media screen and (min-width: 768px) {
-    padding: 32px 40px;
+    padding: 24px;
   }
 }
 
 .form-group {
-  margin: 0 0 24px 0;
+  margin: 0 0 20px 0;
 
   @media screen and (min-width: 768px) {
-    margin: 0 0 40px 0;
+    margin: 0 0 20px 0;
   }
 
   label {
-    margin: 0 0 16px 0;
+    margin: 0 0 8px 0;
     font-size: 18px;
     font-weight: bold;
   }
@@ -28,11 +28,11 @@
   .form-control {
     @include border-color("border");
     border-radius: 0;
-
   }
 
 }
 
 .text-muted {
   @include color("text-inactive");
+  margin-bottom: 8px;
 }

@@ -90,18 +90,19 @@ export class RegistrationEducationComponent implements OnInit {
           maxEducationLevelId: candidate.maxEducationLevel ? candidate.maxEducationLevel.id : null,
         });
         if (candidate.candidateEducations) {
-          this.candidateEducationItems = candidate.candidateEducations.map(edu => {
-            return {
-              id: edu ? edu.id : null,
-            educationType: edu ? edu.educationType : null,
-            lengthOfCourseYears: edu ? edu.lengthOfCourseYears : null,
-            institution: edu ? edu.institution : null,
-            courseName: edu ? edu.courseName : null,
-            yearCompleted: edu ? edu.yearCompleted : null,
-            countryId: edu && edu.country ? edu.country.id : null,
-            educationMajorId: edu && edu.educationMajor ? edu.educationMajor.id : null,
-            }
-          });
+          this.candidateEducationItems = candidate.candidateEducations
+          //   .map(edu => {
+          //   return {
+          //     id: edu ? edu.id : null,
+          //   educationType: edu ? edu.educationType : null,
+          //   lengthOfCourseYears: edu ? edu.lengthOfCourseYears : null,
+          //   institution: edu ? edu.institution : null,
+          //   courseName: edu ? edu.courseName : null,
+          //   yearCompleted: edu ? edu.yearCompleted : null,
+          //   countryId: edu && edu.country ? edu.country.id : null,
+          //   educationMajorId: edu && edu.educationMajor ? edu.educationMajor.id : null,
+          //   }
+          // });
         }
         this._loading.candidate = false;
       },
@@ -162,5 +163,20 @@ export class RegistrationEducationComponent implements OnInit {
     } else {
       this.candidateEducationItems.push(education);
     }
+    this.addingEducation = false;
+  }
+
+  deleteCandidateEducation(index: number) {
+    this.saving = true;
+    const education = this.candidateEducationItems[index];
+    this.candidateEducationService.deleteCandidateEducation(education.id).subscribe(
+      () => {
+        this.candidateEducationItems.splice(index, 1)
+        this.saving = false;
+      },
+      (error) => {
+        this.error = error;
+        this.saving = false;
+      });
   }
 }
