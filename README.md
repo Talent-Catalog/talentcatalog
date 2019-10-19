@@ -33,7 +33,11 @@ Download and install the latest of the following tools:
 
 ### Setup your local database ###
 
-- todo: we don't have a database yet, so this step will be filled in later
+Use PostreSQL pgAdmin tool to...
+
+- Create a new login role (ie user) called tbbtalent, password tbbtalent with 
+full privileges
+- Create a new database called tbbtalent and set tbbtalent as the owner
 
 ### Download and edit the code ###
 
