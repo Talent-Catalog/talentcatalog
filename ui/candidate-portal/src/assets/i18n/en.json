@@ -88,8 +88,17 @@
       "BUTTON": {
         "ADD": "Add additional language"
       }
+    },
+    "CERTIFICATIONS": {
+      "LABEL": {
+        "NAME": "Certificate Name",
+        "INSTITUTION": "Institution Name",
+        "DATECOMPLETED": "Date of Receipt"
+      },
+      "BUTTON": {
+        "ADD": "Add Certificate"
+      }
     }
-
   },
   "COMMON": {
     "CANDIDATE": {
