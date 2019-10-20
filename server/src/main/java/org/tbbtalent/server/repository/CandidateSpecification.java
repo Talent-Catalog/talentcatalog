@@ -27,14 +27,14 @@ public class CandidateSpecification {
                     //Filter for short list candidates by status
                     Join<Candidate, CandidateShortlistItem> candidateShortlistItem = candidate.join("candidateShortlistItems", JoinType.LEFT);
                     Join<CandidateShortlistItem, SavedSearch> savedSearch = candidateShortlistItem.join("savedSearch", JoinType.LEFT);
-                    if (request.getShortlistStatus().equals(ShortlistStatus.pending)){
+                    if (request.getShortlistStatus().equals(ShortlistStatus.pending)) {
                         conjunction.getExpressions().add(builder.notEqual(savedSearch.get("id"), request.getSavedSearchId()));
-                    }else {
+                    } else {
                         conjunction.getExpressions().add(
                                 builder.and(builder.equal(candidateShortlistItem.get("shortlistStatus"), request.getShortlistStatus()),
                                         builder.equal(savedSearch.get("id"), request.getSavedSearchId())));
                     }
-                //Fetch short lists todo only fetch for specific search
+                    //Fetch short lists todo only fetch for specific search
                 } else if (query.getResultType().equals(Candidate.class)) {
                     Fetch<Candidate, CandidateShortlistItem> candidateShortlistItem = candidate.fetch("candidateShortlistItems", JoinType.LEFT);
                     Fetch<CandidateShortlistItem, SavedSearch> savedSearch = candidateShortlistItem.fetch("savedSearch", JoinType.LEFT);
@@ -42,7 +42,7 @@ public class CandidateSpecification {
 
             }
             // KEYWORD SEARCH
-            if (!StringUtils.isBlank(request.getKeyword())){
+            if (!StringUtils.isBlank(request.getKeyword())) {
                 String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
                 String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
                 conjunction.getExpressions().add(
@@ -54,31 +54,32 @@ public class CandidateSpecification {
                         ));
             }
             // STATUS SEARCH
-            if(!Collections.isEmpty(request.getStatuses())) {
+            if (!Collections.isEmpty(request.getStatuses())) {
                 conjunction.getExpressions().add(
                         builder.isTrue(candidate.get("status").in(request.getStatuses()))
                 );
             }
 
             // occupations SEARCH
-            if(!Collections.isEmpty(request.getVerifiedOccupationIds()) || !Collections.isEmpty(request.getOccupationIds())) {
+            if (!Collections.isEmpty(request.getVerifiedOccupationIds()) || !Collections.isEmpty(request.getOccupationIds())) {
                 Join<Candidate, CandidateOccupation> candidateOccupations = candidate.join("candidateOccupations", JoinType.LEFT);
+                Join<CandidateOccupation, Occupation> occupation = candidateOccupations.join("occupation", JoinType.LEFT);
                 if (!Collections.isEmpty(request.getVerifiedOccupationIds())) {
-                    if (request.getVerifiedOccupationSearchType().equals(SearchType.not)){
+                    if (request.getVerifiedOccupationSearchType().equals(SearchType.not)) {
                         conjunction.getExpressions().add(builder.notEqual(builder.isTrue(candidateOccupations.get("verified")),
-                                builder.isTrue(candidateOccupations.get("id").in(request.getVerifiedOccupationIds()))
+                                builder.isTrue(occupation.get("id").in(request.getVerifiedOccupationIds()))
                         ));
                     } else {
                         conjunction.getExpressions().add(builder.and(builder.isTrue(candidateOccupations.get("verified")),
-                                builder.isTrue(candidateOccupations.get("id").in(request.getVerifiedOccupationIds()))
+                                builder.isTrue(occupation.get("id").in(request.getVerifiedOccupationIds()))
                         ));
                     }
 
                 }
-                if (!Collections.isEmpty(request.getOccupationIds())){
-                    if (StringUtils.isBlank(request.getOrProfileKeyword())){
+                if (!Collections.isEmpty(request.getOccupationIds())) {
+                    if (StringUtils.isBlank(request.getOrProfileKeyword())) {
                         conjunction.getExpressions().add(
-                                builder.isTrue(candidateOccupations.get("id").in(request.getOccupationIds()))
+                                builder.isTrue(occupation.get("id").in(request.getOccupationIds()))
                         );
                     } else {
                         String lowerCaseMatchTerm = request.getOrProfileKeyword().toLowerCase();
@@ -87,11 +88,11 @@ public class CandidateSpecification {
                         candidateEducations = candidateEducations == null ? candidate.join("candidateEducations", JoinType.LEFT) : candidateEducations;
 
                         conjunction.getExpressions().add(builder.or(
-                                builder.isTrue(candidateOccupations.get("id").in(request.getOccupationIds())),
+                                builder.isTrue(occupation.get("id").in(request.getOccupationIds())),
                                 builder.or(
-                                                builder.like(builder.lower(candidateJobExperiences.get("description")), likeMatchTerm),
-                                                builder.like(builder.lower(candidateJobExperiences.get("role")), likeMatchTerm),
-                                                builder.like(builder.lower(candidateEducations.get("courseName")), likeMatchTerm)
+                                        builder.like(builder.lower(candidateJobExperiences.get("description")), likeMatchTerm),
+                                        builder.like(builder.lower(candidateJobExperiences.get("role")), likeMatchTerm),
+                                        builder.like(builder.lower(candidateEducations.get("courseName")), likeMatchTerm)
                                 ))
                         );
                     }
@@ -101,28 +102,28 @@ public class CandidateSpecification {
             }
 
             // UN REGISTERED SEARCH
-            if(request.getUnRegistered() != null) {
+            if (request.getUnRegistered() != null) {
                 conjunction.getExpressions().add(
                         builder.equal(candidate.get("registeredWithUN"), request.getUnRegistered())
                 );
             }
 
             // NATIONALITY SEARCH
-            if(!Collections.isEmpty(request.getNationalityIds())) {
+            if (!Collections.isEmpty(request.getNationalityIds())) {
                 conjunction.getExpressions().add(
-                      builder.isTrue(candidate.get("nationality").in(request.getNationalityIds()))
+                        builder.isTrue(candidate.get("nationality").in(request.getNationalityIds()))
                 );
             }
 
             // COUNTRY SEARCH
-            if(!Collections.isEmpty(request.getCountryIds())) {
+            if (!Collections.isEmpty(request.getCountryIds())) {
                 conjunction.getExpressions().add(
                         builder.isTrue(candidate.get("country").in(request.getCountryIds()))
                 );
             }
 
             // GENDER SEARCH
-            if(!StringUtils.isBlank(request.getGender())) {
+            if (!StringUtils.isBlank(request.getGender())) {
                 conjunction.getExpressions().add(
                         builder.equal(candidate.get("gender"), request.getGender())
                 );
@@ -149,18 +150,18 @@ public class CandidateSpecification {
 
             //Min / Max Age
             if (request.getMinAge() != null) {
-                LocalDate minDob = LocalDate.now().minusYears(request.getMinAge()+1);
+                LocalDate minDob = LocalDate.now().minusYears(request.getMinAge() + 1);
                 conjunction.getExpressions().add(builder.lessThanOrEqualTo(candidate.get("dob"), minDob));
             }
 
             if (request.getMaxAge() != null) {
-                LocalDate maxDob = LocalDate.now().minusYears(request.getMaxAge()+1);
+                LocalDate maxDob = LocalDate.now().minusYears(request.getMaxAge() + 1);
 
                 conjunction.getExpressions().add(builder.greaterThan(candidate.get("dob"), maxDob));
             }
 
             // EDUCATION LEVEL SEARCH
-            if(request.getMinEducationLevel() != null) {
+            if (request.getMinEducationLevel() != null) {
                 Join<Candidate, EducationLevel> educationLevel = candidate.join("maxEducationLevel", JoinType.LEFT);
                 conjunction.getExpressions().add(
                         builder.greaterThanOrEqualTo(educationLevel.get("level"), request.getMinEducationLevel())
@@ -168,7 +169,7 @@ public class CandidateSpecification {
             }
 
             // MAJOR SEARCH
-            if(!Collections.isEmpty(request.getEducationMajorIds())) {
+            if (!Collections.isEmpty(request.getEducationMajorIds())) {
                 candidateEducations = candidateEducations == null ? candidate.join("candidateEducations", JoinType.LEFT) : candidateEducations;
                 Join<Candidate, EducationMajor> major = candidateEducations.join("educationMajor", JoinType.LEFT);
 
@@ -178,22 +179,38 @@ public class CandidateSpecification {
             }
 
             // LANGUAGE SEARCH
-            if(request.getEnglishMinSpokenLevel() != null || request.getEnglishMinWrittenLevel() != null || request.getOtherLanguageId() != null
-                        || request.getOtherMinSpokenLevel() != null || request.getOtherMinWrittenLevel() != null) {
+            if (request.getEnglishMinSpokenLevel() != null || request.getEnglishMinWrittenLevel() != null || request.getOtherLanguageId() != null
+                    || request.getOtherMinSpokenLevel() != null || request.getOtherMinWrittenLevel() != null) {
                 Join<Candidate, CandidateLanguage> candidateLanguages = candidate.join("candidateLanguages", JoinType.LEFT);
                 Join<CandidateLanguage, LanguageLevel> writtenLevel = candidateLanguages.join("writtenLevel", JoinType.LEFT);
                 Join<CandidateLanguage, LanguageLevel> spokenLevel = candidateLanguages.join("spokenLevel", JoinType.LEFT);
                 Join<CandidateLanguage, Language> language = candidateLanguages.join("language", JoinType.LEFT);
-                if (request.getEnglishMinWrittenLevel() != null && request.getEnglishMinSpokenLevel() != null){
+                if (request.getEnglishMinWrittenLevel() != null && request.getEnglishMinSpokenLevel() != null) {
                     conjunction.getExpressions().add(builder.and(builder.equal(builder.lower(language.get("name")), "english"),
-                            builder.greaterThanOrEqualTo(writtenLevel.get("level"), request.getEnglishMinSpokenLevel()),
-                            builder.greaterThanOrEqualTo(spokenLevel.get("level"), request.getEnglishMinWrittenLevel())));
+                            builder.greaterThanOrEqualTo(writtenLevel.get("level"), request.getEnglishMinWrittenLevel()),
+                            builder.greaterThanOrEqualTo(spokenLevel.get("level"), request.getEnglishMinSpokenLevel())));
+                } else if (request.getEnglishMinWrittenLevel() != null) {
+                    conjunction.getExpressions().add(builder.and(builder.equal(builder.lower(language.get("name")), "english"),
+                            builder.greaterThanOrEqualTo(spokenLevel.get("level"), request.getEnglishMinSpokenLevel())));
+                } else if (request.getEnglishMinSpokenLevel() != null) {
+                    conjunction.getExpressions().add(builder.and(builder.equal(builder.lower(language.get("name")), "english"),
+                            builder.greaterThanOrEqualTo(writtenLevel.get("level"), request.getEnglishMinWrittenLevel())));
                 }
-                if (request.getOtherLanguageId() != null && request.getOtherMinSpokenLevel() != null && request.getOtherMinWrittenLevel() != null){
-                    conjunction.getExpressions().add(builder.and(builder.equal(language.get("id"), request.getOtherLanguageId()),
-                            builder.greaterThanOrEqualTo(writtenLevel.get("level"), request.getOtherMinWrittenLevel()),
-                            builder.greaterThanOrEqualTo(spokenLevel.get("level"), request.getOtherMinSpokenLevel())));
+                if (request.getOtherLanguageId() != null) {
+                    if (request.getOtherMinSpokenLevel() != null && request.getOtherMinWrittenLevel() != null) {
+                        conjunction.getExpressions().add(builder.and(builder.equal(language.get("id"), request.getOtherLanguageId()),
+                                builder.greaterThanOrEqualTo(writtenLevel.get("level"), request.getOtherMinWrittenLevel()),
+                                builder.greaterThanOrEqualTo(spokenLevel.get("level"), request.getOtherMinSpokenLevel())));
+                    } else if (request.getOtherMinSpokenLevel() != null) {
+                        conjunction.getExpressions().add(builder.and(builder.equal(language.get("id"), request.getOtherLanguageId()),
+                                builder.greaterThanOrEqualTo(spokenLevel.get("level"), request.getOtherMinSpokenLevel())));
+                    } else if (request.getOtherMinWrittenLevel() != null) {
+                        conjunction.getExpressions().add(builder.and(builder.equal(language.get("id"), request.getOtherLanguageId()),
+                                builder.greaterThanOrEqualTo(writtenLevel.get("level"), request.getOtherMinWrittenLevel())));
+                    }
                 }
+
+
             }
 
 
@@ -201,7 +218,7 @@ public class CandidateSpecification {
         };
     }
 
-    private static OffsetDateTime getOffsetDateTime(LocalDate localDate, LocalTime time, String timezone){
+    private static OffsetDateTime getOffsetDateTime(LocalDate localDate, LocalTime time, String timezone) {
         return OffsetDateTime.of(localDate, time, !StringUtils.isBlank(timezone) ? ZoneId.of(timezone).getRules().getOffset(Instant.now()) : ZoneOffset.UTC);
     }
 
