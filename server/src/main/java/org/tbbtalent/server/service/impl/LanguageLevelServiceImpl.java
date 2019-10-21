@@ -20,6 +20,7 @@ import org.tbbtalent.server.request.language.level.CreateLanguageLevelRequest;
 import org.tbbtalent.server.request.language.level.SearchLanguageLevelRequest;
 import org.tbbtalent.server.request.language.level.UpdateLanguageLevelRequest;
 import org.tbbtalent.server.service.LanguageLevelService;
+import org.tbbtalent.server.service.TranslationService;
 
 import java.util.List;
 
@@ -31,16 +32,22 @@ public class LanguageLevelServiceImpl implements LanguageLevelService {
 
     private final CandidateLanguageRepository candidateLanguageRepository;
     private final LanguageLevelRepository languageLevelRepository;
+    private final TranslationService translationService;
 
     @Autowired
-    public LanguageLevelServiceImpl(CandidateLanguageRepository candidateLanguageRepository, LanguageLevelRepository languageLevelRepository) {
+    public LanguageLevelServiceImpl(CandidateLanguageRepository candidateLanguageRepository,
+                                    LanguageLevelRepository languageLevelRepository,
+                                    TranslationService translationService) {
         this.candidateLanguageRepository = candidateLanguageRepository;
         this.languageLevelRepository = languageLevelRepository;
+        this.translationService = translationService;
     }
 
     @Override
     public List<LanguageLevel> listLanguageLevels() {
-        return languageLevelRepository.findByStatus(Status.active);
+        List<LanguageLevel> languageLevels = languageLevelRepository.findByStatus(Status.active);
+        translationService.translate(languageLevels, "language_level");
+        return languageLevels;
     }
 
     @Override

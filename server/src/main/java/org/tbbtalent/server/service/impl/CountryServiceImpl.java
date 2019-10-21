@@ -46,7 +46,8 @@ public class CountryServiceImpl implements CountryService {
     @Override
     public List<Country> listCountries() {
         List<Country> countries = countryRepository.findByStatus(Status.active);
-        return translationService.translate(countries);
+        translationService.translate(countries, "country");
+        return countries;
     }
 
     @Override
@@ -71,7 +72,6 @@ public class CountryServiceImpl implements CountryService {
         checkDuplicates(null, request.getName());
         return this.countryRepository.save(country);
     }
-
 
     @Override
     @Transactional

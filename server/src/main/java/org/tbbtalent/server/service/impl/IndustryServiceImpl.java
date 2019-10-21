@@ -18,6 +18,7 @@ import org.tbbtalent.server.request.industry.CreateIndustryRequest;
 import org.tbbtalent.server.request.industry.SearchIndustryRequest;
 import org.tbbtalent.server.request.industry.UpdateIndustryRequest;
 import org.tbbtalent.server.service.IndustryService;
+import org.tbbtalent.server.service.TranslationService;
 
 import java.util.List;
 
@@ -28,15 +29,23 @@ public class IndustryServiceImpl implements IndustryService {
 
     private final CandidateRepository candidateRepository;
     private final IndustryRepository industryRepository;
+    private final TranslationService translationService;
 
     @Autowired
-    public IndustryServiceImpl(CandidateRepository candidateRepository, IndustryRepository industryRepository) {
+    public IndustryServiceImpl(CandidateRepository candidateRepository,
+                               IndustryRepository industryRepository,
+                               TranslationService translationService) {
         this.candidateRepository = candidateRepository;
         this.industryRepository = industryRepository;
+        this.translationService = translationService;
     }
 
     @Override
-    public List<Industry> listIndustries() { return industryRepository.findByStatus(Status.active); }
+    public List<Industry> listIndustries() {
+        List<Industry> industries = industryRepository.findByStatus(Status.active);
+        translationService.translate(industries, "industry");
+        return industries;
+    }
 
     @Override
     public Page<Industry> searchIndustries(SearchIndustryRequest request) {

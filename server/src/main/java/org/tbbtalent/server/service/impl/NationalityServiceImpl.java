@@ -20,6 +20,7 @@ import org.tbbtalent.server.request.nationality.CreateNationalityRequest;
 import org.tbbtalent.server.request.nationality.SearchNationalityRequest;
 import org.tbbtalent.server.request.nationality.UpdateNationalityRequest;
 import org.tbbtalent.server.service.NationalityService;
+import org.tbbtalent.server.service.TranslationService;
 
 import java.util.List;
 
@@ -30,16 +31,22 @@ public class NationalityServiceImpl implements NationalityService {
 
     private final CandidateRepository candidateRepository;
     private final NationalityRepository nationalityRepository;
+    private final TranslationService translationService;
 
     @Autowired
-    public NationalityServiceImpl(CandidateRepository candidateRepository, NationalityRepository nationalityRepository) {
+    public NationalityServiceImpl(CandidateRepository candidateRepository,
+                                  NationalityRepository nationalityRepository,
+                                  TranslationService translationService) {
         this.candidateRepository = candidateRepository;
         this.nationalityRepository = nationalityRepository;
+        this.translationService = translationService;
     }
 
     @Override
     public List<Nationality> listNationalities() {
-        return nationalityRepository.findByStatus(Status.active);
+        List<Nationality> nationalities = nationalityRepository.findByStatus(Status.active);
+        translationService.translate(nationalities, "nationality");
+        return nationalities;
     }
 
     @Override
