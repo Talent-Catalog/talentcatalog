@@ -1,24 +1,26 @@
 <div class="container">
 
-  <div class="alert alert-warning">Not yet brought over to new UX</div>
+  <div *ngIf="loading">
+    <span>Loading...</span>
+  </div>
 
-  <form [formGroup]="form">
+  <form [formGroup]="form" *ngIf="!loading">
 
     <div class="form-group">
-      <label for="additionalInfo" class="text-muted">*Optional field</label>
-      <textarea type="text" class="md-textarea-auto form-control" rows="10" id="additionalInfo" placeholder="" [formControlName]="'additionalInfo'"></textarea>
+      <label class="font-weight-bold" for="additionalInfo">
+        {{ 'REGISTRATION.SUBMIT.LABEL.ADDITIONALINFO' | translate }}
+      </label>
+      <p>
+        {{ 'REGISTRATION.SUBMIT.TEXT.EXPLANATION' | translate }}
+      </p>
+      <textarea id="additionalInfo" class="md-textarea-auto form-control" rows="5"
+                [formControlName]="'additionalInfo'"></textarea>
     </div>
 
   </form>
 
-  <div class="text-right">
-    <button class="btn btn-primary"
-            [disabled]="form.invalid"
-            (click)="save()">
-      Next
-    </button>
-  </div>
+  <!-- TODO UPLOADS -->
 
 </div>
 
-<app-registration-footer (backClicked)="registrationService.back()" (nextClicked)="registrationService.next()"></app-registration-footer>
+<app-registration-footer [type]="'submit'" (backClicked)="registrationService.back()" (nextClicked)="save()"></app-registration-footer>

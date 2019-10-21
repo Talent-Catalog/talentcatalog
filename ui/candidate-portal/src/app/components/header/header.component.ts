@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {AuthService} from "../../services/auth.service";
 import {Router} from "@angular/router";
 import {TranslateService} from '@ngx-translate/core';
@@ -14,6 +14,9 @@ import {User} from "../../model/user";
 export class HeaderComponent implements OnInit {
 
   @Input() hideHeader: boolean;
+
+  @Output() languageUpdated = new EventEmitter();
+
   isNavbarCollapsed=true;
 
   languages: SystemLanguage[];
@@ -45,5 +48,6 @@ export class HeaderComponent implements OnInit {
   useLanguage(language: string) {
     this.translate.use(language);
     this.languageService.setSelectedLanguage(language);
+    this.languageUpdated.emit(language);
   }
 }

@@ -11,11 +11,11 @@ import {CandidateOccupationService} from "../../../services/candidate-occupation
 import {RegistrationService} from "../../../services/registration.service";
 
 @Component({
-  selector: 'app-registration-job-experience',
-  templateUrl: './registration-job-experience.component.html',
-  styleUrls: ['./registration-job-experience.component.scss']
+  selector: 'app-registration-work-experience',
+  templateUrl: './registration-work-experience.component.html',
+  styleUrls: ['./registration-work-experience.component.scss']
 })
-export class RegistrationJobExperienceComponent implements OnInit {
+export class RegistrationWorkExperienceComponent implements OnInit {
 
   error: any;
   loading: boolean;
@@ -25,7 +25,6 @@ export class RegistrationJobExperienceComponent implements OnInit {
   countries: Country[];
   occupations: CandidateOccupation[];
   startDate: Date;
-  e: number;
 
   constructor(private fb: FormBuilder,
               private router: Router,

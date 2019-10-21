@@ -17,10 +17,6 @@
 
 </div>
 
-<div class="alert alert-danger" *ngIf="error">
-  {{error.error?.message || error.message || error}}
-</div>
-
 <div class="step-body" [ngSwitch]="registrationService?.currentStepKey">
 
   <app-registration-landing *ngSwitchCase="'landing'">
@@ -35,8 +31,8 @@
   <app-registration-candidate-occupation *ngSwitchCase="'occupation'">
   </app-registration-candidate-occupation>
 
-  <app-registration-job-experience *ngSwitchCase="'experience'">
-  </app-registration-job-experience>
+  <app-registration-work-experience *ngSwitchCase="'experience'">
+  </app-registration-work-experience>
 
   <app-registration-education *ngSwitchCase="'education'">
   </app-registration-education>
@@ -49,5 +45,22 @@
 
   <app-registration-additional-info *ngSwitchCase="'submit'">
   </app-registration-additional-info>
+
+  <div class="container text-center" *ngSwitchCase="'complete'">
+    <h1>Thank you for your registration!</h1>
+
+    <p class="alert alert-warning">
+      TODO: Some wordsmithing needed. Explain that they are in the system how it all works from here.
+    </p>
+
+    <div class="text-center">
+      <button class="btn btn-outline-primary">Logout</button>
+    </div>
+
+    <div class="text-center mt-4">
+      <button class="btn btn-primary">View My Profile</button>
+    </div>
+
+  </div>
 
 </div>
