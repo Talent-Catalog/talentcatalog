@@ -8,8 +8,6 @@ import {RegistrationService} from "../../services/registration.service";
 })
 export class RegisterComponent implements OnInit, OnDestroy {
 
-  error: any;
-
   constructor(public registrationService: RegistrationService) { }
 
   ngOnInit() {

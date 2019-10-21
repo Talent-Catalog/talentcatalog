@@ -27,7 +27,7 @@
     <ng-container *ngIf="candidateEducationItems.length">
       <div class="card" *ngFor="let item of candidateEducationItems; let i = index;">
         <div class="text-right">
-          <button class="btn btn-danger" [disabled]="saving" (click)="deleteCandidateEducation(i)">&times;</button>
+          <button class="btn btn-danger btn-delete" [disabled]="saving" (click)="deleteCandidateEducation(i)">&times;</button>
         </div>
         <p>{{item.educationType}}</p>
         <h5>{{item.courseName}} | {{item.institution}}</h5>

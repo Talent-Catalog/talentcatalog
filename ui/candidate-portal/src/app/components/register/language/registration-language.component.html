@@ -10,7 +10,7 @@
     <div class="card" *ngFor="let language of candidateLanguages; let i = index;">
 
       <div class="text-right" *ngIf="!isEnglish(language.languageId)">
-        <button class="btn btn-danger" (click)="deleteCandidateLanguage(i)">&times;</button>
+        <button class="btn btn-danger btn-delete" (click)="deleteCandidateLanguage(i)">&times;</button>
       </div>
 
       <!-- WHICH LANGUAGE -->

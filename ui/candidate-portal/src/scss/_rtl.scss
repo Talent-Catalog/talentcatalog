@@ -1,0 +1,27 @@
+/* Styles to help render RTL languages */
+.rtl-wrapper {
+  direction: rtl !important;
+
+  h1, h2, h3, h4, h5, p {
+    &:not(.text-center) {
+      text-align: right !important;
+    }
+  }
+
+  .form-group {
+    label,
+    .text-muted {
+      display: block;
+      text-align: right !important;
+    }
+  }
+
+  .text-right {
+    text-align: left !important;
+  }
+
+  .text-left {
+    text-align: right !important;
+  }
+
+}

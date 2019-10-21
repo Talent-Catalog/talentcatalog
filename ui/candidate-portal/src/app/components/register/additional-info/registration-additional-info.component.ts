@@ -21,7 +21,8 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
   constructor(private fb: FormBuilder,
               private router: Router,
               private candidateService: CandidateService,
-              public registrationService: RegistrationService) { }
+              public registrationService: RegistrationService) {
+  }
 
   ngOnInit() {
     this.loading = true;
@@ -43,13 +44,16 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
     );
   }
 
-  save(){
+  save() {
+    this.saving = true;
     this.candidateService.updateCandidateAdditionalInfo(this.form.value).subscribe(
       (response) => {
-        this.router.navigate(['register'])
+        this.saving = false;
+        this.registrationService.next();
       },
       (error) => {
         this.error = error;
+        this.saving = false;
       }
     );
   }

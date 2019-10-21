@@ -13,7 +13,7 @@ import {RegistrationLandingComponent} from './components/register/landing/regist
 import {RegistrationContactComponent} from './components/register/contact/registration-contact.component';
 import {RegistrationPersonalComponent} from './components/register/personal/registration-personal.component';
 import {RegistrationCandidateOccupationComponent} from './components/register/candidate-occupation/registration-candidate-occupation.component';
-import {RegistrationJobExperienceComponent} from './components/register/job-experience/registration-job-experience.component';
+import {RegistrationWorkExperienceComponent} from './components/register/work-experience/registration-work-experience.component';
 import {RegistrationEducationComponent} from './components/register/education/registration-education.component';
 import {CandidateEducationFormComponent} from './components/register/education/candidate-education-form/candidate-education-form.component';
 import {RegistrationLanguageComponent} from './components/register/language/registration-language.component';
@@ -22,11 +22,11 @@ import {RegistrationAdditionalInfoComponent} from './components/register/additio
 import {LocalStorageModule} from "angular-2-local-storage";
 import {JwtInterceptor} from "./services/jwt.interceptor";
 import {LanguageInterceptor} from "./services/language.interceptor";
-import {LoginComponent} from "./components/login/login.component";
+import {LoginComponent} from "./components/account/login/login.component";
 import {HomeComponent} from "./components/home/home.component";
 import {ErrorInterceptor} from "./services/error.interceptor";
-import {ResetPasswordComponent} from './components/reset-password/reset-password.component';
-import {ChangePasswordComponent} from './components/change-password/change-password.component';
+import {ResetPasswordComponent} from './components/account/reset-password/reset-password.component';
+import {ChangePasswordComponent} from './components/account/change-password/change-password.component';
 import {HeaderComponent} from "./components/header/header.component";
 import {RegisterComponent} from './components/register/register.component';
 import {RegistrationFooterComponent} from './components/register/registration-footer/registration-footer.component';
@@ -44,7 +44,7 @@ export function createTranslateLoader(http: HttpClient) {
     RegistrationContactComponent,
     RegistrationPersonalComponent,
     RegistrationCandidateOccupationComponent,
-    RegistrationJobExperienceComponent,
+    RegistrationWorkExperienceComponent,
     RegistrationEducationComponent,
     CandidateEducationFormComponent,
     RegistrationLanguageComponent,

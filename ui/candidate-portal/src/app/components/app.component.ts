@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, HostBinding} from '@angular/core';
 import {NavigationStart, Router} from "@angular/router";
 import {TranslateService} from '@ngx-translate/core';
 
@@ -8,6 +8,8 @@ import {TranslateService} from '@ngx-translate/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+
+  @HostBinding('class.rtl-wrapper') rtl: boolean;
 
   showHeader: boolean = true;
 
@@ -29,5 +31,10 @@ export class AppComponent {
         }
       }
     });
+  }
+
+  handleLanguageUpdated(lang) {
+    // Add .rtl-wrapper class to app root if the language is arabic
+    this.rtl = lang === 'ar';
   }
 }

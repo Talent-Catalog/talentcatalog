@@ -32,6 +32,17 @@
   }
 }
 
+.btn-delete {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  line-height: 1em;
+  border-radius: 4px;
+}
+
 .btn-link {
   color: $color-primary;
   background-color: transparent;

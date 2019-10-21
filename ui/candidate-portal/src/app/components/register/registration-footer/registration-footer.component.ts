@@ -11,6 +11,7 @@ export class RegistrationFooterComponent implements OnInit {
   @Input() disabled: boolean;
   @Input() hideBack: boolean;
   @Input() hideNext: boolean;
+  @Input() type: 'step' | 'submit' = 'step';
 
   @Output() backClicked = new EventEmitter();
   @Output() nextClicked = new EventEmitter();
