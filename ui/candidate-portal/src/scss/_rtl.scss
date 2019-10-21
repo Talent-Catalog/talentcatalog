@@ -2,12 +2,10 @@
 .rtl-wrapper {
   direction: rtl !important;
 
-  h1, h2, h3, h4, h5 {
-    text-align: right;
-  }
-
-  p {
-    text-align: right !important;
+  h1, h2, h3, h4, h5, p {
+    &:not(.text-center) {
+      text-align: right !important;
+    }
   }
 
   .form-group {
