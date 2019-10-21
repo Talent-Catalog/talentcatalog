@@ -34,8 +34,8 @@
 
       <!-- MAJOR -->
       <div class="form-group">
-        <label for="educationMajorId">Major *</label>
-        <select class="form-control" name="country" id="educationMajorId" [formControlName]="'educationMajorId'">
+        <label for="majorId">Major *</label>
+        <select class="form-control" name="country" id="majorId" [formControlName]="'majorId'">
           <option value=""></option>
           <option *ngFor="let major of majors" [value]="major.id">{{major.name}}</option>
         </select>
