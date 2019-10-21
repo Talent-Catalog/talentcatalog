@@ -1,6 +1,5 @@
 package org.tbbtalent.server.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -9,8 +8,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.tbbtalent.server.model.Country;
-import org.tbbtalent.server.model.Translatable;
+import org.tbbtalent.server.model.AbstractTranslatableDomainObject;
 import org.tbbtalent.server.model.Translation;
 import org.tbbtalent.server.repository.TranslationRepository;
 import org.tbbtalent.server.security.UserContext;
@@ -29,8 +27,8 @@ public class TranslationServiceImpl implements TranslationService {
         this.translationRepository = translationRepository;
     }
 
-    public <T extends Translatable> void translate(List<T> items,
-                                                   String type) {
+    public <T extends AbstractTranslatableDomainObject<Long>> void translate(List<T> items,
+                                                                             String type) {
         // if the selected language is english, no need to load translations at all, just return original data
         String selectedLanguage = userContext.getUserLanguage();
         if ("en".equals(selectedLanguage)) {

@@ -1,13 +1,18 @@
 package org.tbbtalent.server.model;
 
-import java.io.Serializable;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-public interface Translatable<IdType extends Serializable> {
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-    IdType getId();
-    
-    String getTranslatedName();
-    
-    void setTranslatedName(String translatedName);
+@Inherited
+@Target(TYPE)
+@Retention(RUNTIME)
+public @interface Translatable {
+
+    String value() default "";
+    String translation() default "";
 
 }

@@ -1,16 +1,19 @@
 package org.tbbtalent.server.util.dto;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.data.domain.Page;
 import org.tbbtalent.server.model.Translatable;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-
 public class DtoBuilder {
 
     private List<MappedProperty> mappedProperties;
-    private final MappedProperty TRANSLATION = new MappedProperty("translatedName");
 
     public DtoBuilder() {
         this.mappedProperties = new ArrayList<>();
@@ -65,18 +68,26 @@ public class DtoBuilder {
             return null;
         }
 
+        String propertyToTranslate = null;
+        String translationContainingTranslation = null;
+        if (source != null && source.getClass().isAnnotationPresent(Translatable.class)) {
+            Translatable translatable = source.getClass().getAnnotation(Translatable.class);
+            propertyToTranslate = translatable.value();
+            translationContainingTranslation = translatable.translation();
+        }
+
         Map<String, Object> map = new HashMap<>();
         for (MappedProperty property : mappedProperties) {
             
             // intercept translations, if needed
-            boolean applyTranslation = false;
-            if (source instanceof Translatable && "name".equals(property.name)) {
-                applyTranslation = true;
+            String propertyName = property.name;
+            if (propertyToTranslate != null && propertyToTranslate.equals(property.name)) {
+                propertyName = translationContainingTranslation;
             }
             
             Object value = null;
             try {
-                value = PropertyUtils.getProperty(source, applyTranslation ? TRANSLATION.name : property.name);
+                value = PropertyUtils.getProperty(source, propertyName);
             } catch (IllegalAccessException e) {
                 throw new DtoBuilderException("Unable to access property '" + property.name
                         + "' on " + source.getClass().getSimpleName(), e);

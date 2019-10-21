@@ -8,8 +8,8 @@ import javax.persistence.Transient;
 import org.apache.commons.lang3.StringUtils;
 
 @MappedSuperclass
-public abstract class AbstractTranslatableDomainObject<IdType extends Serializable>  extends AbstractDomainObject<IdType> implements Translatable<IdType> {
-
+@Translatable(value = "name", translation = "translatedName")
+public abstract class AbstractTranslatableDomainObject<IdType extends Serializable> extends AbstractDomainObject<IdType> {
 
     private String name;
 
