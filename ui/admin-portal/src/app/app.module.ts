@@ -88,6 +88,7 @@ import {UpdatedByComponent} from "./components/util/user/updated-by/updated-by.c
 import {DateRangePickerComponent} from './components/util/form/date-range-picker/date-range-picker.component';
 import { EditCandidateJobExperienceComponent } from './components/candidates/view/occupation/experience/edit/edit-candidate-job-experience.component';
 import { CreateCandidateJobExperienceComponent } from './components/candidates/view/occupation/experience/create/create-candidate-job-experience.component';
+import {ViewCandidateAttachmentComponent} from "./components/candidates/view/attachment/view-candidate-attachment.component";
 
 @NgModule({
   declarations: [
@@ -143,6 +144,7 @@ import { CreateCandidateJobExperienceComponent } from './components/candidates/v
     EditCandidateContactComponent,
     ViewCandidateLanguageComponent,
     ViewCandidateNoteComponent,
+    ViewCandidateAttachmentComponent,
     CreateCandidateNoteComponent,
     EditCandidateNoteComponent,
     ViewCandidateEducationComponent,
