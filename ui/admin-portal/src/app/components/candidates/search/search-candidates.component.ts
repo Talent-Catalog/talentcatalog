@@ -138,6 +138,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       countries: [[]],
       educationMajors: [[]],
       nationalities: [[]],
+      statusesDisplay: [[]],
 
     });
 
@@ -288,15 +289,8 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   clear() {
     this.searchForm.reset();
-    this.searchForm.controls['occupationIds'].patchValue([]);
-    this.searchForm.controls['statuses'].patchValue([]);
-    this.searchForm.controls['verifiedOccupationIds'].patchValue([]);
-    this.searchForm.controls['nationalityIds'].patchValue([]);
-    this.searchForm.controls['countryIds'].patchValue([]);
-    this.searchForm.controls['lastModifiedFrom'].patchValue(null);
-    this.searchForm.controls['lastModifiedTo'].patchValue(null);
-    this.searchForm.controls['educationMajorIds'].patchValue([]);
-  }
+    this.savedSearch = null;
+   }
 
   loadSavedSearch(id) {
     this.loading = true;
@@ -389,6 +383,13 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
         countries = this.countries.filter(c => this.searchForm.value.countryIds.indexOf(c.id) != -1);
       }
       this.searchForm.controls['countries'].patchValue(countries);
+
+      let statusesDisplay = [];
+      if (this.searchForm.value.statuses){
+        statusesDisplay = this.statuses.filter(c => this.searchForm.value.statuses.indexOf(c) != -1);
+      }
+      this.searchForm.controls['statusesDisplay'].patchValue(statusesDisplay);
+
 
     });
 

@@ -28,9 +28,10 @@ export class SaveSearchComponent implements OnInit {
   ngOnInit() {
     this.form = this.fb.group({
       name: [null, Validators.required],
-      update: [this.savedSearchId ? true : false],
+      update: [this.savedSearchId ? true : false, Validators.required],
       searchCandidateRequest: [this.searchCandidateRequest]
     });
+    console.log(this.form.value);
     if (this.savedSearchId) {
       this.savedSearchService.get(this.savedSearchId).subscribe(
         (savedSearch) => {
@@ -48,7 +49,10 @@ export class SaveSearchComponent implements OnInit {
   save() {
     this.saving = true;
     let request = this.form.value;
-    if (request.update && this.savedSearchId) {
+    console.log('request', request);
+    if (request.update == true && this.savedSearchId) {
+      console.log('updating', request);
+
       request.name = this.savedSearch.name;
 
       this.savedSearchService.update(this.savedSearchId, request).subscribe(
@@ -61,7 +65,9 @@ export class SaveSearchComponent implements OnInit {
           this.saving = false;
         });
     } else
-      this.savedSearchService.create(this.form.value).subscribe(
+      console.log('creatimng', request);
+
+    this.savedSearchService.create(this.form.value).subscribe(
         (savedSearch) => {
           this.closeModal(savedSearch);
           this.saving = false;
