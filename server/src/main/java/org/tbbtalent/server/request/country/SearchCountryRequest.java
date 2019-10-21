@@ -1,7 +1,6 @@
 package org.tbbtalent.server.request.country;
 
 import org.tbbtalent.server.model.Status;
-import org.tbbtalent.server.model.SystemLanguage;
 import org.tbbtalent.server.request.SearchRequest;
 
 public class SearchCountryRequest extends SearchRequest {
@@ -10,7 +9,7 @@ public class SearchCountryRequest extends SearchRequest {
 
     private Status status;
 
-    private SystemLanguage systemLanguage;
+    private String systemLanguage;
 
     public String getKeyword() {
         return keyword;
@@ -28,8 +27,8 @@ public class SearchCountryRequest extends SearchRequest {
         this.status = status;
     }
 
-    public SystemLanguage getSystemLanguage() { return systemLanguage; }
+    public String getSystemLanguage() { return systemLanguage; }
 
-    public void setSystemLanguage(SystemLanguage systemLanguage) { this.systemLanguage = systemLanguage; }
+    public void setSystemLanguage(String systemLanguage) { this.systemLanguage = systemLanguage; }
 }
 

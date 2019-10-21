@@ -18,8 +18,8 @@ export class TranslationService {
     return this.http.get<Translation[]>(`${this.apiUrl}`);
   }
 
-  search(type: string, systemLanguageId): Observable<SearchResults<Translation>> {
-    return this.http.post<SearchResults<Translation>>(`${this.apiUrl}/search/${type}`, systemLanguageId);
+  search(type: string, systemLanguage: string): Observable<SearchResults<Translation>> {
+    return this.http.post<SearchResults<Translation>>(`${this.apiUrl}/${type}/${systemLanguage}`);
   }
 
   get(id: number): Observable<Translation> {

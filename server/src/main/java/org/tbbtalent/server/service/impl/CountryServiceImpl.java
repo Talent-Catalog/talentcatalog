@@ -1,7 +1,6 @@
 package org.tbbtalent.server.service.impl;
 
-import java.util.List;
-
+import io.jsonwebtoken.lang.Collections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,7 @@ import org.tbbtalent.server.request.country.UpdateCountryRequest;
 import org.tbbtalent.server.service.CountryService;
 import org.tbbtalent.server.service.TranslationService;
 
-import io.jsonwebtoken.lang.Collections;
+import java.util.List;
 
 @Service
 public class CountryServiceImpl implements CountryService {
@@ -41,6 +40,12 @@ public class CountryServiceImpl implements CountryService {
         this.candidateRepository = candidateRepository;
         this.countryRepository = countryRepository;
         this.translationService = translationService;
+    }
+
+    @Override
+    public List<Country> list() {
+        List<Country> countries = countryRepository.findByStatus(Status.active);
+        return countries;
     }
 
     @Override

@@ -42,7 +42,7 @@ export class TranslationsComponent implements OnInit {
     this.searchForm = this.fb.group({
       keyword: [''],
       type: [''],
-      systemLanguageId: [''],
+      systemLanguage: [''],
     });
     this.pageNumber = 1;
     this.pageSize = 50;
@@ -89,7 +89,8 @@ export class TranslationsComponent implements OnInit {
         console.log(this.types);
         this.loading = false;
       });
-      this.translate("countries");
+      console.log(request);
+      this.translate(request.type);
     }else if(request.type == "nationalities"){
       console.log("nationalities loading")
       /* LOAD NATIONALITIES
@@ -107,8 +108,9 @@ export class TranslationsComponent implements OnInit {
   }
 
   translate(type) {
-    this.translationService.search(type, this.searchForm.value.systemLanguageId).subscribe(results => {
+    this.translationService.search(type, this.searchForm.value.systemLanguage).subscribe(results => {
       this.results = results;
+      console.log(results);
       this.loading = false;
     });
   }

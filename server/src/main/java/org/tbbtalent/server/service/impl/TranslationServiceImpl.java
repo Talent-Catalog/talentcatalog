@@ -7,9 +7,7 @@ import org.springframework.stereotype.Service;
 import org.tbbtalent.server.model.Country;
 import org.tbbtalent.server.model.Translation;
 import org.tbbtalent.server.repository.TranslationRepository;
-import org.tbbtalent.server.request.translation.SearchTranslationRequest;
 import org.tbbtalent.server.security.UserContext;
-import org.tbbtalent.server.service.CountryService;
 import org.tbbtalent.server.service.TranslationService;
 
 import java.util.ArrayList;
@@ -22,25 +20,25 @@ public class TranslationServiceImpl implements TranslationService {
 
     private final TranslationRepository translationRepository;
     private final UserContext userContext;
-    private final CountryService countryService;
 
     @Autowired
     public TranslationServiceImpl(TranslationRepository translationRepository,
-                                  UserContext userContext,
-                                  CountryService countryService ) {
+                                  UserContext userContext) {
         this.userContext = userContext;
         this.translationRepository = translationRepository;
-        this.countryService = countryService;
     }
-    @Override
-    public List search(SearchTranslationRequest request) {
-        List translatedTypes = new ArrayList<>();
-        if(request.getObjectType() == "country"){
-            List<Country> countries = countryService.listCountries();
-            List<Country> translatedTypes = translate(request.getSystemLanguage(), countries);
-        }
-        return translatedTypes;
-    }
+//    @Override
+//    public List search(SearchTranslationRequest request) {
+//        List translations = new ArrayList<>();
+//        if(request.getObjectType() == "country"){
+//            List<Country> countries = countryService.listCountries();
+//            translations = translate(request.getSystemLanguage(), countries);
+//            return translations;
+//        }else{
+//
+//        }
+//        return translations;
+//    }
 
 
     // GETTING LANGUAGE FROM USER

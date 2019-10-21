@@ -1,9 +1,12 @@
 package org.tbbtalent.server.api.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import org.tbbtalent.server.model.Translation;
-import org.tbbtalent.server.request.translation.SearchTranslationRequest;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.tbbtalent.server.model.Country;
+import org.tbbtalent.server.service.CountryService;
 import org.tbbtalent.server.service.TranslationService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -15,10 +18,12 @@ import java.util.Map;
 public class TranslationAdminApi {
 
     private final TranslationService translationService;
+    private final CountryService countryService;
 
     @Autowired
-    public TranslationAdminApi(TranslationService translationService) {
+    public TranslationAdminApi(TranslationService translationService, CountryService countryService) {
         this.translationService = translationService;
+        this.countryService = countryService;
     }
 
 //    @GetMapping()
@@ -27,11 +32,11 @@ public class TranslationAdminApi {
 //        return translationDto().buildList(translations);
 //    }
 
-    @PostMapping("search/{type}")
-    public Map<String, Object> search(@PathVariable ("type") String type, @RequestBody SearchTranslationRequest request) {
-        List<Translation> translations = this.translationService.search(request);
-        return translationDto().build(translations);
-
+    @PostMapping("countries/{systemLanguage}")
+    public List<Map<String, Object>> search(@PathVariable("systemLanguage") String systemLanguage) {
+        List<Country> countries = this.countryService.list();
+        List<Country> translatedCountries= this.translationService.translate(systemLanguage, countries);
+        return countryDto().buildList(translatedCountries);
     }
 
 //    @GetMapping("{id}")
@@ -60,13 +65,12 @@ public class TranslationAdminApi {
 //    }
 
 
-    private DtoBuilder translationDto() {
+
+    private DtoBuilder countryDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("objectId")
-                .add("objectType")
-                .add("language")
-                .add("value")
+                .add("name")
+                .add("status")
                 ;
     }
 
