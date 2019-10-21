@@ -30,6 +30,7 @@ import org.tbbtalent.server.model.CandidateStatus;
 import org.tbbtalent.server.model.EducationLevel;
 import org.tbbtalent.server.model.EducationType;
 import org.tbbtalent.server.model.Gender;
+import org.tbbtalent.server.model.NoteType;
 import org.tbbtalent.server.model.Status;
 import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.security.UserContext;
@@ -82,35 +83,35 @@ public class SystemAdminApi {
             Connection sourceConn = DriverManager.getConnection("jdbc:mysql://tbbtalent.org/yiitbb?useUnicode=yes&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull", "sayre", "MoroccoBound");
             Statement sourceStmt = sourceConn.createStatement();
 
-            // TODO: get values from config file
             Connection targetConn = DriverManager.getConnection(targetJdbcUrl, targetUser, targetPwd);
             
             log.info("Preparing translations insert");
             PreparedStatement translationInsert = targetConn.prepareStatement("insert into translation (object_id, object_type, language, value, created_by, created_date) values (?, ?, ?, ?, ?, ?)");
             
-//            migrateFormOption(targetConn, sourceStmt, translationInsert, userId, "country", "country", false);
-//            migrateFormOption(targetConn, sourceStmt, translationInsert, userId, "education_level", "education_level", true);
-//            migrateFormOption(targetConn, sourceStmt, translationInsert, userId, "education_major", "major", false);
-//            migrateFormOption(targetConn, sourceStmt, translationInsert, userId, "industry", "industry", false);
-//            migrateFormOption(targetConn, sourceStmt, translationInsert, userId, "language", "languages", false);
-//            migrateFormOption(targetConn, sourceStmt, translationInsert, userId, "language_level", "language_level", true);
-//            migrateFormOption(targetConn, sourceStmt, translationInsert, userId, "nationality", "nationality", false);
-//            migrateFormOption(targetConn, sourceStmt, translationInsert, userId, "nationality", "nationality_other", false);
-//            migrateFormOption(targetConn, sourceStmt, translationInsert, userId, "occupation", "job_ocupation", false);
+            migrateFormOption(targetConn, sourceStmt, translationInsert, userId, "country", "country", false);
+            migrateFormOption(targetConn, sourceStmt, translationInsert, userId, "education_level", "education_level", true);
+            migrateFormOption(targetConn, sourceStmt, translationInsert, userId, "education_major", "major", false);
+            migrateFormOption(targetConn, sourceStmt, translationInsert, userId, "industry", "industry", false);
+            migrateFormOption(targetConn, sourceStmt, translationInsert, userId, "language", "languages", false);
+            migrateFormOption(targetConn, sourceStmt, translationInsert, userId, "language_level", "language_level", true);
+            migrateFormOption(targetConn, sourceStmt, translationInsert, userId, "nationality", "nationality", false);
+            migrateFormOption(targetConn, sourceStmt, translationInsert, userId, "nationality", "nationality_other", false);
+            migrateFormOption(targetConn, sourceStmt, translationInsert, userId, "occupation", "job_ocupation", false);
             
-//            migrateUsers(targetConn, sourceStmt);
-//            migrateAdmins(targetConn, sourceStmt);
+            migrateUsers(targetConn, sourceStmt);
+            migrateAdmins(targetConn, sourceStmt);
                
-//            migrateCandidates(targetConn, sourceStmt);
+            migrateCandidates(targetConn, sourceStmt);
             
             log.info("loading candidate ids");
             Map<Long, Long> candidateIdsByUserId = loadCandidateIds(targetConn);
 
-//            migrateCandidateCertifications(targetConn, sourceStmt, candidateIdsByUserId);
-//            migrateCandidateLanguages(targetConn, sourceStmt, candidateIdsByUserId);
-//            migrateCandidateEducations(targetConn, sourceStmt, candidateIdsByUserId);
-//            migrateCandidateOccupations(targetConn, sourceStmt, candidateIdsByUserId);
-//            migrateCandidateExperiences(targetConn, sourceStmt, candidateIdsByUserId);
+            migrateCandidateCertifications(targetConn, sourceStmt, candidateIdsByUserId);
+            migrateCandidateLanguages(targetConn, sourceStmt, candidateIdsByUserId);
+            migrateCandidateEducations(targetConn, sourceStmt, candidateIdsByUserId);
+            migrateCandidateOccupations(targetConn, sourceStmt, candidateIdsByUserId);
+            migrateCandidateExperiences(targetConn, sourceStmt, candidateIdsByUserId);
+            migrateCandidateAdminNotes(targetConn, sourceStmt, candidateIdsByUserId);
             
         } catch (Exception e){
             log.error("unable to migrate data", e);
@@ -451,9 +452,11 @@ public class SystemAdminApi {
         log.info("Migration data for candidate occupations");
         
         Set<Long> occupationIds = loadReferenceIds(targetConn, "occupation");
-        
-        String insertSql = "insert into candidate_occupation (candidate_id, occupation_id, years_experience) values (?, ?, ?)"; // TODO:  on conflict (candidate_id, occupation_id) do nothing
-        String selectSql = "select user_id, job_occupation, sum(timestampdiff(YEAR, ifnull(start_date, sysdate()), ifnull(end_date, sysdate()))) as years from user_jobseeker_experience group by user_id, job_occupation";
+        Map<Long, String> otherOccupations = loadOtherReferenceIds(sourceStmt, "job_occupation");
+
+        String insertSql = "insert into candidate_occupation (candidate_id, occupation_id, years_experience, verified, migration_occupation) values (?, ?, ?, ?, ?) on conflict (candidate_id, occupation_id) do nothing";  
+        String selectSql = "select j.user_id, job_occupation, sum(timestampdiff(YEAR, ifnull(start_date, sysdate()), ifnull(end_date, sysdate()))) as years, case when u.status = 10 or u.status = 11 then 1 else 0 end as verified "
+                        + " from user_jobseeker_experience j join user u on u.id = j.user_id group by j.user_id, job_occupation";
         PreparedStatement insert = targetConn.prepareStatement(insertSql);
         ResultSet result = sourceStmt.executeQuery(selectSql);
         int count = 0;
@@ -462,15 +465,16 @@ public class SystemAdminApi {
             Long candidateId = getCandidateId(userId, candidateIdsByUserId);
             int origOccupationId = result.getInt("job_occupation");
             Long occupationId = checkReference(origOccupationId, occupationIds);
-            if (candidateId != null && occupationId != null) {
+            if (candidateId != null) {
                 int i = 1;
                 insert.setLong(i++, candidateId);
-                insert.setLong(i++, occupationId);
+                i = setRefIdOrUnknown(result, insert, "job_occupation", occupationIds, otherOccupations, i, 5);
                 int years = result.getInt("years");
                 if (years < 0) {
                     years = 0;
                 }
                 insert.setInt(i++, years);
+                insert.setBoolean(i++, result.getBoolean("verified"));
                 insert.addBatch();
                 
                 if (count%100 == 0) {
@@ -510,6 +514,10 @@ public class SystemAdminApi {
             int origOccupationId = result.getInt("job_occupation");
             Long occupationId = checkReference(origOccupationId, occupationIds);
             Long candidateOccupationId = candidateOccupations.get(candidateId + "~" + occupationId);
+            if (candidateOccupationId == null) {
+                // try with unknown
+                candidateOccupationId = candidateOccupations.get(candidateId + "~0");
+            }
             if (candidateId != null && candidateOccupationId != null) {
                 int i = 1;
                 insert.setLong(i++, result.getLong("id"));
@@ -557,7 +565,53 @@ public class SystemAdminApi {
         insert.executeBatch();
         log.info("experiences - saving batch " + count);
     }
-    
+
+    private void migrateCandidateAdminNotes(Connection targetConn,
+                                            Statement sourceStmt,
+                                            Map<Long, Long> candidateIdsByUserId) throws SQLException {
+        log.info("Migration data for candidate admin notes");
+        
+        Set<Long> adminIds = loadAdminIds(targetConn);
+        
+        String insertSql = "insert into candidate_note (id, candidate_id, note_type, title, comment, created_date, created_by, updated_date) values (?, ?, ?, ?, ?, ?, ?, ?) on conflict (id) do nothing";
+        String selectSql = "select id, user_id, profile_id, subject, comments, created_at, updated_at from admin_user_notes";
+        PreparedStatement insert = targetConn.prepareStatement(insertSql);
+        ResultSet result = sourceStmt.executeQuery(selectSql);
+        int count = 0;
+        while (result.next()) {
+            long userId = result.getLong("profile_id");
+            Long candidateId = getCandidateId(userId, candidateIdsByUserId);
+            if (candidateId != null) {
+                int i = 1;
+                insert.setLong(i++, result.getLong("id"));
+                insert.setLong(i++, candidateId);
+                insert.setString(i++, NoteType.admin.name());
+                insert.setString(i++, result.getString("subject"));
+                insert.setString(i++, result.getString("comments"));
+                insert.setTimestamp(i++, convertToTimestamp(result.getLong("created_at")));
+                long adminId = result.getLong("user_id");
+                if (adminIds.contains(adminId)) {
+                    insert.setLong(i++, adminId);
+                } else {
+                    insert.setNull(i++,  Types.BIGINT);
+                }
+                insert.setTimestamp(i++, convertToTimestamp(result.getLong("updated_at")));
+                insert.addBatch();
+                
+                if (count%100 == 0) {
+                    insert.executeBatch();
+                    log.info("admin notes - saving batch " + count);
+                }
+                
+                count++;
+            } else {
+                log.warn("skipping record - admin notes: no candidate found for userId " + userId);
+            }
+        }
+        insert.executeBatch();
+        log.info("admin notes - saving batch " + count);
+    }
+
     private int setRefIdOrNull(ResultSet result,
                                PreparedStatement insert,
                                String columnName,
@@ -641,6 +695,17 @@ public class SystemAdminApi {
             referenceMap.put(result.getLong(2), result.getLong(1));
         }
         log.info("loaded " + referenceMap.size() + " candidate ids");
+        return referenceMap;
+    }
+    
+    private Set<Long> loadAdminIds(Connection targetConn) throws SQLException {
+        Set<Long> referenceMap = new HashSet<>();
+        Statement stmt = targetConn.createStatement();
+        ResultSet result = stmt.executeQuery("select id from users where role = 'admin'");
+        while (result.next()) {
+            referenceMap.add(result.getLong(1));
+        }
+        log.info("loaded " + referenceMap.size() + " admin ids");
         return referenceMap;
     }
     
