@@ -2,6 +2,7 @@ package org.tbbtalent.server.util.dto;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.data.domain.Page;
+import org.tbbtalent.server.model.Translatable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -9,6 +10,7 @@ import java.util.*;
 public class DtoBuilder {
 
     private List<MappedProperty> mappedProperties;
+    private final MappedProperty TRANSLATION = new MappedProperty("translatedName");
 
     public DtoBuilder() {
         this.mappedProperties = new ArrayList<>();
@@ -65,9 +67,16 @@ public class DtoBuilder {
 
         Map<String, Object> map = new HashMap<>();
         for (MappedProperty property : mappedProperties) {
+            
+            // intercept translations, if needed
+            boolean applyTranslation = false;
+            if (source instanceof Translatable && "name".equals(property.name)) {
+                applyTranslation = true;
+            }
+            
             Object value = null;
             try {
-                value = PropertyUtils.getProperty(source, property.name);
+                value = PropertyUtils.getProperty(source, applyTranslation ? TRANSLATION.name : property.name);
             } catch (IllegalAccessException e) {
                 throw new DtoBuilderException("Unable to access property '" + property.name
                         + "' on " + source.getClass().getSimpleName(), e);

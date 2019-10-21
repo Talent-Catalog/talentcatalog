@@ -1,9 +1,13 @@
 package org.tbbtalent.server.model;
 
-import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+
+import javax.persistence.Column;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
 public abstract class AbstractAuditableDomainObject<IdType extends Serializable>  extends AbstractDomainObject<IdType> {
