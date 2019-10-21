@@ -44,7 +44,7 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
 
     this.candidateJobExperienceForm = this.fb.group({
       candidateOccupationId: [this.candidateOccupation.id],
-      pageSize: 1,
+      pageSize: 10,
       pageNumber: 0,
       sortDirection: 'DESC',
       sortFields: [['endDate']]

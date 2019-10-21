@@ -35,8 +35,8 @@
   <!-- START DATE -->
   <div class="col-12 col-md-6">
     <div class="form-group">
-      <label for="startDate">Started (month / year)</label>
-      <input type="month" id="startDate" class="form-control" [formControlName]="'startDate'"
+      <label for="startDate">Started (dd/month / year)</label>
+      <input type="date" id="startDate" class="form-control" [formControlName]="'startDate'"
              datepicker-popup is-open="status.opened" min-date="minDate" max-date="maxDate"
              datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
 
@@ -46,8 +46,8 @@
   <!-- END DATE -->
   <div class="col-12 col-md-6">
     <div class="form-group">
-      <label for="endDate">Finished (month / year)</label>
-      <input type="month" id="endDate" class="form-control" [formControlName]="'endDate'"
+      <label for="endDate">Finished (dd/ month / year)</label>
+      <input type="date" id="endDate" class="form-control" [formControlName]="'endDate'"
              datepicker-popup is-open="status.opened" min-date="minDate" max-date="maxDate"
              datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
     </div>

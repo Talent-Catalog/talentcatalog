@@ -40,7 +40,7 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
 
     this.candidateNoteForm = this.fb.group({
       candidateId: [this.candidate.id],
-      pageSize: 1,
+      pageSize: 10,
       pageNumber: 0,
       sortDirection: 'DESC',
       sortFields: [['createdDate']]

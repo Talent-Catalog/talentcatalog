@@ -14,6 +14,15 @@ public class UpdateCandidateStatusRequest {
 
     private String comment;
 
+    public UpdateCandidateStatusRequest() {
+    }
+
+    public UpdateCandidateStatusRequest(@NotNull CandidateStatus status, String comment) {
+        this.candidateId = candidateId;
+        this.status = status;
+        this.comment = comment;
+    }
+
     public Long getCandidateId() {
         return candidateId;
     }

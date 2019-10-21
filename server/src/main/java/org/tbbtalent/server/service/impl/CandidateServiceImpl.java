@@ -334,9 +334,10 @@ public class CandidateServiceImpl implements CandidateService {
     public Candidate updateAdditionalInfo(UpdateCandidateAdditionalInfoRequest request) {
         Candidate candidate = getLoggedInCandidate();
         candidate.setAdditionalInfo(request.getAdditionalInfo());
-        if (candidate.getStatus().equals(CandidateStatus.incomplete)) {
-            candidate.setStatus(CandidateStatus.pending);
+        if (!candidate.getStatus().equals(CandidateStatus.pending)){
+            updateCandidateStatus(candidate.getId(), new UpdateCandidateStatusRequest(CandidateStatus.pending, "Candidate submitted"));
         }
+
         return candidateRepository.save(candidate);
     }
 

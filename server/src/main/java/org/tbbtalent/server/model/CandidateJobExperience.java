@@ -1,6 +1,7 @@
 package org.tbbtalent.server.model;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "candidate_job_experience")
@@ -21,8 +22,8 @@ public class CandidateJobExperience extends AbstractDomainObject<Long> {
 
     private String companyName;
     private String role;
-    private String startDate;
-    private String endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private Boolean fullTime;
     private Boolean paid;
     private String description;
@@ -62,13 +63,13 @@ public class CandidateJobExperience extends AbstractDomainObject<Long> {
         this.role = role;
     }
 
-    public String getStartDate() { return startDate; }
+    public LocalDate getStartDate() { return startDate; }
 
-    public void setStartDate(String startDate) { this.startDate = startDate; }
+    public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
 
-    public String getEndDate() { return endDate; }
+    public LocalDate getEndDate() { return endDate; }
 
-    public void setEndDate(String endDate) { this.endDate = endDate; }
+    public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
 
     public Boolean getFullTime() { return fullTime; }
 
