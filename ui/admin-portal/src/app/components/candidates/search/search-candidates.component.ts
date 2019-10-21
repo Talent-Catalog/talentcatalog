@@ -131,7 +131,15 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       minEducationLevel: [null],
       educationMajorIds: [[]],
       searchJoinRequests: this.fb.array([]),
-      shortlistStatus: null
+      shortlistStatus: null,
+      //for display purposes
+      occupations: [[]],
+      verifiedOccupations: [[]],
+      countries: [[]],
+      educationMajors: [[]],
+      nationalities: [[]],
+      statusesDisplay: [[]],
+
     });
 
     /* LOAD NATIONALITIES */
@@ -280,8 +288,9 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   }
 
   clear() {
-    alert('todo');
-  }
+    this.searchForm.reset();
+    this.savedSearch = null;
+   }
 
   loadSavedSearch(id) {
     this.loading = true;
@@ -333,6 +342,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
     Object.keys(this.searchForm.controls).forEach(name => {
       this.searchForm.controls[name].patchValue(request[name]);
+
       //Form arrays need to be handled
       if (name === 'searchJoinRequests' && request[name]) {
         while (this.searchJoinArray.length) {
@@ -343,7 +353,47 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
         });
       }
 
+      //todo why not re-rendering until click on screen
+      let occupations = [];
+      if (this.searchForm.value.occupationIds){
+        occupations = this.candidateOccupations.filter(c => this.searchForm.value.occupationIds.indexOf(c.id) != -1);
+      }
+      this.searchForm.controls['occupations'].patchValue(occupations);
+
+      let verifiedOccupations = [];
+      if (this.searchForm.value.verifiedOccupationIds){
+        verifiedOccupations = this.verifiedOccupations.filter(c => this.searchForm.value.verifiedOccupationIds.indexOf(c.id) != -1);
+      }
+      this.searchForm.controls['verifiedOccupations'].patchValue(verifiedOccupations);
+
+      let educationMajors = [];
+      if (this.searchForm.value.educationMajorIds){
+        educationMajors = this.educationMajors.filter(c => this.searchForm.value.educationMajorIds.indexOf(c.id) != -1);
+      }
+      this.searchForm.controls['educationMajors'].patchValue(educationMajors);
+
+      let nationalities = [];
+      if (this.searchForm.value.nationalityIds){
+        nationalities = this.nationalities.filter(c => this.searchForm.value.nationalityIds.indexOf(c.id) != -1);
+      }
+      this.searchForm.controls['nationalities'].patchValue(nationalities);
+
+      let countries = [];
+      if (this.searchForm.value.countryIds){
+        countries = this.countries.filter(c => this.searchForm.value.countryIds.indexOf(c.id) != -1);
+      }
+      this.searchForm.controls['countries'].patchValue(countries);
+
+      let statusesDisplay = [];
+      if (this.searchForm.value.statuses){
+        statusesDisplay = this.statuses.filter(c => this.searchForm.value.statuses.indexOf(c) != -1);
+      }
+      this.searchForm.controls['statusesDisplay'].patchValue(statusesDisplay);
+
+
     });
+
+
     this.search();
   }
 

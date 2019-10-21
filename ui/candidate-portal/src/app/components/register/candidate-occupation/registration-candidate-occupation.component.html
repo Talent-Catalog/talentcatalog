@@ -8,7 +8,7 @@
   <div class="card" *ngFor="let occupation of candidateOccupations; let i = index;">
 
     <div class="text-right">
-      <button class="btn btn-danger" (click)="deleteOccupation(i)">&times;</button>
+      <button class="btn btn-danger btn-delete" (click)="deleteOccupation(i)">&times;</button>
     </div>
 
     <div class="form-group">

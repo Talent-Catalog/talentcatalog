@@ -27,7 +27,8 @@
     },
     "FOOTER": {
       "BACK": "Back",
-      "NEXT": "Next"
+      "NEXT": "Next",
+      "SUBMIT": "Submit"
     },
     "LANDING": {
       "TITLE": "Let's get started",
@@ -97,6 +98,14 @@
       },
       "BUTTON": {
         "ADD": "Add Certificate"
+      }
+    },
+    "SUBMIT": {
+      "LABEL": {
+        "ADDITIONALINFO": "Anything else we should know?"
+      },
+      "TEXT": {
+        "EXPLANATION": "If possible please provide this response in English so it can be more easily reviewed by our team. If you feel more comfortable using your native language please do so and we will have a translator convert it for our team."
       }
     }
   },
