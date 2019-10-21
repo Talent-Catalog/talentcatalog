@@ -30,6 +30,7 @@ import {
 } from "../../util/form/language-proficiency/language-level-form-control-model";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import * as moment from 'moment-timezone';
+import {CandidateShortlistItem} from "../../../model/candidate-shortlist-item";
 
 
 @Component({
@@ -443,5 +444,10 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       this.searchForm.controls['otherMinWrittenLevel'].patchValue(model.writtenLevel);
       this.searchForm.controls['otherMinSpokenLevel'].patchValue(model.spokenLevel);
     }
+  }
+
+  handleCandidateShortlistSaved(candidateShortlistItem: CandidateShortlistItem) {
+    this.search();
+    //todo partial update
   }
 }

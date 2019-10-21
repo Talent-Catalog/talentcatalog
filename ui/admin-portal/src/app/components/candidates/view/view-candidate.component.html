@@ -46,7 +46,9 @@
         <ngb-tab [title]="'Experience'">
           <ng-template ngbTabContent>
             <app-candidate-experience-tab
-              [candidate]="candidate">
+              [candidate]="candidate"
+              [editable]="true">
+              >
             </app-candidate-experience-tab>
           </ng-template>
         </ngb-tab>
@@ -55,7 +57,9 @@
         <ngb-tab [title]="'Education'">
           <ng-template ngbTabContent>
             <app-candidate-education-tab
-              [candidate]="candidate">
+              [candidate]="candidate"
+              [editable]="true">
+              >
             </app-candidate-education-tab>
           </ng-template>
         </ngb-tab>

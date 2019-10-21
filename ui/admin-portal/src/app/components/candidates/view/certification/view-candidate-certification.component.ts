@@ -31,7 +31,6 @@ export class ViewCandidateCertificationComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    this.editable = true;
     if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
       this.loading = true;
       this.candidateCertificationService.list(this.candidate.id).subscribe(

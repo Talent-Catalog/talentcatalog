@@ -31,7 +31,6 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    this.editable = true;
     this.expanded = false;
     this.attachments = [];
 

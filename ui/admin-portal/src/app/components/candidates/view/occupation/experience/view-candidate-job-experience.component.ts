@@ -19,6 +19,7 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
   @Input() editable: boolean;
+  @Input() numCharacters: 3;
   @Input() candidateOccupation: CandidateOccupation;
 
   candidateJobExperienceForm: FormGroup;
@@ -38,7 +39,6 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    this.editable = true;
     this.expanded = false;
     this.experiences = [];
 

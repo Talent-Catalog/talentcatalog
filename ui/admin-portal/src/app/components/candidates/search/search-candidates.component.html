@@ -320,10 +320,10 @@
           <th class="w-25">Candidate #</th>
           <th>First Name</th>
           <th>Last Name</th>
+          <th *ngIf="savedSearch">Reviewed</th>
           <th>Nationality</th>
           <th>Location</th>
           <th>Gender</th>
-          <th *ngIf="savedSearch">Reviewed</th>
         </tr>
         </thead>
 
@@ -336,14 +336,16 @@
           </td>
           <td>{{candidate.user.firstName}}</td>
           <td>{{candidate.user.lastName}}</td>
-          <td>{{candidate.nationality?.name}}</td>
-          <td>{{candidate.country?.name}}</td>
-          <td>{{candidate.gender | titlecase}}</td>
           <td *ngIf="savedSearch">
             <app-candidate-shortlist-item [candidateId]="candidate.id"
                                           [candidateShortlistItem]="candidate.candidateShortlistItems && candidate.candidateShortlistItems.length > 0 ? candidate.candidateShortlistItems[0] : null"
-                                          [savedSearch]="savedSearch"></app-candidate-shortlist-item>
+                                          [savedSearch]="savedSearch"
+                                          (shortlistItemSaved)="handleCandidateShortlistSaved($event)"></app-candidate-shortlist-item>
           </td>
+          <td>{{candidate.nationality?.name}}</td>
+          <td>{{candidate.country?.name}}</td>
+          <td>{{candidate.gender | titlecase}}</td>
+
         </tr>
 
         <!-- loading -->

@@ -46,7 +46,7 @@ public class SearchCandidateRequest extends SearchRequest {
     private ShortlistStatus shortlistStatus;
 
     public SearchCandidateRequest() {
-        super(0, 50, Sort.Direction.DESC, new String[]{"id"});
+        super(Sort.Direction.DESC, new String[]{"id"});
     }
 
     private List<SearchJoinRequest> searchJoinRequests;
