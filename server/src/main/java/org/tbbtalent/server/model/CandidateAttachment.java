@@ -18,8 +18,6 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long>  {
 
     private String location;
 
-    private Status status;
-
     public CandidateAttachment() {
     }
 
@@ -55,11 +53,4 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long>  {
         this.location = location;
     }
 
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
 }

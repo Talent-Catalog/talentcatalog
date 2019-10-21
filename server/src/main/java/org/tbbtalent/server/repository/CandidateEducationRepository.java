@@ -21,8 +21,8 @@ public interface CandidateEducationRepository extends JpaRepository<CandidateEdu
     Optional<CandidateEducation> findByIdLoadCandidate(@Param("id") Long id);
 
     @Query(" select e from CandidateEducation e "
-            + " join e.country "
-            + " join e.educationMajor "
+            + " left join e.country "
+            + " left join e.educationMajor "
             + " where e.candidate.id = :candidateId ")
     List<CandidateEducation> findByCandidateId(@Param("candidateId") Long candidateId);
 
