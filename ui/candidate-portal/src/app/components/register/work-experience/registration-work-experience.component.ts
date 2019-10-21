@@ -31,7 +31,8 @@ export class RegistrationWorkExperienceComponent implements OnInit {
   occupations: CandidateOccupation[];
   addingWorkExperience: boolean;
   occupation: CandidateOccupation;
-  experiencesByOccupation: {[id: number]: CandidateJobExperience[]};
+  experiencesByCandidateOccupation: {[id: number]: CandidateJobExperience[]};
+
   addingExperience: boolean;
 
   constructor(private fb: FormBuilder,
@@ -49,7 +50,7 @@ export class RegistrationWorkExperienceComponent implements OnInit {
     this.occupations = [];
     this.candidateJobExperiences = [];
     this.addingWorkExperience = false;
-    this.experiencesByOccupation = {};
+    this.experiencesByCandidateOccupation = {};
     this.addingExperience = false;
 
     /* Load the candidate data */
@@ -66,7 +67,7 @@ export class RegistrationWorkExperienceComponent implements OnInit {
 
             /* Populate experience map */
             for (let occ of this.occupations) {
-              this.experiencesByOccupation[occ.id] = this.candidateJobExperiences.filter(exp => exp.candidateOccupation.id === occ.id);
+              this.experiencesByCandidateOccupation[occ.id] = this.candidateJobExperiences.filter(exp => exp.candidateOccupation.id === occ.id);
             }
 
             this._loading.occupations = false;
@@ -137,5 +138,20 @@ export class RegistrationWorkExperienceComponent implements OnInit {
 
   handleEdit(exp: CandidateJobExperience) {
     window.alert('This feature is still under construction.');
+  }
+
+  addExperience(occupation: CandidateOccupation) {
+    this.occupation = occupation;
+    this.addingExperience = true;
+  }
+
+  handleCancelled(exp: CandidateJobExperience) {
+    this.addingExperience = false;
+    this.occupation = null;
+  }
+
+  handleSave(exp: CandidateJobExperience) {
+    this.experiencesByCandidateOccupation[exp.candidateOccupation.id].push(exp);
+    this.addingExperience = false;
   }
 }

@@ -3,12 +3,12 @@
 <form class="row" [formGroup]="form" *ngIf="!loading && !error">
 
   <!-- OCCUPATION -->
-  <div class="col-12" *ngIf="!occupation">
+  <div class="col-12" *ngIf="!candidateOccupation">
     <div class="form-group">
       <label for="candidateOccupationId">Occupation</label>
       <select class="form-control" name="candidateOccupationId" id="candidateOccupationId" [formControlName]="'candidateOccupationId'">
         <option value=""></option>
-        <option *ngFor="let candidateOccupation of occupations" [value]="candidateOccupation.id">{{candidateOccupation.occupation.name}}</option>
+        <option *ngFor="let candidateOccupation of candidateOccupations" [value]="candidateOccupation.id">{{candidateOccupation.occupation.name}}</option>
       </select>
     </div>
   </div>

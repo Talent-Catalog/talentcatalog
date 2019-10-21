@@ -12,15 +12,22 @@ h5 {
 .occupation-card.card {
   padding: 0;
 
-  .card:first-of-type {
+  .card:nth-child(2) {
     border: 0;
-    border-bottom: 2px solid;
+    border-top: 2px solid;
     @include border-color("background");
   }
 
   .card + .card {
     margin: 0;
   }
+}
+
+.occupation-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
 }
 
 hr {

@@ -4,28 +4,46 @@
   <ng-container *ngFor="let occupation of occupations">
 
     <div class="card occupation-card">
-      <div class="card">
+      <div class="card occupation-heading">
         <h5>{{occupation.occupation?.name}}</h5>
+
+        <button class="btn btn-outline-primary d-none d-md-block"
+                (click)="addExperience(occupation)">
+          Add work experience
+        </button>
       </div>
 
-      <ng-container *ngFor="let experience of experiencesByOccupation[occupation.id]; let i = index;">
-        <div class="card" >
+      <ng-container *ngFor="let experience of experiencesByCandidateOccupation[occupation.id]; let i = index;">
+        <div class="card">
           <app-candidate-work-experience-card [experience]="experience"
                                               (onDelete)="handleDelete($event)"
                                               (onEdit)="handleEdit($event)">
           </app-candidate-work-experience-card>
         </div>
 
-        <hr class="mx-4" *ngIf="i < experiencesByOccupation[occupation.id]?.length - 1">
+        <hr class="mx-4" *ngIf="i < experiencesByCandidateOccupation[occupation.id]?.length - 1">
       </ng-container>
+
+      <div class="text-center my-4">
+        <button class="btn btn-outline-primary d-md-none"
+                (click)="addExperience(occupation)">
+          Add work experience
+        </button>
+      </div>
+
     </div>
 
   </ng-container>
 
   <!-- ADD NEW WORK EXPERIENCE -->
-  <div class="occupation-form" [hidden]="!addingExperience">
+  <div class="occupation-form" *ngIf="addingExperience">
     <div class="container">
-      <app-candidate-work-experience-form></app-candidate-work-experience-form>
+      <app-candidate-work-experience-form [countries]="countries"
+                                          [candidateOccupation]="occupation"
+                                          [candidateOccupations]="occupations"
+                                          (formSaved)="handleSave($event)"
+                                          (formClosed)="handleCancelled($event)">
+      </app-candidate-work-experience-form>
     </div>
   </div>
 

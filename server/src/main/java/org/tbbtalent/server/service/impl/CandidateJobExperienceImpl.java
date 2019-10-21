@@ -57,7 +57,7 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
                 .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountryId()));
 
         // Load the candidate occupation from the database - throw an exception if not found
-        CandidateOccupation occupation = candidateOccupationRepository.findById(request.getCountryId())
+        CandidateOccupation occupation = candidateOccupationRepository.findById(request.getCandidateOccupationId())
                 .orElseThrow(() -> new NoSuchObjectException(CandidateOccupation.class, request.getCandidateOccupationId()));
 
         // Create a new candidateOccupation object to insert into the database

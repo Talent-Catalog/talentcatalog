@@ -5,6 +5,7 @@ import {Country} from "../../../model/country";
 import {CountryService} from "../../../services/country.service";
 import {CandidateOccupation} from "../../../model/candidate-occupation";
 import {CandidateOccupationService} from "../../../services/candidate-occupation.service";
+import {CandidateJobExperienceService} from "../../../services/candidate-job-experience.service";
 
 @Component({
   selector: 'app-candidate-work-experience-form',
@@ -14,11 +15,12 @@ import {CandidateOccupationService} from "../../../services/candidate-occupation
 export class CandidateJobExperienceFormComponent implements OnInit {
 
   @Input() experience: CandidateJobExperience;
-  @Input() occupation: CandidateOccupation;
-  @Input() occupations: CandidateOccupation[];
+  @Input() candidateOccupation: CandidateOccupation;
+  @Input() candidateOccupations: CandidateOccupation[];
   @Input() countries: Country[];
 
-  @Output() saved = new EventEmitter<CandidateJobExperience>();
+  @Output() formSaved = new EventEmitter<CandidateJobExperience>();
+  @Output() formClosed = new EventEmitter<CandidateJobExperience>();
 
   loading: boolean;
   saving: boolean;
@@ -28,7 +30,8 @@ export class CandidateJobExperienceFormComponent implements OnInit {
 
   constructor(private fb: FormBuilder,
               private countryService: CountryService,
-              private candidateOccupationService: CandidateOccupationService) { }
+              private candidateOccupationService: CandidateOccupationService,
+              private jobExperienceService: CandidateJobExperienceService) { }
 
   ngOnInit() {
     this.loading = false;
@@ -52,7 +55,7 @@ export class CandidateJobExperienceFormComponent implements OnInit {
     /* Load missing candidate occupations */
     this.candidateOccupationService.listMyOccupations().subscribe(
       (response) => {
-        this.occupations = response;
+        this.candidateOccupations = response;
       },
       (error) => {
         this.error = error;
@@ -74,8 +77,8 @@ export class CandidateJobExperienceFormComponent implements OnInit {
     if (this.experience) {
       const exp = this.experience;
       this.form.controls['candidateOccupationId'].patchValue(exp.candidateOccupation.id || exp.candidateOccupationId);
-    } else if (this.occupation) {
-      this.form.controls['candidateOccupationId'].patchValue(this.occupation.id);
+    } else if (this.candidateOccupation) {
+      this.form.controls['candidateOccupationId'].patchValue(this.candidateOccupation.id);
     }
   }
 
@@ -84,8 +87,8 @@ export class CandidateJobExperienceFormComponent implements OnInit {
     const request = this.form.value;
     this.jobExperienceService.createJobExperience(this.form.value).subscribe(
       (response) => {
-        this.candidateJobExperiences.push(response);
-        this.setUpForm();
+        response.candidateOccupation = this.candidateOccupation;
+        this.formSaved.emit(response);
         this.saving = false;
       },
       (error) => {
@@ -93,7 +96,7 @@ export class CandidateJobExperienceFormComponent implements OnInit {
         this.saving = false;
       }
     );
-    this.saved.emit(request);
+    this.formSaved.emit(request);
   }
 
 }
