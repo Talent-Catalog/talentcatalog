@@ -1,0 +1,40 @@
+@import "~src/scss/mixins";
+
+h5 {
+  @include color("primary");
+  margin: 0;
+}
+
+.card {
+  box-shadow: none;
+}
+
+.occupation-card.card {
+  padding: 0;
+
+  .card:first-of-type {
+    border: 0;
+    border-bottom: 2px solid;
+    @include border-color("background");
+  }
+
+  .card + .card {
+    margin: 0;
+  }
+}
+
+hr {
+  margin: 0 24px;
+}
+
+.occupation-form {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: 20;
+  padding: 24px 0;
+  overflow-y: auto;
+  background: white;
+}

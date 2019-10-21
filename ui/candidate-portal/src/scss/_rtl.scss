@@ -16,6 +16,15 @@
     }
   }
 
+  .form-check {
+    text-align: right !important;
+    padding-right: 1.25rem;
+
+    .form-check-input {
+      margin-right: -1.25rem;
+    }
+  }
+
   .text-right {
     text-align: left !important;
   }

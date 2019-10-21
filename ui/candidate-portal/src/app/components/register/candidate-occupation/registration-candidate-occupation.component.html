@@ -1,64 +1,62 @@
 <div class="container">
 
-  <div class="d-flex justify-content-center" *ngIf="loading">
-    Loading...
-  </div>
+  <app-loading [loading]="loading"></app-loading>
 
-  <!-- REVIEW -->
-  <div class="card" *ngFor="let occupation of candidateOccupations; let i = index;">
+  <ng-container *ngIf="!loading">
+    <!-- REVIEW -->
+    <div class="card" *ngFor="let occupation of candidateOccupations; let i = index;">
 
-    <div class="text-right">
-      <button class="btn btn-danger btn-delete" (click)="deleteOccupation(i)">&times;</button>
+      <div class="text-right">
+        <button class="btn btn-danger btn-card" (click)="deleteOccupation(i)">&times;</button>
+      </div>
+
+      <div class="form-group">
+        <label translate dir="auto">REGISTRATION.OCCUPATION.LABEL.OCCUPATION</label>
+        <select class="form-control" [(ngModel)]="occupation.occupationId">
+          <option *ngFor="let occupation of occupations" [value]="occupation.id">{{occupation.name}}</option>
+        </select>
+      </div>
+
+      <!-- YEARS OF EXPERIENCE -->
+      <div class="form-group">
+        <label translate dir="auto">REGISTRATION.OCCUPATION.LABEL.YEARSEXPERIENCE</label>
+        <p class="text-muted" translate dir="auto">REGISTRATION.OCCUPATION.LABEL.DISCLAIMER</p>
+        <input type="number" class="form-control" [(ngModel)]="occupation.yearsExperience">
+      </div>
+
     </div>
 
-    <div class="form-group">
-      <label translate dir="auto">REGISTRATION.OCCUPATION.LABEL.OCCUPATION</label>
-      <select class="form-control" [(ngModel)]="occupation.occupationId">
-        <option *ngFor="let occupation of occupations" [value]="occupation.id">{{occupation.name}}</option>
-      </select>
+    <!-- CREATE -->
+    <form class="card" [formGroup]="form" *ngIf="!loading">
+
+      <!-- FIELD -->
+      <div class="form-group">
+        <label for="occupation" translate dir="auto">REGISTRATION.OCCUPATION.LABEL.OCCUPATION</label>
+        <select class="form-control" name="occupation" id="occupation" [formControlName]="'occupationId'">
+          <option value=""></option>
+          <option *ngFor="let occupation of occupations" [value]="occupation.id">{{occupation.name}}</option>
+        </select>
+      </div>
+
+      <!-- YEARS OF EXPERIENCE -->
+      <div class="form-group">
+        <label class="m-0" for="yearsExperience" translate dir="auto">REGISTRATION.OCCUPATION.LABEL.YEARSEXPERIENCE</label>
+        <p class="text-muted" translate dir="auto">REGISTRATION.OCCUPATION.LABEL.DISCLAIMER</p>
+        <input type="number" class="form-control" name="yearsExperience" id="yearsExperience" [formControlName]="'yearsExperience'">
+      </div>
+
+    </form>
+
+    <div class="text-center mt-4">
+      <button class="btn btn-outline-primary"  translate dir="auto"
+              (click)="addOccupation()"
+              [disabled]="form?.invalid || loading || saving">
+        REGISTRATION.OCCUPATION.BUTTON.ADD
+      </button>
     </div>
+  </ng-container>
 
-    <!-- YEARS OF EXPERIENCE -->
-    <div class="form-group">
-      <label translate dir="auto">REGISTRATION.OCCUPATION.LABEL.YEARSEXPERIENCE</label>
-      <p class="text-muted" translate dir="auto">REGISTRATION.OCCUPATION.LABEL.DISCLAIMER</p>
-      <input type="number" class="form-control" [(ngModel)]="occupation.yearsExperience">
-    </div>
-
-  </div>
-
-  <!-- CREATE -->
-  <form class="card" [formGroup]="form" *ngIf="!loading">
-
-    <!-- FIELD -->
-    <div class="form-group">
-      <label for="occupation" translate dir="auto">REGISTRATION.OCCUPATION.LABEL.OCCUPATION</label>
-      <select class="form-control" name="occupation" id="occupation" [formControlName]="'occupationId'">
-        <option value=""></option>
-        <option *ngFor="let occupation of occupations" [value]="occupation.id">{{occupation.name}}</option>
-      </select>
-    </div>
-
-    <!-- YEARS OF EXPERIENCE -->
-    <div class="form-group">
-      <label class="m-0" for="yearsExperience" translate dir="auto">REGISTRATION.OCCUPATION.LABEL.YEARSEXPERIENCE</label>
-      <p class="text-muted" translate dir="auto">REGISTRATION.OCCUPATION.LABEL.DISCLAIMER</p>
-      <input type="number" class="form-control" name="yearsExperience" id="yearsExperience" [formControlName]="'yearsExperience'">
-    </div>
-
-  </form>
-
-  <div class="text-center mt-4">
-    <button class="btn btn-outline-primary"  translate dir="auto"
-            (click)="addOccupation()"
-            [disabled]="form?.invalid || loading || saving">
-      REGISTRATION.OCCUPATION.BUTTON.ADD
-    </button>
-  </div>
-
-  <div class="alert alert-danger" *ngIf="error">
-    {{error.error?.message || error.message || error}}
-  </div>
+  <app-error [error]="error"></app-error>
 
 </div>
 

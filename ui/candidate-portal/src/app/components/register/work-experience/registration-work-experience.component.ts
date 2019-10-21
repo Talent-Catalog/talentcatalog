@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormGroup} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
 import {CandidateJobExperienceService} from "../../../services/candidate-job-experience.service";
@@ -18,13 +18,21 @@ import {RegistrationService} from "../../../services/registration.service";
 export class RegistrationWorkExperienceComponent implements OnInit {
 
   error: any;
-  loading: boolean;
   saving: boolean;
+  _loading = {
+    candidate: true,
+    countries: true,
+    occupations: true
+  };
+
   form: FormGroup;
   candidateJobExperiences: CandidateJobExperience[];
   countries: Country[];
   occupations: CandidateOccupation[];
-  startDate: Date;
+  addingWorkExperience: boolean;
+  occupation: CandidateOccupation;
+  experiencesByOccupation: {[id: number]: CandidateJobExperience[]};
+  addingExperience: boolean;
 
   constructor(private fb: FormBuilder,
               private router: Router,
@@ -36,79 +44,57 @@ export class RegistrationWorkExperienceComponent implements OnInit {
 
 
   ngOnInit() {
+    this.saving = false;
     this.countries = [];
     this.occupations = [];
     this.candidateJobExperiences = [];
-    this.saving = false;
-    this.loading = true;
+    this.addingWorkExperience = false;
+    this.experiencesByOccupation = {};
+    this.addingExperience = false;
 
     /* Load the candidate data */
     this.candidateService.getCandidateJobExperiences().subscribe(
       (candidate) => {
         console.log(candidate);
         this.candidateJobExperiences = candidate.candidateJobExperiences || [];
+        this._loading.candidate = false;
 
-        /* Wait for the candidate then load the countries */
-        this.countryService.listCountries().subscribe(
-          (response) => {
-            this.countries = response;
-            this.loading = false;
-            this.setUpForm();
-          },
-          (error) => {
-            this.error = error;
-            this.loading = false;
-          }
-        );
-
-        /* Wait for the candidate then load the candidate's occupations */
+        /* Load the candidate's occupations */
         this.candidateOccupationService.listMyOccupations().subscribe(
           (response) => {
             this.occupations = response;
-            this.loading = false;
-            this.setUpForm();
+
+            /* Populate experience map */
+            for (let occ of this.occupations) {
+              this.experiencesByOccupation[occ.id] = this.candidateJobExperiences.filter(exp => exp.candidateOccupation.id === occ.id);
+            }
+
+            this._loading.occupations = false;
           },
           (error) => {
             this.error = error;
-            this.loading = false;
+            this._loading.occupations = false;
           }
         );
       },
       (error) => {
         this.error = error;
-        this.loading = false;
+        this._loading.candidate = false;
       }
     );
-  }
 
-  setUpForm(){
-    this.form = this.fb.group({
-      companyName: ['', Validators.required],
-      country: ['', Validators.required],
-      candidateOccupationId: ['', Validators.required],
-      role: ['', Validators.required],
-      startDate: ['', Validators.required],
-      endDate: ['', Validators.required],
-      fullTime: [false, Validators.required],
-      paid: [false, Validators.required],
-      description: ['', Validators.required]
-    })
-  }
-
-  addMore() {
-    this.saving = true;
-    this.jobExperienceService.createJobExperience(this.form.value).subscribe(
+    /* Load countries */
+    this.countryService.listCountries().subscribe(
       (response) => {
-        this.candidateJobExperiences.push(response);
-        this.setUpForm();
-        this.saving = false;
+        this.countries = response;
+        this._loading.countries = false;
       },
       (error) => {
         this.error = error;
-        this.saving = false;
+        this._loading.countries = false;
       }
     );
-    }
+  }
 
   delete(experience){
     this.saving = true;
@@ -138,5 +124,18 @@ export class RegistrationWorkExperienceComponent implements OnInit {
 
   next() {
     this.save('next');
+  }
+
+  get loading() {
+    const l = this._loading;
+    return l.candidate || l.countries || l.occupations;
+  }
+
+  handleDelete(exp: CandidateJobExperience) {
+    window.alert('This feature is still under construction.');
+  }
+
+  handleEdit(exp: CandidateJobExperience) {
+    window.alert('This feature is still under construction.');
   }
 }

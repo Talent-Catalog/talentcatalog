@@ -3,9 +3,7 @@
 <form class="justify-content-center" [formGroup]="loginForm" (submit)="login()">
   <h1>Login</h1>
 
-  <div class="alert alert-danger" *ngIf="error">
-    {{error}}
-  </div>
+  <app-error [error]="error"></app-error>
 
   <input class="form-control" type="text" formControlName="username" placeholder="Username">
   <input class="form-control" type="password" formControlName="password" placeholder="password">

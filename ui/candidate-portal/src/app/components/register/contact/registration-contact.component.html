@@ -1,8 +1,6 @@
 <div class="container">
 
-  <div class="d-flex justify-content-center" *ngIf="loading">
-    Loading...
-  </div>
+  <app-loading [loading]="loading"></app-loading>
 
   <form [formGroup]="form" *ngIf="!loading">
 
@@ -46,9 +44,7 @@
 
   </form>
 
-  <div class="alert alert-danger" *ngIf="error">
-    {{error.error?.message || error.message || error}}
-  </div>
+  <app-error [error]="error"></app-error>
 
 </div>
 

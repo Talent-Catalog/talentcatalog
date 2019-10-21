@@ -214,6 +214,7 @@ public class CandidatePortalApi {
         return new DtoBuilder()
                 .add("id")
                 .add("country", countryDto())
+                .add("candidateOccupation", candidateOccupationDto())
                 .add("companyName")
                 .add("role")
                 .add("startDate")

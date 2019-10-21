@@ -1,8 +1,6 @@
 <div class="container">
 
-  <div *ngIf="loading">
-    <span>Loading...</span>
-  </div>
+  <app-loading [loading]="loading"></app-loading>
 
   <form [formGroup]="form" *ngIf="!loading">
 

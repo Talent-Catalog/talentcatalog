@@ -30,6 +30,10 @@ import {ChangePasswordComponent} from './components/account/change-password/chan
 import {HeaderComponent} from "./components/header/header.component";
 import {RegisterComponent} from './components/register/register.component';
 import {RegistrationFooterComponent} from './components/register/registration-footer/registration-footer.component';
+import {CandidateJobExperienceFormComponent} from './components/common/candidate-job-experience-form/candidate-job-experience-form.component';
+import {CandidateJobExperienceCardComponent} from './components/common/candidate-job-experience-card/candidate-job-experience-card.component';
+import {ErrorComponent} from './components/common/error/error.component';
+import {LoadingComponent} from './components/common/loading/loading.component';
 
 export function createTranslateLoader(http: HttpClient) {
     return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -55,7 +59,11 @@ export function createTranslateLoader(http: HttpClient) {
     ResetPasswordComponent,
     ChangePasswordComponent,
     RegisterComponent,
-    RegistrationFooterComponent
+    RegistrationFooterComponent,
+    CandidateJobExperienceFormComponent,
+    CandidateJobExperienceCardComponent,
+    ErrorComponent,
+    LoadingComponent
   ],
   imports: [
     BrowserModule,

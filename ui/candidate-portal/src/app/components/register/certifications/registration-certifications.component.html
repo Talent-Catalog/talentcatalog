@@ -1,14 +1,12 @@
 <div class="container">
 
-  <div class="d-flex justify-content-center" *ngIf="loading">
-    Loading...
-  </div>
+  <app-loading [loading]="loading"></app-loading>
 
   <ng-container *ngIf="!loading">
 
     <div class="card" *ngFor="let certificate of candidateCertifications">
       <div class="text-right">
-        <button class="btn btn-danger btn-delete" [disabled]="saving" (click)="deleteCertificate(certificate)">&times;</button>
+        <button class="btn btn-danger btn-card" [disabled]="saving" (click)="deleteCertificate(certificate)">&times;</button>
       </div>
       <p>{{certificate.dateCompleted | date}}</p>
       <h4>{{certificate.name}}</h4>
@@ -44,9 +42,7 @@
 
   </ng-container>
 
-  <div class="alert alert-danger" *ngIf="error">
-    {{error.error?.message || error.message || error}}
-  </div>
+  <app-error [error]="error"></app-error>
 
   <div class="text-center mt-4" *ngIf="!addingCertification">
     <button class="btn btn-primary" (click)="addingCertification = true">

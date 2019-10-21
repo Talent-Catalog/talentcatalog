@@ -76,9 +76,7 @@
 
   </div>
 
-  <div class="alert alert-danger" *ngIf="error">
-    {{error.error?.message || error.message || error}}
-  </div>
+  <app-error [error]="error"></app-error>
 
   <div class="text-center mt-4 submit">
     <button class="btn btn-primary"
