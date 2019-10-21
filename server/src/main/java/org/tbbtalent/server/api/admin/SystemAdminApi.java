@@ -22,17 +22,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tbbtalent.server.model.CandidateStatus;
-import org.tbbtalent.server.model.EducationLevel;
-import org.tbbtalent.server.model.EducationType;
-import org.tbbtalent.server.model.Gender;
-import org.tbbtalent.server.model.NoteType;
-import org.tbbtalent.server.model.Status;
-import org.tbbtalent.server.model.User;
+import org.tbbtalent.server.model.*;
 import org.tbbtalent.server.security.UserContext;
 
 @RestController
@@ -97,7 +90,7 @@ public class SystemAdminApi {
             migrateFormOption(targetConn, sourceStmt, translationInsert, userId, "nationality", "nationality", false);
             migrateFormOption(targetConn, sourceStmt, translationInsert, userId, "nationality", "nationality_other", false);
             migrateFormOption(targetConn, sourceStmt, translationInsert, userId, "occupation", "job_ocupation", false);
-            
+//
             migrateUsers(targetConn, sourceStmt);
             migrateAdmins(targetConn, sourceStmt);
                
@@ -112,7 +105,10 @@ public class SystemAdminApi {
             migrateCandidateOccupations(targetConn, sourceStmt, candidateIdsByUserId);
             migrateCandidateExperiences(targetConn, sourceStmt, candidateIdsByUserId);
             migrateCandidateAdminNotes(targetConn, sourceStmt, candidateIdsByUserId);
-            
+            migrateCandidateLinks(targetConn, sourceStmt, candidateIdsByUserId);
+
+
+
         } catch (Exception e){
             log.error("unable to migrate data", e);
         }
@@ -610,6 +606,83 @@ public class SystemAdminApi {
         }
         insert.executeBatch();
         log.info("admin notes - saving batch " + count);
+    }
+
+    private void migrateCandidateLinks(Connection targetConn,
+                                       Statement sourceStmt,
+                                       Map<Long, Long> candidateIdsByUserId) throws SQLException {
+        log.info("Migration data for candidate attachment links");
+
+        String insertSql = "insert into candidate_attachment (id, candidate_id, type, name, location, created_date, created_by) values (?, ?, ?, ?, ?, ?, ?) on conflict (id) do nothing";
+        String selectSql = "select id, user_id, name, link from user_jobseeker_link";
+        PreparedStatement insert = targetConn.prepareStatement(insertSql);
+        ResultSet result = sourceStmt.executeQuery(selectSql);
+        int count = 0;
+        while (result.next()) {
+            long userId = result.getLong("user_id");
+            Long candidateId = getCandidateId(userId, candidateIdsByUserId);
+            if (candidateId != null) {
+                int i = 1;
+                insert.setLong(i++, result.getLong("id"));
+                insert.setLong(i++, candidateId);
+                insert.setString(i++, AttachmentType.link.name());
+                insert.setString(i++, result.getString("name"));
+                insert.setString(i++, result.getString("link"));
+                insert.setTimestamp(i++, new Timestamp(System.currentTimeMillis()));
+                insert.setLong(i++, userId);
+                insert.addBatch();
+
+                if (count%100 == 0) {
+                    insert.executeBatch();
+                    log.info("links - saving batch " + count);
+                }
+
+                count++;
+            } else {
+                log.warn("skipping record - attachment links: no candidate found for userId " + userId);
+            }
+        }
+        insert.executeBatch();
+
+        Set<Long> adminIds = loadAdminIds(targetConn);
+
+        insertSql = "insert into candidate_attachment (candidate_id, type, name, location, created_date, created_by) values (?, ?, ?, ?, ?, ?) on conflict (id) do nothing";
+        selectSql = "select id, user_id, admin_id, filename, upload_date from user_jobseeker_attachments";
+        insert = targetConn.prepareStatement(insertSql);
+        result = sourceStmt.executeQuery(selectSql);
+        count = 0;
+        while (result.next()) {
+            long userId = result.getLong("user_id");
+            Long candidateId = getCandidateId(userId, candidateIdsByUserId);
+            if (candidateId != null) {
+                int i = 1;
+                insert.setLong(i++, candidateId);
+                insert.setString(i++, AttachmentType.file.name());
+                insert.setString(i++, result.getString("filename"));
+                insert.setString(i++, result.getString("filename"));
+                insert.setTimestamp(i++, convertToTimestamp(result.getLong("upload_date")));
+                long adminId = result.getLong("user_id");
+                if (adminIds.contains(adminId)) {
+                    insert.setLong(i++, adminId);
+                } else {
+                    insert.setLong(i++, userId);
+                }
+                insert.addBatch();
+
+                if (count%100 == 0) {
+                    insert.executeBatch();
+                    log.info("links - saving batch " + count);
+                }
+
+                count++;
+            } else {
+                log.warn("skipping record - attachment links: no candidate found for userId " + userId);
+            }
+        }
+        insert.executeBatch();
+        log.info("attachment links - saving batch " + count);
+
+
     }
 
     private int setRefIdOrNull(ResultSet result,

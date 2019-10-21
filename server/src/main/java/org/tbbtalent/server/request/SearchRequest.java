@@ -9,6 +9,16 @@ public class SearchRequest {
     private Sort.Direction sortDirection;
     private String[] sortFields;
 
+    public SearchRequest() {
+    }
+
+    public SearchRequest(Integer pageSize, Integer pageNumber, Sort.Direction sortDirection, String[] sortFields) {
+        this.pageSize = pageSize;
+        this.pageNumber = pageNumber;
+        this.sortDirection = sortDirection;
+        this.sortFields = sortFields;
+    }
+
     public Integer getPageSize() {
         return pageSize;
     }

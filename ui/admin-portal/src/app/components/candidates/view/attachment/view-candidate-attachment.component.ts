@@ -37,7 +37,7 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
 
     this.attachmentForm = this.fb.group({
       candidateId: [this.candidate.id],
-      pageSize: 1,
+      pageSize: 10,
       pageNumber: 0,
       sortDirection: 'DESC',
       sortFields: [['createdDate']]
@@ -70,6 +70,10 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
     this.doSearch();
   }
 
+  todo(){
+    alert('Need to find where these files are stored');
+  }
+
   editCandidateAttachment(candidateAttachment: CandidateAttachment) {
     alert('todo');
 
@@ -87,7 +91,7 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
   //
   }
   //
-  createCandidateAttachment() {
+  createCandidateAttachment(){
 
     alert('todo');
   //   const createCandidateAttachmentModal = this.modalService.open(CreateCandidateAttachmentComponent, {

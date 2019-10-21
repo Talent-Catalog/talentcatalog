@@ -25,7 +25,12 @@
     </div>
     <div *ngFor="let candidateAttachment of attachments; let i = index">
       <div class="row">
-        <div class="col-sm-4">{{candidateAttachment.name}}</div>
+        <div class="col-sm-5">
+          <a *ngIf="candidateAttachment.type == 'link'" target="_blank"
+             href="{{candidateAttachment.location}}">{{candidateAttachment.name}}</a>
+          <a *ngIf="candidateAttachment.type == 'file'" (click)="todo()"
+             href="{{candidateAttachment.location}}">{{candidateAttachment.name}}</a>
+        </div>
         <div class="col-sm-4">
           <app-updated-by *ngIf="candidateAttachment"
                           [createdBy]="candidateAttachment.createdBy"
@@ -34,7 +39,7 @@
                           [updatedDate]="candidateAttachment.updatedDate">
           </app-updated-by>
         </div>
-        <div class="col-sm-2">
+        <div class="col-sm-1">
           <div class="pull-right" *ngIf="editable">
             <button type="button" class="btn btn-sm btn-default" (click)="editCandidateAttachment(candidateAttachment)">
               <i
@@ -47,9 +52,9 @@
       <button type="button" class="btn btn-sm btn-outline-dark" (click)="loadMore()">Load More</button>
     </div>
   </div>
+
+
 </div>
-
-
 
 
 

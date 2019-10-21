@@ -269,8 +269,8 @@
     </ng-container>
     <div class="col-4">
       <div class="btn-group" role="group">
-        <button class="btn btn-outline-dark" (click)="showSavedSearches()">Load Saved Search</button>
-        <button class="btn btn-outline-dark" (click)="showSave()">Save Search</button>
+        <button type="button" class="btn btn-outline-dark" (click)="showSavedSearches()">Load Saved Search</button>
+        <button type="button"  class="btn btn-outline-dark" (click)="showSave()">Save Search</button>
       </div>
     </div>
     <div *ngIf="savedSearch" class="col-4">
@@ -283,11 +283,11 @@
 
     <div class="col-offset-8 col-4">
       <div class="d-flex justify-content-end">
-        <button class="btn btn-outline-dark"
+        <button type="button" class="btn btn-outline-dark"
                 [disabled]="loading"
                 (click)="clear()">Clear
         </button>
-        <button class="btn btn-primary"
+        <button type="submit" class="btn btn-primary"
                 [disabled]="loading"
                 (click)="search()">Apply
         </button>
