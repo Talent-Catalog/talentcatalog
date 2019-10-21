@@ -304,6 +304,8 @@
                     [pageSize]="pageSize"
                     [collectionSize]="results?.totalElements"
                     [(page)]="pageNumber"
+                    [maxSize]="5"
+                    [boundaryLinks]="true"
                     (pageChange)="search()">
     </ngb-pagination>
   </div>
