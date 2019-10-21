@@ -23,6 +23,7 @@ import org.tbbtalent.server.request.language.CreateLanguageRequest;
 import org.tbbtalent.server.request.language.SearchLanguageRequest;
 import org.tbbtalent.server.request.language.UpdateLanguageRequest;
 import org.tbbtalent.server.service.LanguageService;
+import org.tbbtalent.server.service.TranslationService;
 
 import io.jsonwebtoken.lang.Collections;
 
@@ -34,19 +35,24 @@ public class LanguageServiceImpl implements LanguageService {
     private final LanguageRepository languageRepository;
     private final CandidateLanguageRepository candidateLanguageRepository;
     private final SystemLanguageRepository systemLanguageRepository;
+    private final TranslationService translationService;
 
     @Autowired
     public LanguageServiceImpl(CandidateLanguageRepository candidateLanguageRepository,
                                LanguageRepository languageRepository,
-                               SystemLanguageRepository systemLanguageRepository) {
+                               SystemLanguageRepository systemLanguageRepository,
+                               TranslationService translationService) {
         this.candidateLanguageRepository = candidateLanguageRepository;
         this.languageRepository = languageRepository;
         this.systemLanguageRepository = systemLanguageRepository;
+        this.translationService = translationService;
     }
 
     @Override
     public List<Language> listLanguages() {
-        return languageRepository.findByStatus(Status.active);
+        List<Language> languages = languageRepository.findByStatus(Status.active);
+        translationService.translate(languages, "language");
+        return languages;
     }
     
     @Override

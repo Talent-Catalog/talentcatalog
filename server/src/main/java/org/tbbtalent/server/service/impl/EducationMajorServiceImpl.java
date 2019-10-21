@@ -18,6 +18,7 @@ import org.tbbtalent.server.request.education.major.CreateEducationMajorRequest;
 import org.tbbtalent.server.request.education.major.SearchEducationMajorRequest;
 import org.tbbtalent.server.request.education.major.UpdateEducationMajorRequest;
 import org.tbbtalent.server.service.EducationMajorService;
+import org.tbbtalent.server.service.TranslationService;
 
 import java.util.List;
 
@@ -28,17 +29,24 @@ public class EducationMajorServiceImpl implements EducationMajorService {
 
     private final CandidateEducationRepository candidateEducationRepository;
     private final EducationMajorRepository educationMajorRepository;
+    private final TranslationService translationService;
 
     @Autowired
-    public EducationMajorServiceImpl(CandidateEducationRepository candidateEducationRepository, EducationMajorRepository educationMajorRepository) {
+    public EducationMajorServiceImpl(CandidateEducationRepository candidateEducationRepository,
+                                     EducationMajorRepository educationMajorRepository,
+                                     TranslationService translationService) {
         this.candidateEducationRepository = candidateEducationRepository;
         this.educationMajorRepository = educationMajorRepository;
+        this.translationService = translationService;
     }
 
     @Override
     public List<EducationMajor> listActiveEducationMajors() {
-        return educationMajorRepository.findByStatus(Status.active);
+        List<EducationMajor> majors = educationMajorRepository.findByStatus(Status.active);
+        translationService.translate(majors, "education_major");
+        return majors;
     }
+    
     @Override
     public Page<EducationMajor> searchEducationMajors(SearchEducationMajorRequest request) {
         Page<EducationMajor> educationMajors = educationMajorRepository.findAll(
