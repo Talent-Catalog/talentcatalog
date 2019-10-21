@@ -76,7 +76,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.user = user;
         this.phone = phone;
         this.whatsapp = whatsapp;
-        this.status = CandidateStatus.active;
+        this.status = CandidateStatus.draft;
     }
 
     public String getCandidateNumber() {
