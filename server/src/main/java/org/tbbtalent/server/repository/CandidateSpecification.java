@@ -21,6 +21,9 @@ public class CandidateSpecification {
             Join<Candidate, User> user = candidate.join("user");
             Join<Candidate, CandidateEducation> candidateEducations = null;
 
+            conjunction.getExpressions().add(
+                    builder.notEqual(candidate.get("status"), CandidateStatus.draft)
+            );
             //Short lists
             if (request.getSavedSearchId() != null) {
                 if (request.getShortlistStatus() != null) {
@@ -50,7 +53,9 @@ public class CandidateSpecification {
                                 builder.like(builder.lower(candidate.get("candidateNumber")), likeMatchTerm),
                                 builder.like(builder.lower(user.get("firstName")), likeMatchTerm),
                                 builder.like(builder.lower(user.get("lastName")), likeMatchTerm),
-                                builder.like(builder.lower(user.get("email")), likeMatchTerm)
+                                builder.like(builder.lower(user.get("email")), likeMatchTerm),
+                                builder.like(builder.lower(candidate.get("phone")), likeMatchTerm),
+                                builder.like(builder.lower(candidate.get("whatsapp")), likeMatchTerm)
                         ));
             }
             // STATUS SEARCH

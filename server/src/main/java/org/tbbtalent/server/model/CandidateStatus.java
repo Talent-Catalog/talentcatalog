@@ -1,6 +1,7 @@
 package org.tbbtalent.server.model;
 
 public enum CandidateStatus {
+    draft,
     active,
     inactive,
     pending,
