@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Language} from "../model/language";
+import {SystemLanguage} from "../model/language";
 import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
 
@@ -16,6 +17,10 @@ export class LanguageService {
 
   listLanguages(): Observable<Language[]> {
     return this.http.get<Language[]>(`${this.apiUrl}`);
+  }
+
+  listSystemLanguages(): Observable<SystemLanguage[]> {
+    return this.http.get<SystemLanguage[]>(`${this.apiUrl}/system`);
   }
 
   search(request): Observable<SearchResults<Language>> {

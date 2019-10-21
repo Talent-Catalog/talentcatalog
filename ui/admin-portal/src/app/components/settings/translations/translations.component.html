@@ -18,15 +18,21 @@
 
           <div class="form-group col-4">
             <select class="form-control" id="type" formControlName="type">
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
+              <option value="">Select an object type...</option>
+              <option value="countries">Countries</option>
+              <option value="nationalities">Nationalities</option>
+              <option value="languages">Languages</option>
+              <option value="languageLevels">Language Levels</option>
+              <option value="occupations">Occupations</option>
+              <option value="educationLevels">Education Levels</option>
+              <option value="educationMajors">Education Majors</option>
             </select>
           </div>
 
           <div class="form-group col-4">
-            <select class="form-control" id="languageId" name="languageId" formControlName="languageId">
-              <option value=""></option>
-              <option *ngFor="let language of languages" [value]="language.id">{{language.name}}</option>
+            <select class="form-control" id="systemLanguageId" name="systemLanguageId" formControlName="systemLanguageId">
+              <option value="">Select a language...</option>
+              <option *ngFor="let systemLanguage of systemLanguages" [value]="systemLanguage.id">{{systemLanguage.label}}</option>
             </select>
           </div>
 
@@ -44,6 +50,50 @@
   <div>
     TODO: grid of input fields for each value
   </div>
+
+  <table class="table">
+
+    <thead>
+    <tr>
+      <th>Type</th>
+      <th>Name</th>
+      <th>Language</th>
+      <th>Translation</th>
+      <th></th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr *ngFor="let type of types.content">
+      <td>{{searchForm.value.type | titlecase}}</td>
+      <td>{{type.name}}</td>
+      <td>Language</td>
+      <td>Translation</td>
+      <td>
+        <div class="btn-group">
+          <button type="button" class="btn btn-default" (click)="editUser(user)"><i class="fa fa-edit"></i></button>
+          <button type="button" class="btn btn-default" (click)="deleteUser(user)"><i class="fa fa-trash"></i></button>
+        </div>
+      </td>
+    </tr>
+
+    <!-- loading -->
+    <tr *ngIf="loading">
+      <td colspan="42">
+        <i class="fa fa-spinner fa-spin"></i> Loading...
+      </td>
+    </tr>
+
+    <!-- no results -->
+    <tr *ngIf="!loading && !results?.totalElements || !types?.totalElements">
+      <td colspan="42">
+        <span class="text-muted">(no matching users)</span>
+      </td>
+    </tr>
+
+    </tbody>
+
+  </table>
 
 </div>
 

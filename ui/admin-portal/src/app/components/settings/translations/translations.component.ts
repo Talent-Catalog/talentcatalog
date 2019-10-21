@@ -5,7 +5,12 @@ import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {LanguageService} from "../../../services/language.service";
+import {CountryService} from "../../../services/country.service";
+import {TranslationService} from "../../../services/translation.service";
 import {Language} from '../../../model/language';
+import {Country} from '../../../model/country';
+import {Translation} from '../../../model/translation';
+import {SystemLanguage} from '../../../model/language';
 
 @Component({
   selector: 'app-translations',
@@ -19,12 +24,16 @@ export class TranslationsComponent implements OnInit {
   error: any;
   pageNumber: number;
   pageSize: number;
-//  results: SearchResults<Country>;
-  languages: Language[];
+  results: SearchResults<Translation>;
+  translations: Translation[];
+  systemLanguages: SystemLanguage[];
+  types: SearchResults<any>;
 
   constructor(private fb: FormBuilder,
               private modalService: NgbModal,
-              private languageService: LanguageService ) {
+              private languageService: LanguageService,
+              private countryService: CountryService,
+              private translationService: TranslationService ) {
   }
 
   ngOnInit() {
@@ -33,19 +42,20 @@ export class TranslationsComponent implements OnInit {
     this.searchForm = this.fb.group({
       keyword: [''],
       type: [''],
-      languageId: [''],
+      systemLanguageId: [''],
     });
     this.pageNumber = 1;
     this.pageSize = 50;
 
+    this.getSystemLanguages();
     this.onChanges();
-    this.getLanguages();
   }
 
-  getLanguages() {
-    this.languageService.listLanguages().subscribe(
+  getSystemLanguages() {
+    this.languageService.listSystemLanguages().subscribe(
       (response) => {
-        this.languages = response;
+        this.systemLanguages = response;
+        console.log(this.systemLanguages);
       },
       (error) => {
         console.error(error);
@@ -71,11 +81,36 @@ export class TranslationsComponent implements OnInit {
     let request = this.searchForm.value;
     request.pageNumber = this.pageNumber - 1;
     request.pageSize = this.pageSize;
-    /*
-    this.countryService.search(request).subscribe(results => {
+
+    if(request.type == "countries"){
+      /* LOAD COUNTRIES */
+      this.countryService.search(request).subscribe(results => {
+        this.types = results;
+        console.log(this.types);
+        this.loading = false;
+      });
+      this.translate("countries");
+    }else if(request.type == "nationalities"){
+      console.log("nationalities loading")
+      /* LOAD NATIONALITIES
+      this.nationalityService.search(request).subscribe(results => {
+        console.log(results);
+        this.results = results;
+        this.loading = false;
+      });
+      this.translate();
+      */
+    }else {
+      console.log("not country or nationality")
+    }
+
+  }
+
+  translate(type) {
+    this.translationService.search(type, this.searchForm.value.systemLanguageId).subscribe(results => {
       this.results = results;
       this.loading = false;
     });
-    */
   }
+
 }
