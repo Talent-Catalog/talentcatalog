@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {AuthService} from "../../services/auth.service";
-import {ActivatedRoute, Router} from "@angular/router";
 import {CandidateService} from "../../services/candidate.service";
+import {Candidate, CandidateStatus} from "../../model/candidate";
+import {User} from "../../model/user";
+import {AuthService} from "../../services/auth.service";
 
 @Component({
   selector: 'app-home',
@@ -11,13 +11,27 @@ import {CandidateService} from "../../services/candidate.service";
 })
 export class HomeComponent implements OnInit {
 
+  loading: boolean;
+  error: any;
+
+  candidate: Candidate;
+  user: User;
 
   constructor(private candidateService: CandidateService,
-              private route: ActivatedRoute,
-              private router: Router) {
+              public authService: AuthService) {
   }
 
   ngOnInit() {
+    this.candidateService.getStatus().subscribe(
+      (candidate) => {
+        this.candidate = candidate || ({status: CandidateStatus.draft} as Candidate);
+        this.loading = false;
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      }
+    );
   }
 }
 

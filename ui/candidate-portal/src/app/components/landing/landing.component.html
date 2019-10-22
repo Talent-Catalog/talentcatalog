@@ -1,11 +1,45 @@
-<h1>{{ 'HOME.TITLE' | translate }}</h1>
+<div class="container">
 
-<div class="my-4">{{ 'HOME.INTRO' | translate }}</div>
+  <div class="row">
 
-<div class="text-center">
-  <a class="btn btn-outline-primary" [routerLink]="'/register'">{{ 'HOME.REGISTER' | translate }}</a>
-</div>
+    <div class="col-12 col-md-6 mb-4">
 
-<div class="text-center">
-  <a class="btn btn-primary" [routerLink]="'/login'">{{ 'HOME.LOGIN' | translate }}</a>
+      <h1>{{ 'LANDING.TITLE' | translate }}</h1>
+
+      <p>
+        {{ 'LANDING.PARA1' | translate }}
+      </p>
+
+      <p>
+        {{ 'LANDING.PARA2' | translate }}
+      </p>
+
+    </div>
+
+    <div class="col-12 col-md-6 mb-4">
+
+      <div class="card">
+
+        <app-login></app-login>
+
+        <hr>
+
+        <div class="text-center">
+          <a class="btn btn-outline-primary w-75" [routerLink]="'/register'">{{ 'LANDING.REGISTER' | translate }}</a>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <h5>{{ 'LANDING.HEADING3' | translate }}</h5>
+
+  <p>{{ 'LANDING.PARA3' | translate }}</p>
+
+  <h5>{{ 'LANDING.HEADING4' | translate }}</h5>
+
+  <p>{{ 'LANDING.PARA4' | translate }}</p>
+
 </div>

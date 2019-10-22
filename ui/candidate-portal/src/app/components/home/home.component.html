@@ -1,19 +1,52 @@
 <div class="container">
 
-  <h1>Welcome Candidate</h1>
+  <app-loading [loading]="loading"></app-loading>
 
-  <p>To do:</p>
+  <ng-container *ngIf="!loading">
 
-  <ul>
-    <li>
-      If user registration is draft take them to their registration
-    </li>
-    <li>
-      If user registration is pending - info about this - ability to view profile
-    </li>
-    <li>
-      If user status is incomplete - show reason and ability to resubmit??
-    </li>
-  </ul>
+    <h2>{{ 'HOME.TITLE' | translate:{name: (authService.user$ | async).username} }}</h2>
+
+    <ng-container [ngSwitch]="candidate?.status">
+
+      <!-- DRAFT - prompt candidate to complete registration -->
+      <ng-container *ngSwitchCase="'draft'">
+        <p>
+          {{ 'HOME.DRAFT.EXPLANATION' | translate }}
+        </p>
+
+        <div class="text-left">
+          <a class="btn btn-primary" [routerLink]="'/register'">{{ 'HOME.DRAFT.BUTTON' | translate }}</a>
+        </div>
+      </ng-container>
+
+      <!-- PENDING - prompt the user to review their profile -->
+      <ng-container *ngSwitchCase="'pending'">
+        <p>
+          {{ 'HOME.PENDING.EXPLANATION' | translate }}
+        </p>
+
+        <div class="text-left">
+          <a class="btn btn-primary" [routerLink]="'/profile'">{{ 'HOME.PENDING.BUTTON' | translate }}</a>
+        </div>
+      </ng-container>
+
+      <!-- INCOMPLETE - show reason and ability to resubmit?? -->
+      <ng-container *ngSwitchCase="'incomplete'">
+        <p>
+          {{ 'HOME.INCOMPLETE.EXPLANATION' | translate }}
+        </p>
+
+        <p class="alert alert-warning">
+          TODO: List problems
+        </p>
+
+        <div class="text-left">
+          <a class="btn btn-primary" [routerLink]="'/register'">{{ 'HOME.INCOMPLETE.BUTTON' | translate }}</a>
+        </div>
+      </ng-container>
+
+    </ng-container>
+
+  </ng-container>
 
 </div>

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {JwtResponse} from "../model/jwt-response";
-import {throwError} from "rxjs";
+import {BehaviorSubject, Observable, throwError} from "rxjs";
 import {catchError, map} from "rxjs/operators";
 import {environment} from "../../environments/environment";
 import {Router} from "@angular/router";
@@ -16,6 +16,8 @@ export class AuthService {
   apiUrl = environment.apiUrl + '/auth';
 
   private user: User;
+  private _user: BehaviorSubject<User> = new BehaviorSubject(this.getLoggedInUser());
+  public readonly user$: Observable<User> = this._user.asObservable();
 
   constructor(private router: Router,
               private http: HttpClient,
@@ -53,26 +55,31 @@ export class AuthService {
   }
 
   logout() {
-    this.http.post(`${this.apiUrl}/logout`, null);
-    this.localStorageService.remove('user');
-    this.localStorageService.remove('access-token');
+    return this.http.post(`${this.apiUrl}/logout`, null).pipe(
+      map(() => this.clearCredentials()),
+      catchError(e => throwError(e))
+    );
   }
 
   register(request: any) {
     return this.http.post<JwtResponse>(`${this.apiUrl}/register`, request).pipe(
-      map((response) => {
-        this.storeCredentials(response);
-      }),
-      catchError((error) => {return throwError(error)})
+      map((response) => this.storeCredentials(response)),
+      catchError((e) => {return throwError(e)})
     );
   }
 
   private storeCredentials(response: JwtResponse) {
-    this.localStorageService.remove('access-token');
-    this.localStorageService.remove('user');
+    this.clearCredentials();
     this.localStorageService.set('access-token', response.accessToken);
     this.localStorageService.set('user', response.user);
-    this.user = response.user;
+    this._user.next(response.user);
+  }
+
+  private clearCredentials() {
+    this.localStorageService.remove('access-token');
+    this.localStorageService.remove('user');
+    this.user = null;
+    this._user.next(this.user);
   }
 
 }
