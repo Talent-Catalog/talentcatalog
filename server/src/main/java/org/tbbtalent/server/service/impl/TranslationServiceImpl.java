@@ -40,6 +40,29 @@ public class TranslationServiceImpl implements TranslationService {
 //        return translations;
 //    }
 
+//    public <T extends AbstractTranslatableDomainObject<Long>> void translate(List<T> items,
+//                                                                             String type) {
+//        // if the selected language is english, no need to load translations at all, just return original data
+//        String selectedLanguage = userContext.getUserLanguage();
+//        if ("en".equals(selectedLanguage)) {
+//            return;
+//        }
+//
+//        if (CollectionUtils.isNotEmpty(items)) {
+//            List<Long> itemIds = items.stream().map(c -> (Long)c.getId()).collect(Collectors.toList());
+//            List<Translation> translations = translationRepository.findByIdsTypeLanguage(itemIds, type, selectedLanguage);
+//            if (CollectionUtils.isNotEmpty(translations)) {
+//                Map<Long, String> translationsById = translations.stream().collect(Collectors.toMap(t -> t.getObjectId(), t -> t.getValue()));
+//                items.forEach(c -> {
+//                    String translation = translationsById.get(c.getId());
+//                    if (StringUtils.isNotBlank(translation)) {
+//                        c.setTranslatedName(translation);
+//                    }
+//                });
+//            }
+//        }
+//    }
+
 
     // GETTING LANGUAGE FROM USER
     @Override
