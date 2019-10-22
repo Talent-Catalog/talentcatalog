@@ -4,37 +4,36 @@
 
   <ng-container *ngIf="!loading">
 
-    <h2>Welcome back, {{(authService.user$ | async).username}}!</h2>
+    <h2>{{ 'HOME.TITLE' | translate:{name: (authService.user$ | async).username} }}</h2>
 
     <ng-container [ngSwitch]="candidate?.status">
 
       <!-- DRAFT - prompt candidate to complete registration -->
       <ng-container *ngSwitchCase="'draft'">
         <p>
-          You haven't finished your registration. Please click the button below to continue.
+          {{ 'HOME.DRAFT.EXPLANATION' | translate }}
         </p>
 
         <div class="text-left">
-          <a class="btn btn-primary" [routerLink]="'/register'">Continue registration</a>
+          <a class="btn btn-primary" [routerLink]="'/register'">{{ 'HOME.DRAFT.BUTTON' | translate }}</a>
         </div>
       </ng-container>
 
       <!-- PENDING - prompt the user to review their profile -->
       <ng-container *ngSwitchCase="'pending'">
         <p>
-          Congratulations, you've completed your registration application. We will review your application as soon as
-          can. In the meantime, you can review your profile.
+          {{ 'HOME.PENDING.EXPLANATION' | translate }}
         </p>
 
         <div class="text-left">
-          <a class="btn btn-primary" [routerLink]="'/profile'">Review Profile</a>
+          <a class="btn btn-primary" [routerLink]="'/profile'">{{ 'HOME.PENDING.BUTTON' | translate }}</a>
         </div>
       </ng-container>
 
       <!-- INCOMPLETE - show reason and ability to resubmit?? -->
       <ng-container *ngSwitchCase="'incomplete'">
         <p>
-          Your registration application has been reviewed, and requires further action before it can be approved.
+          {{ 'HOME.INCOMPLETE.EXPLANATION' | translate }}
         </p>
 
         <p class="alert alert-warning">
@@ -42,7 +41,7 @@
         </p>
 
         <div class="text-left">
-          <a class="btn btn-primary" [routerLink]="'/register'">Review registration</a>
+          <a class="btn btn-primary" [routerLink]="'/register'">{{ 'HOME.INCOMPLETE.BUTTON' | translate }}</a>
         </div>
       </ng-container>
 

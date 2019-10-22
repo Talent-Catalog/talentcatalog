@@ -45,10 +45,27 @@
     "INTRO": "Landing page - the what and the why",
     "REGISTER": "Register",
     "LOGIN": "Login",
-    "HEADING1": "About Talent Beyond Boundaries",
-    "PARA1": "Talent Beyond Boundaries is a nonprofit organization. Our ultimate goal is to link those who are displaced by conflict with jobs in countries around the world where their skills are needed. The talent catalog is a platform built to show the great range of skills among the millions of people who have been forced by violence to leave their homeland to the international private sector with the goal to link talent with international job opportunities. TBB currently working on a pilot project to place refugees living in Jordan and Lebanon with international employment in countries where their skills are needed. Once we prove this model through the pilot project, we plan to scale up and expand our work to connect tens of thousands of displaced people to international employment around the world.",
-    "HEADING2": "About the Talent Catalog",
-    "PARA2": "Registration in the Talent Catalog is free of charge. This site is available in both Arabic and English. Once registrants create a profile, they can download their personalized CV."
+    "PARA1": "Welcome to the Talent Catalog! This site is an online platform designed to capture the skills and talents of displaced people who face barriers to accessing employment.",
+    "PARA2": "Refugees living in countries where they cannot work legally are welcome to register on this site. However, Talent Beyond Boundaries does not currently have any operations in the country where you are living.",
+    "HEADING3": "About Talent Beyond Boundaries",
+    "PARA3": "Talent Beyond Boundaries is a nonprofit organization. Our ultimate goal is to link those who are displaced by conflict with jobs in countries around the world where their skills are needed. The talent catalog is a platform built to show the great range of skills among the millions of people who have been forced by violence to leave their homeland to the international private sector with the goal to link talent with international job opportunities. TBB currently working on a pilot project to place refugees living in Jordan and Lebanon with international employment in countries where their skills are needed. Once we prove this model through the pilot project, we plan to scale up and expand our work to connect tens of thousands of displaced people to international employment around the world.",
+    "HEADING4": "About the Talent Catalog",
+    "PARA4": "Registration in the Talent Catalog is free of charge. This site is available in both Arabic and English. Once registrants create a profile, they can download their personalized CV."
+  },
+  "HOME": {
+    "TITLE": "Welcome back, {{name}}!",
+    "DRAFT": {
+      "EXPLANATION": "You haven't finished your registration. Please click the button below to continue.",
+      "BUTTON": "Continue registration"
+    },
+    "PENDING": {
+      "EXPLANATION": "Congratulations, you've completed your registration application. We will review your application as soon as we can. In the meantime, you can review your profile.",
+      "BUTTON": "Review Profile"
+    },
+    "INCOMPLETE": {
+      "EXPLANATION": "Your registration application has been reviewed, and requires further action before it can be approved.",
+      "BUTTON": "Review registration"
+    }
   },
   "REGISTRATION": {
     "HEADER": {
@@ -161,6 +178,16 @@
         "LOGOUT": "Logout",
         "PROFILE": "View My Profile"
       }
+    }
+  },
+  "PROFILE": {
+    "TITLE": {
+      "PERSONAL":  "Personal Information",
+      "EXPERIENCE": "Professional Experience",
+      "EDUCATION":  "Education",
+      "CERTIFICATIONS": "Certifications",
+      "LANGUAGES":  "Languages",
+      "OTHER": "Other Information"
     }
   },
   "FORM": {
