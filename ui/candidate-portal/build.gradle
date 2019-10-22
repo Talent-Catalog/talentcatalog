@@ -9,7 +9,7 @@ node {
 }
 
 task npm_build_ui_bundle(type: NpmTask) {
-  args = ['run', 'build', '--', '--prod', '--base-href', '/admin/']
+  args = ['run', 'build', '--', '--prod', '--base-href', '/candidate-portal/']
   dependsOn 'npm_install'
 }
 
