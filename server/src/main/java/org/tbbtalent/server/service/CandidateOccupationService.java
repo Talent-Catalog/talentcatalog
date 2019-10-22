@@ -4,6 +4,7 @@ import org.tbbtalent.server.model.CandidateOccupation;
 import org.tbbtalent.server.model.Occupation;
 import org.tbbtalent.server.request.candidate.occupation.CreateCandidateOccupationRequest;
 import org.tbbtalent.server.request.candidate.occupation.UpdateCandidateOccupationsRequest;
+import org.tbbtalent.server.request.candidate.occupation.VerifyCandidateOccupationRequest;
 
 import java.util.List;
 
@@ -24,4 +25,6 @@ public interface CandidateOccupationService {
     List<Occupation> listOccupations();
 
     List<CandidateOccupation> updateCandidateOccupations(UpdateCandidateOccupationsRequest request);
+
+    CandidateOccupation verifyCandidateOccupation(long id, VerifyCandidateOccupationRequest request);
 }

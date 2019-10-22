@@ -275,6 +275,9 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.error = null;
     const request = this.searchForm.value;
+    if (request.shortlistStatus == ''){
+      request.shortlistStatus = null;
+    }
     request.pageNumber = this.pageNumber - 1;
     request.pageSize = this.pageSize;
     this.subscription = this.candidateService.search(request).subscribe(
@@ -295,6 +298,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   loadSavedSearch(id) {
     this.loading = true;
+    this.searchForm.controls['savedSearchId'].patchValue(id);
     this.savedSearchService.load(id).subscribe(
       request => {
         this.populateFormFromRequest(request);
@@ -332,7 +336,6 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     showSaveModal.result
       .then((savedSearch) => {
         this.savedSearch = savedSearch;
-        console.log(savedSearch);
       })
       .catch(() => { /* Isn't possible */
       });

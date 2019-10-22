@@ -18,6 +18,10 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long>  {
 
     private String location;
 
+    private boolean adminOnly;
+    private String fileType;
+    private boolean migrated;
+
     public CandidateAttachment() {
     }
 
@@ -53,4 +57,27 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long>  {
         this.location = location;
     }
 
+    public boolean isAdminOnly() {
+        return adminOnly;
+    }
+
+    public void setAdminOnly(boolean adminOnly) {
+        this.adminOnly = adminOnly;
+    }
+
+    public String getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
+    }
+
+    public boolean isMigrated() {
+        return migrated;
+    }
+
+    public void setMigrated(boolean migrated) {
+        this.migrated = migrated;
+    }
 }

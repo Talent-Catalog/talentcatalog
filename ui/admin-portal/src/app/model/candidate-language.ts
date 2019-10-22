@@ -6,4 +6,5 @@ export interface CandidateLanguage {
   language: Language;
   spokenLevel: LanguageLevel;
   writtenLevel: LanguageLevel;
+  migrationLanguage: string;
 }

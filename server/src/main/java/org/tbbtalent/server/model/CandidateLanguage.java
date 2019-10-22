@@ -23,6 +23,8 @@ public class CandidateLanguage  extends AbstractDomainObject<Long> {
     @JoinColumn(name = "spoken_level_id")
     private LanguageLevel spokenLevel;
 
+    private String migrationLanguage;
+
     public CandidateLanguage() {
     }
 
@@ -63,6 +65,14 @@ public class CandidateLanguage  extends AbstractDomainObject<Long> {
 
     public void setSpokenLevel(LanguageLevel spokenLevel) {
         this.spokenLevel = spokenLevel;
+    }
+
+    public String getMigrationLanguage() {
+        return migrationLanguage;
+    }
+
+    public void setMigrationLanguage(String migrationLanguage) {
+        this.migrationLanguage = migrationLanguage;
     }
 }
 

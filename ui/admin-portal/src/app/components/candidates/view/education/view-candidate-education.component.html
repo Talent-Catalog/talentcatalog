@@ -8,6 +8,7 @@
 
   <div class="card-header">
     Education
+
     <div class="pull-right" *ngIf="editable">
       <button type="button" class="btn btn-primary" (click)="createCandidateEducation()">Add</button>
     </div>
@@ -19,6 +20,8 @@
         No education entered
       </div>
     </div>
+
+
     <div *ngFor="let candidateEducation of candidateEducations">
       <div class="row">
         <div class="col-xs-11">
@@ -42,6 +45,9 @@
       <hr/>
     </div>
 
+  </div>
+  <div *ngIf="candidate.migrationEducationMajor" class="card-footer">
+      <span class="text-muted">Migrated Major: {{candidate.migrationEducationMajor.name}}</span>
   </div>
 
 </div>

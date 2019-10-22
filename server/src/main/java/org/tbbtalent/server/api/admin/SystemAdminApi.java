@@ -257,17 +257,18 @@ public class SystemAdminApi {
         Set<Long> countryIds = loadReferenceIds(targetConn, "country");
         Set<Long> nationalityIds = loadReferenceIds(targetConn, "nationality");
         Set<Long> eduLevelIds = loadReferenceIds(targetConn, "education_level");
-        
+        Set<Long> eduMajorIds = loadReferenceIds(targetConn, "education_major");
+
         // load other options
         Map<Long, String> otherNationalities = loadOtherReferenceIds(sourceStmt, "nationality");
         
         String insertSql = "insert into candidate (user_id, candidate_number, gender, dob, phone, whatsapp, status, country_id, "
                 + " city, nationality_id, additional_info, max_education_level_id, created_by, created_date, updated_date, un_registered, "
-                + " un_registration_number, migration_nationality) "  
+                + " un_registration_number, migration_education_major_id) "
                 + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) on conflict (user_id) do nothing";
         String selectSql = "select user_id, gender, concat(birth_year, '-', lpad(birth_month, 2, '0'), '-', lpad(birth_day, 2, '0')) as dob, "
                 + " phone_number, phone_wapp, u.status, country, f.name as province, nationality, additional_information_summary, "
-                + " current_education_level, u.created_at, u.updated_at, un_registration_status, unhcr_number "
+                + " current_education_level, u.created_at, u.updated_at, un_registration_status, unhcr_number, major "
                 + " from user_jobseeker j join user u on u.id = j.user_id "
                 + " left join frm_options f on f.id = j.province";
         PreparedStatement insert = targetConn.prepareStatement(insertSql);
@@ -297,6 +298,7 @@ public class SystemAdminApi {
             insert.setTimestamp(i++, convertToTimestamp(result.getLong("updated_at")));
             insert.setBoolean(i++, getUNStatus(result.getInt("un_registration_status")));
             insert.setString(i++, result.getString("unhcr_number"));
+            setRefIdOrNull(result, insert, "major", eduMajorIds, i++);
             insert.addBatch();
             
             if (count%100 == 0) {
@@ -613,7 +615,7 @@ public class SystemAdminApi {
                                        Map<Long, Long> candidateIdsByUserId) throws SQLException {
         log.info("Migration data for candidate attachment links");
 
-        String insertSql = "insert into candidate_attachment (id, candidate_id, type, name, location, created_date, created_by) values (?, ?, ?, ?, ?, ?, ?) on conflict (id) do nothing";
+        String insertSql = "insert into candidate_attachment (id, candidate_id, type, name, location, migrated, admin_only, created_date, created_by) values (?, ?, ?, ?, ?, ?, ?, ?, ?) on conflict (id) do nothing";
         String selectSql = "select id, user_id, name, link from user_jobseeker_link";
         PreparedStatement insert = targetConn.prepareStatement(insertSql);
         ResultSet result = sourceStmt.executeQuery(selectSql);
@@ -628,6 +630,8 @@ public class SystemAdminApi {
                 insert.setString(i++, AttachmentType.link.name());
                 insert.setString(i++, result.getString("name"));
                 insert.setString(i++, result.getString("link"));
+                insert.setBoolean(i++, true);
+                insert.setBoolean(i++, true);
                 insert.setTimestamp(i++, new Timestamp(System.currentTimeMillis()));
                 insert.setLong(i++, userId);
                 insert.addBatch();
@@ -646,8 +650,8 @@ public class SystemAdminApi {
 
         Set<Long> adminIds = loadAdminIds(targetConn);
 
-        insertSql = "insert into candidate_attachment (candidate_id, type, name, location, created_date, created_by) values (?, ?, ?, ?, ?, ?) on conflict (id) do nothing";
-        selectSql = "select id, user_id, admin_id, filename, upload_date from user_jobseeker_attachments";
+        insertSql = "insert into candidate_attachment (candidate_id, type, name, location, file_type, migrated, admin_only, created_date, created_by) values (?, ?, ?, ?, ?, ?, ?, ?) on conflict (id) do nothing";
+        selectSql = "select id, user_id, admin_id, filename, extension, upload_date from user_jobseeker_attachments";
         insert = targetConn.prepareStatement(insertSql);
         result = sourceStmt.executeQuery(selectSql);
         count = 0;
@@ -660,6 +664,9 @@ public class SystemAdminApi {
                 insert.setString(i++, AttachmentType.file.name());
                 insert.setString(i++, result.getString("filename"));
                 insert.setString(i++, result.getString("filename"));
+                insert.setString(i++, result.getString("extension"));
+                insert.setBoolean(i++, true);
+                insert.setBoolean(i++, false);
                 insert.setTimestamp(i++, convertToTimestamp(result.getLong("upload_date")));
                 long adminId = result.getLong("user_id");
                 if (adminIds.contains(adminId)) {

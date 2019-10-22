@@ -25,4 +25,8 @@ export class CandidateOccupationService {
   get(id: number): Observable<CandidateOccupation[]> {
     return this.http.get<CandidateOccupation[]>(`${this.apiUrl}/${id}/list`);
   }
+
+  update(id: number, details): Observable<CandidateOccupation>  {
+    return this.http.put<CandidateOccupation>(`${this.apiUrl}/${id}`, details);
+  }
 }

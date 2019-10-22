@@ -30,13 +30,10 @@ public class CandidateSpecification {
                     //Filter for short list candidates by status
                     Join<Candidate, CandidateShortlistItem> candidateShortlistItem = candidate.join("candidateShortlistItems", JoinType.LEFT);
                     Join<CandidateShortlistItem, SavedSearch> savedSearch = candidateShortlistItem.join("savedSearch", JoinType.LEFT);
-                    if (request.getShortlistStatus().equals(ShortlistStatus.pending)) {
-                        conjunction.getExpressions().add(builder.notEqual(savedSearch.get("id"), request.getSavedSearchId()));
-                    } else {
-                        conjunction.getExpressions().add(
-                                builder.and(builder.equal(candidateShortlistItem.get("shortlistStatus"), request.getShortlistStatus()),
-                                        builder.equal(savedSearch.get("id"), request.getSavedSearchId())));
-                    }
+
+                    conjunction.getExpressions().add(
+                            builder.and(builder.equal(candidateShortlistItem.get("shortlistStatus"), request.getShortlistStatus()),
+                                    builder.equal(savedSearch.get("id"), request.getSavedSearchId())));
                     //Fetch short lists todo only fetch for specific search
                 } else if (query.getResultType().equals(Candidate.class)) {
                     Fetch<Candidate, CandidateShortlistItem> candidateShortlistItem = candidate.fetch("candidateShortlistItems", JoinType.LEFT);
@@ -55,7 +52,8 @@ public class CandidateSpecification {
                                 builder.like(builder.lower(user.get("lastName")), likeMatchTerm),
                                 builder.like(builder.lower(user.get("email")), likeMatchTerm),
                                 builder.like(builder.lower(candidate.get("phone")), likeMatchTerm),
-                                builder.like(builder.lower(candidate.get("whatsapp")), likeMatchTerm)
+                                builder.like(builder.lower(candidate.get("whatsapp")), likeMatchTerm),
+                                builder.like(builder.lower(candidate.get("additionalInfo")), likeMatchTerm)
                         ));
             }
             // STATUS SEARCH
@@ -70,7 +68,7 @@ public class CandidateSpecification {
                 Join<Candidate, CandidateOccupation> candidateOccupations = candidate.join("candidateOccupations", JoinType.LEFT);
                 Join<CandidateOccupation, Occupation> occupation = candidateOccupations.join("occupation", JoinType.LEFT);
                 if (!Collections.isEmpty(request.getVerifiedOccupationIds())) {
-                    if (request.getVerifiedOccupationSearchType().equals(SearchType.not)) {
+                    if (SearchType.not.equals(request.getVerifiedOccupationSearchType())) {
                         conjunction.getExpressions().add(builder.notEqual(builder.isTrue(candidateOccupations.get("verified")),
                                 builder.isTrue(occupation.get("id").in(request.getVerifiedOccupationIds()))
                         ));
@@ -95,9 +93,11 @@ public class CandidateSpecification {
                         conjunction.getExpressions().add(builder.or(
                                 builder.isTrue(occupation.get("id").in(request.getOccupationIds())),
                                 builder.or(
+                                        builder.like(builder.lower(candidate.get("additionalInfo")), likeMatchTerm),
                                         builder.like(builder.lower(candidateJobExperiences.get("description")), likeMatchTerm),
                                         builder.like(builder.lower(candidateJobExperiences.get("role")), likeMatchTerm),
-                                        builder.like(builder.lower(candidateEducations.get("courseName")), likeMatchTerm)
+                                        builder.like(builder.lower(candidateEducations.get("courseName")), likeMatchTerm),
+                                        builder.like(builder.lower(candidateOccupations.get("migrationOccupation")), likeMatchTerm)
                                 ))
                         );
                     }
@@ -177,9 +177,11 @@ public class CandidateSpecification {
             if (!Collections.isEmpty(request.getEducationMajorIds())) {
                 candidateEducations = candidateEducations == null ? candidate.join("candidateEducations", JoinType.LEFT) : candidateEducations;
                 Join<Candidate, EducationMajor> major = candidateEducations.join("educationMajor", JoinType.LEFT);
+                Join<Candidate, EducationMajor> migrationMajor = candidate.join("migrationEducationMajor", JoinType.LEFT);
 
-                conjunction.getExpressions().add(
-                        builder.isTrue(major.get("id").in(request.getEducationMajorIds()))
+                conjunction.getExpressions().add(builder.or(
+                        builder.isTrue(major.get("id").in(request.getEducationMajorIds())),
+                        builder.isTrue(migrationMajor.get("id").in(request.getEducationMajorIds())))
                 );
             }
 

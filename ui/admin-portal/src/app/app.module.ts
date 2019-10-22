@@ -89,6 +89,7 @@ import {DateRangePickerComponent} from './components/util/form/date-range-picker
 import { EditCandidateJobExperienceComponent } from './components/candidates/view/occupation/experience/edit/edit-candidate-job-experience.component';
 import { CreateCandidateJobExperienceComponent } from './components/candidates/view/occupation/experience/create/create-candidate-job-experience.component';
 import {ViewCandidateAttachmentComponent} from "./components/candidates/view/attachment/view-candidate-attachment.component";
+import {EditCandidateOccupationComponent} from "./components/candidates/view/occupation/edit/edit-candidate-occupation.component";
 
 @NgModule({
   declarations: [
@@ -169,7 +170,8 @@ import {ViewCandidateAttachmentComponent} from "./components/candidates/view/att
     LanguageLevelFormControlComponent,
     CandidatePipe,
     EditCandidateJobExperienceComponent,
-    CreateCandidateJobExperienceComponent
+    CreateCandidateJobExperienceComponent,
+    EditCandidateOccupationComponent
   ],
   imports: [
     BrowserModule,
@@ -226,7 +228,8 @@ import {ViewCandidateAttachmentComponent} from "./components/candidates/view/att
     EditCandidateCertificationComponent,
     EditCandidateShortlistItemComponent,
     CreateCandidateJobExperienceComponent,
-    EditCandidateJobExperienceComponent
+    EditCandidateJobExperienceComponent,
+    EditCandidateOccupationComponent
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
