@@ -59,7 +59,7 @@
       <ul class="navbar-nav">
         <div class="nav-item dropdown" ngbDropdown>
           <a class="dropdown-toggle translation-toggle" ngbDropdownToggle>
-            {{languageService.getSelectedLanguage()}}
+            {{selectedLanguage}}
           </a>
 
           <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
@@ -73,7 +73,7 @@
         <li class="nav-item dropdown" ngbDropdown>
 
           <a class="nav-link dropdown-toggle" ngbDropdownToggle>
-            {{user?.username}}
+            Account
           </a>
           <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
             <a class="dropdown-item" (click)="logout()">Logout</a>
