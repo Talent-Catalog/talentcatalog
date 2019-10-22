@@ -98,20 +98,6 @@ export class RegistrationWorkExperienceComponent implements OnInit {
     );
   }
 
-  delete(experience){
-    this.saving = true;
-    this.jobExperienceService.deleteJobExperience(experience.id).subscribe(
-      () => {
-        this.candidateJobExperiences = this.candidateJobExperiences.filter(e => e !== experience);
-        this.saving = false;
-      },
-      (error) => {
-        this.error = error;
-        this.saving = false;
-      }
-    );
-  }
-
   back() {
     this.registrationService.back();
   }
@@ -126,7 +112,18 @@ export class RegistrationWorkExperienceComponent implements OnInit {
   }
 
   handleDelete(exp: CandidateJobExperience) {
-    window.alert('This feature is still under construction.');
+    this.saving = true;
+    this.jobExperienceService.deleteJobExperience(exp.id).subscribe(
+      () => {
+        this.candidateJobExperiences = this.candidateJobExperiences.filter(e => e.id !== exp.id);
+        this.populateExperienceMap();
+        this.saving = false;
+      },
+      (error) => {
+        this.error = error;
+        this.saving = false;
+      }
+    );
   }
 
   handleEdit(exp: CandidateJobExperience) {

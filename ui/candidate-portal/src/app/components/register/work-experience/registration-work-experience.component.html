@@ -25,8 +25,8 @@
           <hr class="mx-4" *ngIf="i < experiencesByCandidateOccupation[occupation.id]?.length - 1">
         </ng-container>
 
-        <div class="text-center my-4">
-          <button class="btn btn-outline-primary d-md-none"
+        <div class="text-center my-4 d-md-none">
+          <button class="btn btn-outline-primary"
                   (click)="addExperience(occupation)">
             {{ 'REGISTRATION.EXPERIENCE.BUTTON.ADD' | translate }}
           </button>
