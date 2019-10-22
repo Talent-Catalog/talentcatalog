@@ -1,4 +1,4 @@
-package org.tbbtalent.server;
+package org.tbbtalent;
 
 import org.flywaydb.core.Flyway;
 import org.springframework.boot.SpringApplication;
@@ -6,9 +6,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.servlet.config.annotation.RedirectViewControllerRegistration;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @SpringBootApplication
-public class TbbTalentApplication {
+public class TbbTalentApplication extends WebMvcConfigurerAdapter {
 
     public static void main(String[] args) {
         SpringApplication.run(TbbTalentApplication.class, args);
@@ -31,6 +34,12 @@ public class TbbTalentApplication {
                 }
             }
         };
+    }
+
+    @Override
+    public void addViewControllers (ViewControllerRegistry registry) {
+        RedirectViewControllerRegistration r =
+                registry.addRedirectViewController("/", "/candidate");
     }
    
 }
