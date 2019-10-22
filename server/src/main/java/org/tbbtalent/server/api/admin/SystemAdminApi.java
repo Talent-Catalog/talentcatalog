@@ -68,10 +68,10 @@ public class SystemAdminApi {
     public String migrate() {
         try {
             Long userId = 1L; 
-            if (userContext != null) {
-                User loggedInUser = userContext.getLoggedInUser();
-                userId = loggedInUser.getId();
-            }
+//            if (userContext != null) {
+//                User loggedInUser = userContext.getLoggedInUser();
+//                userId = loggedInUser.getId();
+//            }
 
             Connection sourceConn = DriverManager.getConnection("jdbc:mysql://tbbtalent.org/yiitbb?useUnicode=yes&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull", "sayre", "MoroccoBound");
             Statement sourceStmt = sourceConn.createStatement();
