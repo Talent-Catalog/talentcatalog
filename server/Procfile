@@ -1,1 +1,1 @@
-web: java -Dserver.port=$PORT $JAVA_OPTS -jar server/core/build/libs/cp-toys-server-0.1.0-exec.jar
+web: java -Dserver.port=$PORT $JAVA_OPTS -jar server/core/build/libs/server.jar
