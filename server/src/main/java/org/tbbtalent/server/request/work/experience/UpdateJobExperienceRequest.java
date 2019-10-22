@@ -6,6 +6,8 @@ import java.time.LocalDate;
 
 public class UpdateJobExperienceRequest {
 
+    private Long id;
+    private Long candidateOccupationId;
     @NotBlank
     private String companyName;
     @NotNull
@@ -18,6 +20,26 @@ public class UpdateJobExperienceRequest {
     private Boolean paid;
     @NotBlank
     private String description;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getCandidateOccupationId() {
+        return candidateOccupationId;
+    }
+
+    public void setCandidateOccupationId(Long candidateOccupationId) {
+        this.candidateOccupationId = candidateOccupationId;
+    }
+
+    public void setCountryId(Long countryId) {
+        this.countryId = countryId;
+    }
 
     public String getCompanyName() { return companyName; }
 

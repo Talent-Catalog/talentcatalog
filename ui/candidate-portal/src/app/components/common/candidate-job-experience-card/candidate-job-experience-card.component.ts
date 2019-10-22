@@ -11,6 +11,7 @@ export class CandidateJobExperienceCardComponent implements OnInit {
   @Input() editing: boolean = false;
   @Input() saving: boolean = false;
   @Input() experience: CandidateJobExperience;
+  @Input() disabled: boolean;
 
   @Output() onEdit = new EventEmitter<CandidateJobExperience>();
   @Output() onDelete = new EventEmitter<CandidateJobExperience>();

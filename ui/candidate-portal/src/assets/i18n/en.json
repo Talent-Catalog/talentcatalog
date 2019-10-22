@@ -70,7 +70,9 @@
       }
     },
     "EXPERIENCE": {
-
+      "BUTTON": {
+        "ADD": "Add work experience"
+      }
     },
     "EDUCATION": {
       "LABEL": {
@@ -109,15 +111,22 @@
       }
     }
   },
-  "COMMON": {
-    "CANDIDATE": {
-      "EDUCATION": {
-        "FORM": {
-          "LABEL": {
-            "EDUCATIONTYPE": "Education Level"
-
-          }
-        }
+  "FORM": {
+    "JOBEXPERIENCE": {
+      "BUTTON": {
+        "ADD": "Add Work Experience",
+        "CANCEL": "Cancel",
+        "SAVE": "Save changes"
+      }
+    }
+  },
+  "CARD": {
+    "JOBEXPERIENCE": {
+      "LABEL": {
+        "FULLTIME":  "Full time",
+        "PARTTIME": "Part time",
+        "PAID":  "Paid employee",
+        "VOLUNTEER": "Volunteer employee"
       }
     }
   }

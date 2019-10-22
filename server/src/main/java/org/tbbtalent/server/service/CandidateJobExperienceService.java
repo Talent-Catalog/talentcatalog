@@ -12,9 +12,7 @@ public interface CandidateJobExperienceService {
 
     CandidateJobExperience createCandidateJobExperience(CreateJobExperienceRequest request);
 
-    CandidateJobExperience createCandidateJobExperience(Long id, CreateJobExperienceRequest request);
-
-    CandidateJobExperience updateCandidateJobExperience(Long id, UpdateJobExperienceRequest request);
+    CandidateJobExperience updateCandidateJobExperience(UpdateJobExperienceRequest request);
 
     void deleteCandidateJobExperience(Long id);
 }

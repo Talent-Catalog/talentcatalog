@@ -1,3 +1,5 @@
+<span #top></span>
+
 <app-error [error]="error"></app-error>
 
 <form class="row" [formGroup]="form" *ngIf="!loading && !error">
@@ -118,11 +120,18 @@
     </div>
   </div>
 
-  <div class="col-12 text-center">
+  <div class="col-12 text-right">
     <button class="btn btn-outline-primary"
+            [disabled]="loading || saving"
+            (click)="cancel()">
+      {{ 'FORM.JOBEXPERIENCE.BUTTON.CANCEL' | translate }}
+    </button>
+
+    <button class="btn btn-primary"
             [disabled]="form.invalid || loading || saving"
             (click)="save()">
-      Add Work Experience
+      <span *ngIf="!candidateJobExperience">{{ 'FORM.JOBEXPERIENCE.BUTTON.ADD' | translate }}</span>
+      <span *ngIf="candidateJobExperience">{{ 'FORM.JOBEXPERIENCE.BUTTON.SAVE' | translate }}</span>
     </button>
   </div>
 </form>

@@ -29,11 +29,11 @@ export class RegistrationWorkExperienceComponent implements OnInit {
   candidateJobExperiences: CandidateJobExperience[];
   countries: Country[];
   occupations: CandidateOccupation[];
-  addingWorkExperience: boolean;
-  occupation: CandidateOccupation;
   experiencesByCandidateOccupation: {[id: number]: CandidateJobExperience[]};
 
-  addingExperience: boolean;
+  experienceFormOpen: boolean;
+  occupation: CandidateOccupation;
+  experience: CandidateJobExperience;
 
   constructor(private fb: FormBuilder,
               private router: Router,
@@ -49,15 +49,18 @@ export class RegistrationWorkExperienceComponent implements OnInit {
     this.countries = [];
     this.occupations = [];
     this.candidateJobExperiences = [];
-    this.addingWorkExperience = false;
     this.experiencesByCandidateOccupation = {};
-    this.addingExperience = false;
+    this.experienceFormOpen = false;
 
     /* Load the candidate data */
     this.candidateService.getCandidateJobExperiences().subscribe(
       (candidate) => {
-        console.log(candidate);
-        this.candidateJobExperiences = candidate.candidateJobExperiences || [];
+        /* Extract the country id and candidate occupation id and store the properties on the object */
+        this.candidateJobExperiences = candidate.candidateJobExperiences
+          .map(exp => Object.assign(exp, {
+            countryId: exp.country.id,
+            candidateOccupationId: exp.candidateOccupation.id
+          })) || [];
         this._loading.candidate = false;
 
         /* Load the candidate's occupations */
@@ -66,9 +69,7 @@ export class RegistrationWorkExperienceComponent implements OnInit {
             this.occupations = response;
 
             /* Populate experience map */
-            for (let occ of this.occupations) {
-              this.experiencesByCandidateOccupation[occ.id] = this.candidateJobExperiences.filter(exp => exp.candidateOccupation.id === occ.id);
-            }
+            this.populateExperienceMap();
 
             this._loading.occupations = false;
           },
@@ -111,20 +112,12 @@ export class RegistrationWorkExperienceComponent implements OnInit {
     );
   }
 
-  save(dir: string) {
-    if (dir === 'next') {
-      this.registrationService.next();
-    } else {
-      this.registrationService.back();
-    }
-  }
-
   back() {
-    this.save('back');
+    this.registrationService.back();
   }
 
   next() {
-    this.save('next');
+    this.registrationService.next();
   }
 
   get loading() {
@@ -137,21 +130,41 @@ export class RegistrationWorkExperienceComponent implements OnInit {
   }
 
   handleEdit(exp: CandidateJobExperience) {
-    window.alert('This feature is still under construction.');
+    this.experience = exp;
+    this.experienceFormOpen = true;
   }
 
   addExperience(occupation: CandidateOccupation) {
     this.occupation = occupation;
-    this.addingExperience = true;
+    this.experienceFormOpen = true;
   }
 
   handleCancelled(exp: CandidateJobExperience) {
-    this.addingExperience = false;
+    this.experienceFormOpen = false;
     this.occupation = null;
   }
 
   handleSave(exp: CandidateJobExperience) {
-    this.experiencesByCandidateOccupation[exp.candidateOccupation.id].push(exp);
-    this.addingExperience = false;
+    const index = this.candidateJobExperiences.findIndex(candExperience => candExperience.id === exp.id);
+    exp = Object.assign(exp, {
+      countryId: exp.country.id,
+      candidateOccupationId: exp.candidateOccupation.id
+    });
+    if (index) {
+      this.candidateJobExperiences[index] = exp;
+    } else {
+      this.candidateJobExperiences.push(exp);
+    }
+    this.populateExperienceMap();
+    this.experienceFormOpen = false;
+  }
+
+  private populateExperienceMap() {
+    this.experiencesByCandidateOccupation = {};
+    for (let occ of this.occupations) {
+      this.experiencesByCandidateOccupation[occ.id] = this.candidateJobExperiences
+        .filter(exp => exp.candidateOccupation.id === occ.id)
+        .sort((a, b) => a.id > b.id ? -1 : 1);
+    }
   }
 }
