@@ -7,7 +7,7 @@
   <!-- OCCUPATION -->
   <div class="col-12" *ngIf="!candidateOccupation">
     <div class="form-group">
-      <label for="candidateOccupationId">Occupation</label>
+      <label for="candidateOccupationId">{{ 'FORM.JOBEXPERIENCE.LABEL.CANDIDATEOCCUPATIONID' | translate }}</label>
       <select class="form-control" name="candidateOccupationId" id="candidateOccupationId" [formControlName]="'candidateOccupationId'">
         <option value=""></option>
         <option *ngFor="let candidateOccupation of candidateOccupations" [value]="candidateOccupation.id">{{candidateOccupation.occupation.name}}</option>
@@ -18,7 +18,7 @@
   <!-- COMPANY NAME -->
   <div class="col-12 col-md-6">
     <div class="form-group">
-      <label for="companyName">Company Name</label>
+      <label for="companyName">{{ 'FORM.JOBEXPERIENCE.LABEL.COMPANYNAME' | translate }}</label>
       <input type="text" class="form-control" name="companyName" id="companyName" [formControlName]="'companyName'">
     </div>
   </div>
@@ -26,7 +26,7 @@
   <!-- COMPANY LOCATION -->
   <div class="col-12 col-md-6">
     <div class="form-group">
-      <label for="country">Location</label>
+      <label for="country">{{ 'FORM.JOBEXPERIENCE.LABEL.COUNTRY' | translate }}</label>
       <select class="form-control" name="country" id="country" [formControlName]="'country'">
         <option value=""></option>
         <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
@@ -37,7 +37,7 @@
   <!-- START DATE -->
   <div class="col-12 col-md-6">
     <div class="form-group">
-      <label for="startDate">Started (dd/month / year)</label>
+      <label for="startDate">{{ 'FORM.JOBEXPERIENCE.LABEL.STARTDATE' | translate }}</label>
       <input type="date" id="startDate" class="form-control" [formControlName]="'startDate'"
              datepicker-popup is-open="status.opened" min-date="minDate" max-date="maxDate"
              datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
@@ -48,7 +48,7 @@
   <!-- END DATE -->
   <div class="col-12 col-md-6">
     <div class="form-group">
-      <label for="endDate">Finished (dd/ month / year)</label>
+      <label for="endDate">{{ 'FORM.JOBEXPERIENCE.LABEL.ENDDATE' | translate }}</label>
       <input type="date" id="endDate" class="form-control" [formControlName]="'endDate'"
              datepicker-popup is-open="status.opened" min-date="minDate" max-date="maxDate"
              datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
@@ -57,15 +57,14 @@
 
   <div class="col-12">
     <p>
-      If possible please provide this response in English so it can be more easily reviewed by our team. If you feel
-      more comfortable using your native language please do so and we will have a translator convert it for our team.
+      {{ 'FORM.JOBEXPERIENCE.EXPLANATION' | translate }}
     </p>
   </div>
 
   <!-- JOB TITLE -->
   <div class="col-12">
     <div class="form-group">
-      <label for="role">Job Title</label>
+      <label for="role">{{ 'FORM.JOBEXPERIENCE.LABEL.ROLE' | translate }}</label>
       <input type="text" class="form-control" name="role" id="role" [formControlName]="'role'">
     </div>
   </div>
@@ -73,7 +72,7 @@
   <!-- ROLE DESCRIPTION -->
   <div class="col-12">
     <div class="form-group">
-      <label for="description">Describe what you did in this role</label>
+      <label for="description">{{ 'FORM.JOBEXPERIENCE.LABEL.DESCRIPTION' | translate }}</label>
       <textarea class="form-control" id="description" placeholder="" rows="5" [formControlName]="'description'"></textarea>
     </div>
   </div>
@@ -81,19 +80,19 @@
   <!-- FULLTIME? -->
   <div class="col-12">
     <div class="form-group">
-      <label>Type of contract</label>
+      <label>{{ 'FORM.JOBEXPERIENCE.LABEL.CONTRACTTYPE.TITLE' | translate }}</label>
 
       <div class="form-check">
         <input class="form-check-input" type="radio" id="fullTime" [value]="true" [formControlName]="'fullTime'">
         <label class="form-check-label" for="fullTime">
-          Full time
+          {{ 'FORM.JOBEXPERIENCE.LABEL.CONTRACTTYPE.FULLTIME' | translate }}
         </label>
       </div>
 
       <div class="form-check">
         <input class="form-check-input" type="radio" id="partTime" [value]="false" [formControlName]="'fullTime'">
         <label class="form-check-label" for="partTime">
-          Part Time
+          {{ 'FORM.JOBEXPERIENCE.LABEL.CONTRACTTYPE.PARTTIME' | translate }}
         </label>
       </div>
     </div>
@@ -102,19 +101,19 @@
   <!-- VOLUNTEER / PAID -->
   <div class="col-12">
     <div class="form-group">
-      <label>Type of employment</label>
+      <label>{{ 'FORM.JOBEXPERIENCE.LABEL.EMPLOYMENTTYPE.TITLE' | translate }}</label>
 
       <div class="form-check">
         <input class="form-check-input" type="radio" id="paid" [value]="true" [formControlName]="'paid'">
         <label class="form-check-label" for="paid">
-          Paid
+          {{ 'FORM.JOBEXPERIENCE.LABEL.EMPLOYMENTTYPE.PAID' | translate }}
         </label>
       </div>
 
       <div class="form-check">
         <input class="form-check-input" type="radio" id="voluntary" [value]="false" [formControlName]="'paid'">
         <label class="form-check-label" for="voluntary">
-          Voluntary
+          {{ 'FORM.JOBEXPERIENCE.LABEL.EMPLOYMENTTYPE.VOLUNTARY' | translate }}
         </label>
       </div>
     </div>
