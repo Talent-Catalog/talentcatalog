@@ -147,7 +147,7 @@ export class RegistrationWorkExperienceComponent implements OnInit {
       countryId: exp.country.id,
       candidateOccupationId: exp.candidateOccupation.id
     });
-    if (index) {
+    if (index >= 0) {
       this.candidateJobExperiences[index] = exp;
     } else {
       this.candidateJobExperiences.push(exp);
