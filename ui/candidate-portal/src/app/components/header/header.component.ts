@@ -32,10 +32,16 @@ export class HeaderComponent implements OnInit {
   }
 
   logout() {
-    this.authService.logout().subscribe(() => this.router.navigate(['']));
+    this.authService.logout().subscribe(
+      () => {
+        this.isNavbarCollapsed = true;
+        this.router.navigate(['']);
+      }
+    );
   }
 
   setLanguage(language: string) {
+    this.isNavbarCollapsed = true;
     this.languageUpdated.emit(language);
   }
 
