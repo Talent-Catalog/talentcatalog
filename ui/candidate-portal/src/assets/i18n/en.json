@@ -1,4 +1,11 @@
 {
+  "HEADER": {
+    "NAV": {
+      "ACCOUNT": "Account",
+      "LOGOUT":"Logout",
+      "LOGIN": "Sign in"
+    }
+  },
   "LOADING": "Loading...",
   "LOGIN": {
     "TITLE": "Login",
@@ -33,11 +40,15 @@
       "UPDATE": "Update Password"
     }
   },
-  "HOME": {
+  "LANDING": {
     "TITLE": "Welcome to TBB",
     "INTRO": "Landing page - the what and the why",
     "REGISTER": "Register",
-    "LOGIN": "Login"
+    "LOGIN": "Login",
+    "HEADING1": "About Talent Beyond Boundaries",
+    "PARA1": "Talent Beyond Boundaries is a nonprofit organization. Our ultimate goal is to link those who are displaced by conflict with jobs in countries around the world where their skills are needed. The talent catalog is a platform built to show the great range of skills among the millions of people who have been forced by violence to leave their homeland to the international private sector with the goal to link talent with international job opportunities. TBB currently working on a pilot project to place refugees living in Jordan and Lebanon with international employment in countries where their skills are needed. Once we prove this model through the pilot project, we plan to scale up and expand our work to connect tens of thousands of displaced people to international employment around the world.",
+    "HEADING2": "About the Talent Catalog",
+    "PARA2": "Registration in the Talent Catalog is free of charge. This site is available in both Arabic and English. Once registrants create a profile, they can download their personalized CV."
   },
   "REGISTRATION": {
     "HEADER": {

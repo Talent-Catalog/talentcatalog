@@ -16,45 +16,6 @@
 
     <div [ngbCollapse]="isNavbarCollapsed" class="collapse navbar-collapse" id="navbarsDefault">
 
-      <!-- JUMP TO -->
-      <ul class="navbar-nav">
-        <li class="nav-item dropdown" ngbDropdown>
-
-          <a class="nav-link dropdown-toggle" ngbDropdownToggle>
-            Jump to
-          </a>
-          <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
-            <a class="dropdown-item" [routerLink]="'/'">Home</a>
-            <a class="dropdown-item alert-success" [routerLink]="'/register'" [queryParams]="{step: 'landing'}">Register</a>
-            <a class="dropdown-item alert-success" [routerLink]="'/register'" [queryParams]="{step: 'contact'}">
-              Contact
-            </a>
-            <a class="dropdown-item alert-success" [routerLink]="'/register'" [queryParams]="{step: 'personal'}">
-              Personal
-            </a>
-            <a class="dropdown-item alert-success" [routerLink]="'/register'" [queryParams]="{step: 'occupation'}">
-              Occupation
-            </a>
-            <a class="dropdown-item alert-success" [routerLink]="'/register'" [queryParams]="{step: 'experience'}">
-              Experience
-            </a>
-            <a class="dropdown-item alert-success" [routerLink]="'/register'" [queryParams]="{step: 'education'}">
-              Education
-            </a>
-            <a class="dropdown-item alert-success" [routerLink]="'/register'" [queryParams]="{step: 'language'}">
-              Language
-            </a>
-            <a class="dropdown-item alert-success" [routerLink]="'/register'" [queryParams]="{step: 'certifications'}">
-              Certifications
-            </a>
-            <a class="dropdown-item alert-success" [routerLink]="'/register'" [queryParams]="{step: 'submit'}">
-              Additional Info
-            </a>
-          </div>
-
-        </li>
-      </ul>
-
       <!-- TRANSLATION -->
       <ul class="navbar-nav">
         <div class="nav-item dropdown" ngbDropdown>
@@ -73,17 +34,21 @@
         <li class="nav-item dropdown" ngbDropdown>
 
           <a class="nav-link dropdown-toggle" ngbDropdownToggle>
-            Account
+            {{ 'HEADER.NAV.ACCOUNT' | translate }}
           </a>
           <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
-            <a class="dropdown-item" (click)="logout()">Logout</a>
+            <a class="dropdown-item" (click)="logout()">
+              {{ 'HEADER.NAV.LOGOUT' | translate }}
+            </a>
           </div>
 
         </li>
       </ul>
 
       <!-- LOGIN -->
-      <a class="btn btn-link" routerLink="/login" *ngIf="!(authService.user$ | async)">Sign In</a>
+      <a class="btn btn-link" [routerLink]="['']" *ngIf="!(authService.user$ | async)">
+        {{ 'HEADER.NAV.LOGIN' | translate }}
+      </a>
 
     </div>
 

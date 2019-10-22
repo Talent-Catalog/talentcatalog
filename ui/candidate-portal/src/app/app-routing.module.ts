@@ -1,7 +1,6 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {LandingComponent} from "./components/landing/landing.component";
-import {LoginComponent} from "./components/account/login/login.component";
 import {HomeComponent} from "./components/home/home.component";
 import {ResetPasswordComponent} from './components/account/reset-password/reset-password.component';
 import {ChangePasswordComponent} from './components/account/change-password/change-password.component';
@@ -13,13 +12,6 @@ const routes: Routes = [
     component: LandingComponent
   },
   {
-    path: 'login',
-    component: LoginComponent,
-    data: {
-      hideHeader: true
-    }
-  },
-  {
     path: 'reset-password',
     component: ResetPasswordComponent,
   },
@@ -28,13 +20,13 @@ const routes: Routes = [
     component: ChangePasswordComponent
   },
   {
-    path: 'register',
-    component: RegisterComponent
-  },
-  {
     path: 'home',
     component: HomeComponent
   },
+  {
+    path: 'register',
+    component: RegisterComponent
+  }
 ];
 
 @NgModule({

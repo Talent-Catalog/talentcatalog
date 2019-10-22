@@ -78,9 +78,8 @@ export class AuthService {
   private clearCredentials() {
     this.localStorageService.remove('access-token');
     this.localStorageService.remove('user');
-    this._user.next(null);
-    /* DEBUG */
-    console.log('this.user', this._user);
+    this.user = null;
+    this._user.next(this.user);
   }
 
 }

@@ -1,7 +1,5 @@
-<div class="login wrapper">
-<div>
-<form class="text-center" [formGroup]="loginForm" (submit)="login()">
-  <h1>{{ 'LOGIN.TITLE' | translate }}</h1>
+<form [formGroup]="loginForm" (submit)="login()">
+<!--  <h1>{{ 'LOGIN.TITLE' | translate }}</h1>-->
 
   <app-error [error]="error"></app-error>
 
@@ -15,12 +13,13 @@
     <input id="password" class="form-control" type="password" [formControlName]="'password'">
   </div>
 
-  <button class="btn btn-primary" type="submit" [disabled]="loading || !loginForm.valid">
-    {{ 'LOGIN.BUTTON.LOGIN' | translate }}
-  </button>
+  <div class="text-center">
+    <button class="btn btn-primary w-75" type="submit" [disabled]="loading || !loginForm.valid">
+      {{ 'LOGIN.BUTTON.LOGIN' | translate }}
+    </button>
+  </div>
 </form>
-</div>
-<div class="reset">
-   <a [routerLink]="'/reset-password'">{{ 'LOGIN.BUTTON.FORGOT' | translate }}</a>
-</div>
+
+<div class="text-center mt-2">
+  <a [routerLink]="'/reset-password'">{{ 'LOGIN.BUTTON.FORGOT' | translate }}</a>
 </div>

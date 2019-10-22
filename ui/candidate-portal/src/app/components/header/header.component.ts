@@ -1,7 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {AuthService} from "../../services/auth.service";
 import {Router} from "@angular/router";
-import {TranslateService} from '@ngx-translate/core';
 import {SystemLanguage} from "../../model/language";
 import {LanguageService} from "../../services/language.service";
 
@@ -23,7 +22,6 @@ export class HeaderComponent implements OnInit {
 
   constructor(public authService: AuthService,
               private router: Router,
-              private translate: TranslateService,
               public languageService: LanguageService) { }
 
   ngOnInit() {

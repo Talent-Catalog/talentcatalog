@@ -1,15 +1,7 @@
 package org.tbbtalent.server.api.portal;
 
-import java.util.Map;
-
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.exception.ExpiredTokenException;
 import org.tbbtalent.server.exception.InvalidPasswordFormatException;
 import org.tbbtalent.server.exception.InvalidPasswordTokenException;
@@ -20,6 +12,9 @@ import org.tbbtalent.server.request.user.SendResetPasswordEmailRequest;
 import org.tbbtalent.server.request.user.UpdateUserPasswordRequest;
 import org.tbbtalent.server.service.UserService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
+
+import javax.validation.Valid;
+import java.util.Map;
 
 
 @RestController

@@ -15,11 +15,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.tbbtalent.server.security.CandidateUserDetailsService;
-import org.tbbtalent.server.security.JwtAuthenticationEntryPoint;
-import org.tbbtalent.server.security.JwtAuthenticationFilter;
-import org.tbbtalent.server.security.LanguageFilter;
-import org.tbbtalent.server.security.TbbAuthenticationProvider;
+import org.tbbtalent.server.security.*;
 
 @Configuration
 @EnableWebSecurity
@@ -50,9 +46,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
                 .antMatchers("/api/portal/auth").permitAll()
                 .antMatchers("/api/portal/auth/**").permitAll()
+                .antMatchers("/api/portal/user/reset-password-email").permitAll()
+                .antMatchers("/api/portal/user/check-token").permitAll()
+                .antMatchers("/api/portal/user/reset-password").permitAll()
                 .antMatchers("/api/portal/language/system/**").permitAll()
                 .antMatchers("/api/portal/**").hasAnyRole("USER", "ADMIN")
-                .antMatchers("/api/admin/auth").permitAll()
+                .antMatchers("/api/admin/auth").permitAll  ()
                 .antMatchers("/api/admin/auth/**").permitAll()
                 .antMatchers("/api/admin/**").hasAnyRole("ADMIN")
                 .and()
