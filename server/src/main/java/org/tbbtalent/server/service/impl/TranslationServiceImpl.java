@@ -59,7 +59,7 @@ public class TranslationServiceImpl implements TranslationService {
             // copying the original object should avoid hibernate accidentally updating an object because the transaction boundaries were not right
             translatedCountries = countries.stream().map(c -> new Country(c)).collect(Collectors.toList());
 
-            List<Translation> translations = translationRepository.findByIdsTypeLanguage(countryIds, "country", selectedLanguage);
+            List<Translation> translations = translationRepository.findByIdsTypeLanguage(countryIds, "countries", selectedLanguage);
             if (CollectionUtils.isNotEmpty(translations)) {
                 Map<Long, String> translationsById = translations.stream().collect(Collectors.toMap(t -> t.getObjectId(), t -> t.getValue()));
                 translatedCountries.forEach(c -> {

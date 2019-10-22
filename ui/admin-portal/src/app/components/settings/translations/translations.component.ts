@@ -24,8 +24,7 @@ export class TranslationsComponent implements OnInit {
   error: any;
   pageNumber: number;
   pageSize: number;
-  results: SearchResults<Translation>;
-  translations: Translation[];
+  translations: SearchResults<Translation>;
   systemLanguages: SystemLanguage[];
   types: SearchResults<any>;
 
@@ -49,6 +48,7 @@ export class TranslationsComponent implements OnInit {
 
     this.getSystemLanguages();
     this.onChanges();
+
   }
 
   getSystemLanguages() {
@@ -89,7 +89,6 @@ export class TranslationsComponent implements OnInit {
         console.log(this.types);
         this.loading = false;
       });
-      console.log(request);
       this.translate(request.type);
     }else if(request.type == "nationalities"){
       console.log("nationalities loading")
@@ -108,9 +107,13 @@ export class TranslationsComponent implements OnInit {
   }
 
   translate(type) {
+    this.loading = true
     this.translationService.search(type, this.searchForm.value.systemLanguage).subscribe(results => {
-      this.results = results;
-      console.log(results);
+      for(var value of this.types.content) {
+        let y = results.find(x => x.id == value.id);
+        value.translation = y;
+      }
+      console.log(this.types.content);
       this.loading = false;
     });
   }

@@ -64,11 +64,11 @@
     </thead>
 
     <tbody>
-    <tr *ngFor="let type of types?.content">
+    <tr *ngFor="let type of types?.content; let i = index">
       <td>{{searchForm.value.type | titlecase}}</td>
       <td>{{type.name}}</td>
       <td>Language</td>
-      <td>Translation</td>
+      <td>{{type.translation.name}}</td>
       <td>
         <div class="btn-group">
           <button type="button" class="btn btn-default" (click)="editUser(user)"><i class="fa fa-edit"></i></button>
