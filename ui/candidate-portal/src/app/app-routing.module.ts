@@ -6,6 +6,7 @@ import {ResetPasswordComponent} from './components/account/reset-password/reset-
 import {ChangePasswordComponent} from './components/account/change-password/change-password.component';
 import {RegisterComponent} from "./components/register/register.component";
 import {CandidateProfileComponent} from "./components/profile/candidate-profile.component";
+import {AuthGuard} from "./services/auth.guard";
 
 const routes: Routes = [
   {
@@ -26,12 +27,19 @@ const routes: Routes = [
   },
   {
     path: 'home',
-    component: HomeComponent
+    component: HomeComponent,
+    canActivate: [AuthGuard]
   },
   {
     path: 'profile',
-    component: CandidateProfileComponent
-  }
+    component: CandidateProfileComponent,
+    canActivate: [AuthGuard]
+  },
+  /* Keep wildcard redirect at the bottom of the array */
+  {
+    path: '**',
+    redirectTo: ''
+  },
 ];
 
 @NgModule({
