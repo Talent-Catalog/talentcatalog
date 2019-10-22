@@ -63,13 +63,13 @@
           </a>
 
           <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
-            <a class="dropdown-item" *ngFor="let lang of languages" (click)="useLanguage(lang.language)">{{lang.label}}</a>
+            <a class="dropdown-item" *ngFor="let lang of languages" (click)="setLanguage(lang.language)">{{lang.label}}</a>
           </div>
         </div>
       </ul>
 
       <!-- ACCOUNT -->
-      <ul class="navbar-nav" *ngIf="user">
+      <ul class="navbar-nav" *ngIf="(authService.user$ | async)">
         <li class="nav-item dropdown" ngbDropdown>
 
           <a class="nav-link dropdown-toggle" ngbDropdownToggle>
@@ -83,7 +83,7 @@
       </ul>
 
       <!-- LOGIN -->
-      <a class="btn btn-link" routerLink="/login" *ngIf="!user">Sign In</a>
+      <a class="btn btn-link" routerLink="/login" *ngIf="!(authService.user$ | async)">Sign In</a>
 
     </div>
 

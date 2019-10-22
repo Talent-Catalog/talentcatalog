@@ -1,25 +1,26 @@
 <div class="login wrapper">
 <div>
-<form class="justify-content-center" [formGroup]="loginForm" (submit)="login()">
-  <h1>Login</h1>
+<form class="text-center" [formGroup]="loginForm" (submit)="login()">
+  <h1>{{ 'LOGIN.TITLE' | translate }}</h1>
 
   <app-error [error]="error"></app-error>
 
-  <input class="form-control" type="text" formControlName="username" placeholder="Username">
-  <input class="form-control" type="password" formControlName="password" placeholder="password">
+  <div class="form-group">
+    <label for="username">{{ 'LOGIN.LABEL.USERNAME' | translate }}</label>
+    <input id="username" class="form-control" type="text" [formControlName]="'username'">
+  </div>
+
+  <div class="form-group">
+    <label for="password">{{ 'LOGIN.LABEL.PASSWORD' | translate }}</label>
+    <input id="password" class="form-control" type="password" [formControlName]="'password'">
+  </div>
 
   <button class="btn btn-primary" type="submit" [disabled]="loading || !loginForm.valid">
-    <span *ngIf="!loading">Login</span>
-
-    <div class="d-flex justify-content-center" *ngIf="loading">
-      <div class="spinner-border" role="status">
-        <span class="sr-only">Loading...</span>
-      </div>
-    </div>
+    {{ 'LOGIN.BUTTON.LOGIN' | translate }}
   </button>
 </form>
 </div>
 <div class="reset">
-   <a [routerLink]="'/reset-password'">Forgot Password?</a>
+   <a [routerLink]="'/reset-password'">{{ 'LOGIN.BUTTON.FORGOT' | translate }}</a>
 </div>
 </div>

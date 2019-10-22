@@ -1,7 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {AuthService} from "../../services/auth.service";
-import {ActivatedRoute, Router} from "@angular/router";
 import {CandidateService} from "../../services/candidate.service";
 
 @Component({
@@ -12,12 +9,11 @@ import {CandidateService} from "../../services/candidate.service";
 export class HomeComponent implements OnInit {
 
 
-  constructor(private candidateService: CandidateService,
-              private route: ActivatedRoute,
-              private router: Router) {
+  constructor(private candidateService: CandidateService) {
   }
 
   ngOnInit() {
+    this.candidateService.get
   }
 }
 

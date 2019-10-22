@@ -1,4 +1,38 @@
 {
+  "LOADING": "Loading...",
+  "LOGIN": {
+    "TITLE": "Login",
+    "LABEL": {
+      "USERNAME": "Username",
+      "PASSWORD": "Password"
+    },
+    "BUTTON": {
+      "FORGOT": "Forgot Password?",
+      "LOGIN": "Login"
+    }
+  },
+  "RESETPASSWORD": {
+    "TITLE": "Forgot Password",
+    "SUCCESS": "We have sent you an email with reset instructions.",
+    "LABEL": {
+      "EMAIL": "Email Address"
+    },
+    "BUTTON": {
+      "RESET": "Reset Password"
+    }
+  },
+  "CHANGEPASSWORD": {
+    "TITLE": "Change Password",
+    "SUCCESS": "Your password has been updated",
+    "LABEL": {
+      "OLDPASSWORD": "Old Password",
+      "PASSWORD": "New Password",
+      "PASSWORDCONFIRMATION":  "Confirm Password"
+    },
+    "BUTTON": {
+      "UPDATE": "Update Password"
+    }
+  },
   "HOME": {
     "TITLE": "Welcome to TBB",
     "INTRO": "Landing page - the what and the why",
@@ -107,6 +141,14 @@
       },
       "TEXT": {
         "EXPLANATION": "If possible please provide this response in English so it can be more easily reviewed by our team. If you feel more comfortable using your native language please do so and we will have a translator convert it for our team."
+      }
+    },
+    "COMPLETE": {
+      "TITLE": "Thank you for your registration!",
+      "PARA1": "TODO: Some wordsmithing needed. Explain that they are in the system how it all works from here.",
+      "BUTTON": {
+        "LOGOUT": "Logout",
+        "PROFILE": "View My Profile"
       }
     }
   },

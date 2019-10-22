@@ -47,18 +47,23 @@
   </app-registration-additional-info>
 
   <div class="container text-center" *ngSwitchCase="'complete'">
-    <h1>Thank you for your registration!</h1>
+
+    <h1>{{ 'REGISTRATION.COMPLETE.TITLE' | translate}}</h1>
 
     <p class="alert alert-warning">
-      TODO: Some wordsmithing needed. Explain that they are in the system how it all works from here.
+      {{ 'REGISTRATION.COMPLETE.PARA1' | translate}}
     </p>
 
-    <div class="text-center">
-      <button class="btn btn-outline-primary">Logout</button>
+    <div class="text-center my-4">
+      <a class="btn btn-primary" [routerLink]="'/profile'">
+        {{ 'REGISTRATION.COMPLETE.BUTTON.PROFILE' | translate}}
+      </a>
     </div>
 
-    <div class="text-center mt-4">
-      <button class="btn btn-primary">View My Profile</button>
+    <div class="text-center">
+      <button class="btn btn-outline-primary" (click)="logout()">
+        {{ 'REGISTRATION.COMPLETE.BUTTON.LOGOUT' | translate}}
+      </button>
     </div>
 
   </div>

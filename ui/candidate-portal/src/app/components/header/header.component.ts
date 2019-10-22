@@ -4,7 +4,6 @@ import {Router} from "@angular/router";
 import {TranslateService} from '@ngx-translate/core';
 import {SystemLanguage} from "../../model/language";
 import {LanguageService} from "../../services/language.service";
-import {User} from "../../model/user";
 
 @Component({
   selector: 'app-header',
@@ -21,34 +20,24 @@ export class HeaderComponent implements OnInit {
 
   languages: SystemLanguage[];
   error: any;
-  user: User;
 
-  constructor(private authService: AuthService,
+  constructor(public authService: AuthService,
               private router: Router,
               private translate: TranslateService,
               public languageService: LanguageService) { }
 
   ngOnInit() {
-    this.user = this.authService.getLoggedInUser();
     this.languageService.listSystemLanguages().subscribe(
-      (response) => {
-        this.languages = response;
-      },
-      (error) => {
-        this.error = error;
-      }
+      (response) => this.languages = response,
+      (error) => this.error = error
     );
   }
 
   logout() {
-    this.authService.logout();
-    this.user = null;
-    this.router.navigate(['']);
+    this.authService.logout().subscribe(() => this.router.navigate(['']));
   }
 
-  useLanguage(language: string) {
-    this.translate.use(language);
-    this.languageService.setSelectedLanguage(language);
+  setLanguage(language: string) {
     this.languageUpdated.emit(language);
   }
 

@@ -28,13 +28,13 @@ const routes: Routes = [
     component: ChangePasswordComponent
   },
   {
+    path: 'register',
+    component: RegisterComponent
+  },
+  {
     path: 'home',
     component: HomeComponent
   },
-  {
-    path: 'register',
-    component: RegisterComponent
-  }
 ];
 
 @NgModule({
