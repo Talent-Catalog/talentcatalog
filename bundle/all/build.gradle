@@ -1,0 +1,29 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.5.RELEASE")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+repositories {
+    mavenCentral()
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+
+dependencies {
+    implementation(project(':server'))
+    implementation(project(':ui:admin-portal'))
+    implementation(project(':ui:candidate-portal'))
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.apache.commons:commons-lang3:3.0")
+
+}

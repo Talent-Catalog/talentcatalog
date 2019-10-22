@@ -1,0 +1,28 @@
+tbb:
+  cors:
+    urls: http://localhost:4200,http://localhost:4201
+
+spring:
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/tbbtalent
+    username: tbbtalent
+    password: tbbtalent
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false
+
+jwt:
+  secret: JWTSuperSecretKey
+  expirationInMs: 604800000
+
+web:
+  portal: http://localhost:4200
+
+flyway:
+  ignoreMissingMigrations: true
+  repair: true
+
