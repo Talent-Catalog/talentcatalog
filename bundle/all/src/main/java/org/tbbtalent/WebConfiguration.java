@@ -26,8 +26,8 @@ public class WebConfiguration implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
         UIBundle[] uiBundles = new UIBundle[]{
-                new UIBundle("candidate-portal", "tbb-candidate-portal-ui"),
-                new UIBundle("admin-portal", "tbb-admin-portal-ui")
+                new UIBundle("candidate-portal", "candidate-portal"),
+                new UIBundle("admin-portal", "admin-portal")
         };
 
 
