@@ -7,8 +7,14 @@
 <div class="card" *ngIf="!loading">
   <div class="card-header">
     {{candidateOccupation.occupation.name}} ({{candidateOccupation.yearsExperience}} years)
-    <div class="pull-right" *ngIf="editable">
+    <i *ngIf="candidateOccupation.verified" class="fa fa-check" title="Verified by TBB"></i>
+    <i *ngIf="!candidateOccupation.verified" class="fa fa-question" title="Candidate specified, not verified"></i>
+    <div class="button-group pull-right" *ngIf="editable">
+      <button type="button" class="btn btn-sm btn-outline-dark" (click)="verifyOccupation()">Verify Occupation</button>
       <button type="button" class="btn btn-sm btn-primary" (click)="createCandidateJobExperience()">Add Experience</button>
+    </div>
+    <div *ngIf="candidateOccupation.migrationOccupation" class="col-sm-12">
+      Migrated Language: {{candidateOccupation.migrationOccupation}}
     </div>
   </div>
 
@@ -22,10 +28,10 @@
     </div>
     <div *ngFor="let candidateJobExperience of experiences">
       <div class="row">
-        <div class="col-xs-11">
+        <div class="col-11">
           <h6 class="card-title">{{candidateJobExperience.role}}</h6>
         </div>
-        <div class="col-xs-1">
+        <div class="col-1">
           <div class="pull-right" *ngIf="editable">
             <button type="button" class="btn btn-default" (click)="editCandidateJobExperience(candidateJobExperience)"><i
               class="fa fa-edit"></i></button>

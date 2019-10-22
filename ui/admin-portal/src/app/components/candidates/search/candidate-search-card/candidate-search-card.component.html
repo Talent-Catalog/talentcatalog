@@ -56,20 +56,21 @@
       <ng-template ngbTabContent>
         <app-candidate-history-tab
           [candidate]="candidate"
+          [characterLimit]="100"
           [editable]="false">
         </app-candidate-history-tab>
       </ng-template>
     </ngb-tab>
 
-    <!-- HISTORY -->
-    <ngb-tab [title]="'Eligibility'">
-      <ng-template ngbTabContent>
-        <app-candidate-eligibility-tab
-          [candidate]="candidate"
-          [editable]="false">
-        </app-candidate-eligibility-tab>
-      </ng-template>
-    </ngb-tab>
+<!--    &lt;!&ndash; HISTORY &ndash;&gt;-->
+<!--    <ngb-tab [title]="'Eligibility'">-->
+<!--      <ng-template ngbTabContent>-->
+<!--        <app-candidate-eligibility-tab-->
+<!--          [candidate]="candidate"-->
+<!--          [editable]="false">-->
+<!--        </app-candidate-eligibility-tab>-->
+<!--      </ng-template>-->
+<!--    </ngb-tab>-->
 
   </ngb-tabset>
 

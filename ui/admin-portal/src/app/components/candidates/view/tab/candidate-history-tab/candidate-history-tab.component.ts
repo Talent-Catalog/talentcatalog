@@ -8,6 +8,7 @@ import {Candidate} from "../../../../../model/candidate";
 })
 export class CandidateHistoryTabComponent implements OnInit, OnChanges {
 
+  @Input() characterLimit: number;
   @Input() candidate: Candidate;
   @Input() editable: boolean;
 

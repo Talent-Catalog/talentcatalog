@@ -26,6 +26,7 @@ export class ViewCandidateEducationComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+    console.log("candidate", this.candidate);
   }
 
 

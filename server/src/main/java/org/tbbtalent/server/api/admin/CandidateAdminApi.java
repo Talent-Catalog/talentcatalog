@@ -77,6 +77,8 @@ public class CandidateAdminApi {
                 .add("nationality", nationalityDto())
                 .add("user", userDto())
                 .add("candidateShortlistItems", shortlistDto())
+                .add("migrationEducationMajor", educationMajor())
+                .add("migrationCountry")
                 ;
     }
 
@@ -107,6 +109,13 @@ public class CandidateAdminApi {
         return new DtoBuilder()
                 .add("id")
                 .add("shortlistStatus")
+                ;
+    }
+
+    private DtoBuilder educationMajor() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
                 ;
     }
 

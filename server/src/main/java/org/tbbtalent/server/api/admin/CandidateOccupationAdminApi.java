@@ -1,12 +1,10 @@
 package org.tbbtalent.server.api.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.model.CandidateOccupation;
 import org.tbbtalent.server.model.Occupation;
+import org.tbbtalent.server.request.candidate.occupation.VerifyCandidateOccupationRequest;
 import org.tbbtalent.server.service.CandidateOccupationService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -42,6 +40,13 @@ public class CandidateOccupationAdminApi {
         return candidateOccupationDto().buildList(candidateOccupations);
     }
 
+    @PutMapping("{id}")
+    public Map<String, Object> update(@PathVariable("id") long id,
+                                      @RequestBody VerifyCandidateOccupationRequest request) {
+        CandidateOccupation candidateOccupation = this.candidateOccupationService.verifyCandidateOccupation(id, request);
+        return candidateOccupationDto().build(candidateOccupation);
+    }
+
     private DtoBuilder occupationDto() {
         return new DtoBuilder()
                 .add("id")
@@ -52,6 +57,7 @@ public class CandidateOccupationAdminApi {
     private DtoBuilder candidateOccupationDto() {
         return new DtoBuilder()
                 .add("id")
+                .add("migrationOccupation")
                 .add("occupation", occupationDto())
                 .add("yearsExperience")
                 .add("verified")

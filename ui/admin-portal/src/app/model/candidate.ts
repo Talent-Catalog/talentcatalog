@@ -2,6 +2,7 @@ import {User} from "./user";
 import {Country} from "./country";
 import {Nationality} from "./nationality";
 import {CandidateShortlistItem} from "./candidate-shortlist-item";
+import {EducationMajor} from "./education-major";
 
 export interface Candidate {
   id: number;
@@ -18,4 +19,5 @@ export interface Candidate {
   whatsapp: string;
   user: User;
   candidateShortlistItems: CandidateShortlistItem[];
+  migrationEducationMajor: EducationMajor;
 }

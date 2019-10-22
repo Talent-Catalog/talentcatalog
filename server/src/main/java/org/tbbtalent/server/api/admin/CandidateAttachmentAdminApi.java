@@ -53,6 +53,9 @@ public class CandidateAttachmentAdminApi {
                 .add("type")
                 .add("name")
                 .add("location")
+                .add("fileType")
+                .add("adminOnly")
+                .add("migrated")
                 .add("createdBy", userDto())
                 .add("createdDate")
                 ;
