@@ -17,24 +17,24 @@ public class TbbTalentApplication extends WebMvcConfigurerAdapter {
         SpringApplication.run(TbbTalentApplication.class, args);
     }
 
-    @Bean
-    @ConditionalOnProperty(name="flyway.repair", havingValue="true")
-    public FlywayMigrationStrategy fixFlyway() {
-        return new FlywayMigrationStrategy() {
-            @Override
-            public void migrate(Flyway flyway) {
-                try {
-                    System.out.println("************* Starting flyway repair ***********************");
-                    flyway.repair();
-                    System.out.println("************* Finished flyway repair ***********************");
-                    flyway.migrate();
-                } catch (Exception e) {
-                    System.out.println("ERROR: unable to repair flyway");
-                    e.printStackTrace();
-                }
-            }
-        };
-    }
+//    @Bean
+//    @ConditionalOnProperty(name="flyway.repair", havingValue="true")
+//    public FlywayMigrationStrategy fixFlyway() {
+//        return new FlywayMigrationStrategy() {
+//            @Override
+//            public void migrate(Flyway flyway) {
+//                try {
+//                    System.out.println("************* Starting flyway repair ***********************");
+//                    flyway.repair();
+//                    System.out.println("************* Finished flyway repair ***********************");
+//                    flyway.migrate();
+//                } catch (Exception e) {
+//                    System.out.println("ERROR: unable to repair flyway");
+//                    e.printStackTrace();
+//                }
+//            }
+//        };
+//    }
 
     @Override
     public void addViewControllers (ViewControllerRegistry registry) {
