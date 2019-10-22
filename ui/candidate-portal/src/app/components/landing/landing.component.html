@@ -1,8 +1,11 @@
-<h1 translate dir="auto">HOME.WELCOME</h1>
+<h1>{{ 'HOME.TITLE' | translate }}</h1>
 
-<div translate dir="auto">HOME.INTRO</div>
-<div translate [translateParams]="{value: 'world'}" dir="auto">HOME.TEST</div>
+<div class="my-4">{{ 'HOME.INTRO' | translate }}</div>
 
-<a class="btn btn-outline-primary" routerLink="register" translate dir="auto">HOME.REGISTER</a>
+<div class="text-center">
+  <a class="btn btn-outline-primary" [routerLink]="'/register'">{{ 'HOME.REGISTER' | translate }}</a>
+</div>
 
-<a class="btn btn-primary" routerLink="login" translate dir="auto">HOME.LOGIN</a>
+<div class="text-center">
+  <a class="btn btn-primary" [routerLink]="'/login'">{{ 'HOME.LOGIN' | translate }}</a>
+</div>
