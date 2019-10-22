@@ -1,0 +1,22 @@
+.btn-card + .btn-card {
+  margin: 0 0 0 8px;
+}
+
+.job-title {
+  margin: 0 0 8px;
+  font-weight: bold;
+}
+
+.icon {
+  display: inline-block;
+  width: 0.8em;
+  height: 0.8em;
+  background-color: #000;
+  border-radius: 2px;
+  margin: 0 8px;
+}
+
+.text-muted {
+  margin: 1em 0 0 0;
+  white-space: pre-wrap;
+}

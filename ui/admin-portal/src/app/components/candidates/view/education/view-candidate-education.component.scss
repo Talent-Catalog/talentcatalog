@@ -1,3 +1,8 @@
 .card-body :last-child > hr {
   display: none;
 }
+
+.row {
+  flex-wrap: nowrap;
+}
+

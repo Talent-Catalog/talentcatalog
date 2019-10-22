@@ -22,7 +22,6 @@ import org.tbbtalent.server.service.CandidateService;
 import org.tbbtalent.server.service.SavedSearchService;
 
 import javax.security.auth.login.AccountLockedException;
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -150,7 +149,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Candidate updateCandidate(long id, UpdateCandidateContactRequest request) {
+    public Candidate updateCandidate(long id, UpdateCandidateRequest request) {
 
         Candidate candidate = this.candidateRepository.findByIdLoadUser(id)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
@@ -279,36 +278,16 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Candidate updateEmail(UpdateCandidateEmailRequest request) {
+    public Candidate updateContact(UpdateCandidateContactRequest request) {
         User user = userContext.getLoggedInUser();
         user.setEmail(request.getEmail());
         user = userRepository.save(user);
-        return user.getCandidate();
-    }
-
-    @Override
-    public Candidate updateAlternateContacts(UpdateCandidateAlternateContactRequest request) {
-        User user = userContext.getLoggedInUser();
-        user.setEmail(request.getEmail());
-        user = userRepository.save(user);
-        Candidate candidate = candidateRepository.findByUserId(user.getId());
-        if (candidate != null) {
-            if (StringUtils.isBlank(request.getEmail()) && StringUtils.isBlank(request.getPhone())
-                    && StringUtils.isBlank(request.getWhatsapp())) {
-                throw new InvalidRequestException("You must specify at least one method of contact");
-            }
-            candidate.setPhone(request.getPhone());
-            candidate.setWhatsapp(request.getWhatsapp());
-        }
-        return candidateRepository.save(candidate);
-    }
-
-    @Override
-    public Candidate updateAdditionalContacts(UpdateCandidateAdditionalContactRequest request) {
-        Candidate candidate = getLoggedInCandidate();
+        Candidate candidate = user.getCandidate();
         candidate.setPhone(request.getPhone());
         candidate.setWhatsapp(request.getWhatsapp());
-        return candidateRepository.save(candidate);
+        candidate = candidateRepository.save(candidate);
+        candidate.setUser(user);
+        return candidate;
     }
 
     @Override
@@ -340,10 +319,10 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Candidate updateEducationLevel(UpdateCandidateEducationLevelRequest request) {
+    public Candidate updateEducation(UpdateCandidateEducationRequest request) {
         Candidate candidate = getLoggedInCandidate();
 
-        // Load the nationality from the database - throw an exception if not found
+        // Load the education level from the database - throw an exception if not found
         EducationLevel educationLevel = educationLevelRepository.findById(request.getMaxEducationLevelId())
                 .orElseThrow(() -> new NoSuchObjectException(EducationLevel.class, request.getMaxEducationLevelId()));
 
@@ -355,6 +334,10 @@ public class CandidateServiceImpl implements CandidateService {
     public Candidate updateAdditionalInfo(UpdateCandidateAdditionalInfoRequest request) {
         Candidate candidate = getLoggedInCandidate();
         candidate.setAdditionalInfo(request.getAdditionalInfo());
+        if (!candidate.getStatus().equals(CandidateStatus.pending)){
+            updateCandidateStatus(candidate.getId(), new UpdateCandidateStatusRequest(CandidateStatus.pending, "Candidate submitted"));
+        }
+
         return candidateRepository.save(candidate);
     }
 

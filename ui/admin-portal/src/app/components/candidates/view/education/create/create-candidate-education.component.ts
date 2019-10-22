@@ -69,7 +69,7 @@ export class CreateCandidateEducationComponent implements OnInit {
       courseName: ['', [Validators.required]],
       institution: ['', [Validators.required]],
       countryId: ['', [Validators.required]],
-      majorId: ['', [Validators.required]],
+      educationMajorId: ['', [Validators.required]],
       yearCompleted: ['', [Validators.required]],
       educationType: ['', [Validators.required]]
     });

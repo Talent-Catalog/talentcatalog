@@ -1,10 +1,8 @@
 package org.tbbtalent.server.api.portal;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.model.CandidateEducation;
 import org.tbbtalent.server.request.candidate.education.CreateCandidateEducationRequest;
 import org.tbbtalent.server.request.candidate.education.UpdateCandidateEducationRequest;
@@ -37,15 +35,29 @@ public class CandidateEducationPortalApi {
         return candidateEducationDto().build(candidateEducation);
     }
 
+    @DeleteMapping("{id}")
+    public ResponseEntity deleteCandidateEducation(@PathVariable("id") Long id) {
+        candidateEducationService.deleteCandidateEducation(id);
+        return ResponseEntity.ok().build();
+    }
+
     private DtoBuilder candidateEducationDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("educationType")
                 .add("country", countryDto())
+                .add("educationMajor", majorDto())
                 .add("lengthOfCourseYears")
                 .add("institution")
                 .add("courseName")
                 .add("yearCompleted")
+                ;
+    }
+
+    private DtoBuilder majorDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
                 ;
     }
 

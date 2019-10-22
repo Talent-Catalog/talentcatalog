@@ -12,12 +12,12 @@ import java.util.List;
 public interface EducationLevelRepository extends JpaRepository<EducationLevel, Long>, JpaSpecificationExecutor<EducationLevel> {
 
     @Query(" select l from EducationLevel l "
-            + " where l.status = :status")
+            + " where l.status = :status order by l.level")
     List<EducationLevel> findByStatus(@Param("status") Status status);
 
     @Query(" select distinct l from EducationLevel l "
             + " where lower(l.name) = lower(:name)"
-            + " and l.status != 'deleted'" )
+            + " and l.status != 'deleted' order by l.level" )
     EducationLevel findByNameIgnoreCase(@Param("name") String name);
 
 

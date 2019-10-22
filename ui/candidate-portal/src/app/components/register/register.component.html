@@ -2,9 +2,9 @@
 
   <div class="container">
 
-    <h4>Step {{registrationService?.currentStep.section}} of {{registrationService?.totalSections}}</h4>
+    <h5>Step {{registrationService?.currentStep.section}} of {{registrationService?.totalSections}}</h5>
 
-    <h1 translate dir="auto">REGISTRATION.HEADER.TITLE.{{registrationService?.currentStep?.key | uppercase}}</h1>
+    <h3 translate dir="auto">REGISTRATION.HEADER.TITLE.{{registrationService?.currentStep?.key | uppercase}}</h3>
 
   </div>
 
@@ -17,24 +17,13 @@
 
 </div>
 
-<div class="alert alert-danger" *ngIf="error">
-  {{error.error?.message || error.message || error}}
-</div>
-
 <div class="step-body" [ngSwitch]="registrationService?.currentStepKey">
 
   <app-registration-landing *ngSwitchCase="'landing'">
   </app-registration-landing>
 
-  <!-- TODO condense contact components into singular component + update endpoints -->
   <app-registration-contact *ngSwitchCase="'contact'">
   </app-registration-contact>
-
-  <app-registration-alternate-contact *ngSwitchCase="'contact/alternate'">
-  </app-registration-alternate-contact>
-
-  <app-registration-additional-contact *ngSwitchCase="'contact/additional'">
-  </app-registration-additional-contact>
 
   <app-registration-personal *ngSwitchCase="'personal'">
   </app-registration-personal>
@@ -42,20 +31,11 @@
   <app-registration-candidate-occupation *ngSwitchCase="'occupation'">
   </app-registration-candidate-occupation>
 
-  <app-registration-job-experience *ngSwitchCase="'experience'">
-  </app-registration-job-experience>
+  <app-registration-work-experience *ngSwitchCase="'experience'">
+  </app-registration-work-experience>
 
   <app-registration-education *ngSwitchCase="'education'">
   </app-registration-education>
-
-  <app-registration-masters *ngSwitchCase="'education/masters'">
-  </app-registration-masters>
-
-  <app-registration-university *ngSwitchCase="'education/university'">
-  </app-registration-university>
-
-  <app-registration-school *ngSwitchCase="'education/school'">
-  </app-registration-school>
 
   <app-registration-language *ngSwitchCase="'language'">
   </app-registration-language>
@@ -63,7 +43,29 @@
   <app-registration-certifications *ngSwitchCase="'certifications'">
   </app-registration-certifications>
 
-  <app-registration-additional-info *ngSwitchCase="'additional-information'">
+  <app-registration-additional-info *ngSwitchCase="'submit'">
   </app-registration-additional-info>
+
+  <div class="container text-center" *ngSwitchCase="'complete'">
+
+    <h1>{{ 'REGISTRATION.COMPLETE.TITLE' | translate}}</h1>
+
+    <p class="alert alert-warning">
+      {{ 'REGISTRATION.COMPLETE.PARA1' | translate}}
+    </p>
+
+    <div class="text-center my-4">
+      <a class="btn btn-primary" [routerLink]="'/profile'">
+        {{ 'REGISTRATION.COMPLETE.BUTTON.PROFILE' | translate}}
+      </a>
+    </div>
+
+    <div class="text-center">
+      <button class="btn btn-outline-primary" (click)="logout()">
+        {{ 'REGISTRATION.COMPLETE.BUTTON.LOGOUT' | translate}}
+      </button>
+    </div>
+
+  </div>
 
 </div>

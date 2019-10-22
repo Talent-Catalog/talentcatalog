@@ -9,6 +9,14 @@ public class SearchRequest {
     private Sort.Direction sortDirection;
     private String[] sortFields;
 
+    public SearchRequest() {
+    }
+
+    public SearchRequest(Sort.Direction sortDirection, String[] sortFields) {
+        this.sortDirection = sortDirection;
+        this.sortFields = sortFields;
+    }
+
     public Integer getPageSize() {
         return pageSize;
     }

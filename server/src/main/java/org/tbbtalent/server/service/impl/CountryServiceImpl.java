@@ -79,7 +79,6 @@ public class CountryServiceImpl implements CountryService {
         return this.countryRepository.save(country);
     }
 
-
     @Override
     @Transactional
     public Country updateCountry(long id, UpdateCountryRequest request) throws EntityExistsException {

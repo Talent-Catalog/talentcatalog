@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators, FormArray} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateLanguage} from "../../../model/candidate-language";
 import {CandidateLanguageService} from "../../../services/candidate-language.service";
@@ -8,6 +8,8 @@ import {Language} from "../../../model/language";
 import {LanguageService} from "../../../services/language.service";
 import {LanguageLevel} from "../../../model/language-level";
 import {LanguageLevelService} from "../../../services/language-level.service";
+import {RegistrationService} from "../../../services/registration.service";
+import {TranslateService} from "@ngx-translate/core";
 
 
 @Component({
@@ -18,116 +20,177 @@ import {LanguageLevelService} from "../../../services/language-level.service";
 export class RegistrationLanguageComponent implements OnInit {
 
   error: any;
-  loading: boolean;
+  _loading = {
+    candidate: true,
+    languages: true,
+    lanuageLevels: true
+  };
   saving: boolean;
+
+  addingLanguage: boolean;
   form: FormGroup;
   candidateLanguages: CandidateLanguage[];
   languages: Language[];
   languageLevels: LanguageLevel[];
-  english: CandidateLanguage[];
 
   constructor(private fb: FormBuilder,
               private router: Router,
               private candidateService: CandidateService,
               private candidateLanguageService: CandidateLanguageService,
               private languageService: LanguageService,
-              private languageLevelService: LanguageLevelService) { }
+              private languageLevelService: LanguageLevelService,
+              private registrationService: RegistrationService,
+              private translate: TranslateService) { }
 
   ngOnInit() {
     this.candidateLanguages = [];
+    this.addingLanguage = false;
     this.saving = false;
-    this.loading = true;
-    this.setUpForm();
-
-    // TODO update language.id for English (currently using value 1)
-    this.form.controls.languageId.setValue('1');
-
-    /* Load the candidate data */
-    this.candidateService.getCandidateLanguages().subscribe(
-      (candidate) => {
-        this.candidateLanguages = candidate.candidateLanguages || [];
-
-        this.english = this.candidateLanguages.filter(l => l.language.name == "English");
-         if(this.english.length !== 0){
-          this.form.patchValue({
-             spokenLevelId: this.english[0].spokenLevel.id,
-             writtenLevelId: this.english[0].writtenLevel.id
-           });
-         }
-
-        /* Load the languages */
-        this.languageService.listLanguages().subscribe(
-          (response) => {
-            this.languages = response;
-            this.loading = false;
-          },
-          (error) => {
-            this.error = error;
-            this.loading = false;
-          }
-        );
-
-        /* Load the language levels */
-        this.languageLevelService.listLanguageLevels().subscribe(
-          (response) => {
-            this.languageLevels = response;
-            this.loading = false;
-          },
-          (error) => {
-            this.error = error;
-            this.loading = false;
-          }
-        );
-       },
-      (error) => {
-          this.error = error;
-          this.loading = false;
-      }
-    );
-  }
-
-  setUpForm(){
     this.form = this.fb.group({
       languageId: ['', Validators.required],
       spokenLevelId: ['', Validators.required],
-      writtenLevelId: ['', Validators.required],
-      bilingual: ['', Validators.required]
-      })
+      writtenLevelId: ['', Validators.required]
+    });
+
+    /* Load the languages */
+    this.languageService.listLanguages().subscribe(
+      (response) => {
+        this.languages = response;
+        this._loading.languages = false;
+        this.loadCandidateLanguages();
+      },
+      (error) => {
+        this.error = error;
+        this._loading.languages = false;
+      }
+    );
+
+    /* Load the language levels */
+    this.languageLevelService.listLanguageLevels().subscribe(
+      (response) => {
+        this.languageLevels = response;
+        this._loading.lanuageLevels = false;
+      },
+      (error) => {
+        this.error = error;
+        this._loading.lanuageLevels = false;
+      }
+    );
+  }
+
+  patchForm(lang?: CandidateLanguage) {
+    this.form.patchValue({
+      languageId: lang && lang.language ? lang.language.id : null,
+      spokenLevelId: lang && lang.spokenLevel ? lang.spokenLevel.id : null,
+      writtenLevelId: lang && lang.writtenLevel ? lang.writtenLevel.id : null
+    });
   };
 
-  // ADD ANOTHER LANGUAGE
-  addMore() {
+  loadCandidateLanguages() {
+    this.candidateService.getCandidateLanguages().subscribe(
+      (candidate) => {
+        if (candidate.candidateLanguages && candidate.candidateLanguages.length) {
+          // Sort the languages so that english is always at the top
+          candidate.candidateLanguages
+            .sort((a, b) => a.id > b.id ? -1 : 1) // Order by candidateLangauge id
+            .sort((a, b) => b.language.name.toLowerCase().trim() == 'english' ? 1 : -1); // Float english to the top
+
+          this.candidateLanguages = candidate.candidateLanguages.map(lang => {
+            return {
+              id: lang.id,
+              language: lang.language,
+              spokenLevel: lang.spokenLevel,
+              writtenLevel: lang.writtenLevel,
+              // Request object variables
+              languageId: lang.language ? lang.language.id : null,
+              spokenLevelId: lang.spokenLevel ? lang.spokenLevel.id : null,
+              writtenLevelId: lang.writtenLevel ? lang.writtenLevel.id : null,
+            }
+          }) || [];
+        } else {
+          // Patch the form with the english language id
+          const english = this.languages.find(lang => lang.name.toLowerCase().trim() === 'english');
+          this.form.patchValue({languageId: english.id});
+          this.addingLanguage = true;
+        }
+        this._loading.candidate = false;
+      },
+      (error) => {
+        this.error = error;
+        this._loading.candidate = false;
+      }
+    );
+  }
+
+  addLanguage() {
+    if (this.addingLanguage) {
+      this.candidateLanguages.push(this.form.value);
+      this.addingLanguage = false;
+      this.patchForm();
+    } else {
+      this.addingLanguage = true;
+    }
+  }
+
+  deleteCandidateLanguage(index: number) {
+    this.candidateLanguages.splice(index, 1);
+  }
+
+  save(dir: string) {
     this.saving = true;
-    this.candidateLanguageService.createCandidateLanguage(this.form.value).subscribe(
-      (response) => {
-        this.candidateLanguages.push(response);
+    if (this.addingLanguage && this.form.valid) {
+      this.addLanguage();
+    }
+    const request = {
+      updates: this.candidateLanguages
+    };
+    this.candidateLanguageService.updateCandidateLanguages(request).subscribe(
+      (val) => {
+        if (dir === 'next') {
+          this.registrationService.next();
+        } else {
+          this.registrationService.back();
+        }
         this.saving = false;
       },
       (error) => {
         this.error = error;
         this.saving = false;
-      }
-    );
+      });
   }
 
-  //DELETE LANGUAGE
-  delete(candidateLanguage){
-    this.saving = true;
-    this.candidateLanguageService.deleteCandidateLanguage(candidateLanguage.id).subscribe(
-      () => {
-        this.candidateLanguages = this.candidateLanguages.filter(c => c !== candidateLanguage);
-        this.saving = false;
-      },
-      (error) => {
-        this.error = error;
-        this.saving = false;
-      }
-    );
+  back() {
+    this.save('back');
   }
 
-  // SAVE FORM
-  save() {
-    this.router.navigate(['register', 'certifications']);
+  next() {
+    this.save('next');
   }
 
+  get loading() {
+    const l = this._loading;
+    return l.candidate ||  l.languages || l.lanuageLevels;
+  }
+
+  get formLanguage() {
+    return this.form.value.languageId;
+  }
+
+  /* Takes an optional language ID as param, otherwise assumes it's the forms value */
+  getLanguageName(id?: number) {
+    id = id || this.form.value.languageId;
+    if (id) {
+      return this.languages.find(lang => lang.id == id).name;
+    }
+    return '';
+  }
+
+  /* Takes an optional language ID as param, otherwise assumes it's the forms value */
+  isEnglish(id?: number) {
+    id = id || this.form.value.languageId;
+    if (id) {
+      return this.languages.find(lang => lang.id == id).name.toLowerCase().trim() === 'english';
+    }
+    return false;
+  }
 }

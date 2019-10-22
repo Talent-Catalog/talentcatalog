@@ -8,6 +8,7 @@
 
   <div class="card-header">
     Education
+
     <div class="pull-right" *ngIf="editable">
       <button type="button" class="btn btn-primary" (click)="createCandidateEducation()">Add</button>
     </div>
@@ -16,17 +17,18 @@
   <div class="card-body">
     <div *ngIf="!candidateEducations || candidateEducations.length == 0">
       <div class="row">
-        <div class="col-sm-12">
-          No education entered
-        </div>
+        No education entered
       </div>
     </div>
+
+
     <div *ngFor="let candidateEducation of candidateEducations">
       <div class="row">
-        <div class="col-6">
-          <h6 class="card-title">{{candidateEducation.educationType}} in {{candidateEducation.educationMajor?.name}}: {{candidateEducation.courseName}}</h6>
+        <div class="col-xs-11">
+          <h6 class="card-title">{{candidateEducation.educationType}} in {{candidateEducation.educationMajor?.name}}
+            : {{candidateEducation.courseName}}</h6>
         </div>
-        <div class="col-6">
+        <div class="col-xs-1">
           <div class="pull-right" *ngIf="editable">
             <button type="button" class="btn btn-default" (click)="editCandidateEducation(candidateEducation)"><i
               class="fa fa-edit"></i></button>
@@ -34,18 +36,18 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-sm-12 col-md-6">
-          <label class="col-form-label card-subtitle text-muted">{{candidateEducation.institution}}, {{candidateEducation.country.name}}</label>
-        </div>
+        <label class="col-form-label card-subtitle text-muted">{{candidateEducation.institution}}
+          , {{candidateEducation.country.name}}</label>
       </div>
       <div class="row">
-        <div class="col-sm-12 col-md-6">
-          <label class="col-form-label mb-2 text-muted">{{candidateEducation.yearCompleted}}</label>
-        </div>
+        <label class="col-form-label mb-2 text-muted">{{candidateEducation.yearCompleted}}</label>
       </div>
       <hr/>
     </div>
 
+  </div>
+  <div *ngIf="candidate.migrationEducationMajor" class="card-footer">
+      <span class="text-muted">Migrated Major: {{candidate.migrationEducationMajor.name}}</span>
   </div>
 
 </div>

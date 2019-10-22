@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.data.domain.Sort;
 import org.tbbtalent.server.model.*;
 import org.tbbtalent.server.request.SearchRequest;
 
@@ -43,6 +44,10 @@ public class SearchCandidateRequest extends SearchRequest {
     private Integer minEducationLevel;
     private List<Long> educationMajorIds;
     private ShortlistStatus shortlistStatus;
+
+    public SearchCandidateRequest() {
+        super(Sort.Direction.DESC, new String[]{"id"});
+    }
 
     private List<SearchJoinRequest> searchJoinRequests;
 

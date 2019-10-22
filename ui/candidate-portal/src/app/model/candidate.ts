@@ -27,6 +27,19 @@ export interface Candidate {
   candidateLanguages: CandidateLanguage[];
   registrationId: string;
   maxEducationLevel: EducationLevel;
-  educations: CandidateEducation[];
+  candidateEducations: CandidateEducation[];
   additionalInfo: string;
+  status: CandidateStatus;
+}
+
+export enum CandidateStatus {
+  draft = 'draft',
+  active = 'active',
+  inactive = 'inactive',
+  pending = 'pending',
+  incomplete = 'incomplete',
+  rejected = 'rejected',
+  approved = 'approved',
+  employed = 'employed',
+  deleted = 'deleted'
 }

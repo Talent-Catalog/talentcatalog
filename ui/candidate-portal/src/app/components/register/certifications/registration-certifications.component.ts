@@ -4,6 +4,7 @@ import {Router} from "@angular/router";
 import {CandidateCertification} from "../../../model/candidate-certification";
 import {CandidateService} from "../../../services/candidate.service";
 import {CandidateCertificationService} from "../../../services/candidate-certification.service";
+import {RegistrationService} from "../../../services/registration.service";
 
 @Component({
   selector: 'app-registration-certifications',
@@ -15,24 +16,28 @@ export class RegistrationCertificationsComponent implements OnInit {
   error: any;
   loading: boolean;
   saving: boolean;
+
   form: FormGroup;
   candidateCertifications: CandidateCertification[];
+  addingCertification: boolean;
 
   constructor(private fb: FormBuilder,
               private router: Router,
               private candidateService: CandidateService,
-              private candidateCertificationService: CandidateCertificationService ) { }
+              private candidateCertificationService: CandidateCertificationService,
+              public registrationService: RegistrationService) { }
 
   ngOnInit() {
     this.candidateCertifications = [];
     this.saving = false;
     this.loading = false;
-    this.setUpForm();
+    this.clearForm();
 
    /* Load the candidate data */
     this.candidateService.getCandidateCertifications().subscribe(
       (candidate) => {
         this.candidateCertifications = candidate.candidateCertifications || [];
+        this.addingCertification = !this.candidateCertifications.length;
       },
       (error) => {
         this.error = error;
@@ -41,7 +46,7 @@ export class RegistrationCertificationsComponent implements OnInit {
     );
   }
 
-  setUpForm(){
+  clearForm() {
     this.form = this.fb.group({
       name: ['', Validators.required],
       institution: ['', Validators.required],
@@ -49,11 +54,13 @@ export class RegistrationCertificationsComponent implements OnInit {
     })
   }
 
-  addMore(){
+  addCertificate() {
     this.saving = true;
     this.candidateCertificationService.createCandidateCertification(this.form.value).subscribe(
       (response) => {
         this.candidateCertifications.push(response);
+        this.clearForm();
+        this.addingCertification = false;
         this.saving = false;
       },
       (error) => {
@@ -61,15 +68,14 @@ export class RegistrationCertificationsComponent implements OnInit {
         this.saving = false;
       }
     );
-    console.log(this.form.value)
-    this.setUpForm();
   }
 
-  delete(certification){
+  deleteCertificate(certification) {
     this.saving = true;
     this.candidateCertificationService.deleteCandidateCertification(certification.id).subscribe(
       () => {
         this.candidateCertifications = this.candidateCertifications.filter(c => c !== certification);
+        this.addingCertification = !this.candidateCertifications.length;
         this.saving = false;
       },
       (error) => {
@@ -80,9 +86,11 @@ export class RegistrationCertificationsComponent implements OnInit {
   }
 
     next() {
-      console.log(this.candidateCertifications);
-      // TODO check if the form is not empty and warn the user
-      this.router.navigate(['register', 'additional-information']);
+      this.registrationService.next();
+    }
+
+    back() {
+      this.registrationService.back();
     }
 
 }

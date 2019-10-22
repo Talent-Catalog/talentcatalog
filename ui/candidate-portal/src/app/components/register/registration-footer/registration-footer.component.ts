@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {RegistrationService} from "../../../services/registration.service";
 
 @Component({
@@ -7,6 +7,11 @@ import {RegistrationService} from "../../../services/registration.service";
   styleUrls: ['./registration-footer.component.scss']
 })
 export class RegistrationFooterComponent implements OnInit {
+
+  @Input() disabled: boolean;
+  @Input() hideBack: boolean;
+  @Input() hideNext: boolean;
+  @Input() type: 'step' | 'submit' = 'step';
 
   @Output() backClicked = new EventEmitter();
   @Output() nextClicked = new EventEmitter();

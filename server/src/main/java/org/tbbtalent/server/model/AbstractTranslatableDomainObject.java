@@ -1,10 +1,11 @@
 package org.tbbtalent.server.model;
 
-import org.apache.commons.lang3.StringUtils;
+import java.io.Serializable;
 
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
-import java.io.Serializable;
+
+import org.apache.commons.lang3.StringUtils;
 
 @MappedSuperclass
 @Translatable(value = "name", translation = "translatedName")

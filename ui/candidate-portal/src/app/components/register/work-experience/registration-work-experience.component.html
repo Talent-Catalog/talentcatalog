@@ -1,0 +1,58 @@
+<div class="container">
+
+  <!-- REVIEW -->
+  <ng-container *ngIf="!experienceFormOpen">
+    <ng-container *ngFor="let occupation of occupations">
+
+      <div class="card occupation-card">
+        <div class="card occupation-heading">
+          <h5>{{occupation.occupation?.name}}</h5>
+
+          <button class="btn btn-outline-primary d-none d-md-block"
+                  (click)="addExperience(occupation)">
+            {{ 'REGISTRATION.EXPERIENCE.BUTTON.ADD' | translate }}
+          </button>
+        </div>
+
+        <ng-container *ngFor="let experience of experiencesByCandidateOccupation[occupation.id]; let i = index;">
+          <div class="card">
+            <app-candidate-work-experience-card [experience]="experience"
+                                                (onDelete)="handleDelete($event)"
+                                                (onEdit)="handleEdit($event)">
+            </app-candidate-work-experience-card>
+          </div>
+
+          <hr class="mx-4" *ngIf="i < experiencesByCandidateOccupation[occupation.id]?.length - 1">
+        </ng-container>
+
+        <div class="text-center my-4 d-md-none">
+          <button class="btn btn-outline-primary"
+                  (click)="addExperience(occupation)">
+            {{ 'REGISTRATION.EXPERIENCE.BUTTON.ADD' | translate }}
+          </button>
+        </div>
+
+      </div>
+
+    </ng-container>
+  </ng-container>
+
+  <!-- ADD NEW WORK EXPERIENCE -->
+  <div class="occupation-form" *ngIf="experienceFormOpen">
+    <div class="container">
+      <app-candidate-work-experience-form [countries]="countries"
+                                          [candidateOccupation]="occupation"
+                                          [candidateOccupations]="occupations"
+                                          [candidateJobExperience]="experience"
+                                          (formSaved)="handleSave($event)"
+                                          (formClosed)="handleCancelled($event)">
+      </app-candidate-work-experience-form>
+    </div>
+  </div>
+
+</div>
+
+<app-registration-footer [disabled]="loading || saving"
+                         (backClicked)="back()"
+                         (nextClicked)="next()">
+</app-registration-footer>

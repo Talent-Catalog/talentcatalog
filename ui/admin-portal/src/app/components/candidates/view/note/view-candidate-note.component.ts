@@ -17,6 +17,7 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
   @Input() editable: boolean;
+  @Input() characterLimit: number;
 
   candidateNoteForm: FormGroup;
   loading: boolean;
@@ -34,13 +35,13 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    this.editable = true;
+    this.characterLimit = this.characterLimit ? this.characterLimit : 100;
     this.expanded = false;
     this.notes = [];
 
     this.candidateNoteForm = this.fb.group({
       candidateId: [this.candidate.id],
-      pageSize: 1,
+      pageSize: 10,
       pageNumber: 0,
       sortDirection: 'DESC',
       sortFields: [['createdDate']]
@@ -101,6 +102,19 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
       .catch(() => { /* Isn't possible */
       });
 
+  }
+
+  truncateHTML(text: string): string {
+
+    if(!text || text.length <= this.characterLimit )
+    {
+      return text;
+    }
+
+
+    let without_html = text.replace(/<(?:.|\n)*?>/gm, '');
+    let shortened = without_html.substring(0, this.characterLimit) + "...";
+    return shortened;
   }
 
 }

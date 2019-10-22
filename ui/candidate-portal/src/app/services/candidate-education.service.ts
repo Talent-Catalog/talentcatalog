@@ -13,10 +13,6 @@ export class CandidateEducationService {
 
   constructor(private http: HttpClient) { }
 
-  listMyEducation() {
-    return this.http.get<CandidateEducation>(`${this.apiUrl}`);
-  }
-
   createCandidateEducation(request): Observable<CandidateEducation> {
     return this.http.post<CandidateEducation>(`${this.apiUrl}`, request);
   }
@@ -25,4 +21,7 @@ export class CandidateEducationService {
      return this.http.post<CandidateEducation>(`${this.apiUrl}/update`, request);
   }
 
+  deleteCandidateEducation(id: number) {
+    return this.http.delete<CandidateEducation>(`${this.apiUrl}/${id}`);
+  }
 }

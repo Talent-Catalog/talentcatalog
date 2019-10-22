@@ -14,7 +14,10 @@ import org.tbbtalent.server.repository.OccupationRepository;
 import org.tbbtalent.server.request.candidate.occupation.CreateCandidateOccupationRequest;
 import org.tbbtalent.server.request.candidate.occupation.UpdateCandidateOccupationRequest;
 import org.tbbtalent.server.request.candidate.occupation.UpdateCandidateOccupationsRequest;
+import org.tbbtalent.server.request.candidate.occupation.VerifyCandidateOccupationRequest;
+import org.tbbtalent.server.request.note.CreateCandidateNoteRequest;
 import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.service.CandidateNoteService;
 import org.tbbtalent.server.service.CandidateOccupationService;
 
 import java.util.ArrayList;
@@ -29,15 +32,17 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
     private final CandidateOccupationRepository candidateOccupationRepository;
     private final CandidateJobExperienceRepository candidateJobExperienceRepository;
     private final OccupationRepository occupationRepository;
+    private final CandidateNoteService candidateNoteService;
     private final UserContext userContext;
 
     @Autowired
     public CandidateOccupationServiceImpl(CandidateOccupationRepository candidateOccupationRepository,
                                           CandidateJobExperienceRepository candidateJobExperienceRepository, OccupationRepository occupationRepository,
-                                          UserContext userContext) {
+                                          CandidateNoteService candidateNoteService, UserContext userContext) {
         this.candidateOccupationRepository = candidateOccupationRepository;
         this.candidateJobExperienceRepository = candidateJobExperienceRepository;
         this.occupationRepository = occupationRepository;
+        this.candidateNoteService = candidateNoteService;
         this.userContext = userContext;
     }
 
@@ -126,11 +131,11 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
                 candidateOccupation = new CandidateOccupation(candidate, occupation, update.getYearsExperience());
             }
             updatedOccupations.add(candidateOccupationRepository.save(candidateOccupation));
-            updatedOccupationIds.add(candidateOccupation.getOccupation().getId());
+            updatedOccupationIds.add(candidateOccupation.getId());
         }
 
         for (Long existingCandidateOccupationId : map.keySet()) {
-            /* Check if the candidate occupation hsa been removed */
+            /* Check if the candidate occupation has been removed */
             if (!updatedOccupationIds.contains(existingCandidateOccupationId)){
                 /* Check if the candidate has job experience linked to the occupation */
                 int count = candidateJobExperienceRepository.countByCandidateOccupationId(existingCandidateOccupationId);
@@ -141,5 +146,18 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
             }
         }
         return candidateOccupations;
+    }
+
+    @Override
+    public CandidateOccupation verifyCandidateOccupation(long id, VerifyCandidateOccupationRequest request) {
+        CandidateOccupation candidateOccupation = candidateOccupationRepository.findByIdLoadCandidate(id)
+                .orElseThrow(() -> new NoSuchObjectException(CandidateOccupation.class, id));
+        candidateOccupation.setVerified(request.isVerified());
+
+        candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(candidateOccupation.getCandidate().getId(),
+                candidateOccupation.getOccupation().getName() +" verification status set to "+request.isVerified(), request.getComment()));
+
+        return candidateOccupationRepository.save(candidateOccupation);
+
     }
 }

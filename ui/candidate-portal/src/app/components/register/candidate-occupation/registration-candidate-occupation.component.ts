@@ -3,7 +3,7 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
 import {CandidateOccupationService} from "../../../services/candidate-occupation.service";
-import {CandidateOccupationRequest} from "../../../model/candidate-occupation";
+import {CandidateOccupation} from "../../../model/candidate-occupation";
 import {Occupation} from "../../../model/occupation";
 import {OccupationService} from "../../../services/occupation.service";
 import {RegistrationService} from "../../../services/registration.service";
@@ -16,10 +16,13 @@ import {RegistrationService} from "../../../services/registration.service";
 export class RegistrationCandidateOccupationComponent implements OnInit {
 
   error: any;
-  loading: boolean;
+  _loading = {
+    candidate: true,
+    occupations: true
+  };
   saving: boolean;
   form: FormGroup;
-  candidateOccupations: CandidateOccupationRequest[];
+  candidateOccupations: CandidateOccupation[];
   occupations: Occupation[];
 
   constructor(private fb: FormBuilder,
@@ -32,9 +35,19 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
   ngOnInit() {
     this.candidateOccupations = [];
     this.saving = false;
-    this.loading = true;
+    this.setUpForm();
 
-    /* Load the candidate data */
+    this.occupationService.listOccupations().subscribe(
+      (response) => {
+        this.occupations = response;
+        this._loading.occupations = false;
+      },
+      (error) => {
+        this.error = error;
+        this._loading.occupations = false;
+      }
+    );
+
     this.candidateService.getCandidateCandidateOccupations().subscribe(
       (candidate) => {
         this.candidateOccupations = candidate.candidateOccupations.map(occ => {
@@ -44,23 +57,11 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
             yearsExperience: occ.yearsExperience
           }
         });
-
-        /* Wait for the candidate then load the industries */
-        this.occupationService.listOccupations().subscribe(
-          (response) => {
-            this.occupations = response;
-            this.loading = false;
-            this.setUpForm();
-          },
-          (error) => {
-            this.error = error;
-            this.loading = false;
-          }
-        );
+        this._loading.candidate = false;
       },
       (error) => {
         this.error = error;
-        this.loading = false;
+        this._loading.candidate = false;
       }
     );
   }
@@ -99,7 +100,6 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
       },
       (error) => {
         this.error = error;
-        this.loading = false;
       });
   }
 
@@ -111,4 +111,7 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
     this.save('next');
   }
 
+  get loading() {
+    return this._loading.candidate || this._loading.occupations;
+  }
 }

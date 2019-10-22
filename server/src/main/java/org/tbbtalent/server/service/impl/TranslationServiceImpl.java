@@ -1,5 +1,9 @@
 package org.tbbtalent.server.service.impl;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,10 +13,6 @@ import org.tbbtalent.server.model.Translation;
 import org.tbbtalent.server.repository.TranslationRepository;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.TranslationService;
-
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class TranslationServiceImpl implements TranslationService {
@@ -26,29 +26,15 @@ public class TranslationServiceImpl implements TranslationService {
         this.userContext = userContext;
         this.translationRepository = translationRepository;
     }
-//    @Override
-//    public List search(SearchTranslationRequest request) {
-//        List translations = new ArrayList<>();
-//        if(request.getObjectType() == "country"){
-//            List<Country> countries = countryService.listCountries();
-//            translations = translate(request.getSystemLanguage(), countries);
-//            return translations;
-//        }else{
-//
-//        }
-//        return translations;
-//    }
 
     public <T extends AbstractTranslatableDomainObject<Long>> void translate(List<T> items,
                                                                              String type) {
         // if the selected language is english, no need to load translations at all, just return original data
         String selectedLanguage = userContext.getUserLanguage();
-        translate(items, type, selectedLanguage);
-    }
+        if ("en".equals(selectedLanguage)) {
+            return;
+        }
 
-    public <T extends AbstractTranslatableDomainObject<Long>> void translate(List<T> items,
-                                                                             String type,
-                                                                             String selectedLanguage) {
         if (CollectionUtils.isNotEmpty(items)) {
             List<Long> itemIds = items.stream().map(c -> (Long)c.getId()).collect(Collectors.toList());
             List<Translation> translations = translationRepository.findByIdsTypeLanguage(itemIds, type, selectedLanguage);

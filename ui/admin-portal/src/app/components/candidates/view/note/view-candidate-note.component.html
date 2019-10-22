@@ -1,3 +1,4 @@
+
 <div *ngIf="loading">
   <i class="fa fa-spinner fa-spin"></i> loading...
 </div>
@@ -36,11 +37,11 @@
     <div class="card-body">
       <div *ngIf="candidateNote.comment">
         <div *ngIf="!expanded">
-          {{ (candidateNote.comment | slice:0:50) + (candidateNote.comment.length > 50 ? ' ...' : '')}}
-          <button *ngIf="candidateNote.comment.length > 50" type="button" class="btn btn-sm btn-default" (click)="expanded = true"><i class="fa fa-toggle-down"></i></button>
+          <div [innerHTML]="truncateHTML(candidateNote.comment)"></div>
+          <button *ngIf="candidateNote.comment.length > characterLimit" type="button" class="btn btn-sm btn-default" (click)="expanded = true"><i class="fa fa-toggle-down"></i></button>
         </div>
         <div *ngIf="expanded">
-          {{ candidateNote.comment }}
+          <div [innerHTML]="candidateNote.comment"></div>
           <button type="button" class="btn btn-sm btn-default" (click)="expanded = false"><i class="fa fa-toggle-up"></i></button>
         </div>
       </div>

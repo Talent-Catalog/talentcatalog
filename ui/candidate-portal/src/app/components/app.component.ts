@@ -1,6 +1,8 @@
-import {Component} from '@angular/core';
-import {NavigationStart, Router} from "@angular/router";
+import {Component, HostBinding} from '@angular/core';
+import {Router} from "@angular/router";
 import {TranslateService} from '@ngx-translate/core';
+import {LocalStorageService} from "angular-2-local-storage";
+import {LanguageService} from "../services/language.service";
 
 @Component({
   selector: 'app-root',
@@ -9,25 +11,25 @@ import {TranslateService} from '@ngx-translate/core';
 })
 export class AppComponent {
 
-  showHeader: boolean = true;
+  @HostBinding('class.rtl-wrapper') rtl: boolean;
 
   constructor(private router: Router,
-              private translate: TranslateService) {
+              private translate: TranslateService,
+              private languageService: LanguageService,
+              private localStorage: LocalStorageService) {
 
     // this language will be used as a fallback when a translation isn't found in the current language
     translate.setDefaultLang('en');
-
-    // the lang to use, if the lang isn't available, it will use the current loader to get them
-    translate.use('en');
-
-    router.events.forEach((event) => {
-      if (event instanceof NavigationStart) {
-        if (event['url'] == '/login' || event['url'].indexOf('/reset-password') != -1) {
-          this.showHeader = false;
-        } else {
-          this.showHeader = true;
-        }
-      }
-    });
+    const lang = (this.localStorage.get('language') as string) || 'en';
+    this.setLanguage(lang);
   }
+
+  setLanguage(lang) {
+    // Add .rtl-wrapper class to app root if the language is arabic
+    this.rtl = lang === 'ar';
+    this.translate.use(lang);
+    this.languageService.setSelectedLanguage(lang);
+    this.localStorage.set('language', lang);
+  }
+
 }

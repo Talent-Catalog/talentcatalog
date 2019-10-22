@@ -18,21 +18,17 @@ public interface CandidateService {
 
     Candidate updateCandidateStatus(long id, UpdateCandidateStatusRequest request);
 
-    Candidate updateCandidate(long id, UpdateCandidateContactRequest request);
+    Candidate updateCandidate(long id, UpdateCandidateRequest request);
 
     boolean deleteCandidate(long id);
 
     LoginRequest register(RegisterCandidateRequest request) throws AccountLockedException;
 
-    Candidate updateEmail(UpdateCandidateEmailRequest request);
-
-    Candidate updateAlternateContacts(UpdateCandidateAlternateContactRequest request);
-
-    Candidate updateAdditionalContacts(UpdateCandidateAdditionalContactRequest request);
+    Candidate updateContact(UpdateCandidateContactRequest request);
 
     Candidate updatePersonal(UpdateCandidatePersonalRequest request);
 
-    Candidate updateEducationLevel(UpdateCandidateEducationLevelRequest request);
+    Candidate updateEducation(UpdateCandidateEducationRequest request);
 
     Candidate updateAdditionalInfo(UpdateCandidateAdditionalInfoRequest request);
 

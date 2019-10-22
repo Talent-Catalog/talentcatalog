@@ -22,6 +22,8 @@ public class CandidateOccupation extends AbstractDomainObject<Long> {
 
     private Boolean topCandidate;
 
+    private String migrationOccupation;
+
     public CandidateOccupation() {
     }
 
@@ -69,5 +71,13 @@ public class CandidateOccupation extends AbstractDomainObject<Long> {
 
     public void setTopCandidate(Boolean topCandidate) {
         this.topCandidate = topCandidate;
+    }
+
+    public String getMigrationOccupation() {
+        return migrationOccupation;
+    }
+
+    public void setMigrationOccupation(String migrationOccupation) {
+        this.migrationOccupation = migrationOccupation;
     }
 }

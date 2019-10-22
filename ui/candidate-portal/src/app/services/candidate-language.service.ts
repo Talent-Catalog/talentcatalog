@@ -20,4 +20,8 @@ export class CandidateLanguageService {
   deleteCandidateLanguage(id: number): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
   }
+
+  updateCandidateLanguages(request): Observable<CandidateLanguage[]> {
+    return this.http.post<CandidateLanguage[]>(`${this.apiUrl}/update`, request);
+  }
 }

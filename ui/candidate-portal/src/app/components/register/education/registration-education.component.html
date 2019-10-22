@@ -1,28 +1,53 @@
 <div class="container">
 
-  <div *ngIf="loading">
-    <span>Loading...</span>
-
-    {{this._loading | json}}
-  </div>
+  <app-loading [loading]="loading"></app-loading>
 
   <ng-container *ngIf="!loading">
 
+    <app-error [error]="error"></app-error>
+
     <form [formGroup]="form">
 
+      <!-- MAX EDUCATION LEVEL -->
       <div class="form-group">
-        <label for="maxEducationLevelId">What is the highest level of candidateEducation you've obtained?</label>
-        <select class="form-control" id="maxEducationLevelId" name="maxEducationLevelId" [formControlName]="'maxEducationLevelId'">
+        <label for="maxEducationLevelId" translate dir="auto">REGISTRATION.EDUCATION.LABEL.MAXEDUCATIONLEVELID</label>
+        <select class="form-control" id="maxEducationLevelId" [formControlName]="'maxEducationLevelId'">
           <option value=""></option>
-          <option *ngFor="let educationLevel of educationLevels"
-                  [value]="educationLevel.id">{{educationLevel.name}}</option>
+          <option *ngFor="let educationLevel of educationLevels" [value]="educationLevel.id">{{educationLevel.name}}</option>
         </select>
       </div>
 
     </form>
 
-  </ng-container>
+    <!-- EDUCATIONS -->
+    <ng-container *ngIf="candidateEducationItems.length">
+      <div class="card" *ngFor="let item of candidateEducationItems; let i = index;">
+        <div class="text-right">
+          <button class="btn btn-danger btn-card" [disabled]="saving" (click)="deleteCandidateEducation(i)">&times;</button>
+        </div>
+        <p>{{item.educationType}}</p>
+        <h5>{{item.courseName}} | {{item.institution}}</h5>
+        <p>{{item.country?.name}}</p>
+        <p *ngIf="item.educationMajor">Majoring in {{item.educationMajor?.name}}</p>
+      </div>
+    </ng-container>
 
+    <!-- EDUCATION HISTORY -->
+    <app-candidate-education-form *ngIf="addingEducation" class="mt-4"
+                                  [countries]="countries"
+                                  [majors]="majors"
+                                  (saved)="handleCandidateEducationSaved($event)">
+    </app-candidate-education-form>
+
+    <div class="text-center mt-4" *ngIf="!addingEducation">
+      <button class="btn btn-outline-primary" translate dir="auto"
+              (click)="addEducation()"
+              [disabled]="loading || saving">
+        REGISTRATION.EDUCATION.BUTTON.ADD
+      </button>
+    </div>
+
+  </ng-container>
 
 </div>
 

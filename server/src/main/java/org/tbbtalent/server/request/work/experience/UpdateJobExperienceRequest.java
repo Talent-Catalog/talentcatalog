@@ -2,21 +2,44 @@ package org.tbbtalent.server.request.work.experience;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 
 public class UpdateJobExperienceRequest {
 
+    private Long id;
+    private Long candidateOccupationId;
     @NotBlank
     private String companyName;
     @NotNull
     private Long countryId;
     @NotBlank
     private String role;
-    private String startDate;
-    private String endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private Boolean fullTime;
     private Boolean paid;
     @NotBlank
     private String description;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getCandidateOccupationId() {
+        return candidateOccupationId;
+    }
+
+    public void setCandidateOccupationId(Long candidateOccupationId) {
+        this.candidateOccupationId = candidateOccupationId;
+    }
+
+    public void setCountryId(Long countryId) {
+        this.countryId = countryId;
+    }
 
     public String getCompanyName() { return companyName; }
 
@@ -34,13 +57,13 @@ public class UpdateJobExperienceRequest {
 
     public void setRole(String role) { this.role = role; }
 
-    public String getStartDate() { return startDate; }
+    public LocalDate getStartDate() { return startDate; }
 
-    public void setStartDate(String startDate) { this.startDate = startDate; }
+    public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
 
-    public String getEndDate() { return endDate; }
+    public LocalDate getEndDate() { return endDate; }
 
-    public void setEndDate(String endDate) { this.endDate = endDate; }
+    public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
 
     public Boolean getFullTime() { return fullTime; }
 

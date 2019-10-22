@@ -48,17 +48,20 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
 
     @Override
     public CandidateJobExperience createCandidateJobExperience(CreateJobExperienceRequest request) {
-        Candidate candidate = userContext.getLoggedInCandidate();
-        Long test = 3L;
-
+        Candidate candidate;
+        /* Check if the candidate ID is explicitly set - this means the request is coming from admin */
+        if (request.getCandidateId() != null) {
+            candidate = candidateRepository.findById(request.getCandidateId())
+                    .orElseThrow(() -> new NoSuchObjectException(Candidate.class, request.getCandidateId()));
+        } else {
+            candidate = userContext.getLoggedInCandidate();
+        }
 
         // Load the country from the database - throw an exception if not found
-        Country country = countryRepository.findById(request.getCountryId())
-                .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountryId()));
+        Country country = getCountry(request.getCountryId());
 
         // Load the candidate occupation from the database - throw an exception if not found
-        CandidateOccupation occupation = candidateOccupationRepository.findById(request.getCountryId())
-                .orElseThrow(() -> new NoSuchObjectException(CandidateOccupation.class, request.getCandidateOccupationId()));
+        CandidateOccupation occupation = getCandidateOccupation(request.getCandidateOccupationId());
 
         // Create a new candidateOccupation object to insert into the database
         CandidateJobExperience candidateJobExperience = new CandidateJobExperience();
@@ -78,47 +81,23 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
     }
 
     @Override
-    public CandidateJobExperience createCandidateJobExperience(Long candidateId, CreateJobExperienceRequest request) {
+    public CandidateJobExperience updateCandidateJobExperience(UpdateJobExperienceRequest request) {
         // Load the candidate from the database - throw an exception if not found
-        Candidate candidate = candidateRepository.findById(candidateId)
-                .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateId));
+        CandidateJobExperience candidateJobExperience = candidateJobExperienceRepository
+                .findByIdLoadCandidateOccupation(request.getId())
+                .orElseThrow(() -> new NoSuchObjectException(CandidateJobExperience.class, request.getId()));
 
-        Long test = 3L;
+        Country country = getCountry(request.getCountryId());
 
-        // Load the country from the database - throw an exception if not found
-        Country country = countryRepository.findById(request.getCountryId())
-                .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountryId()));
+        // Default to the existing candidate occupation
+        CandidateOccupation candidateOccupation = candidateJobExperience.getCandidateOccupation();
 
-        // Load the candidate occupation from the database - throw an exception if not found
-        CandidateOccupation occupation = candidateOccupationRepository.findById(request.getCandidateOccupationId())
-                .orElseThrow(() -> new NoSuchObjectException(CandidateOccupation.class, request.getCandidateOccupationId()));
-
-        // Create a new candidateOccupation object to insert into the database
-        CandidateJobExperience candidateJobExperience = new CandidateJobExperience();
-        candidateJobExperience.setCandidate(candidate);
-        candidateJobExperience.setCountry(country);
-        candidateJobExperience.setCandidateOccupation(occupation);
-        candidateJobExperience.setCompanyName(request.getCompanyName());
-        candidateJobExperience.setRole(request.getRole());
-        candidateJobExperience.setStartDate(request.getStartDate());
-        candidateJobExperience.setEndDate(request.getEndDate());
-        candidateJobExperience.setFullTime(request.getFullTime());
-        candidateJobExperience.setPaid(request.getPaid());
-        candidateJobExperience.setDescription(request.getDescription());
-
-        // Save the candidateOccupation
-        return candidateJobExperienceRepository.save(candidateJobExperience);
-    }
-
-    @Override
-    public CandidateJobExperience updateCandidateJobExperience(Long id, UpdateJobExperienceRequest request) {
-        // Load the candidate from the database - throw an exception if not found
-        CandidateJobExperience candidateJobExperience = candidateJobExperienceRepository.findById(id)
-                .orElseThrow(() -> new NoSuchObjectException(CandidateJobExperience.class, id));
-
-        // Load the country from the database - throw an exception if not found
-        Country country = countryRepository.findById(request.getCountryId())
-                .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountryId()));
+        // Check if the candidate occupation needs to be updated
+        if (request.getCandidateOccupationId() != null) {
+            if (candidateOccupation == null || !candidateOccupation.getId().equals(request.getCandidateOccupationId())) {
+                candidateOccupation = getCandidateOccupation(request.getCandidateOccupationId());
+            }
+        }
 
         // Create a new candidateOccupation object to insert into the database
         candidateJobExperience.setCountry(country);
@@ -129,9 +108,11 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
         candidateJobExperience.setFullTime(request.getFullTime());
         candidateJobExperience.setPaid(request.getPaid());
         candidateJobExperience.setDescription(request.getDescription());
+        candidateJobExperience.setCandidateOccupation(candidateOccupation);
+        candidateJobExperienceRepository.save(candidateJobExperience);
 
         // Save the candidateOccupation
-        return candidateJobExperienceRepository.save(candidateJobExperience);
+        return candidateJobExperience;
     }
 
     @Override
@@ -140,11 +121,23 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
         CandidateJobExperience candidateJobExperience = candidateJobExperienceRepository.findByIdLoadCandidate(id)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateJobExperience.class, id));
 
-        // Check that the user is deleting their own candidateOccupation
+        // Check that the user is deleting their own candidate job experience
         if (!candidate.getId().equals(candidateJobExperience.getCandidate().getId())) {
             throw new InvalidCredentialsException("You do not have permission to perform that action");
         }
 
         candidateJobExperienceRepository.delete(candidateJobExperience);
+    }
+
+    // Load the country from the database - throw an exception if not found
+    private Country getCountry(Long countryId) {
+        return countryRepository.findById(countryId)
+                .orElseThrow(() -> new NoSuchObjectException(Country.class, countryId));
+    }
+
+    // Load the candidate occupation from the database - throw an exception if not found
+    private CandidateOccupation getCandidateOccupation(Long candidateOccupationId) {
+        return candidateOccupationRepository.findById(candidateOccupationId)
+                .orElseThrow(() -> new NoSuchObjectException(CandidateOccupation.class, candidateOccupationId));
     }
 }

@@ -70,6 +70,33 @@ public class SavedSearchAdminApi {
                 .add("keyword")
                 .add("statuses")
                 .add("gender")
+                .add("occupationIds")
+                .add("orProfileKeyword")
+                .add("verifiedOccupationSearchType")
+                .add("nationalityIds")
+                .add("nationalitySearchType")
+                .add("countryIds")
+                .add("englishMinWrittenLevel")
+                .add("englishMinSpokenLevel")
+                .add("otherLanguage", languageDto())
+                .add("otherMinWrittenLevel")
+                .add("otherMinSpokenLevel")
+                .add("lastModifiedFrom")
+                .add("lastModifiedTo")
+                .add("createdFrom")
+                .add("createdTo")
+                .add("minAge")
+                .add("maxAge")
+                .add("minEducationLevel")
+                .add("educationMajorIds")
+                ;
+    }
+
+    private DtoBuilder languageDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
+                .add("status")
                 ;
     }
 

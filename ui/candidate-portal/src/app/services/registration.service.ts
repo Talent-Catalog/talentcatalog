@@ -23,16 +23,6 @@ export class RegistrationService {
       section: 1
     },
     {
-      key: 'contact/alternate',
-      title: 'How can we contact you?',
-      section: 1
-    },
-    {
-      key: 'contact/additional',
-      title: 'How can we contact you?',
-      section: 1
-    },
-    {
       key: 'personal',
       title: 'Tell us about yourself',
       section: 2
@@ -53,21 +43,6 @@ export class RegistrationService {
       section: 5
     },
     {
-      key: 'education/masters',
-      title: 'Tell us about your education',
-      section: 5
-    },
-    {
-      key: 'education/university',
-      title: 'Tell us about your education',
-      section: 5
-    },
-    {
-      key: 'education/school',
-      title: 'Tell us about your education',
-      section: 5
-    },
-    {
       key: 'language',
       title: 'What languages do you speak?',
       section: 6
@@ -80,6 +55,12 @@ export class RegistrationService {
     {
       key: 'submit',
       title: 'Are you ready to submit your application?',
+      section: 8
+    },
+    {
+      key: 'complete',
+      title: '',
+      hideHeader: true,
       section: 8
     }
   ];

@@ -1,8 +1,8 @@
 import {Country} from "./country";
+import {CandidateOccupation} from "./candidate-occupation";
 
 export interface CandidateJobExperience {
   id: number;
-  country: Country;
   companyName: string;
   role: string;
   startDate: string;
@@ -10,4 +10,9 @@ export interface CandidateJobExperience {
   fullTime: string;
   paid: string;
   description: string;
+  country?: Country;
+  candidateOccupation?: CandidateOccupation;
+  // Request object variables
+  countryId?: number;
+  candidateOccupationId?: number;
 }

@@ -6,7 +6,7 @@ public class CreateCandidateEducationRequest {
 
     private EducationType educationType;
     private Long countryId;
-    private Long majorId;
+    private Long educationMajorId;
     private Integer lengthOfCourseYears;
     private String institution;
     private String courseName;
@@ -28,12 +28,12 @@ public class CreateCandidateEducationRequest {
         this.countryId = countryId;
     }
 
-    public Long getMajorId() {
-        return majorId;
+    public Long getEducationMajorId() {
+        return educationMajorId;
     }
 
-    public void setMajorId(Long majorId) {
-        this.majorId = majorId;
+    public void setEducationMajorId(Long educationMajorId) {
+        this.educationMajorId = educationMajorId;
     }
 
     public Integer getLengthOfCourseYears() {

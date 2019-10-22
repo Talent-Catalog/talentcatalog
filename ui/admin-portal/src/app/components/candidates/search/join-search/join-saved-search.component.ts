@@ -1,6 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-
-
 import {SearchResults} from '../../../../model/search-results';
 
 import {FormBuilder, FormGroup} from "@angular/forms";

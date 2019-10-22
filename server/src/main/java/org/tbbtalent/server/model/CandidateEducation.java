@@ -14,7 +14,6 @@ public class CandidateEducation extends AbstractDomainObject<Long> {
     @Enumerated(EnumType.STRING)
     private EducationType educationType;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "country_id")
     private Country country;

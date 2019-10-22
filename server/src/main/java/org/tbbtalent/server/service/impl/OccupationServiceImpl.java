@@ -20,6 +20,7 @@ import org.tbbtalent.server.request.occupation.CreateOccupationRequest;
 import org.tbbtalent.server.request.occupation.SearchOccupationRequest;
 import org.tbbtalent.server.request.occupation.UpdateOccupationRequest;
 import org.tbbtalent.server.service.OccupationService;
+import org.tbbtalent.server.service.TranslationService;
 
 import java.util.List;
 
@@ -30,16 +31,22 @@ public class OccupationServiceImpl implements OccupationService {
 
     private final CandidateOccupationRepository candidateOccupationRepository;
     private final OccupationRepository occupationRepository;
+    private final TranslationService translationService;
 
     @Autowired
-    public OccupationServiceImpl(CandidateOccupationRepository candidateOccupationRepository, OccupationRepository occupationRepository) {
+    public OccupationServiceImpl(CandidateOccupationRepository candidateOccupationRepository,
+                                 OccupationRepository occupationRepository,
+                                 TranslationService translationService) {
         this.candidateOccupationRepository = candidateOccupationRepository;
         this.occupationRepository = occupationRepository;
+        this.translationService = translationService;
     }
 
     @Override
     public List<Occupation> listOccupations() {
-        return occupationRepository.findByStatus(Status.active);
+        List<Occupation> occupations = occupationRepository.findByStatus(Status.active);
+        translationService.translate(occupations, "occupation");
+        return occupations;
     }
 
     @Override

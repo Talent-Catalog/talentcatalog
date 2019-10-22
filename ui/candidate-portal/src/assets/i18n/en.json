@@ -1,10 +1,71 @@
 {
-  "HOME": {
-    "WELCOME": "Welcome to TBB",
+  "HEADER": {
+    "NAV": {
+      "ACCOUNT": "Account",
+      "LOGOUT":"Logout",
+      "LOGIN": "Sign in"
+    }
+  },
+  "LOADING": "Loading...",
+  "LOGIN": {
+    "TITLE": "Login",
+    "LABEL": {
+      "USERNAME": "Username",
+      "PASSWORD": "Password"
+    },
+    "BUTTON": {
+      "FORGOT": "Forgot Password?",
+      "LOGIN": "Login"
+    }
+  },
+  "RESETPASSWORD": {
+    "TITLE": "Forgot Password",
+    "SUCCESS": "We have sent you an email with reset instructions.",
+    "LABEL": {
+      "EMAIL": "Email Address"
+    },
+    "BUTTON": {
+      "RESET": "Reset Password"
+    }
+  },
+  "CHANGEPASSWORD": {
+    "TITLE": "Change Password",
+    "SUCCESS": "Your password has been updated",
+    "LABEL": {
+      "OLDPASSWORD": "Old Password",
+      "PASSWORD": "New Password",
+      "PASSWORDCONFIRMATION":  "Confirm Password"
+    },
+    "BUTTON": {
+      "UPDATE": "Update Password"
+    }
+  },
+  "LANDING": {
+    "TITLE": "Welcome to TBB",
     "INTRO": "Landing page - the what and the why",
     "REGISTER": "Register",
     "LOGIN": "Login",
-    "TEST": "hello {{value}}"
+    "PARA1": "Welcome to the Talent Catalog! This site is an online platform designed to capture the skills and talents of displaced people who face barriers to accessing employment.",
+    "PARA2": "Refugees living in countries where they cannot work legally are welcome to register on this site. However, Talent Beyond Boundaries does not currently have any operations in the country where you are living.",
+    "HEADING3": "About Talent Beyond Boundaries",
+    "PARA3": "Talent Beyond Boundaries is a nonprofit organization. Our ultimate goal is to link those who are displaced by conflict with jobs in countries around the world where their skills are needed. The talent catalog is a platform built to show the great range of skills among the millions of people who have been forced by violence to leave their homeland to the international private sector with the goal to link talent with international job opportunities. TBB currently working on a pilot project to place refugees living in Jordan and Lebanon with international employment in countries where their skills are needed. Once we prove this model through the pilot project, we plan to scale up and expand our work to connect tens of thousands of displaced people to international employment around the world.",
+    "HEADING4": "About the Talent Catalog",
+    "PARA4": "Registration in the Talent Catalog is free of charge. This site is available in both Arabic and English. Once registrants create a profile, they can download their personalized CV."
+  },
+  "HOME": {
+    "TITLE": "Welcome back, {{name}}!",
+    "DRAFT": {
+      "EXPLANATION": "You haven't finished your registration. Please click the button below to continue.",
+      "BUTTON": "Continue registration"
+    },
+    "PENDING": {
+      "EXPLANATION": "Congratulations, you've completed your registration application. We will review your application as soon as we can. In the meantime, you can review your profile.",
+      "BUTTON": "Review Profile"
+    },
+    "INCOMPLETE": {
+      "EXPLANATION": "Your registration application has been reviewed, and requires further action before it can be approved.",
+      "BUTTON": "Review registration"
+    }
   },
   "REGISTRATION": {
     "HEADER": {
@@ -27,7 +88,8 @@
     },
     "FOOTER": {
       "BACK": "Back",
-      "NEXT": "Next"
+      "NEXT": "Next",
+      "SUBMIT": "Submit"
     },
     "LANDING": {
       "TITLE": "Let's get started",
@@ -37,6 +99,8 @@
     "CONTACT": {
       "LABEL": {
         "EMAIL": "Email",
+        "PHONE": "Phone",
+        "WHATSAPP": "Whatsapp",
         "USERNAME": "Username",
         "PASSWORD": "Password",
         "PASSWORDCONFIRMATION": "Confirmation password"
@@ -56,12 +120,113 @@
         "REGISTRATIONID": "UNHCR or UNRWA registration number"
       }
     },
+    "OCCUPATION": {
+      "LABEL": {
+        "OCCUPATION": "What is the main field that you have skills in?",
+        "YEARSEXPERIENCE": "How many years of work experience do you have in this field?",
+        "DISCLAIMER": "Do not include years spent studying in this occupation"
+      },
+      "BUTTON": {
+        "ADD": "Add occupation"
+      }
+    },
     "EXPERIENCE": {
-
+      "BUTTON": {
+        "ADD": "Add work experience"
+      }
     },
     "EDUCATION": {
-      "TITLE": ""
+      "LABEL": {
+        "MAXEDUCATIONLEVELID": "What is the highest level of education you've obtained?"
+      },
+      "BUTTON": {
+        "ADD": "Add education"
+      }
+    },
+    "LANGUAGE": {
+      "LABEL": {
+        "LANGUAGE": "Which language?",
+        "SPEAK": "How well do you speak {{languageName}}?",
+        "WRITTEN": "How well do you read and write in {{languageName}}?"
+      },
+      "BUTTON": {
+        "ADD": "Add additional language"
+      }
+    },
+    "CERTIFICATIONS": {
+      "LABEL": {
+        "NAME": "Certificate Name",
+        "INSTITUTION": "Institution Name",
+        "DATECOMPLETED": "Date of Receipt"
+      },
+      "BUTTON": {
+        "ADD": "Add Certificate"
+      }
+    },
+    "SUBMIT": {
+      "LABEL": {
+        "ADDITIONALINFO": "Anything else we should know?"
+      },
+      "TEXT": {
+        "EXPLANATION": "If possible please provide this response in English so it can be more easily reviewed by our team. If you feel more comfortable using your native language please do so and we will have a translator convert it for our team."
+      }
+    },
+    "COMPLETE": {
+      "TITLE": "Thank you for your registration!",
+      "PARA1": "TODO: Some wordsmithing needed. Explain that they are in the system how it all works from here.",
+      "BUTTON": {
+        "LOGOUT": "Logout",
+        "PROFILE": "View My Profile"
+      }
     }
-
+  },
+  "PROFILE": {
+    "TITLE": {
+      "PERSONAL":  "Personal Information",
+      "EXPERIENCE": "Professional Experience",
+      "EDUCATION":  "Education",
+      "CERTIFICATIONS": "Certifications",
+      "LANGUAGES":  "Languages",
+      "OTHER": "Other Information"
+    }
+  },
+  "FORM": {
+    "JOBEXPERIENCE": {
+      "EXPLANATION": "If possible please provide this response in English so it can be more easily reviewed by our team. If you feel more comfortable using your native language please do so and we will have a translator convert it for our team.",
+      "LABEL": {
+        "CANDIDATEOCCUPATIONID": "Occupation",
+        "COMPANYNAME": "Company Name",
+        "COUNTRY": "Country",
+        "STARTDATE": "Started (dd/mm/yyyy)",
+        "ENDDATE": "Finished (dd/mm/yyyy)",
+        "ROLE": "Job Title",
+        "DESCRIPTION": "Job Description",
+        "CONTRACTTYPE": {
+          "TITLE": "Contract type",
+          "FULLTIME": "Full time",
+          "PARTTIME": "Part time"
+        },
+        "EMPLOYMENTTYPE": {
+          "TITLE": "Type of employment",
+          "PAID": "Paid",
+          "VOLUNTARY": "Voluntary"
+        }
+      },
+      "BUTTON": {
+        "ADD": "Add Work Experience",
+        "CANCEL": "Cancel",
+        "SAVE": "Save changes"
+      }
+    }
+  },
+  "CARD": {
+    "JOBEXPERIENCE": {
+      "LABEL": {
+        "FULLTIME":  "Full time",
+        "PARTTIME": "Part time",
+        "PAID":  "Paid employee",
+        "VOLUNTEER": "Volunteer employee"
+      }
+    }
   }
 }

@@ -1,13 +1,16 @@
 package org.tbbtalent.server.model;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "education_major")
 @SequenceGenerator(name = "seq_gen", sequenceName = "education_major_id_seq", allocationSize = 1)
-public class EducationMajor extends AbstractDomainObject<Long> {
+public class EducationMajor extends AbstractTranslatableDomainObject<Long> {
 
-    private String name;
     @Enumerated(EnumType.STRING)
     private Status status;
 
@@ -15,16 +18,8 @@ public class EducationMajor extends AbstractDomainObject<Long> {
     }
 
     public EducationMajor(String name, Status status) {
-        this.name = name;
+        setName(name);
         this.status = status;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public Status getStatus() {

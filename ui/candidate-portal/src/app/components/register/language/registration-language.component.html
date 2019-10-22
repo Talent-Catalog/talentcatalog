@@ -1,105 +1,106 @@
 <div class="container">
 
-  <h1 class="text-center">What languages do you speak?</h1>
+  <app-loading [loading]="loading"></app-loading>
 
-  <form [formGroup]="form">
+  <ng-container *ngIf="!loading">
 
-    <!-- SPEAK ENGLISH -->
-    <div class="form-group">
-      <label for="spokenLevelId">How well do you speak English?</label>
-        <select class="form-control" name="spokenLevelId" id="spokenLevelId" [formControlName]="'spokenLevelId'">
+    <!-- ADDED LANGUAGES -->
+    <div class="card" *ngFor="let language of candidateLanguages; let i = index;">
+
+      <div class="text-right" *ngIf="!isEnglish(language.languageId)">
+        <button class="btn btn-danger btn-card" (click)="deleteCandidateLanguage(i)">&times;</button>
+      </div>
+
+      <!-- WHICH LANGUAGE -->
+      <div class="form-group" *ngIf="!isEnglish(language.languageId)">
+        <label>{{ 'REGISTRATION.LANGUAGE.LABEL.LANGUAGE' | translate }}</label>
+        <select class="form-control" [disabled]="" [(ngModel)]="language.languageId">
+          <option value=""></option>
+          <option *ngFor="let l of languages" [value]="l.id">{{l.name}}</option>
+        </select>
+      </div>
+
+      <!-- HOW WELL DO YOU SPEAK -->
+      <div class="form-group">
+        <label translate dir="auto">
+          {{ 'REGISTRATION.LANGUAGE.LABEL.SPEAK' | translate:{languageName: getLanguageName(language.languageId)} }}
+        </label>
+        <select class="form-control" [(ngModel)]="language.spokenLevelId">
           <option value=""></option>
           <option *ngFor="let l of languageLevels" [value]="l.id">{{l.name}}</option>
         </select>
-    </div>
-
-    <!-- READ WRITE ENGLISH -->
-    <div class="form-group">
-      <label for="writtenLevelId">How well do you read and write in English?</label>
-      <select class="form-control" name="writtenLevelId" id="writtenLevelId" [formControlName]="'writtenLevelId'">
-        <option value=""></option>
-        <option *ngFor="let l of languageLevels" [value]="l.id">{{l.name}}</option>
-      </select>
-    </div>
-
-    <!-- SECOND LANGUAGE? -->
-    <div class="form-group">
-      <label>Do you speak any other languages?</label>
-
-      <div class="radio">
-        <label><input type="radio" [formControlName]="'bilingual'" value="true" (click)="addMore()">Yes</label>
       </div>
-      <div class="radio">
-        <label><input type="radio" [formControlName]="'bilingual'" value="false">No</label>
+
+      <!-- HOW WELL DO YOU READ AND WRITE -->
+      <div class="form-group">
+        <label translate dir="auto" [translateParams]="{languageName: getLanguageName(language.languageId)}">
+          {{ 'REGISTRATION.LANGUAGE.LABEL.WRITTEN' | translate:{languageName: getLanguageName(language.languageId)} }}
+        </label>
+        <select class="form-control" [(ngModel)]="language.writtenLevelId">
+          <option value=""></option>
+          <option *ngFor="let l of languageLevels" [value]="l.id">{{l.name}}</option>
+        </select>
       </div>
+
     </div>
 
-    <!-- ADD LANGUAGES -->
-    <div *ngIf="form.value.bilingual === 'true'" >
-      <label for="languageId">What language?</label>
-      <select class="form-control" id="languageId" name="languageId" formControlName="languageId">
-        <option value=""></option>
-        <option *ngFor="let language of languages" [value]="language.id">{{language.name}}</option>
-      </select>
+    <!-- LANGUAGE FORM -->
+    <form class="card" [formGroup]="form" *ngIf="addingLanguage">
 
-      <label for="speakId">How well do you speak this language?</label>
-      <select class="form-control" name="speakId" id="speakId" formControlName="speakId">
-        <option value=""></option>
-        <option *ngFor="let l of languageLevels" [value]="l.id">{{l.name}}</option>
-      </select>
+      <!-- WHICH LANGUAGE -->
+      <div class="form-group" *ngIf="!isEnglish()">
+        <label for="id">{{ 'REGISTRATION.LANGUAGE.LABEL.LANGUAGE' | translate }}</label>
+        <select class="form-control" name="id" id="id" [disabled]="" [formControlName]="'languageId'">
+          <option value=""></option>
+          <option *ngFor="let l of languages" [value]="l.id">{{l.name}}</option>
+        </select>
+      </div>
 
-      <label for="writtenLevelId">How well do you read and write in this language?</label>
-      <select class="form-control" name="writtenLevelId" id="writtenLevelId" formControlName="readWriteId">
-        <option value=""></option>
-        <option *ngFor="let l of languageLevels" [value]="l.id">{{l.name}}</option>
-      </select>
-    </div>
+      <ng-container *ngIf="formLanguage">
 
-    <div>
-      <button class="btn btn-outline-primary"
-              [disabled]="form.value.bilingual === 'false' && form.invalid"
-              (click)="addMore()">
-        Add additional language
+        <!-- HOW WELL DO YOU SPEAK -->
+        <div class="form-group">
+          <label for="spokenLevelId">
+            {{ 'REGISTRATION.LANGUAGE.LABEL.SPEAK' | translate:{languageName: getLanguageName()} }}
+          </label>
+          <select class="form-control" name="spokenLevelId" id="spokenLevelId" [formControlName]="'spokenLevelId'">
+            <option value=""></option>
+            <option *ngFor="let l of languageLevels" [value]="l.id">{{l.name}}</option>
+          </select>
+        </div>
+
+        <!-- HOW WELL DO YOU READ AND WRITE -->
+        <div class="form-group">
+          <label for="writtenLevelId">
+            {{ 'REGISTRATION.LANGUAGE.LABEL.WRITTEN' | translate:{languageName: getLanguageName()} }}
+          </label>
+          <select class="form-control" name="writtenLevelId" id="writtenLevelId" [formControlName]="'writtenLevelId'">
+            <option value=""></option>
+            <option *ngFor="let l of languageLevels" [value]="l.id">{{l.name}}</option>
+          </select>
+        </div>
+
+      </ng-container>
+
+    </form>
+
+    <div class="text-center mt-4">
+      <button class="btn"
+              [class.btn-outline-primary]="!addingLanguage"
+              [class.btn-primary]="addingLanguage"
+              [disabled]="addingLanguage && form.invalid || saving || loading"
+              (click)="addLanguage()">
+        {{ 'REGISTRATION.LANGUAGE.BUTTON.ADD' | translate }}
       </button>
     </div>
 
-  </form>
+    <app-error [error]="error"></app-error>
 
-    <!-- LANGUAGES SUMMARY -->
-    <h4>Languages Summary</h4>
-    <table class="table">
-      <thead>
-      <tr>
-        <th scope="col">Language</th>
-        <th scope="col">Speak</th>
-        <th scope="col">Read/Write</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let l of candidateLanguages">
-        <td>{{l.language.name}}</td>
-        <td>{{l.spokenLevel.name}}</td>
-        <td>{{l.writtenLevel.name}}</td>
-        <td>
-          <button type="button" class="close" aria-label="Close"
-                  [disabled]="saving"
-                  (click)="delete(l)">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+  </ng-container>
 
-    <div class="alert alert-danger" *ngIf="error">
-      {{error.error?.message || error.message || error}}
-    </div>
-
-    <div class="text-right">
-      <button class="btn btn-primary"
-              [disabled]="form.invalid || loading || saving"
-              (click)="save()">
-        Next
-      </button>
-    </div>
 </div>
+
+<app-registration-footer [disabled]="loading || saving"
+                         (backClicked)="back()"
+                         (nextClicked)="next()">
+</app-registration-footer>

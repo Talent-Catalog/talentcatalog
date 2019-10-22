@@ -1,7 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormGroup} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
+import {RegistrationService} from "../../../services/registration.service";
 
 
 @Component({
@@ -19,7 +20,9 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
 
   constructor(private fb: FormBuilder,
               private router: Router,
-              private candidateService: CandidateService) { }
+              private candidateService: CandidateService,
+              public registrationService: RegistrationService) {
+  }
 
   ngOnInit() {
     this.loading = true;
@@ -41,13 +44,16 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
     );
   }
 
-  save(){
+  save() {
+    this.saving = true;
     this.candidateService.updateCandidateAdditionalInfo(this.form.value).subscribe(
       (response) => {
-        this.router.navigate(['register'])
+        this.saving = false;
+        this.registrationService.next();
       },
       (error) => {
         this.error = error;
+        this.saving = false;
       }
     );
   }

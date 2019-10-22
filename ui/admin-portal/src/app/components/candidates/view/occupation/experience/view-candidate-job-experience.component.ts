@@ -9,6 +9,7 @@ import {EditCandidateJobExperienceComponent} from "./edit/edit-candidate-job-exp
 import {CreateCandidateJobExperienceComponent} from "./create/create-candidate-job-experience.component";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {SearchResults} from "../../../../../model/search-results";
+import {EditCandidateOccupationComponent} from "../edit/edit-candidate-occupation.component";
 
 @Component({
   selector: 'app-view-candidate-job-experience',
@@ -19,6 +20,7 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
   @Input() editable: boolean;
+  @Input() numCharacters: 3;
   @Input() candidateOccupation: CandidateOccupation;
 
   candidateJobExperienceForm: FormGroup;
@@ -38,13 +40,12 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    this.editable = true;
     this.expanded = false;
     this.experiences = [];
 
     this.candidateJobExperienceForm = this.fb.group({
       candidateOccupationId: [this.candidateOccupation.id],
-      pageSize: 1,
+      pageSize: 10,
       pageNumber: 0,
       sortDirection: 'DESC',
       sortFields: [['endDate']]
@@ -75,6 +76,21 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
   loadMore() {
    this.candidateJobExperienceForm.controls['pageNumber'].patchValue(this.candidateJobExperienceForm.value.pageNumber+1);
    this.doSearch();
+  }
+
+  verifyOccupation() {
+    const modal = this.modalService.open(EditCandidateOccupationComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    modal.componentInstance.candidateOccupation = this.candidateOccupation;
+
+    modal.result
+      .then((candidateOccupation) => this.doSearch())
+      .catch(() => { /* Isn't possible */
+      });
+
   }
 
   createCandidateJobExperience() {

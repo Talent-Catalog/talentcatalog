@@ -24,18 +24,20 @@
       <!-- EDUCATION TYPE -->
       <div class="form-group">
         <label for="educationType">Education Type</label>
-        <select class="form-control" name="educationType" id="educationType" [formControlName]="'educationType'">
+        <select class="form-control" id="educationType" [formControlName]="'educationType'">
           <option value=""></option>
-          <option value="School">School</option>
-          <option value="University">University</option>
+          <option value="Associate">Associate</option>
+          <option value="Vocational">Vocational</option>
+          <option value="Bachelor">Bachelor</option>
           <option value="Masters">Masters</option>
+          <option value="Doctoral">Doctoral</option>
         </select>
       </div>
 
       <!-- MAJOR -->
       <div class="form-group">
-        <label for="majorId">Major *</label>
-        <select class="form-control" name="country" id="majorId" [formControlName]="'majorId'">
+        <label for="educationMajorId">Major *</label>
+        <select class="form-control" name="country" id="educationMajorId" [formControlName]="'educationMajorId'">
           <option value=""></option>
           <option *ngFor="let major of majors" [value]="major.id">{{major.name}}</option>
         </select>

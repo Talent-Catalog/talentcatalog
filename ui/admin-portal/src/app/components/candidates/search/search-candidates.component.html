@@ -30,6 +30,7 @@
         name="statuses"
         [placeholder]="''"
         [data]="statuses"
+        formControlName="statusesDisplay"
         [settings]="dropdownSettings"
         (onSelect)="onItemSelect($event, 'statuses')"
         (onDeSelect)="onItemDeSelect($event, 'statuses')"
@@ -48,6 +49,7 @@
         name="verifiedOccupationIds"
         [placeholder]="''"
         [data]="verifiedOccupations"
+        formControlName="verifiedOccupations"
         [settings]="dropdownSettings"
         (onSelect)="onItemSelect($event, 'verifiedOccupationIds')"
         (onDeSelect)="onItemDeSelect($event, 'verifiedOccupationIds')"
@@ -90,6 +92,7 @@
               name="occupationIds"
               [placeholder]="''"
               [data]="candidateOccupations"
+              formControlName="occupations"
               [settings]="dropdownSettings"
               (onSelect)="onItemSelect($event, 'occupationIds')"
               (onDeSelect)="onItemDeSelect($event, 'occupationIds')"
@@ -151,6 +154,7 @@
             <ng-multiselect-dropdown
               name="country"
               [data]="countries"
+              formControlName="countries"
               [settings]="dropdownSettings"
               (onSelect)="onItemSelect($event, 'countryIds')"
               (onDeSelect)="onItemDeSelect($event, 'countryIds')"
@@ -177,6 +181,7 @@
             <ng-multiselect-dropdown
               name="educationMajorIds"
               [data]="educationMajors"
+              formControlName="educationMajors"
               [settings]="dropdownSettings"
               (onSelect)="onItemSelect($event, 'educationMajorIds')"
               (onDeSelect)="onItemDeSelect($event, 'educationMajorIds')"
@@ -206,6 +211,7 @@
           name="selectedNationalities"
           [placeholder]="'Select Nationalities'"
           [data]="nationalities"
+          formControlName="nationalities"
           [settings]="dropdownSettings"
           (onSelect)="onItemSelect($event, 'nationalityIds')"
           (onDeSelect)="onItemDeSelect($event, 'nationalityIds')"
@@ -263,13 +269,13 @@
     </ng-container>
     <div class="col-4">
       <div class="btn-group" role="group">
-        <button class="btn btn-outline-dark" (click)="showSavedSearches()">Load Saved Search</button>
-        <button class="btn btn-outline-dark" (click)="showSave()">Save Search</button>
+        <button type="button" class="btn btn-outline-dark" (click)="showSavedSearches()">Load Saved Search</button>
+        <button type="button"  class="btn btn-outline-dark" (click)="showSave()">Save Search</button>
       </div>
     </div>
     <div *ngIf="savedSearch" class="col-4">
       <select class="form-control" name="shortlistStatus" shortlistStatus [formControlName]="'shortlistStatus'">
-        <option value="pending">New</option>
+        <option value="">All</option>
         <option value="verified">Verified</option>
         <option value="rejected">Rejected</option>
       </select>
@@ -277,11 +283,11 @@
 
     <div class="col-offset-8 col-4">
       <div class="d-flex justify-content-end">
-        <button class="btn btn-outline-dark"
+        <button type="button" class="btn btn-outline-dark"
                 [disabled]="loading"
                 (click)="clear()">Clear
         </button>
-        <button class="btn btn-primary"
+        <button type="submit" class="btn btn-primary"
                 [disabled]="loading"
                 (click)="search()">Apply
         </button>
@@ -298,6 +304,8 @@
                     [pageSize]="pageSize"
                     [collectionSize]="results?.totalElements"
                     [(page)]="pageNumber"
+                    [maxSize]="5"
+                    [boundaryLinks]="true"
                     (pageChange)="search()">
     </ngb-pagination>
   </div>
@@ -312,10 +320,10 @@
           <th class="w-25">Candidate #</th>
           <th>First Name</th>
           <th>Last Name</th>
+          <th *ngIf="savedSearch">Reviewed</th>
           <th>Nationality</th>
           <th>Location</th>
           <th>Gender</th>
-          <th *ngIf="savedSearch">Reviewed</th>
         </tr>
         </thead>
 
@@ -328,14 +336,16 @@
           </td>
           <td>{{candidate.user.firstName}}</td>
           <td>{{candidate.user.lastName}}</td>
-          <td>{{candidate.nationality?.name}}</td>
-          <td>{{candidate.country?.name}}</td>
-          <td>{{candidate.gender | titlecase}}</td>
           <td *ngIf="savedSearch">
             <app-candidate-shortlist-item [candidateId]="candidate.id"
                                           [candidateShortlistItem]="candidate.candidateShortlistItems && candidate.candidateShortlistItems.length > 0 ? candidate.candidateShortlistItems[0] : null"
-                                          [savedSearch]="savedSearch"></app-candidate-shortlist-item>
+                                          [savedSearch]="savedSearch"
+                                          (shortlistItemSaved)="handleCandidateShortlistSaved($event)"></app-candidate-shortlist-item>
           </td>
+          <td>{{candidate.nationality?.name}}</td>
+          <td>{{candidate.country?.name}}</td>
+          <td>{{candidate.gender | titlecase}}</td>
+
         </tr>
 
         <!-- loading -->

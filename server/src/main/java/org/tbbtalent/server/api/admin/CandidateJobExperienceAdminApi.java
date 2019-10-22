@@ -32,15 +32,18 @@ public class CandidateJobExperienceAdminApi {
     }
 
     @PostMapping("{id}")
-    public Map<String, Object> create(@Valid @PathVariable("id") long candidateId, @RequestBody CreateJobExperienceRequest request) throws EntityExistsException {
-        CandidateJobExperience candidateJobExperience = this.candidateJobExperienceService.createCandidateJobExperience(candidateId, request);
+    public Map<String, Object> create(@Valid @PathVariable("id") Long candidateId,
+                                      @RequestBody CreateJobExperienceRequest request) throws EntityExistsException {
+        request.setCandidateId(candidateId);
+        CandidateJobExperience candidateJobExperience = this.candidateJobExperienceService.createCandidateJobExperience(request);
         return candidateJobExperienceDto().build(candidateJobExperience);
     }
 
     @PutMapping("{id}")
-    public Map<String, Object> update(@PathVariable("id") long id,
+    public Map<String, Object> update(@PathVariable("id") Long id,
                                       @RequestBody UpdateJobExperienceRequest request) {
-        CandidateJobExperience candidateJobExperience = this.candidateJobExperienceService.updateCandidateJobExperience(id, request);
+        request.setId(id);
+        CandidateJobExperience candidateJobExperience = this.candidateJobExperienceService.updateCandidateJobExperience(request);
         return candidateJobExperienceDto().build(candidateJobExperience);
     }
 

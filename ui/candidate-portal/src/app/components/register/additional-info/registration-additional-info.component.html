@@ -1,22 +1,24 @@
 <div class="container">
 
-  <h1 class="text-center">Anything else we should know?</h1>
+  <app-loading [loading]="loading"></app-loading>
 
-  <form [formGroup]="form">
+  <form [formGroup]="form" *ngIf="!loading">
 
     <div class="form-group">
-      <label for="additionalInfo" class="text-muted">*Optional field</label>
-      <textarea type="text" class="md-textarea-auto form-control" rows="10" id="additionalInfo" placeholder="" [formControlName]="'additionalInfo'"></textarea>
+      <label class="font-weight-bold" for="additionalInfo">
+        {{ 'REGISTRATION.SUBMIT.LABEL.ADDITIONALINFO' | translate }}
+      </label>
+      <p>
+        {{ 'REGISTRATION.SUBMIT.TEXT.EXPLANATION' | translate }}
+      </p>
+      <textarea id="additionalInfo" class="md-textarea-auto form-control" rows="5"
+                [formControlName]="'additionalInfo'"></textarea>
     </div>
 
   </form>
 
-  <div class="text-right">
-    <button class="btn btn-primary"
-            [disabled]="form.invalid"
-            (click)="save()">
-      Next
-    </button>
+  <!-- TODO UPLOADS -->
 
 </div>
 
+<app-registration-footer [type]="'submit'" (backClicked)="registrationService.back()" (nextClicked)="save()"></app-registration-footer>

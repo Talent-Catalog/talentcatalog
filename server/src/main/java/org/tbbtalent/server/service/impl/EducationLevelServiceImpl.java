@@ -18,6 +18,7 @@ import org.tbbtalent.server.request.education.level.CreateEducationLevelRequest;
 import org.tbbtalent.server.request.education.level.SearchEducationLevelRequest;
 import org.tbbtalent.server.request.education.level.UpdateEducationLevelRequest;
 import org.tbbtalent.server.service.EducationLevelService;
+import org.tbbtalent.server.service.TranslationService;
 
 import java.util.List;
 
@@ -28,16 +29,22 @@ public class EducationLevelServiceImpl implements EducationLevelService {
 
     private final CandidateEducationRepository candidateEducationRepository;
     private final EducationLevelRepository educationLevelRepository;
+    private final TranslationService translationService;
 
     @Autowired
-    public EducationLevelServiceImpl(CandidateEducationRepository candidateEducationRepository, EducationLevelRepository educationLevelRepository) {
+    public EducationLevelServiceImpl(CandidateEducationRepository candidateEducationRepository,
+                                     EducationLevelRepository educationLevelRepository,
+                                     TranslationService translationService) {
         this.candidateEducationRepository = candidateEducationRepository;
         this.educationLevelRepository = educationLevelRepository;
+        this.translationService = translationService;
     }
 
     @Override
     public List<EducationLevel> listEducationLevels() {
-        return educationLevelRepository.findByStatus(Status.active);
+        List<EducationLevel> educationLevels = educationLevelRepository.findByStatus(Status.active);
+        translationService.translate(educationLevels, "education_level");
+        return educationLevels;
     }
 
     @Override

@@ -7,7 +7,7 @@ import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateContactRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tbbtalent.server.service.CandidateService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
@@ -51,7 +51,7 @@ public class CandidateAdminApi {
 
     @PutMapping("{id}")
     public Map<String, Object> updateContactDetails(@PathVariable("id") long id,
-                                      @RequestBody UpdateCandidateContactRequest request) {
+                                      @RequestBody UpdateCandidateRequest request) {
         Candidate candidate = this.candidateService.updateCandidate(id, request);
         return candidateDto().build(candidate);
     }
@@ -77,6 +77,8 @@ public class CandidateAdminApi {
                 .add("nationality", nationalityDto())
                 .add("user", userDto())
                 .add("candidateShortlistItems", shortlistDto())
+                .add("migrationEducationMajor", educationMajor())
+                .add("migrationCountry")
                 ;
     }
 
@@ -107,6 +109,13 @@ public class CandidateAdminApi {
         return new DtoBuilder()
                 .add("id")
                 .add("shortlistStatus")
+                ;
+    }
+
+    private DtoBuilder educationMajor() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
                 ;
     }
 

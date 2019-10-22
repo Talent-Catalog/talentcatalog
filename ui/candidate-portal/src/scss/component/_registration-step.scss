@@ -1,15 +1,15 @@
 .step-header {
   @include background-color("primary-dark");
-  padding-top: 40px;
-  padding-bottom: 48px;
+  padding-top: 20px;
+  padding-bottom: 28px;
   color: white;
   position: relative;
 
-  h3 {
-    margin-bottom: 16px;
+  h5 {
+    margin-bottom: 8px;
   }
 
-  h1 {
+  h3 {
     margin: 0;
   }
 

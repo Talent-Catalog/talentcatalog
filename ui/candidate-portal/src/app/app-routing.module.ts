@@ -1,23 +1,17 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {LandingComponent} from "./components/landing/landing.component";
-import {LoginComponent} from "./components/login/login.component";
 import {HomeComponent} from "./components/home/home.component";
-import {ResetPasswordComponent} from './components/reset-password/reset-password.component';
-import {ChangePasswordComponent} from './components/change-password/change-password.component';
+import {ResetPasswordComponent} from './components/account/reset-password/reset-password.component';
+import {ChangePasswordComponent} from './components/account/change-password/change-password.component';
 import {RegisterComponent} from "./components/register/register.component";
+import {CandidateProfileComponent} from "./components/profile/candidate-profile.component";
+import {AuthGuard} from "./services/auth.guard";
 
 const routes: Routes = [
   {
     path: '',
     component: LandingComponent
-  },
-  {
-    path: 'login',
-    component: LoginComponent,
-    data: {
-      hideHeader: true
-    }
   },
   {
     path: 'reset-password',
@@ -28,13 +22,24 @@ const routes: Routes = [
     component: ChangePasswordComponent
   },
   {
-    path: 'home',
-    component: HomeComponent
-  },
-  {
     path: 'register',
     component: RegisterComponent
-  }
+  },
+  {
+    path: 'home',
+    component: HomeComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'profile',
+    component: CandidateProfileComponent,
+    canActivate: [AuthGuard]
+  },
+  /* Keep wildcard redirect at the bottom of the array */
+  {
+    path: '**',
+    redirectTo: ''
+  },
 ];
 
 @NgModule({

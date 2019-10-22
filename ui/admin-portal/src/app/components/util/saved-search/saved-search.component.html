@@ -3,8 +3,22 @@
      <div class="row"><strong>{{savedSearch.name}}</strong></div>
      <div class="row">
        <span *ngIf="savedSearch.keyword">Keyword: {{savedSearch.keyword}},</span>
-       <span *ngIf="savedSearch.gender">Gender: {{savedSearch.gender}},</span>
        <span *ngIf="savedSearch.statuses">Statuses: {{savedSearch.statuses}},</span>
+       <span *ngIf="savedSearch.verifiedOccupationIds">Vetted Occupations: {{savedSearch.verifiedOccupationIds}},</span>
+       <span *ngIf="savedSearch.englishMinWrittenLevel">English Written: {{savedSearch.englishMinWrittenLevel}},</span>
+       <span *ngIf="savedSearch.englishMinSpokenLevel">English Spoken: {{savedSearch.englishMinSpokenLevel}},</span>
+       <span *ngIf="savedSearch.occupationIds">Occupations: {{savedSearch.occupationIds}},</span>
+       <span *ngIf="savedSearch.orProfileKeyword">Or Keyword: {{savedSearch.orProfileKeyword}},</span>
+       <span *ngIf="savedSearch.minAge || savedSearch.maxAge">Age: {{savedSearch.minAge}} -  {{savedSearch.maxAge}},</span>
+       <span *ngIf="savedSearch.createdFrom">Registered: {{savedSearch.createdFrom}} - {{savedSearch.createdTo}},</span>
+       <span *ngIf="savedSearch.lastModifiedFrom">Modified: {{savedSearch.lastModifiedFrom}} - {{savedSearch.lastModifiedTo}},</span>
+       <span *ngIf="savedSearch.countryIds">Countries: {{savedSearch.countryIds}},</span>
+       <span *ngIf="savedSearch.minEducationLevel">Min Education Level: {{savedSearch.minEducationLevel}},</span>
+       <span *ngIf="savedSearch.educationMajorIds">Education Majors: {{savedSearch.educationMajorIds}},</span>
+       <span *ngIf="savedSearch.otherLanguage">Other Language: {{savedSearch.otherLanguage.name}},</span>
+       <span *ngIf="savedSearch.nationalityIds">Nationalities: {{savedSearch.nationalityIds}},</span>
+       <span *ngIf="savedSearch.gender">Gender: {{savedSearch.gender}},</span>
+
      </div>
   </div>
 

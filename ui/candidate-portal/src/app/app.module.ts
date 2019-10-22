@@ -11,29 +11,30 @@ import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 
 import {RegistrationLandingComponent} from './components/register/landing/registration-landing.component';
 import {RegistrationContactComponent} from './components/register/contact/registration-contact.component';
-import {RegistrationAlternateContactComponent} from './components/register/contact/alternate/registration-alternate-contact.component';
 import {RegistrationPersonalComponent} from './components/register/personal/registration-personal.component';
 import {RegistrationCandidateOccupationComponent} from './components/register/candidate-occupation/registration-candidate-occupation.component';
-import {RegistrationJobExperienceComponent} from './components/register/job-experience/registration-job-experience.component';
+import {RegistrationWorkExperienceComponent} from './components/register/work-experience/registration-work-experience.component';
 import {RegistrationEducationComponent} from './components/register/education/registration-education.component';
-import {RegistrationMastersComponent} from './components/register/masters/registration-masters.component';
-import {RegistrationUniversityComponent} from './components/register/university/registration-university.component';
-import {RegistrationSchoolComponent} from './components/register/school/registration-school.component';
+import {CandidateEducationFormComponent} from './components/register/education/candidate-education-form/candidate-education-form.component';
 import {RegistrationLanguageComponent} from './components/register/language/registration-language.component';
 import {RegistrationCertificationsComponent} from './components/register/certifications/registration-certifications.component';
 import {RegistrationAdditionalInfoComponent} from './components/register/additional-info/registration-additional-info.component';
-import {RegistrationAdditionalContactComponent} from './components/register/contact/additional/registration-additional-contact.component';
 import {LocalStorageModule} from "angular-2-local-storage";
 import {JwtInterceptor} from "./services/jwt.interceptor";
 import {LanguageInterceptor} from "./services/language.interceptor";
-import {LoginComponent} from "./components/login/login.component";
+import {LoginComponent} from "./components/account/login/login.component";
 import {HomeComponent} from "./components/home/home.component";
 import {ErrorInterceptor} from "./services/error.interceptor";
-import {ResetPasswordComponent} from './components/reset-password/reset-password.component';
-import {ChangePasswordComponent} from './components/change-password/change-password.component';
+import {ResetPasswordComponent} from './components/account/reset-password/reset-password.component';
+import {ChangePasswordComponent} from './components/account/change-password/change-password.component';
 import {HeaderComponent} from "./components/header/header.component";
 import {RegisterComponent} from './components/register/register.component';
 import {RegistrationFooterComponent} from './components/register/registration-footer/registration-footer.component';
+import {CandidateJobExperienceFormComponent} from './components/common/candidate-job-experience-form/candidate-job-experience-form.component';
+import {CandidateJobExperienceCardComponent} from './components/common/candidate-job-experience-card/candidate-job-experience-card.component';
+import {ErrorComponent} from './components/common/error/error.component';
+import {LoadingComponent} from './components/common/loading/loading.component';
+import {CandidateProfileComponent} from './components/profile/candidate-profile.component';
 
 export function createTranslateLoader(http: HttpClient) {
     return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -46,24 +47,25 @@ export function createTranslateLoader(http: HttpClient) {
     LandingComponent,
     RegistrationLandingComponent,
     RegistrationContactComponent,
-    RegistrationAlternateContactComponent,
     RegistrationPersonalComponent,
     RegistrationCandidateOccupationComponent,
-    RegistrationJobExperienceComponent,
+    RegistrationWorkExperienceComponent,
     RegistrationEducationComponent,
-    RegistrationMastersComponent,
-    RegistrationUniversityComponent,
-    RegistrationSchoolComponent,
+    CandidateEducationFormComponent,
     RegistrationLanguageComponent,
     RegistrationCertificationsComponent,
     RegistrationAdditionalInfoComponent,
-    RegistrationAdditionalContactComponent,
     LoginComponent,
     HomeComponent,
     ResetPasswordComponent,
     ChangePasswordComponent,
     RegisterComponent,
-    RegistrationFooterComponent
+    RegistrationFooterComponent,
+    CandidateJobExperienceFormComponent,
+    CandidateJobExperienceCardComponent,
+    ErrorComponent,
+    LoadingComponent,
+    CandidateProfileComponent
   ],
   imports: [
     BrowserModule,

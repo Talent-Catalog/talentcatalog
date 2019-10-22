@@ -4,6 +4,13 @@ import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
 import {EducationLevelService} from "../../../services/education-level.service";
 import {EducationLevel} from "../../../model/education-level";
+import {RegistrationService} from "../../../services/registration.service";
+import {CandidateEducation} from "../../../model/candidate-education";
+import {CandidateEducationService} from "../../../services/candidate-education.service";
+import {EducationMajorService} from "../../../services/education-major.service";
+import {EducationMajor} from "../../../model/education-major";
+import {Country} from "../../../model/country";
+import {CountryService} from "../../../services/country.service";
 
 @Component({
   selector: 'app-registration-education',
@@ -12,29 +19,60 @@ import {EducationLevel} from "../../../model/education-level";
 })
 export class RegistrationEducationComponent implements OnInit {
 
-  form: FormGroup;
-  educationLevels: EducationLevel[];
   error: any;
-  // Component states
+  saving: boolean;
   _loading = {
     levels: true,
-    candidate: true
+    candidate: true,
+    educationMajors: true,
+    countries: true
   };
-  saving: boolean;
+
+  form: FormGroup;
+  majors: EducationMajor[];
+  countries: Country[];
+  educationLevels: EducationLevel[];
+  candidateEducationItems: CandidateEducation[];
+  addingEducation: boolean;
 
   constructor(private fb: FormBuilder,
               private router: Router,
+              private candidateEducationService: CandidateEducationService,
+              private candidateService: CandidateService,
+              private countryService: CountryService,
               private educationLevelService: EducationLevelService,
-              private candidateService: CandidateService) {
+              private educationMajorService: EducationMajorService,
+              public registrationService: RegistrationService) {
   }
 
   ngOnInit() {
     this.saving = false;
+    this.candidateEducationItems = [];
     this.form = this.fb.group({
       maxEducationLevelId: ['', Validators.required]
     });
 
-    this._loading.levels = true;
+    /* Load data */
+    this.educationMajorService.listMajors().subscribe(
+      (response) => {
+        this.majors = response;
+        this._loading.educationMajors = false;
+      },
+      (error) => {
+        this.error = error;
+        this._loading.educationMajors = false;
+      });
+
+    this.countryService.listCountries().subscribe(
+      (response) => {
+        this.countries = response;
+        this._loading.countries = false;
+      },
+      (error) => {
+        this.error = error;
+        this._loading.countries = false;
+      });
+
     this.educationLevelService.listEducationLevels().subscribe(
       (response) => {
         this.educationLevels = response;
@@ -46,14 +84,26 @@ export class RegistrationEducationComponent implements OnInit {
       }
     );
 
-    this._loading.candidate = true;
     this.candidateService.getCandidateEducation().subscribe(
-      (response) => {
-        /* DEBUG */
-        console.log('response', response);
+      (candidate) => {
         this.form.patchValue({
-          maxEducationLevelId: response.maxEducationLevel ? response.maxEducationLevel.id : null,
+          maxEducationLevelId: candidate.maxEducationLevel ? candidate.maxEducationLevel.id : null,
         });
+        if (candidate.candidateEducations) {
+          this.candidateEducationItems = candidate.candidateEducations
+          //   .map(edu => {
+          //   return {
+          //     id: edu ? edu.id : null,
+          //   educationType: edu ? edu.educationType : null,
+          //   lengthOfCourseYears: edu ? edu.lengthOfCourseYears : null,
+          //   institution: edu ? edu.institution : null,
+          //   courseName: edu ? edu.courseName : null,
+          //   yearCompleted: edu ? edu.yearCompleted : null,
+          //   countryId: edu && edu.country ? edu.country.id : null,
+          //   educationMajorId: edu && edu.educationMajor ? edu.educationMajor.id : null,
+          //   }
+          // });
+        }
         this._loading.candidate = false;
       },
       (error) => {
@@ -64,22 +114,19 @@ export class RegistrationEducationComponent implements OnInit {
   }
 
   save(dir: string) {
-    console.log(this.form);
-
-    this.candidateService.updateCandidateEducationLevel(this.form.value).subscribe(
+    this.saving = true;
+    this.candidateService.updateCandidateEducation(this.form.value).subscribe(
       (response) => {
-
-        let maxEducationLevel = response.maxEducationLevel;
-        if (maxEducationLevel.name == 'mastersDegree' || maxEducationLevel.name == 'doctorateDegree') {
-          this.router.navigate(['register', 'education', 'masters']);
-        } else if (maxEducationLevel.name == 'bachelorsDegree') {
-          this.router.navigate(['register', 'education', 'university']);
+        this.saving = false;
+        if (dir === 'next') {
+          this.registrationService.next();
         } else {
-          this.router.navigate(['register', 'education', 'school']);
+          this.registrationService.back();
         }
       },
       (error) => {
         this.error = error;
+        this.saving = false;
       }
     );
   };
@@ -93,6 +140,43 @@ export class RegistrationEducationComponent implements OnInit {
   }
 
   get loading() {
-    return this._loading.levels || this._loading.candidate;
+    const l = this._loading;
+    return l.levels || l.candidate || l.educationMajors || l.countries;
+  }
+
+  addEducation() {
+    if (this.addingEducation) {
+      this.addingEducation = false;
+    } else {
+      this.addingEducation = true;
+    }
+  }
+
+  handleCandidateEducationSaved(education: CandidateEducation) {
+    let index = -1;
+    if (this.candidateEducationItems.length) {
+      index = this.candidateEducationItems.findIndex(edu => edu.id === education.id);
+    }
+    /* Replace the old education item with the updated item */
+    if (index >= 0) {
+      this.candidateEducationItems.splice(index, 1, education);
+    } else {
+      this.candidateEducationItems.push(education);
+    }
+    this.addingEducation = false;
+  }
+
+  deleteCandidateEducation(index: number) {
+    this.saving = true;
+    const education = this.candidateEducationItems[index];
+    this.candidateEducationService.deleteCandidateEducation(education.id).subscribe(
+      () => {
+        this.candidateEducationItems.splice(index, 1)
+        this.saving = false;
+      },
+      (error) => {
+        this.error = error;
+        this.saving = false;
+      });
   }
 }

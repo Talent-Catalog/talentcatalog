@@ -1,0 +1,44 @@
+<div class="text-right">
+
+  <button class="btn btn-danger btn-card"
+          [disabled]="disabled"
+          (click)="delete()">
+    &times;
+  </button>
+
+  <button class="btn btn-primary btn-card"
+          [disabled]="disabled"
+          (click)="edit()">
+    &copy;
+  </button>
+
+</div>
+
+<p class="job-title">{{experience?.role}}</p>
+
+<p>{{experience?.companyName}}</p>
+
+<div class="row">
+
+  <div class="col-12 col-md-4">
+    <span class="icon"></span>
+    {{experience?.country?.name}}
+  </div>
+  <div class="col-12 col-md-4">
+    <span class="icon"></span>
+    <span *ngIf="experience?.fullTime === true">{{ 'CARD.JOBEXPERIENCE.LABEL.FULLTIME' | translate }}</span>
+    <span *ngIf="experience?.fullTime === false">{{ 'CARD.JOBEXPERIENCE.LABEL.PARTTIME' | translate }}</span>,
+    <span *ngIf="experience?.paid === true">{{ 'CARD.JOBEXPERIENCE.LABEL.PAID' | translate }}</span>
+    <span *ngIf="experience?.paid === false">{{ 'CARD.JOBEXPERIENCE.LABEL.VOLUNTEER' | translate }}</span>
+  </div>
+  <div class="col-12 col-md-4">
+    <span class="icon"></span>
+    {{experience?.startDate ? (experience?.startDate | date: 'yyyy') : '*'}} - {{experience?.endDate ? (experience?.endDate | date: 'yyyy') : '*'}}
+  </div>
+
+</div>
+
+<p class="text-muted">
+  {{experience?.description}}
+</p>
+

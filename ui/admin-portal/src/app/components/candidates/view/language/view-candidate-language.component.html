@@ -21,6 +21,9 @@
         <div class="col-sm-12">
           {{candidateLanguage.language.name}}
         </div>
+        <div *ngIf="candidateLanguage.migrationLanguage" class="col-sm-12">
+          Migrated Language: {{candidateLanguage.migrationLanguage}}
+        </div>
       </div>
       <div class="row">
         <div class="col-sm-12 col-md-6">

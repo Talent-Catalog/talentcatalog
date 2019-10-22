@@ -1,17 +1,18 @@
 <div class="container-fluid step-footer">
 
-  <div class="container">
+  <div class="container" [class.justify-content-end]="hideBack">
 
-    <button class="btn btn-outline-primary" translate dir="auto"
-            [disabled]="registrationService.currentStepIndex == 0"
+    <button class="btn btn-outline-primary" translate dir="auto" [hidden]="hideBack"
+            [disabled]="registrationService.currentStepIndex == 0 || disabled"
             (click)="back()">
       REGISTRATION.FOOTER.BACK
     </button>
 
-    <button class="btn btn-primary" translate dir="auto"
-            [disabled]="registrationService.currentStepIndex >= registrationService.steps.length - 1"
+    <button class="btn btn-primary" translate dir="auto" [hidden]="hideNext"
+            [disabled]="registrationService.currentStepIndex >= registrationService.steps.length - 1 || disabled"
             (click)="next()">
-      REGISTRATION.FOOTER.NEXT
+      <span *ngIf="type === 'step'">{{ 'REGISTRATION.FOOTER.NEXT' | translate }}</span>
+      <span *ngIf="type === 'submit'">{{ 'REGISTRATION.FOOTER.SUBMIT' | translate }}</span>
     </button>
 
   </div>

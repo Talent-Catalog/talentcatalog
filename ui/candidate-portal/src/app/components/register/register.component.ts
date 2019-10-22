@@ -1,5 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {RegistrationService} from "../../services/registration.service";
+import {AuthService} from "../../services/auth.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-register',
@@ -8,9 +10,9 @@ import {RegistrationService} from "../../services/registration.service";
 })
 export class RegisterComponent implements OnInit, OnDestroy {
 
-  error: any;
-
-  constructor(public registrationService: RegistrationService) { }
+  constructor(public registrationService: RegistrationService,
+              public authService: AuthService,
+              public router: Router) { }
 
   ngOnInit() {
     this.registrationService.start();
@@ -20,5 +22,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
     this.registrationService.stop();
   }
 
+  logout() {
+    this.authService.logout().subscribe(() => this.router.navigate(['']));
+  }
 }
 

@@ -30,6 +30,7 @@ import {
 } from "../../util/form/language-proficiency/language-level-form-control-model";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import * as moment from 'moment-timezone';
+import {CandidateShortlistItem} from "../../../model/candidate-shortlist-item";
 
 
 @Component({
@@ -131,7 +132,15 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       minEducationLevel: [null],
       educationMajorIds: [[]],
       searchJoinRequests: this.fb.array([]),
-      shortlistStatus: null
+      shortlistStatus: null,
+      //for display purposes
+      occupations: [[]],
+      verifiedOccupations: [[]],
+      countries: [[]],
+      educationMajors: [[]],
+      nationalities: [[]],
+      statusesDisplay: [[]],
+
     });
 
     /* LOAD NATIONALITIES */
@@ -266,6 +275,9 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.error = null;
     const request = this.searchForm.value;
+    if (request.shortlistStatus == ''){
+      request.shortlistStatus = null;
+    }
     request.pageNumber = this.pageNumber - 1;
     request.pageSize = this.pageSize;
     this.subscription = this.candidateService.search(request).subscribe(
@@ -280,11 +292,13 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   }
 
   clear() {
-    alert('todo');
-  }
+    this.searchForm.reset();
+    this.savedSearch = null;
+   }
 
   loadSavedSearch(id) {
     this.loading = true;
+    this.searchForm.controls['savedSearchId'].patchValue(id);
     this.savedSearchService.load(id).subscribe(
       request => {
         this.populateFormFromRequest(request);
@@ -322,7 +336,6 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     showSaveModal.result
       .then((savedSearch) => {
         this.savedSearch = savedSearch;
-        console.log(savedSearch);
       })
       .catch(() => { /* Isn't possible */
       });
@@ -333,6 +346,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
     Object.keys(this.searchForm.controls).forEach(name => {
       this.searchForm.controls[name].patchValue(request[name]);
+
       //Form arrays need to be handled
       if (name === 'searchJoinRequests' && request[name]) {
         while (this.searchJoinArray.length) {
@@ -343,7 +357,47 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
         });
       }
 
+      //todo why not re-rendering until click on screen
+      let occupations = [];
+      if (this.searchForm.value.occupationIds){
+        occupations = this.candidateOccupations.filter(c => this.searchForm.value.occupationIds.indexOf(c.id) != -1);
+      }
+      this.searchForm.controls['occupations'].patchValue(occupations);
+
+      let verifiedOccupations = [];
+      if (this.searchForm.value.verifiedOccupationIds){
+        verifiedOccupations = this.verifiedOccupations.filter(c => this.searchForm.value.verifiedOccupationIds.indexOf(c.id) != -1);
+      }
+      this.searchForm.controls['verifiedOccupations'].patchValue(verifiedOccupations);
+
+      let educationMajors = [];
+      if (this.searchForm.value.educationMajorIds){
+        educationMajors = this.educationMajors.filter(c => this.searchForm.value.educationMajorIds.indexOf(c.id) != -1);
+      }
+      this.searchForm.controls['educationMajors'].patchValue(educationMajors);
+
+      let nationalities = [];
+      if (this.searchForm.value.nationalityIds){
+        nationalities = this.nationalities.filter(c => this.searchForm.value.nationalityIds.indexOf(c.id) != -1);
+      }
+      this.searchForm.controls['nationalities'].patchValue(nationalities);
+
+      let countries = [];
+      if (this.searchForm.value.countryIds){
+        countries = this.countries.filter(c => this.searchForm.value.countryIds.indexOf(c.id) != -1);
+      }
+      this.searchForm.controls['countries'].patchValue(countries);
+
+      let statusesDisplay = [];
+      if (this.searchForm.value.statuses){
+        statusesDisplay = this.statuses.filter(c => this.searchForm.value.statuses.indexOf(c) != -1);
+      }
+      this.searchForm.controls['statusesDisplay'].patchValue(statusesDisplay);
+
+
     });
+
+
     this.search();
   }
 
@@ -393,5 +447,10 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       this.searchForm.controls['otherMinWrittenLevel'].patchValue(model.writtenLevel);
       this.searchForm.controls['otherMinSpokenLevel'].patchValue(model.spokenLevel);
     }
+  }
+
+  handleCandidateShortlistSaved(candidateShortlistItem: CandidateShortlistItem) {
+    this.search();
+    //todo partial update
   }
 }
