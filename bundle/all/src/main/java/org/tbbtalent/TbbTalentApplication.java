@@ -16,7 +16,7 @@ public class TbbTalentApplication extends WebMvcConfigurerAdapter {
    @Override
     public void addViewControllers (ViewControllerRegistry registry) {
         RedirectViewControllerRegistration r =
-                registry.addRedirectViewController("/", "/candidate");
+                registry.addRedirectViewController("/", "/candidate-portal");
     }
    
 }

@@ -1,6 +1,6 @@
 tbb:
   cors:
-    urls: http://localhost:4200,http://localhost:4201
+    urls: http://localhost:4200,http://localhost:4201,https://tbbtalent-staging.herokuapp.com/
 
 spring:
   datasource:
