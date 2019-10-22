@@ -34,9 +34,8 @@ public class TranslationAdminApi {
 
     @PostMapping("countries/{systemLanguage}")
     public List<Map<String, Object>> search(@PathVariable("systemLanguage") String systemLanguage) {
-        List<Country> countries = this.countryService.list();
-        List<Country> translatedCountries= this.translationService.translate(systemLanguage, countries);
-        return countryDto().buildList(translatedCountries);
+        List<Country> countries = this.countryService.listCountries(systemLanguage);
+        return countryDto().buildList(countries);
     }
 
 //    @GetMapping("{id}")

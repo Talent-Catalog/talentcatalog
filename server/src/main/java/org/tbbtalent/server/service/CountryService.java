@@ -12,9 +12,9 @@ import java.util.List;
 
 public interface CountryService {
 
-    List<Country> list();
-
     List<Country> listCountries();
+
+    List<Country> listCountries(String selectedLanguage);
 
     Page<Country> searchCountries(SearchCountryRequest request);
 

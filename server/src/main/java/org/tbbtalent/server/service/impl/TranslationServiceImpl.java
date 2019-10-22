@@ -43,10 +43,12 @@ public class TranslationServiceImpl implements TranslationService {
                                                                              String type) {
         // if the selected language is english, no need to load translations at all, just return original data
         String selectedLanguage = userContext.getUserLanguage();
-        if ("en".equals(selectedLanguage)) {
-            return;
-        }
+        translate(items, type, selectedLanguage);
+    }
 
+    public <T extends AbstractTranslatableDomainObject<Long>> void translate(List<T> items,
+                                                                             String type,
+                                                                             String selectedLanguage) {
         if (CollectionUtils.isNotEmpty(items)) {
             List<Long> itemIds = items.stream().map(c -> (Long)c.getId()).collect(Collectors.toList());
             List<Translation> translations = translationRepository.findByIdsTypeLanguage(itemIds, type, selectedLanguage);

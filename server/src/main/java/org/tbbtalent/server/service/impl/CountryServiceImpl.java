@@ -43,15 +43,17 @@ public class CountryServiceImpl implements CountryService {
     }
 
     @Override
-    public List<Country> list() {
+    public List<Country> listCountries() {
         List<Country> countries = countryRepository.findByStatus(Status.active);
+        translationService.translate(countries, "country");
         return countries;
     }
 
     @Override
-    public List<Country> listCountries() {
+    public List<Country> listCountries(String selectedLanguage) {
         List<Country> countries = countryRepository.findByStatus(Status.active);
-        return translationService.translate(countries);
+        translationService.translate(countries, "country", selectedLanguage);
+        return countries;
     }
 
     @Override
