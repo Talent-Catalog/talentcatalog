@@ -66,5 +66,7 @@ export class CandidateService {
     return this.http.get<Candidate>(`${this.apiUrl}/certifications`);
   }
 
-
+  getStatus() {
+    return this.http.get<Candidate>(`${this.apiUrl}/status`);
+  }
 }

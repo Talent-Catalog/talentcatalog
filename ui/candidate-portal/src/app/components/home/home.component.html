@@ -1,19 +1,53 @@
 <div class="container">
 
-  <h1>Welcome Candidate</h1>
+  <app-loading [loading]="loading"></app-loading>
 
-  <p>To do:</p>
+  <ng-container *ngIf="!loading">
 
-  <ul>
-    <li>
-      If user registration is draft take them to their registration
-    </li>
-    <li>
-      If user registration is pending - info about this - ability to view profile
-    </li>
-    <li>
-      If user status is incomplete - show reason and ability to resubmit??
-    </li>
-  </ul>
+    <h2>Welcome back, {{(authService.user$ | async).username}}!</h2>
+
+    <ng-container [ngSwitch]="candidate?.status">
+
+      <!-- DRAFT - prompt candidate to complete registration -->
+      <ng-container *ngSwitchCase="'draft'">
+        <p>
+          You haven't finished your registration. Please click the button below to continue.
+        </p>
+
+        <div class="text-left">
+          <a class="btn btn-primary" [routerLink]="'/register'">Continue registration</a>
+        </div>
+      </ng-container>
+
+      <!-- PENDING - prompt the user to review their profile -->
+      <ng-container *ngSwitchCase="'pending'">
+        <p>
+          Congratulations, you've completed your registration application. We will review your application as soon as
+          can. In the meantime, you can review your profile.
+        </p>
+
+        <div class="text-left">
+          <a class="btn btn-primary" [routerLink]="'/profile'">Review Profile</a>
+        </div>
+      </ng-container>
+
+      <!-- INCOMPLETE - show reason and ability to resubmit?? -->
+      <ng-container *ngSwitchCase="'incomplete'">
+        <p>
+          Your registration application has been reviewed, and requires further action before it can be approved.
+        </p>
+
+        <p class="alert alert-warning">
+          TODO: List problems
+        </p>
+
+        <div class="text-left">
+          <a class="btn btn-primary" [routerLink]="'/register'">Review registration</a>
+        </div>
+      </ng-container>
+
+    </ng-container>
+
+  </ng-container>
 
 </div>

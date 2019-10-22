@@ -96,6 +96,12 @@ public class CandidatePortalApi {
         return candidateWithCertificationsDto().build(candidate);
     }
 
+    @GetMapping("status")
+    public Map<String, Object> getCandidateStatus() {
+        Candidate candidate = this.candidateService.getLoggedInCandidate();
+        return candidateStatusDto().build(candidate);
+    }
+
     private DtoBuilder candidateContactDto() {
         return new DtoBuilder()
                 .add("user", userDto())
@@ -274,6 +280,12 @@ public class CandidatePortalApi {
                 .add("id")
                 .add("name")
                 .add("level")
+                ;
+    }
+
+    private DtoBuilder candidateStatusDto() {
+        return new DtoBuilder()
+                .add("status")
                 ;
     }
 }

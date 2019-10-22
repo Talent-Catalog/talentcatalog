@@ -1,6 +1,8 @@
 <div class="container">
 
-  <form class="row" [formGroup]="form">
+  <app-loading [loading]="loading"></app-loading>
+
+  <form class="row" [formGroup]="form" *ngIf="!loading">
 
     <!-- FIRST NAME -->
     <div class="col-12 col-md-6">
@@ -42,11 +44,7 @@
       </div>
     </div>
 
-
-
     <hr class="col-12">
-
-
 
     <!-- COUNTRY -->
     <div class="col-12 col-md-6">
@@ -113,8 +111,11 @@
 
   </form>
 
+  <app-error [error]="error"></app-error>
+
 </div>
 
-<app-registration-footer (backClicked)="back()"
+<app-registration-footer [disabled]="loading || saving"
+                         (backClicked)="back()"
                          (nextClicked)="next()">
 </app-registration-footer>

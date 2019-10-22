@@ -20,7 +20,11 @@ export class RegistrationPersonalComponent implements OnInit {
   form: FormGroup;
   error: any;
   // Component states
-  loading: boolean;
+  _loading = {
+    candidate: true,
+    countries: true,
+    nationalities: true
+  };
   saving: boolean;
 
   candidate: Candidate;
@@ -36,7 +40,6 @@ export class RegistrationPersonalComponent implements OnInit {
               public registrationService: RegistrationService) { }
 
   ngOnInit() {
-    this.loading = true;
     this.saving = false;
     this.years = years;
     this.form = this.fb.group({
@@ -59,22 +62,22 @@ export class RegistrationPersonalComponent implements OnInit {
     this.countryService.listCountries().subscribe(
       (response) => {
         this.countries = response;
-        this.loading = false;
+        this._loading.countries = false;
       },
       (error) => {
         this.error = error;
-        this.loading = false;
+        this._loading.countries = false;
       }
     );
 
     this.nationalityService.listNationalities().subscribe(
       (response) => {
         this.nationalities = response;
-        this.loading = false;
+        this._loading.nationalities = false;
       },
       (error) => {
         this.error = error;
-        this.loading = false;
+        this._loading.nationalities = false;
       }
     );
 
@@ -96,11 +99,11 @@ export class RegistrationPersonalComponent implements OnInit {
           // registrationId: response.registrationId
 
         });
-        this.loading = false;
+        this._loading.candidate = false;
       },
       (error) => {
         this.error = error;
-        this.loading = false;
+        this._loading.candidate = false;
       }
     );
   }
@@ -129,6 +132,11 @@ export class RegistrationPersonalComponent implements OnInit {
 
   next() {
     this.save('next');
+  }
+
+  get loading() {
+    const l = this._loading;
+    return l.candidate || l.countries || l.nationalities;
   }
 
 }
