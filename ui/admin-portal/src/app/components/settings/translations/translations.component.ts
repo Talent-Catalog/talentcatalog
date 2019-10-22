@@ -83,12 +83,13 @@ export class TranslationsComponent implements OnInit {
     request.pageSize = this.pageSize;
 
     if(request.type == "countries"){
-      /* LOAD COUNTRIES */
-      this.countryService.search(request).subscribe(results => {
-        this.types = results;
-        console.log(this.types);
-        this.loading = false;
-      });
+      /* LOAD COUNTRIES
+        this.countryService.search(request).subscribe(results => {
+          this.types = results;
+          console.log(this.types);
+          this.loading = false;
+        });
+      */
       this.translate(request.type);
     }else if(request.type == "nationalities"){
       console.log("nationalities loading")
@@ -109,11 +110,14 @@ export class TranslationsComponent implements OnInit {
   translate(type) {
     this.loading = true
     this.translationService.search(type, this.searchForm.value.systemLanguage).subscribe(results => {
+      this.translations = results;
+      /*
       for(var value of this.types.content) {
         let y = results.find(x => x.id == value.id);
         value.translation = y;
       }
-      console.log(this.types.content);
+      */
+      console.log(this.translations);
       this.loading = false;
     });
   }

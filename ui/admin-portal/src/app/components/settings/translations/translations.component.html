@@ -64,11 +64,11 @@
     </thead>
 
     <tbody>
-    <tr *ngFor="let type of types?.content; let i = index">
+    <tr *ngFor="let translation of translations">
       <td>{{searchForm.value.type | titlecase}}</td>
-      <td>{{type.name}}</td>
-      <td>Language</td>
-      <td>{{type.translation.name}}</td>
+      <td>{{translation.name}}</td>
+      <td>{{searchForm.value.systemLanguage}}</td>
+      <td>{{translation.translatedName}}</td>
       <td>
         <div class="btn-group">
           <button type="button" class="btn btn-default" (click)="editUser(user)"><i class="fa fa-edit"></i></button>
@@ -85,7 +85,7 @@
     </tr>
 
     <!-- no results -->
-    <tr *ngIf="!loading && !results?.totalElements || !types?.totalElements">
+    <tr *ngIf="!loading && translations.length == 0 || !types?.totalElements">
       <td colspan="42">
         <span class="text-muted">(no matching users)</span>
       </td>

@@ -26,12 +26,6 @@ public class TranslationAdminApi {
         this.countryService = countryService;
     }
 
-//    @GetMapping()
-//    public List<Map<String, Object>> listAllTranslations() {
-//        List<Translation> translations = translationService.listTranslations();
-//        return translationDto().buildList(translations);
-//    }
-
     @PostMapping("countries/{systemLanguage}")
     public List<Map<String, Object>> search(@PathVariable("systemLanguage") String systemLanguage) {
         List<Country> countries = this.countryService.listCountries(systemLanguage);
@@ -70,6 +64,7 @@ public class TranslationAdminApi {
                 .add("id")
                 .add("name")
                 .add("status")
+                .add("translatedName")
                 ;
     }
 
