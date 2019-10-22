@@ -7,7 +7,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "translation")
 @SequenceGenerator(name = "seq_gen", sequenceName = "translation_id_seq", allocationSize = 1)
-public class Translation extends AbstractAuditableDomainObject<Long>, extends AbstractTranslatableDomainObject{
+public class Translation extends AbstractAuditableDomainObject<Long> {
 
     private Long objectId;
     private String objectType;

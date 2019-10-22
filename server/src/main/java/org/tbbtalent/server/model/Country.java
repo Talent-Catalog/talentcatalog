@@ -5,9 +5,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "country")
 @SequenceGenerator(name = "seq_gen", sequenceName = "country_id_seq", allocationSize = 1)
-public class Country extends AbstractDomainObject<Long> {
-
-    private String name;
+public class Country extends AbstractTranslatableDomainObject<Long> {
 
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -16,22 +14,8 @@ public class Country extends AbstractDomainObject<Long> {
     }
 
     public Country(String name, Status status) {
-        this.name = name;
+        setName(name);
         this.status = status;
-    }
-
-    public Country(Country original) {
-        setId(original.getId());
-        this.name = original.getName();
-        this.status = original.getStatus();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public Status getStatus() {
