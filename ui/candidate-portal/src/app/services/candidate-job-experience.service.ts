@@ -17,6 +17,10 @@ export class CandidateJobExperienceService {
     return this.http.post<CandidateJobExperience>(`${this.apiUrl}`, request);
   }
 
+  updateJobExperience(request: any): Observable<CandidateJobExperience> {
+    return this.http.post<CandidateJobExperience>(`${this.apiUrl}/update`, request);
+  }
+
   deleteJobExperience(id: number): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
   }

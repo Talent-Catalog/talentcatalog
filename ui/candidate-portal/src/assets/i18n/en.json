@@ -1,10 +1,9 @@
 {
   "HOME": {
-    "WELCOME": "Welcome to TBB",
+    "TITLE": "Welcome to TBB",
     "INTRO": "Landing page - the what and the why",
     "REGISTER": "Register",
-    "LOGIN": "Login",
-    "TEST": "hello {{value}}"
+    "LOGIN": "Login"
   },
   "REGISTRATION": {
     "HEADER": {
@@ -70,7 +69,9 @@
       }
     },
     "EXPERIENCE": {
-
+      "BUTTON": {
+        "ADD": "Add work experience"
+      }
     },
     "EDUCATION": {
       "LABEL": {
@@ -109,15 +110,42 @@
       }
     }
   },
-  "COMMON": {
-    "CANDIDATE": {
-      "EDUCATION": {
-        "FORM": {
-          "LABEL": {
-            "EDUCATIONTYPE": "Education Level"
-
-          }
+  "FORM": {
+    "JOBEXPERIENCE": {
+      "EXPLANATION": "If possible please provide this response in English so it can be more easily reviewed by our team. If you feel more comfortable using your native language please do so and we will have a translator convert it for our team.",
+      "LABEL": {
+        "CANDIDATEOCCUPATIONID": "Occupation",
+        "COMPANYNAME": "Company Name",
+        "COUNTRY": "Country",
+        "STARTDATE": "Started (dd/mm/yyyy)",
+        "ENDDATE": "Finished (dd/mm/yyyy)",
+        "ROLE": "Job Title",
+        "DESCRIPTION": "Job Description",
+        "CONTRACTTYPE": {
+          "TITLE": "Contract type",
+          "FULLTIME": "Full time",
+          "PARTTIME": "Part time"
+        },
+        "EMPLOYMENTTYPE": {
+          "TITLE": "Type of employment",
+          "PAID": "Paid",
+          "VOLUNTARY": "Voluntary"
         }
+      },
+      "BUTTON": {
+        "ADD": "Add Work Experience",
+        "CANCEL": "Cancel",
+        "SAVE": "Save changes"
+      }
+    }
+  },
+  "CARD": {
+    "JOBEXPERIENCE": {
+      "LABEL": {
+        "FULLTIME":  "Full time",
+        "PARTTIME": "Part time",
+        "PAID":  "Paid employee",
+        "VOLUNTEER": "Volunteer employee"
       }
     }
   }

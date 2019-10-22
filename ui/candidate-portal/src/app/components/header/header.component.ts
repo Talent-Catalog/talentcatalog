@@ -51,4 +51,12 @@ export class HeaderComponent implements OnInit {
     this.languageService.setSelectedLanguage(language);
     this.languageUpdated.emit(language);
   }
+
+  get selectedLanguage() {
+    let language = null;
+    if (this.languages) {
+      language = this.languages.find(lang => lang.language === this.languageService.getSelectedLanguage());
+    }
+    return language ? language.label : 'Language';
+  }
 }

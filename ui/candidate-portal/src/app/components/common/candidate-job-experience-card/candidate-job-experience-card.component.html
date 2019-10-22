@@ -1,8 +1,16 @@
 <div class="text-right">
 
-  <div class="btn btn-danger btn-card" (click)="delete()">&times;</div>
+  <button class="btn btn-danger btn-card"
+          [disabled]="disabled"
+          (click)="delete()">
+    &times;
+  </button>
 
-  <div class="btn btn-primary btn-card" (click)="edit()">&copy;</div>
+  <button class="btn btn-primary btn-card"
+          [disabled]="disabled"
+          (click)="edit()">
+    &copy;
+  </button>
 
 </div>
 
@@ -18,7 +26,10 @@
   </div>
   <div class="col-12 col-md-4">
     <span class="icon"></span>
-    {{experience?.fullTime ? 'Full time' : 'Part time'}}, {{experience?.paid ? 'Paid' : 'Volunteer' }} employee
+    <span *ngIf="experience?.fullTime === true">{{ 'CARD.JOBEXPERIENCE.LABEL.FULLTIME' | translate }}</span>
+    <span *ngIf="experience?.fullTime === false">{{ 'CARD.JOBEXPERIENCE.LABEL.PARTTIME' | translate }}</span>,
+    <span *ngIf="experience?.paid === true">{{ 'CARD.JOBEXPERIENCE.LABEL.PAID' | translate }}</span>
+    <span *ngIf="experience?.paid === false">{{ 'CARD.JOBEXPERIENCE.LABEL.VOLUNTEER' | translate }}</span>
   </div>
   <div class="col-12 col-md-4">
     <span class="icon"></span>

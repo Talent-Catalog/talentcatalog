@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.model.CandidateJobExperience;
 import org.tbbtalent.server.request.work.experience.CreateJobExperienceRequest;
+import org.tbbtalent.server.request.work.experience.UpdateJobExperienceRequest;
 import org.tbbtalent.server.service.CandidateJobExperienceService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -28,6 +29,12 @@ public class CandidateJobExperiencePortalApi {
         return jobExperienceDto().build(candidateJobExperience);
     }
 
+    @PostMapping("update")
+    public Map<String, Object> updateJobExperience(@Valid @RequestBody UpdateJobExperienceRequest request) {
+        CandidateJobExperience candidateJobExperience = this.candidateJobExperienceService.updateCandidateJobExperience(request);
+        return jobExperienceDto().build(candidateJobExperience);
+    }
+
     @DeleteMapping("{id}")
     public ResponseEntity deleteJobExperience(@PathVariable("id") Long id) {
         candidateJobExperienceService.deleteCandidateJobExperience(id);
@@ -38,6 +45,7 @@ public class CandidateJobExperiencePortalApi {
         return new DtoBuilder()
             .add("id")
             .add("country", countryDto())
+            .add("candidateOccupation", candidateOccupationDto())
             .add("companyName")
             .add("role")
             .add("startDate")
@@ -46,6 +54,19 @@ public class CandidateJobExperiencePortalApi {
             .add("paid")
             .add("description")
             ;
+    }
+
+    private DtoBuilder candidateOccupationDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("occupation", occupationDto())
+                ;
+    }
+
+    private DtoBuilder occupationDto() {
+        return new DtoBuilder()
+                .add("id")
+                ;
     }
 
     private DtoBuilder countryDto() {

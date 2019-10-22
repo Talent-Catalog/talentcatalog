@@ -8,6 +8,10 @@
   @include button-size(8px, 1em, 18px, 1.25, 0);
 }
 
+.btn + .btn {
+  margin-left: 1em;
+}
+
 .btn-primary {
   @include button-variant($color-primary, $color-primary, $color-primary-dark, $color-primary-dark, $color-primary-darker, $color-primary-darker);
 }
@@ -92,4 +96,3 @@ a {
   @include border-color("border");
   @include color("text-inactive");
 }
-
