@@ -33,8 +33,8 @@ export class RegistrationContactComponent implements OnInit {
     this.loading = true;
     this.candidate = null;
     this.form = this.fb.group({
-      email: ['', Validators.email],
-      phone: [''],
+      email: ['', [Validators.required, Validators.email]],
+      phone: ['', [Validators.required]],
       whatsapp: [''],
       // username: ['']
     });
@@ -44,10 +44,12 @@ export class RegistrationContactComponent implements OnInit {
       this.candidateService.getCandidateContact().subscribe(
         (candidate) => {
           this.candidate = candidate;
-          this.form.patchValue({email: candidate.user.email});
-          this.form.patchValue({phone: candidate.phone});
-          this.form.patchValue({whatsapp: candidate.whatsapp});
-          // this.form.patchValue({username: response.user.username});
+          this.form.patchValue({
+            email: candidate.user ? candidate.user.email : '',
+            phone: candidate.phone,
+            whatsapp: candidate.whatsapp,
+            //username: candidate.user ? response.user.username : ''
+          });
           this.loading = false;
         },
         (error) => {
@@ -57,8 +59,8 @@ export class RegistrationContactComponent implements OnInit {
       );
     } else {
       // The user has not registered - add the password fields to the reactive form
-      this.form.addControl('password', new FormControl('', [Validators.required]));
-      this.form.addControl('passwordConfirmation', new FormControl('', [Validators.required]));
+      this.form.addControl('password', new FormControl('', [Validators.required, Validators.minLength(8)]));
+      this.form.addControl('passwordConfirmation', new FormControl('', [Validators.required, Validators.minLength(8)]));
       this.loading = false;
     }
   }
@@ -66,6 +68,13 @@ export class RegistrationContactComponent implements OnInit {
   save() {
     this.saving = true;
     if (this.authService.isAuthenticated()) {
+
+      // If the candidate hasn't changed anything, skip the update service call
+      if (this.form.pristine) {
+        this.registrationService.next();
+        return;
+      }
+
       // The user has already registered and is revisiting this page
       this.candidateService.updateCandidateContact(this.form.value).subscribe(
         (response) => {

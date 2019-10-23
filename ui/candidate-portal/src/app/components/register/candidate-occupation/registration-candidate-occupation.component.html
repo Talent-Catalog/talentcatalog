@@ -3,6 +3,7 @@
   <app-loading [loading]="loading"></app-loading>
 
   <ng-container *ngIf="!loading">
+
     <!-- REVIEW -->
     <div class="card" *ngFor="let occupation of candidateOccupations; let i = index;">
 
@@ -11,16 +12,16 @@
       </div>
 
       <div class="form-group">
-        <label translate dir="auto">REGISTRATION.OCCUPATION.LABEL.OCCUPATION</label>
-        <select class="form-control" [(ngModel)]="occupation.occupationId">
+        <label>{{ 'REGISTRATION.OCCUPATION.LABEL.OCCUPATION' | translate }}</label>
+        <select class="form-control" [(ngModel)]="occupation.occupationId" disabled>
           <option *ngFor="let occupation of occupations" [value]="occupation.id">{{occupation.name}}</option>
         </select>
       </div>
 
       <!-- YEARS OF EXPERIENCE -->
       <div class="form-group">
-        <label translate dir="auto">REGISTRATION.OCCUPATION.LABEL.YEARSEXPERIENCE</label>
-        <p class="text-muted" translate dir="auto">REGISTRATION.OCCUPATION.LABEL.DISCLAIMER</p>
+        <label>{{ 'REGISTRATION.OCCUPATION.LABEL.YEARSEXPERIENCE' | translate }}</label>
+        <p class="text-muted">{{ 'REGISTRATION.OCCUPATION.LABEL.DISCLAIMER' | translate }}</p>
         <input type="number" class="form-control" [(ngModel)]="occupation.yearsExperience">
       </div>
 
@@ -31,27 +32,29 @@
 
       <!-- FIELD -->
       <div class="form-group">
-        <label for="occupation" translate dir="auto">REGISTRATION.OCCUPATION.LABEL.OCCUPATION</label>
+        <label for="occupation">{{ 'REGISTRATION.OCCUPATION.LABEL.OCCUPATION' | translate }} <sup>*</sup></label>
         <select class="form-control" name="occupation" id="occupation" [formControlName]="'occupationId'">
           <option value=""></option>
-          <option *ngFor="let occupation of occupations" [value]="occupation.id">{{occupation.name}}</option>
+          <option *ngFor="let occupation of filteredOccupations" [value]="occupation.id">{{occupation.name}}</option>
         </select>
+        <app-form-control-error [control]="form.controls.occupationId"></app-form-control-error>
       </div>
 
       <!-- YEARS OF EXPERIENCE -->
       <div class="form-group">
-        <label class="m-0" for="yearsExperience" translate dir="auto">REGISTRATION.OCCUPATION.LABEL.YEARSEXPERIENCE</label>
-        <p class="text-muted" translate dir="auto">REGISTRATION.OCCUPATION.LABEL.DISCLAIMER</p>
+        <label class="m-0" for="yearsExperience">{{ 'REGISTRATION.OCCUPATION.LABEL.YEARSEXPERIENCE' | translate }} <sup>*</sup></label>
+        <p class="text-muted">{{ 'REGISTRATION.OCCUPATION.LABEL.DISCLAIMER' | translate }}</p>
         <input type="number" class="form-control" name="yearsExperience" id="yearsExperience" [formControlName]="'yearsExperience'">
+        <app-form-control-error [control]="form.controls.yearsExperience"></app-form-control-error>
       </div>
 
     </form>
 
     <div class="text-center mt-4">
-      <button class="btn btn-outline-primary"  translate dir="auto"
+      <button class="btn btn-outline-primary"
               (click)="addOccupation()"
               [disabled]="form?.invalid || loading || saving">
-        REGISTRATION.OCCUPATION.BUTTON.ADD
+        {{ 'REGISTRATION.OCCUPATION.BUTTON.ADD' | translate }}
       </button>
     </div>
   </ng-container>
@@ -60,4 +63,4 @@
 
 </div>
 
-<app-registration-footer (backClicked)="back()" (nextClicked)="next()"></app-registration-footer>
+<app-registration-footer [disabled]="!candidateOccupations?.length" (backClicked)="back()" (nextClicked)="next()"></app-registration-footer>

@@ -322,9 +322,12 @@ public class CandidateServiceImpl implements CandidateService {
     public Candidate updateEducation(UpdateCandidateEducationRequest request) {
         Candidate candidate = getLoggedInCandidate();
 
-        // Load the education level from the database - throw an exception if not found
-        EducationLevel educationLevel = educationLevelRepository.findById(request.getMaxEducationLevelId())
-                .orElseThrow(() -> new NoSuchObjectException(EducationLevel.class, request.getMaxEducationLevelId()));
+        EducationLevel educationLevel = null;
+        if (request.getMaxEducationLevelId() != null) {
+            // Load the education level from the database - throw an exception if not found
+            educationLevel = educationLevelRepository.findById(request.getMaxEducationLevelId())
+                    .orElseThrow(() -> new NoSuchObjectException(EducationLevel.class, request.getMaxEducationLevelId()));
+        }
 
         candidate.setMaxEducationLevel(educationLevel);
         return candidateRepository.save(candidate);

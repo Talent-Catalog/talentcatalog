@@ -19,7 +19,7 @@ public class WebConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/").setViewName("forward:/index.html");
+        registry.addRedirectViewController("/", "/candidate-portal/");
     }
 
     @Override
@@ -44,6 +44,11 @@ public class WebConfiguration implements WebMvcConfigurer {
                             return new ClassPathResource("/ui-bundle/" + uiBundle.module + "/" + resourcePath);
                         }
                     });
+
+            registry.addResourceHandler("/" + uiBundle.url + "/assets/**")
+                    .setCachePeriod(0)
+                    .addResourceLocations("classpath:/ui-bundle/" + uiBundle.module + "/assets/")
+                    .resourceChain(true);
 
             registry.addResourceHandler("/" + uiBundle.url, "/" + uiBundle.url + "/", "/" + uiBundle.url + "/**")
                     .setCachePeriod(0)

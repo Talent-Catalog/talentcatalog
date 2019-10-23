@@ -47,7 +47,7 @@ export class CandidateEducationFormComponent implements OnInit {
     const edu = this.candidateEducation;
     this.form = this.fb.group({
       id: [edu ? edu.id : null],
-      educationType: [edu ? edu.educationType : null],
+      educationType: [edu ? edu.educationType : null, Validators.required],
       courseName: [edu ? edu.courseName : null, Validators.required],
       countryId: [edu && edu.country ? edu.country.id : null, Validators.required],
       institution: [edu ? edu.institution : null, Validators.required],
@@ -102,12 +102,15 @@ export class CandidateEducationFormComponent implements OnInit {
     return this._loading.majors || this._loading.countries;
   }
 
-
-
   save() {
     this.error = null;
     this.saving = true;
 
+    // If the candidate hasn't changed anything, skip the update service call
+    if (this.form.pristine) {
+      this.saved.emit(this.candidateEducation);
+      return;
+    }
 
     if (!this.form.value.id) {
       this.candidateEducationService.createCandidateEducation(this.form.value).subscribe(

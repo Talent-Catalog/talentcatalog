@@ -114,4 +114,19 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
   get loading() {
     return this._loading.candidate || this._loading.occupations;
   }
+
+  get filteredOccupations(): Occupation[] {
+    if (!this.occupations) {
+      return [];
+    }
+    else if (!this.candidateOccupations || !this.occupations.length) {
+      return this.occupations
+    } else {
+      const existingIds = this.candidateOccupations.map(candidateOcc => candidateOcc.occupation
+        ? candidateOcc.occupation.id.toString()
+        : candidateOcc.occupationId.toString()
+      );
+      return this.occupations.filter(occ => !existingIds.includes(occ.id.toString()))
+    }
+  }
 }

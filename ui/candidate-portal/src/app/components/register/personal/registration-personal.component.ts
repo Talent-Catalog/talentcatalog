@@ -85,16 +85,16 @@ export class RegistrationPersonalComponent implements OnInit {
       (response) => {
         this.form.patchValue({
           /* PERSONAL */
-          firstName: response.user.firstName,
-          lastName: response.user.lastName,
-          gender: response.gender,
-          dob: response.dob,
+          firstName: response.user ? response.user.firstName : null,
+          lastName: response.user ? response.user.lastName : null,
+          gender: response.gender || null ,
+          dob: response.dob || null,
           /* LOCATION */
-          countryId: response.country.id,
+          countryId: response.country ? response.country.id : null,
           city: response.city,
           yearOfArrival: response.yearOfArrival,
           /* NATIONALITY */
-          nationality: response.nationality.id,
+          nationality: response.nationality ? response.nationality.id : null,
           // registeredWithUN: response.registeredWithUN,
           // registrationId: response.registrationId
 
@@ -110,6 +110,21 @@ export class RegistrationPersonalComponent implements OnInit {
 
   save(dir: string) {
     this.saving = true;
+    if (this.form.invalid) {
+      return;
+    }
+
+    // If the candidate hasn't changed anything, skip the update service call
+    if (this.form.pristine) {
+      if (dir === 'next') {
+        this.registrationService.next();
+      } else {
+        this.registrationService.back();
+      }
+      return;
+    }
+
+    // Save changes
     this.candidateService.updateCandidatePersonal(this.form.value).subscribe(
       () => {
         this.saving = false;

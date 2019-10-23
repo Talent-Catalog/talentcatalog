@@ -26,8 +26,8 @@
           <button class="btn btn-danger btn-card" [disabled]="saving" (click)="deleteCandidateEducation(i)">&times;</button>
         </div>
         <p>{{item.educationType}}</p>
-        <h5>{{item.courseName}} | {{item.institution}}</h5>
-        <p>{{item.country?.name}}</p>
+        <h5>{{item.courseName}}</h5>
+        <p>{{item.institution}} | {{item.country?.name}}</p>
         <p *ngIf="item.educationMajor">Majoring in {{item.educationMajor?.name}}</p>
       </div>
     </ng-container>
@@ -51,4 +51,7 @@
 
 </div>
 
-<app-registration-footer (backClicked)="back()" (nextClicked)="next()"></app-registration-footer>
+<app-registration-footer [disabled]="loading || saving"
+                         (backClicked)="back()"
+                         (nextClicked)="next()">
+</app-registration-footer>

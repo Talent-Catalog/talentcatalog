@@ -44,12 +44,17 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
     );
   }
 
-  save() {
+  save(dir: string) {
     this.saving = true;
+
     this.candidateService.updateCandidateAdditionalInfo(this.form.value).subscribe(
       (response) => {
         this.saving = false;
-        this.registrationService.next();
+        if (dir === 'next') {
+          this.registrationService.next();
+        } else {
+          this.registrationService.back();
+        }
       },
       (error) => {
         this.error = error;
@@ -57,5 +62,4 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
       }
     );
   }
-
 }

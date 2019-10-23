@@ -7,23 +7,25 @@
     <!-- FIRST NAME -->
     <div class="col-12 col-md-6">
       <div class="form-group">
-        <label for="firstName" translate dir="auto">REGISTRATION.PERSONAL.LABEL.FIRSTNAME</label>
+        <label for="firstName">{{ 'REGISTRATION.PERSONAL.LABEL.FIRSTNAME' | translate }} <sup>*</sup></label>
         <input type="text" class="form-control" id="firstName" placeholder="Enter first name" [formControlName]="'firstName'">
+        <app-form-control-error [control]="form.controls.firstName"></app-form-control-error>
       </div>
     </div>
 
     <!-- LAST NAME -->
     <div class="col-12 col-md-6">
       <div class="form-group">
-        <label for="lastName" translate dir="auto">REGISTRATION.PERSONAL.LABEL.LASTNAME</label>
+        <label for="lastName">{{ 'REGISTRATION.PERSONAL.LABEL.LASTNAME' | translate }} <sup>*</sup></label>
         <input type="text" class="form-control" id="lastName" placeholder="Enter last name" [formControlName]="'lastName'">
+        <app-form-control-error [control]="form.controls.lastName"></app-form-control-error>
       </div>
     </div>
 
     <!-- GENDER -->
     <div class="col-12 col-md-6">
       <div class="form-group">
-        <label for="gender" translate dir="auto">REGISTRATION.PERSONAL.LABEL.GENDER</label>
+        <label for="gender">{{ 'REGISTRATION.PERSONAL.LABEL.GENDER' | translate }} <sup>*</sup></label>
 
         <select class="form-control" name="gender" id="gender" [formControlName]="'gender'">
           <option value=""></option>
@@ -31,16 +33,19 @@
           <option value="male">Male</option>
           <option value="other">Other</option>
         </select>
+
+        <app-form-control-error [control]="form.controls.gender"></app-form-control-error>
       </div>
     </div>
 
     <!-- DOB -->
     <div class="col-12 col-md-6">
       <div class="form-group">
-        <label for="dob" translate dir="auto">REGISTRATION.PERSONAL.LABEL.DOB</label>
+        <label for="dob">{{ 'REGISTRATION.PERSONAL.LABEL.DOB' | translate }} <sup>*</sup></label>
         <input type="date" id="dob" class="form-control" [formControlName]="'dob'" datepicker-popup
                is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions"
                date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
+        <app-form-control-error [control]="form.controls.dob"></app-form-control-error>
       </div>
     </div>
 
@@ -49,30 +54,33 @@
     <!-- COUNTRY -->
     <div class="col-12 col-md-6">
       <div class="form-group">
-        <label for="countryId" translate dir="auto">REGISTRATION.PERSONAL.LABEL.COUNTRYID</label>
+        <label for="countryId">{{ 'REGISTRATION.PERSONAL.LABEL.COUNTRYID' | translate }} <sup>*</sup></label>
         <select class="form-control" name="countryId" id="countryId" [formControlName]="'countryId'">
           <option value=""></option>
           <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
         </select>
+        <app-form-control-error [control]="form.controls.countryId"></app-form-control-error>
       </div>
     </div>
 
     <!-- CITY -->
     <div class="col-12 col-md-6">
       <div class="form-group">
-        <label for="city" translate dir="auto">REGISTRATION.PERSONAL.LABEL.CITY</label>
+        <label for="city">{{ 'REGISTRATION.PERSONAL.LABEL.CITY' | translate }} <sup>*</sup></label>
         <input type="text" class="form-control" id="city" placeholder="" [formControlName]="'city'">
+        <app-form-control-error [control]="form.controls.city"></app-form-control-error>
       </div>
     </div>
 
     <!-- YEAR OF ARRIVAL -->
     <div class="col-12">
       <div class="form-group">
-        <label for="yearOfArrival" translate dir="auto">REGISTRATION.PERSONAL.LABEL.YEAROFARRIVAL</label>
+        <label for="yearOfArrival">{{ 'REGISTRATION.PERSONAL.LABEL.YEAROFARRIVAL' | translate }} <sup>*</sup></label>
         <select class="form-control" name="yearOfArrival" id="yearOfArrival" [formControlName]="'yearOfArrival'">
           <option value=""></option>
           <option *ngFor="let year of years" [value]="year">{{year}}</option>
         </select>
+        <app-form-control-error [control]="form.controls.yearOfArrival"></app-form-control-error>
       </div>
     </div>
 
@@ -81,17 +89,18 @@
     <!-- NATIONALITY -->
     <div class="col-12">
       <div class="form-group">
-        <label for="nationality" translate dir="auto">REGISTRATION.PERSONAL.LABEL.NATIONALITY</label>
+        <label for="nationality">{{ 'REGISTRATION.PERSONAL.LABEL.NATIONALITY' | translate }} <sup>*</sup></label>
         <select class="form-control" name="nationality" id="nationality" [formControlName]="'nationality'">
           <option value=""></option>
           <option *ngFor="let nationality of nationalities" [value]="nationality.id">{{nationality.name}}</option>
         </select>
+        <app-form-control-error [control]="form.controls.nationality"></app-form-control-error>
       </div>
     </div>
 
     <!-- UN REGISTRATION - removed for now -->
     <!--    <div class="form-group">-->
-    <!--      <label for="registeredWithUN" translate dir="auto">REGISTRATION.PERSONAL.LABEL.REGISTEREDWITHUN</label>-->
+    <!--      <label for="registeredWithUN">{{ 'REGISTRATION.PERSONAL.LABEL.REGISTEREDWITHUN' | translate }}</label>-->
     <!--      <select class="form-control" name="nationality" id="registeredWithUN" [formControlName]="'registeredWithUN'">-->
     <!--        <option value=""></option>-->
     <!--        <option [value]="true">Yes</option>-->
@@ -105,7 +114,7 @@
 
     <!--    &lt;!&ndash; REGISTRATION NUMBER &ndash;&gt;-->
     <!--    <div class="form-group" *ngIf="form.value.registeredWithUN === 'true'">-->
-    <!--      <label for="registrationId" translate dir="auto">REGISTRATION.PERSONAL.LABEL.REGISTRATIONID</label>-->
+    <!--      <label for="registrationId">{{ 'REGISTRATION.PERSONAL.LABEL.REGISTRATIONID' | translate }}</label>-->
     <!--      <input type="text" class="form-control" id="registrationId" placeholder="" [formControlName]="'registrationId'">-->
     <!--    </div>-->
 
@@ -115,7 +124,7 @@
 
 </div>
 
-<app-registration-footer [disabled]="loading || saving"
+<app-registration-footer [disabled]="form?.invalid || loading || saving"
                          (backClicked)="back()"
                          (nextClicked)="next()">
 </app-registration-footer>
