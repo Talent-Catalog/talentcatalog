@@ -1,6 +1,7 @@
 package org.tbbtalent.server.service.impl;
 
 import io.jsonwebtoken.lang.Collections;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,8 +62,13 @@ public class CountryServiceImpl implements CountryService {
         Page<Country> countries = countryRepository.findAll(
                 CountrySpecification.buildSearchQuery(request), request.getPageRequest());
         log.info("Found " + countries.getTotalElements() + " countries in search");
+        if (!StringUtils.isBlank(request.getSystemLanguage())){
+            translationService.translate(countries.getContent(), "country", request.getSystemLanguage());
+        }
         return countries;
     }
+
+
 
     @Override
     public Country getCountry(long id) {

@@ -1,11 +1,12 @@
 package org.tbbtalent.server.api.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.model.Country;
+import org.tbbtalent.server.model.Translation;
+import org.tbbtalent.server.request.country.SearchCountryRequest;
+import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
 import org.tbbtalent.server.service.CountryService;
 import org.tbbtalent.server.service.TranslationService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
@@ -26,10 +27,10 @@ public class TranslationAdminApi {
         this.countryService = countryService;
     }
 
-    @PostMapping("countries/{systemLanguage}")
-    public List<Map<String, Object>> search(@PathVariable("systemLanguage") String systemLanguage) {
-        List<Country> countries = this.countryService.listCountries(systemLanguage);
-        return countryDto().buildList(countries);
+    @PostMapping("countries")
+    public Map<String, Object> search(@RequestBody SearchCountryRequest request) {
+        Page<Country> countries = this.countryService.searchCountries(request);
+        return translationDto().buildPage(countries);
     }
 
 //    @GetMapping("{id}")
@@ -59,11 +60,12 @@ public class TranslationAdminApi {
 
 
 
-    private DtoBuilder countryDto() {
+    private DtoBuilder translationDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("name")
                 .add("status")
+                .add("translatedId")
                 .add("translatedName")
                 ;
     }

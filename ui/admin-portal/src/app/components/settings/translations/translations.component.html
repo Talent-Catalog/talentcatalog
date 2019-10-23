@@ -1,18 +1,13 @@
 <div>
   <div class="section">
     <div>
-    <!-- 
-      <div class="pull-right">
-        <button class="btn btn-primary" (click)="addCountry()">Add</button>
-      </div>
-    </div>
-     -->
       <form [formGroup]="searchForm" (ngSubmit)="search()">
 
         <div class="form-row d-flex justify-content-between align-items-end">
 
           <div class="form-group col-4">
-            <input type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword"
+            <input type="text" class="form-control" placeholder="Search..." aria-label="Search"
+                   formControlName="keyword"
                    id="keyword">
           </div>
 
@@ -32,68 +27,74 @@
           <div class="form-group col-4">
             <select class="form-control" id="systemLanguage" name="systemLanguage" formControlName="systemLanguage">
               <option value="">Select a language...</option>
-              <option *ngFor="let systemLanguage of systemLanguages" [value]="systemLanguage.language">{{systemLanguage.label}}</option>
+              <option *ngFor="let systemLanguage of systemLanguages"
+                      [value]="systemLanguage.language">{{systemLanguage.label}}</option>
             </select>
           </div>
 
         </div>
       </form>
-    <div class="alert alert-danger" *ngIf="error">
-      {{error}}
+      <div class="alert alert-danger" *ngIf="error">
+        {{error}}
+      </div>
     </div>
+
+    <div class="text-muted mb-2 align-middle">
+
+      <ngb-pagination class="pull-right"
+                      [boundaryLinks]="true"
+                      [pageSize]="pageSize"
+                      [collectionSize]="results?.totalElements"
+                      [(page)]="pageNumber"
+                      (pageChange)="search()">
+      </ngb-pagination>
+
+      Found {{results?.totalElements}} occupations
+    </div>
+
+    <table class="table">
+
+      <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+<!--        <th>Language</th>-->
+        <th>Translation</th>
+        <th></th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr *ngFor="let translation of results?.content">
+        <td>{{searchForm.value.type | titlecase}}</td>
+        <td>{{translation.name}}</td>
+<!--        <td>{{translation.language}}</td>-->
+        <td>{{translation.translatedName}}</td>
+        <td>
+          <div class="btn-group">
+            <!--          <button type="button" class="btn btn-default" (click)="editUser(user)"><i class="fa fa-edit"></i></button>-->
+            <!--          <button type="button" class="btn btn-default" (click)="deleteUser(user)"><i class="fa fa-trash"></i></button>-->
+          </div>
+        </td>
+      </tr>
+
+      <!-- loading -->
+      <tr *ngIf="loading">
+        <td colspan="42">
+          <i class="fa fa-spinner fa-spin"></i> Loading...
+        </td>
+      </tr>
+
+      <!--    &lt;!&ndash; no results &ndash;&gt;-->
+      <!--    <tr *ngIf="!loading && translations.length == 0 || !types?.totalElements">-->
+      <!--      <td colspan="42">-->
+      <!--        <span class="text-muted">(no matching users)</span>-->
+      <!--      </td>-->
+      <!--    </tr>-->
+
+      </tbody>
+
+    </table>
+
   </div>
-
-  <div class="text-muted mb-2 align-middle">
-    TODO: filters for type and language (eg. nationalities in arabic)
-  </div>
-
-  <div>
-    TODO: grid of input fields for each value
-  </div>
-
-  <table class="table">
-
-    <thead>
-    <tr>
-      <th>Type</th>
-      <th>Name</th>
-      <th>Language</th>
-      <th>Translation</th>
-      <th></th>
-    </tr>
-    </thead>
-
-    <tbody>
-    <tr *ngFor="let translation of translations">
-      <td>{{searchForm.value.type | titlecase}}</td>
-      <td>{{translation.name}}</td>
-      <td>{{searchForm.value.systemLanguage}}</td>
-      <td>{{translation.translatedName}}</td>
-      <td>
-        <div class="btn-group">
-          <button type="button" class="btn btn-default" (click)="editUser(user)"><i class="fa fa-edit"></i></button>
-          <button type="button" class="btn btn-default" (click)="deleteUser(user)"><i class="fa fa-trash"></i></button>
-        </div>
-      </td>
-    </tr>
-
-    <!-- loading -->
-    <tr *ngIf="loading">
-      <td colspan="42">
-        <i class="fa fa-spinner fa-spin"></i> Loading...
-      </td>
-    </tr>
-
-    <!-- no results -->
-    <tr *ngIf="!loading && translations.length == 0 || !types?.totalElements">
-      <td colspan="42">
-        <span class="text-muted">(no matching users)</span>
-      </td>
-    </tr>
-
-    </tbody>
-
-  </table>
-
 </div>
-

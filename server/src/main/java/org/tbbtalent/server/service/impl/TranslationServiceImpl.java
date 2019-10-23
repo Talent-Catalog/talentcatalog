@@ -2,10 +2,10 @@ package org.tbbtalent.server.service.impl;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.model.AbstractTranslatableDomainObject;
@@ -29,86 +29,32 @@ public class TranslationServiceImpl implements TranslationService {
 
     public <T extends AbstractTranslatableDomainObject<Long>> void translate(List<T> items,
                                                                              String type) {
-        // if the selected language is english, no need to load translations at all, just return original data
         String selectedLanguage = userContext.getUserLanguage();
+        translate(items, type, selectedLanguage);
+    }
+
+    public <T extends AbstractTranslatableDomainObject<Long>> void translate(List<T> items,
+                                                                             String type, String selectedLanguage) {
+        // if the selected language is english, no need to load translations at all, just return original data
         if ("en".equals(selectedLanguage)) {
             return;
         }
 
         if (CollectionUtils.isNotEmpty(items)) {
-            List<Long> itemIds = items.stream().map(c -> (Long)c.getId()).collect(Collectors.toList());
+            List<Long> itemIds = items.stream().map(c -> (Long) c.getId()).collect(Collectors.toList());
             List<Translation> translations = translationRepository.findByIdsTypeLanguage(itemIds, type, selectedLanguage);
             if (CollectionUtils.isNotEmpty(translations)) {
-                Map<Long, String> translationsById = translations.stream().collect(Collectors.toMap(t -> t.getObjectId(), t -> t.getValue()));
+                Map<Long, Translation> translationsById = translations.stream().collect(Collectors.toMap(Translation::getObjectId, Function.identity()));
                 items.forEach(c -> {
-                    String translation = translationsById.get(c.getId());
-                    if (StringUtils.isNotBlank(translation)) {
-                        c.setTranslatedName(translation);
+                    Translation translation = translationsById.get(c.getId());
+                    if (translation != null) {
+                        c.setTranslatedId(translation.getId());
+                        c.setTranslatedName(translation.getValue());
                     }
                 });
             }
         }
     }
-
-
-//    // GETTING LANGUAGE FROM USER
-//    @Override
-//    public List<Country> translate(List<Country> countries) {
-//        // TODO: if the selected language is english, no need to load translations at all, just return original data
-//        String selectedLanguage = userContext.getUserLanguage();
-//        return translate(selectedLanguage, countries);
-//    }
-//
-//    // GETTING LANGUAGE FROM ADMIN TRANSLATION SETTINGS
-//    @Override
-//    public List<Country> translate(String selectedLanguage, List<Country> countries) {
-//        // TODO: if the selected language is english, no need to load translations at all, just return original data
-//        List<Country> translatedCountries = new ArrayList<>();
-//        if (CollectionUtils.isNotEmpty(countries)) {
-//            List<Long> countryIds = countries.stream().map(c -> c.getId()).collect(Collectors.toList());
-//            // copying the original object should avoid hibernate accidentally updating an object because the transaction boundaries were not right
-//            translatedCountries = countries.stream().map(c -> new Country(c)).collect(Collectors.toList());
-//
-//            List<Translation> translations = translationRepository.findByIdsTypeLanguage(countryIds, "countries", selectedLanguage);
-//            if (CollectionUtils.isNotEmpty(translations)) {
-//                Map<Long, String> translationsById = translations.stream().collect(Collectors.toMap(t -> t.getObjectId(), t -> t.getValue()));
-//                translatedCountries.forEach(c -> {
-//                    String translation = translationsById.get(c.getId());
-//                    if (StringUtils.isNotBlank(translation)) {
-//                        c.setName(translation);
-//                    }
-//                });
-//            }
-//        }
-//        return translatedCountries;
-//    }
-
 }
 
-
-//    @Override
-//    public List<Country> translate(List<Country> countries) {
-//
-//        // TODO: if the selected language is english, no need to load translations at all, just return original data
-//
-//        List<Country> translatedCountries = new ArrayList<>();
-//        if (CollectionUtils.isNotEmpty(countries)) {
-//            List<Long> countryIds = countries.stream().map(c -> c.getId()).collect(Collectors.toList());
-//            // copying the original object should avoid hibernate accidentally updating an object because the transaction boundaries were not right
-//            translatedCountries = countries.stream().map(c -> new Country(c)).collect(Collectors.toList());
-//
-//            String selectedLanguage = userContext.getUserLanguage();
-//            List<Translation> translations = translationRepository.findByIdsTypeLanguage(countryIds, "country", selectedLanguage);
-//            if (CollectionUtils.isNotEmpty(translations)) {
-//                Map<Long, String> translationsById = translations.stream().collect(Collectors.toMap(t -> t.getObjectId(), t -> t.getValue()));
-//                translatedCountries.forEach(c -> {
-//                    String translation = translationsById.get(c.getId());
-//                    if (StringUtils.isNotBlank(translation)) {
-//                        c.setName(translation);
-//                    }
-//                });
-//            }
-//        }
-//        return translatedCountries;
-//    }
 

@@ -1,8 +1,7 @@
 export interface Translation {
   id: number;
-  objectId: number;
-  objectType: string;
-  language: string;
-  value: string;
+  name: string;
+  translatedId: number;
+  translatedName: string;
 }
 
