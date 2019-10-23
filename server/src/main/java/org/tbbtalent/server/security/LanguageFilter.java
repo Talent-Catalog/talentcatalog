@@ -40,7 +40,7 @@ public class LanguageFilter extends OncePerRequestFilter {
             logger.error("Could not set user language in security context", ex);
         }
 
-
+        filterChain.doFilter(request, response);
     }
 
 }
