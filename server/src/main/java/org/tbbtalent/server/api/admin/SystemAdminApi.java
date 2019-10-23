@@ -303,7 +303,7 @@ public class SystemAdminApi {
             
             if (count%100 == 0) {
                 insert.executeBatch();
-                log.info("candidates - saving batch " + count);
+                log.info("candidates - saving batch  " + count);
             }
             
             count++;
