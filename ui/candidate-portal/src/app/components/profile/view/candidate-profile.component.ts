@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {CandidateService} from "../../services/candidate.service";
-import {Candidate} from "../../model/candidate";
+import {CandidateService} from "../../../services/candidate.service";
+import {Candidate} from "../../../model/candidate";
 
 @Component({
   selector: 'app-candidate-profile',

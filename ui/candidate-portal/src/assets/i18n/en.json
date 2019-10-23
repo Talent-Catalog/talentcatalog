@@ -69,7 +69,7 @@
   },
   "REGISTRATION": {
     "HEADER": {
-      "STEP": "Step {{registrationService?.currentStep.section}} of {{registrationService?.totalSections}}",
+      "STEP": "Step {{current}} of {{total}}",
       "TITLE": {
         "CONTACT": "How can we contact you?",
         "CONTACT/ALTERNATE": "How can we contact you?",
@@ -89,7 +89,8 @@
     "FOOTER": {
       "BACK": "Back",
       "NEXT": "Next",
-      "SUBMIT": "Submit"
+      "SUBMIT": "Submit",
+      "UPDATE": "Update"
     },
     "LANDING": {
       "TITLE": "Let's get started",
@@ -213,6 +214,9 @@
     "OTHER": {
       "TITLE":  "Other Information",
       "ADDITIONALINFO": "Any thing else we should know?"
+    },
+    "BUTTON": {
+      "EDIT": "Edit"
     }
   },
   "FORM": {

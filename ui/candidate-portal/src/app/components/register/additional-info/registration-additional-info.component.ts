@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
@@ -11,6 +11,8 @@ import {RegistrationService} from "../../../services/registration.service";
   styleUrls: ['./registration-additional-info.component.scss']
 })
 export class RegistrationAdditionalInfoComponent implements OnInit {
+
+  @Input() submitApplication: boolean = false;
 
   form: FormGroup;
   error: any;
@@ -28,12 +30,13 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
     this.loading = true;
     this.saving = false;
     this.form = this.fb.group({
-      additionalInfo: ['']
+      additionalInfo: [''],
+      submit: this.submitApplication
     });
     this.candidateService.getCandidateAdditionalInfo().subscribe(
       (response) => {
         this.form.patchValue({
-          additionalInfo: response.additionalInfo,
+          additionalInfo: response.additionalInfo
         });
         this.loading = false;
       },

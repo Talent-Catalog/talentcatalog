@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
@@ -12,6 +12,11 @@ import {RegistrationService} from "../../../services/registration.service";
   styleUrls: ['./registration-contact.component.scss']
 })
 export class RegistrationContactComponent implements OnInit {
+
+  /* A flag to indicate if the component is being used on the profile component */
+  @Input() edit: boolean = false;
+
+  @Output() onSave = new EventEmitter();
 
   form: FormGroup;
   error: any;
@@ -72,6 +77,7 @@ export class RegistrationContactComponent implements OnInit {
       // If the candidate hasn't changed anything, skip the update service call
       if (this.form.pristine) {
         this.registrationService.next();
+        this.onSave.emit();
         return;
       }
 
@@ -79,6 +85,7 @@ export class RegistrationContactComponent implements OnInit {
       this.candidateService.updateCandidateContact(this.form.value).subscribe(
         (response) => {
           this.registrationService.next();
+          this.onSave.emit();
         },
         (error) => {
           this.error = error;
@@ -99,12 +106,4 @@ export class RegistrationContactComponent implements OnInit {
     }
   }
 
-  get formValid() {
-    const value = this.form.value;
-    const control = this.form.controls;
-
-    const hasContactField = (value.email && control.email.valid) || value.phone || value.whatsapp;
-    const hasPassword = !this.authenticated && control.password.valid && control.passwordConfirmation.valid || true;
-    return hasContactField && hasPassword;
-  }
 }

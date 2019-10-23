@@ -54,7 +54,8 @@
 
 
 <app-registration-footer [disabled]="form.invalid"
-                         [hideBack]="true"
+                         [hideBack]="edit || true"
+                         [type]="edit ? 'update' : 'step'"
                          (nextClicked)="save()">
 </app-registration-footer>
 

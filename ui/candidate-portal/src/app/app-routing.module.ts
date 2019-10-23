@@ -5,8 +5,9 @@ import {HomeComponent} from "./components/home/home.component";
 import {ResetPasswordComponent} from './components/account/reset-password/reset-password.component';
 import {ChangePasswordComponent} from './components/account/change-password/change-password.component';
 import {RegisterComponent} from "./components/register/register.component";
-import {CandidateProfileComponent} from "./components/profile/candidate-profile.component";
+import {CandidateProfileComponent} from "./components/profile/view/candidate-profile.component";
 import {AuthGuard} from "./services/auth.guard";
+import {EditCandidateComponent} from "./components/profile/edit/edit-candidate.component";
 
 const routes: Routes = [
   {
@@ -33,6 +34,11 @@ const routes: Routes = [
   {
     path: 'profile',
     component: CandidateProfileComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'profile/edit/:section',
+    component: EditCandidateComponent,
     canActivate: [AuthGuard]
   },
   /* Keep wildcard redirect at the bottom of the array */

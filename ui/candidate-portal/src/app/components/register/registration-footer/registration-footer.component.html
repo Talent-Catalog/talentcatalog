@@ -11,6 +11,7 @@
     <button class="btn btn-primary" translate dir="auto" [hidden]="hideNext"
             [disabled]="registrationService.currentStepIndex >= registrationService.steps.length - 1 || disabled"
             (click)="next()">
+      <span *ngIf="type === 'update'">{{ 'REGISTRATION.FOOTER.UPDATE' | translate }}</span>
       <span *ngIf="type === 'step'">{{ 'REGISTRATION.FOOTER.NEXT' | translate }}</span>
       <span *ngIf="type === 'submit'">{{ 'REGISTRATION.FOOTER.SUBMIT' | translate }}</span>
     </button>

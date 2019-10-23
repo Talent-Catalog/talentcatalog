@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {RegistrationService} from "../../../services/registration.service";
 
 @Component({
@@ -6,21 +6,17 @@ import {RegistrationService} from "../../../services/registration.service";
   templateUrl: './registration-footer.component.html',
   styleUrls: ['./registration-footer.component.scss']
 })
-export class RegistrationFooterComponent implements OnInit {
+export class RegistrationFooterComponent {
 
   @Input() disabled: boolean;
   @Input() hideBack: boolean;
   @Input() hideNext: boolean;
-  @Input() type: 'step' | 'submit' = 'step';
+  @Input() type: 'step' | 'submit' | 'update' = 'step';
 
   @Output() backClicked = new EventEmitter();
   @Output() nextClicked = new EventEmitter();
 
   constructor(public registrationService: RegistrationService) { }
-
-  ngOnInit() {
-
-  }
 
   back() {
     this.backClicked.emit();

@@ -34,9 +34,10 @@ import {CandidateJobExperienceFormComponent} from './components/common/candidate
 import {CandidateJobExperienceCardComponent} from './components/common/candidate-job-experience-card/candidate-job-experience-card.component';
 import {ErrorComponent} from './components/common/error/error.component';
 import {LoadingComponent} from './components/common/loading/loading.component';
-import {CandidateProfileComponent} from './components/profile/candidate-profile.component';
+import {CandidateProfileComponent} from './components/profile/view/candidate-profile.component';
 import {FormControlErrorComponent} from "./components/common/form-control-error/form-control-error.component";
 import {CandidateCertificationCardComponent} from './components/common/candidate-certification-card/candidate-certification-card.component';
+import {EditCandidateComponent} from './components/profile/edit/edit-candidate.component';
 
 export function createTranslateLoader(http: HttpClient) {
     return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -69,7 +70,8 @@ export function createTranslateLoader(http: HttpClient) {
     LoadingComponent,
     CandidateProfileComponent,
     FormControlErrorComponent,
-    CandidateCertificationCardComponent
+    CandidateCertificationCardComponent,
+    EditCandidateComponent
   ],
   imports: [
     BrowserModule,
