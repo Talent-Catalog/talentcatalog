@@ -8,7 +8,7 @@ import {CandidateOccupationService} from "../../../services/candidate-occupation
 import {CandidateJobExperienceService} from "../../../services/candidate-job-experience.service";
 
 @Component({
-  selector: 'app-candidate-work-experience-form',
+  selector: 'app-candidate-job-experience-form',
   templateUrl: './candidate-job-experience-form.component.html',
   styleUrls: ['./candidate-job-experience-form.component.scss']
 })

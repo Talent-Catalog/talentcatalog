@@ -36,6 +36,7 @@ import {ErrorComponent} from './components/common/error/error.component';
 import {LoadingComponent} from './components/common/loading/loading.component';
 import {CandidateProfileComponent} from './components/profile/candidate-profile.component';
 import {FormControlErrorComponent} from "./components/common/form-control-error/form-control-error.component";
+import {CandidateCertificationCardComponent} from './components/common/candidate-certification-card/candidate-certification-card.component';
 
 export function createTranslateLoader(http: HttpClient) {
     return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -67,7 +68,8 @@ export function createTranslateLoader(http: HttpClient) {
     ErrorComponent,
     LoadingComponent,
     CandidateProfileComponent,
-    FormControlErrorComponent
+    FormControlErrorComponent,
+    CandidateCertificationCardComponent
   ],
   imports: [
     BrowserModule,

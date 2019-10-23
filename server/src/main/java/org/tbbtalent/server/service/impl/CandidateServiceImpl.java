@@ -385,4 +385,10 @@ public class CandidateServiceImpl implements CandidateService {
         return candidateRepository.findByUserId(user.getId());
     }
 
+    @Override
+    public Candidate getLoggedInCandidateLoadProfile() {
+        User user = userContext.getLoggedInUser();
+        return candidateRepository.findByUserIdLoadProfile(user.getId());
+    }
+
 }

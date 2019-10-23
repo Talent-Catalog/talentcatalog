@@ -102,6 +102,12 @@ public class CandidatePortalApi {
         return candidateStatusDto().build(candidate);
     }
 
+    @GetMapping("profile")
+    public Map<String, Object> getCandidateProfile() {
+        Candidate candidate = this.candidateService.getLoggedInCandidateLoadProfile();
+        return candidateProfileDto().build(candidate);
+    }
+
     private DtoBuilder candidateContactDto() {
         return new DtoBuilder()
                 .add("user", userDto())
@@ -286,6 +292,35 @@ public class CandidatePortalApi {
     private DtoBuilder candidateStatusDto() {
         return new DtoBuilder()
                 .add("status")
+                ;
+    }
+
+    private DtoBuilder candidateProfileDto() {
+        return new DtoBuilder()
+                .add("user", userDto())
+                /* CONTACT */
+                .add("phone")
+                .add("whatsapp")
+                /* PERSONAL */
+                .add("gender")
+                .add("dob")
+                .add("city")
+                .add("yearOfArrival")
+                .add("nationality", nationalityDto())
+                .add("country", countryDto())
+                /* OCCUPATIONS */
+                .add("candidateOccupations", candidateOccupationDto())
+                /* JOB EXPERIENCE */
+                .add("candidateJobExperiences", jobExperienceDto())
+                /* EDUCATIONS */
+                .add("maxEducationLevel", educationLevelDto())
+                .add("candidateEducations", educationDto())
+                /* LANGUAGES */
+                .add("candidateLanguages", candidateLanguageDto())
+                /* CERTIFICATIONS */
+                .add("candidateCertifications", certificationDto())
+                /* ADDITIONAL INFO / SUBMIT */
+                .add("additionalInfo")
                 ;
     }
 }

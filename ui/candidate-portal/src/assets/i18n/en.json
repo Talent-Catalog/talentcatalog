@@ -181,13 +181,38 @@
     }
   },
   "PROFILE": {
-    "TITLE": {
-      "PERSONAL":  "Personal Information",
-      "EXPERIENCE": "Professional Experience",
-      "EDUCATION":  "Education",
-      "CERTIFICATIONS": "Certifications",
-      "LANGUAGES":  "Languages",
-      "OTHER": "Other Information"
+    "CONTACT": {
+      "TITLE": "Contact",
+      "EMAIL": "Email address",
+      "PHONE": "Phone",
+      "WHATSAPP": "WhatsApp"
+    },
+    "PERSONAL": {
+      "TITLE": "Personal Information",
+      "FIRSTNAME": "First name",
+      "LASTNAME": "Last name",
+      "GENDER": "Gender",
+      "DOB": "Date of birth",
+      "COUNTRY": "Country",
+      "CITY": "City",
+      "YEAROFARRIVAL": "What year did you arrive in this country?",
+      "NATIONALITY": "Nationality"
+    },
+    "EXPERIENCE": {
+      "TITLE":  "Professional Experience"
+    },
+    "EDUCATION": {
+      "TITLE":  "Education"
+    },
+    "CERTIFICATIONS": {
+      "TITLE":  "Certifications"
+    },
+    "LANGUAGES": {
+      "TITLE":  "Languages"
+    },
+    "OTHER": {
+      "TITLE":  "Other Information",
+      "ADDITIONALINFO": "Any thing else we should know?"
     }
   },
   "FORM": {

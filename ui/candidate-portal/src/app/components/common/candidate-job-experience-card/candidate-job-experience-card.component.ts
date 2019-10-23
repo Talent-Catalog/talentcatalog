@@ -2,14 +2,13 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {CandidateJobExperience} from "../../../model/candidate-job-experience";
 
 @Component({
-  selector: 'app-candidate-work-experience-card',
+  selector: 'app-candidate-job-experience-card',
   templateUrl: './candidate-job-experience-card.component.html',
   styleUrls: ['./candidate-job-experience-card.component.scss']
 })
 export class CandidateJobExperienceCardComponent implements OnInit {
 
-  @Input() editing: boolean = false;
-  @Input() saving: boolean = false;
+  @Input() preview: boolean = false;
   @Input() experience: CandidateJobExperience;
   @Input() disabled: boolean;
 

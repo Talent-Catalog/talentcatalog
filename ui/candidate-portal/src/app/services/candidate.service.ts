@@ -69,4 +69,8 @@ export class CandidateService {
   getStatus() {
     return this.http.get<Candidate>(`${this.apiUrl}/status`);
   }
+
+  getProfile() {
+    return this.http.get<Candidate>(`${this.apiUrl}/profile`);
+  }
 }

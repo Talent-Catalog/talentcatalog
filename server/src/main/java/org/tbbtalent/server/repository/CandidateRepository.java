@@ -28,13 +28,13 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     Candidate findByWhatsappIgnoreCase(String whatsapp);
 
     @Query(" select distinct c from Candidate c "
-            + " left join c.candidateOccupations p"
+            + " left join c.candidateOccupations p "
             + " where c.id = :id ")
     Candidate findByIdLoadCandidateOccupations(@Param("id") Long id);
 
     @Query(" select distinct c from Candidate c "
-            + " left join c.candidateEducations e"
-            + " left join e.educationMajor m"
+            + " left join c.candidateEducations e "
+            + " left join e.educationMajor m "
             + " where c.id = :id ")
     Candidate findByIdLoadEducations(@Param("id") Long id);
 
@@ -46,12 +46,12 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     Candidate findByIdLoadJobExperiences(@Param("id") Long id);
 
     @Query(" select distinct c from Candidate c "
-            + " left join c.candidateCertifications cert"
+            + " left join c.candidateCertifications cert "
             + " where c.id = :id ")
     Candidate findByIdLoadCertifications(@Param("id") Long id);
 
     @Query(" select distinct c from Candidate c "
-            + " left join c.candidateLanguages lang"
+            + " left join c.candidateLanguages lang "
             + " where c.id = :id ")
     Candidate findByIdLoadCandidateLanguages(@Param("id") Long id);
 
@@ -60,7 +60,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     Candidate findByUserId(@Param("id") Long userId);
 
     @Query(" select c from Candidate c "
-            + " join c.user u"
+            + " join c.user u "
             + " where c.id = :id ")
     Optional<Candidate> findByIdLoadUser(@Param("id") Long id);
 
@@ -71,6 +71,18 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     @Query(" select c from Candidate c "
             + " where c.country.id = :countryId ")
     List<Candidate> findByCountryId(@Param("countryId") Long countryId);
+
+    @Query(" select distinct c from Candidate c "
+            + " left join c.candidateOccupations occ "
+            + " left join c.candidateJobExperiences exp "
+            + " left join exp.candidateOccupation expOcc "
+            + " left join exp.country co "
+            + " left join c.candidateEducations edu "
+            + " left join edu.educationMajor maj "
+            + " left join c.candidateCertifications cert "
+            + " left join c.candidateLanguages lang "
+            + " where c.user.id = :id ")
+    Candidate findByUserIdLoadProfile(@Param("id") Long userId);
 
     //TO DO FIND BY COUNTRY ID & FIND BY LANGUAGE ID
 }
