@@ -1,9 +1,10 @@
 import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
-import {Translation} from "../model/translation";
+import {TranslationItem} from "../model/translation-item";
 import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
+import {Translation} from "../model/translation";
 
 @Injectable({
   providedIn: 'root'
@@ -18,12 +19,8 @@ export class TranslationService {
     return this.http.get<Translation[]>(`${this.apiUrl}`);
   }
 
-  search(type: string, request): Observable<SearchResults<Translation>> {
-    return this.http.post<SearchResults<Translation>>(`${this.apiUrl}/${type}`, request);
-  }
-
-  get(id: number): Observable<Translation> {
-    return this.http.get<Translation>(`${this.apiUrl}/${id}`);
+  search(type: string, request): Observable<SearchResults<TranslationItem>> {
+    return this.http.post<SearchResults<TranslationItem>>(`${this.apiUrl}/${type}`, request);
   }
 
   create(details): Observable<Translation>  {
@@ -32,10 +29,6 @@ export class TranslationService {
 
   update(id: number, details): Observable<Translation>  {
     return this.http.put<Translation>(`${this.apiUrl}/${id}`, details);
-  }
-
-  delete(id: number): Observable<boolean>  {
-    return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
   }
 
 }

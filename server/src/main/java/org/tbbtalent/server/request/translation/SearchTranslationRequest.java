@@ -7,10 +7,14 @@ import javax.validation.constraints.NotNull;
 public class SearchTranslationRequest extends SearchRequest {
 
     @NotNull
-    private String systemLanguage;
+    private String language;
 
-    public String getSystemLanguage() { return systemLanguage; }
+    public String getLanguage() {
+        return language;
+    }
 
-    public void setSystemLanguage(String systemLanguage) { this.systemLanguage = systemLanguage; }
+    public void setLanguage(String language) {
+        this.language = language;
+    }
 }
 

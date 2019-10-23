@@ -1,5 +1,6 @@
 package org.tbbtalent.server.service.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,9 @@ public class EducationLevelServiceImpl implements EducationLevelService {
         Page<EducationLevel> educationLevels = educationLevelRepository.findAll(
                 EducationLevelSpecification.buildSearchQuery(request), request.getPageRequest());
         log.info("Found " + educationLevels.getTotalElements() + " language levels in search");
+        if (!StringUtils.isBlank(request.getLanguage())){
+            translationService.translate(educationLevels.getContent(), "education_level", request.getLanguage());
+        }
         return educationLevels;
     }
 

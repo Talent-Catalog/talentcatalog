@@ -9,6 +9,8 @@ public class SearchOccupationRequest extends SearchRequest {
 
     private Status status;
 
+    private String language;
+
     public String getKeyword() {
         return keyword;
     }
@@ -23,6 +25,14 @@ public class SearchOccupationRequest extends SearchRequest {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 }
 

@@ -8,9 +8,15 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.tbbtalent.server.exception.EntityExistsException;
+import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.AbstractTranslatableDomainObject;
 import org.tbbtalent.server.model.Translation;
+import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.repository.TranslationRepository;
+import org.tbbtalent.server.request.translation.CreateTranslationRequest;
+import org.tbbtalent.server.request.translation.UpdateTranslationRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.TranslationService;
 
@@ -55,6 +61,32 @@ public class TranslationServiceImpl implements TranslationService {
             }
         }
     }
+
+    @Override
+    @Transactional
+    public Translation createTranslation(CreateTranslationRequest request) throws EntityExistsException {
+        User user = userContext.getLoggedInUser();
+        Translation translation = new Translation(user, request.getId(), request.getType(),
+                request.getType(), request.getTranslatedName());
+        List<Translation> existing = translationRepository.findByTypeLanguage(request.getType(), request.getLanguage());
+        if (!CollectionUtils.isEmpty(existing)){
+            throw new EntityExistsException("translation");
+        }
+        return this.translationRepository.save(translation);
+    }
+
+
+    @Override
+    @Transactional
+    public Translation updateTranslation(long id, UpdateTranslationRequest request) throws EntityExistsException {
+        Translation translation = this.translationRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(Translation.class, id));
+        translation.setValue(request.getTranslatedName());
+        return translationRepository.save(translation);
+    }
+
+
+
 }
 
 

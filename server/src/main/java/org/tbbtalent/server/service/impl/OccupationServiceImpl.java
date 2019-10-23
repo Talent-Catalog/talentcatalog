@@ -1,6 +1,7 @@
 package org.tbbtalent.server.service.impl;
 
 import io.jsonwebtoken.lang.Collections;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +55,9 @@ public class OccupationServiceImpl implements OccupationService {
         Page<Occupation> occupations = occupationRepository.findAll(
                 OccupationSpecification.buildSearchQuery(request), request.getPageRequest());
         log.info("Found " + occupations.getTotalElements() + " occupations in search");
+        if (!StringUtils.isBlank(request.getLanguage())){
+            translationService.translate(occupations.getContent(), "occupation", request.getLanguage());
+        }
         return occupations;
     }
 

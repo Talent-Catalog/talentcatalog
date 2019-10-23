@@ -1,5 +1,6 @@
 package org.tbbtalent.server.request.country;
 
+import org.springframework.data.domain.Sort;
 import org.tbbtalent.server.model.Status;
 import org.tbbtalent.server.request.SearchRequest;
 
@@ -9,7 +10,11 @@ public class SearchCountryRequest extends SearchRequest {
 
     private Status status;
 
-    private String systemLanguage;
+    private String language;
+
+    public SearchCountryRequest() {
+        super(Sort.Direction.ASC, new String[]{"name"});
+    }
 
     public String getKeyword() {
         return keyword;
@@ -27,8 +32,10 @@ public class SearchCountryRequest extends SearchRequest {
         this.status = status;
     }
 
-    public String getSystemLanguage() { return systemLanguage; }
+    public String getLanguage() { return language; }
 
-    public void setSystemLanguage(String systemLanguage) { this.systemLanguage = systemLanguage; }
+    public void setLanguage(String language) { this.language = language; }
+
+
 }
 

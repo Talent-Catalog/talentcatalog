@@ -62,8 +62,8 @@ public class CountryServiceImpl implements CountryService {
         Page<Country> countries = countryRepository.findAll(
                 CountrySpecification.buildSearchQuery(request), request.getPageRequest());
         log.info("Found " + countries.getTotalElements() + " countries in search");
-        if (!StringUtils.isBlank(request.getSystemLanguage())){
-            translationService.translate(countries.getContent(), "country", request.getSystemLanguage());
+        if (!StringUtils.isBlank(request.getLanguage())){
+            translationService.translate(countries.getContent(), "country", request.getLanguage());
         }
         return countries;
     }

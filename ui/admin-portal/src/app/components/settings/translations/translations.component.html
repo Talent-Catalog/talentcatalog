@@ -14,18 +14,18 @@
           <div class="form-group col-4">
             <select class="form-control" id="type" formControlName="type">
               <option value="">Select an object type...</option>
-              <option value="countries">Countries</option>
-              <option value="nationalities">Nationalities</option>
-              <option value="languages">Languages</option>
-              <option value="languageLevels">Language Levels</option>
-              <option value="occupations">Occupations</option>
-              <option value="educationLevels">Education Levels</option>
-              <option value="educationMajors">Education Majors</option>
+              <option value="country">Countries</option>
+              <option value="nationality">Nationalities</option>
+              <option value="language">Languages</option>
+              <option value="language_level">Language Levels</option>
+              <option value="occupation">Occupations</option>
+              <option value="education_level">Education Levels</option>
+              <option value="education_major">Education Majors</option>
             </select>
           </div>
 
           <div class="form-group col-4">
-            <select class="form-control" id="systemLanguage" name="systemLanguage" formControlName="systemLanguage">
+            <select class="form-control" id="language" name="language" formControlName="language">
               <option value="">Select a language...</option>
               <option *ngFor="let systemLanguage of systemLanguages"
                       [value]="systemLanguage.language">{{systemLanguage.label}}</option>
@@ -49,52 +49,53 @@
                       (pageChange)="search()">
       </ngb-pagination>
 
-      Found {{results?.totalElements}} occupations
+      Found {{results?.totalElements}} translations
     </div>
+    <form [formGroup]="topLevelForm">
+      <div formArrayName="translations">
+        <table class="table">
 
-    <table class="table">
+          <thead>
+          <tr>
+            <th>Type</th>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Translation</th>
+          </tr>
+          </thead>
 
-      <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-<!--        <th>Language</th>-->
-        <th>Translation</th>
-        <th></th>
-      </tr>
-      </thead>
+          <tbody>
 
-      <tbody>
-      <tr *ngFor="let translation of results?.content">
-        <td>{{searchForm.value.type | titlecase}}</td>
-        <td>{{translation.name}}</td>
-<!--        <td>{{translation.language}}</td>-->
-        <td>{{translation.translatedName}}</td>
-        <td>
-          <div class="btn-group">
-            <!--          <button type="button" class="btn btn-default" (click)="editUser(user)"><i class="fa fa-edit"></i></button>-->
-            <!--          <button type="button" class="btn btn-default" (click)="deleteUser(user)"><i class="fa fa-trash"></i></button>-->
-          </div>
-        </td>
-      </tr>
 
-      <!-- loading -->
-      <tr *ngIf="loading">
-        <td colspan="42">
-          <i class="fa fa-spinner fa-spin"></i> Loading...
-        </td>
-      </tr>
+          <tr *ngFor="let translation of results?.content; index as index" [formGroupName]="index">
+              <td>{{searchForm.value.type | titlecase}}</td>
+              <td>{{translation.name}}</td>
+              <td>{{translation.status}}</td>
+              <td>
+                <input type="text" formControlName="translatedName" (blur)="updateTranslation(index)"/>
+              </td>
+          </tr>
 
-      <!--    &lt;!&ndash; no results &ndash;&gt;-->
-      <!--    <tr *ngIf="!loading && translations.length == 0 || !types?.totalElements">-->
-      <!--      <td colspan="42">-->
-      <!--        <span class="text-muted">(no matching users)</span>-->
-      <!--      </td>-->
-      <!--    </tr>-->
 
-      </tbody>
+          <!-- loading -->
+          <tr *ngIf="loading">
+            <td colspan="42">
+              <i class="fa fa-spinner fa-spin"></i> Loading...
+            </td>
+          </tr>
 
-    </table>
+              <!-- no results -->
+              <tr *ngIf="!loading && !results?.totalElements">
+                <td colspan="42">
+                  <span class="text-muted">(no matching translations)</span>
+                </td>
+              </tr>
+
+          </tbody>
+
+        </table>
+      </div>
+    </form>
 
   </div>
 </div>
