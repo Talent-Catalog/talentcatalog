@@ -7,41 +7,44 @@
   <!-- OCCUPATION -->
   <div class="col-12" *ngIf="!candidateOccupation">
     <div class="form-group">
-      <label for="candidateOccupationId">{{ 'FORM.JOBEXPERIENCE.LABEL.CANDIDATEOCCUPATIONID' | translate }}</label>
+      <label for="candidateOccupationId">{{ 'FORM.JOBEXPERIENCE.LABEL.CANDIDATEOCCUPATIONID' | translate }} <sup>*</sup></label>
       <select class="form-control" name="candidateOccupationId" id="candidateOccupationId" [formControlName]="'candidateOccupationId'">
         <option value=""></option>
         <option *ngFor="let candidateOccupation of candidateOccupations" [value]="candidateOccupation.id">{{candidateOccupation.occupation.name}}</option>
       </select>
+      <app-form-control-error [control]="form.controls.candidateOccupationId"></app-form-control-error>
     </div>
   </div>
 
   <!-- COMPANY NAME -->
   <div class="col-12 col-md-6">
     <div class="form-group">
-      <label for="companyName">{{ 'FORM.JOBEXPERIENCE.LABEL.COMPANYNAME' | translate }}</label>
+      <label for="companyName">{{ 'FORM.JOBEXPERIENCE.LABEL.COMPANYNAME' | translate }} <sup>*</sup></label>
       <input type="text" class="form-control" name="companyName" id="companyName" [formControlName]="'companyName'">
+      <app-form-control-error [control]="form.controls.companyName"></app-form-control-error>
     </div>
   </div>
 
   <!-- COMPANY LOCATION -->
   <div class="col-12 col-md-6">
     <div class="form-group">
-      <label for="country">{{ 'FORM.JOBEXPERIENCE.LABEL.COUNTRY' | translate }}</label>
+      <label for="country">{{ 'FORM.JOBEXPERIENCE.LABEL.COUNTRY' | translate }} <sup>*</sup></label>
       <select class="form-control" name="country" id="country" [formControlName]="'country'">
         <option value=""></option>
         <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
       </select>
+      <app-form-control-error [control]="form.controls.country"></app-form-control-error>
     </div>
   </div>
 
   <!-- START DATE -->
   <div class="col-12 col-md-6">
     <div class="form-group">
-      <label for="startDate">{{ 'FORM.JOBEXPERIENCE.LABEL.STARTDATE' | translate }}</label>
+      <label for="startDate">{{ 'FORM.JOBEXPERIENCE.LABEL.STARTDATE' | translate }} <sup>*</sup></label>
       <input type="date" id="startDate" class="form-control" [formControlName]="'startDate'"
              datepicker-popup is-open="status.opened" min-date="minDate" max-date="maxDate"
              datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
-
+      <app-form-control-error [control]="form.controls.startDate"></app-form-control-error>
     </div>
   </div>
 
@@ -52,6 +55,7 @@
       <input type="date" id="endDate" class="form-control" [formControlName]="'endDate'"
              datepicker-popup is-open="status.opened" min-date="minDate" max-date="maxDate"
              datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
+      <app-form-control-error [control]="form.controls.endDate"></app-form-control-error>
     </div>
   </div>
 
@@ -64,23 +68,25 @@
   <!-- JOB TITLE -->
   <div class="col-12">
     <div class="form-group">
-      <label for="role">{{ 'FORM.JOBEXPERIENCE.LABEL.ROLE' | translate }}</label>
+      <label for="role">{{ 'FORM.JOBEXPERIENCE.LABEL.ROLE' | translate }} <sup>*</sup></label>
       <input type="text" class="form-control" name="role" id="role" [formControlName]="'role'">
+      <app-form-control-error [control]="form.controls.role"></app-form-control-error>
     </div>
   </div>
 
   <!-- ROLE DESCRIPTION -->
   <div class="col-12">
     <div class="form-group">
-      <label for="description">{{ 'FORM.JOBEXPERIENCE.LABEL.DESCRIPTION' | translate }}</label>
+      <label for="description">{{ 'FORM.JOBEXPERIENCE.LABEL.DESCRIPTION' | translate }} <sup>*</sup></label>
       <textarea class="form-control" id="description" placeholder="" rows="5" [formControlName]="'description'"></textarea>
+      <app-form-control-error [control]="form.controls.description"></app-form-control-error>
     </div>
   </div>
 
   <!-- FULLTIME? -->
   <div class="col-12">
     <div class="form-group">
-      <label>{{ 'FORM.JOBEXPERIENCE.LABEL.CONTRACTTYPE.TITLE' | translate }}</label>
+      <label>{{ 'FORM.JOBEXPERIENCE.LABEL.CONTRACTTYPE.TITLE' | translate }} <sup>*</sup></label>
 
       <div class="form-check">
         <input class="form-check-input" type="radio" id="fullTime" [value]="true" [formControlName]="'fullTime'">
@@ -95,13 +101,15 @@
           {{ 'FORM.JOBEXPERIENCE.LABEL.CONTRACTTYPE.PARTTIME' | translate }}
         </label>
       </div>
+
+      <app-form-control-error [control]="form.controls.fullTime"></app-form-control-error>
     </div>
   </div>
 
   <!-- VOLUNTEER / PAID -->
   <div class="col-12">
     <div class="form-group">
-      <label>{{ 'FORM.JOBEXPERIENCE.LABEL.EMPLOYMENTTYPE.TITLE' | translate }}</label>
+      <label>{{ 'FORM.JOBEXPERIENCE.LABEL.EMPLOYMENTTYPE.TITLE' | translate }} <sup>*</sup></label>
 
       <div class="form-check">
         <input class="form-check-input" type="radio" id="paid" [value]="true" [formControlName]="'paid'">
@@ -116,6 +124,8 @@
           {{ 'FORM.JOBEXPERIENCE.LABEL.EMPLOYMENTTYPE.VOLUNTARY' | translate }}
         </label>
       </div>
+
+      <app-form-control-error [control]="form.controls.paid"></app-form-control-error>
     </div>
   </div>
 

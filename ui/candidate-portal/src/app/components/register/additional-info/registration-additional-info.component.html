@@ -21,4 +21,7 @@
 
 </div>
 
-<app-registration-footer [type]="'submit'" (backClicked)="registrationService.back()" (nextClicked)="save()"></app-registration-footer>
+<app-registration-footer [disabled]="loading || saving"
+                         [type]="'submit'"
+                         (backClicked)="save('back')"
+                         (nextClicked)="save('next')"></app-registration-footer>

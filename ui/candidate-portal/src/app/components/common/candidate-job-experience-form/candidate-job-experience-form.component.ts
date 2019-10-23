@@ -70,7 +70,7 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
       candidateOccupationId: [this.candidateJobExperience ? this.candidateJobExperience.candidateOccupationId : '', Validators.required],
       role: [this.candidateJobExperience ? this.candidateJobExperience.role : '', Validators.required],
       startDate: [this.candidateJobExperience ? this.candidateJobExperience.startDate : '', Validators.required],
-      endDate: [this.candidateJobExperience ? this.candidateJobExperience.endDate : '', Validators.required],
+      endDate: [this.candidateJobExperience ? this.candidateJobExperience.endDate : ''],
       fullTime: [this.candidateJobExperience ? this.candidateJobExperience.fullTime : null, Validators.required],
       paid: [this.candidateJobExperience ? this.candidateJobExperience.paid : null, Validators.required],
       description: [this.candidateJobExperience ? this.candidateJobExperience.description : '', Validators.required]

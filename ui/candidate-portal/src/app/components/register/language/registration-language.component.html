@@ -4,7 +4,7 @@
 
   <ng-container *ngIf="!loading">
 
-    <!-- ADDED LANGUAGES -->
+    <!-- REVIEW LANGUAGES -->
     <div class="card" *ngFor="let language of candidateLanguages; let i = index;">
 
       <div class="text-right" *ngIf="!isEnglish(language.languageId)">
@@ -14,8 +14,7 @@
       <!-- WHICH LANGUAGE -->
       <div class="form-group" *ngIf="!isEnglish(language.languageId)">
         <label>{{ 'REGISTRATION.LANGUAGE.LABEL.LANGUAGE' | translate }}</label>
-        <select class="form-control" [disabled]="" [(ngModel)]="language.languageId">
-          <option value=""></option>
+        <select class="form-control" [disabled]="" [(ngModel)]="language.languageId" disabled>
           <option *ngFor="let l of languages" [value]="l.id">{{l.name}}</option>
         </select>
       </div>
@@ -26,7 +25,6 @@
           {{ 'REGISTRATION.LANGUAGE.LABEL.SPEAK' | translate:{languageName: getLanguageName(language.languageId)} }}
         </label>
         <select class="form-control" [(ngModel)]="language.spokenLevelId">
-          <option value=""></option>
           <option *ngFor="let l of languageLevels" [value]="l.id">{{l.name}}</option>
         </select>
       </div>
@@ -37,7 +35,6 @@
           {{ 'REGISTRATION.LANGUAGE.LABEL.WRITTEN' | translate:{languageName: getLanguageName(language.languageId)} }}
         </label>
         <select class="form-control" [(ngModel)]="language.writtenLevelId">
-          <option value=""></option>
           <option *ngFor="let l of languageLevels" [value]="l.id">{{l.name}}</option>
         </select>
       </div>
@@ -49,19 +46,19 @@
 
       <!-- WHICH LANGUAGE -->
       <div class="form-group" *ngIf="!isEnglish()">
-        <label for="id">{{ 'REGISTRATION.LANGUAGE.LABEL.LANGUAGE' | translate }}</label>
+        <label for="id">{{ 'REGISTRATION.LANGUAGE.LABEL.LANGUAGE' | translate }} <sup>*</sup></label>
         <select class="form-control" name="id" id="id" [disabled]="" [formControlName]="'languageId'">
           <option value=""></option>
-          <option *ngFor="let l of languages" [value]="l.id">{{l.name}}</option>
+          <option *ngFor="let l of filteredLanguages" [value]="l.id">{{l.name}}</option>
         </select>
       </div>
 
-      <ng-container *ngIf="formLanguage">
+      <ng-container *ngIf="selectedFormLanguage">
 
         <!-- HOW WELL DO YOU SPEAK -->
         <div class="form-group">
           <label for="spokenLevelId">
-            {{ 'REGISTRATION.LANGUAGE.LABEL.SPEAK' | translate:{languageName: getLanguageName()} }}
+            {{ 'REGISTRATION.LANGUAGE.LABEL.SPEAK' | translate:{languageName: getLanguageName()} }} <sup>*</sup>
           </label>
           <select class="form-control" name="spokenLevelId" id="spokenLevelId" [formControlName]="'spokenLevelId'">
             <option value=""></option>
@@ -72,7 +69,7 @@
         <!-- HOW WELL DO YOU READ AND WRITE -->
         <div class="form-group">
           <label for="writtenLevelId">
-            {{ 'REGISTRATION.LANGUAGE.LABEL.WRITTEN' | translate:{languageName: getLanguageName()} }}
+            {{ 'REGISTRATION.LANGUAGE.LABEL.WRITTEN' | translate:{languageName: getLanguageName()} }} <sup>*</sup>
           </label>
           <select class="form-control" name="writtenLevelId" id="writtenLevelId" [formControlName]="'writtenLevelId'">
             <option value=""></option>

@@ -10,6 +10,7 @@ import {LanguageLevel} from "../../../model/language-level";
 import {LanguageLevelService} from "../../../services/language-level.service";
 import {RegistrationService} from "../../../services/registration.service";
 import {TranslateService} from "@ngx-translate/core";
+import {Occupation} from "../../../model/occupation";
 
 
 @Component({
@@ -172,7 +173,7 @@ export class RegistrationLanguageComponent implements OnInit {
     return l.candidate ||  l.languages || l.lanuageLevels;
   }
 
-  get formLanguage() {
+  get selectedFormLanguage() {
     return this.form.value.languageId;
   }
 
@@ -192,5 +193,20 @@ export class RegistrationLanguageComponent implements OnInit {
       return this.languages.find(lang => lang.id == id).name.toLowerCase().trim() === 'english';
     }
     return false;
+  }
+
+  get filteredLanguages(): Occupation[] {
+    if (!this.languages) {
+      return [];
+    }
+    else if (!this.candidateLanguages || !this.languages.length) {
+      return this.languages
+    } else {
+      const existingIds = this.candidateLanguages.map(candidateLang => candidateLang.language
+        ? candidateLang.language.id.toString()
+        : candidateLang.languageId.toString()
+      );
+      return this.languages.filter(occ => !existingIds.includes(occ.id.toString()))
+    }
   }
 }

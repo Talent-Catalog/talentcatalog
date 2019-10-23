@@ -14,14 +14,12 @@ export class LanguageService {
 
   selectedLanguage: string = 'en';
 
-  constructor(private http: HttpClient,
-              private languageService: LanguageService) { }
+  constructor(private http: HttpClient) { }
 
   listLanguages(): Observable<Language[]> {
-    const locale = this.languageService.getSelectedLanguage() || 'en';
     return this.http.get<Language[]>(`${this.apiUrl}`).pipe(
       map((items: Language[], index: number) => {
-        return items.sort((a, b) => a.name.localeCompare(b.name, locale));
+        return items.sort((a, b) => a.name.localeCompare(b.name, this.selectedLanguage));
       }),
       catchError(e => throwError(e))
     );

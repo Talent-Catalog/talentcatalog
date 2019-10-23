@@ -16,18 +16,21 @@
     <form class="card" [formGroup]="form" *ngIf="addingCertification">
 
       <div class="form-group">
-        <label for="name">{{ 'REGISTRATION.CERTIFICATIONS.LABEL.NAME' | translate }}</label>
+        <label for="name">{{ 'REGISTRATION.CERTIFICATIONS.LABEL.NAME' | translate }} <sup>*</sup></label>
         <input type="text" class="form-control" id="name" placeholder="" [formControlName]="'name'">
+        <app-form-control-error [control]="form.controls.name"></app-form-control-error>
       </div>
 
       <div class="form-group">
-        <label for="institution">{{ 'REGISTRATION.CERTIFICATIONS.LABEL.INSTITUTION' | translate }}</label>
+        <label for="institution">{{ 'REGISTRATION.CERTIFICATIONS.LABEL.INSTITUTION' | translate }} <sup>*</sup></label>
         <input type="text" class="form-control" id="institution" placeholder="" [formControlName]="'institution'">
+        <app-form-control-error [control]="form.controls.institution"></app-form-control-error>
       </div>
 
       <div class="form-group">
-        <label for="dateCompleted">{{ 'REGISTRATION.CERTIFICATIONS.LABEL.DATECOMPLETED' | translate }}</label>
+        <label for="dateCompleted">{{ 'REGISTRATION.CERTIFICATIONS.LABEL.DATECOMPLETED' | translate }} <sup>*</sup></label>
         <input type="date" id="dateCompleted" class="form-control" [formControlName]="'dateCompleted'" datepicker-popup is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
+        <app-form-control-error [control]="form.controls.dateCompleted"></app-form-control-error>
       </div>
 
       <div class="text-center">

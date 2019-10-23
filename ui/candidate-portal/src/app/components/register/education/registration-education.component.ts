@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormGroup} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
 import {EducationLevelService} from "../../../services/education-level.service";
@@ -49,7 +49,7 @@ export class RegistrationEducationComponent implements OnInit {
     this.saving = false;
     this.candidateEducationItems = [];
     this.form = this.fb.group({
-      maxEducationLevelId: ['', Validators.required]
+      maxEducationLevelId: ['']
     });
 
     /* Load data */
@@ -91,18 +91,6 @@ export class RegistrationEducationComponent implements OnInit {
         });
         if (candidate.candidateEducations) {
           this.candidateEducationItems = candidate.candidateEducations
-          //   .map(edu => {
-          //   return {
-          //     id: edu ? edu.id : null,
-          //   educationType: edu ? edu.educationType : null,
-          //   lengthOfCourseYears: edu ? edu.lengthOfCourseYears : null,
-          //   institution: edu ? edu.institution : null,
-          //   courseName: edu ? edu.courseName : null,
-          //   yearCompleted: edu ? edu.yearCompleted : null,
-          //   countryId: edu && edu.country ? edu.country.id : null,
-          //   educationMajorId: edu && edu.educationMajor ? edu.educationMajor.id : null,
-          //   }
-          // });
         }
         this._loading.candidate = false;
       },
@@ -115,6 +103,17 @@ export class RegistrationEducationComponent implements OnInit {
 
   save(dir: string) {
     this.saving = true;
+
+    // If the candidate hasn't changed anything, skip the update service call
+    if (this.form.pristine) {
+      if (dir === 'next') {
+        this.registrationService.next();
+      } else {
+        this.registrationService.back();
+      }
+      return;
+    }
+
     this.candidateService.updateCandidateEducation(this.form.value).subscribe(
       (response) => {
         this.saving = false;
@@ -145,11 +144,7 @@ export class RegistrationEducationComponent implements OnInit {
   }
 
   addEducation() {
-    if (this.addingEducation) {
-      this.addingEducation = false;
-    } else {
-      this.addingEducation = true;
-    }
+    this.addingEducation = true;
   }
 
   handleCandidateEducationSaved(education: CandidateEducation) {
