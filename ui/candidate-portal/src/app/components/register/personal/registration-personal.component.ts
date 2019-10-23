@@ -110,6 +110,21 @@ export class RegistrationPersonalComponent implements OnInit {
 
   save(dir: string) {
     this.saving = true;
+    if (this.form.invalid) {
+      return;
+    }
+
+    // If the candidate hasn't changed anything, skip the update service call
+    if (this.form.pristine) {
+      if (dir === 'next') {
+        this.registrationService.next();
+      } else {
+        this.registrationService.back();
+      }
+      return;
+    }
+
+    // Save changes
     this.candidateService.updateCandidatePersonal(this.form.value).subscribe(
       () => {
         this.saving = false;

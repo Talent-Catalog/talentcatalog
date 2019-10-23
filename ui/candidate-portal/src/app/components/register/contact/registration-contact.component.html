@@ -6,38 +6,42 @@
 
     <!-- EMAIL -->
     <div class="form-group">
-      <label for="email" translate dir="auto">REGISTRATION.CONTACT.LABEL.EMAIL</label>
+      <label for="email">{{'REGISTRATION.CONTACT.LABEL.EMAIL' | translate }} <sup>*</sup></label>
       <input type="email" class="form-control" id="email" placeholder="Enter email" [formControlName]="'email'">
+      <app-form-control-error [control]="form.controls.email"></app-form-control-error>
     </div>
 
     <!-- PHONE # -->
     <div class="form-group">
-      <label for="phone" translate dir="auto">REGISTRATION.CONTACT.LABEL.PHONE</label>
+      <label for="phone">{{ 'REGISTRATION.CONTACT.LABEL.PHONE' | translate }} <sup>*</sup></label>
       <input type="text" class="form-control" id="phone" placeholder="Enter phone number" [formControlName]="'phone'">
+      <app-form-control-error [control]="form.controls.phone"></app-form-control-error>
     </div>
 
     <!-- WHATSAPP -->
     <div class="form-group">
-      <label for="whatsapp" translate dir="auto">REGISTRATION.CONTACT.LABEL.WHATSAPP</label>
+      <label for="whatsapp">{{ 'REGISTRATION.CONTACT.LABEL.WHATSAPP' | translate }}</label>
       <input type="text" class="form-control" id="whatsapp" placeholder="Enter WhatsApp" [formControlName]="'whatsapp'">
     </div>
 
     <ng-container *ngIf="!authenticated">
 <!--      <div class="form-group">-->
-<!--        <label for="username" translate dir="auto">REGISTRATION.CONTACT.LABEL.USERNAME</label>-->
+<!--        <label for="username" >{{ 'REGISTRATION.CONTACT.LABEL.USERNAME' | translate}} <sup>*</sup></label>-->
 <!--        <input type="username" class="form-control" id="username" placeholder="Enter username" [formControlName]="'username'">-->
 <!--      </div>-->
 
       <div class="form-group">
-        <label for="password" translate dir="auto">REGISTRATION.CONTACT.LABEL.PASSWORD</label>
+        <label for="password">{{ 'REGISTRATION.CONTACT.LABEL.PASSWORD' | translate }} <sup>*</sup></label>
         <input type="password" class="form-control" id="password" placeholder="Enter password"
                [formControlName]="'password'">
+        <app-form-control-error [control]="form.controls.password"></app-form-control-error>
       </div>
 
       <div class="form-group">
-        <label for="passwordConfirmation" translate dir="auto">REGISTRATION.CONTACT.LABEL.PASSWORDCONFIRMATION</label>
+        <label for="passwordConfirmation">{{ 'REGISTRATION.CONTACT.LABEL.PASSWORDCONFIRMATION' | translate }} <sup>*</sup></label>
         <input type="password" class="form-control" id="passwordConfirmation" placeholder="Enter confirmation password"
                [formControlName]="'passwordConfirmation'">
+        <app-form-control-error [control]="form.controls.passwordConfirmation"></app-form-control-error>
       </div>
 
     </ng-container>
@@ -49,7 +53,7 @@
 </div>
 
 
-<app-registration-footer [disabled]="!formValid"
+<app-registration-footer [disabled]="form.invalid"
                          [hideBack]="true"
                          (nextClicked)="save()">
 </app-registration-footer>
