@@ -76,7 +76,13 @@ export class RegistrationService {
   start() {
     if (!this.subscription) {
       this.subscription = this.route.queryParams.subscribe(
-        params => this.openStep(params['step'])
+        params => {
+          if (params['step']) {
+            this.openStep(params['step'])
+          } else {
+            this.routeToStep('landing')
+          }
+        }
       );
     }
   }
