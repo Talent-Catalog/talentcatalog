@@ -9,6 +9,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -35,6 +37,8 @@ public class SystemAdminApi {
     private static final Logger log = LoggerFactory.getLogger(SystemAdminApi.class);
 
     private final UserContext userContext;
+    final static String DATE_FORMAT = "dd-MM-yyyy";
+
 
     private Timestamp now = Timestamp.valueOf(LocalDateTime.now());
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -650,7 +654,7 @@ public class SystemAdminApi {
 
         Set<Long> adminIds = loadAdminIds(targetConn);
 
-        insertSql = "insert into candidate_attachment (candidate_id, type, name, location, file_type, migrated, admin_only, created_date, created_by) values (?, ?, ?, ?, ?, ?, ?, ?) on conflict (id) do nothing";
+        insertSql = "insert into candidate_attachment (candidate_id, type, name, location, file_type, migrated, admin_only, created_date, created_by) values (?, ?, ?, ?, ?, ?, ?, ?, ?) on conflict (id) do nothing";
         selectSql = "select id, user_id, admin_id, filename, extension, upload_date from user_jobseeker_attachments";
         insert = targetConn.prepareStatement(insertSql);
         result = sourceStmt.executeQuery(selectSql);
@@ -932,8 +936,26 @@ public class SystemAdminApi {
     }
 
     private Timestamp convertToTimestamp(Long epoch) {
-        return Timestamp.from(Instant.ofEpochSecond(epoch));
+        java.util.Date date = new java.util.Date(epoch);
+        String formattedDate = new SimpleDateFormat(DATE_FORMAT).format(date);
+        if (isDateValid(formattedDate)){
+            return Timestamp.from(Instant.ofEpochMilli(epoch));
+        };
+        return null;
     }
+
+    public static boolean isDateValid(String date)
+    {
+        try {
+            DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+            df.setLenient(false);
+            df.parse(date);
+            return true;
+        } catch (ParseException e) {
+            return false;
+        }
+    }
+
 
     private Date convertToDate(String isoDateStr) {
         if (StringUtils.isNotEmpty(isoDateStr)) {
