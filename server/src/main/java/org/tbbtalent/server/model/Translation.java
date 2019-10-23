@@ -14,6 +14,17 @@ public class Translation extends AbstractAuditableDomainObject<Long> {
     private String language;
     private String value;
 
+    public Translation() {
+    }
+
+    public Translation(User createdBy, Long objectId, String objectType, String language, String value) {
+        super(createdBy);
+        this.objectId = objectId;
+        this.objectType = objectType;
+        this.language = language;
+        this.value = value;
+    }
+
     public Long getObjectId() {
         return objectId;
     }

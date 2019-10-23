@@ -1,6 +1,7 @@
 package org.tbbtalent.server.service.impl;
 
 import io.jsonwebtoken.lang.Collections;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +56,9 @@ public class LanguageLevelServiceImpl implements LanguageLevelService {
         Page<LanguageLevel> languageLevels = languageLevelRepository.findAll(
                 LanguageLevelSpecification.buildSearchQuery(request), request.getPageRequest());
         log.info("Found " + languageLevels.getTotalElements() + " language levels in search");
+        if (!StringUtils.isBlank(request.getLanguage())){
+            translationService.translate(languageLevels.getContent(), "language_level", request.getLanguage());
+        }
         return languageLevels;
     }
 

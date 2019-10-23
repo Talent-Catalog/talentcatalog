@@ -1,7 +1,7 @@
 package org.tbbtalent.server.service.impl;
 
-import java.util.List;
-
+import io.jsonwebtoken.lang.Collections;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ import org.tbbtalent.server.request.country.UpdateCountryRequest;
 import org.tbbtalent.server.service.CountryService;
 import org.tbbtalent.server.service.TranslationService;
 
-import io.jsonwebtoken.lang.Collections;
+import java.util.List;
 
 @Service
 public class CountryServiceImpl implements CountryService {
@@ -51,12 +51,24 @@ public class CountryServiceImpl implements CountryService {
     }
 
     @Override
+    public List<Country> listCountries(String selectedLanguage) {
+        List<Country> countries = countryRepository.findByStatus(Status.active);
+        translationService.translate(countries, "country", selectedLanguage);
+        return countries;
+    }
+
+    @Override
     public Page<Country> searchCountries(SearchCountryRequest request) {
         Page<Country> countries = countryRepository.findAll(
                 CountrySpecification.buildSearchQuery(request), request.getPageRequest());
         log.info("Found " + countries.getTotalElements() + " countries in search");
+        if (!StringUtils.isBlank(request.getLanguage())){
+            translationService.translate(countries.getContent(), "country", request.getLanguage());
+        }
         return countries;
     }
+
+
 
     @Override
     public Country getCountry(long id) {

@@ -8,15 +8,24 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.data.domain.Page;
 import org.tbbtalent.server.model.Translatable;
 
 public class DtoBuilder {
 
     private List<MappedProperty> mappedProperties;
+    private Boolean skipTranslation;
+
 
     public DtoBuilder() {
         this.mappedProperties = new ArrayList<>();
+    }
+
+    public DtoBuilder(Boolean skipTranslation) {
+        this.skipTranslation = skipTranslation;
+        this.mappedProperties = new ArrayList<>();
+
     }
 
     public DtoBuilder add(String property) {
@@ -81,7 +90,7 @@ public class DtoBuilder {
             
             // intercept translations, if needed
             String propertyName = property.name;
-            if (propertyToTranslate != null && propertyToTranslate.equals(property.name)) {
+            if (BooleanUtils.isFalse(skipTranslation) && propertyToTranslate != null && propertyToTranslate.equals(property.name)) {
                 propertyName = translationContainingTranslation;
             }
             

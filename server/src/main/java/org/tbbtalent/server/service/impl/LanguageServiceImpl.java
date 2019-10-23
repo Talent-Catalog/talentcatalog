@@ -2,6 +2,7 @@ package org.tbbtalent.server.service.impl;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +66,9 @@ public class LanguageServiceImpl implements LanguageService {
         Page<Language> languages = languageRepository.findAll(
                 LanguageSpecification.buildSearchQuery(request), request.getPageRequest());
         log.info("Found " + languages.getTotalElements() + " languages in search");
+        if (!StringUtils.isBlank(request.getLanguage())){
+            translationService.translate(languages.getContent(), "language", request.getLanguage());
+        }
         return languages;
     }
 

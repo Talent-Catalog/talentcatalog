@@ -14,6 +14,9 @@ public abstract class AbstractTranslatableDomainObject<IdType extends Serializab
     private String name;
 
     @Transient
+    private Long translatedId;
+
+    @Transient
     private String translatedName;
 
     protected AbstractTranslatableDomainObject() {
@@ -29,6 +32,14 @@ public abstract class AbstractTranslatableDomainObject<IdType extends Serializab
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Long getTranslatedId() {
+        return translatedId;
+    }
+
+    public void setTranslatedId(Long translatedId) {
+        this.translatedId = translatedId;
     }
 
     public String getTranslatedName() {

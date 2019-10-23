@@ -1,5 +1,6 @@
 package org.tbbtalent.server.service.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,9 @@ public class EducationMajorServiceImpl implements EducationMajorService {
         Page<EducationMajor> educationMajors = educationMajorRepository.findAll(
                 EducationMajorSpecification.buildSearchQuery(request), request.getPageRequest());
         log.info("Found " + educationMajors.getTotalElements() + " education majors in search");
+        if (!StringUtils.isBlank(request.getLanguage())){
+            translationService.translate(educationMajors.getContent(), "education_major", request.getLanguage());
+        }
         return educationMajors;
     }
 

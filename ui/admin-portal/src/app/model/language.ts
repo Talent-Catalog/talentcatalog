@@ -3,3 +3,9 @@ export interface Language {
   name: string;
   status: string;
 }
+
+export interface SystemLanguage {
+  id: number;
+  label: string;
+  language: string;
+}

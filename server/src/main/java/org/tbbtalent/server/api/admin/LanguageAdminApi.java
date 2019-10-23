@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.model.Language;
+import org.tbbtalent.server.model.SystemLanguage;
 import org.tbbtalent.server.request.language.CreateLanguageRequest;
 import org.tbbtalent.server.request.language.SearchLanguageRequest;
 import org.tbbtalent.server.request.language.UpdateLanguageRequest;
@@ -31,6 +32,12 @@ public class LanguageAdminApi {
     public List<Map<String, Object>> listAllLanguages() {
         List<Language> languages = languageService.listLanguages();
         return languageDto().buildList(languages);
+    }
+
+    @GetMapping(value = "system")
+    public List<Map<String, Object>> getSystemLanguages() {
+        List<SystemLanguage> languages = languageService.listSystemLanguages();
+        return systemLanguageDto().buildList(languages);
     }
 
     @PostMapping("search")
@@ -71,5 +78,14 @@ public class LanguageAdminApi {
                 .add("status")
                 ;
     }
+
+    private DtoBuilder systemLanguageDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("language")
+                .add("label")
+                ;
+    }
+
 
 }
