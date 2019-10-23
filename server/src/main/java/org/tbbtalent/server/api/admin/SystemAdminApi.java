@@ -72,10 +72,10 @@ public class SystemAdminApi {
     public String migrate() {
         try {
             Long userId = 1L; 
-//            if (userContext != null) {
-//                User loggedInUser = userContext.getLoggedInUser();
-//                userId = loggedInUser.getId();
-//            }
+            if (userContext != null) {
+                User loggedInUser = userContext.getLoggedInUser();
+                userId = loggedInUser.getId();
+            }
 
             Connection sourceConn = DriverManager.getConnection("jdbc:mysql://tbbtalent.org/yiitbb?useUnicode=yes&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull", "sayre", "MoroccoBound");
             Statement sourceStmt = sourceConn.createStatement();
@@ -94,7 +94,7 @@ public class SystemAdminApi {
             migrateFormOption(targetConn, sourceStmt, translationInsert, userId, "nationality", "nationality", false);
             migrateFormOption(targetConn, sourceStmt, translationInsert, userId, "nationality", "nationality_other", false);
             migrateFormOption(targetConn, sourceStmt, translationInsert, userId, "occupation", "job_ocupation", false);
-//
+
             migrateUsers(targetConn, sourceStmt);
             migrateAdmins(targetConn, sourceStmt);
                
@@ -110,8 +110,7 @@ public class SystemAdminApi {
             migrateCandidateExperiences(targetConn, sourceStmt, candidateIdsByUserId);
             migrateCandidateAdminNotes(targetConn, sourceStmt, candidateIdsByUserId);
             migrateCandidateLinks(targetConn, sourceStmt, candidateIdsByUserId);
-
-
+            migrateCandidateSkills(targetConn, sourceStmt, candidateIdsByUserId);
 
         } catch (Exception e){
             log.error("unable to migrate data", e);
@@ -652,6 +651,8 @@ public class SystemAdminApi {
         }
         insert.executeBatch();
 
+        log.info("Migration data for candidate attachments");
+
         Set<Long> adminIds = loadAdminIds(targetConn);
 
         insertSql = "insert into candidate_attachment (candidate_id, type, name, location, file_type, migrated, admin_only, created_date, created_by) values (?, ?, ?, ?, ?, ?, ?, ?, ?) on conflict (id) do nothing";
@@ -692,8 +693,43 @@ public class SystemAdminApi {
         }
         insert.executeBatch();
         log.info("attachment links - saving batch " + count);
+    }
 
-
+    private void migrateCandidateSkills(Connection targetConn,
+                                        Statement sourceStmt,
+                                        Map<Long, Long> candidateIdsByUserId) throws SQLException {
+        log.info("Migration data for candidate skills");
+        
+        Set<Long> adminIds = loadAdminIds(targetConn);
+        
+        String insertSql = "insert into candidate_skill (id, candidate_id, skill, time_period) values (?, ?, ?, ?) on conflict (id) do nothing";
+        String selectSql = "select id, user_id, skill, time_period from user_jobseeker_skills";
+        PreparedStatement insert = targetConn.prepareStatement(insertSql);
+        ResultSet result = sourceStmt.executeQuery(selectSql);
+        int count = 0;
+        while (result.next()) {
+            long userId = result.getLong("user_id");
+            Long candidateId = getCandidateId(userId, candidateIdsByUserId);
+            if (candidateId != null) {
+                int i = 1;
+                insert.setLong(i++, result.getLong("id"));
+                insert.setLong(i++, candidateId);
+                insert.setString(i++, result.getString("skill"));
+                insert.setInt(i++, result.getInt("time_period"));
+                insert.addBatch();
+                
+                if (count%100 == 0) {
+                    insert.executeBatch();
+                    log.info("skills - saving batch " + count);
+                }
+                
+                count++;
+            } else {
+                log.warn("skipping record - skills: no candidate found for userId " + userId);
+            }
+        }
+        insert.executeBatch();
+        log.info("skills - saving batch " + count);
     }
 
     private int setRefIdOrNull(ResultSet result,
