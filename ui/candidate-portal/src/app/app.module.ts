@@ -15,7 +15,7 @@ import {RegistrationPersonalComponent} from './components/register/personal/regi
 import {RegistrationCandidateOccupationComponent} from './components/register/candidate-occupation/registration-candidate-occupation.component';
 import {RegistrationWorkExperienceComponent} from './components/register/work-experience/registration-work-experience.component';
 import {RegistrationEducationComponent} from './components/register/education/registration-education.component';
-import {CandidateEducationFormComponent} from './components/register/education/candidate-education-form/candidate-education-form.component';
+import {CandidateEducationFormComponent} from './components/common/candidate-education-form/candidate-education-form.component';
 import {RegistrationLanguageComponent} from './components/register/language/registration-language.component';
 import {RegistrationCertificationsComponent} from './components/register/certifications/registration-certifications.component';
 import {RegistrationAdditionalInfoComponent} from './components/register/additional-info/registration-additional-info.component';

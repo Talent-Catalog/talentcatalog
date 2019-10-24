@@ -149,7 +149,12 @@ export class RegistrationPersonalComponent implements OnInit {
   }
 
   back() {
-    this.save('back');
+    if (this.form.invalid || this.form.pristine) {
+      // Candidate data shouldn't be updated
+      this.registrationService.back();
+    } else {
+      this.save('back');
+    }
   }
 
   next() {

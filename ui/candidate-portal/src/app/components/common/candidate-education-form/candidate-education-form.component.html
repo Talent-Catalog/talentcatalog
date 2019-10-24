@@ -5,7 +5,7 @@
     <!-- EDUCATION TYPE / LEVEL -->
     <div class="col-12">
       <div class="form-group">
-        <label for="educationType">Education Level</label>
+        <label for="educationType">{{ 'FORM.EDUCATION.EDUCATIONTYPE' | translate }} <sup>*</sup></label>
         <select class="form-control" id="educationType" [formControlName]="'educationType'">
           <option value=""></option>
           <option value="Associate">Associate</option>
@@ -20,7 +20,7 @@
     <!-- MAJOR  -->
     <div class="col-12">
       <div class="form-group">
-        <label for="educationMajorId">What was your Degree in (Major/Specialisation)?</label>
+        <label for="educationMajorId">{{ 'FORM.EDUCATION.EDUCATIONMAJORID' | translate }} <sup>*</sup></label>
         <select class="form-control" id="educationMajorId" [formControlName]="'educationMajorId'">
           <option value=""></option>
           <option [value]="major.id" *ngFor="let major of majors">{{major.name}}</option>
@@ -31,7 +31,7 @@
     <!-- COURSE NAME -->
     <div class="col-12">
       <div class="form-group">
-        <label for="courseName">Course Name</label>
+        <label for="courseName">{{ 'FORM.EDUCATION.COURSENAME' | translate }} <sup>*</sup></label>
         <input type="text" class="form-control" placeholder="" id="courseName" [formControlName]="'courseName'">
       </div>
     </div>
@@ -39,7 +39,7 @@
     <!-- LOCATION -->
     <div class="col-12 col-md-6">
       <div class="form-group">
-        <label for="countryId">Location</label>
+        <label for="countryId">{{ 'FORM.EDUCATION.COUNTRYID' | translate }} <sup>*</sup></label>
         <select class="form-control" name="countryId" id="countryId" [formControlName]="'countryId'">
           <option value=""></option>
           <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
@@ -50,7 +50,7 @@
     <!-- Institution -->
     <div class="col-12 col-md-6">
       <div class="form-group">
-        <label for="institution">Name of institution</label>
+        <label for="institution">{{ 'FORM.EDUCATION.INSTITUTION' | translate }} <sup>*</sup></label>
         <input type="text" class="form-control" placeholder="" id="institution" [formControlName]="'institution'">
       </div>
     </div>
@@ -58,7 +58,7 @@
     <!-- COURSE LENGTH -->
     <div class="col-12 col-md-6">
       <div class="form-group">
-        <label for="lengthOfCourseYears">Length of course (years)</label>
+        <label for="lengthOfCourseYears">{{ 'FORM.EDUCATION.LENGTHOFCOURSEYEARS' | translate }} <sup>*</sup></label>
         <input type="number" class="form-control" placeholder="" id="lengthOfCourseYears" [formControlName]="'lengthOfCourseYears'">
       </div>
     </div>
@@ -66,7 +66,7 @@
     <!-- GRADUATION YEAR -->
     <div class="col-12 col-md-6">
       <div class="form-group">
-        <label for="dateCompleted">Year of graduation</label>
+        <label for="dateCompleted">{{ 'FORM.EDUCATION.DATECOMPLETED' | translate }} <sup>*</sup></label>
         <select class="form-control" name="dateCompleted" id="dateCompleted" [formControlName]="'dateCompleted'">
           <option value=""></option>
           <option *ngFor="let year of years" [value]="year">{{year}}</option>

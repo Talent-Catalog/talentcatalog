@@ -1,13 +1,13 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
-import {years} from "../../../../model/years";
-import {CandidateEducation} from "../../../../model/candidate-education";
-import {CandidateEducationService} from "../../../../services/candidate-education.service";
-import {Country} from "../../../../model/country";
-import {CountryService} from "../../../../services/country.service";
-import {EducationMajor} from "../../../../model/education-major";
-import {EducationMajorService} from "../../../../services/education-major.service";
+import {years} from "../../../model/years";
+import {CandidateEducation} from "../../../model/candidate-education";
+import {CandidateEducationService} from "../../../services/candidate-education.service";
+import {Country} from "../../../model/country";
+import {CountryService} from "../../../services/country.service";
+import {EducationMajor} from "../../../model/education-major";
+import {EducationMajorService} from "../../../services/education-major.service";
 
 
 @Component({
@@ -53,7 +53,7 @@ export class CandidateEducationFormComponent implements OnInit {
       institution: [edu ? edu.institution : null, Validators.required],
       lengthOfCourseYears: [edu ? edu.lengthOfCourseYears : null, Validators.required],
       dateCompleted: [edu ? edu.yearCompleted : null, Validators.required],
-      educationMajorId: [edu && edu.educationMajor ? edu.educationMajor.id : null, Validators.required ]
+      educationMajorId: [edu && edu.educationMajor ? edu.educationMajor.id : null, Validators.required]
     });
     /* Observe form educationType control and add required validator for university (and above) education types */
     this.form.controls['educationType'].valueChanges.subscribe(

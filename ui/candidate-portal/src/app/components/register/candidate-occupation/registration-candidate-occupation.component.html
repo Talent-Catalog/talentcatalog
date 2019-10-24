@@ -51,7 +51,7 @@
 
 </div>
 
-<app-registration-footer [disabled]="!candidateOccupations?.length"
+<app-registration-footer [nextDisabled]="!candidateOccupations?.length"
                          [hideBack]="edit"
                          [type]="edit ? 'update' : 'step'"
                          (backClicked)="back()"

@@ -3,13 +3,13 @@
   <div class="container" [class.justify-content-end]="hideBack">
 
     <button class="btn btn-outline-primary" translate dir="auto" [hidden]="hideBack"
-            [disabled]="registrationService.currentStepIndex == 0 || disabled"
+            [disabled]="registrationService.currentStepIndex == 0 || backDisabled"
             (click)="back()">
       REGISTRATION.FOOTER.BACK
     </button>
 
     <button class="btn btn-primary" translate dir="auto" [hidden]="hideNext"
-            [disabled]="registrationService.currentStepIndex >= registrationService.steps.length - 1 || disabled"
+            [disabled]="registrationService.currentStepIndex >= registrationService.steps.length - 1 || nextDisabled"
             (click)="next()">
       <span *ngIf="type === 'update'">{{ 'REGISTRATION.FOOTER.UPDATE' | translate }}</span>
       <span *ngIf="type === 'step'">{{ 'REGISTRATION.FOOTER.NEXT' | translate }}</span>

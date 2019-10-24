@@ -53,7 +53,7 @@
 </div>
 
 
-<app-registration-footer [disabled]="form.invalid"
+<app-registration-footer [nextDisabled]="form.invalid"
                          [hideBack]="edit || true"
                          [type]="edit ? 'update' : 'step'"
                          (nextClicked)="save()">

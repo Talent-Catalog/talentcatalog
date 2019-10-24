@@ -53,7 +53,7 @@
 
 </div>
 
-<app-registration-footer [disabled]="loading || saving"
+<app-registration-footer [nextDisabled]="loading || saving"
                          [hideBack]="edit"
                          [type]="edit ? 'update' : 'step'"
                          (backClicked)="back()"

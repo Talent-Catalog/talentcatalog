@@ -8,9 +8,10 @@ import {RegistrationService} from "../../../services/registration.service";
 })
 export class RegistrationFooterComponent {
 
-  @Input() disabled: boolean;
-  @Input() hideBack: boolean;
-  @Input() hideNext: boolean;
+  @Input() nextDisabled: boolean = false;
+  @Input() backDisabled: boolean = false;
+  @Input() hideBack: boolean = false;
+  @Input() hideNext: boolean = false;
   @Input() type: 'step' | 'submit' | 'update' = 'step';
 
   @Output() backClicked = new EventEmitter();
