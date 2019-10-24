@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateLanguage} from "../../../model/candidate-language";
@@ -19,6 +19,11 @@ import {Occupation} from "../../../model/occupation";
   styleUrls: ['./registration-language.component.scss']
 })
 export class RegistrationLanguageComponent implements OnInit {
+
+  /* A flag to indicate if the component is being used on the profile component */
+  @Input() edit: boolean = false;
+
+  @Output() onSave = new EventEmitter();
 
   error: any;
   _loading = {
@@ -148,6 +153,7 @@ export class RegistrationLanguageComponent implements OnInit {
     this.candidateLanguageService.updateCandidateLanguages(request).subscribe(
       (val) => {
         if (dir === 'next') {
+          this.onSave.emit();
           this.registrationService.next();
         } else {
           this.registrationService.back();

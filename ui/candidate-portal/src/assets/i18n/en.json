@@ -199,6 +199,9 @@
       "YEAROFARRIVAL": "What year did you arrive in this country?",
       "NATIONALITY": "Nationality"
     },
+    "OCCUPATIONS": {
+      "TITLE":  "Occupations"
+    },
     "EXPERIENCE": {
       "TITLE":  "Professional Experience"
     },
@@ -217,6 +220,20 @@
     },
     "BUTTON": {
       "EDIT": "Edit"
+    }
+  },
+  "EDIT": {
+    "TITLE": {
+      "EDITING": "You are now editing",
+      "CONTACT": "Contact details",
+      "OCCUPATIONS":"Occupation details",
+      "PERSONAL":"Personal details",
+      "OCCUPATION": "Occupations",
+      "EXPERIENCE":"Work experience",
+      "EDUCATION": "Education history",
+      "LANGUAGES":"Languages",
+      "CERTIFICATIONS": "Certifications",
+      "OTHER":"Any other information"
     }
   },
   "FORM": {

@@ -125,6 +125,8 @@
 </div>
 
 <app-registration-footer [disabled]="form?.invalid || loading || saving"
+                         [hideBack]="edit"
+                         [type]="edit ? 'update' : 'step'"
                          (backClicked)="back()"
                          (nextClicked)="next()">
 </app-registration-footer>

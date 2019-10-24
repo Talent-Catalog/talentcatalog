@@ -98,6 +98,8 @@
 </div>
 
 <app-registration-footer [disabled]="loading || saving"
+                         [hideBack]="edit"
+                         [type]="edit ? 'update' : 'step'"
                          (backClicked)="back()"
                          (nextClicked)="next()">
 </app-registration-footer>

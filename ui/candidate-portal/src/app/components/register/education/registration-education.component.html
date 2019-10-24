@@ -10,7 +10,7 @@
 
       <!-- MAX EDUCATION LEVEL -->
       <div class="form-group">
-        <label for="maxEducationLevelId" translate dir="auto">REGISTRATION.EDUCATION.LABEL.MAXEDUCATIONLEVELID</label>
+        <label for="maxEducationLevelId">{{ 'REGISTRATION.EDUCATION.LABEL.MAXEDUCATIONLEVELID' | translate }}</label>
         <select class="form-control" id="maxEducationLevelId" [formControlName]="'maxEducationLevelId'">
           <option value=""></option>
           <option *ngFor="let educationLevel of educationLevels" [value]="educationLevel.id">{{educationLevel.name}}</option>
@@ -40,10 +40,10 @@
     </app-candidate-education-form>
 
     <div class="text-center mt-4" *ngIf="!addingEducation">
-      <button class="btn btn-outline-primary" translate dir="auto"
-              (click)="addEducation()"
-              [disabled]="loading || saving">
-        REGISTRATION.EDUCATION.BUTTON.ADD
+      <button class="btn btn-outline-primary"
+              [disabled]="loading || saving"
+              (click)="addEducation()">
+        {{ 'REGISTRATION.EDUCATION.BUTTON.ADD' | translate }}
       </button>
     </div>
 
@@ -52,6 +52,8 @@
 </div>
 
 <app-registration-footer [disabled]="loading || saving"
+                         [hideBack]="edit"
+                         [type]="edit ? 'update' : 'step'"
                          (backClicked)="back()"
                          (nextClicked)="next()">
 </app-registration-footer>

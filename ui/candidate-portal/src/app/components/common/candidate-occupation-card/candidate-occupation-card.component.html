@@ -1,0 +1,32 @@
+<ng-container *ngIf="candidateOccupation">
+
+  <div class="text-right" *ngIf="!preview">
+    <button class="btn btn-danger btn-card" [disabled]="disabled" (click)="delete()">&times;</button>
+  </div>
+
+  <div class="form-group">
+    <label>{{ 'REGISTRATION.OCCUPATION.LABEL.OCCUPATION' | translate }}</label>
+
+    <select class="form-control" [(ngModel)]="candidateOccupation.occupationId" *ngIf="!preview">
+      <option *ngFor="let occupation of occupations" [value]="occupation.id">{{occupation.name}}</option>
+    </select>
+
+    <p class="m-0" *ngIf="preview">
+      {{candidateOccupation.occupation.name}}
+    </p>
+  </div>
+
+  <!-- YEARS OF EXPERIENCE -->
+  <div class="form-group">
+    <label>{{ 'REGISTRATION.OCCUPATION.LABEL.YEARSEXPERIENCE' | translate }}</label>
+
+    <p class="text-muted" *ngIf="!preview">{{ 'REGISTRATION.OCCUPATION.LABEL.DISCLAIMER' | translate }}</p>
+
+    <input type="number" class="form-control" [(ngModel)]="candidateOccupation.yearsExperience" *ngIf="!preview">
+
+    <p class="m-0" *ngIf="preview">
+      {{candidateOccupation.yearsExperience}}
+    </p>
+  </div>
+
+</ng-container>

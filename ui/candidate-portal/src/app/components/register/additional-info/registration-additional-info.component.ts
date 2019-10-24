@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
@@ -13,6 +13,10 @@ import {RegistrationService} from "../../../services/registration.service";
 export class RegistrationAdditionalInfoComponent implements OnInit {
 
   @Input() submitApplication: boolean = false;
+  /* A flag to indicate if the component is being used on the profile component */
+  @Input() edit: boolean = false;
+
+  @Output() onSave = new EventEmitter();
 
   form: FormGroup;
   error: any;
@@ -54,6 +58,7 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
       (response) => {
         this.saving = false;
         if (dir === 'next') {
+          this.onSave.emit();
           this.registrationService.next();
         } else {
           this.registrationService.back();

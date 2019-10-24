@@ -7,23 +7,11 @@
     <!-- REVIEW -->
     <div class="card" *ngFor="let occupation of candidateOccupations; let i = index;">
 
-      <div class="text-right">
-        <button class="btn btn-danger btn-card" (click)="deleteOccupation(i)">&times;</button>
-      </div>
-
-      <div class="form-group">
-        <label>{{ 'REGISTRATION.OCCUPATION.LABEL.OCCUPATION' | translate }}</label>
-        <select class="form-control" [(ngModel)]="occupation.occupationId" disabled>
-          <option *ngFor="let occupation of occupations" [value]="occupation.id">{{occupation.name}}</option>
-        </select>
-      </div>
-
-      <!-- YEARS OF EXPERIENCE -->
-      <div class="form-group">
-        <label>{{ 'REGISTRATION.OCCUPATION.LABEL.YEARSEXPERIENCE' | translate }}</label>
-        <p class="text-muted">{{ 'REGISTRATION.OCCUPATION.LABEL.DISCLAIMER' | translate }}</p>
-        <input type="number" class="form-control" [(ngModel)]="occupation.yearsExperience">
-      </div>
+      <app-candidate-occupation-card [(candidateOccupation)]="occupation"
+                                     [occupations]="occupations"
+                                     [disabled]="saving || loading"
+                                     (onDelete)="deleteOccupation(i)">
+      </app-candidate-occupation-card>
 
     </div>
 
@@ -63,4 +51,9 @@
 
 </div>
 
-<app-registration-footer [disabled]="!candidateOccupations?.length" (backClicked)="back()" (nextClicked)="next()"></app-registration-footer>
+<app-registration-footer [disabled]="!candidateOccupations?.length"
+                         [hideBack]="edit"
+                         [type]="edit ? 'update' : 'step'"
+                         (backClicked)="back()"
+                         (nextClicked)="next()">
+</app-registration-footer>

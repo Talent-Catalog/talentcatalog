@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {Candidate} from "../../../model/candidate";
@@ -16,6 +16,11 @@ import {RegistrationService} from "../../../services/registration.service";
   styleUrls: ['./registration-personal.component.scss']
 })
 export class RegistrationPersonalComponent implements OnInit {
+
+  /* A flag to indicate if the component is being used on the profile component */
+  @Input() edit: boolean = false;
+
+  @Output() onSave = new EventEmitter();
 
   form: FormGroup;
   error: any;
@@ -117,6 +122,7 @@ export class RegistrationPersonalComponent implements OnInit {
     // If the candidate hasn't changed anything, skip the update service call
     if (this.form.pristine) {
       if (dir === 'next') {
+        this.onSave.emit();
         this.registrationService.next();
       } else {
         this.registrationService.back();
@@ -129,6 +135,7 @@ export class RegistrationPersonalComponent implements OnInit {
       () => {
         this.saving = false;
         if (dir === 'next') {
+          this.onSave.emit();
           this.registrationService.next();
         } else {
           this.registrationService.back();

@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateCertification} from "../../../model/candidate-certification";
@@ -12,6 +12,11 @@ import {RegistrationService} from "../../../services/registration.service";
   styleUrls: ['./registration-certifications.component.scss']
 })
 export class RegistrationCertificationsComponent implements OnInit {
+
+  /* A flag to indicate if the component is being used on the profile component */
+  @Input() edit: boolean = false;
+
+  @Output() onSave = new EventEmitter();
 
   error: any;
   loading: boolean;
@@ -86,6 +91,7 @@ export class RegistrationCertificationsComponent implements OnInit {
   }
 
     next() {
+      this.onSave.emit();
       this.registrationService.next();
     }
 

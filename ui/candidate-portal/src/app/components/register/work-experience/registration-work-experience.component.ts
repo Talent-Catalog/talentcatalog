@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
@@ -16,6 +16,10 @@ import {RegistrationService} from "../../../services/registration.service";
   styleUrls: ['./registration-work-experience.component.scss']
 })
 export class RegistrationWorkExperienceComponent implements OnInit {
+
+  @Input() edit: boolean;
+
+  @Output() onSave = new EventEmitter();
 
   error: any;
   saving: boolean;
@@ -103,6 +107,7 @@ export class RegistrationWorkExperienceComponent implements OnInit {
   }
 
   next() {
+    this.onSave.emit();
     this.registrationService.next();
   }
 

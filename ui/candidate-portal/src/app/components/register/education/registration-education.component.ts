@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
@@ -18,6 +18,11 @@ import {CountryService} from "../../../services/country.service";
   styleUrls: ['./registration-education.component.scss']
 })
 export class RegistrationEducationComponent implements OnInit {
+
+  /* A flag to indicate if the component is being used on the profile component */
+  @Input() edit: boolean = false;
+
+  @Output() onSave = new EventEmitter();
 
   error: any;
   saving: boolean;
@@ -107,6 +112,7 @@ export class RegistrationEducationComponent implements OnInit {
     // If the candidate hasn't changed anything, skip the update service call
     if (this.form.pristine) {
       if (dir === 'next') {
+        this.onSave.emit();
         this.registrationService.next();
       } else {
         this.registrationService.back();
@@ -118,6 +124,7 @@ export class RegistrationEducationComponent implements OnInit {
       (response) => {
         this.saving = false;
         if (dir === 'next') {
+          this.onSave.emit();
           this.registrationService.next();
         } else {
           this.registrationService.back();
@@ -166,7 +173,7 @@ export class RegistrationEducationComponent implements OnInit {
     const education = this.candidateEducationItems[index];
     this.candidateEducationService.deleteCandidateEducation(education.id).subscribe(
       () => {
-        this.candidateEducationItems.splice(index, 1)
+        this.candidateEducationItems.splice(index, 1);
         this.saving = false;
       },
       (error) => {

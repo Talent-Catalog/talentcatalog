@@ -2,7 +2,9 @@
 
   <div class="container">
 
-    <h3>Test..</h3>
+    <h5>{{ 'EDIT.TITLE.EDITING' | translate }}</h5>
+
+    <h3>{{ 'EDIT.TITLE.' + (section | uppercase) | translate }}</h3>
 
   </div>
 
@@ -15,47 +17,40 @@
                             (onSave)="handleSave()">
   </app-registration-contact>
 
-  <app-registration-personal *ngSwitchCase="'personal'">
+  <app-registration-personal *ngSwitchCase="'personal'"
+                             [edit]="true"
+                             (onSave)="handleSave()">
   </app-registration-personal>
 
-  <app-registration-candidate-occupation *ngSwitchCase="'occupation'">
+  <app-registration-candidate-occupation *ngSwitchCase="'occupations'"
+                                         [edit]="true"
+                                         (onSave)="handleSave()">
   </app-registration-candidate-occupation>
 
-  <app-registration-work-experience *ngSwitchCase="'experience'">
+  <app-registration-work-experience *ngSwitchCase="'experience'"
+                                    [edit]="true"
+                                    (onSave)="handleSave()">
   </app-registration-work-experience>
 
-  <app-registration-education *ngSwitchCase="'education'">
+  <app-registration-education *ngSwitchCase="'education'"
+                              [edit]="true"
+                              (onSave)="handleSave()">
   </app-registration-education>
 
-  <app-registration-language *ngSwitchCase="'language'">
+  <app-registration-language *ngSwitchCase="'languages'"
+                             [edit]="true"
+                             (onSave)="handleSave()">
   </app-registration-language>
 
-  <app-registration-certifications *ngSwitchCase="'certifications'">
+  <app-registration-certifications *ngSwitchCase="'certifications'"
+                                   [edit]="true"
+                                   (onSave)="handleSave()">
   </app-registration-certifications>
 
-  <app-registration-additional-info *ngSwitchCase="'submit'" [submitApplication]="true">
+  <app-registration-additional-info *ngSwitchCase="'other'"
+                                    [edit]="true"
+                                    (onSave)="handleSave()"
+                                    [submitApplication]="false">
   </app-registration-additional-info>
-
-  <div class="container text-center" *ngSwitchCase="'complete'">
-
-    <h1>{{ 'REGISTRATION.COMPLETE.TITLE' | translate}}</h1>
-
-    <p class="alert alert-warning">
-      {{ 'REGISTRATION.COMPLETE.PARA1' | translate}}
-    </p>
-
-    <div class="text-center my-4">
-      <a class="btn btn-primary" [routerLink]="'/profile'">
-        {{ 'REGISTRATION.COMPLETE.BUTTON.PROFILE' | translate}}
-      </a>
-    </div>
-
-    <div class="text-center">
-      <button class="btn btn-outline-primary" (click)="logout()">
-        {{ 'REGISTRATION.COMPLETE.BUTTON.LOGOUT' | translate}}
-      </button>
-    </div>
-
-  </div>
 
 </div>
