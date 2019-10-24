@@ -128,7 +128,7 @@ public class CandidateSpecification {
             }
 
             // GENDER SEARCH
-            if (!StringUtils.isBlank(request.getGender())) {
+            if (request.getGender() != null) {
                 conjunction.getExpressions().add(
                         builder.equal(candidate.get("gender"), request.getGender())
                 );

@@ -15,7 +15,7 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
     private Status status;
     private String keyword;
     private String statuses;
-    private String gender;
+    private Gender gender;
 
     private String occupationIds;
     private String orProfileKeyword;
@@ -94,11 +94,11 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
         this.statuses = statuses;
     }
 
-    public String getGender() {
+    public Gender getGender() {
         return gender;
     }
 
-    public void setGender(String gender) {
+    public void setGender(Gender gender) {
         this.gender = gender;
     }
 
