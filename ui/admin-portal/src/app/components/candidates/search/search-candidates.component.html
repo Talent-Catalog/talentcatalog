@@ -286,11 +286,11 @@
     <div class="col-offset-8 col-4">
       <div class="d-flex justify-content-end">
         <button type="button" class="btn btn-outline-dark"
-                [disabled]="_loading"
+                [disabled]="loading"
                 (click)="clear()">Clear
         </button>
         <button type="submit" class="btn btn-primary"
-                [disabled]="_loading"
+                [disabled]="loading"
                 (click)="search()">Apply
         </button>
       </div>

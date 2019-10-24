@@ -38,6 +38,10 @@
       </div>
     </div>
 
+    <div class="text-right">
+      <button class="btn btn-link" (click)="clearWritten()">Clear</button>
+    </div>
+
     <!-- SPOKEN LEVEL -->
     <div class="form-group">
       <label>Spoken Level</label>
@@ -45,6 +49,10 @@
       <div class="radio" *ngFor="let level of languageLevels">
         <label><input type="radio" [formControlName]="'spokenLevel'" [value]="level.id">{{level.name}}</label>
       </div>
+    </div>
+
+    <div class="text-right">
+      <button class="btn btn-link" (click)="clearSpoken()">Clear</button>
     </div>
 
   </form>
