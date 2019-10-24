@@ -34,7 +34,7 @@
       <label>Written Level</label>
 
       <div class="radio" *ngFor="let level of languageLevels">
-        <label><input type="radio" [formControlName]="'writtenLevel'" [value]="level.level">{{level.name}}</label>
+        <label><input type="radio" [formControlName]="'writtenLevel'" [value]="level.id">{{level.name}}</label>
       </div>
     </div>
 
@@ -43,7 +43,7 @@
       <label>Spoken Level</label>
 
       <div class="radio" *ngFor="let level of languageLevels">
-        <label><input type="radio" [formControlName]="'spokenLevel'" [value]="level.level">{{level.name}}</label>
+        <label><input type="radio" [formControlName]="'spokenLevel'" [value]="level.id">{{level.name}}</label>
       </div>
     </div>
 

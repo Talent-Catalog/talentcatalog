@@ -92,8 +92,8 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
   renderLevel() {
     const val = (this.form.value as LanguageLevelFormControlModel);
     const language = val.languageId ? this.languages.find(l => l.id == val.languageId).name : '';
-    const written = val.writtenLevel ? 'Written: ' + this.languageLevels.find(l => l.level == val.writtenLevel).name : '';
-    const spoken = val.spokenLevel ? 'Spoken: ' + this.languageLevels.find(l => l.level == val.spokenLevel).name : '';
+    const written = val.writtenLevel ? 'Written: ' + this.languageLevels.find(l => l.id == val.writtenLevel).name : '';
+    const spoken = val.spokenLevel ? 'Spoken: ' + this.languageLevels.find(l => l.id == val.spokenLevel).name : '';
     const proficiencyString = written && spoken ? written + ', ' + spoken : written || spoken;
     return language && proficiencyString ? `${language} (${proficiencyString})` : language ? language : proficiencyString;
   }

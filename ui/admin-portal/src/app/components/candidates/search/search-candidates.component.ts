@@ -31,6 +31,8 @@ import {
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import * as moment from 'moment-timezone';
 import {CandidateShortlistItem} from "../../../model/candidate-shortlist-item";
+import {LanguageLevel} from "../../../model/language-level";
+import {LanguageLevelService} from "../../../services/language-level.service";
 
 
 @Component({
@@ -40,9 +42,21 @@ import {CandidateShortlistItem} from "../../../model/candidate-shortlist-item";
 })
 export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
-  searchForm: FormGroup;
-  loading: boolean;
   error: any;
+  _loading = {
+    candidateOccupations: true,
+    countries: true,
+    educationLevels: true,
+    educationMajors: true,
+    languageLevels: true,
+    languages: true,
+    nationalities: true,
+    savedSearch: false,
+    verifiedOccupations: true,
+  };
+  searching: boolean;
+
+  searchForm: FormGroup;
   moreFilters: boolean;
   results: SearchResults<Candidate>;
   savedSearch;
@@ -69,6 +83,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   educationMajors: EducationMajor[];
   verifiedOccupations: Occupation[];
   candidateOccupations: Occupation[];
+  languageLevels: LanguageLevel[];
 
   statuses: { id: string, name: string }[] = [
     {id: 'pending', name: 'pending'},
@@ -94,7 +109,14 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
               private educationLevelService: EducationLevelService,
               private educationMajorService: EducationMajorService,
               private candidateOccupationService: CandidateOccupationService,
+              private languageLevelService: LanguageLevelService,
               private modalService: NgbModal) {
+  }
+
+  get loading() {
+    for (let prop of Object.keys(this._loading)) {
+      if (this._loading[prop]) { return true; }
+    }
   }
 
   ngOnInit() {
@@ -147,11 +169,11 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     this.nationalityService.listNationalities().subscribe(
       (response) => {
         this.nationalities = response;
-        this.loading = false;
+        this._loading.nationalities = false;
       },
       (error) => {
         this.error = error;
-        this.loading = false;
+        this._loading.nationalities = false;
       }
     );
 
@@ -159,11 +181,11 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     this.countryService.listCountries().subscribe(
       (response) => {
         this.countries = response;
-        this.loading = false;
+        this._loading.countries = false;
       },
       (error) => {
         this.error = error;
-        this.loading = false;
+        this._loading.countries = false;
       }
     );
 
@@ -171,58 +193,70 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     this.languageService.listLanguages().subscribe(
       (response) => {
         this.languages = response;
+
         const englishLanguageObj = this.languages.find(l => l.name.toLowerCase() === 'english');
         this.englishLanguageModel = Object.assign(emptyLanguageLevelFormControlModel, {languageId: englishLanguageObj.id || null});
-        this.loading = false;
+
+        this._loading.languages = false;
       },
       (error) => {
         this.error = error;
-        this.loading = false;
+        this._loading.languages = false;
       }
     );
+
+    this.languageLevelService.listLanguageLevels().subscribe(
+      (response) => {
+        this.languageLevels = response;
+        this._loading.languageLevels = false;
+      },
+      (error) => {
+        this.error = error;
+        this._loading.languageLevels = false;
+      });
 
     /* LOAD EDUCATIONAL LEVELS */
     this.educationLevelService.listEducationLevels().subscribe(
       (response) => {
         this.educationLevels = response;
-        this.loading = false;
+        this._loading.educationLevels = false;
       },
       (error) => {
         this.error = error;
-        this.loading = false;
+        this._loading.educationLevels = false;
       });
 
     /* LOAD EDUCATIONAL MAJORS */
     this.educationMajorService.listMajors().subscribe(
       (response) => {
         this.educationMajors = response;
-        this.loading = false;
+        this._loading.educationMajors = false;
       },
       (error) => {
         this.error = error;
-        this.loading = false;
+        this._loading.educationMajors = false;
       });
 
     /* LOAD VERIFIED OCCUPATIONS */
     this.candidateOccupationService.listVerifiedOccupations().subscribe(
       (response) => {
         this.verifiedOccupations = response;
-        this.loading = false;
+        this._loading.verifiedOccupations = false;
       },
       (error) => {
         this.error = error;
-        this.loading = false;
+        this._loading.verifiedOccupations = false;
       });
 
     /* LOAD CANDIDATE OCCUPATIONS (includes unverified) */
     this.candidateOccupationService.listOccupations().subscribe(
       (response) => {
         this.candidateOccupations = response;
-        this.loading = false;
+        this._loading.candidateOccupations = false;
       },
       (error) => {
         this.error = error;
-        this.loading = false;
+        this._loading.candidateOccupations = false;
       });
 
     /* SEARCH ON CHANGE*/
@@ -272,10 +306,10 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   /* SEARCH FORM */
   search() {
-    this.loading = true;
+    this.searching = true;
     this.error = null;
     const request = this.searchForm.value;
-    if (request.shortlistStatus == ''){
+    if (request.shortlistStatus == '') {
       request.shortlistStatus = null;
     }
     request.pageNumber = this.pageNumber - 1;
@@ -283,11 +317,11 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     this.subscription = this.candidateService.search(request).subscribe(
       results => {
         this.results = results;
-        this.loading = false;
+        this.searching = false;
       },
       error => {
         this.error = error;
-        this.loading = false;
+        this.searching = false;
       });
   }
 
@@ -297,7 +331,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
    }
 
   loadSavedSearch(id) {
-    this.loading = true;
+    this._loading.savedSearch = true;
     this.searchForm.controls['savedSearchId'].patchValue(id);
     this.savedSearchService.load(id).subscribe(
       request => {
@@ -305,7 +339,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       },
       error => {
         this.error = error;
-        this.loading = false;
+        this._loading.savedSearch = false;
       });
   }
 
@@ -397,6 +431,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
     });
 
+    this._loading.savedSearch = false;
 
     this.search();
   }
