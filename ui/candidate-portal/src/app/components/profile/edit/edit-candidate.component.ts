@@ -20,8 +20,6 @@ export class EditCandidateComponent implements OnInit {
   }
 
   handleSave() {
-    /* DEBUG */
-    console.log('updated', );
     this.router.navigate(['/profile']);
   }
 }

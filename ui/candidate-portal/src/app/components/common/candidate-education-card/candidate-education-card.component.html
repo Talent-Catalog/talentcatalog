@@ -10,4 +10,6 @@
 
 <p>{{candidateEducation.institution}} | {{candidateEducation.country?.name}}</p>
 
-<p *ngIf="candidateEducation.educationMajor">Majoring in {{candidateEducation.educationMajor?.name}}</p>
+<p *ngIf="candidateEducation.educationMajor">
+  {{ 'CARD.EDUCATION.MAJOR' | translate: { major: candidateEducation.educationMajor?.name } }}
+</p>

@@ -116,8 +116,8 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
                 candidateLanguage = new CandidateLanguage(
                         candidate,
                         language,
-                        languageLevels.get(update.getSpokenLevelId()),
-                        languageLevels.get(update.getWrittenLevelId())
+                        languageLevels.get(update.getWrittenLevelId()),
+                        languageLevels.get(update.getSpokenLevelId())
                 );
             }
             updatedLanguages.add(candidateLanguageRepository.save(candidateLanguage));

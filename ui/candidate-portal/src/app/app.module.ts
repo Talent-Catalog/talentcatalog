@@ -40,6 +40,7 @@ import {CandidateCertificationCardComponent} from './components/common/candidate
 import {EditCandidateComponent} from './components/profile/edit/edit-candidate.component';
 import {CandidateOccupationCardComponent} from './components/common/candidate-occupation-card/candidate-occupation-card.component';
 import {CandidateEducationCardComponent} from './components/common/candidate-education-card/candidate-education-card.component';
+import {CandidateLanguageCardComponent} from './components/common/candidate-language-card/candidate-language-card.component';
 
 export function createTranslateLoader(http: HttpClient) {
     return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -75,7 +76,8 @@ export function createTranslateLoader(http: HttpClient) {
     CandidateCertificationCardComponent,
     EditCandidateComponent,
     CandidateOccupationCardComponent,
-    CandidateEducationCardComponent
+    CandidateEducationCardComponent,
+    CandidateLanguageCardComponent
   ],
   imports: [
     BrowserModule,

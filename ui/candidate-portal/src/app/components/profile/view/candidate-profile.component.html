@@ -177,7 +177,7 @@
           </app-candidate-occupation-card>
 
           <div class="text-center" *ngIf="i < candidate?.candidateOccupations?.length - 1">
-            <hr class="w-75 my-5">
+            <hr class="w-75 my-4">
           </div>
         </ng-container>
 
@@ -206,7 +206,7 @@
           </app-candidate-job-experience-card>
 
           <div class="text-center" *ngIf="i < candidate?.candidateJobExperiences?.length - 1">
-            <hr class="w-75 my-5">
+            <hr class="w-75 my-4">
           </div>
         </ng-container>
 
@@ -236,7 +236,7 @@
           </app-candidate-education-card>
 
           <div class="text-center" *ngIf="i < candidate?.candidateEducations?.length - 1">
-            <hr class="w-75 my-5">
+            <hr class="w-75 my-4">
           </div>
         </ng-container>
 
@@ -264,7 +264,7 @@
           </app-candidate-certification-card>
 
           <div class="text-center" *ngIf="i < candidate?.candidateCertifications?.length - 1">
-            <hr class="w-75 my-5">
+            <hr class="w-75 my-4">
           </div>
         </ng-container>
       </div>
@@ -286,12 +286,13 @@
 
       <div class="card">
 
-        <!-- TODO -->
         <ng-container *ngFor="let language of candidate.candidateLanguages; let i = index;">
-          <pre>{{language | json}}</pre>
+          <app-candidate-language-card [language]="language"
+                                        [preview]="true">
+          </app-candidate-language-card>
 
           <div class="text-center" *ngIf="i < candidate?.candidateLanguages?.length - 1">
-            <hr class="w-75 my-5">
+            <hr class="w-75 my-4">
           </div>
         </ng-container>
 

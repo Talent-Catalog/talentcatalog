@@ -278,6 +278,9 @@
         "PAID":  "Paid employee",
         "VOLUNTEER": "Volunteer employee"
       }
+    },
+    "EDUCATION": {
+      "MAJOR": "Majoring in {{major}}"
     }
   }
 }
