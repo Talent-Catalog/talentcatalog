@@ -75,7 +75,7 @@ export class RegistrationService {
 
   // Observe the query params in the url to determine which step to display
   start() {
-    if (!this.subscription) {
+    if (!this.subscription || this.subscription.closed) {
       this.started = true;
       this.subscription = this.route.queryParams.subscribe(
         params => {

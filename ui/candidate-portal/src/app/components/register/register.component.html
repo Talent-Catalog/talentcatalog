@@ -2,7 +2,7 @@
 
   <div class="container">
 
-    <h5>{{ 'REGISTRATION.HEADER.STEP' | translate: {current: registrationService?.currentStep.section, total: registrationService?.totalSections} }}</h5>
+    <h5>{{ 'REGISTRATION.HEADER.STEP' | translate: {current: registrationService?.currentStep?.section, total: registrationService?.totalSections} }}</h5>
 
     <h3 translate dir="auto">REGISTRATION.HEADER.TITLE.{{registrationService?.currentStep?.key | uppercase}}</h3>
 
