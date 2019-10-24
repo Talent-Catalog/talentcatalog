@@ -43,10 +43,12 @@ public class EmailHelper {
         String bodyHtml = null;
         try {
             final Context ctx = new Context();
-            ctx.setVariable("name", displayName);
+            ctx.setVariable("displayName", displayName);
+            ctx.setVariable("username", user.getUsername());
+            ctx.setVariable("forgotPwdUrl", portalUrl + "/reset-password/");
             ctx.setVariable("year", currentYear());
 
-            subject = "Talent Beyond Boundaries - Confirm your Registration Email";
+            subject = "Talent Beyond Boundaries - Thank you for your application";
             bodyText = textTemplateEngine.process("registration", ctx);
             bodyHtml = htmlTemplateEngine.process("registration", ctx);
 

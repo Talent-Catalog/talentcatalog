@@ -20,7 +20,9 @@ jwt:
   expirationInMs: 604800000
 
 web:
-  portal: http://localhost:4200
+  #portal: http://localhost:4200
+  # for heroku deploy hardcoded for now
+  portal: https://tbbtalent-staging.herokuapp.com/candidate-portal
   
 flyway:
   ignoreMissingMigrations: true
@@ -35,11 +37,11 @@ aws:
       secret-key: K6SvY9w+IhddylnBqHlZ1Ic5ZqT8vO3c+FU8h8VO
 
 email:
-   type: STUB # STUB or SMTP
+   type: SMTP # STUB or SMTP
    host: smtp.gmail.com
    port: 587
-   user: XXXX
-   password: XXXXX
+   user: devtestingdp@gmail.com
+   password: H@6J9bpcIDHa
    authenticated: true
    default-email: martina@digitalpurpose.com.au
    test-override-email: martina+tbb@digitalpurpose.com.au
