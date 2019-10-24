@@ -93,6 +93,13 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
     return language && proficiencyString ? `${language} (${proficiencyString})` : language ? language : proficiencyString;
   }
 
+  clearProficiencies() {
+    this.form.patchValue({
+      writtenLevel: null,
+      spokenLevel: null
+    })
+  }
+
   clearSpoken() {
     this.form.patchValue({
       spokenLevel: null

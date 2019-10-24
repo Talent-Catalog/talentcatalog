@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 
 import {Candidate} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
@@ -33,6 +33,8 @@ import * as moment from 'moment-timezone';
 import {CandidateShortlistItem} from "../../../model/candidate-shortlist-item";
 import {LanguageLevel} from "../../../model/language-level";
 import {LanguageLevelService} from "../../../services/language-level.service";
+import {DateRangePickerComponent} from "../../util/form/date-range-picker/date-range-picker.component";
+import {LanguageLevelFormControlComponent} from "../../util/form/language-proficiency/language-level-form-control.component";
 
 
 @Component({
@@ -41,6 +43,11 @@ import {LanguageLevelService} from "../../../services/language-level.service";
   styleUrls: ['./search-candidates.component.scss']
 })
 export class SearchCandidatesComponent implements OnInit, OnDestroy {
+
+  @ViewChild('createdDate') createdDate: DateRangePickerComponent;
+  @ViewChild('modifiedDate') modifiedDate: DateRangePickerComponent;
+  @ViewChild('englishLanguage') englishLanguage: LanguageLevelFormControlComponent;
+  @ViewChild('otherLanguage') otherLanguage: LanguageLevelFormControlComponent;
 
   error: any;
   _loading = {
@@ -266,7 +273,9 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
         distinctUntilChanged()
       )
       .subscribe(res => {
-        this.search();
+        if (!this.searching) {
+          this.search();
+        }
       });
     this.search();
   }
@@ -327,6 +336,10 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   clear() {
     this.searchForm.reset();
+    this.createdDate.clearDates();
+    this.modifiedDate.clearDates();
+    this.englishLanguage.clearProficiencies();
+    this.otherLanguage.form.reset();
     this.savedSearch = null;
    }
 
