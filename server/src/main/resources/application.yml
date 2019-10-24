@@ -26,3 +26,12 @@ flyway:
   ignoreMissingMigrations: true
   repair: true
 
+aws:
+   s3:
+      files-bucket: files.tbbtalent.org
+      region: us-east-1
+   credentials:
+      access-key: AKIA6C7ESOA6I7YPKGDT
+      secret-key: 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
+
+      

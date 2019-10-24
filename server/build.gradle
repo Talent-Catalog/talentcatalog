@@ -25,6 +25,7 @@ apply plugin: 'io.spring.dependency-management'
 dependencyManagement {
     imports {
         mavenBom "org.springframework.boot:spring-boot-starter-parent:$springBootVersion"
+        mavenBom 'com.amazonaws:aws-java-sdk-bom:1.11.656'
     }
 }
 //bootJar {
@@ -47,11 +48,15 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt:0.9.1")
     implementation("org.flywaydb:flyway-core:5.2.4")
     implementation("org.apache.commons:commons-lang3:3.0")
+    implementation 'com.amazonaws:aws-java-sdk-s3'
+    implementation('javax.mail:mail:1.4')
+    implementation('org.springframework.boot:spring-boot-starter-thymeleaf')
 
     runtimeOnly('org.postgresql:postgresql')
     runtimeOnly('mysql:mysql-connector-java:8.0.15')
 
     testCompile("junit:junit")
+    testCompile("org.springframework:spring-test")
 }
 
 jar {

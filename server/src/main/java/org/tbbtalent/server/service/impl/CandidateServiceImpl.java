@@ -271,6 +271,13 @@ public class CandidateServiceImpl implements CandidateService {
         user.setPasswordEnc(passwordEncrypted);
         user = this.userRepository.save(user);
 
+        // TODO: do not log in user but send email confirmation email, if email exists
+        if (StringUtils.isNotBlank(request.getEmail())) {
+            // TODO
+        } else {
+            // do the login stuff here
+        }
+        
         /* Log the candidate in */
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername(user.getUsername());
