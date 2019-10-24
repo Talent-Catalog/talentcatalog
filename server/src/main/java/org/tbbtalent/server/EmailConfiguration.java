@@ -12,10 +12,17 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 
 @Configuration
 public class EmailConfiguration {
+    
     @Bean
-    public TemplateEngine emailTemplateEngine() {
+    public TemplateEngine textTemplateEngine() {
         final SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.addTemplateResolver(textTemplateResolver());
+        return templateEngine;
+    }
+    
+    @Bean
+    public TemplateEngine htmlTemplateEngine() {
+        final SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.addTemplateResolver(htmlTemplateResolver());
         return templateEngine;
     }

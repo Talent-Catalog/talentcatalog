@@ -43,7 +43,7 @@ public class EmailSender {
     @Value("${email.host}")
     private String host;
     @Value("${email.port}")
-    private String port;
+    private int port;
     @Value("${email.user}")
     private String user;
     @Value("${email.password}")
@@ -73,44 +73,41 @@ public class EmailSender {
         this.transport = emailTransport();
     }
         
-    public boolean send(String emailFrom,
-                        String emailTo,
+    public boolean send(String emailTo,
                         String bccTo,
                         String subject,
-                        String content) {
-        return doSend(emailFrom, emailTo, subject, content);
+                        String contentText,
+                        String contentHtml) {
+        return doSend(emailTo, subject, contentText, contentHtml);
     }
 
     @Async
-    public boolean sendAsync(String emailFrom,
-                             String emailTo,
+    public boolean sendAsync(String emailTo,
                              String subject,
-                             String content) {
-        return doSend(emailFrom, emailTo, subject, content);
+                             String contentText,
+                             String contentHtml) {
+        return doSend(emailTo, subject, contentText, contentHtml);
     }
     
-    private boolean doSend(String emailFrom,
-                         String emailTo,
-                         String subject,
-                         String content) {
+    private boolean doSend(String emailTo,
+                           String subject,
+                           String contentText,
+                           String contentHtml) {
         
         log.info("sending email to " + emailTo + " with subject '" + subject + "'");
         
         MimeMessage email = new MimeMessage(session);
         try {
-            email.addFrom(InternetAddress.parse(emailFrom));
-            email.addRecipients(Message.RecipientType.TO, emailTo);
+            email.addFrom(InternetAddress.parse(defaultEmail));
+            email.addRecipients(Message.RecipientType.TO, applyTestOverrideIfRequired(emailTo));
             email.setSubject(subject);
-            email.setContent(createEmailBody(content));
-            
-            // check, if replace with test email
-            applyTestOverrideIfRequired(email);
+            email.setContent(createEmailBody(contentText, contentHtml));
             
             send(email);
             
             return true;
         } catch (MessagingException e) {
-            log.error("Error sending email to {}: {}", emailTo, e.getMessage());
+            log.error("Error sending email to " + emailTo, e);
         }
         
         return false;
@@ -133,31 +130,27 @@ public class EmailSender {
         transport.sendMessage(mimeMessage, mimeMessage.getAllRecipients());
     }
 
-    private static Multipart createEmailBody(String content) throws MessagingException {
-        MimeMultipart body = new MimeMultipart();
-        BodyPart bodyPart = new MimeBodyPart();
-        bodyPart.setContent(content, "text/html; charset=utf-8");
-        body.addBodyPart(bodyPart);
+    private static Multipart createEmailBody(String contentText,
+                                             String contentHtml) throws MessagingException {
+        MimeMultipart body = new MimeMultipart("alternative");
+        
+        BodyPart bodyPartText = new MimeBodyPart();
+        bodyPartText.setText(contentText);
+        body.addBodyPart(bodyPartText);
+        
+        BodyPart bodyPartHtml = new MimeBodyPart();
+        bodyPartHtml.setContent(contentHtml, "text/html; charset=utf-8");
+        body.addBodyPart(bodyPartHtml);
         return body;
     }
     
-    private void applyTestOverrideIfRequired(MimeMessage email) {
-        try {
-            Address[] recipients = email.getAllRecipients();
-            if (StringUtils.isNotBlank(testOverrideEmail) && recipients != null) {
-                for (Address address : recipients) {
-                    if (address instanceof InternetAddress) {
-                        InternetAddress recipient = (InternetAddress)address;
-                        log.info("replacing intended recipient " + recipient.getAddress() + " with " + testOverrideEmail);
-                        recipient.setAddress(testOverrideEmail);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            log.error("unable to check recipients for test override", e);
+    private String applyTestOverrideIfRequired(String email) {
+        if (StringUtils.isNotBlank(testOverrideEmail) && StringUtils.isNotBlank(email)) {
+            return testOverrideEmail;
         }
+        return email;
     }
-
+    
     /*
      * @Bean
      * 
@@ -171,8 +164,9 @@ public class EmailSender {
             properties.put("mail.from", defaultEmail);
             properties.put("mail.smtp.port", port);
             properties.put("mail.smtp.host", host);
-            properties.put("mail.smtp.auth", authenticate != null ? authenticate.toString() : "false");
             properties.put("mail.smtp.username", user);
+            properties.put("mail.debug", "true");  
+            properties.put("mail.smtp.auth", authenticate != null ? authenticate.toString() : "false");
             properties.put("mail.smtp.starttls.enable", authenticate != null ? authenticate : false);
             if (authenticate != null && authenticate) {
                 Authenticator authenticator = new Authenticator() {
@@ -245,4 +239,38 @@ public class EmailSender {
             }
         }
     }
+
+    public void setType(EmailType type) {
+        this.type = type;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setAuthenticate(Boolean authenticate) {
+        this.authenticate = authenticate;
+    }
+
+    public void setDefaultEmail(String defaultEmail) {
+        this.defaultEmail = defaultEmail;
+    }
+
+    public void setTestOverrideEmail(String testOverrideEmail) {
+        this.testOverrideEmail = testOverrideEmail;
+    }
+    
+    
 }

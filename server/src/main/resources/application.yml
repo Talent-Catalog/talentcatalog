@@ -34,4 +34,12 @@ aws:
       access-key: AKIA6C7ESOA6I7YPKGDT
       secret-key: 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
 
-      
+email:
+   type: STUB # STUB or SMTP
+   host: smtp.gmail.com
+   port: 587
+   user: XXXX
+   password: XXXXX
+   authenticated: true
+   default-email: martina@digitalpurpose.com.au
+   test-override-email: martina+tbb@digitalpurpose.com.au
