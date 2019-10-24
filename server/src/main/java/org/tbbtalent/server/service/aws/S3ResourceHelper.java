@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.FileDownloadException;
 
@@ -33,7 +32,6 @@ import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import com.amazonaws.services.s3.transfer.TransferManagerConfiguration;
 import com.amazonaws.services.s3.transfer.Upload;
 
-@Service
 public class S3ResourceHelper {
     private static final Logger log = LoggerFactory.getLogger(S3ResourceHelper.class);
     public static long FILE_PART_SIZE = 5 * 1024 * 1024; // 5MB

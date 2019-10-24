@@ -8,13 +8,13 @@ import org.tbbtalent.server.service.aws.S3ResourceHelper;
 @Configuration
 public class AwsConfiguration {
     
-    @Value("${s3.region.name}")
+    @Value("${aws.s3.region}")
     private String s3Region;
 
-    @Value("${cloud.aws.credentials.accessKey}")
+    @Value("${aws.credentials.access-key}")
     private String accessKey;
 
-    @Value("${cloud.aws.credentials.secretKey}")
+    @Value("${aws.credentials.secret-key}")
     private String secretKey;
 
     @Bean

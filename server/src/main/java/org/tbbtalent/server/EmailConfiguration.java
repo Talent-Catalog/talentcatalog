@@ -15,12 +15,11 @@ public class EmailConfiguration {
     @Bean
     public TemplateEngine emailTemplateEngine() {
         final SpringTemplateEngine templateEngine = new SpringTemplateEngine();
-//        templateEngine.addTemplateResolver(textTemplateResolver());
+        templateEngine.addTemplateResolver(textTemplateResolver());
         templateEngine.addTemplateResolver(htmlTemplateResolver());
         return templateEngine;
     }
 
-    @SuppressWarnings("unused")
     private ITemplateResolver textTemplateResolver() {
         final ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
         templateResolver.setOrder(Integer.valueOf(1));
