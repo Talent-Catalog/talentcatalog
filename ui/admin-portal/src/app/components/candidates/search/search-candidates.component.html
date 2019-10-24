@@ -10,7 +10,7 @@
   <button class="btn btn-primary" [routerLink]="['create']">Add</button>
 </div>
 
-<div>
+<div *ngIf="!loading">
   <div class="alert alert-danger" *ngIf="error">
     {{error}}
   </div>
@@ -61,8 +61,10 @@
     <!-- ENGLISH LANGUAGE -->
     <div class="form-group col-12 col-md-2">
       <label>English Proficiency</label>
-      <app-language-level-form-control [model]="englishLanguageModel"
+      <app-language-level-form-control #englishLanguage
+                                       [model]="englishLanguageModel"
                                        [languages]="languages"
+                                       [languageLevels]="languageLevels"
                                        [languageDisabled]="true"
                                        (modelUpdated)="handleLanguageLevelChange($event, 'english')">
       </app-language-level-form-control>
@@ -76,7 +78,7 @@
       </button>
     </div>
 
-    <ng-container *ngIf="moreFilters">
+    <div class="form-row" [hidden]="!moreFilters">
 
       <hr class="w-100">
 
@@ -139,13 +141,15 @@
           <!-- REGISTERED BETWEEN -->
           <div class="form-group col-12 col-md-4">
             <label>Registered On</label>
-            <app-date-range-picker (dateSelected)="handleDateSelected($event, 'created')"></app-date-range-picker>
+            <app-date-range-picker #createdDate (dateSelected)="handleDateSelected($event, 'created')">
+            </app-date-range-picker>
           </div>
 
           <!-- MODIFIED BETWEEN -->
           <div class="form-group col-12 col-md-4">
             <label>Last Modified</label>
-            <app-date-range-picker (dateSelected)="handleDateSelected($event, 'lastModified')"></app-date-range-picker>
+            <app-date-range-picker #modifiedDate (dateSelected)="handleDateSelected($event, 'lastModified')">
+            </app-date-range-picker>
           </div>
 
           <!-- COUNTRIES  -->
@@ -197,7 +201,9 @@
       <!-- OTHER LANGUAGE -->
       <div class="form-group col-12 col-md-3">
         <label>Other Language</label>
-        <app-language-level-form-control [languages]="languages"
+        <app-language-level-form-control #otherLanguage
+                                         [languages]="languages"
+                                         [languageLevels]="languageLevels"
                                          [model]="otherLanguageModel"
                                          (modelUpdated)="handleLanguageLevelChange($event, 'other')">
         </app-language-level-form-control>
@@ -266,7 +272,7 @@
 
 
       <hr class="w-100">
-    </ng-container>
+    </div>
     <div class="col-4">
       <div class="btn-group" role="group">
         <button type="button" class="btn btn-outline-dark" (click)="showSavedSearches()">Load Saved Search</button>
@@ -281,16 +287,13 @@
       </select>
     </div>
 
-    <div class="col-offset-8 col-4">
+    <div class="offset-8 col-4">
       <div class="d-flex justify-content-end">
         <button type="button" class="btn btn-outline-dark"
                 [disabled]="loading"
                 (click)="clear()">Clear
         </button>
-        <button type="submit" class="btn btn-primary"
-                [disabled]="loading"
-                (click)="search()">Apply
-        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="loading">Apply</button>
       </div>
     </div>
 
@@ -349,14 +352,14 @@
         </tr>
 
         <!-- loading -->
-        <tr *ngIf="loading">
+        <tr *ngIf="searching">
           <td colspan="42">
             <i class="fa fa-spinner fa-spin"></i> Loading...
           </td>
         </tr>
 
         <!-- no results -->
-        <tr *ngIf="!loading && !results?.totalElements">
+        <tr *ngIf="!searching && !results?.totalElements">
           <td colspan="42">
             <span class="text-muted">(no matching candidates)</span>
           </td>

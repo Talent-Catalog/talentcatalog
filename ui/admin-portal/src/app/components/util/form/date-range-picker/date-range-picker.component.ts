@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {NgbCalendar, NgbDate, NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
+import {NgbDate, NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-date-range-picker',
@@ -16,16 +16,10 @@ export class DateRangePickerComponent implements OnInit {
   hoveredDate: NgbDate;
   displayDate: string;
 
-  constructor(private calendar: NgbCalendar) {}
+  constructor() {}
 
   ngOnInit(): void {
     this.displayDate = null;
-    if (!this.fromDate) {
-      this.fromDate = this.calendar.getToday();
-    }
-    if (!this.toDate) {
-      this.toDate = this.calendar.getNext(this.calendar.getToday(), 'd', 10);
-    }
   }
 
   onDateSelection(date: any) {
@@ -67,5 +61,15 @@ export class DateRangePickerComponent implements OnInit {
     this.displayDate = this.toDate
       ? this.renderDate(this.fromDate) + ' - ' + this.renderDate(this.toDate)
       : this.renderDate(this.fromDate);
+  }
+
+  clearDates() {
+    this.fromDate = null;
+    this.toDate = null;
+    this.displayDate = null;
+    this.dateSelected.emit({
+      fromDate: null,
+      toDate: null
+    });
   }
 }

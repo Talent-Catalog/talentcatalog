@@ -62,17 +62,12 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
     }
 
     /* Subscribe to form value changes to emit updates to parent component */
-    this.form.valueChanges.subscribe(
-      () => {
-        this.modelUpdated.emit(this.form.value);
-      },
-      (error) => {
-          console.log('error', error);
-      });
+    this.form.valueChanges.subscribe(() => this.modelUpdated.emit(this.form.value));
   }
 
   ngOnChanges(c: SimpleChanges) {
-    if (c.model && c.model.currentValue !== c.model.previousValue) {
+    if (c.form && c.form.currentValue !== c.form.previousValue
+      &&c.model && c.model.currentValue !== c.model.previousValue) {
       this.form.patchValue(c.model.currentValue);
     }
   }
@@ -92,9 +87,28 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
   renderLevel() {
     const val = (this.form.value as LanguageLevelFormControlModel);
     const language = val.languageId ? this.languages.find(l => l.id == val.languageId).name : '';
-    const written = val.writtenLevel ? 'Written: ' + this.languageLevels.find(l => l.level == val.writtenLevel).name : '';
-    const spoken = val.spokenLevel ? 'Spoken: ' + this.languageLevels.find(l => l.level == val.spokenLevel).name : '';
+    const written = val.writtenLevel ? 'Written: ' + this.languageLevels.find(l => l.id == val.writtenLevel).name : '';
+    const spoken = val.spokenLevel ? 'Spoken: ' + this.languageLevels.find(l => l.id == val.spokenLevel).name : '';
     const proficiencyString = written && spoken ? written + ', ' + spoken : written || spoken;
     return language && proficiencyString ? `${language} (${proficiencyString})` : language ? language : proficiencyString;
+  }
+
+  clearProficiencies() {
+    this.form.patchValue({
+      writtenLevel: null,
+      spokenLevel: null
+    })
+  }
+
+  clearSpoken() {
+    this.form.patchValue({
+      spokenLevel: null
+    })
+  }
+
+  clearWritten() {
+    this.form.patchValue({
+      writtenLevel: null
+    })
   }
 }

@@ -1,21 +1,26 @@
 package org.tbbtalent.server.request.candidate;
 
-import java.time.LocalDate;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.data.domain.Sort;
-import org.tbbtalent.server.model.*;
+import org.tbbtalent.server.model.CandidateStatus;
+import org.tbbtalent.server.model.Gender;
+import org.tbbtalent.server.model.SearchType;
+import org.tbbtalent.server.model.ShortlistStatus;
 import org.tbbtalent.server.request.SearchRequest;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
+import java.util.List;
 
 public class SearchCandidateRequest extends SearchRequest {
 
     private Long savedSearchId;
     private String keyword;
     private List<CandidateStatus> statuses;
-    private String gender;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
     private List<Long> occupationIds;
     private String orProfileKeyword;
     private List<Long> verifiedOccupationIds;
@@ -75,11 +80,11 @@ public class SearchCandidateRequest extends SearchRequest {
         this.statuses = statuses;
     }
 
-    public String getGender() {
+    public Gender getGender() {
         return gender;
     }
 
-    public void setGender(String gender) {
+    public void setGender(Gender gender) {
         this.gender = gender;
     }
 
