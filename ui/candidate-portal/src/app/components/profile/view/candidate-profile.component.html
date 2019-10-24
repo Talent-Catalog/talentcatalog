@@ -231,7 +231,9 @@
 
         <!-- TODO -->
         <ng-container *ngFor="let education of candidate.candidateEducations; let i = index;">
-          <pre>{{education | json}}</pre>
+          <app-candidate-education-card [candidateEducation]="education"
+                                        [preview]="true">
+          </app-candidate-education-card>
 
           <div class="text-center" *ngIf="i < candidate?.candidateEducations?.length - 1">
             <hr class="w-75 my-5">
@@ -257,7 +259,8 @@
 
       <div class="card">
         <ng-container *ngFor="let certification of candidate.candidateCertifications; let i = index;">
-          <app-candidate-certification-card [certificate]="certification" [preview]="true">
+          <app-candidate-certification-card [certificate]="certification"
+                                            [preview]="true">
           </app-candidate-certification-card>
 
           <div class="text-center" *ngIf="i < candidate?.candidateCertifications?.length - 1">

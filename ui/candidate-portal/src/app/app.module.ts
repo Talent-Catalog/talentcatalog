@@ -39,6 +39,7 @@ import {FormControlErrorComponent} from "./components/common/form-control-error/
 import {CandidateCertificationCardComponent} from './components/common/candidate-certification-card/candidate-certification-card.component';
 import {EditCandidateComponent} from './components/profile/edit/edit-candidate.component';
 import {CandidateOccupationCardComponent} from './components/common/candidate-occupation-card/candidate-occupation-card.component';
+import {CandidateEducationCardComponent} from './components/common/candidate-education-card/candidate-education-card.component';
 
 export function createTranslateLoader(http: HttpClient) {
     return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -73,7 +74,8 @@ export function createTranslateLoader(http: HttpClient) {
     FormControlErrorComponent,
     CandidateCertificationCardComponent,
     EditCandidateComponent,
-    CandidateOccupationCardComponent
+    CandidateOccupationCardComponent,
+    CandidateEducationCardComponent
   ],
   imports: [
     BrowserModule,

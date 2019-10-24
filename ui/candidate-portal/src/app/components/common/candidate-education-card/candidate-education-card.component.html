@@ -1,0 +1,13 @@
+<div class="text-right" *ngIf="!preview">
+  <button class="btn btn-danger btn-card"
+          [disabled]="disabled"
+          (click)="delete()">&times;</button>
+</div>
+
+<p>{{candidateEducation.educationType}}</p>
+
+<h5>{{candidateEducation.courseName}}</h5>
+
+<p>{{candidateEducation.institution}} | {{candidateEducation.country?.name}}</p>
+
+<p *ngIf="candidateEducation.educationMajor">Majoring in {{candidateEducation.educationMajor?.name}}</p>

@@ -20,17 +20,14 @@
     </form>
 
     <!-- EDUCATIONS -->
-    <ng-container *ngIf="candidateEducationItems.length">
-      <div class="card" *ngFor="let item of candidateEducationItems; let i = index;">
-        <div class="text-right">
-          <button class="btn btn-danger btn-card" [disabled]="saving" (click)="deleteCandidateEducation(i)">&times;</button>
-        </div>
-        <p>{{item.educationType}}</p>
-        <h5>{{item.courseName}}</h5>
-        <p>{{item.institution}} | {{item.country?.name}}</p>
-        <p *ngIf="item.educationMajor">Majoring in {{item.educationMajor?.name}}</p>
-      </div>
-    </ng-container>
+    <div class="card" *ngFor="let item of candidateEducationItems; let i = index;">
+
+      <app-candidate-education-card [candidateEducation]="item"
+                                    [disabled]="saving"
+                                    (onDelete)="deleteCandidateEducation(i)">
+      </app-candidate-education-card>
+
+    </div>
 
     <!-- EDUCATION HISTORY -->
     <app-candidate-education-form *ngIf="addingEducation" class="mt-4"
