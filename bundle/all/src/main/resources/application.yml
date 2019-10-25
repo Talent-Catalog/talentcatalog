@@ -39,7 +39,7 @@ email:
    host: smtp.gmail.com
    port: 587
    user: tbbtalent@talentbeyondboundaries.org
-   password: TBB4Talent!now
+   password: //check passpack
    authenticated: true
    default-email: tbbtalent@talentbeyondboundaries.org
    test-override-email: tbbtalent@talentbeyondboundaries.org
