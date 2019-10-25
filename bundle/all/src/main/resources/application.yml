@@ -26,3 +26,28 @@ flyway:
   ignoreMissingMigrations: true
   repair: true
 
+web:
+  portal: https://tbbtalent-staging.herokuapp.com/candidate-portal
+  
+flyway:
+  ignoreMissingMigrations: true
+  repair: true
+
+aws:
+   s3:
+      files-bucket: files.tbbtalent.org
+      region: us-east-1
+   credentials:
+      access-key: AKIA6C7ESOA6I7YPKGDT
+      secret-key: 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
+
+email:
+   type: SMTP # STUB or SMTP
+   host: smtp.gmail.com
+   port: 587
+   user: tbbtalent@talentbeyondboundaries.org
+   password: TBB4Talent!now
+   authenticated: true
+   default-email: tbbtalent@talentbeyondboundaries.org
+   test-override-email: tbbtalent@talentbeyondboundaries.org
+

@@ -57,8 +57,10 @@ public class EmailTester {
         sender.setType(EmailType.SMTP);
         sender.setHost("smtp.gmail.com");
         sender.setPort(587);
-        sender.setUser("devtestingdp@gmail.com");
-        sender.setPassword("H@6J9bpcIDHa");
+//        sender.setUser("devtestingdp@gmail.com");
+//        sender.setPassword("H@6J9bpcIDHa");
+        sender.setUser("tbbtalent@talentbeyondboundaries.org");
+        sender.setPassword("TBB4Talent!now");
         sender.setAuthenticate(true);
         sender.setDefaultEmail("martina@digitalpurpose.com.au");
         sender.setTestOverrideEmail("martina+tbb@digitalpurpose.com.au");
