@@ -20,13 +20,6 @@ jwt:
   expirationInMs: 604800000
 
 web:
-  portal: http://localhost:4200
-
-flyway:
-  ignoreMissingMigrations: true
-  repair: true
-
-web:
   portal: https://tbbtalent-staging.herokuapp.com/candidate-portal
   
 flyway:
