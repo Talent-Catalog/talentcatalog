@@ -61,5 +61,25 @@ $candidate-card-width: 375px;
       display: flex;
     }
   }
+}
 
+.operator {
+  display: inline-flex;
+
+  .btn {
+    padding: 0 8px;
+    line-height: 1;
+    border-radius: 0;
+    font-size: 12px;
+  }
+
+  .btn + .btn {
+    border-left: 1px solid black;
+    margin: 0;
+  }
+
+  .active {
+    color: black;
+    font-weight: bold;
+  }
 }

@@ -19,9 +19,7 @@ import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.SavedSearchService;
 
-
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -160,8 +158,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         savedSearch.setUnRegistered(request.getSearchCandidateRequest().getUnRegistered());
         savedSearch.setLastModifiedFrom(request.getSearchCandidateRequest().getLastModifiedFrom());
         savedSearch.setLastModifiedTo(request.getSearchCandidateRequest().getLastModifiedTo());
-        savedSearch.setCreatedFrom(request.getSearchCandidateRequest().getRegisteredFrom());
-        savedSearch.setCreatedTo(request.getSearchCandidateRequest().getRegisteredTo());
+//        savedSearch.setCreatedFrom(request.getSearchCandidateRequest().getRegisteredFrom());
+//        savedSearch.setCreatedTo(request.getSearchCandidateRequest().getRegisteredTo());
         savedSearch.setMinAge(request.getSearchCandidateRequest().getMinAge());
         savedSearch.setMaxAge(request.getSearchCandidateRequest().getMaxAge());
         savedSearch.setMinEducationLevel(request.getSearchCandidateRequest().getMinEducationLevel());
@@ -192,8 +190,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setUnRegistered(request.isUnRegistered());
         searchCandidateRequest.setLastModifiedFrom(request.getLastModifiedFrom());
         searchCandidateRequest.setLastModifiedTo(request.getLastModifiedTo());
-        searchCandidateRequest.setRegisteredFrom(request.getCreatedFrom());
-        searchCandidateRequest.setRegisteredTo(request.getCreatedTo());
+//        searchCandidateRequest.setRegisteredFrom(request.getCreatedFrom());
+//        searchCandidateRequest.setRegisteredTo(request.getCreatedTo());
         searchCandidateRequest.setMinAge(request.getMinAge());
         searchCandidateRequest.setMaxAge(request.getMaxAge());
         searchCandidateRequest.setMinEducationLevel(request.getMinEducationLevel());

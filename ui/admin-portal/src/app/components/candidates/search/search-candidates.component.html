@@ -17,14 +17,14 @@
   <form class="form-row" [formGroup]="searchForm" (ngSubmit)="search()">
 
     <!-- KEYWORD -->
-    <div class="form-group col-12 col-md-4">
+    <div class="form-group col-12 col-md-3">
       <label for="keyword">Keyword</label>
       <input id="keyword" type="text" class="form-control" placeholder="Search..." aria-label="Search"
              formControlName="keyword">
     </div>
 
     <!-- STATUS -->
-    <div class="form-group col-12 col-md-2">
+    <div class="form-group col-12 col-md-3">
       <label>Status</label>
       <ng-multiselect-dropdown
         name="statuses"
@@ -40,11 +40,23 @@
     </div>
 
     <!-- OCCUPATION (VETTED) -->
-    <!-- TODO 'any | not' -->
-    <div class="form-group col-12 col-md-2">
-      <label>Occupation
-        <small>(TBB vetted)</small>
+    <div class="form-group col-12 col-md-3">
+      <label class="m-0">
+        <div>
+          <span>Occupation</span>
+        </div>
+        <small class="text-muted">(TBB vetted)</small>
       </label>
+
+      <div class="operator">
+        <button class="btn btn-link" type="button"
+                [class.active]="searchForm.value.verifiedOccupationSearchType === 'or'"
+                (click)="handleSearchTypeChange('verifiedOccupationSearchType', 'or')">any</button>
+        <button class="btn btn-link" type="button"
+                [class.active]="searchForm.value.verifiedOccupationSearchType === 'not'"
+                (click)="handleSearchTypeChange('verifiedOccupationSearchType', 'not')">not</button>
+      </div>
+
       <ng-multiselect-dropdown
         name="verifiedOccupationIds"
         [placeholder]="''"
@@ -59,7 +71,7 @@
     </div>
 
     <!-- ENGLISH LANGUAGE -->
-    <div class="form-group col-12 col-md-2">
+    <div class="form-group col-12 col-md-3">
       <label>English Proficiency</label>
       <app-language-level-form-control #englishLanguage
                                        [model]="englishLanguageModel"
@@ -71,14 +83,18 @@
     </div>
 
     <!-- TOGGLE FILTERS -->
-    <div class="form-group col-12 col-md-2">
-      <button type="button" class="btn btn-outline-primary w-100" (click)="moreFilters = !moreFilters">
-        <span *ngIf="!moreFilters">More Filters</span>
-        <span *ngIf="moreFilters">Less Filters</span>
-      </button>
+    <div class="col-12">
+      <div class="row">
+        <div class="offset-3 col-6">
+          <button type="button" class="btn btn-outline-primary w-100" (click)="moreFilters = !moreFilters">
+            <span *ngIf="!moreFilters">More Filters</span>
+            <span *ngIf="moreFilters">Less Filters</span>
+          </button>
+        </div>
+      </div>
     </div>
 
-    <div class="form-row" [hidden]="!moreFilters">
+    <div class="form-row p-0" [hidden]="!moreFilters">
 
       <hr class="w-100">
 
@@ -119,7 +135,7 @@
         <div class="d-flex flex-wrap">
 
           <!-- AGE -->
-          <div class="col-12 col-md-4">
+          <div class="col-12 col-md-6">
 
             <div class="d-flex flex-wrap">
 
@@ -138,15 +154,8 @@
 
           </div>
 
-          <!-- REGISTERED BETWEEN -->
-          <div class="form-group col-12 col-md-4">
-            <label>Registered On</label>
-            <app-date-range-picker #createdDate (dateSelected)="handleDateSelected($event, 'created')">
-            </app-date-range-picker>
-          </div>
-
           <!-- MODIFIED BETWEEN -->
-          <div class="form-group col-12 col-md-4">
+          <div class="form-group col-12 col-md-6">
             <label>Last Modified</label>
             <app-date-range-picker #modifiedDate (dateSelected)="handleDateSelected($event, 'lastModified')">
             </app-date-range-picker>
@@ -212,7 +221,16 @@
       <!-- NATIONALITY -->
       <div class="form-group col-12 col-md-3">
         <label>Nationality</label>
-        <!-- TODO 'any | not' -->
+
+        <div class="operator">
+          <button class="btn btn-link" type="button"
+                  [class.active]="searchForm.value.nationalitySearchType === 'or'"
+                  (click)="handleSearchTypeChange('nationalitySearchType', 'or')">any</button>
+          <button class="btn btn-link" type="button"
+                  [class.active]="searchForm.value.nationalitySearchType === 'not'"
+                  (click)="handleSearchTypeChange('nationalitySearchType', 'not')">not</button>
+        </div>
+
         <ng-multiselect-dropdown
           name="selectedNationalities"
           [placeholder]="'Select Nationalities'"
@@ -271,28 +289,38 @@
       </ng-container>
 
 
-      <hr class="w-100">
     </div>
-    <div class="col-4">
-      <div class="btn-group" role="group">
-        <button type="button" class="btn btn-outline-dark" (click)="showSavedSearches()">Load Saved Search</button>
-        <button type="button"  class="btn btn-outline-dark" (click)="showSave()">Save Search</button>
-      </div>
+
+    <hr class="w-100">
+
+    <!-- LOAD SAVED SEARCH  -->
+    <div class="form-group col-6">
+      <button type="button" class="btn btn-outline-dark w-100" (click)="showSavedSearches()">Load Saved Search</button>
     </div>
-    <div *ngIf="savedSearch" class="col-4">
-      <select class="form-control" name="shortlistStatus" shortlistStatus [formControlName]="'shortlistStatus'">
+
+    <!-- SAVE SEARCH  -->
+    <div class="form-group col-6">
+      <button type="button"  class="btn btn-outline-primary w-100" (click)="showSave()">Save Search</button>
+    </div>
+
+    <!-- SHORT LIST STATUS FILTER -->
+    <div class="form-group col-12" *ngIf="savedSearch">
+      <label for="shortlistStatus">Candidate review status</label>
+      <select class="form-control" id="shortlistStatus" [formControlName]="'shortlistStatus'">
         <option value="">All</option>
         <option value="verified">Verified</option>
         <option value="rejected">Rejected</option>
       </select>
     </div>
 
-    <div class="offset-8 col-4">
+    <!-- CLEAR FORM -->
+    <div class="col-12">
       <div class="d-flex justify-content-end">
-        <button type="button" class="btn btn-outline-dark"
+        <button type="button" class="btn btn-outline-dark mr-2"
                 [disabled]="loading"
                 (click)="clear()">Clear
         </button>
+
         <button type="submit" class="btn btn-primary" [disabled]="loading">Apply</button>
       </div>
     </div>

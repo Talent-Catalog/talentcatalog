@@ -141,9 +141,9 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       occupationIds: [[]],
       orProfileKeyword: [null],
       verifiedOccupationIds: [[]],
-      verifiedOccupationSearchType: [null],
+      verifiedOccupationSearchType: ['or'],
       nationalityIds: [[]],
-      nationalitySearchType: [null],
+      nationalitySearchType: ['or'],
       countryIds: [[]],
       englishMinWrittenLevel: [null],
       englishMinSpokenLevel: [null],
@@ -500,5 +500,9 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   handleCandidateShortlistSaved(candidateShortlistItem: CandidateShortlistItem) {
     this.search();
     //todo partial update
+  }
+
+  handleSearchTypeChange(control: string, value: 'or' | 'not') {
+    this.searchForm.controls[control].patchValue(value);
   }
 }

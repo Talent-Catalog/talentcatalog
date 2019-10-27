@@ -38,10 +38,10 @@ public class SearchCandidateRequest extends SearchRequest {
     private LocalDate lastModifiedFrom;
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private LocalDate lastModifiedTo;
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
-    private LocalDate registeredFrom;
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
-    private LocalDate registeredTo;
+//    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+//    private LocalDate registeredFrom;
+//    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+//    private LocalDate registeredTo;
     @NotNull
     private String timezone;
     private Integer minAge;
@@ -208,21 +208,21 @@ public class SearchCandidateRequest extends SearchRequest {
         this.lastModifiedTo = lastModifiedTo;
     }
 
-    public LocalDate getRegisteredFrom() {
-        return registeredFrom;
-    }
-
-    public void setRegisteredFrom(LocalDate registeredFrom) {
-        this.registeredFrom = registeredFrom;
-    }
-
-    public LocalDate getRegisteredTo() {
-        return registeredTo;
-    }
-
-    public void setRegisteredTo(LocalDate registeredTo) {
-        this.registeredTo = registeredTo;
-    }
+//    public LocalDate getRegisteredFrom() {
+//        return registeredFrom;
+//    }
+//
+//    public void setRegisteredFrom(LocalDate registeredFrom) {
+//        this.registeredFrom = registeredFrom;
+//    }
+//
+//    public LocalDate getRegisteredTo() {
+//        return registeredTo;
+//    }
+//
+//    public void setRegisteredTo(LocalDate registeredTo) {
+//        this.registeredTo = registeredTo;
+//    }
 
     public String getTimezone() {
         return timezone;

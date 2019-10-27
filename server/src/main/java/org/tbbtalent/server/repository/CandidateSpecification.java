@@ -67,11 +67,16 @@ public class CandidateSpecification {
             if (!Collections.isEmpty(request.getVerifiedOccupationIds()) || !Collections.isEmpty(request.getOccupationIds())) {
                 Join<Candidate, CandidateOccupation> candidateOccupations = candidate.join("candidateOccupations", JoinType.LEFT);
                 Join<CandidateOccupation, Occupation> occupation = candidateOccupations.join("occupation", JoinType.LEFT);
+
                 if (!Collections.isEmpty(request.getVerifiedOccupationIds())) {
                     if (SearchType.not.equals(request.getVerifiedOccupationSearchType())) {
-                        conjunction.getExpressions().add(builder.notEqual(builder.isTrue(candidateOccupations.get("verified")),
-                                builder.isTrue(occupation.get("id").in(request.getVerifiedOccupationIds()))
-                        ));
+//                        conjunction.getExpressions().add(
+//                                builder.notEqual(builder.isTrue(candidateOccupations.get("verified")),
+//                                builder.isTrue(occupation.get("id").in(request.getVerifiedOccupationIds()))
+//                        ));
+
+                        builder.not(occupation.get("id").in(request.getVerifiedOccupationIds()));
+
                     } else {
                         conjunction.getExpressions().add(builder.and(builder.isTrue(candidateOccupations.get("verified")),
                                 builder.isTrue(occupation.get("id").in(request.getVerifiedOccupationIds()))
@@ -79,6 +84,7 @@ public class CandidateSpecification {
                     }
 
                 }
+
                 if (!Collections.isEmpty(request.getOccupationIds())) {
                     if (StringUtils.isBlank(request.getOrProfileKeyword())) {
                         conjunction.getExpressions().add(
@@ -115,9 +121,13 @@ public class CandidateSpecification {
 
             // NATIONALITY SEARCH
             if (!Collections.isEmpty(request.getNationalityIds())) {
-                conjunction.getExpressions().add(
-                        builder.isTrue(candidate.get("nationality").in(request.getNationalityIds()))
-                );
+                if (request.getNationalitySearchType() == null || SearchType.or.equals(request.getNationalitySearchType())) {
+                    conjunction.getExpressions().add(
+                            builder.isTrue(candidate.get("nationality").in(request.getNationalityIds()))
+                    );
+                } else {
+
+                }
             }
 
             // COUNTRY SEARCH
@@ -145,13 +155,13 @@ public class CandidateSpecification {
             }
 
             //Registered From - change to registered
-            if (request.getRegisteredFrom() != null) {
-                conjunction.getExpressions().add(builder.greaterThanOrEqualTo(candidate.get("registeredDate"), getOffsetDateTime(request.getRegisteredFrom(), LocalTime.MIN, request.getTimezone())));
-            }
-
-            if (request.getRegisteredTo() != null) {
-                conjunction.getExpressions().add(builder.lessThanOrEqualTo(candidate.get("registeredDate"), getOffsetDateTime(request.getRegisteredTo(), LocalTime.MAX, request.getTimezone())));
-            }
+//            if (request.getRegisteredFrom() != null) {
+//                conjunction.getExpressions().add(builder.greaterThanOrEqualTo(candidate.get("registeredDate"), getOffsetDateTime(request.getRegisteredFrom(), LocalTime.MIN, request.getTimezone())));
+//            }
+//
+//            if (request.getRegisteredTo() != null) {
+//                conjunction.getExpressions().add(builder.lessThanOrEqualTo(candidate.get("registeredDate"), getOffsetDateTime(request.getRegisteredTo(), LocalTime.MAX, request.getTimezone())));
+//            }
 
             //Min / Max Age
             if (request.getMinAge() != null) {
