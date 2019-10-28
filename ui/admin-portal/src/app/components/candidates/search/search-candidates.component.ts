@@ -70,6 +70,8 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   subscription: Subscription;
   pageNumber: number;
   pageSize: number;
+  sortField = 'id';
+  sortDirection = 'ASC';
 
   /* MULTI SELECT */
   dropdownSettings: IDropdownSettings = {
@@ -323,6 +325,8 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     }
     request.pageNumber = this.pageNumber - 1;
     request.pageSize = this.pageSize;
+    request.sortFields = [this.sortField];
+    request.sortDirection = this.sortDirection;
     this.subscription = this.candidateService.search(request).subscribe(
       results => {
         this.results = results;
@@ -530,5 +534,15 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   handleSearchTypeChange(control: string, value: 'or' | 'not') {
     this.searchForm.controls[control].patchValue(value);
+  }
+
+  toggleSort(column){
+    if (this.sortField == column){
+      this.sortDirection = this.sortDirection == 'ASC' ? 'DESC' : 'ASC';
+    } else {
+      this.sortField = column;
+      this.sortDirection = 'ASC';
+    }
+    this.search();
   }
 }
