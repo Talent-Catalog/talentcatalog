@@ -12,11 +12,11 @@ import java.util.List;
 public interface NationalityRepository extends JpaRepository<Nationality, Long>, JpaSpecificationExecutor<Nationality> {
 
     @Query(" select n from Nationality n "
-            + " where n.status = :status")
+            + " where n.status = :status order by n.name asc")
     List<Nationality> findByStatus(@Param("status") Status status);
 
     @Query(" select distinct n from Nationality n "
             + " where lower(n.name) = lower(:name)"
-            + " and n.status != 'deleted'" )
+            + " and n.status != 'deleted' order by n.name asc" )
     Nationality findByNameIgnoreCase(@Param("name") String name);
 }

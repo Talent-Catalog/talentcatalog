@@ -28,14 +28,14 @@ public interface CandidateOccupationRepository extends JpaRepository<CandidateOc
 
     @Query("select distinct o from CandidateOccupation co"
             + " join co.occupation o "
-            + " where co.verified = true")
+            + " where co.verified = true order by o.name asc")
     List<Occupation> findAllVerifiedOccupations();
 
     @Query("select distinct o from CandidateOccupation co"
-            + " join co.occupation o ")
+            + " join co.occupation o order by o.name asc")
     List<Occupation> findAllOccupations();
 
     @Query(" select o from CandidateOccupation o "
-            + " where o.candidate.id = :candidateId ")
+            + " where o.candidate.id = :candidateId")
     List<CandidateOccupation> findByCandidateId(@Param("candidateId") Long candidateId);
 }

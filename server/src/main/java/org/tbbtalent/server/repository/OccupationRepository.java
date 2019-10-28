@@ -12,12 +12,12 @@ import java.util.List;
 public interface OccupationRepository extends JpaRepository<Occupation, Long>, JpaSpecificationExecutor<Occupation> {
 
     @Query(" select o from Occupation o "
-            + " where o.status = :status")
+            + " where o.status = :status order by o.name asc")
     List<Occupation> findByStatus(@Param("status") Status status);
 
     @Query(" select distinct o from Occupation o "
             + " where lower(o.name) = lower(:name)"
-            + " and o.status != 'deleted'" )
+            + " and o.status != 'deleted' order by o.name asc" )
     Occupation findByNameIgnoreCase(@Param("name") String name);
 
 }
