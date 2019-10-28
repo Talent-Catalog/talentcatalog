@@ -43,7 +43,11 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
 
     @Override
     public Page<CandidateJobExperience> searchCandidateJobExperience(SearchJobExperienceRequest request) {
-        return candidateJobExperienceRepository.findByCandidateOccupationId(request.getCandidateOccupationId(), request.getPageRequest());
+        if (request.getCandidateId() != null) {
+            return candidateJobExperienceRepository.findByCandidateId(request.getCandidateId(), request.getPageRequest());
+        } else {
+            return candidateJobExperienceRepository.findByCandidateOccupationId(request.getCandidateOccupationId(), request.getPageRequest());
+        }
     }
 
     @Override

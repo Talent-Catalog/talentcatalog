@@ -5,11 +5,58 @@
   {{error}}
 </div>
 
-<div *ngFor="let candidateOccupation of results">
-  <app-view-candidate-job-experience
-    [candidate]="candidate"
-    [candidateOccupation]="candidateOccupation"
-    [editable]="editable">
-  </app-view-candidate-job-experience>
+<div class="dropdown" ngbDropdown>
+  <a class="dropdown-toggle btn btn-sm" ngbDropdownToggle>
+    Order By
+  </a>
+  <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
+    <a class="dropdown-item" (click)="orderOccupation = true">Occupation</a>
+    <a class="dropdown-item" (click)="orderOccupation = false">Experiences</a>
+  </div>
+</div>
+
+<div *ngIf="orderOccupation">
+  <div *ngFor="let candidateOccupation of results">
+    <app-view-candidate-job-experience
+      [candidate]="candidate"
+      [candidateOccupation]="candidateOccupation"
+      [editable]="editable">
+    </app-view-candidate-job-experience>
+  </div>
+</div>
+
+<div *ngIf="!orderOccupation">
+  <div *ngFor="let candidateJobExperience of experiences">
+    <div class="card" *ngIf="!loading">
+      <div class="card-header">
+        {{candidateJobExperience.role}}
+        <div class="pull-right" *ngIf="editable">
+          <button type="button" class="btn btn-default" (click)="editCandidateJobExperience(candidateJobExperience)"><i
+            class="fa fa-edit"></i></button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div *ngIf="candidateJobExperience.description">
+          <div *ngIf="!expanded">
+            {{ (candidateJobExperience.description | slice:0:50) + (candidateJobExperience.description.length > 50 ? ' ...' : '')}}
+            <button *ngIf="candidateJobExperience.description.length > 50" type="button" class="btn btn-sm btn-default" (click)="expanded = true"><i class="fa fa-toggle-down"></i></button>
+          </div>
+          <div *ngIf="expanded">
+            {{ candidateJobExperience.description }}
+            <button type="button" class="btn btn-sm btn-default" (click)="expanded = false"><i class="fa fa-toggle-up"></i></button>
+          </div>
+        </div>
+        <div class="row">
+          <label class="col-form-label">{{candidateJobExperience.companyName}}, {{candidateJobExperience.country.name}}</label>
+        </div>
+        <div class="row">
+          <label class="col-form-label mb-2 text-muted small">{{candidateJobExperience.startDate | date }} - {{candidateJobExperience.endDate | date }}</label>
+        </div>
+        <div class="pull-right" *ngIf="hasMore">
+          <button type="button" class="btn btn-sm btn-outline-dark" (click)="loadMore()">Load More</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
