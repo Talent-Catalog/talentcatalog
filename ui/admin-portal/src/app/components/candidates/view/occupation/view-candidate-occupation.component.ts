@@ -103,7 +103,6 @@ export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
     });
 
     editCandidateJobExperienceModal.componentInstance.candidateJobExperience = candidateJobExperience;
-    editCandidateJobExperienceModal.componentInstance.candidateOccupationId = this.candidateOccupation.id;
 
     editCandidateJobExperienceModal.result
       .then((candidateJobExperience) => this.doSearch())

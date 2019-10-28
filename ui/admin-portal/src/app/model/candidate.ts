@@ -3,6 +3,7 @@ import {Country} from "./country";
 import {Nationality} from "./nationality";
 import {CandidateShortlistItem} from "./candidate-shortlist-item";
 import {EducationMajor} from "./education-major";
+import {EducationLevel} from "./education-level";
 
 export interface Candidate {
   id: number;
@@ -22,4 +23,5 @@ export interface Candidate {
   migrationEducationMajor: EducationMajor;
   additionalInfo: string;
   candidateMessage: string;
+  maxEducationLevel: EducationLevel
 }

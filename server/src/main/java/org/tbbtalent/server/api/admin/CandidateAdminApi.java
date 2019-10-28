@@ -75,6 +75,7 @@ public class CandidateAdminApi {
                 .add("yearOfArrival")
                 .add("additionalInfo")
                 .add("candidateMessage")
+                .add("maxEducationLevel", educationLevelDto())
                 .add("country", countryDto())
                 .add("nationality", nationalityDto())
                 .add("user", userDto())
@@ -115,6 +116,13 @@ public class CandidateAdminApi {
     }
 
     private DtoBuilder educationMajor() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
+                ;
+    }
+
+    private DtoBuilder educationLevelDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("name")
