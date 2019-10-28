@@ -119,7 +119,7 @@
         "LASTNAME": "Last name",
         "GENDER": "Gender",
         "DOB": "Date of birth",
-        "COUNTRYID": "Country",
+        "COUNTRYID": "Country you are currently living in",
         "CITY": "City",
         "YEAROFARRIVAL": "What year did you arrive in this country?",
         "NATIONALITY": "Nationality",

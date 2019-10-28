@@ -6,7 +6,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
-public class UpdateCandidateRequest {
+public class UpdateCandidateRequest extends BaseCandidateContactRequest {
 
     @NotBlank
     private String firstName;
@@ -21,9 +21,6 @@ public class UpdateCandidateRequest {
     private Integer yearOfArrival;
     private String address1;
     private String city;
-    private String phone;
-    private String whatsapp;
-    private String email;
     private LocalDate dob;
 
     public String getFirstName() {
@@ -88,30 +85,6 @@ public class UpdateCandidateRequest {
 
     public void setCity(String city) {
         this.city = city;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getWhatsapp() {
-        return whatsapp;
-    }
-
-    public void setWhatsapp(String whatsapp) {
-        this.whatsapp = whatsapp;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public LocalDate getDob() {

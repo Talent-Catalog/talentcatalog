@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,6 @@ import org.tbbtalent.server.service.CandidateService;
 import org.tbbtalent.server.service.SavedSearchService;
 import org.tbbtalent.server.service.email.EmailHelper;
 
-import javax.security.auth.login.AccountLockedException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +41,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final UserContext userContext;
     private final SavedSearchService savedSearchService;
     private final CandidateNoteService candidateNoteService;
-    private final EmailHelper emailHelper; 
+    private final EmailHelper emailHelper;
 
     @Autowired
     public CandidateServiceImpl(UserRepository userRepository,
@@ -158,6 +158,9 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateCandidate(long id, UpdateCandidateRequest request) {
+        // Check update request for a duplicate email or phone number
+        request.setId(id);
+        validateContactRequest(request);
 
         Candidate candidate = this.candidateRepository.findByIdLoadUser(id)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
@@ -171,33 +174,11 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new NoSuchObjectException(Nationality.class, request.getNationalityId()));
 
         User user = candidate.getUser();
-        //check email not already taken
-        if (!StringUtils.isBlank(request.getPhone())) {
-            User exists = userRepository.findByEmailIgnoreCase(request.getEmail());
-            if (exists != null && !exists.getId().equals(user.getId())) {
-                throw new UsernameTakenException("email");
-            }
-            user.setFirstName(request.getFirstName());
-            user.setLastName(request.getLastName());
-            user.setEmail(request.getEmail());
-            userRepository.save(user);
-        }
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setEmail(request.getEmail());
+        userRepository.save(user);
 
-        //check phone not already taken
-        if (!StringUtils.isBlank(request.getPhone())) {
-            Candidate exists = candidateRepository.findByPhoneIgnoreCase(request.getEmail());
-            if (exists != null && !exists.getId().equals(id)) {
-                throw new UsernameTakenException("phone");
-            }
-        }
-
-        //check whatsapp not already taken
-        if (!StringUtils.isBlank(request.getWhatsapp())) {
-            Candidate exists = candidateRepository.findByWhatsappIgnoreCase(request.getWhatsapp());
-            if (exists != null && !exists.getId().equals(id)) {
-                throw new UsernameTakenException("whatsapp");
-            }
-        }
         candidate.setUser(user);
         candidate.setDob(request.getDob());
         candidate.setGender(request.getGender());
@@ -225,34 +206,19 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public LoginRequest register(RegisterCandidateRequest request) throws AccountLockedException {
+    public LoginRequest register(RegisterCandidateRequest request) {
         if (!request.getPassword().equals(request.getPasswordConfirmation())) {
             throw new PasswordMatchException();
         }
+
+        // Check update request for a duplicate email or phone number
+        validateContactRequest(request);
 
         /* Check for existing account with the username fields */
         if (StringUtils.isNotBlank(request.getUsername())) {
             User exists = userRepository.findByUsernameAndRole(request.getUsername(), Role.user);
             if (exists != null) {
                 throw new UsernameTakenException("username");
-            }
-        }
-        if (StringUtils.isNotBlank(request.getEmail())) {
-            User exists = userRepository.findByEmailIgnoreCase(request.getEmail());
-            if (exists != null) {
-                throw new UsernameTakenException("email");
-            }
-        }
-        if (StringUtils.isNotBlank(request.getPhone())) {
-            Candidate exists = candidateRepository.findByPhoneIgnoreCase(request.getPhone());
-            if (exists != null) {
-                throw new UsernameTakenException("phone");
-            }
-        }
-        if (StringUtils.isNotBlank(request.getWhatsapp())) {
-            Candidate exists = candidateRepository.findByWhatsappIgnoreCase(request.getWhatsapp());
-            if (exists != null) {
-                throw new UsernameTakenException("whatsapp");
             }
         }
 
@@ -277,7 +243,7 @@ public class CandidateServiceImpl implements CandidateService {
         User user = candidate.getUser();
         user.setPasswordEnc(passwordEncrypted);
         user = this.userRepository.save(user);
-        
+
         /* Log the candidate in */
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername(user.getUsername());
@@ -287,6 +253,9 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateContact(UpdateCandidateContactRequest request) {
+        // Check update request for a duplicate email or phone number
+        validateContactRequest(request);
+
         User user = userContext.getLoggedInUser();
         user.setEmail(request.getEmail());
         user = userRepository.save(user);
@@ -347,7 +316,7 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setAdditionalInfo(request.getAdditionalInfo());
         if (BooleanUtils.isTrue(request.getSubmit()) && !candidate.getStatus().equals(CandidateStatus.pending)) {
             updateCandidateStatus(candidate.getId(), new UpdateCandidateStatusRequest(CandidateStatus.pending, "Candidate submitted"));
-            
+
             emailHelper.sendRegistrationEmail(candidate.getUser());
         }
 
@@ -401,4 +370,54 @@ public class CandidateServiceImpl implements CandidateService {
         return candidateRepository.findByUserIdLoadProfile(user.getId());
     }
 
+    @Transactional(readOnly = true)
+    void validateContactRequest(BaseCandidateContactRequest request) {
+        User user;
+        if (request.getId() != null) {
+            user = userRepository.findById(request.getId()).orElseThrow(() -> new NoSuchObjectException(User.class, request.getId()));
+        } else {
+            user = userContext.getLoggedInUser();
+        }
+
+        Candidate candidate = null;
+        if (user != null) {
+            candidate = user.getCandidate();
+        }
+
+        // Check email not already taken
+        if (!StringUtils.isBlank(request.getEmail())) {
+            try {
+                User exists = userRepository.findByEmailIgnoreCase(request.getEmail());
+                if (user == null && exists != null || exists != null && !exists.getId().equals(user.getId())) {
+                    throw new UsernameTakenException("email");
+                }
+            } catch (IncorrectResultSizeDataAccessException e) {
+                throw new UsernameTakenException("email");
+            }
+        }
+
+        // Check phone not already taken
+        if (!StringUtils.isBlank(request.getPhone())) {
+            try {
+                Candidate exists = candidateRepository.findByPhoneIgnoreCase(request.getPhone());
+                if (candidate == null && exists != null || exists != null && !exists.getId().equals(candidate.getId())) {
+                    throw new UsernameTakenException("phone");
+                }
+            } catch (IncorrectResultSizeDataAccessException e) {
+                throw new UsernameTakenException("phone");
+            }
+        }
+
+        // Check whatsapp not already taken
+        if (!StringUtils.isBlank(request.getWhatsapp())) {
+            try {
+                Candidate exists = candidateRepository.findByWhatsappIgnoreCase(request.getWhatsapp());
+                if (user == null && exists != null || exists != null && !exists.getId().equals(candidate.getId())) {
+                    throw new UsernameTakenException("whatsapp");
+                }
+            } catch (IncorrectResultSizeDataAccessException e) {
+                throw new UsernameTakenException("whatsapp");
+            }
+        }
+    }
 }
