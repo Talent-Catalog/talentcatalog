@@ -62,6 +62,7 @@ public class EmailHelper {
     public void sendResetPasswordEmail(User user) throws EmailSendFailedException {
         
         String email = user.getEmail();
+        String displayName = user.getDisplayName();
         String token = user.getResetToken();
         
         String subject = null;
@@ -69,6 +70,7 @@ public class EmailHelper {
         String bodyHtml = null;
         try {
             final Context ctx = new Context();
+            ctx.setVariable("displayName", displayName);
             ctx.setVariable("resetUrl", portalUrl + "/reset-password/" + token);
             ctx.setVariable("year", currentYear());
             
@@ -82,7 +84,33 @@ public class EmailHelper {
             throw new EmailSendFailedException(e);
         }
     }
-    
+
+    public void sendIncompleteApplication(User user, String message) throws EmailSendFailedException {
+
+        String email = user.getEmail();
+        String displayName = user.getDisplayName();
+
+        String subject = null;
+        String bodyText = null;
+        String bodyHtml = null;
+        try {
+            final Context ctx = new Context();
+            ctx.setVariable("displayName", displayName);
+            ctx.setVariable("candidateMessage", message);
+            ctx.setVariable("username", user.getUsername());
+            ctx.setVariable("forgotPwdUrl", portalUrl + "/reset-password/");
+            ctx.setVariable("year", currentYear());
+
+            subject = "Talent Beyond Boundaries - Please provide more details application";
+            bodyText = textTemplateEngine.process("incomplete-application", ctx);
+            bodyHtml = htmlTemplateEngine.process("incomplete-application", ctx);
+
+            emailSender.sendAsync(email, subject, bodyText, bodyHtml);
+        } catch (Exception e) {
+            log.error("error sending confirm registration email", e);
+            throw new EmailSendFailedException(e);
+        }
+    }
     private String currentYear() {
         return LocalDate.now().getYear() + "";
     }

@@ -28,6 +28,8 @@ public class CandidateEducation extends AbstractDomainObject<Long> {
 
     private Integer yearCompleted;
 
+    private Boolean incomplete;
+
     public CandidateEducation() {
     }
 
@@ -87,5 +89,13 @@ public class CandidateEducation extends AbstractDomainObject<Long> {
 
     public void setEducationMajor(EducationMajor educationMajor) {
         this.educationMajor = educationMajor;
+    }
+
+    public Boolean getIncomplete() {
+        return incomplete;
+    }
+
+    public void setIncomplete(Boolean incomplete) {
+        this.incomplete = incomplete;
     }
 }

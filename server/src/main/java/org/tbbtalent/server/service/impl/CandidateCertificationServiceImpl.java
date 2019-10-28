@@ -43,8 +43,14 @@ public class CandidateCertificationServiceImpl implements CandidateCertification
         candidateCertification.setInstitution(request.getInstitution());
         candidateCertification.setDateCompleted(request.getDateCompleted());
 
+
         // Save the candidateOccupation
-        return candidateCertificationRepository.save(candidateCertification);
+        candidateCertification = candidateCertificationRepository.save(candidateCertification);
+
+        candidate.setAuditFields(candidate.getUser());
+        candidateRepository.save(candidate);
+
+        return candidateCertification;
     }
 
     @Override
@@ -59,6 +65,10 @@ public class CandidateCertificationServiceImpl implements CandidateCertification
         }
 
         candidateCertificationRepository.delete(candidateCertification);
+
+        candidate.setAuditFields(candidate.getUser());
+        candidateRepository.save(candidate);
+
     }
 
     @Override
@@ -79,7 +89,12 @@ public class CandidateCertificationServiceImpl implements CandidateCertification
         candidateCertification.setDateCompleted(request.getDateCompleted());
 
         // Save the candidateOccupation
-        return candidateCertificationRepository.save(candidateCertification);
+        candidateCertification =  candidateCertificationRepository.save(candidateCertification);
+
+        candidate.setAuditFields(candidate.getUser());
+        candidateRepository.save(candidate);
+
+        return candidateCertification;
     }
 
     @Override

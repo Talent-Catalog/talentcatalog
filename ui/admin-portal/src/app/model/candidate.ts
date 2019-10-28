@@ -20,4 +20,6 @@ export interface Candidate {
   user: User;
   candidateShortlistItems: CandidateShortlistItem[];
   migrationEducationMajor: EducationMajor;
+  additionalInfo: string;
+  candidateMessage: string;
 }
