@@ -44,10 +44,10 @@ import {LanguageLevelFormControlComponent} from "../../util/form/language-profic
 })
 export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
-  @ViewChild('modifiedDate') modifiedDatePicker: DateRangePickerComponent;
-  @ViewChild('englishLanguage') englishLanguagePicker: LanguageLevelFormControlComponent;
-  @ViewChild('otherLanguage') otherLanguagePicker: LanguageLevelFormControlComponent;
-  @ViewChild('formWrapper') formWrapper: ElementRef;
+  @ViewChild('modifiedDate', {static: true}) modifiedDatePicker: DateRangePickerComponent;
+  @ViewChild('englishLanguage', {static: true}) englishLanguagePicker: LanguageLevelFormControlComponent;
+  @ViewChild('otherLanguage', {static: true}) otherLanguagePicker: LanguageLevelFormControlComponent;
+  @ViewChild('formWrapper', {static: true}) formWrapper: ElementRef;
 
   error: any;
   _loading = {
