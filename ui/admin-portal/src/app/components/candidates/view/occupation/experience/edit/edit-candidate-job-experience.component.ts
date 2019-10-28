@@ -13,6 +13,7 @@ import {CountryService} from "../../../../../../services/country.service";
 export class EditCandidateJobExperienceComponent implements OnInit {
 
   candidateJobExperience: CandidateJobExperience;
+  candidate: Candidate;
 
   candidateForm: FormGroup;
 
@@ -43,6 +44,7 @@ export class EditCandidateJobExperienceComponent implements OnInit {
     );
 
     this.candidateForm = this.fb.group({
+      candidateId: [
       countryId: [this.candidateJobExperience.country ? this.candidateJobExperience.country.id : null, Validators.required],
       companyName: [this.candidateJobExperience.companyName],
       role: [this.candidateJobExperience.role],

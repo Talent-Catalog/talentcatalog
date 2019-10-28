@@ -51,6 +51,7 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
     });
 
     if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
+      this.loading = true;
       this.doSearch();
     }
 
@@ -58,9 +59,10 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
 
   doSearch() {
     this.loading = true;
+    this.experiences = [];
     this.candidateJobExperienceService.search(this.candidateJobExperienceForm.value).subscribe(
       results => {
-        this.experiences.push(...results.content);
+        this.experiences = results.content;
         this.hasMore = results.totalPages > results.number+1;
         this.loading = false;
       },
