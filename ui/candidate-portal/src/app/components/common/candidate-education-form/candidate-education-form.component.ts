@@ -52,7 +52,8 @@ export class CandidateEducationFormComponent implements OnInit {
       countryId: [edu && edu.country ? edu.country.id : null, Validators.required],
       institution: [edu ? edu.institution : null, Validators.required],
       lengthOfCourseYears: [edu ? edu.lengthOfCourseYears : null, Validators.required],
-      dateCompleted: [edu ? edu.yearCompleted : null, Validators.required],
+      dateCompleted: [edu ? edu.yearCompleted : null],
+      incomplete: [edu ? edu.incomplete : null],
       educationMajorId: [edu && edu.educationMajor ? edu.educationMajor.id : null, Validators.required]
     });
     /* Observe form educationType control and add required validator for university (and above) education types */
