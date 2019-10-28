@@ -21,6 +21,7 @@ import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.CandidateNoteService;
 import org.tbbtalent.server.service.CandidateService;
 import org.tbbtalent.server.service.SavedSearchService;
+import org.tbbtalent.server.service.email.EmailHelper;
 
 import javax.security.auth.login.AccountLockedException;
 import java.util.ArrayList;
@@ -40,14 +41,19 @@ public class CandidateServiceImpl implements CandidateService {
     private final UserContext userContext;
     private final SavedSearchService savedSearchService;
     private final CandidateNoteService candidateNoteService;
+    private final EmailHelper emailHelper; 
 
     @Autowired
-    public CandidateServiceImpl(UserRepository userRepository, CandidateRepository candidateRepository,
+    public CandidateServiceImpl(UserRepository userRepository,
+                                CandidateRepository candidateRepository,
                                 CountryRepository countryRepository,
                                 EducationLevelRepository educationLevelRepository,
                                 NationalityRepository nationalityRepository,
                                 PasswordHelper passwordHelper,
-                                UserContext userContext, SavedSearchService savedSearchService, CandidateNoteService candidateNoteService) {
+                                UserContext userContext,
+                                SavedSearchService savedSearchService,
+                                CandidateNoteService candidateNoteService,
+                                EmailHelper emailHelper) {
         this.userRepository = userRepository;
         this.candidateRepository = candidateRepository;
         this.countryRepository = countryRepository;
@@ -57,6 +63,7 @@ public class CandidateServiceImpl implements CandidateService {
         this.userContext = userContext;
         this.savedSearchService = savedSearchService;
         this.candidateNoteService = candidateNoteService;
+        this.emailHelper = emailHelper;
     }
 
     @Override
@@ -270,7 +277,7 @@ public class CandidateServiceImpl implements CandidateService {
         User user = candidate.getUser();
         user.setPasswordEnc(passwordEncrypted);
         user = this.userRepository.save(user);
-
+        
         /* Log the candidate in */
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername(user.getUsername());
@@ -338,8 +345,10 @@ public class CandidateServiceImpl implements CandidateService {
     public Candidate updateAdditionalInfo(UpdateCandidateAdditionalInfoRequest request) {
         Candidate candidate = getLoggedInCandidate();
         candidate.setAdditionalInfo(request.getAdditionalInfo());
-        if (BooleanUtils.isTrue(request.getSubmit()) && !candidate.getStatus().equals(CandidateStatus.pending)){
+        if (BooleanUtils.isTrue(request.getSubmit()) && !candidate.getStatus().equals(CandidateStatus.pending)) {
             updateCandidateStatus(candidate.getId(), new UpdateCandidateStatusRequest(CandidateStatus.pending, "Candidate submitted"));
+            
+            emailHelper.sendRegistrationEmail(candidate.getUser());
         }
 
         return candidateRepository.save(candidate);

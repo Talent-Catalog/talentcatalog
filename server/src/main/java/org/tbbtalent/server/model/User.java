@@ -1,7 +1,17 @@
 package org.tbbtalent.server.model;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.apache.commons.lang3.StringUtils;
 
 @Entity
 @Table(name = "users")
@@ -155,4 +165,16 @@ public class User extends AbstractAuditableDomainObject<Long> {
         this.selectedLanguage = selectedLanguage;
     }
     
+    @Transient
+    public String getDisplayName() {
+        String displayName = "";
+        if (StringUtils.isNotBlank(firstName) && StringUtils.isNotBlank(lastName)) {
+            displayName = firstName + " " + lastName;
+        } else if (StringUtils.isNotBlank(firstName)) {
+            displayName = firstName;
+        } else if (StringUtils.isNotBlank(lastName)) {
+            displayName = lastName;
+        }
+        return displayName;
+    }
 }

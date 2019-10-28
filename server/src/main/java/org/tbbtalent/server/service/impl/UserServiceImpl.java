@@ -23,6 +23,7 @@ import org.tbbtalent.server.security.JwtTokenProvider;
 import org.tbbtalent.server.security.PasswordHelper;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.UserService;
+import org.tbbtalent.server.service.email.EmailHelper;
 
 import javax.security.auth.login.AccountLockedException;
 import java.time.LocalDateTime;
@@ -38,6 +39,7 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider tokenProvider;
     private final UserContext userContext;
+    private final EmailHelper emailHelper;
 
     @Value("${web.portal}")
     private String portalUrl;
@@ -47,12 +49,14 @@ public class UserServiceImpl implements UserService {
                            PasswordHelper passwordHelper,
                            AuthenticationManager authenticationManager,
                            JwtTokenProvider tokenProvider,
-                           UserContext userContext) {
+                           UserContext userContext,
+                           EmailHelper emailHelper) {
         this.userRepository = userRepository;
         this.passwordHelper = passwordHelper;
         this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;
         this.userContext = userContext;
+        this.emailHelper = emailHelper;
     }
 
     @Override
@@ -205,13 +209,11 @@ public class UserServiceImpl implements UserService {
             user.setResetTokenIssuedDate(LocalDateTime.now());
             this.userRepository.save(user);
 
-            /* TODO
             try {
                 emailHelper.sendResetPasswordEmail(user);
             } catch (EmailSendFailedException e) {
                 log.error("unable to send reset password email for " + user.getEmail());
             }
-            */
 
             // temporary for testing till emails are working
             log.info("RESET URL: " + portalUrl + "/reset-password/" + user.getResetToken());
