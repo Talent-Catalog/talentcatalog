@@ -41,5 +41,5 @@ email:
    user: devtestingdp@gmail.com
    password: H@6J9bpcIDHa
    authenticated: true
-   default-email: martina@digitalpurpose.com.au
-   test-override-email: martina+tbb@digitalpurpose.com.au
+   default-email: jthatcher@digitalpurpose.com.au
+   test-override-email: jthatcher+tbb@digitalpurpose.com.au

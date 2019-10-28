@@ -34,13 +34,22 @@ aws:
       access-key: AKIA6C7ESOA6I7YPKGDT
       secret-key: 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
 
-email:
-   type: SMTP # STUB or SMTP
-   host: smtp.gmail.com
-   port: 587
-   user: tbbtalent@talentbeyondboundaries.org
-   password: //check passpack
-   authenticated: true
-   default-email: tbbtalent@talentbeyondboundaries.org
-   test-override-email: tbbtalent@talentbeyondboundaries.org
+#email:
+#   type: SMTP # STUB or SMTP
+#   host: smtp.gmail.com
+#   port: 587
+#   user: tbbtalent@talentbeyondboundaries.org
+#   password: //check passpack
+#   authenticated: true
+#   default-email: tbbtalent@talentbeyondboundaries.org
+#   test-override-email: tbbtalent@talentbeyondboundaries.org
 
+email:
+  type: SMTP # STUB or SMTP
+  host: smtp.gmail.com
+  port: 587
+  user: devtestingdp@gmail.com
+  password: H@6J9bpcIDHa
+  authenticated: true
+  default-email: jthatcher@digitalpurpose.com.au
+  test-override-email: jthatcher+tbb@digitalpurpose.com.au
