@@ -25,11 +25,21 @@
           <option value="pending">Pending</option>
           <option value="active">Active</option>
           <option value="incomplete">Incomplete</option>
+          <option value="rejected">Rejected</option>
+          <option value="approved">Approved</option>
+          <option value="employed">Employed</option>
+          <option value="inactive">Inactive</option>
+          <option value="deleted">Deleted</option>
         </select>
       </div>
       <div class="form-group">
-        <label for="comment">Comment</label>
+        <label for="comment">Admin Note</label>
         <textarea  class="form-control"  id="comment" [formControlName]="'comment'"></textarea>
+      </div>
+
+      <div *ngIf="showCandidateMessage" class="form-group">
+        <label for="candidateMessage">Please provide a message to the candidate (visible to them)</label>
+        <textarea  class="form-control"  id="candidateMessage" [formControlName]="'candidateMessage'"></textarea>
       </div>
     </form>
   </div>

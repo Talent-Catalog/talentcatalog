@@ -13,11 +13,11 @@ public interface CountryRepository extends JpaRepository<Country, Long>, JpaSpec
 
 
     @Query(" select c from Country c "
-            + " where c.status = :status")
+            + " where c.status = :status order by c.name asc")
     List<Country> findByStatus(@Param("status") Status status);
 
     @Query(" select distinct c from Country c "
             + " where lower(c.name) = lower(:name)"
-            + " and c.status != 'deleted'" )
+            + " and c.status != 'deleted' order by c.name asc" )
     Country findByNameIgnoreCase(@Param("name") String name);
 }

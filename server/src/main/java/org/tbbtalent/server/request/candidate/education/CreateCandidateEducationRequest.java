@@ -11,6 +11,7 @@ public class CreateCandidateEducationRequest {
     private String institution;
     private String courseName;
     private Integer yearCompleted;
+    private Boolean incomplete;
 
     public EducationType getEducationType() {
         return educationType;
@@ -66,5 +67,13 @@ public class CreateCandidateEducationRequest {
 
     public void setYearCompleted(Integer yearCompleted) {
         this.yearCompleted = yearCompleted;
+    }
+
+    public Boolean getIncomplete() {
+        return incomplete;
+    }
+
+    public void setIncomplete(Boolean incomplete) {
+        this.incomplete = incomplete;
     }
 }

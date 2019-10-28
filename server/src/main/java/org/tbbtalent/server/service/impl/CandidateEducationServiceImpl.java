@@ -40,11 +40,16 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
     @Override
     public CandidateEducation createCandidateEducation(CreateCandidateEducationRequest request) {
         Candidate candidate = userContext.getLoggedInCandidate();
-        return createCandidateEducation(candidate, request);
+        CandidateEducation education = createCandidateEducation(candidate, request);
+
+        candidate.setAuditFields(candidate.getUser());
+        candidateRepository.save(candidate);
+
+        return education;
     }
 
     @Override
-    public CandidateEducation updateCandidateEducation(UpdateCandidateEducationRequest request) {
+    public CandidateEducation updateCandidateEducation(Long id, UpdateCandidateEducationRequest request) {
         // Get ENUM for education type
         EducationType educationType = request.getEducationType();
 
@@ -66,9 +71,19 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
         candidateEducation.setInstitution(request.getInstitution());
         candidateEducation.setCourseName(request.getCourseName());
         candidateEducation.setYearCompleted(request.getYearCompleted());
+        candidateEducation.setIncomplete(request.getIncomplete());
 
         // Save the candidateOccupation
         return candidateEducationRepository.save(candidateEducation);
+    }
+
+    @Override
+    public CandidateEducation updateCandidateEducation(UpdateCandidateEducationRequest request) {
+        Candidate candidate = userContext.getLoggedInCandidate();
+        CandidateEducation candidateEducation = updateCandidateEducation(candidate.getId(), request);
+        candidate.setAuditFields(candidate.getUser());
+        candidateRepository.save(candidate);
+        return candidateEducation;
     }
 
     @Override
@@ -84,6 +99,9 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
             throw new InvalidCredentialsException("You do not have permission to perform that action");
         }
         candidateEducationRepository.delete(candidateEducation);
+
+        candidate.setAuditFields(candidate.getUser());
+        candidateRepository.save(candidate);
     }
 
     @Override
@@ -117,6 +135,7 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
         candidateEducation.setInstitution(request.getInstitution());
         candidateEducation.setCourseName(request.getCourseName());
         candidateEducation.setYearCompleted(request.getYearCompleted());
+        candidateEducation.setIncomplete(request.getIncomplete());
         // Save the candidate education
         candidateEducation = candidateEducationRepository.save(candidateEducation);
         // Add the major back to the saved object

@@ -6,6 +6,7 @@ import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.*;
 import org.tbbtalent.server.repository.CandidateLanguageRepository;
+import org.tbbtalent.server.repository.CandidateRepository;
 import org.tbbtalent.server.repository.LanguageLevelRepository;
 import org.tbbtalent.server.repository.LanguageRepository;
 import org.tbbtalent.server.request.candidate.language.CreateCandidateLanguageRequest;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 public class CandidateLanguageServiceImpl implements CandidateLanguageService {
 
     private final CandidateLanguageRepository candidateLanguageRepository;
+    private final CandidateRepository candidateRepository;
     private final LanguageRepository languageRepository;
     private final LanguageLevelRepository languageLevelRepository;
     private final UserContext userContext;
@@ -31,10 +33,12 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
     @Autowired
     public CandidateLanguageServiceImpl(CandidateLanguageRepository candidateLanguageRepository,
                                         LanguageRepository languageRepository,
+                                        CandidateRepository candidateRepository,
                                         LanguageLevelRepository languageLevelRepository,
                                         UserContext userContext) {
         this.candidateLanguageRepository = candidateLanguageRepository;
         this.languageRepository = languageRepository;
+        this.candidateRepository = candidateRepository;
         this.languageLevelRepository = languageLevelRepository;
         this.userContext = userContext;
     }
@@ -62,7 +66,10 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
         candidateLanguage.setWrittenLevel(languageReadWrite);
 
         // Save the candidateOccupation
-        return candidateLanguageRepository.save(candidateLanguage);
+        candidateLanguage = candidateLanguageRepository.save(candidateLanguage);
+        candidate.setAuditFields(candidate.getUser());
+        candidateRepository.save(candidate);
+        return candidateLanguage;
     }
 
     @Override
@@ -75,8 +82,9 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
         if (!candidate.getId().equals(candidateLanguage.getCandidate().getId())) {
             throw new InvalidCredentialsException("You do not have permission to perform that action");
         }
-
         candidateLanguageRepository.delete(candidateLanguage);
+        candidate.setAuditFields(candidate.getUser());
+        candidateRepository.save(candidate);
     }
 
     @Override
@@ -130,6 +138,10 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
                 candidateLanguageRepository.deleteById(existingCandidateLanguageId);
             }
         }
+
+        candidate.setAuditFields(candidate.getUser());
+        candidateRepository.save(candidate);
+
         return candidateLanguages;
     }
 }

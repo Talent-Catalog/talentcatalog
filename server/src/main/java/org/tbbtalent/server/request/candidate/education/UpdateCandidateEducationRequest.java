@@ -12,6 +12,7 @@ public class UpdateCandidateEducationRequest {
     private String institution;
     private String courseName;
     private Integer yearCompleted;
+    private Boolean incomplete;
 
     public Long getId() {
         return id;
@@ -72,4 +73,12 @@ public class UpdateCandidateEducationRequest {
     public Integer getYearCompleted() { return yearCompleted; }
 
     public void setYearCompleted(Integer yearCompleted) { this.yearCompleted = yearCompleted; }
+
+    public Boolean getIncomplete() {
+        return incomplete;
+    }
+
+    public void setIncomplete(Boolean incomplete) {
+        this.incomplete = incomplete;
+    }
 }

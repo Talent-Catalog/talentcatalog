@@ -1,7 +1,6 @@
 package org.tbbtalent.server.request.candidate;
 
 import org.tbbtalent.server.model.CandidateStatus;
-import org.tbbtalent.server.model.Gender;
 
 import javax.validation.constraints.NotNull;
 
@@ -13,6 +12,7 @@ public class UpdateCandidateStatusRequest {
     private CandidateStatus status;
 
     private String comment;
+    private String candidateMessage;
 
     public UpdateCandidateStatusRequest() {
     }
@@ -45,5 +45,13 @@ public class UpdateCandidateStatusRequest {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public String getCandidateMessage() {
+        return candidateMessage;
+    }
+
+    public void setCandidateMessage(String candidateMessage) {
+        this.candidateMessage = candidateMessage;
     }
 }

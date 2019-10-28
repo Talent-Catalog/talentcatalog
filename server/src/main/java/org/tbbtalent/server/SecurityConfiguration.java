@@ -50,7 +50,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/portal/user/check-token").permitAll()
                 .antMatchers("/api/portal/user/reset-password").permitAll()
                 .antMatchers("/api/portal/language/system/**").permitAll()
-                .antMatchers("/api/portal/**").hasAnyRole("USER", "ADMIN")
+                .antMatchers("/api/portal/**").hasAnyRole("USER")
                 .antMatchers("/api/admin/auth").permitAll  ()
                 .antMatchers("/api/admin/auth/**").permitAll()
                 .antMatchers("/api/admin/system/migrate").permitAll()

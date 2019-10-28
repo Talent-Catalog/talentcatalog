@@ -151,7 +151,11 @@ public class CandidateServiceImpl implements CandidateService {
         if (!request.getStatus().equals(candidate.getStatus())){
             candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(id, "Status change from "+candidate.getStatus()+" to "+request.getStatus(), request.getComment()));
             candidate.setStatus(request.getStatus());
+            candidate.setCandidateMessage(request.getCandidateMessage());
             candidate =  candidateRepository.save(candidate);
+            if (request.getStatus().equals(CandidateStatus.incomplete)){
+                emailHelper.sendIncompleteApplication(candidate.getUser(), request.getCandidateMessage());
+            }
         }
         return candidate;
     }
@@ -262,6 +266,7 @@ public class CandidateServiceImpl implements CandidateService {
         Candidate candidate = user.getCandidate();
         candidate.setPhone(request.getPhone());
         candidate.setWhatsapp(request.getWhatsapp());
+        candidate.setAuditFields(user);
         candidate = candidateRepository.save(candidate);
         candidate.setUser(user);
         return candidate;
@@ -291,6 +296,7 @@ public class CandidateServiceImpl implements CandidateService {
             candidate.setNationality(nationality);
             candidate.setUnRegistered(request.getRegisteredWithUN());
             candidate.setUnRegistrationNumber(request.getRegistrationId());
+            candidate.setAuditFields(user);
         }
         return candidateRepository.save(candidate);
     }
@@ -307,6 +313,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         candidate.setMaxEducationLevel(educationLevel);
+        candidate.setAuditFields(candidate.getUser());
         return candidateRepository.save(candidate);
     }
 
@@ -319,7 +326,7 @@ public class CandidateServiceImpl implements CandidateService {
 
             emailHelper.sendRegistrationEmail(candidate.getUser());
         }
-
+        candidate.setAuditFields(candidate.getUser());
         return candidateRepository.save(candidate);
     }
 

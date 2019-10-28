@@ -14,5 +14,7 @@ public interface CandidateJobExperienceService {
 
     CandidateJobExperience updateCandidateJobExperience(UpdateJobExperienceRequest request);
 
+    CandidateJobExperience updateCandidateJobExperience(Long candidateId, UpdateJobExperienceRequest request);
+
     void deleteCandidateJobExperience(Long id);
 }

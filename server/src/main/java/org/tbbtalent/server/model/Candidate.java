@@ -23,6 +23,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private Boolean unRegistered;
     private String unRegistrationNumber;
     private String additionalInfo;
+    private String candidateMessage;
 
     @Enumerated(EnumType.STRING)
     private CandidateStatus status;
@@ -182,6 +183,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.additionalInfo = additionalInfo;
     }
 
+    public String getCandidateMessage() {
+        return candidateMessage;
+    }
+
+    public void setCandidateMessage(String candidateMessage) {
+        this.candidateMessage = candidateMessage;
+    }
+
     public CandidateStatus getStatus() {
         return status;
     }
@@ -213,6 +222,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setUser(User user) {
         this.user = user;
     }
+
 
     public OffsetDateTime getRegisteredDate() {
         return registeredDate;
