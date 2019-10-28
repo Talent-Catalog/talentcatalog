@@ -22,7 +22,7 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
   @Output() formSaved = new EventEmitter<CandidateJobExperience>();
   @Output() formClosed = new EventEmitter<CandidateJobExperience>();
 
-  @ViewChild('top') top: ElementRef;
+  @ViewChild('top', {static: true}) top: ElementRef;
 
   loading: boolean;
   saving: boolean;
