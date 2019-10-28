@@ -6,8 +6,6 @@ import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.candidate.*;
 
-import javax.security.auth.login.AccountLockedException;
-
 public interface CandidateService {
 
     Page<Candidate> searchCandidates(SearchCandidateRequest request);
@@ -22,7 +20,7 @@ public interface CandidateService {
 
     boolean deleteCandidate(long id);
 
-    LoginRequest register(RegisterCandidateRequest request) throws AccountLockedException;
+    LoginRequest register(RegisterCandidateRequest request);
 
     Candidate updateContact(UpdateCandidateContactRequest request);
 
