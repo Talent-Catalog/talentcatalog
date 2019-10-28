@@ -111,4 +111,10 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
       writtenLevel: null
     })
   }
+
+  patchModel(model: LanguageLevelFormControlModel) {
+    for (let key of Object.keys(model)) {
+      this.form.controls[key].patchValue(model[key]);
+    }
+  }
 }

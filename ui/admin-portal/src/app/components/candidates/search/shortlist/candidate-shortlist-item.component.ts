@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {CandidateService} from "../../../../services/candidate.service";
 import {EditCandidateShortlistItemComponent} from "./edit/edit-candidate-shortlist-item.component";
 import {SavedSearch} from "../../../../model/saved-search";
@@ -20,16 +20,18 @@ export class CandidateShortlistItemComponent implements OnInit {
 
   loading: boolean;
   error;
+  debug: boolean = false;
 
   constructor(private candidateService: CandidateService,
               private modalService: NgbModal) { }
 
   ngOnInit() {
-    console.log('candidateShortListItemId', this.candidateShortlistItem);
-    console.log('candidateId', this.candidateId);
-    console.log('savedSearch', this.savedSearch);
+    if (this.debug) {
+      console.log('candidateShortListItemId', this.candidateShortlistItem);
+      console.log('candidateId', this.candidateId);
+      console.log('savedSearch', this.savedSearch);
+    }
   }
-
 
   editShortlistItem() {
     const editModal = this.modalService.open(EditCandidateShortlistItemComponent, {
@@ -42,12 +44,8 @@ export class CandidateShortlistItemComponent implements OnInit {
     editModal.componentInstance.savedSearch = this.savedSearch;
 
     editModal.result
-      .then((candidateShortListItem) => {
-        this.shortlistItemSaved.emit(candidateShortListItem);
-      })
+      .then((candidateShortListItem) => this.shortlistItemSaved.emit(candidateShortListItem))
       .catch(() => { /* Isn't possible */ });
-
   }
-
 
 }

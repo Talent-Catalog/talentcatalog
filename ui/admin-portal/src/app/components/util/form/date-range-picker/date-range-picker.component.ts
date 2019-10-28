@@ -22,7 +22,7 @@ export class DateRangePickerComponent implements OnInit {
     this.displayDate = null;
   }
 
-  onDateSelection(date: any) {
+  selectDate(date: any) {
     if (!this.fromDate && !this.toDate) {
       this.fromDate = date;
     } else if (this.fromDate && !this.toDate && date.after(this.fromDate)) {
