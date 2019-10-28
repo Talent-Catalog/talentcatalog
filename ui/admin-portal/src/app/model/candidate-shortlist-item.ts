@@ -1,5 +1,4 @@
 import {User} from "./user";
-import {Candidate} from "./candidate";
 
 export interface CandidateShortlistItem {
   id: number;

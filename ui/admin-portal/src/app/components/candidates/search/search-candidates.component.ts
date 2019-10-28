@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 
 import {Candidate} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
@@ -10,7 +10,7 @@ import {Language} from "../../../model/language";
 import {LanguageService} from "../../../services/language.service";
 import {SearchResults} from '../../../model/search-results';
 
-import {NgbDateStruct, NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {NgbDate, NgbDateStruct, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormArray, FormBuilder, FormGroup} from "@angular/forms";
 import {SearchSavedSearchesComponent} from "./saved-search/search-saved-searches.component";
 import {SaveSearchComponent} from "./save/save-search.component";
@@ -44,10 +44,10 @@ import {LanguageLevelFormControlComponent} from "../../util/form/language-profic
 })
 export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
-  @ViewChild('createdDate') createdDate: DateRangePickerComponent;
-  @ViewChild('modifiedDate') modifiedDate: DateRangePickerComponent;
-  @ViewChild('englishLanguage') englishLanguage: LanguageLevelFormControlComponent;
-  @ViewChild('otherLanguage') otherLanguage: LanguageLevelFormControlComponent;
+  @ViewChild('modifiedDate') modifiedDatePicker: DateRangePickerComponent;
+  @ViewChild('englishLanguage') englishLanguagePicker: LanguageLevelFormControlComponent;
+  @ViewChild('otherLanguage') otherLanguagePicker: LanguageLevelFormControlComponent;
+  @ViewChild('formWrapper') formWrapper: ElementRef;
 
   error: any;
   _loading = {
@@ -336,10 +336,9 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   clear() {
     this.searchForm.reset();
-    this.createdDate.clearDates();
-    this.modifiedDate.clearDates();
-    this.englishLanguage.clearProficiencies();
-    this.otherLanguage.form.reset();
+    this.modifiedDatePicker.clearDates();
+    this.englishLanguagePicker.clearProficiencies();
+    this.otherLanguagePicker.form.reset();
     this.savedSearch = null;
    }
 
@@ -391,60 +390,88 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   populateFormFromRequest(request) {
 
+    /* Do a blanket patch of all form fields */
     Object.keys(this.searchForm.controls).forEach(name => {
       this.searchForm.controls[name].patchValue(request[name]);
-
-      //Form arrays need to be handled
-      if (name === 'searchJoinRequests' && request[name]) {
-        while (this.searchJoinArray.length) {
-          this.searchJoinArray.removeAt(0);
-        }
-        request[name].forEach((join) => {
-          this.searchJoinArray.push(this.fb.group(join))
-        });
-      }
-
-      //todo why not re-rendering until click on screen
-      let occupations = [];
-      if (this.searchForm.value.occupationIds){
-        occupations = this.candidateOccupations.filter(c => this.searchForm.value.occupationIds.indexOf(c.id) != -1);
-      }
-      this.searchForm.controls['occupations'].patchValue(occupations);
-
-      let verifiedOccupations = [];
-      if (this.searchForm.value.verifiedOccupationIds){
-        verifiedOccupations = this.verifiedOccupations.filter(c => this.searchForm.value.verifiedOccupationIds.indexOf(c.id) != -1);
-      }
-      this.searchForm.controls['verifiedOccupations'].patchValue(verifiedOccupations);
-
-      let educationMajors = [];
-      if (this.searchForm.value.educationMajorIds){
-        educationMajors = this.educationMajors.filter(c => this.searchForm.value.educationMajorIds.indexOf(c.id) != -1);
-      }
-      this.searchForm.controls['educationMajors'].patchValue(educationMajors);
-
-      let nationalities = [];
-      if (this.searchForm.value.nationalityIds){
-        nationalities = this.nationalities.filter(c => this.searchForm.value.nationalityIds.indexOf(c.id) != -1);
-      }
-      this.searchForm.controls['nationalities'].patchValue(nationalities);
-
-      let countries = [];
-      if (this.searchForm.value.countryIds){
-        countries = this.countries.filter(c => this.searchForm.value.countryIds.indexOf(c.id) != -1);
-      }
-      this.searchForm.controls['countries'].patchValue(countries);
-
-      let statusesDisplay = [];
-      if (this.searchForm.value.statuses){
-        statusesDisplay = this.statuses.filter(c => this.searchForm.value.statuses.indexOf(c) != -1);
-      }
-      this.searchForm.controls['statusesDisplay'].patchValue(statusesDisplay);
-
-
     });
 
+    /* STATUSES */
+    this.searchForm.controls['statusesDisplay'].patchValue(request.statuses || []);
+
+    /* VERIFIED OCCUPATIONS */
+    let verifiedOccupations = [];
+    if (request.verifiedOccupationIds) {
+      verifiedOccupations = this.verifiedOccupations.filter(c => request.verifiedOccupationIds.indexOf(c.id) != -1);
+    }
+    this.searchForm.controls['verifiedOccupations'].patchValue(verifiedOccupations);
+
+    /* ENGLISH PROFICIENCY */
+    this.englishLanguagePicker.patchModel({
+      writtenLevel: request.englishMinWrittenLevel,
+      spokenLevel: request.englishMinSpokenLevel
+    });
+
+    /* UNVERIFIED OCCUPATIONS */
+    let occupations = [];
+    if (request.occupationIds) {
+      occupations = this.candidateOccupations.filter(c => request.occupationIds.indexOf(c.id) != -1);
+    }
+    this.searchForm.controls['occupations'].patchValue(occupations);
+
+    /* MODIFIED DATES */
+    if (request.lastModifiedFrom) {
+      let [y, m, d] = request.lastModifiedFrom.split('-');
+      let date: NgbDate = new NgbDate(Number(y), Number(m), Number(d));
+      this.modifiedDatePicker.selectDate(date);
+    }
+    if (request.lastModifiedTo) {
+      let [y, m, d] = request.lastModifiedTo.split('-');
+      let date: NgbDate = new NgbDate(Number(y), Number(m), Number(d));
+      this.modifiedDatePicker.selectDate(date);
+    }
+
+    /* COUNTRIES */
+    let countries = [];
+    if (request.countryIds) {
+      countries = this.countries.filter(c => request.countryIds.indexOf(c.id) != -1);
+    }
+    this.searchForm.controls['countries'].patchValue(countries);
+
+    /* EDUCATION MAJORS */
+    let educationMajors = [];
+    if (request.educationMajorIds) {
+      educationMajors = this.educationMajors.filter(c => request.educationMajorIds.indexOf(c.id) != -1);
+    }
+    this.searchForm.controls['educationMajors'].patchValue(educationMajors);
+
+    /* OTHER LANGUAGE */
+    this.otherLanguagePicker.patchModel({
+      languageId: request.otherLanguageId,
+      writtenLevel: request.otherMinWrittenLevel,
+      spokenLevel: request.otherMinSpokenLevel
+    });
+
+    /* NATIONALITIES */
+    let nationalities = [];
+    if (request.nationalityIds) {
+      nationalities = this.nationalities.filter(c => request.nationalityIds.indexOf(c.id) != -1);
+    }
+    this.searchForm.controls['nationalities'].patchValue(nationalities);
+
+    /* JOINED SEARCHES */
+    while (this.searchJoinArray.length) {
+      this.searchJoinArray.removeAt(0); // Clear the form array
+    }
+    if (request['searchJoinRequests']) {
+      request['searchJoinRequests'].forEach((join) => {
+        this.searchJoinArray.push(this.fb.group(join)) // If present, repopulate the array from the request
+      });
+    }
+
     this._loading.savedSearch = false;
+
+    /* Perform a mouse event to force the multi-select components to update */
+    this.formWrapper.nativeElement.click();
 
     this.search();
   }
@@ -473,7 +500,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   handleDateSelected(e: {fromDate: NgbDateStruct, toDate: NgbDateStruct}, control: string) {
     if (e.fromDate) {
-      console.log(e);
+      // console.log(e);
       this.searchForm.controls[control + 'From'].patchValue(e.fromDate.year + '-' + ('0' + e.fromDate.month).slice(-2)  + '-' + ('0' + e.fromDate.day).slice(-2));
     } else {
       this.searchForm.controls[control + 'From'].patchValue(null);

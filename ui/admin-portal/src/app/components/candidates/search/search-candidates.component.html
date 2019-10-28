@@ -10,11 +10,11 @@
   <button class="btn btn-primary" [routerLink]="['create']">Add</button>
 </div>
 
-<div *ngIf="!loading">
+<div [hidden]="loading">
   <div class="alert alert-danger" *ngIf="error">
     {{error}}
   </div>
-  <form class="form-row" [formGroup]="searchForm" (ngSubmit)="search()">
+  <form class="form-row" [formGroup]="searchForm" (ngSubmit)="search()" #formWrapper>
 
     <!-- KEYWORD -->
     <div class="form-group col-12 col-md-3">

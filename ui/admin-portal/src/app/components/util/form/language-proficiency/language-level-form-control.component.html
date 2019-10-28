@@ -21,7 +21,7 @@
   <form [formGroup]="form" class="language-dropdown" *ngIf="showMenu">
 
     <!-- LANGUAGE -->
-    <div class="form-group">
+    <div class="form-group" [hidden]="languageDisabled">
       <label>Language</label>
 
       <select class="form-control" name="language" [formControlName]="'languageId'" [disabled]="languageDisabled">
