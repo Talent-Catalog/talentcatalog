@@ -334,7 +334,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       });
   }
 
-  clear() {
+  clearForm() {
     this.searchForm.reset();
     this.modifiedDatePicker.clearDates();
     this.englishLanguagePicker.clearProficiencies();
@@ -347,7 +347,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     this.searchForm.controls['savedSearchId'].patchValue(id);
     this.savedSearchService.load(id).subscribe(
       request => {
-        this.populateFormFromRequest(request);
+        this.populateFormWithSavedSearch(request);
       },
       error => {
         this.error = error;
@@ -370,7 +370,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       });
   }
 
-  showSave() {
+  openSavedSearchModal() {
     const showSaveModal = this.modalService.open(SaveSearchComponent, {
       centered: true,
       backdrop: 'static'
@@ -387,8 +387,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       });
   }
 
-
-  populateFormFromRequest(request) {
+  populateFormWithSavedSearch(request) {
 
     /* Do a blanket patch of all form fields */
     Object.keys(this.searchForm.controls).forEach(name => {
