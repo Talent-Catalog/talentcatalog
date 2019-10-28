@@ -90,6 +90,7 @@ import { EditCandidateJobExperienceComponent } from './components/candidates/vie
 import { CreateCandidateJobExperienceComponent } from './components/candidates/view/occupation/experience/create/create-candidate-job-experience.component';
 import {ViewCandidateAttachmentComponent} from "./components/candidates/view/attachment/view-candidate-attachment.component";
 import {EditCandidateOccupationComponent} from "./components/candidates/view/occupation/edit/edit-candidate-occupation.component";
+import {SortedByComponent} from "./components/util/sort/sorted-by.component";
 
 @NgModule({
   declarations: [
@@ -171,7 +172,8 @@ import {EditCandidateOccupationComponent} from "./components/candidates/view/occ
     CandidatePipe,
     EditCandidateJobExperienceComponent,
     CreateCandidateJobExperienceComponent,
-    EditCandidateOccupationComponent
+    EditCandidateOccupationComponent,
+    SortedByComponent
   ],
   imports: [
     BrowserModule,

@@ -348,13 +348,13 @@
 
         <thead>
         <tr>
-          <th class="w-25">Candidate #</th>
-          <th>First Name</th>
-          <th>Last Name</th>
+          <th class="w-25" (click)="toggleSort('id')"><app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by> Candidate #</th>
+          <th (click)="toggleSort('user.firstName')"><app-sorted-by [column]="'user.firstName'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>First Name</th>
+          <th (click)="toggleSort('user.lastName')"><app-sorted-by [column]="'user.lastName'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>Last Name</th>
           <th *ngIf="savedSearch">Reviewed</th>
-          <th>Nationality</th>
-          <th>Location</th>
-          <th>Gender</th>
+          <th (click)="toggleSort('nationality.name')"><app-sorted-by [column]="'nationality.name'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>Nationality</th>
+          <th (click)="toggleSort('country.name')"><app-sorted-by [column]="'country.name'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>Location</th>
+          <th (click)="toggleSort('gender')"><app-sorted-by [column]="'gender'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>Gender</th>
         </tr>
         </thead>
 

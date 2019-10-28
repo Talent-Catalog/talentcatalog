@@ -2,28 +2,83 @@ package org.tbbtalent.server.repository;
 
 import io.jsonwebtoken.lang.Collections;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.tbbtalent.server.model.*;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 
-import javax.persistence.criteria.Fetch;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.*;
 import java.time.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class CandidateSpecification {
 
     public static Specification<Candidate> buildSearchQuery(final SearchCandidateRequest request) {
         return (candidate, query, builder) -> {
             Predicate conjunction = builder.conjunction();
-            query.distinct(true);
-            Join<Candidate, User> user = candidate.join("user");
+            Join user = null;
+            Join nationality = null;
+            Join country = null;
             Join<Candidate, CandidateEducation> candidateEducations = null;
 
             conjunction.getExpressions().add(
                     builder.notEqual(candidate.get("status"), CandidateStatus.draft)
             );
+
+            if (query.getResultType().equals(Candidate.class)) {
+                query.distinct(true);
+
+                Fetch<Object, Object> userFetch = candidate.fetch("user", JoinType.INNER);
+                user = (Join<Object, Object>)userFetch;
+
+                Fetch<Object, Object> nationalityFetch = candidate.fetch("nationality", JoinType.INNER);
+                nationality = (Join<Object, Object>)nationalityFetch;
+
+                Fetch<Object, Object> countryFetch = candidate.fetch("country", JoinType.INNER);
+                country = (Join<Object, Object>)countryFetch;
+
+                String[] sort = request.getSortFields();
+                List<Order> orders = new ArrayList<>();
+
+                for (String property : sort) {
+
+                    Join<Object, Object> join = null;
+                    String subProperty = null;
+                    if (property.startsWith("user.")) {
+                        join = user;
+                        subProperty = property.replaceAll("user.", "");
+                    }
+                    else if (property.startsWith("nationality.")) {
+                        join = nationality;
+                        subProperty = property.replaceAll("nationality.", "");
+                    }
+                    else if (property.startsWith("country.")) {
+                        join = country;
+                        subProperty = property.replaceAll("country.", "");
+                    }
+                    else {
+                        subProperty = property;
+                    }
+
+                    Path<Object> path = null;
+                    if (join != null) {
+                        path = join.get(subProperty);
+                    }
+                    else {
+                        path = candidate.get(subProperty);
+                    }
+                    orders.add(request.getSortDirection().equals(Sort.Direction.ASC) ? builder.asc(path) : builder.desc(path));
+                }
+
+                query.orderBy(orders);
+
+            } else {
+                user = candidate.join("user");
+                nationality = candidate.join("nationality");;
+                country = candidate.join("country");;
+            }
             //Short lists
             if (request.getSavedSearchId() != null) {
                 if (request.getShortlistStatus() != null) {
@@ -70,13 +125,7 @@ public class CandidateSpecification {
 
                 if (!Collections.isEmpty(request.getVerifiedOccupationIds())) {
                     if (SearchType.not.equals(request.getVerifiedOccupationSearchType())) {
-//                        conjunction.getExpressions().add(
-//                                builder.notEqual(builder.isTrue(candidateOccupations.get("verified")),
-//                                builder.isTrue(occupation.get("id").in(request.getVerifiedOccupationIds()))
-//                        ));
-
                         builder.not(occupation.get("id").in(request.getVerifiedOccupationIds()));
-
                     } else {
                         conjunction.getExpressions().add(builder.and(builder.isTrue(candidateOccupations.get("verified")),
                                 builder.isTrue(occupation.get("id").in(request.getVerifiedOccupationIds()))

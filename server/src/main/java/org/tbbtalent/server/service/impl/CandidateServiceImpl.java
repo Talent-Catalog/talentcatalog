@@ -80,7 +80,7 @@ public class CandidateServiceImpl implements CandidateService {
             }
         }
 
-        Page<Candidate> candidates = candidateRepository.findAll(query, request.getPageRequest());
+        Page<Candidate> candidates = candidateRepository.findAll(query, request.getPageRequestWithoutSort());
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
         return candidates;
     }
