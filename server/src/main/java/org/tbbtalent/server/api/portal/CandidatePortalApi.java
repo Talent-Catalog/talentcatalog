@@ -175,6 +175,7 @@ public class CandidatePortalApi {
                 .add("institution")
                 .add("courseName")
                 .add("yearCompleted")
+                .add("incomplete")
                 .add("country", countryDto())
                 .add("educationMajor", majorDto())
                 ;
@@ -292,6 +293,7 @@ public class CandidatePortalApi {
     private DtoBuilder candidateStatusDto() {
         return new DtoBuilder()
                 .add("status")
+                .add("candidateMessage")
                 ;
     }
 
@@ -321,6 +323,7 @@ public class CandidatePortalApi {
                 .add("candidateCertifications", certificationDto())
                 /* ADDITIONAL INFO / SUBMIT */
                 .add("additionalInfo")
+                .add("candidateMessage")
                 ;
     }
 }

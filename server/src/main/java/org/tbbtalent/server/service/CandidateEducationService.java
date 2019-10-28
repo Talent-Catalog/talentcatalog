@@ -11,6 +11,8 @@ public interface CandidateEducationService {
     CandidateEducation createCandidateEducation(CreateCandidateEducationRequest request);
 
     CandidateEducation updateCandidateEducation(UpdateCandidateEducationRequest request);
+    
+    CandidateEducation updateCandidateEducation(Long id, UpdateCandidateEducationRequest request);
 
     CandidateEducation createCandidateEducation(long id, CreateCandidateEducationRequest request);
 

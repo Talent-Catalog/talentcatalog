@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -21,8 +22,8 @@ import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.CandidateNoteService;
 import org.tbbtalent.server.service.CandidateService;
 import org.tbbtalent.server.service.SavedSearchService;
+import org.tbbtalent.server.service.email.EmailHelper;
 
-import javax.security.auth.login.AccountLockedException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,14 +41,19 @@ public class CandidateServiceImpl implements CandidateService {
     private final UserContext userContext;
     private final SavedSearchService savedSearchService;
     private final CandidateNoteService candidateNoteService;
+    private final EmailHelper emailHelper;
 
     @Autowired
-    public CandidateServiceImpl(UserRepository userRepository, CandidateRepository candidateRepository,
+    public CandidateServiceImpl(UserRepository userRepository,
+                                CandidateRepository candidateRepository,
                                 CountryRepository countryRepository,
                                 EducationLevelRepository educationLevelRepository,
                                 NationalityRepository nationalityRepository,
                                 PasswordHelper passwordHelper,
-                                UserContext userContext, SavedSearchService savedSearchService, CandidateNoteService candidateNoteService) {
+                                UserContext userContext,
+                                SavedSearchService savedSearchService,
+                                CandidateNoteService candidateNoteService,
+                                EmailHelper emailHelper) {
         this.userRepository = userRepository;
         this.candidateRepository = candidateRepository;
         this.countryRepository = countryRepository;
@@ -57,6 +63,7 @@ public class CandidateServiceImpl implements CandidateService {
         this.userContext = userContext;
         this.savedSearchService = savedSearchService;
         this.candidateNoteService = candidateNoteService;
+        this.emailHelper = emailHelper;
     }
 
     @Override
@@ -144,13 +151,20 @@ public class CandidateServiceImpl implements CandidateService {
         if (!request.getStatus().equals(candidate.getStatus())){
             candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(id, "Status change from "+candidate.getStatus()+" to "+request.getStatus(), request.getComment()));
             candidate.setStatus(request.getStatus());
+            candidate.setCandidateMessage(request.getCandidateMessage());
             candidate =  candidateRepository.save(candidate);
+            if (request.getStatus().equals(CandidateStatus.incomplete)){
+                emailHelper.sendIncompleteApplication(candidate.getUser(), request.getCandidateMessage());
+            }
         }
         return candidate;
     }
 
     @Override
     public Candidate updateCandidate(long id, UpdateCandidateRequest request) {
+        // Check update request for a duplicate email or phone number
+        request.setId(id);
+        validateContactRequest(request);
 
         Candidate candidate = this.candidateRepository.findByIdLoadUser(id)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
@@ -164,33 +178,11 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new NoSuchObjectException(Nationality.class, request.getNationalityId()));
 
         User user = candidate.getUser();
-        //check email not already taken
-        if (!StringUtils.isBlank(request.getPhone())) {
-            User exists = userRepository.findByEmailIgnoreCase(request.getEmail());
-            if (exists != null && !exists.getId().equals(user.getId())) {
-                throw new UsernameTakenException("email");
-            }
-            user.setFirstName(request.getFirstName());
-            user.setLastName(request.getLastName());
-            user.setEmail(request.getEmail());
-            userRepository.save(user);
-        }
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setEmail(request.getEmail());
+        userRepository.save(user);
 
-        //check phone not already taken
-        if (!StringUtils.isBlank(request.getPhone())) {
-            Candidate exists = candidateRepository.findByPhoneIgnoreCase(request.getEmail());
-            if (exists != null && !exists.getId().equals(id)) {
-                throw new UsernameTakenException("phone");
-            }
-        }
-
-        //check whatsapp not already taken
-        if (!StringUtils.isBlank(request.getWhatsapp())) {
-            Candidate exists = candidateRepository.findByWhatsappIgnoreCase(request.getWhatsapp());
-            if (exists != null && !exists.getId().equals(id)) {
-                throw new UsernameTakenException("whatsapp");
-            }
-        }
         candidate.setUser(user);
         candidate.setDob(request.getDob());
         candidate.setGender(request.getGender());
@@ -218,34 +210,19 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public LoginRequest register(RegisterCandidateRequest request) throws AccountLockedException {
+    public LoginRequest register(RegisterCandidateRequest request) {
         if (!request.getPassword().equals(request.getPasswordConfirmation())) {
             throw new PasswordMatchException();
         }
+
+        // Check update request for a duplicate email or phone number
+        validateContactRequest(request);
 
         /* Check for existing account with the username fields */
         if (StringUtils.isNotBlank(request.getUsername())) {
             User exists = userRepository.findByUsernameAndRole(request.getUsername(), Role.user);
             if (exists != null) {
                 throw new UsernameTakenException("username");
-            }
-        }
-        if (StringUtils.isNotBlank(request.getEmail())) {
-            User exists = userRepository.findByEmailIgnoreCase(request.getEmail());
-            if (exists != null) {
-                throw new UsernameTakenException("email");
-            }
-        }
-        if (StringUtils.isNotBlank(request.getPhone())) {
-            Candidate exists = candidateRepository.findByPhoneIgnoreCase(request.getPhone());
-            if (exists != null) {
-                throw new UsernameTakenException("phone");
-            }
-        }
-        if (StringUtils.isNotBlank(request.getWhatsapp())) {
-            Candidate exists = candidateRepository.findByWhatsappIgnoreCase(request.getWhatsapp());
-            if (exists != null) {
-                throw new UsernameTakenException("whatsapp");
             }
         }
 
@@ -280,12 +257,16 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateContact(UpdateCandidateContactRequest request) {
+        // Check update request for a duplicate email or phone number
+        validateContactRequest(request);
+
         User user = userContext.getLoggedInUser();
         user.setEmail(request.getEmail());
         user = userRepository.save(user);
         Candidate candidate = user.getCandidate();
         candidate.setPhone(request.getPhone());
         candidate.setWhatsapp(request.getWhatsapp());
+        candidate.setAuditFields(user);
         candidate = candidateRepository.save(candidate);
         candidate.setUser(user);
         return candidate;
@@ -315,6 +296,7 @@ public class CandidateServiceImpl implements CandidateService {
             candidate.setNationality(nationality);
             candidate.setUnRegistered(request.getRegisteredWithUN());
             candidate.setUnRegistrationNumber(request.getRegistrationId());
+            candidate.setAuditFields(user);
         }
         return candidateRepository.save(candidate);
     }
@@ -331,6 +313,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         candidate.setMaxEducationLevel(educationLevel);
+        candidate.setAuditFields(candidate.getUser());
         return candidateRepository.save(candidate);
     }
 
@@ -338,10 +321,12 @@ public class CandidateServiceImpl implements CandidateService {
     public Candidate updateAdditionalInfo(UpdateCandidateAdditionalInfoRequest request) {
         Candidate candidate = getLoggedInCandidate();
         candidate.setAdditionalInfo(request.getAdditionalInfo());
-        if (BooleanUtils.isTrue(request.getSubmit()) && !candidate.getStatus().equals(CandidateStatus.pending)){
+        if (BooleanUtils.isTrue(request.getSubmit()) && !candidate.getStatus().equals(CandidateStatus.pending)) {
             updateCandidateStatus(candidate.getId(), new UpdateCandidateStatusRequest(CandidateStatus.pending, "Candidate submitted"));
-        }
 
+            emailHelper.sendRegistrationEmail(candidate.getUser());
+        }
+        candidate.setAuditFields(candidate.getUser());
         return candidateRepository.save(candidate);
     }
 
@@ -392,4 +377,54 @@ public class CandidateServiceImpl implements CandidateService {
         return candidateRepository.findByUserIdLoadProfile(user.getId());
     }
 
+    @Transactional(readOnly = true)
+    void validateContactRequest(BaseCandidateContactRequest request) {
+        User user;
+        if (request.getId() != null) {
+            user = userRepository.findById(request.getId()).orElseThrow(() -> new NoSuchObjectException(User.class, request.getId()));
+        } else {
+            user = userContext.getLoggedInUser();
+        }
+
+        Candidate candidate = null;
+        if (user != null) {
+            candidate = user.getCandidate();
+        }
+
+        // Check email not already taken
+        if (!StringUtils.isBlank(request.getEmail())) {
+            try {
+                User exists = userRepository.findByEmailIgnoreCase(request.getEmail());
+                if (user == null && exists != null || exists != null && !exists.getId().equals(user.getId())) {
+                    throw new UsernameTakenException("email");
+                }
+            } catch (IncorrectResultSizeDataAccessException e) {
+                throw new UsernameTakenException("email");
+            }
+        }
+
+        // Check phone not already taken
+        if (!StringUtils.isBlank(request.getPhone())) {
+            try {
+                Candidate exists = candidateRepository.findByPhoneIgnoreCase(request.getPhone());
+                if (candidate == null && exists != null || exists != null && !exists.getId().equals(candidate.getId())) {
+                    throw new UsernameTakenException("phone");
+                }
+            } catch (IncorrectResultSizeDataAccessException e) {
+                throw new UsernameTakenException("phone");
+            }
+        }
+
+        // Check whatsapp not already taken
+        if (!StringUtils.isBlank(request.getWhatsapp())) {
+            try {
+                Candidate exists = candidateRepository.findByWhatsappIgnoreCase(request.getWhatsapp());
+                if (user == null && exists != null || exists != null && !exists.getId().equals(candidate.getId())) {
+                    throw new UsernameTakenException("whatsapp");
+                }
+            } catch (IncorrectResultSizeDataAccessException e) {
+                throw new UsernameTakenException("whatsapp");
+            }
+        }
+    }
 }

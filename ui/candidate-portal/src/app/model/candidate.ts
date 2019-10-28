@@ -29,6 +29,7 @@ export interface Candidate {
   maxEducationLevel: EducationLevel;
   candidateEducations: CandidateEducation[];
   additionalInfo: string;
+  candidateMessage: string;
   status: CandidateStatus;
 }
 

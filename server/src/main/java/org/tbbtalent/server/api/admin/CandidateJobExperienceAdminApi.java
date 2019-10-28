@@ -42,8 +42,7 @@ public class CandidateJobExperienceAdminApi {
     @PutMapping("{id}")
     public Map<String, Object> update(@PathVariable("id") Long id,
                                       @RequestBody UpdateJobExperienceRequest request) {
-        request.setId(id);
-        CandidateJobExperience candidateJobExperience = this.candidateJobExperienceService.updateCandidateJobExperience(request);
+        CandidateJobExperience candidateJobExperience = this.candidateJobExperienceService.updateCandidateJobExperience(id, request);
         return candidateJobExperienceDto().build(candidateJobExperience);
     }
 

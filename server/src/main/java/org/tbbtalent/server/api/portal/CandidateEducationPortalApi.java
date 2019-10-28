@@ -50,6 +50,7 @@ public class CandidateEducationPortalApi {
                 .add("lengthOfCourseYears")
                 .add("institution")
                 .add("courseName")
+                .add("incomplete")
                 .add("yearCompleted")
                 ;
     }

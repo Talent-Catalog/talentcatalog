@@ -59,6 +59,8 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
                     .orElseThrow(() -> new NoSuchObjectException(Candidate.class, request.getCandidateId()));
         } else {
             candidate = userContext.getLoggedInCandidate();
+            candidate.setAuditFields(candidate.getUser());
+            candidateRepository.save(candidate);
         }
 
         // Load the country from the database - throw an exception if not found
@@ -86,6 +88,16 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
 
     @Override
     public CandidateJobExperience updateCandidateJobExperience(UpdateJobExperienceRequest request) {
+        Candidate candidate = userContext.getLoggedInCandidate();
+        CandidateJobExperience experience = updateCandidateJobExperience(candidate.getId(), request);
+        candidate.setAuditFields(candidate.getUser());
+        candidateRepository.save(candidate);
+
+        return experience;
+    }
+
+    @Override
+    public CandidateJobExperience updateCandidateJobExperience(Long id, UpdateJobExperienceRequest request) {
         // Load the candidate from the database - throw an exception if not found
         CandidateJobExperience candidateJobExperience = candidateJobExperienceRepository
                 .findByIdLoadCandidateOccupation(request.getId())
@@ -131,6 +143,9 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
         }
 
         candidateJobExperienceRepository.delete(candidateJobExperience);
+
+        candidate.setAuditFields(candidate.getUser());
+        candidateRepository.save(candidate);
     }
 
     // Load the country from the database - throw an exception if not found

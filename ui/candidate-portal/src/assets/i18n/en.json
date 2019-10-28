@@ -41,16 +41,17 @@
     }
   },
   "LANDING": {
-    "TITLE": "Welcome to TBB",
+    "TITLE": "Welcome to the Talent Catalog",
     "INTRO": "Landing page - the what and the why",
     "REGISTER": "Register",
     "LOGIN": "Login",
-    "PARA1": "Welcome to the Talent Catalog! This site is an online platform designed to capture the skills and talents of displaced people who face barriers to accessing employment.",
-    "PARA2": "Refugees living in countries where they cannot work legally are welcome to register on this site. However, Talent Beyond Boundaries does not currently have any operations in the country where you are living.",
-    "HEADING3": "About Talent Beyond Boundaries",
-    "PARA3": "Talent Beyond Boundaries is a nonprofit organization. Our ultimate goal is to link those who are displaced by conflict with jobs in countries around the world where their skills are needed. The talent catalog is a platform built to show the great range of skills among the millions of people who have been forced by violence to leave their homeland to the international private sector with the goal to link talent with international job opportunities. TBB currently working on a pilot project to place refugees living in Jordan and Lebanon with international employment in countries where their skills are needed. Once we prove this model through the pilot project, we plan to scale up and expand our work to connect tens of thousands of displaced people to international employment around the world.",
-    "HEADING4": "About the Talent Catalog",
-    "PARA4": "Registration in the Talent Catalog is free of charge. This site is available in both Arabic and English. Once registrants create a profile, they can download their personalized CV."
+    "PARA1": "Welcome to the Talent Catalog! This site is an online platform designed to capture the skills and talents of refugees and other displaced people.  Registration in the Talent Catalog is free of charge. This site is available in both Arabic and English.",
+    "HEADING2": "Talent Beyond Boundaries",
+    "PARA2": "Talent Beyond Boundaries’ mission is to open pathways for refugees and other forcibly displaced people to use their skills and talents as a route towards restored self-reliance and safety. Talent Beyond Boundaries is a nonprofit organization. We link those who are displaced by conflict with jobs in countries around the world where their skills are needed. At this time, TBB has operations in Jordan, Lebanon, Australia, Canada, and the UK. Learn more about Talent Beyond Boundaries at talentbeyondboundaries.org.",
+    "HEADING3": "",
+    "PARA3": "",
+    "HEADING4": "",
+    "PARA4": ""
   },
   "HOME": {
     "TITLE": "Welcome back, {{name}}!",
@@ -59,11 +60,15 @@
       "BUTTON": "Continue registration"
     },
     "PENDING": {
-      "EXPLANATION": "Congratulations, you've completed your registration application. We will review your application as soon as we can. In the meantime, you can review your profile.",
+      "EXPLANATION": "Thank you for completing your profile on the Talent Catalog! TBB will only contact you if an employer expresses interest in your profile. \n\n\nYou can update your profile with additional information at any time. We recommend you continuously update your profile with any new information relevant to your professional experience or qualifications, as well as update any changes in your contact information.",
+      "BUTTON": "Review Profile"
+    },
+    "ACTIVE": {
+      "EXPLANATION": "Thank you for completing your profile on the Talent Catalog! TBB will only contact you if an employer expresses interest in your profile. \n\n\n You can update your profile with additional information at any time. We recommend you continuously update your profile with any new information relevant to your professional experience or qualifications, as well as update any changes in your contact information.",
       "BUTTON": "Review Profile"
     },
     "INCOMPLETE": {
-      "EXPLANATION": "Your registration application has been reviewed, and requires further action before it can be approved.",
+      "EXPLANATION": "You have not finished your Talent Catalog profile. Your profile cannot currently be considered for international employment opportunities. Please look back through your profile and add additional information. Remember to 'submit' your profile at the end.",
       "BUTTON": "Review registration"
     }
   },
@@ -94,7 +99,8 @@
     },
     "LANDING": {
       "TITLE": "Let's get started",
-      "PARA1": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid consequatur cupiditate, doloremque fugiat quam quia sit suscipit totam! Beatae debitis, exercitationem incidunt ipsum numquam officiis ullam. Delectus enim necessitatibus soluta. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Atque beatae blanditiis cupiditate, dolor dolorem ea eos exercitationem illum ipsum itaque iure, labore non perspiciatis porro quaerat quam quos sit veniam.",
+      "PARA1": "In order to be considered for international employment opportunities, you can create a profile on the Talent Catalog. We encourage you to share as much detail as possible about your work experience when creating your profile. Please note that your registration is not complete until you click 'Submit' at the end of the process. It may take between 15 min - 1 hour to complete a full profile.",
+      "PARA2": "Talent Beyond Boundaries will use the information you share to identify relevant international employment opportunities, and may share your skills profile with interested employers. TBB will not share your identifying details with any other parties without your consent. TBB does publicly share anonymized, aggregate data about all registrants in the Talent Catalog.",
       "BUTTON1": "Register now"
     },
     "CONTACT": {
@@ -113,7 +119,7 @@
         "LASTNAME": "Last name",
         "GENDER": "Gender",
         "DOB": "Date of birth",
-        "COUNTRYID": "Country",
+        "COUNTRYID": "Country you are currently living in",
         "CITY": "City",
         "YEAROFARRIVAL": "What year did you arrive in this country?",
         "NATIONALITY": "Nationality",

@@ -48,7 +48,7 @@ public class AuthPortalApi {
     }
 
     @PostMapping("register")
-    public Map<String, Object> get(@Valid @RequestBody RegisterCandidateRequest request) throws NoSuchObjectException, AccountLockedException {
+    public Map<String, Object> register(@Valid @RequestBody RegisterCandidateRequest request) throws NoSuchObjectException, AccountLockedException {
         LoginRequest loginRequest = candidateService.register(request);
         JwtAuthenticationResponse jwt = userService.login(loginRequest);
         return jwtDto().build(jwt);

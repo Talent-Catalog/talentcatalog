@@ -73,6 +73,8 @@ public class CandidateAdminApi {
                 .add("city")
                 .add("address1")
                 .add("yearOfArrival")
+                .add("additionalInfo")
+                .add("candidateMessage")
                 .add("country", countryDto())
                 .add("nationality", nationalityDto())
                 .add("user", userDto())

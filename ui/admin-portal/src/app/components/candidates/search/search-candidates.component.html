@@ -10,11 +10,11 @@
   <button class="btn btn-primary" [routerLink]="['create']">Add</button>
 </div>
 
-<div *ngIf="!loading">
+<div [hidden]="loading">
   <div class="alert alert-danger" *ngIf="error">
     {{error}}
   </div>
-  <form class="form-row" [formGroup]="searchForm" (ngSubmit)="search()">
+  <form class="form-row" [formGroup]="searchForm" (ngSubmit)="search()" #formWrapper>
 
     <!-- KEYWORD -->
     <div class="form-group col-12 col-md-3">
@@ -300,7 +300,7 @@
 
     <!-- SAVE SEARCH  -->
     <div class="form-group col-6">
-      <button type="button"  class="btn btn-outline-primary w-100" (click)="showSave()">Save Search</button>
+      <button type="button"  class="btn btn-outline-primary w-100" (click)="openSavedSearchModal()">Save Search</button>
     </div>
 
     <!-- SHORT LIST STATUS FILTER -->
@@ -318,7 +318,7 @@
       <div class="d-flex justify-content-end">
         <button type="button" class="btn btn-outline-dark mr-2"
                 [disabled]="loading"
-                (click)="clear()">Clear
+                (click)="clearForm()">Clear
         </button>
 
         <button type="submit" class="btn btn-primary" [disabled]="loading">Apply</button>
