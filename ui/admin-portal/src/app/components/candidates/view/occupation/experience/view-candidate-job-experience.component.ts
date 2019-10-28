@@ -1,7 +1,6 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from "../../../../../model/candidate";
-import {Occupation} from "../../../../../model/occupation";
 import {CandidateOccupation} from "../../../../../model/candidate-occupation";
 import {CandidateJobExperience} from "../../../../../model/candidate-job-experience";
 import {CandidateJobExperienceService} from "../../../../../services/candidate-job-experience.service";
@@ -118,7 +117,6 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
     });
 
     editCandidateJobExperienceModal.componentInstance.candidateJobExperience = candidateJobExperience;
-    editCandidateJobExperienceModal.componentInstance.candidateOccupationId = this.candidateOccupation.id;
 
     editCandidateJobExperienceModal.result
       .then((candidateJobExperience) => this.doSearch())
