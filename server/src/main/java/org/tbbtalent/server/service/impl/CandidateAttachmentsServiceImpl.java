@@ -9,6 +9,7 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.ServiceException;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.model.CandidateAttachment;
+import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.repository.CandidateAttachmentRepository;
 import org.tbbtalent.server.repository.CandidateRepository;
 import org.tbbtalent.server.request.SearchRequest;
@@ -56,11 +57,12 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     @Override
     public List<CandidateAttachment> listCandidateAttachmentsForLoggedInCandidate() {
         Candidate candidate = userContext.getLoggedInCandidate();
-        return candidateAttachmentRepository.findByCandidateId(candidate.getId());
+        return candidateAttachmentRepository.findByCandidateIdLoadAudit(candidate.getId());
     }
 
     @Override
     public CandidateAttachment createCandidateAttachment(CreateCandidateAttachmentRequest request, Boolean adminOnly) {
+        User user = userContext.getLoggedInUser();
         Candidate candidate;
         /* Handle requests coming from the admin portal */
         if (request.getCandidateId() != null) {
@@ -93,6 +95,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         /* TODO: Full path or partial S3 path? */
         attachment.setMigrated(false);
         attachment.setAdminOnly(adminOnly);
+        attachment.setAuditFields(user);
         return candidateAttachmentRepository.save(attachment);
     }
 

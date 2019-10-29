@@ -1,6 +1,40 @@
+<h3>Uploads</h3>
+
 <div class="attachments">
-  <div class="card" *ngFor="let attachment of attachments">
-    {{attachment | json}}
+  <div class="card mb-3" *ngFor="let attachment of attachments">
+
+    <div class="row">
+
+      <div class="col-12">
+
+        <div class="form-group">
+          <label>Name</label>
+          <p>{{attachment.name}}</p>
+        </div>
+
+      </div>
+
+      <div class="col-12 col-md-6">
+
+        <div class="form-group">
+          <label>Uploaded by</label>
+          <p *ngIf="attachment.createdBy">{{attachment.createdBy.firstName}} {{attachment.createdBy.lastName}}</p>
+          <p *ngIf="!attachment.createdBy">Unknown</p>
+        </div>
+
+      </div>
+
+      <div class="col-12 col-md-6">
+
+        <div class="form-group">
+          <label>Uploaded On</label>
+          <p>{{attachment.createdDate | date}}</p>
+        </div>
+
+      </div>
+
+    </div>
+
   </div>
 </div>
 

@@ -38,12 +38,21 @@ export class CandidateAttachmentsComponent implements OnInit {
     const request = {
       type: 'file',
       name: attachment.file.name,
-      fileType: '',
+      fileType: this.getFileType(attachment.file.name),
       folder: attachment.s3Params.objectKey
     };
     this.candidateAttachmentService.createAttachment(request).subscribe(
       (response) => this.attachments.push(response),
-      (error) => this.error = error);
+      (error) => this.error = error
+    );
+  }
+
+  getFileType(name: string) {
+    const fragments = name.split(".");
+    if (fragments.length > 1) {
+      return fragments[fragments.length - 1];
+    }
+    return ''
   }
 
 }
