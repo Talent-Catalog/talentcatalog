@@ -18,18 +18,18 @@
     </div>
     <div *ngFor="let candidateLanguage of candidateLanguages">
       <div class="row">
-        <div class="col-sm-12">
+        <div class="col-sm-11">
           {{candidateLanguage.language.name}}
-        </div>
-        <div *ngIf="candidateLanguage.migrationLanguage" class="col-sm-12">
-          Migrated Language: {{candidateLanguage.migrationLanguage}}
-        </div>
-        <div class="col-xs-1">
+
           <div class="pull-right" *ngIf="editable">
             <button type="button" class="btn btn-default" (click)="editCandidateLanguage(candidateLanguage)"><i
               class="fa fa-edit"></i></button>
           </div>
         </div>
+        <div *ngIf="candidateLanguage.migrationLanguage" class="col-sm-12">
+          Migrated Language: {{candidateLanguage.migrationLanguage}}
+        </div>
+
       </div>
       <div class="row">
         <div class="col-sm-12 col-md-6">
