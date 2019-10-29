@@ -185,6 +185,15 @@
         "LOGOUT": "Logout",
         "PROFILE": "View My Profile"
       }
+    },
+    "ATTACHMENTS": {
+      "TITLE": "Uploads",
+      "EMPTYSTATE": "You have not uploaded any attachments.",
+      "LABEL": {
+        "NAME": "File name",
+        "CREATEDBY": "Uploaded by",
+        "CREATEDDATE": "Uploaded on"
+      }
     }
   },
   "PROFILE": {
@@ -283,6 +292,14 @@
       "INSTITUTION":  "Name of institution",
       "LENGTHOFCOURSEYEARS": "Length of course (years)",
       "DATECOMPLETED":  "Year of graduation"
+    },
+    "ATTACHMENT": {
+      "LABEL": {
+        "DROP":  "Drag and drop file",
+        "OR": "OR",
+        "BROWSE":  "Browse Files",
+        "UPLOADING": "Uploading..."
+      }
     }
   },
   "CARD": {

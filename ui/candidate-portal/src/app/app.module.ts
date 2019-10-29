@@ -41,7 +41,7 @@ import {EditCandidateComponent} from './components/profile/edit/edit-candidate.c
 import {CandidateOccupationCardComponent} from './components/common/candidate-occupation-card/candidate-occupation-card.component';
 import {CandidateEducationCardComponent} from './components/common/candidate-education-card/candidate-education-card.component';
 import {CandidateLanguageCardComponent} from './components/common/candidate-language-card/candidate-language-card.component';
-import {CandidateAttachmentsComponent} from './components/common/file-uploads/candidate-attachments.component';
+import {CandidateAttachmentsComponent} from './components/common/candidate-attachments/candidate-attachments.component';
 import {FileUploadComponent} from './components/common/file-upload/file-upload.component';
 
 export function createTranslateLoader(http: HttpClient) {

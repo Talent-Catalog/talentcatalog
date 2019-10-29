@@ -2,6 +2,7 @@ package org.tbbtalent.server.api.portal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.model.CandidateAttachment;
 import org.tbbtalent.server.request.SearchRequest;
@@ -40,12 +41,12 @@ public class CandidateAttachmentPortalApi {
         CandidateAttachment candidateAttachment = candidateAttachmentService.createCandidateAttachment(request, false);
         return candidateAttachmentDto().build(candidateAttachment);
     }
-//
-//    @DeleteMapping("{id}")
-//    public ResponseEntity deleteCandidateAttachment(@PathVariable("id") Long id) {
-//        candidateAttachmentService.deleteCandidateAttachment(id);
-//        return ResponseEntity.ok().build();
-//    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity deleteCandidateAttachment(@PathVariable("id") Long id) {
+        candidateAttachmentService.deleteCandidateAttachment(id);
+        return ResponseEntity.ok().build();
+    }
 
     private DtoBuilder candidateAttachmentDto() {
         return new DtoBuilder()

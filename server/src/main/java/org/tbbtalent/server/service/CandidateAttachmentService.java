@@ -17,4 +17,6 @@ public interface CandidateAttachmentService {
     List<CandidateAttachment> listCandidateAttachmentsForLoggedInCandidate();
 
     CandidateAttachment createCandidateAttachment(CreateCandidateAttachmentRequest request, Boolean adminOnly);
+
+    void deleteCandidateAttachment(Long id);
 }

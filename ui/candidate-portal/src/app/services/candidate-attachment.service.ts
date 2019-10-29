@@ -26,4 +26,7 @@ export class CandidateAttachmentService {
     return this.http.post<CandidateAttachment>(`${this.apiUrl}`, request);
   }
 
+  deleteAttachment(id: number) {
+    return this.http.delete<CandidateAttachment>(`${this.apiUrl}/${id}`);
+  }
 }

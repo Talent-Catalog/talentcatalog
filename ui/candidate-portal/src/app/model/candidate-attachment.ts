@@ -7,6 +7,7 @@ export enum AttachmentType {
 }
 
 export interface CandidateAttachment {
+  id?: number;
   name: string;
   location: string;
   fileType: string;

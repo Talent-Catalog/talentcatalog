@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.tbbtalent.server.model.CandidateAttachment;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CandidateAttachmentRepository extends JpaRepository<CandidateAttachment, Long> {
 
@@ -18,4 +19,8 @@ public interface CandidateAttachmentRepository extends JpaRepository<CandidateAt
 
     Page<CandidateAttachment> findByCandidateId(Long candidateId, Pageable request);
 
+    @Query(" select distinct a from CandidateAttachment a "
+            + " left join a.candidate c "
+            + " where a.id = ?1 ")
+    Optional<CandidateAttachment> findByIdLoadCandidate(Long id);
 }

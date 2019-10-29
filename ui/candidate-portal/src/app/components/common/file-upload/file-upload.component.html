@@ -4,14 +4,14 @@
 
   <input #input type="file" multiple hidden (change)="handleFileChanged($event)">
 
-  <span>Drag and drop file</span>
+  <span>{{ 'FORM.ATTACHMENT.LABEL.DROP' | translate }}</span>
 
-  <span class="or text-muted">OR</span>
+  <span class="or text-muted">{{ 'FORM.ATTACHMENT.LABEL.OR' | translate }}</span>
 
   <span>
     <button class="btn btn-primary" [disabled]="uploading" (click)="input.click()">
-      <ng-container *ngIf="!uploading">Browse files</ng-container>
-      <ng-container *ngIf="uploading">Uploading..</ng-container>
+      <ng-container *ngIf="!uploading">{{ 'FORM.ATTACHMENT.LABEL.BROWSE' | translate }}</ng-container>
+      <ng-container *ngIf="uploading">{{ 'FORM.ATTACHMENT.LABEL.UPLOADING' | translate }}</ng-container>
     </button>
   </span>
 
