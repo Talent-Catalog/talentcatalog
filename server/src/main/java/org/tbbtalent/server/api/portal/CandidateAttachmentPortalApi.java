@@ -2,15 +2,14 @@ package org.tbbtalent.server.api.portal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.model.CandidateAttachment;
 import org.tbbtalent.server.request.SearchRequest;
+import org.tbbtalent.server.request.attachment.CreateCandidateAttachmentRequest;
 import org.tbbtalent.server.service.CandidateAttachmentService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController()
@@ -24,17 +23,23 @@ public class CandidateAttachmentPortalApi {
         this.candidateAttachmentService = candidateAttachmentService;
     }
 
+    @GetMapping()
+    public List<Map<String, Object>> list() {
+        List<CandidateAttachment> candidateAttachments = this.candidateAttachmentService.listCandidateAttachmentsForLoggedInCandidate();
+        return candidateAttachmentDto().buildList(candidateAttachments);
+    }
+
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchRequest request) {
         Page<CandidateAttachment> candidateAttachments = this.candidateAttachmentService.searchCandidateAttachmentsForLoggedInCandidate(request);
         return candidateAttachmentDto().buildPage(candidateAttachments);
     }
 
-//    @PostMapping()
-//    public Map<String, Object> createCandidateAttachment(@RequestBody CreateCandidateAttachmentRequest request) {
-//        CandidateAttachment candidateAttachment = candidateAttachmentService.createCandidateAttachment(request);
-//        return candidateAttachmentDto().build(candidateAttachment);
-//    }
+    @PostMapping()
+    public Map<String, Object> createCandidateAttachment(@RequestBody CreateCandidateAttachmentRequest request) {
+        CandidateAttachment candidateAttachment = candidateAttachmentService.createCandidateAttachment(request, false);
+        return candidateAttachmentDto().build(candidateAttachment);
+    }
 //
 //    @DeleteMapping("{id}")
 //    public ResponseEntity deleteCandidateAttachment(@PathVariable("id") Long id) {

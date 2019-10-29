@@ -4,5 +4,6 @@
   </div>
 </div>
 
-<app-file-upload *ngIf="!preview"></app-file-upload>
+<app-error [error]="error"></app-error>
 
+<app-file-upload *ngIf="!preview" (fileUploaded)="handleAttachmentUploaded($event)"></app-file-upload>

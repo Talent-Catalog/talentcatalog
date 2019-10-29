@@ -33,6 +33,7 @@ public class SystemUploadApi {
 
     @Value("${aws.s3.max-size}")
     private long maxSize;
+
     @GetMapping(value = "policy/{s3Key}")
     public S3UploadData getUploadPolicy(@PathVariable("s3Key") String s3Key) throws Exception {
         if (StringUtils.isNotBlank(uploadFolder)) {
@@ -67,7 +68,7 @@ public class SystemUploadApi {
         return new S3UploadData(policy, signature, accessKey);
     }
 
-    protected String getExpirationTimestamp() {
+    private String getExpirationTimestamp() {
         LocalDateTime in60min = LocalDateTime.now(ZoneId.of("UTC")).plusMinutes(60);
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
         return in60min.format(formatter);

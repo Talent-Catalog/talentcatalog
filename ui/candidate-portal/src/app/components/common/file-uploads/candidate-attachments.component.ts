@@ -2,7 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {CandidateAttachmentService} from "../../../services/candidate-attachment.service";
 import {CandidateAttachment} from "../../../model/candidate-attachment";
 import {FormBuilder, FormGroup} from "@angular/forms";
-import {SearchResults} from "../../../model/search-results";
+import {S3UploadParams} from "../../../model/s3-upload-params";
 
 @Component({
   selector: 'app-candidate-attachments',
@@ -17,37 +17,15 @@ export class CandidateAttachmentsComponent implements OnInit {
   loading: boolean = true;
 
   form: FormGroup;
-  result: SearchResults<CandidateAttachment>;
   attachments: CandidateAttachment[] = [];
 
   constructor(private fb: FormBuilder,
               private candidateAttachmentService: CandidateAttachmentService) { }
 
-  get pageControl() {
-    return this.form.controls.pageNumber;
-  }
-
   ngOnInit() {
-    // Set up the search form
-    this.form = this.fb.group({
-      pageSize: 10,
-      pageNumber: 1
-    });
-
-    // Listen for value changes to the page number
-    this.pageControl.valueChanges.subscribe(() => this.search());
-
-    this.search();
-  }
-
-  search() {
-    /* DEBUG */
-    console.log('this.pc.v', this.pageControl.value);
-
-    this.candidateAttachmentService.searchCandidateAttachments(this.form.value).subscribe(
+    this.candidateAttachmentService.listCandidateAttachments().subscribe(
       (response) => {
-        this.result = response;
-        this.attachments = response.content;
+        this.attachments = response;
         this.loading = false;
       },
       (error) => {
@@ -56,26 +34,16 @@ export class CandidateAttachmentsComponent implements OnInit {
       });
   }
 
-  handleAttachmentUploaded(attachment: CandidateAttachment) {
-    this.attachments.push(attachment);
-  }
-
-  setPage(page) {
-    this.pageControl.patchValue(page);
-  }
-
-  getPrevPage() {
-    if (!this.result || this.result.first) {
-      return;
-    }
-    this.setPage(this.pageControl.value - 1);
-  }
-
-  getNextPage() {
-    if (!this.result || this.result.last) {
-      return;
-    }
-    this.setPage(this.pageControl.value + 1);
+  handleAttachmentUploaded(attachment: {s3Params: S3UploadParams, file: File}) {
+    const request = {
+      type: 'file',
+      name: attachment.file.name,
+      fileType: '',
+      folder: attachment.s3Params.objectKey
+    };
+    this.candidateAttachmentService.createAttachment(request).subscribe(
+      (response) => this.attachments.push(response),
+      (error) => this.error = error);
   }
 
 }

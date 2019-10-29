@@ -1,17 +1,17 @@
 <app-error [error]="error"></app-error>
 
-<div class="upload-box card text-center">
+<div class="upload-box card text-center" [class.hover]="hover">
 
   <input #input type="file" multiple hidden (change)="handleFileChanged($event)">
 
-  <span *ngIf="!loading">Drag and drop file</span>
+  <span>Drag and drop file</span>
 
   <span class="or text-muted">OR</span>
 
   <span>
-    <button class="btn btn-primary" [disabled]="loading" (click)="input.click()">
-      <ng-container *ngIf="!loading">Browse files</ng-container>
-      <ng-container *ngIf="loading">Uploading..</ng-container>
+    <button class="btn btn-primary" [disabled]="uploading" (click)="input.click()">
+      <ng-container *ngIf="!uploading">Browse files</ng-container>
+      <ng-container *ngIf="uploading">Uploading..</ng-container>
     </button>
   </span>
 

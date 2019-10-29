@@ -81,9 +81,4 @@ export class S3HelperService {
     return 'application/octet-stream';
   }
 
-  // Checks the file extension for a valid file type
-  isValidFileType() {
-
-  }
-
 }

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, HostBinding, HostListener, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, HostListener, OnInit, Output} from '@angular/core';
 import {S3HelperService} from "../../../services/s3-helper.service";
 import {S3UploadParams} from "../../../model/s3-upload-params";
 
@@ -9,27 +9,29 @@ import {S3UploadParams} from "../../../model/s3-upload-params";
 })
 export class FileUploadComponent implements OnInit {
 
-  @HostBinding('class.hover') background: string;
-
   @HostListener('dragover', ['$event'])
   public onDragOver(evt) {
     evt.preventDefault();
     evt.stopPropagation();
-    this.background = 'black';
+    this.hover = true;
   }
 
   @HostListener('dragleave', ['$event'])
   public onDragLeave(evt) {
     evt.preventDefault();
     evt.stopPropagation();
+    this.hover = false;
   }
 
   @HostListener('drop', ['$event'])
   public onDrop(evt) {
     evt.preventDefault();
     evt.stopPropagation();
-    const fileChangeEvent = {target: {files: evt.dataTransfer.files}};
-    this.handleFileChanged(fileChangeEvent);
+    this.hover = false;
+    if (!this.uploading) {
+      const fileChangeEvent = {target: {files: evt.dataTransfer.files}};
+      this.handleFileChanged(fileChangeEvent);
+    }
   }
 
   @Output() fileUploaded = new EventEmitter<any>();
@@ -37,6 +39,8 @@ export class FileUploadComponent implements OnInit {
   error: any;
   loading: boolean;
   uploading: boolean;
+  hover: boolean;
+  files: File[];
 
   s3Params: S3UploadParams;
 
@@ -58,22 +62,24 @@ export class FileUploadComponent implements OnInit {
   }
 
   handleFileChanged(event: any) {
-    const files: File[] = event.target.files;
-
     if (this.uploading) {
       return;
     }
+    this.files = [...event.target.files];
 
-    if (!!files && files.length) {
-      this.uploadFileToS3(files[0]);
+    if (!!this.files && this.files.length) {
+      this.uploading = true;
+      this.uploadFilesToS3();
     }
   }
 
-  uploadFileToS3(file: File) {
+  uploadFilesToS3() {
     this.error = null;
-    if (this.uploading === true) return;
-    this.uploading = true;
 
+    /* Extract the first element from the file array */
+    const file = this.files.splice(0, 1)[0];
+
+    /* Validate the file */
     if (!this.validFile(file)) {
       this.uploading = false;
       return;
@@ -86,7 +92,13 @@ export class FileUploadComponent implements OnInit {
           s3Params: this.s3Params,
           file: file
         });
-        this.uploading = false;
+
+        // Are there more files to upload?
+        if (this.files.length) {
+          this.uploadFilesToS3(); // Call recursively
+        } else {
+          this.uploading = false;
+        }
       })
       .catch((error) => {
         this.error = error;

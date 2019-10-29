@@ -14,7 +14,16 @@ export class CandidateAttachmentService {
 
   constructor(private http: HttpClient) { }
 
+  listCandidateAttachments(): Observable<CandidateAttachment[]> {
+    return this.http.get<CandidateAttachment[]>(`${this.apiUrl}`);
+  }
+
   searchCandidateAttachments(request): Observable<SearchResults<CandidateAttachment>> {
     return this.http.post<SearchResults<CandidateAttachment>>(`${this.apiUrl}/search`, request);
   }
+
+  createAttachment(request): Observable<CandidateAttachment> {
+    return this.http.post<CandidateAttachment>(`${this.apiUrl}`, request);
+  }
+
 }
