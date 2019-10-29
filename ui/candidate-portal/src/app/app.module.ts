@@ -41,6 +41,8 @@ import {EditCandidateComponent} from './components/profile/edit/edit-candidate.c
 import {CandidateOccupationCardComponent} from './components/common/candidate-occupation-card/candidate-occupation-card.component';
 import {CandidateEducationCardComponent} from './components/common/candidate-education-card/candidate-education-card.component';
 import {CandidateLanguageCardComponent} from './components/common/candidate-language-card/candidate-language-card.component';
+import {CandidateAttachmentsComponent} from './components/common/file-uploads/candidate-attachments.component';
+import {FileUploadComponent} from './components/common/file-upload/file-upload.component';
 
 export function createTranslateLoader(http: HttpClient) {
     return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -77,7 +79,9 @@ export function createTranslateLoader(http: HttpClient) {
     EditCandidateComponent,
     CandidateOccupationCardComponent,
     CandidateEducationCardComponent,
-    CandidateLanguageCardComponent
+    CandidateLanguageCardComponent,
+    CandidateAttachmentsComponent,
+    FileUploadComponent
   ],
   imports: [
     BrowserModule,
@@ -101,7 +105,7 @@ export function createTranslateLoader(http: HttpClient) {
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: LanguageInterceptor, multi: true},
-    {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true}
   ],
   bootstrap: [AppComponent]
 })

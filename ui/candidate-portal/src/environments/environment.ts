@@ -4,7 +4,9 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8080/api/portal'
+  apiUrl: 'http://localhost:8080/api/portal',
+  systemApiUrl: 'http://localhost:8080/api/system',
+  s3BucketUrl: 'https://s3.us-east-1.amazonaws.com/files.tbbtalent.org'
 };
 
 /*
