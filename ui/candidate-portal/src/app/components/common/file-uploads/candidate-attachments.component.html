@@ -1,0 +1,8 @@
+<div class="attachments">
+  <div class="card" *ngFor="let attachment of attachments">
+    {{attachment | json}}
+  </div>
+</div>
+
+<app-file-upload *ngIf="!preview"></app-file-upload>
+

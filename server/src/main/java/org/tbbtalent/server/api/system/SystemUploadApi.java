@@ -33,10 +33,6 @@ public class SystemUploadApi {
 
     @Value("${aws.s3.max-size}")
     private long maxSize;
-
-//    @Autowired
-//    private AfoAttachmentService afoAttachmentService;
-
     @GetMapping(value = "policy/{s3Key}")
     public S3UploadData getUploadPolicy(@PathVariable("s3Key") String s3Key) throws Exception {
         if (StringUtils.isNotBlank(uploadFolder)) {
@@ -44,11 +40,6 @@ public class SystemUploadApi {
         }
         return getPolicyForKey(s3Key);
     }
-
-//    @PostMapping
-//    public Map<String, Object> uploadFile(@Valid @RequestBody UploadFileRequest request) {
-
-//    }
 
     private S3UploadData getPolicyForKey(String s3Key) throws Exception {
 
