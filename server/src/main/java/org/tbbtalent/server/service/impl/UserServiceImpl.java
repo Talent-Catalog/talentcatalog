@@ -123,6 +123,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    public User updateUsername(long id, UpdateUsernameRequest request) {
+        User user = this.userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(User.class, id));
+
+        if (!user.getUsername().equalsIgnoreCase(request.getUsername())){
+            User existing = userRepository.findByUsernameIgnoreCase(request.getUsername());
+            if (existing != null){
+                throw new UsernameTakenException("username");
+            }
+        }
+
+        user.setUsername(request.getUsername());
+
+        return userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
     public void deleteUser(long id) {
         User user = userRepository.findById(id).orElse(null);
         if (user != null) {
@@ -193,6 +211,24 @@ public class UserServiceImpl implements UserService {
 //        if (!passwordHelper.isValidPassword(user.getPasswordEnc(), oldPasswordEnc)) {
 //            throw new InvalidCredentialsException("Invalid credentials for this user");
 //        }
+
+        /* Change the password */
+        String passwordEnc = passwordHelper.validateAndEncodePassword(request.getPassword());
+        user.setPasswordEnc(passwordEnc);
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    public void updateUserPassword(long id, UpdateUserPasswordRequest request) {
+        /* Get user */
+        User user = this.userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(User.class, id));
+
+        /* Check that the new passwords match */
+        if (!request.getPassword().equals(request.getPasswordConfirmation())) {
+            throw new PasswordMatchException();
+        }
 
         /* Change the password */
         String passwordEnc = passwordHelper.validateAndEncodePassword(request.getPassword());

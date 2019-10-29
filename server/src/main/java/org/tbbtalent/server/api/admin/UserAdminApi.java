@@ -5,9 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.User;
-import org.tbbtalent.server.request.user.CreateUserRequest;
-import org.tbbtalent.server.request.user.SearchUserRequest;
-import org.tbbtalent.server.request.user.UpdateUserRequest;
+import org.tbbtalent.server.request.user.*;
 import org.tbbtalent.server.service.UserService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -50,6 +48,19 @@ public class UserAdminApi {
         return userDto().build(user);
     }
 
+    @PutMapping("/username/{id}")
+    public Map<String, Object> updateUsername(@PathVariable("id") long id,
+                                      @RequestBody UpdateUsernameRequest request) {
+        User user = this.userService.updateUsername(id, request);
+        return userDto().build(user);
+    }
+
+    @PutMapping("/password/{id}")
+    public void updatePassword(@PathVariable("id") long id,
+                                              @RequestBody UpdateUserPasswordRequest request) {
+        this.userService.updateUserPassword(id, request);
+    }
+
     @DeleteMapping("{id}")
     public void delete(@PathVariable("id") long id) {
         this.userService.deleteUser(id);
@@ -64,6 +75,8 @@ public class UserAdminApi {
                 .add("lastName")
                 .add("email")
                 .add("status")
+                .add("createdDate")
+                .add("lastLogin")
                 ;
     }
 

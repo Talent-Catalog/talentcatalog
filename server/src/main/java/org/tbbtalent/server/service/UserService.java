@@ -1,19 +1,13 @@
 package org.tbbtalent.server.service;
 
-import javax.security.auth.login.AccountLockedException;
-
-import org.tbbtalent.server.model.User;
 import org.springframework.data.domain.Page;
 import org.tbbtalent.server.exception.UsernameTakenException;
+import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.request.LoginRequest;
-import org.tbbtalent.server.request.user.CreateUserRequest;
-import org.tbbtalent.server.request.user.SearchUserRequest;
-import org.tbbtalent.server.request.user.UpdateUserRequest;
-import org.tbbtalent.server.request.user.CheckPasswordResetTokenRequest;
-import org.tbbtalent.server.request.user.ResetPasswordRequest;
-import org.tbbtalent.server.request.user.SendResetPasswordEmailRequest;
-import org.tbbtalent.server.request.user.UpdateUserPasswordRequest;
+import org.tbbtalent.server.request.user.*;
 import org.tbbtalent.server.response.JwtAuthenticationResponse;
+
+import javax.security.auth.login.AccountLockedException;
 
 public interface UserService {
 
@@ -25,6 +19,7 @@ public interface UserService {
     void checkResetToken(CheckPasswordResetTokenRequest request);
     void generateResetPasswordToken(SendResetPasswordEmailRequest request);
     void updatePassword(UpdateUserPasswordRequest request);
+    void updateUserPassword(long id, UpdateUserPasswordRequest request);
 
     Page<User> searchUsers(SearchUserRequest request);
 
@@ -33,6 +28,8 @@ public interface UserService {
     User createUser(CreateUserRequest request) throws UsernameTakenException;
 
     User updateUser(long id, UpdateUserRequest request);
+
+    User updateUsername(long id, UpdateUsernameRequest request);
 
     void deleteUser(long id);
 
