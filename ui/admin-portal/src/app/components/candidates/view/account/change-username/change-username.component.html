@@ -1,0 +1,43 @@
+<div class="modal-header">
+
+  <h4 class="modal-title">Update Username</h4>
+
+  <button type="button" class="close" aria-label="Close" (click)="dismiss()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+
+</div>
+
+<div class="modal-body">
+
+  <div *ngIf="loading">
+    <i class="fa fa-spinner fa-spin"></i>
+  </div>
+
+  <div *ngIf="!loading">
+    <div class="alert alert-danger" *ngIf="error">
+      {{error}}
+    </div>
+
+    <form [formGroup]="form">
+
+      <!-- Username -->
+      <div class="form-group">
+        <label for="username">New Username:</label>
+        <input id="username" class="form-control" type="username" [formControlName]="'username'">
+      </div>
+
+      <div class="text-right">
+
+        <button class="btn btn-primary mb-4"
+                (click)="updateUsername()">
+          Update
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
