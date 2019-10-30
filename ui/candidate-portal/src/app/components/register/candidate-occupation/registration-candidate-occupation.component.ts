@@ -66,7 +66,7 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
           }
         });
         this._loading.candidate = false;
-        this.showForm = false;
+        this.showForm = this.candidateOccupations.length == 0;
       },
       (error) => {
         this.error = error;

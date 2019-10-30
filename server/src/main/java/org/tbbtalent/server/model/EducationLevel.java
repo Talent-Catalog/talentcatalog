@@ -15,6 +15,9 @@ public class EducationLevel extends AbstractTranslatableDomainObject<Long> {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    @Enumerated(EnumType.STRING)
+    private EducationType educationType;
+
     public EducationLevel() {
     }
 
@@ -40,4 +43,11 @@ public class EducationLevel extends AbstractTranslatableDomainObject<Long> {
         this.status = status;
     }
 
+    public EducationType getEducationType() {
+        return educationType;
+    }
+
+    public void setEducationType(EducationType educationType) {
+        this.educationType = educationType;
+    }
 }

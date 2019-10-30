@@ -1,14 +1,14 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {Candidate} from "../../../../../model/candidate";
-import {CandidateOccupation} from "../../../../../model/candidate-occupation";
-import {CandidateJobExperience} from "../../../../../model/candidate-job-experience";
-import {CandidateJobExperienceService} from "../../../../../services/candidate-job-experience.service";
-import {EditCandidateJobExperienceComponent} from "./edit/edit-candidate-job-experience.component";
-import {CreateCandidateJobExperienceComponent} from "./create/create-candidate-job-experience.component";
-import {FormBuilder, FormGroup} from "@angular/forms";
-import {SearchResults} from "../../../../../model/search-results";
-import {EditCandidateOccupationComponent} from "../edit/edit-candidate-occupation.component";
+import {Candidate} from '../../../../../model/candidate';
+import {CandidateOccupation} from '../../../../../model/candidate-occupation';
+import {CandidateJobExperience} from '../../../../../model/candidate-job-experience';
+import {CandidateJobExperienceService} from '../../../../../services/candidate-job-experience.service';
+import {EditCandidateJobExperienceComponent} from './edit/edit-candidate-job-experience.component';
+import {CreateCandidateJobExperienceComponent} from './create/create-candidate-job-experience.component';
+import {FormBuilder, FormGroup} from '@angular/forms';
+import {SearchResults} from '../../../../../model/search-results';
+import {EditCandidateOccupationComponent} from '../edit/edit-candidate-occupation.component';
 
 @Component({
   selector: 'app-view-candidate-job-experience',
@@ -60,6 +60,8 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
   doSearch() {
     this.loading = true;
     this.experiences = [];
+
+    /* GET CANDIDATE JOB EXPERIENCES */
     this.candidateJobExperienceService.search(this.candidateJobExperienceForm.value).subscribe(
       results => {
         this.experiences = results.content;
@@ -88,10 +90,11 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
     modal.componentInstance.candidateOccupation = this.candidateOccupation;
 
     modal.result
-      .then((candidateOccupation) => this.doSearch())
+      .then((candidateOccupation) => this.candidateOccupation = candidateOccupation)
       .catch(() => { /* Isn't possible */
       });
 
+    this.candidateJobExperienceForm.controls['candidateOccupationId'].patchValue(this.candidateOccupation.id);
   }
 
   createCandidateJobExperience() {

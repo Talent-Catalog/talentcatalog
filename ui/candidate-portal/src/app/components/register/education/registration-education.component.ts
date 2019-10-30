@@ -39,6 +39,7 @@ export class RegistrationEducationComponent implements OnInit {
   educationLevels: EducationLevel[];
   candidateEducationItems: CandidateEducation[];
   addingEducation: boolean;
+  educationType: string;
 
   constructor(private fb: FormBuilder,
               private router: Router,
@@ -55,6 +56,20 @@ export class RegistrationEducationComponent implements OnInit {
     this.candidateEducationItems = [];
     this.form = this.fb.group({
       maxEducationLevelId: ['']
+    });
+
+    this.form.get('maxEducationLevelId').valueChanges.subscribe(value => {
+      if (value){
+        let educationLevel = this.educationLevels.find(e => e.id == value);
+        if (educationLevel){
+           let education = this.candidateEducationItems.find(e => e.educationType == educationLevel.educationType);
+           if (education){
+             return;
+           }
+        }
+        this.addingEducation = educationLevel && educationLevel.educationType != null;
+        this.educationType = educationLevel ? educationLevel.educationType : null;
+      }
     });
 
     /* Load data */

@@ -17,6 +17,7 @@ import {EducationMajorService} from "../../../services/education-major.service";
 })
 export class CandidateEducationFormComponent implements OnInit {
 
+  @Input() educationType: string;
   @Input() candidateEducation: CandidateEducation;
   @Input() majors: EducationMajor[];
   @Input() countries: Country[];
@@ -47,7 +48,7 @@ export class CandidateEducationFormComponent implements OnInit {
     const edu = this.candidateEducation;
     this.form = this.fb.group({
       id: [edu ? edu.id : null],
-      educationType: [edu ? edu.educationType : null, Validators.required],
+      educationType: [edu ? edu.educationType : this.educationType, Validators.required],
       courseName: [edu ? edu.courseName : null, Validators.required],
       countryId: [edu && edu.country ? edu.country.id : null, Validators.required],
       institution: [edu ? edu.institution : null, Validators.required],

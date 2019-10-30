@@ -38,4 +38,10 @@ public interface CandidateOccupationRepository extends JpaRepository<CandidateOc
     @Query(" select o from CandidateOccupation o "
             + " where o.candidate.id = :candidateId")
     List<CandidateOccupation> findByCandidateId(@Param("candidateId") Long candidateId);
+
+    @Query(" select co from CandidateOccupation co "
+            + " where co.candidate.id = :candidateId"
+            + " and co.occupation.id = :occupationId")
+    CandidateOccupation findByCandidateIdAAndOccupationId(@Param("candidateId") Long candidateId,
+                                                          @Param("occupationId") Long occupationId);
 }

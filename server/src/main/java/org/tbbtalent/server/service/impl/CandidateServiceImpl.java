@@ -44,8 +44,6 @@ public class CandidateServiceImpl implements CandidateService {
     private final CandidateNoteService candidateNoteService;
     private final EmailHelper emailHelper;
 
-
-
     @Autowired
     public CandidateServiceImpl(UserRepository userRepository,
                                 CandidateRepository candidateRepository,
@@ -151,11 +149,11 @@ public class CandidateServiceImpl implements CandidateService {
     public Candidate updateCandidateStatus(long id, UpdateCandidateStatusRequest request) {
         Candidate candidate = this.candidateRepository.findByIdLoadUser(id)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
-        if (!request.getStatus().equals(candidate.getStatus())) {
+        candidate.setStatus(request.getStatus());
+        candidate.setCandidateMessage(request.getCandidateMessage());
+        candidate = candidateRepository.save(candidate);
+        if (!request.getStatus().equals(candidate.getStatus())){
             candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(id, "Status change from " + candidate.getStatus() + " to " + request.getStatus(), request.getComment()));
-            candidate.setStatus(request.getStatus());
-            candidate.setCandidateMessage(request.getCandidateMessage());
-            candidate = candidateRepository.save(candidate);
             if (request.getStatus().equals(CandidateStatus.incomplete)) {
                 emailHelper.sendIncompleteApplication(candidate.getUser(), request.getCandidateMessage());
             }

@@ -11,7 +11,7 @@
       <!-- MAX EDUCATION LEVEL -->
       <div class="form-group">
         <label for="maxEducationLevelId">{{ 'REGISTRATION.EDUCATION.LABEL.MAXEDUCATIONLEVELID' | translate }}</label>
-        <select class="form-control" id="maxEducationLevelId" [formControlName]="'maxEducationLevelId'">
+        <select class="form-control" id="maxEducationLevelId" [formControlName]="'maxEducationLevelId'" >
           <option value=""></option>
           <option *ngFor="let educationLevel of educationLevels" [value]="educationLevel.id">{{educationLevel.name}}</option>
         </select>
@@ -29,8 +29,10 @@
 
     </div>
 
+    <p *ngIf="addingEducation" translate dir="auto">REGISTRATION.EDUCATION.MESSAGE</p>
     <!-- EDUCATION HISTORY -->
     <app-candidate-education-form *ngIf="addingEducation" class="mt-4"
+                                  [educationType]="educationType"
                                   [countries]="countries"
                                   [majors]="majors"
                                   (saved)="handleCandidateEducationSaved($event)">
