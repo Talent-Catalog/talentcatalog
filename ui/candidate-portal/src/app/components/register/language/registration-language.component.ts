@@ -215,4 +215,8 @@ export class RegistrationLanguageComponent implements OnInit {
       return this.languages.filter(occ => !existingIds.includes(occ.id.toString()))
     }
   }
+
+  cancel() {
+    this.onSave.emit();
+  }
 }

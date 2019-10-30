@@ -93,6 +93,7 @@
     },
     "FOOTER": {
       "BACK": "Back",
+      "CANCEL": "Cancel",
       "NEXT": "Next",
       "SUBMIT": "Submit",
       "UPDATE": "Update"

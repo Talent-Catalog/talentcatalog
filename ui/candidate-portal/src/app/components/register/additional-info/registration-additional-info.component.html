@@ -22,8 +22,7 @@
 </div>
 
 <app-registration-footer [nextDisabled]="loading || saving"
-                         [hideBack]="edit"
                          [type]="edit ? 'update' : 'submit'"
-                         (backClicked)="save('back')"
+                         (backClicked)="edit ? cancel() : save('back') "
                          (nextClicked)="save('next')">
 </app-registration-footer>

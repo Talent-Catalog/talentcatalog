@@ -166,4 +166,7 @@ export class RegistrationPersonalComponent implements OnInit {
     return l.candidate || l.countries || l.nationalities;
   }
 
+  cancel() {
+    this.onSave.emit();
+  }
 }

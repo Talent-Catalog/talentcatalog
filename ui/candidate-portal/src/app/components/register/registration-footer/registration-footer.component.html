@@ -2,18 +2,25 @@
 
   <div class="container" [class.justify-content-end]="hideBack">
 
-    <button class="btn btn-outline-primary" translate dir="auto" [hidden]="hideBack"
+    <button class="btn btn-outline-primary"
+            [hidden]="hideBack"
             [disabled]="registrationService.currentStepIndex == 0 || backDisabled"
             (click)="back()">
-      REGISTRATION.FOOTER.BACK
+      <span [ngSwitch]="type">
+        <ng-container *ngSwitchCase="'update'">{{ 'REGISTRATION.FOOTER.CANCEL' | translate }}</ng-container>
+        <ng-container *ngSwitchDefault>{{ 'REGISTRATION.FOOTER.BACK' | translate }}</ng-container>
+      </span>
     </button>
 
-    <button class="btn btn-primary" translate dir="auto" [hidden]="hideNext"
+    <button class="btn btn-primary"
+            [hidden]="hideNext"
             [disabled]="registrationService.currentStepIndex >= registrationService.steps.length - 1 || nextDisabled"
             (click)="next()">
-      <span *ngIf="type === 'update'">{{ 'REGISTRATION.FOOTER.UPDATE' | translate }}</span>
-      <span *ngIf="type === 'step'">{{ 'REGISTRATION.FOOTER.NEXT' | translate }}</span>
-      <span *ngIf="type === 'submit'">{{ 'REGISTRATION.FOOTER.SUBMIT' | translate }}</span>
+      <span [ngSwitch]="type">
+        <ng-container *ngSwitchCase="'update'">{{ 'REGISTRATION.FOOTER.UPDATE' | translate }}</ng-container>
+        <ng-container *ngSwitchCase="'submit'">{{ 'REGISTRATION.FOOTER.SUBMIT' | translate }}</ng-container>
+        <ng-container *ngSwitchDefault>{{ 'REGISTRATION.FOOTER.NEXT' | translate }}</ng-container>
+      </span>
     </button>
 
   </div>

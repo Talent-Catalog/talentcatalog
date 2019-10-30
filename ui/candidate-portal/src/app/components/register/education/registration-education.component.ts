@@ -186,4 +186,8 @@ export class RegistrationEducationComponent implements OnInit {
         this.saving = false;
       });
   }
+
+  cancel() {
+    this.onSave.emit();
+  }
 }

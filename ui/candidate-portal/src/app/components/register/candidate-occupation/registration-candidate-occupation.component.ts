@@ -117,6 +117,10 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
       });
   }
 
+  cancel() {
+    this.onSave.emit();
+  }
+
   back() {
     this.save('back');
   }

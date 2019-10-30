@@ -70,6 +70,10 @@ export class RegistrationContactComponent implements OnInit {
     }
   }
 
+  cancel() {
+    this.onSave.emit();
+  }
+
   save() {
     this.saving = true;
     if (this.authService.isAuthenticated()) {

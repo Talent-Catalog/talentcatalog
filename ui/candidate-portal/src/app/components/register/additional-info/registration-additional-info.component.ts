@@ -70,4 +70,8 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
       }
     );
   }
+
+  cancel() {
+    this.onSave.emit();
+  }
 }
