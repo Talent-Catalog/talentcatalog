@@ -254,6 +254,9 @@
     }
   },
   "FORM": {
+    "LABEL": {
+      "OPTIONAL": "(optional)"
+    },
     "ERROR": {
       "REQUIRED": "This field is required",
       "EMAIL":"This field must contain a valid email address",

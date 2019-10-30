@@ -55,8 +55,8 @@ export class RegistrationPersonalComponent implements OnInit {
       dob: [null, Validators.required],
       /* LOCATION */
       countryId: ['', Validators.required],
-      city: ['', Validators.required],
-      yearOfArrival: ['', Validators.required],
+      city: [''],
+      yearOfArrival: [''],
       /* NATIONALITY */
       nationality: ['', Validators.required],
       // registeredWithUN: ['', Validators.required],

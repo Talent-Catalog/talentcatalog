@@ -66,21 +66,27 @@
     <!-- CITY -->
     <div class="col-12 col-md-6">
       <div class="form-group">
-        <label for="city">{{ 'REGISTRATION.PERSONAL.LABEL.CITY' | translate }} <sup>*</sup></label>
+        <label for="city">
+          {{ 'REGISTRATION.PERSONAL.LABEL.CITY' | translate }}
+          <small class="text-muted">{{ 'FORM.LABEL.OPTIONAL' | translate}}</small>
+        </label>
         <input type="text" class="form-control" id="city" placeholder="" [formControlName]="'city'">
-        <app-form-control-error [control]="form.controls.city"></app-form-control-error>
+<!--        <app-form-control-error [control]="form.controls.city"></app-form-control-error>-->
       </div>
     </div>
 
     <!-- YEAR OF ARRIVAL -->
     <div class="col-12">
       <div class="form-group">
-        <label for="yearOfArrival">{{ 'REGISTRATION.PERSONAL.LABEL.YEAROFARRIVAL' | translate }} <sup>*</sup></label>
+        <label for="yearOfArrival">
+          {{ 'REGISTRATION.PERSONAL.LABEL.YEAROFARRIVAL' | translate }}
+          <small class="text-muted">{{ 'FORM.LABEL.OPTIONAL' | translate}}</small>
+        </label>
         <select class="form-control" name="yearOfArrival" id="yearOfArrival" [formControlName]="'yearOfArrival'">
           <option value=""></option>
           <option *ngFor="let year of years" [value]="year">{{year}}</option>
         </select>
-        <app-form-control-error [control]="form.controls.yearOfArrival"></app-form-control-error>
+<!--        <app-form-control-error [control]="form.controls.yearOfArrival"></app-form-control-error>-->
       </div>
     </div>
 
