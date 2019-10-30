@@ -171,20 +171,17 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         CandidateOccupation candidateOccupation = candidateOccupationRepository.findByIdLoadCandidate(id)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateOccupation.class, id));
 
-        if(request.getOccupationId() != null){
-            // Load the verified occupation from the database - throw an exception if not found
-            Occupation verifiedOccupation = occupationRepository.findById(request.getOccupationId())
-                    .orElseThrow(() -> new NoSuchObjectException(Occupation.class, request.getOccupationId()));
+        // Load the verified occupation from the database - throw an exception if not found
+        Occupation verifiedOccupation = occupationRepository.findById(request.getOccupationId())
+                .orElseThrow(() -> new NoSuchObjectException(Occupation.class, request.getOccupationId()));
 
-            // Check candidate doesn't already have this occupation
-            CandidateOccupation existing = candidateOccupationRepository.findByCandidateIdAAndOccupationId(candidateOccupation.getCandidate().getId(), request.getOccupationId());
-            if (existing != null){
-                throw new EntityExistsException("occupation");
-            }
-
-            candidateOccupation.setOccupation(verifiedOccupation);
+        // Check candidate doesn't already have this occupation and isn't the same candidateOccupation
+        CandidateOccupation existing = candidateOccupationRepository.findByCandidateIdAAndOccupationId(candidateOccupation.getCandidate().getId(), request.getOccupationId());
+        if (existing != null && !existing.getId().equals(candidateOccupation.getId())){
+            throw new EntityExistsException("occupation");
         }
 
+        candidateOccupation.setOccupation(verifiedOccupation);
         candidateOccupation.setVerified(request.isVerified());
 
         candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(candidateOccupation.getCandidate().getId(),
