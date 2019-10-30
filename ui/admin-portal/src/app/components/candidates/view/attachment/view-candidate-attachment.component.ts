@@ -113,4 +113,7 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
   //
   }
 
+  deleteCandidateAttachment(attachment: CandidateAttachment) {
+    alert("todo");
+  }
 }
