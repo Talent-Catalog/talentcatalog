@@ -5,6 +5,7 @@ import {CandidateService} from "../../../../../services/candidate.service";
 import {Candidate} from "../../../../../model/candidate";
 import {NationalityService} from "../../../../../services/nationality.service";
 import {CountryService} from "../../../../../services/country.service";
+import {generateYearArray} from "../../../../../util/year-helper";
 
 @Component({
   selector: 'app-edit-country',
@@ -35,13 +36,7 @@ export class EditCandidateContactComponent implements OnInit {
   ngOnInit() {
     this.loading = true;
 
-    this.years = [];
-    let currentYear = new Date().getFullYear();
-    let year = 1950;
-    while (year < currentYear){
-      this.years.push(year++);
-    }
-
+    this.years = generateYearArray(1950, true);
 
     /*load the countries */
     this.countryService.listCountries().subscribe(

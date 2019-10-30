@@ -24,7 +24,9 @@
   <div class="card-body">
 
     <!-- EMPTY STATE -->
-    <p *ngIf="!attachments || attachments.length == 0"></p>
+    <p *ngIf="!attachments?.length">
+      No files have been uploaded by the candidate.
+    </p>
 
     <!-- ATTACHMENTS -->
     <div class="row position-relative mb-3" *ngFor="let attachment of attachments; let i = index">
@@ -41,7 +43,6 @@
           <i class="fa fa-trash"></i>
         </button>
       </div>
-
 
       <!-- NAME -->
       <div class="col-12" [class.edit-padding]="editable">
