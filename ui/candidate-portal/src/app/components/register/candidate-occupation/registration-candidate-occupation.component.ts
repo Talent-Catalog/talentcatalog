@@ -29,17 +29,20 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
   form: FormGroup;
   candidateOccupations: CandidateOccupation[];
   occupations: Occupation[];
+  showForm;
 
   constructor(private fb: FormBuilder,
               private router: Router,
               private candidateService: CandidateService,
               private occupationService: OccupationService,
               private candidateOccupationService: CandidateOccupationService,
-              public registrationService: RegistrationService) { }
+              public registrationService: RegistrationService) {
+  }
 
   ngOnInit() {
     this.candidateOccupations = [];
     this.saving = false;
+    this.showForm = true;
     this.setUpForm();
 
     this.occupationService.listOccupations().subscribe(
@@ -63,6 +66,7 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
           }
         });
         this._loading.candidate = false;
+        this.showForm = false;
       },
       (error) => {
         this.error = error;
@@ -71,7 +75,7 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
     );
   }
 
-  setUpForm(){
+  setUpForm() {
     this.form = this.fb.group({
       id: [null],
       occupationId: [null, Validators.required],
@@ -80,8 +84,12 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
   }
 
   addOccupation() {
-    this.candidateOccupations.push(this.form.value);
-    this.setUpForm();
+    if (this.form.valid) {
+      this.candidateOccupations.push(this.form.value);
+      this.setUpForm();
+    }
+    this.showForm = true;
+
   }
 
   deleteOccupation(index: number) {
@@ -124,8 +132,7 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
   get filteredOccupations(): Occupation[] {
     if (!this.occupations) {
       return [];
-    }
-    else if (!this.candidateOccupations || !this.occupations.length) {
+    } else if (!this.candidateOccupations || !this.occupations.length) {
       return this.occupations
     } else {
       const existingIds = this.candidateOccupations.map(candidateOcc => candidateOcc.occupation

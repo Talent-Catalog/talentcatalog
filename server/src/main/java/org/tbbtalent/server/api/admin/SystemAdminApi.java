@@ -291,7 +291,11 @@ public class SystemAdminApi {
             if (countryId == null) {
                 countryId = whackyExtraCountryLookup(origCountryId);
             }
-            i = setRefIdOrNull(result, insert, "country", countryIds, i);
+            if (countryId != null) {
+                insert.setLong(i++, countryId);
+            } else {
+                insert.setNull(i++,  Types.BIGINT);
+            }
             insert.setString(i++, result.getString("province"));
             i = setRefIdOrUnknown(result, insert, "nationality", nationalityIds, otherNationalities, i, 18);
             insert.setString(i++, result.getString("additional_information_summary"));
