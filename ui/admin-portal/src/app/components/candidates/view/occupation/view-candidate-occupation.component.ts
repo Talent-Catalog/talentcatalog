@@ -1,17 +1,13 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {Candidate} from "../../../../model/candidate";
-import {Occupation} from "../../../../model/occupation";
 import {CandidateOccupation} from "../../../../model/candidate-occupation";
 import {CandidateService} from "../../../../services/candidate.service";
 import {CandidateOccupationService} from "../../../../services/candidate-occupation.service";
 import {CandidateJobExperience} from "../../../../model/candidate-job-experience";
 import {CandidateJobExperienceService} from "../../../../services/candidate-job-experience.service";
 import {EditCandidateJobExperienceComponent} from "./experience/edit/edit-candidate-job-experience.component";
-import {EditCountryComponent} from "../../../settings/countries/edit/edit-country.component";
-import {SearchResults} from "../../../../model/search-results";
 
 @Component({
   selector: 'app-view-candidate-occupation',

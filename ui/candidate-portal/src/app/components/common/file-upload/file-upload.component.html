@@ -1,0 +1,18 @@
+<app-error [error]="error"></app-error>
+
+<div class="upload-box card text-center" [class.hover]="hover">
+
+  <input #input type="file" multiple hidden (change)="handleFileChanged($event)">
+
+  <span>{{ 'FORM.ATTACHMENT.LABEL.DROP' | translate }}</span>
+
+  <span class="or text-muted">{{ 'FORM.ATTACHMENT.LABEL.OR' | translate }}</span>
+
+  <span>
+    <button class="btn btn-primary" [disabled]="uploading" (click)="input.click()">
+      <ng-container *ngIf="!uploading">{{ 'FORM.ATTACHMENT.LABEL.BROWSE' | translate }}</ng-container>
+      <ng-container *ngIf="uploading">{{ 'FORM.ATTACHMENT.LABEL.UPLOADING' | translate }}</ng-container>
+    </button>
+  </span>
+
+</div>

@@ -134,7 +134,7 @@
         "DISCLAIMER": "Do not include years spent studying in this occupation"
       },
       "BUTTON": {
-        "ADD": "Add occupation"
+        "ADD": "Add another occupation"
       }
     },
     "EXPERIENCE": {
@@ -184,6 +184,15 @@
       "BUTTON": {
         "LOGOUT": "Logout",
         "PROFILE": "View My Profile"
+      }
+    },
+    "ATTACHMENTS": {
+      "TITLE": "Uploads",
+      "EMPTYSTATE": "You have not uploaded any attachments.",
+      "LABEL": {
+        "NAME": "File name",
+        "CREATEDBY": "Uploaded by",
+        "CREATEDDATE": "Uploaded on"
       }
     }
   },
@@ -284,6 +293,14 @@
       "LENGTHOFCOURSEYEARS": "Length of course (years)",
       "DATECOMPLETED":  "Year of graduation",
       "INCOMPLETE":  "Incomplete"
+    },
+    "ATTACHMENT": {
+      "LABEL": {
+        "DROP":  "Drag and drop file",
+        "OR": "OR",
+        "BROWSE":  "Browse Files",
+        "UPLOADING": "Uploading..."
+      }
     }
   },
   "CARD": {

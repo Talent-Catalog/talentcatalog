@@ -74,7 +74,9 @@ public class SystemAdminApi {
             Long userId = 1L; 
             if (userContext != null) {
                 User loggedInUser = userContext.getLoggedInUser();
-                userId = loggedInUser.getId();
+                if (loggedInUser != null){
+                    userId = loggedInUser.getId();
+                }
             }
 
             Connection sourceConn = DriverManager.getConnection("jdbc:mysql://tbbtalent.org/yiitbb?useUnicode=yes&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull", "sayre", "MoroccoBound");
@@ -291,7 +293,11 @@ public class SystemAdminApi {
             if (countryId == null) {
                 countryId = whackyExtraCountryLookup(origCountryId);
             }
-            i = setRefIdOrNull(result, insert, "country", countryIds, i);
+            if (countryId != null) {
+                insert.setLong(i++, countryId);
+            } else {
+                insert.setNull(i++,  Types.BIGINT);
+            }
             insert.setString(i++, result.getString("province"));
             i = setRefIdOrUnknown(result, insert, "nationality", nationalityIds, otherNationalities, i, 18);
             insert.setString(i++, result.getString("additional_information_summary"));

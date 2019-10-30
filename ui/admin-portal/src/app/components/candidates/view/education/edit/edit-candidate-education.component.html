@@ -26,9 +26,12 @@
         <label for="educationType">Education Type</label>
         <select class="form-control" name="educationType" id="educationType" [formControlName]="'educationType'">
           <option value=""></option>
-          <option value="School">School</option>
-          <option value="University">University</option>
+<!--          <option value="School">School</option>-->
+          <option value="Vocational">Vocational</option>
+          <option value="Associate">Associate</option>
+          <option value="Bachelor">Bachelor</option>
           <option value="Masters">Masters</option>
+          <option value="Doctoral">Doctoral</option>
         </select>
       </div>
 
@@ -63,13 +66,27 @@
         </select>
       </div>
 
-      <!-- YEAR -->
+      <!-- COURSE LENGTH -->
       <div class="form-group">
-        <label for="yearCompleted">Year of completion *</label>
+        <label for="lengthOfCourseYears">Length of Course Years</label>
+        <input type="number" class="form-control" placeholder="" id="lengthOfCourseYears"
+               [formControlName]="'lengthOfCourseYears'">
+      </div>
+      <!-- Year -->
+      <div class="form-group">
+        <label for="yearCompleted">Year of completion</label>
         <select class="form-control" name="yearCompleted" id="yearCompleted" [formControlName]="'yearCompleted'">
           <option value=""></option>
           <option *ngFor="let year of years" [value]="year">{{year}}</option>
         </select>
+      </div>
+
+
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input"  id="incomplete" [value]="true" [formControlName]="'incomplete'">
+        <label class="form-check-label" for="incomplete">
+          Not completed
+        </label>
       </div>
 
 

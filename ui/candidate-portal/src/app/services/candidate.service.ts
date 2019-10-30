@@ -73,4 +73,8 @@ export class CandidateService {
   getProfile() {
     return this.http.get<Candidate>(`${this.apiUrl}/profile`);
   }
+
+  getCandidateNumber() {
+    return this.http.get<Candidate>(`${this.apiUrl}/candidate-number`);
+  }
 }

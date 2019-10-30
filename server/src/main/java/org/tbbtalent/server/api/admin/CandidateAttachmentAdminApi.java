@@ -2,11 +2,10 @@ package org.tbbtalent.server.api.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.model.CandidateAttachment;
+import org.tbbtalent.server.request.attachment.CreateCandidateAttachmentRequest;
 import org.tbbtalent.server.request.attachment.SearchCandidateAttachmentsRequest;
 import org.tbbtalent.server.service.CandidateAttachmentService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
@@ -33,11 +32,19 @@ public class CandidateAttachmentAdminApi {
         return candidateAttachmentDto().buildPage(candidateAttachments);
     }
 
-//    @PostMapping
-//    public Map<String, Object> create(@Valid @RequestBody CreateCandidateAttachmentRequest request) throws EntityExistsException {
-//        CandidateAttachment candidateAttachment = this.candidateAttachmentService.createCandidateAttachment(request);
+    @PostMapping()
+    public Map<String, Object> createCandidateAttachment(@RequestBody CreateCandidateAttachmentRequest request) {
+        CandidateAttachment candidateAttachment = candidateAttachmentService.createCandidateAttachment(request, true);
+        return candidateAttachmentDto().build(candidateAttachment);
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity deleteCandidateAttachment(@PathVariable("id") Long id) {
+        candidateAttachmentService.deleteCandidateAttachment(id);
+        return ResponseEntity.ok().build();
+    }
+
 //        return candidateAttachmentDto().build(candidateAttachment);
-//    }
 //
 //    @PutMapping("{id}")
 //    public Map<String, Object> update(@PathVariable("id") long id,

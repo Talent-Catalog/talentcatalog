@@ -95,6 +95,9 @@ import {EditCandidateLanguageComponent} from './components/candidates/view/langu
 import {ViewCandidateAccountComponent} from './components/candidates/view/account/view-candidate-account.component';
 import {ChangePasswordComponent} from './components/candidates/view/account/change-password/change-password.component';
 import {ChangeUsernameComponent} from './components/candidates/view/account/change-username/change-username.component';
+import {CreateCandidateAttachmentComponent} from './components/candidates/view/attachment/create/create-candidate-attachment.component';
+import {EditCandidateAttachmentComponent} from './components/candidates/view/attachment/edit/edit-candidate-attachment.component';
+import {FileUploadComponent} from "./components/util/file-upload/file-upload.component";
 
 @NgModule({
   declarations: [
@@ -181,7 +184,10 @@ import {ChangeUsernameComponent} from './components/candidates/view/account/chan
     EditCandidateLanguageComponent,
     ViewCandidateAccountComponent,
     ChangePasswordComponent,
-    ChangeUsernameComponent
+    ChangeUsernameComponent,
+    CreateCandidateAttachmentComponent,
+    EditCandidateAttachmentComponent,
+    FileUploadComponent
   ],
   imports: [
     BrowserModule,
@@ -242,7 +248,8 @@ import {ChangeUsernameComponent} from './components/candidates/view/account/chan
     EditCandidateOccupationComponent,
     EditCandidateLanguageComponent,
     ChangePasswordComponent,
-    ChangeUsernameComponent
+    ChangeUsernameComponent,
+    CreateCandidateAttachmentComponent
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},

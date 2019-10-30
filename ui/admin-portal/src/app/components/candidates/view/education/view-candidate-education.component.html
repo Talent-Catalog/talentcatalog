@@ -6,46 +6,58 @@
 </div>
 <div class="card" *ngIf="!loading">
 
+  <!-- HEADER -->
   <div class="card-header">
-    Education <span *ngIf="candidate.maxEducationLevel">(Max Level: {{candidate.maxEducationLevel?.name}})</span>
+
+    <span>Education</span>
+
+    <span *ngIf="candidate.maxEducationLevel">(Max Level: {{candidate.maxEducationLevel?.name}})</span>
 
     <div class="pull-right" *ngIf="editable">
-      <button type="button" class="btn btn-primary" (click)="createCandidateEducation()">Add</button>
+      <button class="btn btn-primary btn-sm" (click)="createCandidateEducation()">
+        <i class="fa fa-plus"></i>
+      </button>
     </div>
+
   </div>
 
+  <!-- BODY -->
   <div class="card-body">
-    <div *ngIf="!candidateEducations || candidateEducations.length == 0">
-      <div class="row">
-        No education entered
-      </div>
-    </div>
+    <!-- EMPTY STATE -->
+    <p class="m-0" *ngIf="!candidateEducations || candidateEducations.length == 0">
+      No education data has been entered by this candidate.
+    </p>
 
+    <!-- EDUCATION CARDS -->
+    <div *ngFor="let edu of candidateEducations">
 
-    <div *ngFor="let candidateEducation of candidateEducations">
       <div class="row">
-        <div class="col-xs-11">
-          <h6 class="card-title">{{candidateEducation.educationType}} in {{candidateEducation.educationMajor?.name}}
-            : {{candidateEducation.courseName}}</h6>
+
+        <div class="col-11">
+          <h6 class="card-title">{{edu.educationType}} in {{edu.educationMajor?.name}} : {{edu.courseName}}</h6>
         </div>
-        <div class="col-xs-1">
-          <div class="pull-right" *ngIf="editable">
-            <button type="button" class="btn btn-default" (click)="editCandidateEducation(candidateEducation)"><i
-              class="fa fa-edit"></i></button>
-          </div>
+
+        <div class="col-1">
+          <button type="button" class="btn btn-default" (click)="editCandidateEducation(edu)">
+            <i class="fa fa-edit"></i>
+          </button>
         </div>
+
+        <div class="col-12">
+          <span class="text-muted">{{edu.institution}}, {{edu.country.name}}</span>
+        </div>
+
+        <div class="col-12">
+          <span class="text-muted" [ngSwitch]="">
+            {{edu.yearCompleted}}
+            <span *ngIf="edu.incomplete">Candidate has not completed</span>
+          </span>
+        </div>
+
       </div>
-      <div class="row">
-        <label class="col-form-label card-subtitle text-muted">{{candidateEducation.institution}}
-          , {{candidateEducation.country.name}}</label>
-      </div>
-      <div class="row">
-        <label class="col-form-label mb-2 text-muted">{{candidateEducation.yearCompleted}}</label>
-        <label class="col-form-label mb-2 text-muted" *ngIf="candidateEducation.incomplete">
-          Candidate has not completed
-        </label>
-      </div>
+
       <hr/>
+
     </div>
 
   </div>

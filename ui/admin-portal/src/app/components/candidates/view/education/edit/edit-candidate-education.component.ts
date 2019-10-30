@@ -5,6 +5,7 @@ import {CandidateEducationService} from "../../../../../services/candidate-educa
 import {CandidateEducation} from "../../../../../model/candidate-education";
 import {CountryService} from "../../../../../services/country.service";
 import {EducationMajorService} from "../../../../../services/education-major.service";
+import {generateYearArray} from "../../../../../util/year-helper";
 
 @Component({
   selector: 'app-edit-candidate-education',
@@ -56,12 +57,7 @@ export class EditCandidateEducationComponent implements OnInit {
       }
     );
 
-    this.years = [];
-    let currentYear = new Date().getFullYear()+4;
-    let year = 1950;
-    while (year < currentYear){
-      this.years.push(year++);
-    }
+    this.years = generateYearArray(1950, true, null, 4);
 
     this.candidateForm = this.fb.group({
       courseName: [this.candidateEducation.courseName],
@@ -69,8 +65,9 @@ export class EditCandidateEducationComponent implements OnInit {
       countryId: [this.candidateEducation.country ? this.candidateEducation.country.id : null, Validators.required],
       majorId: [this.candidateEducation.educationMajor ? this.candidateEducation.educationMajor.id : null, Validators.required],
       yearCompleted: [this.candidateEducation.yearCompleted],
-      educationType: [this.candidateEducation.educationType, [Validators.required]]
-
+      educationType: [this.candidateEducation.educationType, [Validators.required]],
+      lengthOfCourseYears: [this.candidateEducation.lengthOfCourseYears],
+      incomplete: [this.candidateEducation.incomplete ]
     });
     this.loading = false;
   }

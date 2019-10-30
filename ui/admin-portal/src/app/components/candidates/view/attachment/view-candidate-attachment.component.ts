@@ -1,9 +1,12 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from "../../../../model/candidate";
 import {FormBuilder, FormGroup} from "@angular/forms";
-import {CandidateAttachment} from "../../../../model/candidate-attachment";
+import {AttachmentType, CandidateAttachment} from "../../../../model/candidate-attachment";
 import {CandidateAttachmentService} from "../../../../services/candidate-attachment.service";
+import {environment} from "../../../../../environments/environment";
+import {CreateCandidateAttachmentComponent} from "./create/create-candidate-attachment.component";
+import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
 
 @Component({
   selector: 'app-view-candidate-attachment',
@@ -15,10 +18,12 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
   @Input() candidate: Candidate;
   @Input() editable: boolean;
 
-  attachmentForm: FormGroup;
   loading: boolean;
+  error: any;
+  s3BucketUrl = environment.s3BucketUrl;
+
+  attachmentForm: FormGroup;
   expanded: boolean;
-  error;
   attachments: CandidateAttachment[];
   hasMore: boolean;
 
@@ -48,11 +53,16 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
 
   }
 
-  doSearch() {
+  doSearch(refresh?: boolean) {
     this.loading = true;
     this.candidateAttachmentService.search(this.attachmentForm.value).subscribe(
       results => {
-        this.attachments.push(...results.content);
+        if (refresh) {
+          this.attachments = results.content;
+        } else {
+          this.attachments.push(...results.content);
+        }
+
         this.hasMore = results.totalPages > results.number+1;
         this.loading = false;
       },
@@ -69,12 +79,17 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
     this.doSearch();
   }
 
-  todo(){
-    alert('Need to find where these files are stored');
+  getAttachmentUrl(attachment: CandidateAttachment) {
+    if (attachment.type === AttachmentType.file) {
+      return this.s3BucketUrl + '/candidate/' + this.candidate.candidateNumber + '/' + attachment.location;
+    }
+    return attachment.location;
   }
 
   editCandidateAttachment(candidateAttachment: CandidateAttachment) {
     alert('todo');
+
+
 
     //   const editCandidateAttachmentModal = this.modalService.open(EditCandidateAttachmentComponent, {
   //     centered: true,
@@ -89,22 +104,41 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
   //     });
   //
   }
-  //
-  createCandidateAttachment(){
 
-    alert('todo');
-  //   const createCandidateAttachmentModal = this.modalService.open(CreateCandidateAttachmentComponent, {
-  //     centered: true,
-  //     backdrop: 'static'
-  //   });
-  //
-  //   createCandidateAttachmentModal.componentInstance.candidateId = this.candidate.id;
-  //
-  //   createCandidateAttachmentModal.result
-  //     .then((candidateAttachment) => this.doSearch())
-  //     .catch(() => { /* Isn't possible */
-  //     });
-  //
+  addAttachment(type: string){
+    const createCandidateAttachmentModal = this.modalService.open(CreateCandidateAttachmentComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    createCandidateAttachmentModal.componentInstance.candidateId = this.candidate.id;
+    createCandidateAttachmentModal.componentInstance.type = type || 'link';
+
+    createCandidateAttachmentModal.result
+      .then(() => this.doSearch())
+      .catch(() => { /* Isn't possible */ });
   }
 
+  deleteCandidateAttachment(attachment: CandidateAttachment) {
+    const deleteCountryModal = this.modalService.open(ConfirmationComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    deleteCountryModal.componentInstance.message = 'Are you sure you want to delete ' + attachment.name + '?';
+
+    deleteCountryModal.result
+      .then((result) => {
+        if (result === true) {
+          this.candidateAttachmentService.deleteAttachment(attachment.id).subscribe(
+            () => {
+              this.doSearch(true);
+            },
+            (error) => {
+              console.log('error', error);
+            });
+        }
+      })
+      .catch(() => { /* Isn't possible */ });
+  }
 }

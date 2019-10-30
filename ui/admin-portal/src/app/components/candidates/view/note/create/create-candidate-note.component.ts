@@ -18,7 +18,6 @@ export class CreateCandidateNoteComponent implements OnInit {
 
   candidateId: number;
   countries = [];
-  years = [];
   error;
   loading: boolean;
   saving: boolean;
@@ -32,15 +31,7 @@ export class CreateCandidateNoteComponent implements OnInit {
   ngOnInit() {
     this.loading = true;
 
-    /* load the years */
-    this.years = [];
-    let currentYear = new Date().getFullYear();
-    let year = 1950;
-    while (year < currentYear){
-      this.years.push(year++);
-    }
-
-    /*load the countries */
+    /* load the countries */
     this.countryService.listCountries().subscribe(
       (response) => {
         this.countries = response;

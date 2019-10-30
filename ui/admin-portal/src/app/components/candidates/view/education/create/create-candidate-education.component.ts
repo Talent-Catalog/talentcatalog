@@ -5,6 +5,7 @@ import {CandidateEducationService} from "../../../../../services/candidate-educa
 import {CandidateEducation} from "../../../../../model/candidate-education";
 import {CountryService} from "../../../../../services/country.service";
 import {EducationMajorService} from "../../../../../services/education-major.service";
+import {generateYearArray} from "../../../../../util/year-helper";
 
 @Component({
   selector: 'app-create-candidate-education',
@@ -36,12 +37,7 @@ export class CreateCandidateEducationComponent implements OnInit {
     this.loading = true;
 
     /* load the years */
-    this.years = [];
-    let currentYear = new Date().getFullYear();
-    let year = 1950;
-    while (year < currentYear){
-      this.years.push(year++);
-    }
+    this.years = generateYearArray(1950, true);
 
     /*load the countries */
     this.countryService.listCountries().subscribe(
@@ -70,8 +66,10 @@ export class CreateCandidateEducationComponent implements OnInit {
       institution: ['', [Validators.required]],
       countryId: ['', [Validators.required]],
       educationMajorId: ['', [Validators.required]],
-      yearCompleted: ['', [Validators.required]],
-      educationType: ['', [Validators.required]]
+      yearCompleted: [''],
+      lengthOfCourseYears: [''],
+      educationType: ['', [Validators.required]],
+      incomplete: ['', ]
     });
     this.loading = false;
   }

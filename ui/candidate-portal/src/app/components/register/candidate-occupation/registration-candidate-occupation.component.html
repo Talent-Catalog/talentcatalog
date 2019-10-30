@@ -16,7 +16,7 @@
     </div>
 
     <!-- CREATE -->
-    <form class="card" [formGroup]="form" *ngIf="!loading">
+    <form class="card" [formGroup]="form" *ngIf="!loading && showForm">
 
       <!-- FIELD -->
       <div class="form-group">
@@ -41,7 +41,7 @@
     <div class="text-center mt-4">
       <button class="btn btn-outline-primary"
               (click)="addOccupation()"
-              [disabled]="form?.invalid || loading || saving">
+              [disabled]="loading || saving">
         {{ 'REGISTRATION.OCCUPATION.BUTTON.ADD' | translate }}
       </button>
     </div>
@@ -51,7 +51,7 @@
 
 </div>
 
-<app-registration-footer [nextDisabled]="!candidateOccupations?.length"
+<app-registration-footer [nextDisabled]="!form.valid && !candidateOccupations?.length"
                          [hideBack]="edit"
                          [type]="edit ? 'update' : 'step'"
                          (backClicked)="back()"
