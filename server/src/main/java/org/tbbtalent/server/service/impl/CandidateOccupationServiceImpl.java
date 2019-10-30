@@ -169,7 +169,13 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
     public CandidateOccupation verifyCandidateOccupation(long id, VerifyCandidateOccupationRequest request) {
         CandidateOccupation candidateOccupation = candidateOccupationRepository.findByIdLoadCandidate(id)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateOccupation.class, id));
+
+        // Load the verified occupation from the database - throw an exception if not found
+        Occupation verifiedOccupation = occupationRepository.findById(request.getOccupationId())
+                .orElseThrow(() -> new NoSuchObjectException(Occupation.class, request.getOccupationId()));
+
         candidateOccupation.setVerified(request.isVerified());
+        candidateOccupation.setOccupation(verifiedOccupation);
 
         candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(candidateOccupation.getCandidate().getId(),
                 candidateOccupation.getOccupation().getName() +" verification status set to "+request.isVerified(), request.getComment()));

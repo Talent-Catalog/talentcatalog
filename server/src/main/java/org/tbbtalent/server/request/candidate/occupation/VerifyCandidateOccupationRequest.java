@@ -4,6 +4,7 @@ public class VerifyCandidateOccupationRequest {
 
     private Long id;
     private boolean verified;
+    private Long occupationId;
     private String comment;
 
     public Long getId() {
@@ -21,6 +22,10 @@ public class VerifyCandidateOccupationRequest {
     public void setVerified(boolean verified) {
         this.verified = verified;
     }
+
+    public Long getOccupationId() { return occupationId; }
+
+    public void setOccupationId(Long occupationId) { this.occupationId = occupationId; }
 
     public String getComment() {
         return comment;

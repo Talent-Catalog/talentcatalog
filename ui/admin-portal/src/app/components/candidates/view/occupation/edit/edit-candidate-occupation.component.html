@@ -22,17 +22,34 @@
     <form [formGroup]="form">
 
       <!-- Verified -->
-      <div class="col-12">
-        <div class="form-group">
-          <label>TBB Verified</label>
-
-          <div class="form-check">
-            <input class="form-check-input" type="radio" id="verified" [value]="true" [formControlName]="'verified'">
-            <label class="form-check-label" for="verified">
-              TBB Verified
-            </label>
+      <div class="row">
+        <div class="col-5">
+          <div class="form-group">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" id="verified" [value]="true" [formControlName]="'verified'">
+              <label class="form-check-label" for="verified">
+                TBB Verified
+              </label>
+            </div>
           </div>
+        </div>
 
+        <div class="col-7">
+          <div *ngIf="this.form.value.verified == true">
+            <div class="form-group">
+              <select class="form-control" name="occupationId" id="occupationId" [formControlName]="'occupationId'">
+                <option value=""></option>
+                <option *ngFor="let occupation of occupations" [value]="occupation.id">{{occupation.name}}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="row mb-2">
+
+        <div class="col-12">
           <div class="form-check">
             <input class="form-check-input" type="radio" id="candidateSpecified" [value]="false" [formControlName]="'verified'">
             <label class="form-check-label" for="candidateSpecified">
@@ -40,13 +57,21 @@
             </label>
           </div>
         </div>
+
       </div>
 
-      <!-- COMMENT -->
-      <div class="form-group">
-        <label for="comment">Comment</label>
-        <textarea type="text" class="md-textarea-auto form-control" rows="8" id="comment" placeholder="" [formControlName]="'comment'"></textarea>
+      <div class="row">
+
+        <div class="col-12">
+          <!-- COMMENT -->
+          <div class="form-group">
+            <label for="comment">Comment</label>
+            <textarea type="text" class="md-textarea-auto form-control" rows="8" id="comment" placeholder="" [formControlName]="'comment'"></textarea>
+          </div>
+        </div>
+
       </div>
+
 
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="onSave()"
