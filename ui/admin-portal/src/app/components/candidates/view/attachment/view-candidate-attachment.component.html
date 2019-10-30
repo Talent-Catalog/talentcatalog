@@ -14,8 +14,13 @@
     <span>Attachments</span>
 
     <div class="pull-right" *ngIf="editable">
-      <button type="button" class="btn btn-sm btn-primary" (click)="createCandidateAttachment()">
-        <i class="fa fa-plus"></i></button>
+      <button class="btn btn-sm btn-primary" (click)="addAttachment('link')">
+        <i class="fa fa-plus"></i> Link
+      </button>
+
+      <button class="btn btn-sm btn-primary ml-2" (click)="addAttachment('file')">
+        <i class="fa fa-plus"></i> File
+      </button>
     </div>
 
   </div>
@@ -32,14 +37,12 @@
     <div class="row position-relative mb-3" *ngFor="let attachment of attachments; let i = index">
 
       <!-- EDIT -->
-      <div class="actions">
-        <button class="btn btn-sm btn-default" *ngIf="editable"
-                (click)="editCandidateAttachment(attachment)">
+      <div class="actions" *ngIf="editable">
+        <button class="btn btn-sm btn-outline-primary" (click)="editCandidateAttachment(attachment)">
           <i class="fa fa-edit"></i>
         </button>
 
-        <button class="btn btn-sm btn-default" *ngIf="editable"
-                (click)="deleteCandidateAttachment(attachment)">
+        <button class="btn btn-sm btn-outline-danger" (click)="deleteCandidateAttachment(attachment)">
           <i class="fa fa-trash"></i>
         </button>
       </div>

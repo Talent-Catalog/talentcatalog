@@ -79,23 +79,35 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             candidate = userContext.getLoggedInCandidate();
         }
 
-        // Prepend the filename with a UUID to ensure an existing file doesn't get overwritten on S3
-        String uniqueFilename = UUID.randomUUID() + "_" + request.getName();
-        /* Copy the file into the candidate's folder on S3 */
-        String source = "temp/" + request.getFolder() + "/" + request.getName();
-        String destination = "candidate/" + candidate.getCandidateNumber() + "/" + uniqueFilename;
-        this.s3ResourceHelper.copyObject(source, destination);
-
-        log.info("[S3] Transferred candidate attachment from source [" + source + "] to destination [" + destination + "]");
-
         // Create a record of the attachment
         CandidateAttachment attachment = new CandidateAttachment();
+
+        if (request.getType().equals(AttachmentType.link)) {
+
+            attachment.setType(AttachmentType.link);
+            attachment.setLocation(request.getLocation());
+            attachment.setName(request.getName());
+
+        } else if (request.getType().equals(AttachmentType.file)) {
+            // Upload the file to AWS S3
+
+            // Prepend the filename with a UUID to ensure an existing file doesn't get overwritten on S3
+            String uniqueFilename = UUID.randomUUID() + "_" + request.getName();
+            // Copy the file into the candidate's folder on S3
+            String source = "temp/" + request.getFolder() + "/" + request.getName();
+            String destination = "candidate/" + candidate.getCandidateNumber() + "/" + uniqueFilename;
+            this.s3ResourceHelper.copyObject(source, destination);
+
+            log.info("[S3] Transferred candidate attachment from source [" + source + "] to destination [" + destination + "]");
+
+            // The location is set to the filename because we can derive it's location from the candidate number
+            attachment.setLocation(uniqueFilename);
+            attachment.setName(uniqueFilename);
+            attachment.setType(AttachmentType.file);
+            attachment.setFileType(request.getFileType());
+        }
+
         attachment.setCandidate(candidate);
-        attachment.setName(uniqueFilename);
-        // The location is set to the filename because we can derive it's location from the candidate number
-        attachment.setLocation(uniqueFilename);
-        attachment.setFileType(request.getFileType());
-        attachment.setType(AttachmentType.file);
         attachment.setMigrated(false);
         attachment.setAdminOnly(adminOnly);
         attachment.setAuditFields(user);

@@ -13,6 +13,7 @@ public class CreateCandidateAttachmentRequest {
     private String name;
     private String fileType;
     private String folder;
+    private String location; // Used for creating link attachments on admin
 
     public Long getCandidateId() {
         return candidateId;
@@ -52,6 +53,14 @@ public class CreateCandidateAttachmentRequest {
 
     public void setFolder(String folder) {
         this.folder = folder;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 }
 

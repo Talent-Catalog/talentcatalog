@@ -14,7 +14,9 @@
     <span *ngIf="candidate.maxEducationLevel">(Max Level: {{candidate.maxEducationLevel?.name}})</span>
 
     <div class="pull-right" *ngIf="editable">
-      <button type="button" class="btn btn-primary" (click)="createCandidateEducation()">Add</button>
+      <button class="btn btn-primary btn-sm" (click)="createCandidateEducation()">
+        <i class="fa fa-plus"></i>
+      </button>
     </div>
 
   </div>

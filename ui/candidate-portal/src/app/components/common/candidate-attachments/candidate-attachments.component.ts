@@ -76,12 +76,12 @@ export class CandidateAttachmentsComponent implements OnInit {
     if (fragments.length > 1) {
       return fragments[fragments.length - 1];
     }
-    return ''
+    return '';
   }
 
   getAttachmentUrl(attachment: CandidateAttachment) {
     if (attachment.type === AttachmentType.file) {
-      return this.s3BucketUrl + '/candidate/' + this.candidateNumber + '/' + attachment.name;
+      return this.s3BucketUrl + '/candidate/' + this.candidateNumber + '/' + attachment.location;
     }
     return attachment.location;
   }
@@ -94,7 +94,8 @@ export class CandidateAttachmentsComponent implements OnInit {
         this.deleting = false;
       },
       (error) => {
-        console.log('error', error);
+        this.error = error;
+        this.deleting = false;
       });
   }
 }

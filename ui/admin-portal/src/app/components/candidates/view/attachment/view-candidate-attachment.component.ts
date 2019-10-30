@@ -5,6 +5,7 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {AttachmentType, CandidateAttachment} from "../../../../model/candidate-attachment";
 import {CandidateAttachmentService} from "../../../../services/candidate-attachment.service";
 import {environment} from "../../../../../environments/environment";
+import {CreateCandidateAttachmentComponent} from "./create/create-candidate-attachment.component";
 
 @Component({
   selector: 'app-view-candidate-attachment',
@@ -74,13 +75,15 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
 
   getAttachmentUrl(attachment: CandidateAttachment) {
     if (attachment.type === AttachmentType.file) {
-      return this.s3BucketUrl + '/candidate/' + this.candidate.candidateNumber + '/' + attachment.name;
+      return this.s3BucketUrl + '/candidate/' + this.candidate.candidateNumber + '/' + attachment.location;
     }
     return attachment.location;
   }
 
   editCandidateAttachment(candidateAttachment: CandidateAttachment) {
     alert('todo');
+
+
 
     //   const editCandidateAttachmentModal = this.modalService.open(EditCandidateAttachmentComponent, {
   //     centered: true,
@@ -95,22 +98,19 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
   //     });
   //
   }
-  //
-  createCandidateAttachment(){
 
-    alert('todo');
-  //   const createCandidateAttachmentModal = this.modalService.open(CreateCandidateAttachmentComponent, {
-  //     centered: true,
-  //     backdrop: 'static'
-  //   });
-  //
-  //   createCandidateAttachmentModal.componentInstance.candidateId = this.candidate.id;
-  //
-  //   createCandidateAttachmentModal.result
-  //     .then((candidateAttachment) => this.doSearch())
-  //     .catch(() => { /* Isn't possible */
-  //     });
-  //
+  addAttachment(type: string){
+    const createCandidateAttachmentModal = this.modalService.open(CreateCandidateAttachmentComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    createCandidateAttachmentModal.componentInstance.candidateId = this.candidate.id;
+    createCandidateAttachmentModal.componentInstance.type = type || 'link';
+
+    createCandidateAttachmentModal.result
+      .then(() => this.doSearch())
+      .catch(() => { /* Isn't possible */ });
   }
 
   deleteCandidateAttachment(attachment: CandidateAttachment) {
