@@ -9,10 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.AttachmentType;
-import org.tbbtalent.server.model.Candidate;
-import org.tbbtalent.server.model.CandidateAttachment;
-import org.tbbtalent.server.model.User;
+import org.tbbtalent.server.model.*;
 import org.tbbtalent.server.repository.CandidateAttachmentRepository;
 import org.tbbtalent.server.repository.CandidateRepository;
 import org.tbbtalent.server.request.SearchRequest;
@@ -122,13 +119,22 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     @Override
     @Transactional
     public void deleteCandidateAttachment(Long id) {
-        Candidate candidate = userContext.getLoggedInCandidate();
+        User user = userContext.getLoggedInUser();
+
         CandidateAttachment candidateAttachment = candidateAttachmentRepository.findByIdLoadCandidate(id)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateAttachment.class, id));
 
-        // Check that the user is deleting their own attachment
-        if (!candidate.getId().equals(candidateAttachment.getCandidate().getId())) {
-            throw new InvalidCredentialsException("You do not have permission to perform that action");
+        Candidate candidate;
+
+        if (!user.getRole().equals(Role.admin)) {
+             candidate = userContext.getLoggedInCandidate();
+            // Check that the user is deleting their own attachment
+            if (!candidate.getId().equals(candidateAttachment.getCandidate().getId())) {
+                throw new InvalidCredentialsException("You do not have permission to perform that action");
+            }
+        } else {
+            candidate = candidateRepository.findById(candidateAttachment.getCandidate().getId())
+                    .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateAttachment.getCandidate().getId()));
         }
 
         // Delete the record from the database

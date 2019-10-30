@@ -2,10 +2,8 @@ package org.tbbtalent.server.api.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.model.CandidateAttachment;
 import org.tbbtalent.server.request.attachment.CreateCandidateAttachmentRequest;
 import org.tbbtalent.server.request.attachment.SearchCandidateAttachmentsRequest;
@@ -39,6 +37,13 @@ public class CandidateAttachmentAdminApi {
         CandidateAttachment candidateAttachment = candidateAttachmentService.createCandidateAttachment(request, true);
         return candidateAttachmentDto().build(candidateAttachment);
     }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity deleteCandidateAttachment(@PathVariable("id") Long id) {
+        candidateAttachmentService.deleteCandidateAttachment(id);
+        return ResponseEntity.ok().build();
+    }
+
 //        return candidateAttachmentDto().build(candidateAttachment);
 //
 //    @PutMapping("{id}")

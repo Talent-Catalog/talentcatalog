@@ -19,8 +19,12 @@ export class CandidateAttachmentService {
   createAttachment(details): Observable<CandidateAttachment>  {
     return this.http.post<CandidateAttachment>(`${this.apiUrl}`, details);
   }
-  //
+
   // update(id: number, details): Observable<CandidateAttachment>  {
   //   return this.http.put<CandidateAttachment>(`${this.apiUrl}/${id}`, details);
   // }
+
+  deleteAttachment(id: number) {
+    return this.http.delete<CandidateAttachment>(`${this.apiUrl}/${id}`);
+  }
 }
