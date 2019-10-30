@@ -2,6 +2,7 @@ package org.tbbtalent.server.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
@@ -173,6 +174,13 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         // Load the verified occupation from the database - throw an exception if not found
         Occupation verifiedOccupation = occupationRepository.findById(request.getOccupationId())
                 .orElseThrow(() -> new NoSuchObjectException(Occupation.class, request.getOccupationId()));
+
+        // Check candidate doesn't already have this occupation
+        CandidateOccupation existing = candidateOccupationRepository.findByCandidateIdAAndOccupationId(candidateOccupation.getCandidate().getId(), request.getOccupationId());
+        if (existing != null){
+            throw new EntityExistsException("occupation");
+        }
+
 
         candidateOccupation.setVerified(request.isVerified());
         candidateOccupation.setOccupation(verifiedOccupation);
