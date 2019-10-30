@@ -44,6 +44,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
             .authorizeRequests()
+                .antMatchers("/backend/jobseeker").permitAll()
                 .antMatchers("/api/portal/auth").permitAll()
                 .antMatchers("/api/portal/auth/**").permitAll()
                 .antMatchers("/api/portal/user/reset-password-email").permitAll()

@@ -162,6 +162,9 @@ public class UserServiceImpl implements UserService {
                 throw new InvalidCredentialsException("Sorry, it looks like that account is no longer active.");
             }
 
+            user.setLastLogin(LocalDateTime.now());
+            user = userRepository.save(user);
+
             SecurityContextHolder.getContext().setAuthentication(auth);
             String jwt = tokenProvider.generateToken(auth);
             return new JwtAuthenticationResponse(jwt, user);

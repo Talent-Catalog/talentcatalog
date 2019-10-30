@@ -1,6 +1,7 @@
 package org.tbbtalent.server.model;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -59,6 +60,7 @@ public class User extends AbstractAuditableDomainObject<Long> {
         this.email = email;
         this.role = role;
         this.status = Status.active;
+        this.setCreatedDate(OffsetDateTime.now());
     }
 
     public String getUsername() {
