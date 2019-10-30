@@ -6,41 +6,51 @@
 </div>
 <div class="card" *ngIf="!loading">
 
+  <!-- HEADER -->
   <div class="card-header">Languages</div>
 
+  <!-- BODY -->
   <div class="card-body">
-    <div *ngIf="!candidateLanguages || candidateLanguages.length == 0">
+
+    <!-- EMPTY STATE -->
+    <p *ngIf="!candidateLanguages?.length">
+      No language data has been entered by this candidate.
+    </p>
+
+    <!-- LANGUAGE CARDS -->
+    <ng-container *ngFor="let language of candidateLanguages; let i = index;">
+
       <div class="row">
-        <div class="col-sm-12">
-          No languages entered
-        </div>
-      </div>
-    </div>
-    <div *ngFor="let candidateLanguage of candidateLanguages">
-      <div class="row">
+
         <div class="col-sm-11">
-          {{candidateLanguage.language.name}}
-
-          <div class="pull-right" *ngIf="editable">
-            <button type="button" class="btn btn-default" (click)="editCandidateLanguage(candidateLanguage)"><i
-              class="fa fa-edit"></i></button>
-          </div>
+          {{language.language.name}}
         </div>
-        <div *ngIf="candidateLanguage.migrationLanguage" class="col-sm-12">
-          Migrated Language: {{candidateLanguage.migrationLanguage}}
+
+        <div class="col-1">
+          <button class="btn btn-default"
+                  *ngIf="editable"
+                  (click)="editCandidateLanguage(language)">
+            <i class="fa fa-edit"></i>
+          </button>
+        </div>
+
+        <div class="col-12" *ngIf="language.migrationLanguage">
+          Migrated Language: {{language.migrationLanguage}}
+        </div>
+
+        <div class="col-sm-12 col-md-6">
+          <span>Speaking: {{language.spokenLevel.name}}</span>
+        </div>
+
+        <div class="col-sm-12 col-md-6">
+          <span>Reading and Writing: {{language.writtenLevel.name}}</span>
         </div>
 
       </div>
-      <div class="row">
-        <div class="col-sm-12 col-md-6">
-          <label class="col-form-label">Speaking: {{candidateLanguage.spokenLevel.name}}</label>
-        </div>
-        <div class="col-sm-12 col-md-6">
-          <label class="col-form-label">Reading and Writing: {{candidateLanguage.writtenLevel.name}}</label>
-        </div>
-      </div>
-      <hr/>
-    </div>
+
+      <hr *ngIf="i < candidateLanguages?.length - 1">
+
+    </ng-container>
 
   </div>
 

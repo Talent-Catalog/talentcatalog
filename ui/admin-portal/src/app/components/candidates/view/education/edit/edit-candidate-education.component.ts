@@ -5,6 +5,7 @@ import {CandidateEducationService} from "../../../../../services/candidate-educa
 import {CandidateEducation} from "../../../../../model/candidate-education";
 import {CountryService} from "../../../../../services/country.service";
 import {EducationMajorService} from "../../../../../services/education-major.service";
+import {generateYearArray} from "../../../../../util/year-helper";
 
 @Component({
   selector: 'app-edit-candidate-education',
@@ -56,13 +57,7 @@ export class EditCandidateEducationComponent implements OnInit {
       }
     );
 
-    this.years = [];
-    let currentYear = new Date().getFullYear()+4;
-    let year = 1950;
-    while (year < currentYear){
-      this.years.push(year++);
-    }
-    this.years.reverse();
+    this.years = generateYearArray(1950, true, null, 4);
 
     this.candidateForm = this.fb.group({
       courseName: [this.candidateEducation.courseName],

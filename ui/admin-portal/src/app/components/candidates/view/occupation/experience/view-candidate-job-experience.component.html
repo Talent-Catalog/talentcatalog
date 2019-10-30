@@ -1,69 +1,95 @@
 <div *ngIf="loading">
   <i class="fa fa-spinner fa-spin"></i> loading...
 </div>
+
 <div *ngIf="error">
   {{error}}
 </div>
+
 <div class="card" *ngIf="!loading">
+
   <div class="card-header">
     {{candidateOccupation.occupation.name}} ({{candidateOccupation.yearsExperience}} years)
     <i *ngIf="candidateOccupation.verified" class="fa fa-check" title="Verified by TBB"></i>
     <i *ngIf="!candidateOccupation.verified" class="fa fa-question" title="Candidate specified, not verified"></i>
+
     <div class="button-group pull-right" *ngIf="editable">
-      <button type="button" class="btn btn-sm" (click)="verifyOccupation()"><i class="fa fa-edit"></i></button>
-      <button type="button" class="btn btn-sm btn-primary" (click)="createCandidateJobExperience()"><i
-        class="fa fa-plus"></i></button>
+      <button class="btn btn-sm btn-outline-dark mr-2" (click)="verifyOccupation()">
+        <i class="fa fa-check"></i>
+      </button>
+
+      <button class="btn btn-sm btn-primary" (click)="createCandidateJobExperience()">
+        <i class="fa fa-plus"></i>
+      </button>
     </div>
+
     <div *ngIf="candidateOccupation.migrationOccupation" class="col-sm-12">
-      Migrated Occupation: {{candidateOccupation.migrationOccupation}}
+      Migrated Language: {{candidateOccupation.migrationOccupation}}
     </div>
   </div>
 
   <div class="card-body">
-    <div *ngIf="!experiences || experiences.length == 0">
+
+    <!-- EMPTY STATE -->
+    <p *ngIf="!experiences?.length">
+      No job experience data has been entered by this candidate.
+    </p>
+
+    <!-- JOB EXPERIENCE CARDS -->
+    <ng-container *ngFor="let experience of experiences; let i = index">
+
       <div class="row">
-        <div class="col-sm-12">
-          No job experience entered
-        </div>
-      </div>
-    </div>
-    <div *ngFor="let candidateJobExperience of experiences">
-      <div class="row">
+
         <div class="col-11">
-          <strong>{{candidateJobExperience.role}}</strong>
+          <h6 class="card-title">{{experience.role}}</h6>
         </div>
+
         <div class="col-1">
-          <div class="pull-right" *ngIf="editable">
-            <button type="button" class="btn btn-default" (click)="editCandidateJobExperience(candidateJobExperience)">
-              <i class="fa fa-edit"></i></button>
+          <button class="btn btn-default" *ngIf="editable" (click)="editCandidateJobExperience(experience)">
+            <i class="fa fa-edit"></i>
+          </button>
+        </div>
+
+        <div class="col-12" *ngIf="experience.description">
+
+          <div *ngIf="!expanded">
+            {{ (experience.description | slice:0:50) + (experience.description.length > 50 ? ' ...' : '')}}
+            <button class="btn btn-sm btn-default"
+                    *ngIf="experience.description.length > 50"
+                    (click)="expanded = true">
+              <i class="fa fa-toggle-down"></i>
+            </button>
           </div>
+
+          <div *ngIf="expanded">
+            {{ experience.description }}
+            <button type="button" class="btn btn-sm btn-default" (click)="expanded = false">
+              <i class="fa fa-toggle-up"></i>
+            </button>
+          </div>
+
         </div>
-      </div>
-      <div class="row col-12" *ngIf="candidateJobExperience.description">
-        <div *ngIf="!expanded">
-          {{ (candidateJobExperience.description | slice:0:50) + (candidateJobExperience.description.length > 50 ? ' ...' : '')}}
-          <button *ngIf="candidateJobExperience.description.length > 50" type="button" class="btn btn-sm btn-default"
-                  (click)="expanded = true"><i class="fa fa-toggle-down"></i></button>
+
+        <div class="col-12">
+          <span>{{experience.companyName}}, {{experience.country.name}}</span>
         </div>
-        <div *ngIf="expanded">
-          {{ candidateJobExperience.description }}
-          <button type="button" class="btn btn-sm btn-default" (click)="expanded = false"><i
-            class="fa fa-toggle-up"></i></button>
+
+        <div class="col-12">
+          <small class="text-muted">
+            {{experience.startDate | date }} - {{experience.endDate | date }}
+          </small>
         </div>
+
       </div>
-      <div class="row col-12" >
-        <label class="col-form-label">{{candidateJobExperience.companyName}}
-          , {{candidateJobExperience.country.name}}</label>
-      </div>
-      <div class="row col-12">
-        <label class="col-form-label mb-2 text-muted small">{{candidateJobExperience.startDate | date }}
-          - {{candidateJobExperience.endDate | date }}</label>
-      </div>
-      <hr/>
-    </div>
+
+      <hr *ngIf="i < experiences?.length - 1">
+
+    </ng-container>
+
     <div class="pull-right" *ngIf="hasMore">
       <button type="button" class="btn btn-sm btn-outline-dark" (click)="loadMore()">Load More</button>
     </div>
+
   </div>
 
 </div>
