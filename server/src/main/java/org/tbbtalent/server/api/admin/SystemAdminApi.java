@@ -74,7 +74,9 @@ public class SystemAdminApi {
             Long userId = 1L; 
             if (userContext != null) {
                 User loggedInUser = userContext.getLoggedInUser();
-                userId = loggedInUser.getId();
+                if (loggedInUser != null){
+                    userId = loggedInUser.getId();
+                }
             }
 
             Connection sourceConn = DriverManager.getConnection("jdbc:mysql://tbbtalent.org/yiitbb?useUnicode=yes&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull", "sayre", "MoroccoBound");
