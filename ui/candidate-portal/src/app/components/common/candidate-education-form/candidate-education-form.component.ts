@@ -1,13 +1,13 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
-import {years} from "../../../model/years";
 import {CandidateEducation} from "../../../model/candidate-education";
 import {CandidateEducationService} from "../../../services/candidate-education.service";
 import {Country} from "../../../model/country";
 import {CountryService} from "../../../services/country.service";
 import {EducationMajor} from "../../../model/education-major";
 import {EducationMajorService} from "../../../services/education-major.service";
+import {generateYearArray} from "../../../util/year-helper";
 
 
 @Component({
@@ -43,7 +43,7 @@ export class CandidateEducationFormComponent implements OnInit {
 
   ngOnInit() {
     this.saving = false;
-    this.years = years;
+    this.years = generateYearArray();
     /* Intialise the form */
     const edu = this.candidateEducation;
     this.form = this.fb.group({

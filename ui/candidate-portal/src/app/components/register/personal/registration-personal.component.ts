@@ -7,8 +7,8 @@ import {NationalityService} from "../../../services/nationality.service";
 import {Nationality} from "../../../model/nationality";
 import {CountryService} from "../../../services/country.service";
 import {Country} from "../../../model/country";
-import {years} from "../../../model/years";
 import {RegistrationService} from "../../../services/registration.service";
+import {generateYearArray} from "../../../util/year-helper";
 
 @Component({
   selector: 'app-registration-personal',
@@ -46,7 +46,7 @@ export class RegistrationPersonalComponent implements OnInit {
 
   ngOnInit() {
     this.saving = false;
-    this.years = years;
+    this.years = generateYearArray();
     this.form = this.fb.group({
       /* PERSONAL */
       firstName: [null, Validators.required],
