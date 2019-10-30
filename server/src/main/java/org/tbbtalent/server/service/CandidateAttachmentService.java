@@ -5,6 +5,7 @@ import org.tbbtalent.server.model.CandidateAttachment;
 import org.tbbtalent.server.request.SearchRequest;
 import org.tbbtalent.server.request.attachment.CreateCandidateAttachmentRequest;
 import org.tbbtalent.server.request.attachment.SearchCandidateAttachmentsRequest;
+import org.tbbtalent.server.request.attachment.UpdateCandidateAttachmentRequest;
 
 import java.util.List;
 
@@ -19,4 +20,6 @@ public interface CandidateAttachmentService {
     CandidateAttachment createCandidateAttachment(CreateCandidateAttachmentRequest request, Boolean adminOnly);
 
     void deleteCandidateAttachment(Long id);
+
+    CandidateAttachment updateCandidateAttachment(UpdateCandidateAttachmentRequest request);
 }

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.model.CandidateAttachment;
 import org.tbbtalent.server.request.attachment.CreateCandidateAttachmentRequest;
 import org.tbbtalent.server.request.attachment.SearchCandidateAttachmentsRequest;
+import org.tbbtalent.server.request.attachment.UpdateCandidateAttachmentRequest;
 import org.tbbtalent.server.service.CandidateAttachmentService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -38,20 +39,17 @@ public class CandidateAttachmentAdminApi {
         return candidateAttachmentDto().build(candidateAttachment);
     }
 
+    @PutMapping()
+    public Map<String, Object> update(@RequestBody UpdateCandidateAttachmentRequest request) {
+        CandidateAttachment candidateAttachment = this.candidateAttachmentService.updateCandidateAttachment(request);
+        return candidateAttachmentDto().build(candidateAttachment);
+    }
+
     @DeleteMapping("{id}")
     public ResponseEntity deleteCandidateAttachment(@PathVariable("id") Long id) {
         candidateAttachmentService.deleteCandidateAttachment(id);
         return ResponseEntity.ok().build();
     }
-
-//        return candidateAttachmentDto().build(candidateAttachment);
-//
-//    @PutMapping("{id}")
-//    public Map<String, Object> update(@PathVariable("id") long id,
-//                                      @RequestBody UpdateCandidateAttachmentRequest request) {
-//        CandidateAttachment candidateAttachment = this.candidateAttachmentService.updateCandidateAttachment(id, request);
-//        return candidateAttachmentDto().build(candidateAttachment);
-//    }
 
 
     private DtoBuilder candidateAttachmentDto() {

@@ -249,7 +249,8 @@ import {FileUploadComponent} from "./components/util/file-upload/file-upload.com
     EditCandidateLanguageComponent,
     ChangePasswordComponent,
     ChangeUsernameComponent,
-    CreateCandidateAttachmentComponent
+    CreateCandidateAttachmentComponent,
+    EditCandidateAttachmentComponent
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
