@@ -53,6 +53,9 @@ export class EditCandidateOccupationComponent implements OnInit {
 
   onSave() {
     this.saving = true;
+    if(this.form.value.verified === false) {
+      this.form.value.occupationId = null;
+    }
     this.candidateOccupationService.update(this.candidateOccupation.id, this.form.value).subscribe(
       (candidateOccupation) => {
         this.closeModal(candidateOccupation);
@@ -62,7 +65,7 @@ export class EditCandidateOccupationComponent implements OnInit {
         this.error = error;
         this.saving = false;
       });
-  }
+    }
 
   closeModal(candidateOccupation: CandidateOccupation) {
     this.activeModal.close(candidateOccupation);

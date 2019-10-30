@@ -171,19 +171,21 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         CandidateOccupation candidateOccupation = candidateOccupationRepository.findByIdLoadCandidate(id)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateOccupation.class, id));
 
-        // Load the verified occupation from the database - throw an exception if not found
-        Occupation verifiedOccupation = occupationRepository.findById(request.getOccupationId())
-                .orElseThrow(() -> new NoSuchObjectException(Occupation.class, request.getOccupationId()));
+        if(request.getOccupationId() != null){
+            // Load the verified occupation from the database - throw an exception if not found
+            Occupation verifiedOccupation = occupationRepository.findById(request.getOccupationId())
+                    .orElseThrow(() -> new NoSuchObjectException(Occupation.class, request.getOccupationId()));
 
-        // Check candidate doesn't already have this occupation
-        CandidateOccupation existing = candidateOccupationRepository.findByCandidateIdAAndOccupationId(candidateOccupation.getCandidate().getId(), request.getOccupationId());
-        if (existing != null){
-            throw new EntityExistsException("occupation");
+            // Check candidate doesn't already have this occupation
+            CandidateOccupation existing = candidateOccupationRepository.findByCandidateIdAAndOccupationId(candidateOccupation.getCandidate().getId(), request.getOccupationId());
+            if (existing != null){
+                throw new EntityExistsException("occupation");
+            }
+
+            candidateOccupation.setOccupation(verifiedOccupation);
         }
 
-
         candidateOccupation.setVerified(request.isVerified());
-        candidateOccupation.setOccupation(verifiedOccupation);
 
         candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(candidateOccupation.getCandidate().getId(),
                 candidateOccupation.getOccupation().getName() +" verification status set to "+request.isVerified(), request.getComment()));
