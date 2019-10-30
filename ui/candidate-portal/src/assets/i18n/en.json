@@ -282,7 +282,8 @@
       "COUNTRYID": "Location",
       "INSTITUTION":  "Name of institution",
       "LENGTHOFCOURSEYEARS": "Length of course (years)",
-      "DATECOMPLETED":  "Year of graduation"
+      "DATECOMPLETED":  "Year of graduation",
+      "INCOMPLETE":  "Incomplete"
     }
   },
   "CARD": {

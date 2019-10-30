@@ -32,7 +32,7 @@ import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import * as moment from 'moment-timezone';
 import {CandidateShortlistItem} from "../../../model/candidate-shortlist-item";
 import {LanguageLevel} from "../../../model/language-level";
-import {LanguageLevelService} from "../../../services/language-level.service";
+import {LanguageLevelService} from '../../../services/language-level.service';
 import {DateRangePickerComponent} from "../../util/form/date-range-picker/date-range-picker.component";
 import {LanguageLevelFormControlComponent} from "../../util/form/language-proficiency/language-level-form-control.component";
 

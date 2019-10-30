@@ -3,6 +3,7 @@ package org.tbbtalent.server.api.admin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.model.CandidateLanguage;
+import org.tbbtalent.server.request.candidate.language.UpdateCandidateLanguageRequest;
 import org.tbbtalent.server.service.CandidateLanguageService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -25,6 +26,13 @@ public class CandidateLanguageAdminApi {
     public List<Map<String, Object>> get(@PathVariable("id") long id) {
         List<CandidateLanguage> candidateLanguages = this.candidateLanguageService.list(id);
         return candidateLanguageDto().buildList(candidateLanguages);
+    }
+
+    @PutMapping("{id}")
+    public Map<String, Object> update(@PathVariable("id") long id,
+                                      @RequestBody UpdateCandidateLanguageRequest request) {
+        CandidateLanguage candidateLanguage = this.candidateLanguageService.updateCandidateLanguage(id, request);
+        return candidateLanguageDto().build(candidateLanguage);
     }
 
 

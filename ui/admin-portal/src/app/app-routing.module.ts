@@ -19,7 +19,7 @@ const routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        component: SearchCandidatesComponent
+        component: HomeComponent
       },
       {
         path: 'candidates',

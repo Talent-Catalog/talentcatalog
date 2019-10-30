@@ -84,7 +84,7 @@ export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
     /* GET CANDIDATE EXPERIENCE */
     this.candidateJobExperienceService.search(this.candidateJobExperienceForm.value).subscribe(
       results => {
-        this.experiences.push(...results.content);
+        this.experiences = results.content;
         this.hasMore = results.totalPages > results.number+1;
         this.loading = false;
       },

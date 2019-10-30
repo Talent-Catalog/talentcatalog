@@ -7,6 +7,6 @@ export interface CandidateNote {
   noteType: string;
   createdBy: User;
   createdDate: number;
-  updatedBy: User
+  updatedBy: User;
   updatedDate: number;
 }

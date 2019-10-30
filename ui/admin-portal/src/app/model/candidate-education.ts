@@ -10,4 +10,5 @@ export interface CandidateEducation {
   institution: string;
   courseName: string;
   yearCompleted: string;
+  incomplete: boolean;
 };

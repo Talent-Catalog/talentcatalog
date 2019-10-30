@@ -7,7 +7,7 @@
 <div class="card" *ngIf="!loading">
 
   <div class="card-header">
-    Education
+    Education <span *ngIf="candidate.maxEducationLevel">(Max Level: {{candidate.maxEducationLevel?.name}})</span>
 
     <div class="pull-right" *ngIf="editable">
       <button type="button" class="btn btn-primary" (click)="createCandidateEducation()">Add</button>
@@ -41,6 +41,9 @@
       </div>
       <div class="row">
         <label class="col-form-label mb-2 text-muted">{{candidateEducation.yearCompleted}}</label>
+        <label class="col-form-label mb-2 text-muted" *ngIf="candidateEducation.incomplete">
+          Candidate has not completed
+        </label>
       </div>
       <hr/>
     </div>

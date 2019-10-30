@@ -41,7 +41,7 @@ public class CandidateEducationAdminApi {
     public Map<String, Object> update(@PathVariable("id") long id,
                                       @RequestBody UpdateCandidateEducationRequest request) {
         request.setId(id);
-        CandidateEducation candidateEducation = this.candidateEducationService.updateCandidateEducation(request);
+        CandidateEducation candidateEducation = this.candidateEducationService.updateCandidateEducation(id, request);
         return candidateEducationDto().build(candidateEducation);
     }
 
@@ -56,6 +56,7 @@ public class CandidateEducationAdminApi {
                 .add("institution")
                 .add("courseName")
                 .add("yearCompleted")
+                .add("incomplete")
                 ;
     }
 

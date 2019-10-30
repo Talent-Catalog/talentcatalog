@@ -86,11 +86,15 @@ import {CandidateShortlistItemComponent} from "./components/candidates/search/sh
 import {UserPipe} from "./components/util/user/user.pipe";
 import {UpdatedByComponent} from "./components/util/user/updated-by/updated-by.component";
 import {DateRangePickerComponent} from './components/util/form/date-range-picker/date-range-picker.component';
-import { EditCandidateJobExperienceComponent } from './components/candidates/view/occupation/experience/edit/edit-candidate-job-experience.component';
-import { CreateCandidateJobExperienceComponent } from './components/candidates/view/occupation/experience/create/create-candidate-job-experience.component';
+import {EditCandidateJobExperienceComponent} from './components/candidates/view/occupation/experience/edit/edit-candidate-job-experience.component';
+import {CreateCandidateJobExperienceComponent} from './components/candidates/view/occupation/experience/create/create-candidate-job-experience.component';
 import {ViewCandidateAttachmentComponent} from "./components/candidates/view/attachment/view-candidate-attachment.component";
 import {EditCandidateOccupationComponent} from "./components/candidates/view/occupation/edit/edit-candidate-occupation.component";
 import {SortedByComponent} from "./components/util/sort/sorted-by.component";
+import {EditCandidateLanguageComponent} from './components/candidates/view/language/edit/edit-candidate-language.component';
+import {ViewCandidateAccountComponent} from './components/candidates/view/account/view-candidate-account.component';
+import {ChangePasswordComponent} from './components/candidates/view/account/change-password/change-password.component';
+import {ChangeUsernameComponent} from './components/candidates/view/account/change-username/change-username.component';
 
 @NgModule({
   declarations: [
@@ -173,7 +177,11 @@ import {SortedByComponent} from "./components/util/sort/sorted-by.component";
     EditCandidateJobExperienceComponent,
     CreateCandidateJobExperienceComponent,
     EditCandidateOccupationComponent,
-    SortedByComponent
+    SortedByComponent,
+    EditCandidateLanguageComponent,
+    ViewCandidateAccountComponent,
+    ChangePasswordComponent,
+    ChangeUsernameComponent
   ],
   imports: [
     BrowserModule,
@@ -231,7 +239,10 @@ import {SortedByComponent} from "./components/util/sort/sorted-by.component";
     EditCandidateShortlistItemComponent,
     CreateCandidateJobExperienceComponent,
     EditCandidateJobExperienceComponent,
-    EditCandidateOccupationComponent
+    EditCandidateOccupationComponent,
+    EditCandidateLanguageComponent,
+    ChangePasswordComponent,
+    ChangeUsernameComponent
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
