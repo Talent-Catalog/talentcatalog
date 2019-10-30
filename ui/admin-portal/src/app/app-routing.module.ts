@@ -1,7 +1,6 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {SearchCandidatesComponent} from './components/candidates/search/search-candidates.component';
-import {HomeComponent} from './components/home/home.component';
 import {CreateCandidateComponent} from './components/candidates/create/create-candidate.component';
 import {ViewCandidateComponent} from './components/candidates/view/view-candidate.component';
 import {EditCandidateStatusComponent} from './components/candidates/view/status/edit-candidate-status.component';
@@ -19,7 +18,7 @@ const routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        component: SearchCandidatesComponent
+        redirectTo: 'candidates'
       },
       {
         path: 'candidates',

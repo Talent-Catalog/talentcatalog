@@ -46,13 +46,8 @@
         </div>
       </div>
 
-      <div>
-        <app-updated-by *ngIf="candidateNote"
-                        [createdBy]="candidateNote.createdBy"
-                        [createdDate]="candidateNote.createdDate"
-                        [updatedBy]="candidateNote.updatedBy"
-                        [updatedDate]="candidateNote.updatedDate">
-        </app-updated-by>
+      <div *ngIf="candidateNote">
+        <app-updated-by *ngIf="candidateNote" [object]="candidateNote"></app-updated-by>
       </div>
     </div>
   </div>

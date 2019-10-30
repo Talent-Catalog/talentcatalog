@@ -2,3 +2,10 @@
   background-color: lightgray;
 }
 
+.date::before {
+  content: ' on (';
+}
+
+.date::after {
+  content: ')';
+}

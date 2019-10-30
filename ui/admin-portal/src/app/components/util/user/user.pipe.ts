@@ -1,5 +1,5 @@
-import { Pipe, PipeTransform } from '@angular/core';
-import { User } from "../../../model/user";
+import {Pipe, PipeTransform} from '@angular/core';
+import {User} from "../../../model/user";
 
 @Pipe({
   name: 'user'
@@ -22,9 +22,7 @@ export class UserPipe implements PipeTransform {
   }
 
   private fullName(user: User) {
-    return user.firstName + ' ' + user.lastName;
+    return ((user.firstName || '') + ' ' + (user.lastName || '')).trim();
   }
-
-
 
 }

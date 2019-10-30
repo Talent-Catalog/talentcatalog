@@ -1,5 +1,4 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {User} from "../../../../model/user";
 
 @Component({
   selector: 'app-updated-by',
@@ -8,11 +7,7 @@ import {User} from "../../../../model/user";
 })
 export class UpdatedByComponent implements OnInit {
 
-  @Input() createdBy: User;
-  @Input() updatedBy: User;
-  @Input() createdDate;
-  @Input() updatedDate;
-
+  @Input() object: {[key: string]: any};
 
   constructor() {
   }

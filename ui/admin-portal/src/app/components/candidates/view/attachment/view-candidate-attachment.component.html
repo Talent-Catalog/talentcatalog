@@ -27,7 +27,13 @@
     <p *ngIf="!attachments || attachments.length == 0"></p>
 
     <!-- ATTACHMENTS -->
-    <div class="row" *ngFor="let attachment of attachments; let i = index">
+    <div class="row position-relative" *ngFor="let attachment of attachments; let i = index">
+
+      <!-- EDIT -->
+      <button class="btn btn-sm btn-default btn-edit"
+              (click)="editCandidateAttachment(attachment)">
+        <i class="fa fa-edit"></i>
+      </button>
 
       <!-- NAME -->
       <div class="col-12">
@@ -39,22 +45,10 @@
       </div>
 
       <!-- AUDIT DATA -->
-      <div class="col-12">
-        <app-updated-by *ngIf="attachment"
-                        [createdBy]="attachment.createdBy"
-                        [createdDate]="attachment.createdDate"
-                        [updatedBy]="attachment.updatedBy"
-                        [updatedDate]="attachment.updatedDate">
-        </app-updated-by>
+      <div class="col-12" *ngIf="attachment">
+        <app-updated-by [object]="attachment"></app-updated-by>
       </div>
 
-      <div class="col-2">
-        <div class="pull-right" *ngIf="editable">
-          <button type="button" class="btn btn-sm btn-default" (click)="editCandidateAttachment(attachment)">
-            <i
-              class="fa fa-edit"></i></button>
-        </div>
-      </div>
     </div>
 
     <!-- LOAD MORE -->
