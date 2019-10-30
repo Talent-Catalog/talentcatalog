@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.exception.ExpiredTokenException;
 import org.tbbtalent.server.exception.InvalidPasswordFormatException;
 import org.tbbtalent.server.exception.InvalidPasswordTokenException;
+import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.request.user.CheckPasswordResetTokenRequest;
 import org.tbbtalent.server.request.user.ResetPasswordRequest;
@@ -40,7 +41,7 @@ public class UserPortalApi {
     }
 
     @PostMapping(value="reset-password-email")
-    public void sendResetPasswordEmail(@RequestBody SendResetPasswordEmailRequest request) {
+    public void sendResetPasswordEmail(@RequestBody SendResetPasswordEmailRequest request) throws NoSuchObjectException {
         userService.generateResetPasswordToken(request);
     }
 

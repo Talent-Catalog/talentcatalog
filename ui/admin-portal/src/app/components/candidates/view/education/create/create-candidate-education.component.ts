@@ -42,6 +42,7 @@ export class CreateCandidateEducationComponent implements OnInit {
     while (year < currentYear){
       this.years.push(year++);
     }
+    this.years.reverse();
 
     /*load the countries */
     this.countryService.listCountries().subscribe(
@@ -70,8 +71,10 @@ export class CreateCandidateEducationComponent implements OnInit {
       institution: ['', [Validators.required]],
       countryId: ['', [Validators.required]],
       educationMajorId: ['', [Validators.required]],
-      yearCompleted: ['', [Validators.required]],
-      educationType: ['', [Validators.required]]
+      yearCompleted: [''],
+      lengthOfCourseYears: [''],
+      educationType: ['', [Validators.required]],
+      incomplete: ['', ]
     });
     this.loading = false;
   }

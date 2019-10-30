@@ -62,6 +62,7 @@ export class EditCandidateEducationComponent implements OnInit {
     while (year < currentYear){
       this.years.push(year++);
     }
+    this.years.reverse();
 
     this.candidateForm = this.fb.group({
       courseName: [this.candidateEducation.courseName],
@@ -69,8 +70,9 @@ export class EditCandidateEducationComponent implements OnInit {
       countryId: [this.candidateEducation.country ? this.candidateEducation.country.id : null, Validators.required],
       majorId: [this.candidateEducation.educationMajor ? this.candidateEducation.educationMajor.id : null, Validators.required],
       yearCompleted: [this.candidateEducation.yearCompleted],
-      educationType: [this.candidateEducation.educationType, [Validators.required]]
-
+      educationType: [this.candidateEducation.educationType, [Validators.required]],
+      lengthOfCourseYears: [this.candidateEducation.lengthOfCourseYears],
+      incomplete: [this.candidateEducation.incomplete ]
     });
     this.loading = false;
   }

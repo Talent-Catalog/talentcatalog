@@ -71,7 +71,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   pageNumber: number;
   pageSize: number;
   sortField = 'id';
-  sortDirection = 'ASC';
+  sortDirection = 'DESC';
 
   /* MULTI SELECT */
   dropdownSettings: IDropdownSettings = {

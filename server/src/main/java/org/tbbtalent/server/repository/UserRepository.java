@@ -23,7 +23,7 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
 
     /* Used for candidate authentication */
     @Query("select distinct u from User u "
-            + " where lower(u.email) = lower(:email) "
+            + " where (lower(u.email) = lower(:email) )"
             + " and u.status != 'deleted'")
     User findByEmailIgnoreCase(@Param("email") String email);
 
