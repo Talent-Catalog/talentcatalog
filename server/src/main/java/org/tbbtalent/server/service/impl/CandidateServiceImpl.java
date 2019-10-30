@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
@@ -42,6 +43,8 @@ public class CandidateServiceImpl implements CandidateService {
     private final SavedSearchService savedSearchService;
     private final CandidateNoteService candidateNoteService;
     private final EmailHelper emailHelper;
+
+
 
     @Autowired
     public CandidateServiceImpl(UserRepository userRepository,
@@ -148,12 +151,12 @@ public class CandidateServiceImpl implements CandidateService {
     public Candidate updateCandidateStatus(long id, UpdateCandidateStatusRequest request) {
         Candidate candidate = this.candidateRepository.findByIdLoadUser(id)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
-        if (!request.getStatus().equals(candidate.getStatus())){
-            candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(id, "Status change from "+candidate.getStatus()+" to "+request.getStatus(), request.getComment()));
+        if (!request.getStatus().equals(candidate.getStatus())) {
+            candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(id, "Status change from " + candidate.getStatus() + " to " + request.getStatus(), request.getComment()));
             candidate.setStatus(request.getStatus());
             candidate.setCandidateMessage(request.getCandidateMessage());
-            candidate =  candidateRepository.save(candidate);
-            if (request.getStatus().equals(CandidateStatus.incomplete)){
+            candidate = candidateRepository.save(candidate);
+            if (request.getStatus().equals(CandidateStatus.incomplete)) {
                 emailHelper.sendIncompleteApplication(candidate.getUser(), request.getCandidateMessage());
             }
         }
@@ -377,6 +380,11 @@ public class CandidateServiceImpl implements CandidateService {
         return candidateRepository.findByUserIdLoadProfile(user.getId());
     }
 
+    @Override
+    public Candidate findByCandidateNumber(String candidateNumber) {
+        return candidateRepository.findByCandidateNumber(candidateNumber);
+    }
+
     @Transactional(readOnly = true)
     void validateContactRequest(BaseCandidateContactRequest request) {
         User user;
@@ -427,4 +435,5 @@ public class CandidateServiceImpl implements CandidateService {
             }
         }
     }
+
 }

@@ -21,6 +21,7 @@ jwt:
 
 web:
   portal: https://tbbtalent-staging.herokuapp.com/candidate-portal
+  admin: https://tbbtalent-staging.herokuapp.com/admin-portal
 
 flyway:
   ignoreMissingMigrations: true

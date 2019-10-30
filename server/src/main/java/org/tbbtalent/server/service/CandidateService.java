@@ -43,4 +43,8 @@ public interface CandidateService {
     Candidate getLoggedInCandidate();
 
     Candidate getLoggedInCandidateLoadProfile();
+
+    Candidate findByCandidateNumber(String candidateNumber);
+
+
 }

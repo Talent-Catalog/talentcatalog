@@ -21,6 +21,7 @@ jwt:
 
 web:
   portal: http://localhost:4200
+  admin:  http://localhost:4201
 
 flyway:
   ignoreMissingMigrations: true
