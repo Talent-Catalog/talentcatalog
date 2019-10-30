@@ -1,58 +1,68 @@
 <div *ngIf="loading">
   <i class="fa fa-spinner fa-spin"></i> loading...
 </div>
+
 <div *ngIf="error">
   {{error}}
 </div>
 
 <div class="card">
-  <div class="card-header">
-    <div *ngIf="!loading">
-      Attachments
-      <div class="pull-right" *ngIf="editable">
-        <button type="button" class="btn btn-sm btn-primary" (click)="createCandidateAttachment()"><i
-          class="fa fa-plus"></i></button>
-      </div>
+
+  <!-- HEADER -->
+  <div class="card-header justify-content-between">
+
+    <span>Attachments</span>
+
+    <div class="pull-right" *ngIf="editable">
+      <button type="button" class="btn btn-sm btn-primary" (click)="createCandidateAttachment()">
+        <i class="fa fa-plus"></i></button>
     </div>
+
   </div>
+
+  <!-- BODY -->
   <div class="card-body">
-    <div *ngIf="!attachments || attachments.length == 0">
-      <div class="row">
-        <div class="col-sm-12">
-          No attachments
+
+    <!-- EMPTY STATE -->
+    <p *ngIf="!attachments || attachments.length == 0"></p>
+
+    <!-- ATTACHMENTS -->
+    <div class="row" *ngFor="let attachment of attachments; let i = index">
+
+      <!-- NAME -->
+      <div class="col-12">
+
+        <a target="_blank" [href]="getAttachmentUrl(attachment)">
+          {{attachment.name}}
+        </a>
+
+      </div>
+
+      <!-- AUDIT DATA -->
+      <div class="col-12">
+        <app-updated-by *ngIf="attachment"
+                        [createdBy]="attachment.createdBy"
+                        [createdDate]="attachment.createdDate"
+                        [updatedBy]="attachment.updatedBy"
+                        [updatedDate]="attachment.updatedDate">
+        </app-updated-by>
+      </div>
+
+      <div class="col-2">
+        <div class="pull-right" *ngIf="editable">
+          <button type="button" class="btn btn-sm btn-default" (click)="editCandidateAttachment(attachment)">
+            <i
+              class="fa fa-edit"></i></button>
         </div>
       </div>
     </div>
-    <div *ngFor="let candidateAttachment of attachments; let i = index">
-      <div class="row">
-        <div class="col-sm-5">
-          <a *ngIf="candidateAttachment.type == 'link'" target="_blank"
-             href="{{candidateAttachment.location}}">{{candidateAttachment.name}}</a>
-          <a *ngIf="candidateAttachment.type == 'file'" (click)="todo()"
-             href="{{candidateAttachment.location}}">{{candidateAttachment.name}}</a>
-        </div>
-        <div class="col-sm-4">
-          <app-updated-by *ngIf="candidateAttachment"
-                          [createdBy]="candidateAttachment.createdBy"
-                          [createdDate]="candidateAttachment.createdDate"
-                          [updatedBy]="candidateAttachment.updatedBy"
-                          [updatedDate]="candidateAttachment.updatedDate">
-          </app-updated-by>
-        </div>
-        <div class="col-sm-1">
-          <div class="pull-right" *ngIf="editable">
-            <button type="button" class="btn btn-sm btn-default" (click)="editCandidateAttachment(candidateAttachment)">
-              <i
-                class="fa fa-edit"></i></button>
-          </div>
-        </div>
-      </div>
-    </div>
+
+    <!-- LOAD MORE -->
     <div class="text-center" *ngIf="hasMore">
       <button type="button" class="btn btn-sm btn-outline-dark" (click)="loadMore()">Load More</button>
     </div>
-  </div>
 
+  </div>
 
 </div>
 

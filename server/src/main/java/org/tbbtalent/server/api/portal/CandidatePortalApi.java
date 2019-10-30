@@ -108,6 +108,18 @@ public class CandidatePortalApi {
         return candidateProfileDto().build(candidate);
     }
 
+    @GetMapping("candidate-number")
+    public Map<String, Object> getCandidateNumber() {
+        Candidate candidate = this.candidateService.getLoggedInCandidate();
+        return candidateNumberDto().build(candidate);
+    }
+
+    private DtoBuilder candidateNumberDto() {
+        return new DtoBuilder()
+                .add("candidateNumber")
+                ;
+    }
+
     private DtoBuilder candidateContactDto() {
         return new DtoBuilder()
                 .add("user", userDto())

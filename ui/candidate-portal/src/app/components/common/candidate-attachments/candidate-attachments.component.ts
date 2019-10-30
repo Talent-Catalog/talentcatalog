@@ -4,6 +4,7 @@ import {AttachmentType, CandidateAttachment} from "../../../model/candidate-atta
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {S3UploadParams} from "../../../model/s3-upload-params";
 import {environment} from "../../../../environments/environment";
+import {CandidateService} from "../../../services/candidate.service";
 
 @Component({
   selector: 'app-candidate-attachments',
@@ -15,26 +16,46 @@ export class CandidateAttachmentsComponent implements OnInit {
   @Input() preview: boolean = false;
 
   error: any;
-  loading: boolean = true;
+  _loading = {
+    candidate: true,
+    attachments: true
+  };
   deleting: boolean;
 
-  form: FormGroup;
-  attachments: CandidateAttachment[] = [];
   s3BucketUrl: string = environment.s3BucketUrl;
+  form: FormGroup;
+
+  attachments: CandidateAttachment[] = [];
+  candidateNumber: string;
 
   constructor(private fb: FormBuilder,
+              private candidateService: CandidateService,
               private candidateAttachmentService: CandidateAttachmentService) { }
 
   ngOnInit() {
-    this.candidateAttachmentService.listCandidateAttachments().subscribe(
+    this.candidateService.getCandidateNumber().subscribe(
       (response) => {
-        this.attachments = response;
-        this.loading = false;
+        this.candidateNumber = response.candidateNumber;
+        this._loading.candidate = false;
       },
       (error) => {
         this.error = error;
-        this.loading = false;
+        this._loading.candidate = false;
       });
+    this.candidateAttachmentService.listCandidateAttachments().subscribe(
+      (response) => {
+        this.attachments = response;
+        this._loading.attachments = false;
+      },
+      (error) => {
+        this.error = error;
+        this._loading.attachments = false;
+      });
+  }
+
+  get loading() {
+    const l = this._loading;
+    return l.attachments || l.candidate;
   }
 
   handleAttachmentUploaded(attachment: {s3Params: S3UploadParams, file: File}) {
@@ -59,11 +80,10 @@ export class CandidateAttachmentsComponent implements OnInit {
   }
 
   getAttachmentUrl(attachment: CandidateAttachment) {
-    let candidateNumber = 'CN20001';
     if (attachment.type === AttachmentType.file) {
-      return this.s3BucketUrl + '/candidate/' + candidateNumber + '/' + attachment.name;
+      return this.s3BucketUrl + '/candidate/' + this.candidateNumber + '/' + attachment.name;
     }
-    return
+    return attachment.location;
   }
 
   deleteAttachment(attachment: CandidateAttachment) {

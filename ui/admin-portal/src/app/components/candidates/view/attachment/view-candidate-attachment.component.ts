@@ -1,9 +1,10 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from "../../../../model/candidate";
 import {FormBuilder, FormGroup} from "@angular/forms";
-import {CandidateAttachment} from "../../../../model/candidate-attachment";
+import {AttachmentType, CandidateAttachment} from "../../../../model/candidate-attachment";
 import {CandidateAttachmentService} from "../../../../services/candidate-attachment.service";
+import {environment} from "../../../../../environments/environment";
 
 @Component({
   selector: 'app-view-candidate-attachment',
@@ -15,10 +16,12 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
   @Input() candidate: Candidate;
   @Input() editable: boolean;
 
-  attachmentForm: FormGroup;
   loading: boolean;
+  error: any;
+  s3BucketUrl = environment.s3BucketUrl;
+
+  attachmentForm: FormGroup;
   expanded: boolean;
-  error;
   attachments: CandidateAttachment[];
   hasMore: boolean;
 
@@ -69,8 +72,11 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
     this.doSearch();
   }
 
-  todo(){
-    alert('Need to find where these files are stored');
+  getAttachmentUrl(attachment: CandidateAttachment) {
+    if (attachment.type === AttachmentType.file) {
+      return this.s3BucketUrl + '/candidate/' + this.candidate.candidateNumber + '/' + attachment.name;
+    }
+    return attachment.location;
   }
 
   editCandidateAttachment(candidateAttachment: CandidateAttachment) {
