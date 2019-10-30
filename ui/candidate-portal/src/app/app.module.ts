@@ -43,6 +43,7 @@ import {CandidateEducationCardComponent} from './components/common/candidate-edu
 import {CandidateLanguageCardComponent} from './components/common/candidate-language-card/candidate-language-card.component';
 import {CandidateAttachmentsComponent} from './components/common/candidate-attachments/candidate-attachments.component';
 import {FileUploadComponent} from './components/common/file-upload/file-upload.component';
+import {InputFilterDirective} from './directives/input-filter.directive';
 
 export function createTranslateLoader(http: HttpClient) {
     return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -81,7 +82,8 @@ export function createTranslateLoader(http: HttpClient) {
     CandidateEducationCardComponent,
     CandidateLanguageCardComponent,
     CandidateAttachmentsComponent,
-    FileUploadComponent
+    FileUploadComponent,
+    InputFilterDirective
   ],
   imports: [
     BrowserModule,

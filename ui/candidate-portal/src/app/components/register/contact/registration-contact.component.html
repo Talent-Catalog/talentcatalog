@@ -14,14 +14,16 @@
     <!-- PHONE # -->
     <div class="form-group">
       <label for="phone">{{ 'REGISTRATION.CONTACT.LABEL.PHONE' | translate }} <sup>*</sup></label>
-      <input type="text" class="form-control" id="phone" placeholder="Enter phone number" [formControlName]="'phone'">
+      <input type="text" class="form-control" id="phone" placeholder="Enter phone number" appInputFilter
+             [formControlName]="'phone'">
       <app-form-control-error [control]="form.controls.phone"></app-form-control-error>
     </div>
 
     <!-- WHATSAPP -->
     <div class="form-group">
       <label for="whatsapp">{{ 'REGISTRATION.CONTACT.LABEL.WHATSAPP' | translate }}</label>
-      <input type="text" class="form-control" id="whatsapp" placeholder="Enter WhatsApp" [formControlName]="'whatsapp'">
+      <input type="text" class="form-control" id="whatsapp" placeholder="Enter WhatsApp" appInputFilter
+             [formControlName]="'whatsapp'">
     </div>
 
     <ng-container *ngIf="!authenticated">
