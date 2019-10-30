@@ -1,11 +1,8 @@
-import { Injectable } from '@angular/core';
-import { Candidate } from '../model/candidate';
-import { Observable } from 'rxjs/index';
-import { environment } from '../../environments/environment';
-import { HttpClient } from '@angular/common/http';
-import { SearchResults } from '../model/search-results';
+import {Injectable} from '@angular/core';
+import {Observable} from 'rxjs/index';
+import {environment} from '../../environments/environment';
+import {HttpClient} from '@angular/common/http';
 import {CandidateLanguage} from "../model/candidate-language";
-import {Country} from "../model/country";
 
 @Injectable({providedIn: 'root'})
 export class CandidateLanguageService {
@@ -18,5 +15,8 @@ export class CandidateLanguageService {
     return this.http.get<CandidateLanguage[]>(`${this.apiUrl}/${id}/list`);
   }
 
+  update(id: number, details): Observable<CandidateLanguage>  {
+    return this.http.put<CandidateLanguage>(`${this.apiUrl}/${id}`, details);
+  }
 
 }

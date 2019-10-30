@@ -100,8 +100,8 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
     public CandidateJobExperience updateCandidateJobExperience(Long id, UpdateJobExperienceRequest request) {
         // Load the candidate from the database - throw an exception if not found
         CandidateJobExperience candidateJobExperience = candidateJobExperienceRepository
-                .findByIdLoadCandidateOccupation(request.getId())
-                .orElseThrow(() -> new NoSuchObjectException(CandidateJobExperience.class, request.getId()));
+                .findByIdLoadCandidateOccupation(id)
+                .orElseThrow(() -> new NoSuchObjectException(CandidateJobExperience.class, id));
 
         Country country = getCountry(request.getCountryId());
 

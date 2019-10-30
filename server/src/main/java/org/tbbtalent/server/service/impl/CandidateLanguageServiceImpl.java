@@ -73,6 +73,32 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
     }
 
     @Override
+    public CandidateLanguage updateCandidateLanguage(Long id, UpdateCandidateLanguageRequest request) {
+
+        CandidateLanguage candidateLanguage = candidateLanguageRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(CandidateLanguage.class, id));
+
+        // Load the language from the database - throw an exception if not found
+        Language language = languageRepository.findById(request.getLanguageId())
+                .orElseThrow(() -> new NoSuchObjectException(Language.class, request.getLanguageId()));
+
+        // Load the levels from the database - throw an exception if not found
+        LanguageLevel spokenLevel = languageLevelRepository.findById(request.getSpokenLevelId())
+                .orElseThrow(() -> new NoSuchObjectException(LanguageLevel.class, request.getSpokenLevelId()));
+
+        LanguageLevel writtenLevel = languageLevelRepository.findById(request.getWrittenLevelId())
+                .orElseThrow(() -> new NoSuchObjectException(LanguageLevel.class, request.getWrittenLevelId()));
+
+        // Update education object to insert into the database
+        candidateLanguage.setLanguage(language);
+        candidateLanguage.setSpokenLevel(spokenLevel);
+        candidateLanguage.setWrittenLevel(writtenLevel);
+
+        // Save the candidateOccupation
+        return candidateLanguageRepository.save(candidateLanguage);
+    }
+
+    @Override
     public void deleteCandidateLanguage(Long id) {
         Candidate candidate = userContext.getLoggedInCandidate();
         CandidateLanguage candidateLanguage = candidateLanguageRepository.findByIdLoadCandidate(id)

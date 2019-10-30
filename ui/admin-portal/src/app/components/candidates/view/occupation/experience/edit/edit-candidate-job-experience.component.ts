@@ -4,6 +4,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateJobExperienceService} from "../../../../../../services/candidate-job-experience.service";
 import {CandidateJobExperience} from "../../../../../../model/candidate-job-experience";
 import {CountryService} from "../../../../../../services/country.service";
+import {Candidate} from "../../../../../../model/candidate";
 
 @Component({
   selector: 'app-edit-candidate-job-experience',
@@ -13,6 +14,7 @@ import {CountryService} from "../../../../../../services/country.service";
 export class EditCandidateJobExperienceComponent implements OnInit {
 
   candidateJobExperience: CandidateJobExperience;
+  candidate: Candidate;
 
   candidateForm: FormGroup;
 

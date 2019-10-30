@@ -13,4 +13,5 @@ export interface CandidateEducation {
   // Request object variables
   countryId?: number;
   educationMajorId?: number;
+  incomplete?: boolean;
 }
