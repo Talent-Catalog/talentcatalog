@@ -2,9 +2,13 @@
   display: none;
 }
 
-.btn-edit {
+.actions {
   position: absolute;
   top: 0;
   right: 0;
   z-index: 2;
+}
+
+.edit-padding {
+  padding-right: 60px;
 }

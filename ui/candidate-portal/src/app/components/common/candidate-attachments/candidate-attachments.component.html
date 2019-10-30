@@ -1,11 +1,11 @@
-<h5>{{ 'REGISTRATION.ATTACHMENTS.TITLE' | translate }}</h5>
+<h5 class="mb-3">{{ 'REGISTRATION.ATTACHMENTS.TITLE' | translate }}</h5>
 
 <p *ngIf="!loading && !attachments.length">
   {{ 'REGISTRATION.ATTACHMENTS.EMPTYSTATE' | translate }}
 </p>
 
 <div class="attachments">
-  <div class="card mb-3" *ngFor="let attachment of attachments">
+  <div class="mb-3" *ngFor="let attachment of attachments; let i = index;" [class.card]="!preview">
 
     <div class="text-right" *ngIf="!preview">
       <button class="btn btn-danger btn-card"
@@ -44,6 +44,8 @@
       </div>
 
     </div>
+
+    <hr *ngIf="preview && i < attachments?.length - 1">
 
   </div>
 </div>

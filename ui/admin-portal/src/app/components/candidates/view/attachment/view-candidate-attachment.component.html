@@ -27,16 +27,24 @@
     <p *ngIf="!attachments || attachments.length == 0"></p>
 
     <!-- ATTACHMENTS -->
-    <div class="row position-relative" *ngFor="let attachment of attachments; let i = index">
+    <div class="row position-relative mb-3" *ngFor="let attachment of attachments; let i = index">
 
       <!-- EDIT -->
-      <button class="btn btn-sm btn-default btn-edit"
-              (click)="editCandidateAttachment(attachment)">
-        <i class="fa fa-edit"></i>
-      </button>
+      <div class="actions">
+        <button class="btn btn-sm btn-default" *ngIf="editable"
+                (click)="editCandidateAttachment(attachment)">
+          <i class="fa fa-edit"></i>
+        </button>
+
+        <button class="btn btn-sm btn-default" *ngIf="editable"
+                (click)="deleteCandidateAttachment(attachment)">
+          <i class="fa fa-trash"></i>
+        </button>
+      </div>
+
 
       <!-- NAME -->
-      <div class="col-12">
+      <div class="col-12" [class.edit-padding]="editable">
 
         <a target="_blank" [href]="getAttachmentUrl(attachment)">
           {{attachment.name}}
