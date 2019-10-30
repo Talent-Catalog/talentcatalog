@@ -22,7 +22,7 @@ export class UserPipe implements PipeTransform {
   }
 
   private fullName(user: User) {
-    return ((user.firstName || '') + ' ' + (user.lastName || '')).trim();
+    return ((user.firstName || '') + ' ' + (user.lastName || '')).trim() || '-';
   }
 
 }

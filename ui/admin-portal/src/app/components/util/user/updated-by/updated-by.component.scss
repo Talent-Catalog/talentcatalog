@@ -2,10 +2,10 @@
   background-color: lightgray;
 }
 
-.date::before {
-  content: ' on (';
+.name::before {
+  content: ' by ';
 }
 
-.date::after {
-  content: ')';
+.date::before {
+  content: ' on ';
 }
