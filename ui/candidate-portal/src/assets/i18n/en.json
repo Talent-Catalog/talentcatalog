@@ -143,6 +143,7 @@
       }
     },
     "EDUCATION": {
+      "MESSAGE": "Please enter your degrees below starting with the highest level",
       "LABEL": {
         "MAXEDUCATIONLEVELID": "What is the highest level of education you've obtained?"
       },
