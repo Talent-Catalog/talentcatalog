@@ -16,10 +16,10 @@ export class InputFilterDirective {
 
   // List for oninput events and filter out characters based on pattern
   @HostListener('input', ['$event']) onInputChange(event) {
-    const initalValue = this._el.nativeElement.value;
-    this._el.nativeElement.value = initalValue.replace(this.filterPattern, '');
+    const val = this._el.nativeElement.value;
+    this._el.nativeElement.value = val.replace(this.filterPattern, '');
     // Stop the input event from propagating to the element
-    if (initalValue !== this._el.nativeElement.value) {
+    if (val !== this._el.nativeElement.value) {
       event.stopPropagation();
     }
   }

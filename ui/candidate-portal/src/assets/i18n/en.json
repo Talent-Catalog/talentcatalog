@@ -54,7 +54,7 @@
     "PARA4": ""
   },
   "HOME": {
-    "TITLE": "Welcome back, {{name}}!",
+    "TITLE": "Hi {{name}}!",
     "DRAFT": {
       "EXPLANATION": "You haven't finished your registration. Please click the button below to continue.",
       "BUTTON": "Continue registration"
@@ -182,7 +182,7 @@
     },
     "COMPLETE": {
       "TITLE": "Thank you for your registration!",
-      "PARA1": "TODO: Some wordsmithing needed. Explain that they are in the system how it all works from here.",
+      "PARA1": "Thank you for completing your profile on the Talent Catalog! TBB will only contact you if an employer expresses interest in your profile. You can update your profile with additional information at any time. We recommend you continuously update your profile with any new information relevant to your professional experience or qualifications, as well as update any changes in your contact information.",
       "BUTTON": {
         "LOGOUT": "Logout",
         "PROFILE": "View My Profile"

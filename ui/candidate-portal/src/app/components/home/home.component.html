@@ -4,7 +4,7 @@
 
   <ng-container *ngIf="!loading">
 
-    <h2>{{ 'HOME.TITLE' | translate:{name: (authService.user$ | async).username} }}</h2>
+    <h2>{{ 'HOME.TITLE' | translate:{name: candidate?.user?.firstName + ' ' + candidate?.user?.lastName} }}</h2>
 
     <ng-container [ngSwitch]="candidate?.status">
 
