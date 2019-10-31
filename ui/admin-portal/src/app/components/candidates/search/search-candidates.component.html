@@ -369,7 +369,7 @@
           <td>{{candidate.user.lastName}}</td>
           <td *ngIf="savedSearch">
             <app-candidate-shortlist-item [candidateId]="candidate.id"
-                                          [candidateShortlistItem]="candidate.candidateShortlistItems && candidate.candidateShortlistItems.length > 0 ? candidate.candidateShortlistItems[0] : null"
+                                          [candidateShortlistItems]="candidate.candidateShortlistItems"
                                           [savedSearch]="savedSearch"
                                           (shortlistItemSaved)="handleCandidateShortlistSaved($event)"></app-candidate-shortlist-item>
           </td>

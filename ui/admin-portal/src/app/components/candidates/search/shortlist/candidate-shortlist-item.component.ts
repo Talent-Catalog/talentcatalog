@@ -13,7 +13,7 @@ import {CandidateShortlistItem} from "../../../../model/candidate-shortlist-item
 export class CandidateShortlistItemComponent implements OnInit {
 
   @Input() candidateId: number;
-  @Input() candidateShortlistItem: CandidateShortlistItem;
+  @Input() candidateShortlistItems: CandidateShortlistItem[];
   @Input() savedSearch: SavedSearch;
 
   @Output() shortlistItemSaved = new EventEmitter();
@@ -21,15 +21,14 @@ export class CandidateShortlistItemComponent implements OnInit {
   loading: boolean;
   error;
   debug: boolean = false;
+  candidateShortlistItem;
 
   constructor(private candidateService: CandidateService,
               private modalService: NgbModal) { }
 
   ngOnInit() {
-    if (this.debug) {
-      console.log('candidateShortListItemId', this.candidateShortlistItem);
-      console.log('candidateId', this.candidateId);
-      console.log('savedSearch', this.savedSearch);
+    if (this.candidateShortlistItems && this.savedSearch){
+       this.candidateShortlistItem = this.candidateShortlistItems.find(s => s.savedSearch.id == this.savedSearch.id)
     }
   }
 
