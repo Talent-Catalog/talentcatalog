@@ -163,12 +163,11 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateCandidate(long id, UpdateCandidateRequest request) {
-        // Check update request for a duplicate email or phone number
-        request.setId(id);
-        validateContactRequest(request);
-
         Candidate candidate = this.candidateRepository.findByIdLoadUser(id)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
+        // Check update request for a duplicate email or phone number
+        request.setId(id);
+        validateContactRequest(candidate.getUser(), request);
 
         // Load the country from the database - throw an exception if not found
         Country country = countryRepository.findById(request.getCountryId())
@@ -217,7 +216,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         // Check update request for a duplicate email or phone number
-        validateContactRequest(request);
+        validateContactRequest(null, request);
 
         /* Check for existing account with the username fields */
         if (StringUtils.isNotBlank(request.getUsername())) {
@@ -258,10 +257,10 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateContact(UpdateCandidateContactRequest request) {
-        // Check update request for a duplicate email or phone number
-        validateContactRequest(request);
-
         User user = userContext.getLoggedInUser();
+        // Check update request for a duplicate email or phone number
+        validateContactRequest(user, request);
+
         user.setEmail(request.getEmail());
         user = userRepository.save(user);
         Candidate candidate = user.getCandidate();
@@ -384,14 +383,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Transactional(readOnly = true)
-    void validateContactRequest(BaseCandidateContactRequest request) {
-        User user;
-        if (request.getId() != null) {
-            user = userRepository.findById(request.getId()).orElseThrow(() -> new NoSuchObjectException(User.class, request.getId()));
-        } else {
-            user = userContext.getLoggedInUser();
-        }
-
+    void validateContactRequest(User user, BaseCandidateContactRequest request) {
         Candidate candidate = null;
         if (user != null) {
             candidate = user.getCandidate();

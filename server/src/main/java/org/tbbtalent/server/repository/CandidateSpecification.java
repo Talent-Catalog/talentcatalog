@@ -257,10 +257,10 @@ public class CandidateSpecification {
                             builder.greaterThanOrEqualTo(spokenLevel.get("level"), request.getEnglishMinSpokenLevel())));
                 } else if (request.getEnglishMinWrittenLevel() != null) {
                     conjunction.getExpressions().add(builder.and(builder.equal(builder.lower(language.get("name")), "english"),
-                            builder.greaterThanOrEqualTo(spokenLevel.get("level"), request.getEnglishMinSpokenLevel())));
+                            builder.greaterThanOrEqualTo(writtenLevel.get("level"), request.getEnglishMinWrittenLevel())));
                 } else if (request.getEnglishMinSpokenLevel() != null) {
                     conjunction.getExpressions().add(builder.and(builder.equal(builder.lower(language.get("name")), "english"),
-                            builder.greaterThanOrEqualTo(writtenLevel.get("level"), request.getEnglishMinWrittenLevel())));
+                            builder.greaterThanOrEqualTo(spokenLevel.get("level"), request.getEnglishMinSpokenLevel())));
                 }
                 if (request.getOtherLanguageId() != null) {
                     if (request.getOtherMinSpokenLevel() != null && request.getOtherMinWrittenLevel() != null) {
