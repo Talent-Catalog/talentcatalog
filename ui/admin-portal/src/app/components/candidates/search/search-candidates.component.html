@@ -248,7 +248,7 @@
       <div class="form-group col-12 col-md-3">
         <label for="gender">Gender</label>
         <select class="form-control" name="gender" id="gender" [formControlName]="'gender'">
-          <option value=""></option>
+          <option [ngValue]="null"></option>
           <option value="female">Female</option>
           <option value="male">Male</option>
           <option value="other">Other</option>
