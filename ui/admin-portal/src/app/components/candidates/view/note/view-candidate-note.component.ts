@@ -59,7 +59,6 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
     this.candidateNoteService.search(this.candidateNoteForm.value).subscribe(
       results => {
         this.notes.push(...results.content);
-        console.log(this.notes);
         this.hasMore = results.totalPages > results.number+1;
         this.loading = false;
       },

@@ -1,0 +1,6 @@
+/* Add formatting to the address field by spacing out the data with commas */
+.address {
+  .field + .comma:before {
+    content: ', ';
+  }
+}

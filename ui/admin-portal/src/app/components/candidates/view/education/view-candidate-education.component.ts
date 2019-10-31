@@ -1,5 +1,4 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from "../../../../model/candidate";
 import {CandidateEducation} from "../../../../model/candidate-education";
@@ -26,9 +25,7 @@ export class ViewCandidateEducationComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-    console.log("candidate", this.candidate);
   }
-
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {

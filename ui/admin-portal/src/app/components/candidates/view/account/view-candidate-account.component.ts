@@ -34,9 +34,7 @@ export class ViewCandidateAccountComponent implements OnInit, OnChanges {
       this.loading = true;
       this.userService.get(this.candidate.user.id).subscribe(
         user => {
-          console.log(user)
           this.user = user;
-          console.log(this.user);
           this.loading = false;
         },
         error => {
