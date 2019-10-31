@@ -64,6 +64,17 @@
           </ng-template>
         </ngb-tab>
 
+        <!-- Education -->
+        <ngb-tab [title]="'Additional Info'">
+          <ng-template ngbTabContent>
+            <app-candidate-additional-info-tab
+              [candidate]="candidate"
+              [editable]="true">
+              >
+            </app-candidate-additional-info-tab>
+          </ng-template>
+        </ngb-tab>
+
       </ngb-tabset>
     </div>
     <div class="col-sm-3 admin-panel">

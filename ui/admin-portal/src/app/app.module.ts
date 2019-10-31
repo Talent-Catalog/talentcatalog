@@ -98,6 +98,8 @@ import {ChangeUsernameComponent} from './components/candidates/view/account/chan
 import {CreateCandidateAttachmentComponent} from './components/candidates/view/attachment/create/create-candidate-attachment.component';
 import {EditCandidateAttachmentComponent} from './components/candidates/view/attachment/edit/edit-candidate-attachment.component';
 import {FileUploadComponent} from "./components/util/file-upload/file-upload.component";
+import {CandidateAdditionalInfoTabComponent} from './components/candidates/view/tab/candidate-additional-info-tab/candidate-additional-info-tab.component';
+import {ViewCandidateAdditionalInfoComponent} from './components/candidates/view/additional-info/view-candidate-additional-info.component';
 
 @NgModule({
   declarations: [
@@ -187,7 +189,9 @@ import {FileUploadComponent} from "./components/util/file-upload/file-upload.com
     ChangeUsernameComponent,
     CreateCandidateAttachmentComponent,
     EditCandidateAttachmentComponent,
-    FileUploadComponent
+    FileUploadComponent,
+    CandidateAdditionalInfoTabComponent,
+    ViewCandidateAdditionalInfoComponent
   ],
   imports: [
     BrowserModule,
