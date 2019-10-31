@@ -170,8 +170,4 @@ export class RegistrationPersonalComponent implements OnInit {
     this.onSave.emit();
   }
 
-  markDirty(control: string) {
-    this.form.controls[control].markAsTouched();
-    this.form.controls[control].markAsDirty();
-  }
 }

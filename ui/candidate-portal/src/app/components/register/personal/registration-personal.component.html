@@ -60,14 +60,14 @@
           <input id="dob" type="text" class="form-control" placeholder="YYYY/MM/DD"
                  ngbDatepicker #picker="ngbDatepicker"
                  [formControlName]="'dob'"
-                 (dateSelect)="markDirty('dob')"
+                 (dateSelect)="form.controls.dob.markAsDirty()"
                  [autoClose]="true"
                  [outsideDays]="'hidden'"
                  [container]="'#dob'">
 
           <div class="input-group-append">
             <small class="btn btn-link text-secondary" *ngIf="form.controls.dob.value"
-                   (click)="form.controls.dob.patchValue(null); markDirty('dob');">
+                   (click)="form.controls.dob.patchValue(null); form.controls.dob.markAsDirty();">
               <span>{{ 'FORM.LABEL.CLEAR' | translate }}</span>
             </small>
 
