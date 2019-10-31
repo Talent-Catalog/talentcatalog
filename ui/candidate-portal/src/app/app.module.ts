@@ -5,7 +5,7 @@ import {AppComponent} from './components/app.component';
 import {LandingComponent} from './components/landing/landing.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from "@angular/common/http";
-import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
+import {NgbDateAdapter, NgbDateParserFormatter, NgbDatepickerConfig, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 
@@ -44,6 +44,9 @@ import {CandidateLanguageCardComponent} from './components/common/candidate-lang
 import {CandidateAttachmentsComponent} from './components/common/candidate-attachments/candidate-attachments.component';
 import {FileUploadComponent} from './components/common/file-upload/file-upload.component';
 import {InputFilterDirective} from './directives/input-filter.directive';
+import {CustomDateAdapter, CustomDateParserFormatter} from "./util/date-adapter/ngb-date-adapter";
+import {UserPipe} from './pipes/user.pipe';
+import {TrimPipe} from './pipes/trim.pipe';
 
 export function createTranslateLoader(http: HttpClient) {
     return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -83,7 +86,9 @@ export function createTranslateLoader(http: HttpClient) {
     CandidateLanguageCardComponent,
     CandidateAttachmentsComponent,
     FileUploadComponent,
-    InputFilterDirective
+    InputFilterDirective,
+    UserPipe,
+    TrimPipe
   ],
   imports: [
     BrowserModule,
@@ -107,8 +112,16 @@ export function createTranslateLoader(http: HttpClient) {
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: LanguageInterceptor, multi: true},
-    {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true}
+    {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
+    {provide: NgbDateAdapter, useClass: CustomDateAdapter},
+    {provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter},
+
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+
+  constructor(private datepickerConfig: NgbDatepickerConfig) {
+    this.datepickerConfig.minDate = {year: 1950, month: 1, day: 1};
+  }
+}

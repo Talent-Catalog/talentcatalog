@@ -54,7 +54,7 @@
     "PARA4": ""
   },
   "HOME": {
-    "TITLE": "Hi {{name}}!",
+    "TITLE": "Hi {{name}}",
     "DRAFT": {
       "EXPLANATION": "You haven't finished your registration. Please click the button below to continue.",
       "BUTTON": "Continue registration"
@@ -255,7 +255,9 @@
   },
   "FORM": {
     "LABEL": {
-      "OPTIONAL": "(optional)"
+      "OPTIONAL": "(optional)",
+      "CLEAR": "Clear",
+      "CHOOSE": "Choose"
     },
     "ERROR": {
       "REQUIRED": "This field is required",
@@ -268,8 +270,8 @@
         "CANDIDATEOCCUPATIONID": "Occupation",
         "COMPANYNAME": "Company Name",
         "COUNTRY": "Country",
-        "STARTDATE": "Started (dd/mm/yyyy)",
-        "ENDDATE": "Finished (dd/mm/yyyy)",
+        "STARTDATE": "Start Date",
+        "ENDDATE": "Finish Date",
         "ROLE": "Job Title",
         "DESCRIPTION": "Job Description",
         "CONTRACTTYPE": {

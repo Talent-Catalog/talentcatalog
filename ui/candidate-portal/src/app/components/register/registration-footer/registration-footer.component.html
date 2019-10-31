@@ -4,7 +4,7 @@
 
     <button class="btn btn-outline-primary"
             [hidden]="hideBack"
-            [disabled]="registrationService.currentStepIndex == 0 || backDisabled"
+            [disabled]="regoService.registering && regoService.currentStepIndex == 0 || backDisabled"
             (click)="back()">
       <span [ngSwitch]="type">
         <ng-container *ngSwitchCase="'update'">{{ 'REGISTRATION.FOOTER.CANCEL' | translate }}</ng-container>
@@ -14,7 +14,7 @@
 
     <button class="btn btn-primary"
             [hidden]="hideNext"
-            [disabled]="registrationService.currentStepIndex >= registrationService.steps.length - 1 || nextDisabled"
+            [disabled]="regoService.registering && regoService.currentStepIndex >= regoService.steps.length - 1 || nextDisabled"
             (click)="next()">
       <span [ngSwitch]="type">
         <ng-container *ngSwitchCase="'update'">{{ 'REGISTRATION.FOOTER.UPDATE' | translate }}</ng-container>

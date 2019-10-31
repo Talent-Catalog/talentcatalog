@@ -68,7 +68,7 @@ export class RegistrationService {
   public currentStepKey: string;
   public currentStep: RegistrationStep;
   public currentStepIndex: number;
-  started: boolean = false;
+  registering: boolean = false;
 
   constructor(private router: Router,
               private route: ActivatedRoute) { }
@@ -76,7 +76,7 @@ export class RegistrationService {
   // Observe the query params in the url to determine which step to display
   start() {
     if (!this.subscription || this.subscription.closed) {
-      this.started = true;
+      this.registering = true;
       this.subscription = this.route.queryParams.subscribe(
         params => {
           if (params['step']) {
@@ -93,7 +93,7 @@ export class RegistrationService {
   stop() {
     if (this.subscription) {
       this.subscription.unsubscribe();
-      this.started = false;
+      this.registering = false;
     }
   }
 
@@ -104,13 +104,13 @@ export class RegistrationService {
   }
 
   back() {
-    if (!this.started) {return;}
+    if (!this.registering) {return;}
     this.currentStepIndex--;
     this.setStep();
   }
 
   next() {
-    if (!this.started) {return;}
+    if (!this.registering) {return;}
     this.currentStepIndex++;
     this.setStep();
   }
