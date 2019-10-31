@@ -14,7 +14,7 @@
     <i *ngIf="!candidateOccupation.verified" class="fa fa-question" title="Candidate specified, not verified"></i>
 
     <div class="button-group pull-right" *ngIf="editable">
-      <button class="btn btn-sm btn-outline-dark mr-2" (click)="verifyOccupation()">
+      <button class="btn btn-sm btn-outline-dark mr-2" *ngIf="!candidateOccupation?.verified" (click)="verifyOccupation()">
         <i class="fa fa-check"></i>
       </button>
 
