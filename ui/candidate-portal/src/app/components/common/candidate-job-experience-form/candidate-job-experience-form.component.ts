@@ -76,6 +76,15 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
       description: [this.candidateJobExperience ? this.candidateJobExperience.description : '', Validators.required]
     });
 
+    this.form.controls['paid'].valueChanges.subscribe(
+      (val) => {
+        /* DEBUG */
+        console.log('this.form', this.form);
+      },
+      (error) => {
+        console.log('error', error);
+      });;
+
     /* Patch form with candidates occupation */
     if (this.candidateJobExperience) {
       const exp = this.candidateJobExperience;
@@ -120,6 +129,15 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
 
   cancel() {
     this.formClosed.emit();
+  }
+
+  get formInvalid() {
+    let controlKeys = Object.keys(this.form.controls).filter(key => key !== 'endDate');
+    for (let key of controlKeys) {
+      if (this.form.controls[key].invalid) {
+        return true;
+      }
+    }
   }
 
 }

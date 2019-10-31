@@ -201,7 +201,7 @@
     </button>
 
     <button class="btn btn-primary"
-            [disabled]="form.invalid || loading || saving"
+            [disabled]="formInvalid || loading || saving"
             (click)="save()">
       <span *ngIf="!candidateJobExperience">{{ 'FORM.JOBEXPERIENCE.BUTTON.ADD' | translate }}</span>
       <span *ngIf="candidateJobExperience">{{ 'FORM.JOBEXPERIENCE.BUTTON.SAVE' | translate }}</span>
