@@ -52,16 +52,11 @@ export class CandidateEducationFormComponent implements OnInit {
       courseName: [edu ? edu.courseName : null, Validators.required],
       countryId: [edu && edu.country ? edu.country.id : null, Validators.required],
       institution: [edu ? edu.institution : null, Validators.required],
-      lengthOfCourseYears: [edu ? edu.lengthOfCourseYears : null, Validators.required],
-      dateCompleted: [edu ? edu.yearCompleted : null],
+      lengthOfCourseYears: [edu ? edu.lengthOfCourseYears.toString() : null, Validators.required],
+      yearCompleted: [edu ? edu.yearCompleted : null],
       incomplete: [edu ? edu.incomplete : null],
       educationMajorId: [edu && edu.educationMajor ? edu.educationMajor.id : null, Validators.required]
     });
-    /* Observe form educationType control and add required validator for university (and above) education types */
-    this.form.controls['educationType'].valueChanges.subscribe(
-      (value) => {
-          this.form.controls['educationMajorId'].setValidators(Validators.required);
-      });
 
     /* Load countries if absent */
     if (!this.countries) {
@@ -125,7 +120,10 @@ export class CandidateEducationFormComponent implements OnInit {
         },
       );
     } else {
-      this.candidateEducationService.updateCandidateEducation(this.form.value).subscribe(
+      const request = Object.assign(this.form.value, {
+        majorId: this.form.value.educationMajorId
+      });
+      this.candidateEducationService.updateCandidateEducation(request).subscribe(
         (response) => {
           this.saved.emit(response);
         },

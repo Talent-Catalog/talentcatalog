@@ -20,22 +20,34 @@
     </form>
 
     <!-- EDUCATIONS -->
-    <div class="card" *ngFor="let item of candidateEducationItems; let i = index;">
+    <div class="card parent-card" *ngFor="let item of candidateEducationItems; let i = index;">
 
-      <app-candidate-education-card [candidateEducation]="item"
+      <app-candidate-education-card *ngIf="editTarget?.id !== item.id"
+                                    [candidateEducation]="item"
                                     [disabled]="saving"
-                                    (onDelete)="deleteCandidateEducation(i)">
+                                    (onDelete)="deleteCandidateEducation(i)"
+                                    (onEdit)="editCandidateEducation($event)">
       </app-candidate-education-card>
+
+      <app-candidate-education-form *ngIf="editTarget?.id == item.id"
+                                    [candidateEducation]="item"
+                                    [countries]="countries"
+                                    [majors]="majors"
+                                    (saved)="handleEducationSaved($event, i)">
+      </app-candidate-education-form>
 
     </div>
 
-    <p *ngIf="addingEducation" translate dir="auto">REGISTRATION.EDUCATION.MESSAGE</p>
-    <!-- EDUCATION HISTORY -->
+    <p *ngIf="addingEducation && !candidateEducationItems.length">
+      {{ 'REGISTRATION.EDUCATION.MESSAGE' | translate }}}
+    </p>
+
+    <!-- CREATE NEW EDUCATION -->
     <app-candidate-education-form *ngIf="addingEducation" class="mt-4"
                                   [educationType]="educationType"
                                   [countries]="countries"
                                   [majors]="majors"
-                                  (saved)="handleCandidateEducationSaved($event)">
+                                  (saved)="handleCandidateEducationCreated($event)">
     </app-candidate-education-form>
 
     <div class="text-center mt-4" *ngIf="!addingEducation">

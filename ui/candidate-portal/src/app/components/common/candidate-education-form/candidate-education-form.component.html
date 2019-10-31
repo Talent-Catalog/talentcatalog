@@ -66,8 +66,8 @@
     <!-- GRADUATION YEAR -->
     <div class="col-8 col-md-4">
       <div class="form-group">
-        <label for="dateCompleted">{{ 'FORM.EDUCATION.DATECOMPLETED' | translate }} <sup>*</sup></label>
-        <select class="form-control" name="dateCompleted" id="dateCompleted" [formControlName]="'dateCompleted'">
+        <label for="yearCompleted">{{ 'FORM.EDUCATION.DATECOMPLETED' | translate }} <sup>*</sup></label>
+        <select class="form-control" name="yearCompleted" id="yearCompleted" [formControlName]="'yearCompleted'">
           <option value=""></option>
           <option *ngFor="let year of years" [value]="year">{{year}}</option>
         </select>
