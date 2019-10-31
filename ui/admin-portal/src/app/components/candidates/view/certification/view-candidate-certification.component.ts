@@ -1,5 +1,4 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from "../../../../model/candidate";
 import {CandidateCertification} from "../../../../model/candidate-certification";
@@ -32,18 +31,22 @@ export class ViewCandidateCertificationComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
-      this.loading = true;
-      this.candidateCertificationService.list(this.candidate.id).subscribe(
-        candidateCertifications => {
-          this.candidateCertifications = candidateCertifications;
-          this.loading = false;
-        },
-        error => {
-          this.error = error;
-          this.loading = false;
-        })
-      ;
+      this.doSearch();
     }
+  }
+
+  doSearch() {
+    this.loading = true;
+    this.candidateCertificationService.list(this.candidate.id).subscribe(
+      candidateCertifications => {
+        this.candidateCertifications = candidateCertifications;
+        this.loading = false;
+      },
+      error => {
+        this.error = error;
+        this.loading = false;
+      })
+    ;
   }
 
   editCandidateCertification(candidateCertification: CandidateCertification) {
@@ -69,7 +72,7 @@ export class ViewCandidateCertificationComponent implements OnInit, OnChanges {
     createCandidateCertificationModal.componentInstance.candidateId = this.candidate.id;
 
     createCandidateCertificationModal.result
-      .then((candidateCertification) => this.candidateCertification = candidateCertification)
+      .then((candidateCertification) => this.doSearch())
       .catch(() => { /* Isn't possible */ });
 
   }
