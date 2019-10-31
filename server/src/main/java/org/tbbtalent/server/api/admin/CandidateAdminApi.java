@@ -112,6 +112,13 @@ public class CandidateAdminApi {
         return new DtoBuilder()
                 .add("id")
                 .add("shortlistStatus")
+                .add("savedSearch", savedSearchDto())
+                ;
+    }
+
+    private DtoBuilder savedSearchDto() {
+        return new DtoBuilder()
+                .add("id")
                 ;
     }
 
