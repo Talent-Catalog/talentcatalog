@@ -38,9 +38,11 @@
         </div>
 
         <div class="col-1">
-          <button type="button" class="btn btn-default" (click)="editCandidateEducation(edu)">
-            <i class="fa fa-edit"></i>
-          </button>
+          <div class="pull-right" *ngIf="editable">
+            <button type="button" class="btn btn-default" (click)="editCandidateEducation(edu)">
+              <i class="fa fa-edit"></i>
+            </button>
+          </div>
         </div>
 
         <div class="col-12">
