@@ -257,7 +257,8 @@
     "LABEL": {
       "OPTIONAL": "(optional)",
       "CLEAR": "Clear",
-      "CHOOSE": "Choose"
+      "CHOOSE": "Choose",
+      "SAVE": "Save"
     },
     "ERROR": {
       "REQUIRED": "This field is required",
