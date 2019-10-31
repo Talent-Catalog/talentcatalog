@@ -1,5 +1,7 @@
 <div class="container">
 
+  <app-loading [loading]="loading"></app-loading>
+
   <!-- REVIEW -->
   <ng-container *ngIf="!experienceFormOpen">
     <ng-container *ngFor="let occupation of occupations">

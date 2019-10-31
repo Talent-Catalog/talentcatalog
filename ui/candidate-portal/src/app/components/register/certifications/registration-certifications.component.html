@@ -27,7 +27,29 @@
 
       <div class="form-group">
         <label for="dateCompleted">{{ 'REGISTRATION.CERTIFICATIONS.LABEL.DATECOMPLETED' | translate }} <sup>*</sup></label>
-        <input type="date" id="dateCompleted" class="form-control" [formControlName]="'dateCompleted'" datepicker-popup is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
+
+        <div class="input-group">
+          <input id="dateCompleted" type="text" class="form-control" placeholder="YYYY/MM/DD"
+                 ngbDatepicker #dateCompleted="ngbDatepicker"
+                 [formControlName]="'dateCompleted'"
+                 (dateSelect)="form.controls.dateCompleted.markAsDirty()"
+                 [autoClose]="true"
+                 [outsideDays]="'hidden'"
+                 [container]="'#dateCompleted'">
+
+          <div class="input-group-append">
+            <small class="btn btn-link text-secondary" *ngIf="form.controls.dateCompleted.value"
+                   (click)="form.controls.dateCompleted.patchValue(null); form.controls.dateCompleted.markAsDirty();">
+              <span>{{ 'FORM.LABEL.CLEAR' | translate }}</span>
+            </small>
+
+            <div class="btn btn-link" *ngIf="!form.controls.dateCompleted.value"
+                 (click)="dateCompleted.toggle()">
+              <span>{{ 'FORM.LABEL.CHOOSE' | translate}}</span>
+            </div>
+          </div>
+        </div>
+
         <app-form-control-error [control]="form.controls.dateCompleted"></app-form-control-error>
       </div>
 
