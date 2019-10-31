@@ -20,10 +20,14 @@ export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
   @Input() editable: boolean;
 
   candidateJobExperienceForm: FormGroup;
-  loading: boolean;
+  _loading = {
+    experience: true,
+    occupation: true,
+    candidate: true
+  };
   error;
   candidateOccupation: CandidateOccupation;
-  results: CandidateOccupation[];
+  candidateOccupations: CandidateOccupation[];
   experiences: CandidateJobExperience[];
   orderOccupation: boolean;
   hasMore: boolean;
@@ -49,9 +53,13 @@ export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
       sortFields: [['endDate']]
     });
     if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
-      this.loading = true;
       this.doSearch();
     }
+  }
+
+  get loading() {
+    const l = this._loading;
+    return l.experience || l.occupation || l.candidate;
   }
 
   doSearch() {
@@ -59,37 +67,26 @@ export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
     this.candidateService.get(this.candidate.id).subscribe(
       candidate => {
           this.candidate = candidate;
-          this.loading = false;
+          this._loading.candidate = false;
         },
       error => {
           this.error = error;
-          this.loading = false;
+          this._loading.candidate = false;
         });
 
     /* GET CANDIDATE OCCUPATIONS */
     this.candidateOccupationService.get(this.candidate.id).subscribe(
       results => {
-         this.results = results;
-         this.loading = false;
+         this.candidateOccupations = results;
+         this._loading.occupation = false;
          },
       error => {
          this.error = error;
-         this.loading = false;
+         this._loading.occupation = false;
        }
     );
-    /* GET CANDIDATE EXPERIENCE */
-    this.candidateJobExperienceService.search(this.candidateJobExperienceForm.value).subscribe(
-      results => {
-        this.experiences = results.content;
-        this.hasMore = results.totalPages > results.number+1;
-        this.loading = false;
-      },
-      error => {
-        this.error = error;
-        this.loading = false;
-      })
-    ;
 
+    this.loadJobExperiences();
   }
 
   editCandidateJobExperience(candidateJobExperience: CandidateJobExperience) {
@@ -101,10 +98,36 @@ export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
     editCandidateJobExperienceModal.componentInstance.candidateJobExperience = candidateJobExperience;
 
     editCandidateJobExperienceModal.result
-      .then((candidateJobExperience) => this.doSearch())
+      .then(() => this.doSearch())
       .catch(() => { /* Isn't possible */
       });
+  }
 
+  loadJobExperiences(more: boolean = false) {
+    if (more) {
+      // Load the next page
+      const page = this.candidateJobExperienceForm.value.pageNumber;
+      this.candidateJobExperienceForm.patchValue({pageNumber: page + 1});
+    } else {
+      // Load the first page
+      this.candidateJobExperienceForm.patchValue({pageNumber: 0});
+    }
+
+    /* GET CANDIDATE EXPERIENCE */
+    this.candidateJobExperienceService.search(this.candidateJobExperienceForm.value).subscribe(
+      results => {
+        if (more) {
+          this.experiences = this.experiences.concat(results.content);
+        } else {
+          this.experiences = results.content;
+        }
+        this.hasMore = results.totalPages > results.number + 1;
+        this._loading.experience = false;
+      },
+      error => {
+        this.error = error;
+        this._loading.experience = false;
+      });
   }
 }
 

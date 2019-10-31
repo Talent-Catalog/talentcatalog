@@ -57,7 +57,7 @@
       </label>
 
       <div class="input-group">
-        <input id="startDate" type="text" class="form-control" placeholder="YYYY/MM/DD"
+        <input id="startDate" type="text" class="form-control" placeholder="YYYY-MM-DD"
                ngbDatepicker #startDate="ngbDatepicker"
                [formControlName]="'startDate'"
                (dateSelect)="form.controls.startDate.markAsDirty()"
@@ -90,7 +90,7 @@
       </label>
 
       <div class="input-group">
-        <input id="endDate" type="text" class="form-control" placeholder="YYYY/MM/DD"
+        <input id="endDate" type="text" class="form-control" placeholder="YYYY-MM-DD"
                ngbDatepicker #endDate="ngbDatepicker"
                [formControlName]="'endDate'"
                (dateSelect)="form.controls.endDate.markAsDirty()"

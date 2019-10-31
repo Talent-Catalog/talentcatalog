@@ -10,4 +10,7 @@ export interface CandidateJobExperience {
   fullTime: string;
   paid: string;
   description: string;
+
+  // RENDERING HELPERS
+  expanded?: boolean;
 }

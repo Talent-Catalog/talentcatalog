@@ -57,7 +57,7 @@
         <label for="dob">{{ 'REGISTRATION.PERSONAL.LABEL.DOB' | translate }} <sup>*</sup></label>
 
         <div class="input-group">
-          <input id="dob" type="text" class="form-control" placeholder="YYYY/MM/DD"
+          <input id="dob" type="text" class="form-control" placeholder="YYYY-MM-DD"
                  ngbDatepicker #picker="ngbDatepicker"
                  [formControlName]="'dob'"
                  (dateSelect)="form.controls.dob.markAsDirty()"
