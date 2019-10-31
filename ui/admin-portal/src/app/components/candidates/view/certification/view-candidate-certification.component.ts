@@ -58,7 +58,7 @@ export class ViewCandidateCertificationComponent implements OnInit, OnChanges {
     editCandidateCertificationModal.componentInstance.candidateCertification = candidateCertification;
 
     editCandidateCertificationModal.result
-      .then((candidateCertification) => this.candidateCertification = candidateCertification)
+      .then(() => this.doSearch())
       .catch(() => { /* Isn't possible */ });
 
   }
