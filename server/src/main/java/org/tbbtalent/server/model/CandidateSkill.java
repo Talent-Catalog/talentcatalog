@@ -16,7 +16,7 @@ public class CandidateSkill extends AbstractDomainObject<Long> {
     @JoinColumn(name = "candidate_id")
     private Candidate candidate;
     private String skill;
-    private Integer timePeriod;
+    private String timePeriod;
 
     public Candidate getCandidate() {
         return candidate;
@@ -34,11 +34,11 @@ public class CandidateSkill extends AbstractDomainObject<Long> {
         this.skill = skill;
     }
 
-    public Integer getTimePeriod() {
+    public String getTimePeriod() {
         return timePeriod;
     }
 
-    public void setTimePeriod(Integer timePeriod) {
+    public void setTimePeriod(String timePeriod) {
         this.timePeriod = timePeriod;
     }
 
