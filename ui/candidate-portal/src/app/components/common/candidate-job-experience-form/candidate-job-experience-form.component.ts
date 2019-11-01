@@ -79,10 +79,10 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
     this.form.controls['paid'].valueChanges.subscribe(
       (val) => {
         /* DEBUG */
-        console.log('this.form', this.form);
+        // console.log('this.form', this.form);
       },
       (error) => {
-        console.log('error', error);
+        // console.log('error', error);
       });;
 
     /* Patch form with candidates occupation */

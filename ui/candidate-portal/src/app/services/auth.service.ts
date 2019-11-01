@@ -30,7 +30,7 @@ export class AuthService {
         this.storeCredentials(response);
       }),
       catchError(e => {
-          console.log('error', e);
+          // console.log('error', e);
           return throwError(e);
         }
       )

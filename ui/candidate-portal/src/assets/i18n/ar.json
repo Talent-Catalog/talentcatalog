@@ -337,6 +337,15 @@
     "DOCTORAL": "Doctoral?"
   },
   "ERROR": {
-    "USERNAME_TAKEN": "??An account has already been taken with that username??"
+    "USERNAME_TAKEN": "?An account has already been taken with that username",
+    "USER_DEACTIVATED": "?This account has been deactivated",
+    "INVALID_PASSWORD_MATCH": "?The confirmation password did not match",
+    "PASSWORD_EXPIRED": "?Password has expired for this account",
+    "MISSING_OBJECT": "?Cannot find the data your requested",
+    "INVALID_PASSWORD_TOKEN": "?The reset password token is not valid",
+    "INVALID_PASSWORD_FORMAT": "?Your password does not match password rules",
+    "FILE_DOWNLOAD_FAILED": "?The requested file could not be downloaded",
+    "EXPIRED_PASSWORD_TOKEN": "?The reset password token has expired",
+    "ENTITY_REFERENCED": "?You cannot delete this record because it is linked to another?"
   }
 }

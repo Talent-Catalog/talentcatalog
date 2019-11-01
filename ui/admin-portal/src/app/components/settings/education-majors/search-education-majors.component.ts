@@ -104,7 +104,7 @@ export class SearchEducationMajorsComponent implements OnInit {
 
     deleteEducationMajorModal.result
       .then((result) => {
-        console.log(result);
+        // console.log(result);
         if (result === true) {
           this.educationMajorService.delete(educationMajor.id).subscribe(
             (educationMajor) => {

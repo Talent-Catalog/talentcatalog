@@ -93,7 +93,7 @@ export class RegistrationContactComponent implements OnInit {
           this.onSave.emit();
         },
         (error) => {
-          console.log(error);
+          // console.log(error);
           this.error = error;
           this.saving = false;
         }
@@ -105,7 +105,7 @@ export class RegistrationContactComponent implements OnInit {
           this.registrationService.next();
         },
         (error) => {
-          console.log(error);
+          // console.log(error);
           this.error = error;
           this.saving = false;
         }

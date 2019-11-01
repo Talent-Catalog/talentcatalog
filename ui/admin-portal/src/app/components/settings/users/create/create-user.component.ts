@@ -33,7 +33,7 @@ export class CreateUserComponent implements OnInit {
 
   onSave() {
     this.saving = true;
-    console.log(this.userForm.value);
+    // console.log(this.userForm.value);
     this.userService.create(this.userForm.value).subscribe(
       (user) => {
         this.closeModal(user)

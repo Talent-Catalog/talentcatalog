@@ -104,7 +104,7 @@ export class SearchEducationLevelsComponent implements OnInit {
 
     deleteEducationLevelModal.result
       .then((result) => {
-        console.log(result);
+        // console.log(result);
         if (result === true) {
           this.educationLevelService.delete(educationLevel.id).subscribe(
             (educationLevel) => {

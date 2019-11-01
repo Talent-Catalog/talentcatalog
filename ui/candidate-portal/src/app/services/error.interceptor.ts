@@ -16,11 +16,14 @@ export class ErrorInterceptor implements HttpInterceptor {
         // auto logout if 401 response returned from api
         this.authService.logout().subscribe(() => this.router.navigateByUrl('login'));
       }
-      if (err.code){
-        err.code = err.code.toUpperCase();
-      }
+
 
       const error = err.error || err.statusText;
+
+      if (error.code){
+        error.code = error.code.toUpperCase();
+      }
+      // console.log(err);
       return throwError(error);
     }))
   }

@@ -105,7 +105,7 @@ export class SearchOccupationsComponent implements OnInit {
 
     deleteOccupationModal.result
       .then((result) => {
-        console.log(result);
+        // console.log(result);
         if (result === true) {
           this.occupationService.delete(occupation.id).subscribe(
             (occupation) => {

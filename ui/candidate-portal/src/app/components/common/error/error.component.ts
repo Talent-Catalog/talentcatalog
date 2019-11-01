@@ -15,7 +15,7 @@ export class ErrorComponent implements OnInit {
   }
 
   ngOnChanges(){
-    console.log(this.error);
+    // console.log(this.error);
 
   }
 

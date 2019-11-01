@@ -100,11 +100,11 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
         const index = this.attachments.findIndex(attachment => attachment.id == updated.id);
         if (index >= 0) {
           /* DEBUG */
-          console.log('index', index);
+          // console.log('index', index);
           this.attachments[index] = updated;
         } else {
           /* DEBUG */
-          console.log('updated', updated);
+          // console.log('updated', updated);
           this.doSearch(true); // Shouldn't be necessary, but is here as a fail-safe
         }
       })

@@ -104,7 +104,7 @@ export class SearchNationalitiesComponent implements OnInit {
 
     deleteNationalityModal.result
       .then((result) => {
-        console.log(result);
+        // console.log(result);
         if (result === true) {
           this.nationalityService.delete(nationality.id).subscribe(
             (nationality) => {
