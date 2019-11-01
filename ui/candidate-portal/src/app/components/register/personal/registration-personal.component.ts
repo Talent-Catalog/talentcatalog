@@ -52,7 +52,7 @@ export class RegistrationPersonalComponent implements OnInit {
       firstName: [null, Validators.required],
       lastName: [null, Validators.required],
       gender: [null, Validators.required],
-      dob: [null, Validators.required],
+      dob: [null],
       /* LOCATION */
       countryId: ['', Validators.required],
       city: [''],

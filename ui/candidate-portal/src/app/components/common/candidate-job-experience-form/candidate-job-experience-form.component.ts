@@ -69,8 +69,8 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
       country: [this.candidateJobExperience ? this.candidateJobExperience.countryId : '', Validators.required],
       candidateOccupationId: [this.candidateJobExperience ? this.candidateJobExperience.candidateOccupationId : '', Validators.required],
       role: [this.candidateJobExperience ? this.candidateJobExperience.role : '', Validators.required],
-      startDate: [this.candidateJobExperience ? this.candidateJobExperience.startDate : '', Validators.required],
-      endDate: [this.candidateJobExperience ? this.candidateJobExperience.endDate : ''],
+      startDate: [this.candidateJobExperience ? this.candidateJobExperience.startDate : null, Validators.required],
+      endDate: [this.candidateJobExperience ? this.candidateJobExperience.endDate : null],
       fullTime: [this.candidateJobExperience ? this.candidateJobExperience.fullTime : null, Validators.required],
       paid: [this.candidateJobExperience ? this.candidateJobExperience.paid : null, Validators.required],
       description: [this.candidateJobExperience ? this.candidateJobExperience.description : '', Validators.required]
@@ -83,7 +83,7 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
       },
       (error) => {
         // console.log('error', error);
-      });;
+      });
 
     /* Patch form with candidates occupation */
     if (this.candidateJobExperience) {
@@ -129,15 +129,6 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
 
   cancel() {
     this.formClosed.emit();
-  }
-
-  get formInvalid() {
-    let controlKeys = Object.keys(this.form.controls).filter(key => key !== 'endDate');
-    for (let key of controlKeys) {
-      if (this.form.controls[key].invalid) {
-        return true;
-      }
-    }
   }
 
 }

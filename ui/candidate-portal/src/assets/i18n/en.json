@@ -263,7 +263,8 @@
     "ERROR": {
       "REQUIRED": "This field is required",
       "EMAIL":"This field must contain a valid email address",
-      "MINLENGTH": "This field must contain at least {{length}} characters"
+      "MINLENGTH": "This field must contain at least {{length}} characters",
+      "DATE": "Invalid date - expected format YYYY-MM-DD"
     },
     "JOBEXPERIENCE": {
       "EXPLANATION": "If possible please provide this response in English so it can be more easily reviewed by our team. If you feel more comfortable using your native language please do so and we will have a translator convert it for our team.",
