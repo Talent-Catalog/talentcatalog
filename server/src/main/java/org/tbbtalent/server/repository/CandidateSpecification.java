@@ -119,9 +119,16 @@ public class CandidateSpecification {
             }
 
             // occupations SEARCH
-            if (!Collections.isEmpty(request.getVerifiedOccupationIds()) || !Collections.isEmpty(request.getOccupationIds())) {
-                Join<Candidate, CandidateOccupation> candidateOccupations = candidate.join("candidateOccupations", JoinType.LEFT);
-                Join<CandidateOccupation, Occupation> occupation = candidateOccupations.join("occupation", JoinType.LEFT);
+            Join<Candidate, CandidateOccupation> candidateOccupations = null;
+            Join<CandidateOccupation, Occupation> occupation = null;
+
+            if (!Collections.isEmpty(request.getVerifiedOccupationIds())
+                    || !Collections.isEmpty(request.getOccupationIds())
+                    || !StringUtils.isBlank(request.getOrProfileKeyword())
+            ) {
+                candidateOccupations = candidate.join("candidateOccupations", JoinType.LEFT);
+                occupation = candidateOccupations.join("occupation", JoinType.LEFT);
+
 
                 if (!Collections.isEmpty(request.getVerifiedOccupationIds())) {
                     if (SearchType.not.equals(request.getVerifiedOccupationSearchType())) {
@@ -134,15 +141,33 @@ public class CandidateSpecification {
 
                 }
 
-                if (!Collections.isEmpty(request.getOccupationIds())) {
+                if (!Collections.isEmpty(request.getOccupationIds()) || !StringUtils.isBlank(request.getOrProfileKeyword())) {
                     if (StringUtils.isBlank(request.getOrProfileKeyword())) {
                         conjunction.getExpressions().add(
                                 builder.isTrue(occupation.get("id").in(request.getOccupationIds()))
+                        );
+                    } else if (Collections.isEmpty(request.getOccupationIds())) {
+                        String lowerCaseMatchTerm = request.getOrProfileKeyword().toLowerCase();
+                        String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
+                        Join<Candidate, CandidateJobExperience> candidateJobExperiences = candidate.join("candidateJobExperiences", JoinType.LEFT);
+                        Join<Candidate, CandidateSkill> candidateSkills = candidate.join("candidateSkills", JoinType.LEFT);
+                        candidateEducations = candidateEducations == null ? candidate.join("candidateEducations", JoinType.LEFT) : candidateEducations;
+
+                        conjunction.getExpressions().add(
+                                builder.or(
+                                        builder.like(builder.lower(candidate.get("additionalInfo")), likeMatchTerm),
+                                        builder.like(builder.lower(candidateJobExperiences.get("description")), likeMatchTerm),
+                                        builder.like(builder.lower(candidateJobExperiences.get("role")), likeMatchTerm),
+                                        builder.like(builder.lower(candidateEducations.get("courseName")), likeMatchTerm),
+                                        builder.like(builder.lower(candidateOccupations.get("migrationOccupation")), likeMatchTerm),
+                                        builder.like(builder.lower(candidateSkills.get("skill")), likeMatchTerm)
+                                )
                         );
                     } else {
                         String lowerCaseMatchTerm = request.getOrProfileKeyword().toLowerCase();
                         String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
                         Join<Candidate, CandidateJobExperience> candidateJobExperiences = candidate.join("candidateJobExperiences", JoinType.LEFT);
+                        Join<Candidate, CandidateSkill> candidateSkills = candidate.join("candidateSkills", JoinType.LEFT);
                         candidateEducations = candidateEducations == null ? candidate.join("candidateEducations", JoinType.LEFT) : candidateEducations;
 
                         conjunction.getExpressions().add(builder.or(
@@ -152,14 +177,16 @@ public class CandidateSpecification {
                                         builder.like(builder.lower(candidateJobExperiences.get("description")), likeMatchTerm),
                                         builder.like(builder.lower(candidateJobExperiences.get("role")), likeMatchTerm),
                                         builder.like(builder.lower(candidateEducations.get("courseName")), likeMatchTerm),
-                                        builder.like(builder.lower(candidateOccupations.get("migrationOccupation")), likeMatchTerm)
+                                        builder.like(builder.lower(candidateOccupations.get("migrationOccupation")), likeMatchTerm),
+                                        builder.like(builder.lower(candidateSkills.get("skill")), likeMatchTerm)
                                 ))
                         );
                     }
 
                 }
-
             }
+
+
 
             // UN REGISTERED SEARCH
             if (request.getUnRegistered() != null) {

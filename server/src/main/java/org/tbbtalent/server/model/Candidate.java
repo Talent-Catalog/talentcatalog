@@ -69,6 +69,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     private Set<CandidateShortlistItem> candidateShortlistItems = new HashSet<>();
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    private Set<CandidateSkill> candidateSkills = new HashSet<>();
+
     //old data only links to candidate needs to be searchable
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "migration_education_major_id")
@@ -295,6 +298,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setMigrationEducationMajor(EducationMajor migrationEducationMajor) {
         this.migrationEducationMajor = migrationEducationMajor;
+    }
+
+    public Set<CandidateSkill> getCandidateSkills() {
+        return candidateSkills;
+    }
+
+    public void setCandidateSkills(Set<CandidateSkill> candidateSkills) {
+        this.candidateSkills = candidateSkills;
     }
 
     public String getMigrationCountry() {
