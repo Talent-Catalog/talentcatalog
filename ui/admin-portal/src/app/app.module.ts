@@ -100,6 +100,7 @@ import {EditCandidateAttachmentComponent} from './components/candidates/view/att
 import {FileUploadComponent} from "./components/util/file-upload/file-upload.component";
 import {CandidateAdditionalInfoTabComponent} from './components/candidates/view/tab/candidate-additional-info-tab/candidate-additional-info-tab.component';
 import {ViewCandidateAdditionalInfoComponent} from './components/candidates/view/additional-info/view-candidate-additional-info.component';
+import {ViewCandidateSkillComponent} from "./components/candidates/view/skill/view-candidate-skill.component";
 
 @NgModule({
   declarations: [
@@ -191,7 +192,8 @@ import {ViewCandidateAdditionalInfoComponent} from './components/candidates/view
     EditCandidateAttachmentComponent,
     FileUploadComponent,
     CandidateAdditionalInfoTabComponent,
-    ViewCandidateAdditionalInfoComponent
+    ViewCandidateAdditionalInfoComponent,
+    ViewCandidateSkillComponent
   ],
   imports: [
     BrowserModule,
