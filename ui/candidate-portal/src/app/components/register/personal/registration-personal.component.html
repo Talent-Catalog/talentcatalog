@@ -29,9 +29,9 @@
 
         <select class="form-control" name="gender" id="gender" [formControlName]="'gender'">
           <option value=""></option>
-          <option value="female">Female</option>
-          <option value="male">Male</option>
-          <option value="other">Other</option>
+          <option value="female">{{ 'GENDER.FEMALE' | translate }}</option>
+          <option value="male">{{ 'GENDER.MALE' | translate }}</option>
+          <option value="other">{{ 'GENDER.OTHER' | translate }}</option>
         </select>
 
         <app-form-control-error [control]="form.controls.gender"></app-form-control-error>

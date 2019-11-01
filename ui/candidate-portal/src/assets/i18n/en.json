@@ -323,5 +323,17 @@
     "EDUCATION": {
       "MAJOR": "Majoring in {{major}}"
     }
+  },
+  "GENDER": {
+     "MALE": "Male",
+     "FEMALE": "Female",
+     "OTHER": "Other"
+  },
+  "EDUCATIONTYPE": {
+    "ASSOCIATE": "Associate",
+    "VOCATIONAL": "Vocational",
+    "BACHELOR": "Bachelor",
+    "MASTERS": "Masters",
+    "DOCTORAL": "Doctoral"
   }
 }

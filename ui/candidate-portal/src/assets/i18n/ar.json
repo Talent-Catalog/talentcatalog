@@ -323,5 +323,17 @@
     "EDUCATION": {
       "MAJOR": "اختبارات اختبارات {{major}}"
     }
+  },
+  "GENDER": {
+    "MALE": "الذكر",
+    "FEMALE": "أنثى",
+    "OTHER": "Other?"
+  },
+  "EDUCATIONTYPE": {
+    "ASSOCIATE": "Associate?",
+    "VOCATIONAL": "Vocational?",
+    "BACHELOR": "Bachelor?",
+    "MASTERS": "Masters?",
+    "DOCTORAL": "Doctoral?"
   }
 }
