@@ -982,7 +982,7 @@ public class SystemAdminApi {
                          Long candidateId) {
         try {
             Date date = result.getDate(columnName);
-            if (!"1970-01-01".equals(date.toString())) {
+            if (date != null && !"1970-01-01".equals(date.toString())) {
                 return date;
             }
         } catch (Exception e) {
