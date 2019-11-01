@@ -29,13 +29,13 @@ flyway:
 
 aws:
    s3:
-      files-bucket: files.tbbtalent.org
+      files-bucket: dev.files.tbbtalent.org
       region: us-east-1
       max-size: 52428800
       upload-folder: temp
    credentials:
-      access-key: AKIA6C7ESOA6I7YPKGDT
-      secret-key: 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
+      access-key: AKIA6C7ESOA6FCQTELMN
+      secret-key: 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
 
 #email:
 #   type: SMTP # STUB or SMTP

@@ -1,5 +1,6 @@
 package org.tbbtalent.server.service.impl;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -142,7 +143,8 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         candidateAttachmentRepository.delete(candidateAttachment);
 
         // Delete the object on S3
-        s3ResourceHelper.deleteFile("candidate/" + candidate.getCandidateNumber() + "/" + candidateAttachment.getName());
+        String folder = BooleanUtils.isTrue(candidateAttachment.isMigrated()) ? "migrated" : candidate.getCandidateNumber();
+        s3ResourceHelper.deleteFile("candidate/" + folder + "/" + candidateAttachment.getName());
 
         // Update the candidate audit fields
         candidate.setAuditFields(candidate.getUser());

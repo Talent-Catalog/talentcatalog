@@ -80,11 +80,11 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
     this.doSearch();
   }
 
-  getAttachmentUrl(attachment: CandidateAttachment) {
-    if (attachment.type === AttachmentType.file) {
-      return this.s3BucketUrl + '/candidate/' + this.candidate.candidateNumber + '/' + attachment.location;
+  getAttachmentUrl(att: CandidateAttachment) {
+    if (att.type === AttachmentType.file) {
+      return this.s3BucketUrl + '/candidate/' + (att.migrated ? 'migrated' : this.candidate.candidateNumber) + '/' + att.location;
     }
-    return attachment.location;
+    return att.location;
   }
 
   editCandidateAttachment(candidateAttachment: CandidateAttachment) {

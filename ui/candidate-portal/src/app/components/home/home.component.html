@@ -47,7 +47,7 @@
           {{ 'HOME.INCOMPLETE.EXPLANATION' | translate }}
         </p>
 
-        <p class="alert alert-warning">
+        <p class="alert alert-warning" *ngIf="candidate.candidateMessage">
           {{candidate.candidateMessage}}
         </p>
 
