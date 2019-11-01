@@ -856,7 +856,7 @@ public class SystemAdminApi {
         */
         switch (status) {
             case 0:
-                return Status.deleted.name();
+                return Status.inactive.name();
             case 1:
             case 2:
             case 3:
@@ -866,7 +866,6 @@ public class SystemAdminApi {
             case 7:
             case 8:
             case 9:
-                return Status.inactive.name();
             case 10:
             case 11:
                 return Status.active.name();
