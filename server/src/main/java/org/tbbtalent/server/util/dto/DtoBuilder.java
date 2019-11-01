@@ -15,7 +15,7 @@ import org.tbbtalent.server.model.Translatable;
 public class DtoBuilder {
 
     private List<MappedProperty> mappedProperties;
-    private Boolean skipTranslation;
+    private Boolean skipTranslation  = false;
 
 
     public DtoBuilder() {
