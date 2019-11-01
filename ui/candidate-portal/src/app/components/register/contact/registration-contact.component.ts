@@ -76,6 +76,7 @@ export class RegistrationContactComponent implements OnInit {
 
   save() {
     this.saving = true;
+    this.error = null;
     if (this.authService.isAuthenticated()) {
 
       // If the candidate hasn't changed anything, skip the update service call
@@ -92,6 +93,7 @@ export class RegistrationContactComponent implements OnInit {
           this.onSave.emit();
         },
         (error) => {
+          console.log(error);
           this.error = error;
           this.saving = false;
         }
@@ -103,6 +105,7 @@ export class RegistrationContactComponent implements OnInit {
           this.registrationService.next();
         },
         (error) => {
+          console.log(error);
           this.error = error;
           this.saving = false;
         }

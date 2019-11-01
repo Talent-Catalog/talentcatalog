@@ -335,5 +335,8 @@
     "BACHELOR": "Bachelor",
     "MASTERS": "Masters",
     "DOCTORAL": "Doctoral"
+  },
+  "ERROR": {
+    "USERNAME_TAKEN": "An account has already been taken with that username"
   }
 }
