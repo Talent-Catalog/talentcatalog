@@ -41,6 +41,17 @@
         </div>
       </ng-container>
 
+      <!-- EMPLOYED - prompt the user to review their profile -->
+      <ng-container *ngSwitchCase="'employed'">
+        <p>
+          {{ 'HOME.EMPLOYED.EXPLANATION' | translate }}
+        </p>
+
+        <div class="text-left">
+          <a class="btn btn-primary" [routerLink]="'/profile'">{{ 'HOME.ACTIVE.BUTTON' | translate }}</a>
+        </div>
+      </ng-container>
+
       <!-- INCOMPLETE - show reason and ability to resubmit?? -->
       <ng-container *ngSwitchCase="'incomplete'">
         <p>
@@ -54,6 +65,13 @@
         <div class="text-left">
           <a class="btn btn-primary" [routerLink]="'/register'">{{ 'HOME.INCOMPLETE.BUTTON' | translate }}</a>
         </div>
+      </ng-container>
+
+      <!-- default -->
+      <ng-container *ngSwitchDefault>
+        <p>
+          {{ 'HOME.INACTIVE.EXPLANATION' | translate }}
+        </p>
       </ng-container>
 
     </ng-container>

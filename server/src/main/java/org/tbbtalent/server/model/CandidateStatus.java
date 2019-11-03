@@ -6,8 +6,6 @@ public enum CandidateStatus {
     inactive,
     pending,
     incomplete,
-    rejected,
-    approved,
     employed,
     deleted
 

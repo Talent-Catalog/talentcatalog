@@ -70,6 +70,13 @@
     "INCOMPLETE": {
       "EXPLANATION": "اختبارات اختبارات اختبارات اختبارات اختبارات اختبارات اختبارات اختبارات. اختبارات اختبارات اختبارات اختبارات اختبارات اختبارات اختبارات اختبارات اختبارات اختبارات. اختبارات اختبارات اختبارات اختبارات اختبارات اختبارات اختبارات اختبارات اختبارات اختبارات. اختبارات اختبارات 'اختبارات' اختبارات اختبارات اختبارات اختبارات اختبارات.",
       "BUTTON": "اختبارات اختبارات"
+    },
+    "EMPLOYED": {
+      "EXPLANATION": "?Thank you for completing your profile on the Talent Catalog! ? ",
+      "BUTTON": "Review registration"
+    },
+    "INACTIVE": {
+      "EXPLANATION": "?Your profile did not contain enough information to be included in the Talent Catalog?"
     }
   },
   "REGISTRATION": {
@@ -338,7 +345,9 @@
     "DOCTORAL": "Doctoral?"
   },
   "ERROR": {
-    "USERNAME_TAKEN": "?An account has already been taken with that username",
+    "USERNAME_TAKEN": "?An account has already been taken with that email",
+    "PHONE_TAKEN": "?An account has already been taken with that phone",
+    "WHATSAPP_TAKEN": "?An account has already been taken with that whatsapp number",
     "USER_DEACTIVATED": "?This account has been deactivated",
     "INVALID_PASSWORD_MATCH": "?The confirmation password did not match",
     "PASSWORD_EXPIRED": "?Password has expired for this account",

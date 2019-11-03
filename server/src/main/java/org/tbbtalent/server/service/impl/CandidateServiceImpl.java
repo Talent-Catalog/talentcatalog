@@ -158,6 +158,11 @@ public class CandidateServiceImpl implements CandidateService {
                 emailHelper.sendIncompleteApplication(candidate.getUser(), request.getCandidateMessage());
             }
         }
+        if (candidate.getStatus().equals(CandidateStatus.deleted)){
+            User user = candidate.getUser();
+            user.setStatus(Status.deleted);
+            userRepository.save(user);
+        }
         return candidate;
     }
 
@@ -413,7 +418,7 @@ public class CandidateServiceImpl implements CandidateService {
             }
         }
 
-        // Check whatsapp not already taken
+//         Check whatsapp not already taken
         if (!StringUtils.isBlank(request.getWhatsapp())) {
             try {
                 Candidate exists = candidateRepository.findByWhatsappIgnoreCase(request.getWhatsapp());

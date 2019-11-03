@@ -70,6 +70,13 @@
     "INCOMPLETE": {
       "EXPLANATION": "You have not finished your Talent Catalog profile. Your profile cannot currently be considered for international employment opportunities. Please look back through your profile and add additional information. Remember to 'submit' your profile at the end.",
       "BUTTON": "Review registration"
+    },
+    "EMPLOYED": {
+      "EXPLANATION": "Thank you for completing your profile on the Talent Catalog!  ",
+      "BUTTON": "Review registration"
+    },
+    "INACTIVE": {
+      "EXPLANATION": "Your profile did not contain enough information to be included in the Talent Catalog"
     }
   },
   "REGISTRATION": {
@@ -338,7 +345,9 @@
     "DOCTORAL": "Doctoral"
   },
   "ERROR": {
-    "USERNAME_TAKEN": "An account has already been taken with that username",
+    "EMAIL_TAKEN": "An account has already been taken with that email",
+    "PHONE_TAKEN": "An account has already been taken with that phone",
+    "WHATSAPP_TAKEN": "An account has already been taken with that whatsapp number",
     "USER_DEACTIVATED": "This account has been deactivated",
     "INVALID_PASSWORD_MATCH": "The confirmation password did not match",
     "PASSWORD_EXPIRED": "Password has expired for this account",
