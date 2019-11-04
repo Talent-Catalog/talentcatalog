@@ -149,11 +149,12 @@ public class CandidateServiceImpl implements CandidateService {
     public Candidate updateCandidateStatus(long id, UpdateCandidateStatusRequest request) {
         Candidate candidate = this.candidateRepository.findByIdLoadUser(id)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
+        CandidateStatus originalStatus = candidate.getStatus();
         candidate.setStatus(request.getStatus());
         candidate.setCandidateMessage(request.getCandidateMessage());
         candidate = candidateRepository.save(candidate);
-        if (!request.getStatus().equals(candidate.getStatus())){
-            candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(id, "Status change from " + candidate.getStatus() + " to " + request.getStatus(), request.getComment()));
+        if (!request.getStatus().equals(originalStatus)){
+            candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(id, "Status change from " + originalStatus + " to " + request.getStatus(), request.getComment()));
             if (request.getStatus().equals(CandidateStatus.incomplete)) {
                 emailHelper.sendIncompleteApplication(candidate.getUser(), request.getCandidateMessage());
             }

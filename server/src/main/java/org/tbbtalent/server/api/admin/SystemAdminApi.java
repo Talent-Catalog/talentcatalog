@@ -131,7 +131,10 @@ public class SystemAdminApi {
         log.info("Migration data for " + tableName);
         String insertSql = null;
         String selectSql = null;
-        if (hasLevel) {
+        if (optionType == "education_level"){
+            insertSql = "insert into " + tableName + " (id, name, level, status, education_type) values (?, ?, ?, ?, ?) on conflict (id) do nothing";
+            selectSql = "select id, name, name_ar, `order` from frm_options where type = '" + optionType + "'";
+        } else if (hasLevel) {
             insertSql = "insert into " + tableName + " (id, name, level, status) values (?, ?, ?, ?) on conflict (id) do nothing";
             selectSql = "select id, name, name_ar, `order` from frm_options where type = '" + optionType + "'";
         } else {
@@ -146,11 +149,20 @@ public class SystemAdminApi {
             int i = 1;
             Long id = result.getLong("id");
             optionInsert.setLong(i++, id);
-            optionInsert.setString(i++, result.getString("name"));
+            String name = result.getString("name");
+            optionInsert.setString(i++, name);
             if (hasLevel) {
                 optionInsert.setInt(i++, result.getInt("order"));
             }
             optionInsert.setString(i++, "active");
+            if (optionType == "education_level"){
+                String educationType = getEducationType(name);
+                if (educationType != null) {
+                    optionInsert.setString(i++, educationType);
+                } else {
+                    optionInsert.setNull(i++, Types.VARCHAR);
+                }
+            }
             optionInsert.addBatch();
             
             addTranslation(translationInsert, id, tableName, "ar", result.getString("name_ar"), userId);
@@ -166,6 +178,9 @@ public class SystemAdminApi {
         optionInsert.executeBatch();
         translationInsert.executeBatch();
         log.info(tableName + " - saving batch " + count);
+
+
+
     }
     
     private void addTranslation(PreparedStatement translationInsert,
@@ -911,7 +926,7 @@ public class SystemAdminApi {
         return (value == 1 ||  value == 2);
     }
     
-    private String getEducationLevel(int value) {
+    private String getEducationLevel(Integer value) {
         /*
         | 6864 | degree | Bachelor's Degree  |
         | 6865 | degree | Master's Degree    |
@@ -928,6 +943,20 @@ public class SystemAdminApi {
                 case 6867: return EducationType.Doctoral.name();
                 case 6868: return EducationType.Associate.name();
                 case 9442: return EducationType.Vocational.name();
+            }
+        }
+        return null;
+    }
+
+    private String getEducationType(String name) {
+        if (name != null) {
+            switch (name) {
+                case "Bachelor's Degree": return EducationType.Bachelor.name();
+                case "Master's Degree": return EducationType.Masters.name();
+                case "Doctoral Degree": return EducationType.Doctoral.name();
+                case "Associate Degree": return EducationType.Associate.name();
+                case "Vocational Degree": return EducationType.Vocational.name();
+                case "Some University": return EducationType.Bachelor.name();
             }
         }
         return null;
@@ -1070,6 +1099,6 @@ public class SystemAdminApi {
     public void setTargetPwd(String targetPwd) {
         this.targetPwd = targetPwd;
     }
-    
-    
+
+
 }
