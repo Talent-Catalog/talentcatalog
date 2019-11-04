@@ -20,6 +20,7 @@
   },
   "RESETPASSWORD": {
     "TITLE": "Forgot Password",
+    "ERROR": "We cannot find an account with your email, please contact us on facebook.",
     "SUCCESS": "We have sent you an email with reset instructions.",
     "LABEL": {
       "EMAIL": "Email Address"

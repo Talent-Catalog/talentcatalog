@@ -18,7 +18,8 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        component: HomeComponent
+        redirectTo: 'candidates',
+        pathMatch: 'full'
       },
       {
         path: 'candidates',

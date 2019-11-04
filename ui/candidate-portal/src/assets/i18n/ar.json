@@ -21,6 +21,7 @@
   "RESETPASSWORD": {
     "TITLE": "اختبارات اختبارات",
     "SUCCESS": "اختبارات اختبارات اختبارات اختبارات اختبارات اختبارات",
+    "ERROR": "?We cannot find an account with your email, please contact us on facebook.",
     "LABEL": {
       "EMAIL": "اختبارات اختبارات"
     },
