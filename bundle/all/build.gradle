@@ -21,8 +21,8 @@ targetCompatibility = 1.8
 
 dependencies {
     implementation(project(':server'))
-//    implementation(project(':ui:admin-portal'))
-//    implementation(project(':ui:candidate-portal'))
+    implementation(project(':ui:admin-portal'))
+    implementation(project(':ui:candidate-portal'))
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.apache.commons:commons-lang3:3.0")
     implementation("org.flywaydb:flyway-core:5.2.4")
