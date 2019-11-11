@@ -16,7 +16,6 @@ export class EditCandidateStatusComponent implements OnInit {
   error;
   loading: boolean;
   saving: boolean;
-  showCandidateMessage: boolean;
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
@@ -29,24 +28,21 @@ export class EditCandidateStatusComponent implements OnInit {
         this.candidateForm = this.fb.group({
           status: [candidate.status, Validators.required],
           comment: [null, Validators.required],
-          candidateMessage: [candidate.candidateMessage],
-        });
-
-        this.showCandidateMessage = candidate.status == 'incomplete';
-
-        this.candidateForm.get('status').valueChanges.subscribe(value => {
-          this.showCandidateMessage = value == 'incomplete'
+          candidateMessage: [candidate.candidateMessage || ''],
         });
         this.loading = false;
       });
-
   }
 
    onSave() {
     this.error = null;
-    if (this.candidateForm.value.status == 'incomplete' && !this.candidateForm.value.candidateMessage || this.candidateForm.value.candidateMessage.length < 1){
+
+    const val = this.candidateForm.value;
+    if (this.showCandidateMessage && (!val.candidateMessage || val.candidateMessage.length < 1)) {
       this.error = 'Please enter a message for the candidate about what they need to complete';
+      return;
     }
+
     this.saving = true;
     this.candidateService.updateStatus(this.candidateId, this.candidateForm.value).subscribe(
       (candidate) => {
@@ -65,5 +61,12 @@ export class EditCandidateStatusComponent implements OnInit {
 
   cancel() {
     this.activeModal.dismiss();
+  }
+
+  get showCandidateMessage() {
+    if (this.loading || !this.candidateForm) {
+      return false;
+    }
+    return this.candidateForm.controls.status.value === 'incomplete';
   }
 }

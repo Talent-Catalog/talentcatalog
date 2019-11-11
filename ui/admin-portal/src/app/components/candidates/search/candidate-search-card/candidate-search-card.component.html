@@ -62,15 +62,16 @@
       </ng-template>
     </ngb-tab>
 
-<!--    &lt;!&ndash; HISTORY &ndash;&gt;-->
-<!--    <ngb-tab [title]="'Eligibility'">-->
-<!--      <ng-template ngbTabContent>-->
-<!--        <app-candidate-eligibility-tab-->
-<!--          [candidate]="candidate"-->
-<!--          [editable]="false">-->
-<!--        </app-candidate-eligibility-tab>-->
-<!--      </ng-template>-->
-<!--    </ngb-tab>-->
+    <!-- Additional Info --
+    <ngb-tab [title]="'Additional Info'">
+      <ng-template ngbTabContent>
+        <app-candidate-additional-info-tab
+          [candidate]="candidate"
+          [editable]="false">
+        </app-candidate-additional-info-tab>
+      </ng-template>
+    </ngb-tab>
+    -->
 
   </ngb-tabset>
 

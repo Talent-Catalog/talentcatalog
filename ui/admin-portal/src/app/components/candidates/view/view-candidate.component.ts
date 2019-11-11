@@ -48,7 +48,6 @@ export class ViewCandidateComponent implements OnInit {
     let modal = this.modalService.open(EditCandidateStatusComponent);
     modal.componentInstance.candidateId = this.candidate.id;
     modal.result.then(result => {
-      console.log(result)
       this.candidate = result;
     });
   }

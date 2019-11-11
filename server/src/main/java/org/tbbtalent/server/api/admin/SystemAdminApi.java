@@ -131,7 +131,10 @@ public class SystemAdminApi {
         log.info("Migration data for " + tableName);
         String insertSql = null;
         String selectSql = null;
-        if (hasLevel) {
+        if (optionType == "education_level"){
+            insertSql = "insert into " + tableName + " (id, name, level, status, education_type) values (?, ?, ?, ?, ?) on conflict (id) do nothing";
+            selectSql = "select id, name, name_ar, `order` from frm_options where type = '" + optionType + "'";
+        } else if (hasLevel) {
             insertSql = "insert into " + tableName + " (id, name, level, status) values (?, ?, ?, ?) on conflict (id) do nothing";
             selectSql = "select id, name, name_ar, `order` from frm_options where type = '" + optionType + "'";
         } else {
@@ -146,11 +149,20 @@ public class SystemAdminApi {
             int i = 1;
             Long id = result.getLong("id");
             optionInsert.setLong(i++, id);
-            optionInsert.setString(i++, result.getString("name"));
+            String name = result.getString("name");
+            optionInsert.setString(i++, name);
             if (hasLevel) {
                 optionInsert.setInt(i++, result.getInt("order"));
             }
             optionInsert.setString(i++, "active");
+            if (optionType == "education_level"){
+                String educationType = getEducationType(name);
+                if (educationType != null) {
+                    optionInsert.setString(i++, educationType);
+                } else {
+                    optionInsert.setNull(i++, Types.VARCHAR);
+                }
+            }
             optionInsert.addBatch();
             
             addTranslation(translationInsert, id, tableName, "ar", result.getString("name_ar"), userId);
@@ -166,6 +178,9 @@ public class SystemAdminApi {
         optionInsert.executeBatch();
         translationInsert.executeBatch();
         log.info(tableName + " - saving batch " + count);
+
+
+
     }
     
     private void addTranslation(PreparedStatement translationInsert,
@@ -470,8 +485,6 @@ public class SystemAdminApi {
         while (result.next()) {
             long userId = result.getLong("user_id");
             Long candidateId = getCandidateId(userId, candidateIdsByUserId);
-            int origOccupationId = result.getInt("job_occupation");
-            Long occupationId = checkReference(origOccupationId, occupationIds);
             if (candidateId != null) {
                 int i = 1;
                 insert.setLong(i++, candidateId);
@@ -490,10 +503,8 @@ public class SystemAdminApi {
                 }
                 
                 count++;
-            } else if (candidateId == null) {
-                log.warn("skipping record - occupations: no candidate found for userId " + userId);
             } else {
-                log.warn("skipping record - occupations: no occupation found for occupationId " + occupationId);
+                log.warn("skipping record - occupations: no candidate found for userId " + userId);
             }
         }
         insert.executeBatch();
@@ -706,8 +717,6 @@ public class SystemAdminApi {
                                         Map<Long, Long> candidateIdsByUserId) throws SQLException {
         log.info("Migration data for candidate skills");
         
-        Set<Long> adminIds = loadAdminIds(targetConn);
-        
         String insertSql = "insert into candidate_skill (id, candidate_id, skill, time_period) values (?, ?, ?, ?) on conflict (id) do nothing";
         String selectSql = "select id, user_id, skill, time_period from user_jobseeker_skills";
         PreparedStatement insert = targetConn.prepareStatement(insertSql);
@@ -721,7 +730,7 @@ public class SystemAdminApi {
                 insert.setLong(i++, result.getLong("id"));
                 insert.setLong(i++, candidateId);
                 insert.setString(i++, result.getString("skill"));
-                insert.setInt(i++, result.getInt("time_period"));
+                insert.setString(i++, getSkillTimePeriod(result.getInt("time_period")));
                 insert.addBatch();
                 
                 if (count%100 == 0) {
@@ -862,7 +871,7 @@ public class SystemAdminApi {
         */
         switch (status) {
             case 0:
-                return Status.deleted.name();
+                return Status.inactive.name();
             case 1:
             case 2:
             case 3:
@@ -872,7 +881,6 @@ public class SystemAdminApi {
             case 7:
             case 8:
             case 9:
-                return Status.inactive.name();
             case 10:
             case 11:
                 return Status.active.name();
@@ -918,7 +926,7 @@ public class SystemAdminApi {
         return (value == 1 ||  value == 2);
     }
     
-    private String getEducationLevel(int value) {
+    private String getEducationLevel(Integer value) {
         /*
         | 6864 | degree | Bachelor's Degree  |
         | 6865 | degree | Master's Degree    |
@@ -940,6 +948,20 @@ public class SystemAdminApi {
         return null;
     }
 
+    private String getEducationType(String name) {
+        if (name != null) {
+            switch (name) {
+                case "Bachelor's Degree": return EducationType.Bachelor.name();
+                case "Master's Degree": return EducationType.Masters.name();
+                case "Doctoral Degree": return EducationType.Doctoral.name();
+                case "Associate Degree": return EducationType.Associate.name();
+                case "Vocational Degree": return EducationType.Vocational.name();
+                case "Some University": return EducationType.Bachelor.name();
+            }
+        }
+        return null;
+    }
+
     private boolean getPaid(int paidValue) {
         /*
         | 9561 | fulltime | Full time |
@@ -956,6 +978,28 @@ public class SystemAdminApi {
         return (fullTimeValue == 9561);
     }
     
+    private String getSkillTimePeriod(int period) {
+        /*
+        | 336 | time_period | 1 year or less   |
+        | 337 | time_period | 1-2 years        |
+        | 338 | time_period | 3-5 years        |
+        | 339 | time_period | 5-7 years        |
+        | 340 | time_period | 7-9 years        |
+        | 341 | time_period | 10 years or more |
+         */
+        if (period > 0) {
+            switch (period) {
+                case 336: return "1 year or less";
+                case 337: return "1-2 years";
+                case 338: return "3-5 years";
+                case 339: return "5-7 years";
+                case 340: return "7-9 years";
+                case 341: return "10 years or more";
+            }
+        }
+        return null;
+    }
+    
     private Long whackyExtraCountryLookup(Integer origCountryId) {
         Integer val = countryForGeneralCountry.get(origCountryId);
         if (val != null) return new Long(val); 
@@ -966,7 +1010,10 @@ public class SystemAdminApi {
                          String columnName,
                          Long candidateId) {
         try {
-            return result.getDate(columnName);
+            Date date = result.getDate(columnName);
+            if (date != null && !"1970-01-01".equals(date.toString())) {
+                return date;
+            }
         } catch (Exception e) {
             try {
                 log.error("candidateId " + candidateId + " - unparsable date for column: " + columnName + " - " + result.getString(columnName), e);
@@ -978,11 +1025,14 @@ public class SystemAdminApi {
     }
 
     private Timestamp convertToTimestamp(Long epoch) {
-        java.util.Date date = new java.util.Date(epoch);
-        String formattedDate = new SimpleDateFormat(DATE_FORMAT).format(date);
-        if (isDateValid(formattedDate)){
-            return Timestamp.from(Instant.ofEpochMilli(epoch));
-        };
+        if (epoch != null && epoch > 0) {
+            epoch = epoch*1000;
+            java.util.Date date = new java.util.Date(epoch);
+            String formattedDate = new SimpleDateFormat(DATE_FORMAT).format(date);
+            if (isDateValid(formattedDate)){
+                return Timestamp.from(Instant.ofEpochMilli(epoch));
+            };
+        }
         return null;
     }
 
@@ -1049,6 +1099,6 @@ public class SystemAdminApi {
     public void setTargetPwd(String targetPwd) {
         this.targetPwd = targetPwd;
     }
-    
-    
+
+
 }

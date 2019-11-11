@@ -17,11 +17,11 @@ export class SortedByComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.debugging) {
-      console.log(this.sortColumn);
-      console.log(this.sortDirection);
-      console.log(this.column);
-    }
+    // if (this.debugging) {
+    //   console.log(this.sortColumn);
+    //   console.log(this.sortDirection);
+    //   console.log(this.column);
+    // }
   }
 
 }

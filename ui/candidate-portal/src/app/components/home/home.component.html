@@ -4,7 +4,7 @@
 
   <ng-container *ngIf="!loading">
 
-    <h2>{{ 'HOME.TITLE' | translate:{name: (authService.user$ | async).username} }}</h2>
+    <h2>{{ ('HOME.TITLE' | translate:{name: (user | user: 'fullName') ? ' ' + (user | user: 'fullName') : '' }) | trim }}!</h2>
 
     <ng-container [ngSwitch]="candidate?.status">
 
@@ -41,19 +41,37 @@
         </div>
       </ng-container>
 
+      <!-- EMPLOYED - prompt the user to review their profile -->
+      <ng-container *ngSwitchCase="'employed'">
+        <p>
+          {{ 'HOME.EMPLOYED.EXPLANATION' | translate }}
+        </p>
+
+        <div class="text-left">
+          <a class="btn btn-primary" [routerLink]="'/profile'">{{ 'HOME.ACTIVE.BUTTON' | translate }}</a>
+        </div>
+      </ng-container>
+
       <!-- INCOMPLETE - show reason and ability to resubmit?? -->
       <ng-container *ngSwitchCase="'incomplete'">
         <p>
           {{ 'HOME.INCOMPLETE.EXPLANATION' | translate }}
         </p>
 
-        <p class="alert alert-warning">
+        <p class="alert alert-warning" *ngIf="candidate.candidateMessage">
           {{candidate.candidateMessage}}
         </p>
 
         <div class="text-left">
           <a class="btn btn-primary" [routerLink]="'/register'">{{ 'HOME.INCOMPLETE.BUTTON' | translate }}</a>
         </div>
+      </ng-container>
+
+      <!-- default -->
+      <ng-container *ngSwitchDefault>
+        <p>
+          {{ 'HOME.INACTIVE.EXPLANATION' | translate }}
+        </p>
       </ng-container>
 
     </ng-container>

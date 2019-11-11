@@ -89,7 +89,7 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
     @Override
     public CandidateJobExperience updateCandidateJobExperience(UpdateJobExperienceRequest request) {
         Candidate candidate = userContext.getLoggedInCandidate();
-        CandidateJobExperience experience = updateCandidateJobExperience(candidate.getId(), request);
+        CandidateJobExperience experience = updateCandidateJobExperience(request.getId(), request);
         candidate.setAuditFields(candidate.getUser());
         candidateRepository.save(candidate);
 
@@ -115,7 +115,7 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
             }
         }
 
-        // Create a new candidateOccupation object to insert into the database
+        // Update the database record
         candidateJobExperience.setCountry(country);
         candidateJobExperience.setCompanyName(request.getCompanyName());
         candidateJobExperience.setRole(request.getRole());

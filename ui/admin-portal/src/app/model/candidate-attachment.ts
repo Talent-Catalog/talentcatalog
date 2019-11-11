@@ -14,4 +14,5 @@ export interface CandidateAttachment {
   createdDate: number;
   updatedBy: User
   updatedDate: number;
+  migrated: boolean; // A flag determining is the file was migrated from the previous system
 }

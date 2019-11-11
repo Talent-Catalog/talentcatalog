@@ -21,15 +21,6 @@
 
     <form [formGroup]="candidateForm">
 
-      <!-- COUNTRY -->
-      <div class="form-group">
-        <label for="countryId">Country *</label>
-        <select class="form-control" name="country" id="countryId" [formControlName]="'countryId'">
-          <option value=""></option>
-          <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
-        </select>
-      </div>
-
       <!-- COMPANY NAME -->
       <div class="form-group">
         <label for="companyName">Company Name</label>
@@ -37,10 +28,13 @@
                [formControlName]="'companyName'">
       </div>
 
-      <!-- ROLE NAME -->
+      <!-- COUNTRY -->
       <div class="form-group">
-        <label for="role">Role</label>
-        <input type="text" class="form-control" id="role" [formControlName]="'role'">
+        <label for="countryId">Country *</label>
+        <select class="form-control" name="country" id="countryId" [formControlName]="'countryId'">
+          <option value=""></option>
+          <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
+        </select>
       </div>
 
       <!-- START DATE -->
@@ -56,27 +50,33 @@
         <label for="endDate">End Date</label>
         <input type="date" id="endDate" class="form-control" [formControlName]="'endDate'" datepicker-popup
                is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions"
-               date-disabled="disabled(date, mode)" ng-required="true" close-text="Close"/>
+               date-disabled="disabled(date, mode)" close-text="Close"/>
       </div>
 
       <!-- FULL TIME -->
       <div class="form-group">
-        <label for="fullTime">Full Time</label>
+        <label for="fullTime">Contract Type</label>
         <select class="form-control" name="fullTime" id="fullTime" [formControlName]="'fullTime'">
           <option value=""></option>
-          <option value="true">Yes</option>
-          <option value="false">No</option>
+          <option value="true">Full time</option>
+          <option value="false">Part Time</option>
         </select>
       </div>
 
       <!-- PAID -->
       <div class="form-group">
-        <label for="paid">Paid</label>
+        <label for="paid">Employment Type</label>
         <select class="form-control" name="paid" id="paid" [formControlName]="'paid'">
           <option value=""></option>
-          <option value="true">Yes</option>
-          <option value="false">No</option>
+          <option value="true">Paid</option>
+          <option value="false">Voluntary</option>
         </select>
+      </div>
+
+      <!-- ROLE NAME -->
+      <div class="form-group">
+        <label for="role">Role</label>
+        <input type="text" class="form-control" id="role" [formControlName]="'role'">
       </div>
 
       <!-- DESCRIPTION -->
@@ -84,6 +84,9 @@
         <label for="description">Description</label>
         <textarea type="text" class="md-textarea-auto form-control" rows="8" id="description" placeholder="" [formControlName]="'description'"></textarea>
       </div>
+
+
+
 
 
       <div class="modal-footer">

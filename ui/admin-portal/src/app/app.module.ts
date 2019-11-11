@@ -98,6 +98,9 @@ import {ChangeUsernameComponent} from './components/candidates/view/account/chan
 import {CreateCandidateAttachmentComponent} from './components/candidates/view/attachment/create/create-candidate-attachment.component';
 import {EditCandidateAttachmentComponent} from './components/candidates/view/attachment/edit/edit-candidate-attachment.component';
 import {FileUploadComponent} from "./components/util/file-upload/file-upload.component";
+import {CandidateAdditionalInfoTabComponent} from './components/candidates/view/tab/candidate-additional-info-tab/candidate-additional-info-tab.component';
+import {ViewCandidateAdditionalInfoComponent} from './components/candidates/view/additional-info/view-candidate-additional-info.component';
+import {ViewCandidateSkillComponent} from "./components/candidates/view/skill/view-candidate-skill.component";
 import {SavedSearchesComponent} from './components/home/search/saved-searches.component';
 import {EditSavedSearchComponent} from './components/home/search/edit/edit-saved-search.component';
 
@@ -190,6 +193,10 @@ import {EditSavedSearchComponent} from './components/home/search/edit/edit-saved
     CreateCandidateAttachmentComponent,
     EditCandidateAttachmentComponent,
     FileUploadComponent,
+    CandidateAdditionalInfoTabComponent,
+    ViewCandidateAdditionalInfoComponent,
+    ViewCandidateSkillComponent
+    FileUploadComponent,
     SavedSearchesComponent,
     EditSavedSearchComponent
   ],
@@ -253,6 +260,8 @@ import {EditSavedSearchComponent} from './components/home/search/edit/edit-saved
     EditCandidateLanguageComponent,
     ChangePasswordComponent,
     ChangeUsernameComponent,
+    CreateCandidateAttachmentComponent,
+    EditCandidateAttachmentComponent
     CreateCandidateAttachmentComponent,
     EditSavedSearchComponent
   ],

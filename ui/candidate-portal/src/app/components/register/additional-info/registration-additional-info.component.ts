@@ -54,6 +54,11 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
   save(dir: string) {
     this.saving = true;
 
+    /* Don't submit the registration application if the user is going back */
+    if (dir === 'back') {
+      this.form.controls.submit.patchValue(false);
+    }
+
     this.candidateService.updateCandidateAdditionalInfo(this.form.value).subscribe(
       (response) => {
         this.saving = false;
@@ -69,5 +74,9 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
         this.saving = false;
       }
     );
+  }
+
+  cancel() {
+    this.onSave.emit();
   }
 }

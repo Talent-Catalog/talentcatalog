@@ -1,13 +1,13 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
-import {years} from "../../../model/years";
 import {CandidateEducation} from "../../../model/candidate-education";
 import {CandidateEducationService} from "../../../services/candidate-education.service";
 import {Country} from "../../../model/country";
 import {CountryService} from "../../../services/country.service";
 import {EducationMajor} from "../../../model/education-major";
 import {EducationMajorService} from "../../../services/education-major.service";
+import {generateYearArray} from "../../../util/year-helper";
 
 
 @Component({
@@ -17,6 +17,7 @@ import {EducationMajorService} from "../../../services/education-major.service";
 })
 export class CandidateEducationFormComponent implements OnInit {
 
+  @Input() educationType: string;
   @Input() candidateEducation: CandidateEducation;
   @Input() majors: EducationMajor[];
   @Input() countries: Country[];
@@ -42,25 +43,20 @@ export class CandidateEducationFormComponent implements OnInit {
 
   ngOnInit() {
     this.saving = false;
-    this.years = years;
+    this.years = generateYearArray();
     /* Intialise the form */
     const edu = this.candidateEducation;
     this.form = this.fb.group({
       id: [edu ? edu.id : null],
-      educationType: [edu ? edu.educationType : null, Validators.required],
+      educationType: [edu ? edu.educationType : this.educationType, Validators.required],
       courseName: [edu ? edu.courseName : null, Validators.required],
       countryId: [edu && edu.country ? edu.country.id : null, Validators.required],
       institution: [edu ? edu.institution : null, Validators.required],
-      lengthOfCourseYears: [edu ? edu.lengthOfCourseYears : null, Validators.required],
-      dateCompleted: [edu ? edu.yearCompleted : null],
+      lengthOfCourseYears: [edu ? edu.lengthOfCourseYears.toString() : null, Validators.required],
+      yearCompleted: [edu ? edu.yearCompleted : null],
       incomplete: [edu ? edu.incomplete : null],
       educationMajorId: [edu && edu.educationMajor ? edu.educationMajor.id : null, Validators.required]
     });
-    /* Observe form educationType control and add required validator for university (and above) education types */
-    this.form.controls['educationType'].valueChanges.subscribe(
-      (value) => {
-          this.form.controls['educationMajorId'].setValidators(Validators.required);
-      });
 
     /* Load countries if absent */
     if (!this.countries) {
@@ -124,7 +120,10 @@ export class CandidateEducationFormComponent implements OnInit {
         },
       );
     } else {
-      this.candidateEducationService.updateCandidateEducation(this.form.value).subscribe(
+      const request = Object.assign(this.form.value, {
+        majorId: this.form.value.educationMajorId
+      });
+      this.candidateEducationService.updateCandidateEducation(request).subscribe(
         (response) => {
           this.saved.emit(response);
         },

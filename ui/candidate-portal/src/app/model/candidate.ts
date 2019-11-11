@@ -39,8 +39,6 @@ export enum CandidateStatus {
   inactive = 'inactive',
   pending = 'pending',
   incomplete = 'incomplete',
-  rejected = 'rejected',
-  approved = 'approved',
   employed = 'employed',
   deleted = 'deleted'
 }

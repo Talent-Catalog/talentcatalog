@@ -69,12 +69,21 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
       country: [this.candidateJobExperience ? this.candidateJobExperience.countryId : '', Validators.required],
       candidateOccupationId: [this.candidateJobExperience ? this.candidateJobExperience.candidateOccupationId : '', Validators.required],
       role: [this.candidateJobExperience ? this.candidateJobExperience.role : '', Validators.required],
-      startDate: [this.candidateJobExperience ? this.candidateJobExperience.startDate : '', Validators.required],
-      endDate: [this.candidateJobExperience ? this.candidateJobExperience.endDate : ''],
+      startDate: [this.candidateJobExperience ? this.candidateJobExperience.startDate : null, Validators.required],
+      endDate: [this.candidateJobExperience ? this.candidateJobExperience.endDate : null],
       fullTime: [this.candidateJobExperience ? this.candidateJobExperience.fullTime : null, Validators.required],
       paid: [this.candidateJobExperience ? this.candidateJobExperience.paid : null, Validators.required],
       description: [this.candidateJobExperience ? this.candidateJobExperience.description : '', Validators.required]
     });
+
+    this.form.controls['paid'].valueChanges.subscribe(
+      (val) => {
+        /* DEBUG */
+        // console.log('this.form', this.form);
+      },
+      (error) => {
+        // console.log('error', error);
+      });
 
     /* Patch form with candidates occupation */
     if (this.candidateJobExperience) {

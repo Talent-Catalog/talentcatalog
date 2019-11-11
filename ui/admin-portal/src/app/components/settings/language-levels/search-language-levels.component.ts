@@ -104,7 +104,7 @@ export class SearchLanguageLevelsComponent implements OnInit {
 
     deleteLanguageLevelModal.result
       .then((result) => {
-        console.log(result);
+        // console.log(result);
         if (result === true) {
           this.languageLevelService.delete(languageLevel.id).subscribe(
             (languageLevel) => {

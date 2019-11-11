@@ -39,7 +39,7 @@ export class EditUserComponent implements OnInit {
 
   onSave() {
     this.saving = true;
-    console.log(this.userForm.value);
+    // console.log(this.userForm.value);
     this.userService.update(this.userId, this.userForm.value).subscribe(
       (user) => {
         this.closeModal(user);

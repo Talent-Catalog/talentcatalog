@@ -1,0 +1,26 @@
+<div *ngIf="loading">
+  <i class="fa fa-spinner fa-spin"></i> loading...
+</div>
+<div *ngIf="error">
+  {{error}}
+</div>
+<div class="card" *ngIf="!loading">
+
+  <div class="card-header">
+    Skills (migrated)
+  </div>
+
+  <div class="card-body">
+    <div *ngIf="!candidateSkills || candidateSkills.length == 0">
+      <div class="row">
+        <div class="col-sm-12">
+          No skills migrated
+        </div>
+      </div>
+    </div>
+    <div class="row" *ngFor="let skill of candidateSkills">
+      <div class="col-6">{{skill.skill}}</div>
+      <div class="col-6">{{skill.timePeriod}} years</div>
+    </div>
+  </div>
+</div>

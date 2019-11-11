@@ -2,28 +2,31 @@
 
   <app-loading [loading]="loading"></app-loading>
 
-  <form [formGroup]="form" *ngIf="!loading">
+  <ng-container *ngIf="!loading">
 
-    <div class="form-group">
-      <label class="font-weight-bold" for="additionalInfo">
-        {{ 'REGISTRATION.SUBMIT.LABEL.ADDITIONALINFO' | translate }}
-      </label>
-      <p>
-        {{ 'REGISTRATION.SUBMIT.TEXT.EXPLANATION' | translate }}
-      </p>
-      <textarea id="additionalInfo" class="md-textarea-auto form-control" rows="5"
-                [formControlName]="'additionalInfo'"></textarea>
-    </div>
+    <form [formGroup]="form">
 
-  </form>
+      <div class="form-group">
+        <label class="font-weight-bold" for="additionalInfo">
+          {{ 'REGISTRATION.SUBMIT.LABEL.ADDITIONALINFO' | translate }}
+        </label>
+        <p>
+          {{ 'REGISTRATION.SUBMIT.TEXT.EXPLANATION' | translate }}
+        </p>
+        <textarea id="additionalInfo" class="md-textarea-auto form-control" rows="5"
+                  [formControlName]="'additionalInfo'"></textarea>
+      </div>
 
-  <app-candidate-attachments></app-candidate-attachments>
+    </form>
+
+    <app-candidate-attachments></app-candidate-attachments>
+
+  </ng-container>
 
 </div>
 
 <app-registration-footer [nextDisabled]="loading || saving"
-                         [hideBack]="edit"
                          [type]="edit ? 'update' : 'submit'"
-                         (backClicked)="save('back')"
+                         (backClicked)="edit ? cancel() : save('back') "
                          (nextClicked)="save('next')">
 </app-registration-footer>

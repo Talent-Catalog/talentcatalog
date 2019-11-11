@@ -7,6 +7,7 @@ import {CandidateAttachmentService} from "../../../../services/candidate-attachm
 import {environment} from "../../../../../environments/environment";
 import {CreateCandidateAttachmentComponent} from "./create/create-candidate-attachment.component";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
+import {EditCandidateAttachmentComponent} from "./edit/edit-candidate-attachment.component";
 
 @Component({
   selector: 'app-view-candidate-attachment',
@@ -79,30 +80,36 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
     this.doSearch();
   }
 
-  getAttachmentUrl(attachment: CandidateAttachment) {
-    if (attachment.type === AttachmentType.file) {
-      return this.s3BucketUrl + '/candidate/' + this.candidate.candidateNumber + '/' + attachment.location;
+  getAttachmentUrl(att: CandidateAttachment) {
+    if (att.type === AttachmentType.file) {
+      return this.s3BucketUrl + '/candidate/' + (att.migrated ? 'migrated' : this.candidate.candidateNumber) + '/' + att.location;
     }
-    return attachment.location;
+    return att.location;
   }
 
   editCandidateAttachment(candidateAttachment: CandidateAttachment) {
-    alert('todo');
+      const editCandidateAttachmentModal = this.modalService.open(EditCandidateAttachmentComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
 
+    editCandidateAttachmentModal.componentInstance.attachment = candidateAttachment;
 
-
-    //   const editCandidateAttachmentModal = this.modalService.open(EditCandidateAttachmentComponent, {
-  //     centered: true,
-  //     backdrop: 'static'
-  //   });
-  //
-  //   editCandidateAttachmentModal.componentInstance.candidateAttachment = candidateAttachment;
-  //
-  //   editCandidateAttachmentModal.result
-  //     .then((candidateAttachment) => this.doSearch())
-  //     .catch(() => { /* Isn't possible */
-  //     });
-  //
+    editCandidateAttachmentModal.result
+      .then((updated) => {
+        const index = this.attachments.findIndex(attachment => attachment.id == updated.id);
+        if (index >= 0) {
+          /* DEBUG */
+          // console.log('index', index);
+          this.attachments[index] = updated;
+        } else {
+          /* DEBUG */
+          // console.log('updated', updated);
+          this.doSearch(true); // Shouldn't be necessary, but is here as a fail-safe
+        }
+      })
+      .catch(() => { /* Isn't possible */
+      });
   }
 
   addAttachment(type: string){
@@ -115,7 +122,7 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
     createCandidateAttachmentModal.componentInstance.type = type || 'link';
 
     createCandidateAttachmentModal.result
-      .then(() => this.doSearch())
+      .then(() => this.doSearch(true))
       .catch(() => { /* Isn't possible */ });
   }
 

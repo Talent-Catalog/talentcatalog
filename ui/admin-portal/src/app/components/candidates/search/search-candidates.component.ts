@@ -97,8 +97,6 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   statuses: { id: string, name: string }[] = [
     {id: 'pending', name: 'pending'},
     {id: 'incomplete', name: 'incomplete'},
-    {id: 'rejected', name: 'rejected'},
-    {id: 'approved', name: 'approved'},
     {id: 'employed', name: 'employed'},
     {id: 'deleted', name: 'deleted'},
     {id: 'active', name: 'active'},

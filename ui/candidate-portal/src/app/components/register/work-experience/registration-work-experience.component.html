@@ -1,5 +1,7 @@
 <div class="container">
 
+  <app-loading [loading]="loading"></app-loading>
+
   <!-- REVIEW -->
   <ng-container *ngIf="!experienceFormOpen">
     <ng-container *ngFor="let occupation of occupations">
@@ -53,8 +55,7 @@
 </div>
 
 <app-registration-footer [nextDisabled]="loading || saving"
-                         [hideBack]="edit"
                          [type]="edit ? 'update' : 'step'"
-                         (backClicked)="back()"
-                         (nextClicked)="next()">
+                         (backClicked)="edit ? closeEdit() : back() "
+                         (nextClicked)="edit? closeEdit() : next()">
 </app-registration-footer>

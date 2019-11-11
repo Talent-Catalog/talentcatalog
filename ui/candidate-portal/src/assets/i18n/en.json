@@ -20,6 +20,7 @@
   },
   "RESETPASSWORD": {
     "TITLE": "Forgot Password",
+    "ERROR": "We cannot find an account with your email, please contact us on facebook.",
     "SUCCESS": "We have sent you an email with reset instructions.",
     "LABEL": {
       "EMAIL": "Email Address"
@@ -54,7 +55,7 @@
     "PARA4": ""
   },
   "HOME": {
-    "TITLE": "Welcome back, {{name}}!",
+    "TITLE": "Hi {{name}}",
     "DRAFT": {
       "EXPLANATION": "You haven't finished your registration. Please click the button below to continue.",
       "BUTTON": "Continue registration"
@@ -70,6 +71,13 @@
     "INCOMPLETE": {
       "EXPLANATION": "You have not finished your Talent Catalog profile. Your profile cannot currently be considered for international employment opportunities. Please look back through your profile and add additional information. Remember to 'submit' your profile at the end.",
       "BUTTON": "Review registration"
+    },
+    "EMPLOYED": {
+      "EXPLANATION": "Thank you for completing your profile on the Talent Catalog!  ",
+      "BUTTON": "Review registration"
+    },
+    "INACTIVE": {
+      "EXPLANATION": "Your profile did not contain enough information to be included in the Talent Catalog"
     }
   },
   "REGISTRATION": {
@@ -93,6 +101,7 @@
     },
     "FOOTER": {
       "BACK": "Back",
+      "CANCEL": "Cancel",
       "NEXT": "Next",
       "SUBMIT": "Submit",
       "UPDATE": "Update"
@@ -143,6 +152,7 @@
       }
     },
     "EDUCATION": {
+      "MESSAGE": "Please enter your degrees below starting with the highest level",
       "LABEL": {
         "MAXEDUCATIONLEVELID": "What is the highest level of education you've obtained?"
       },
@@ -180,7 +190,7 @@
     },
     "COMPLETE": {
       "TITLE": "Thank you for your registration!",
-      "PARA1": "TODO: Some wordsmithing needed. Explain that they are in the system how it all works from here.",
+      "PARA1": "Thank you for completing your profile on the Talent Catalog! TBB will only contact you if an employer expresses interest in your profile. You can update your profile with additional information at any time. We recommend you continuously update your profile with any new information relevant to your professional experience or qualifications, as well as update any changes in your contact information.",
       "BUTTON": {
         "LOGOUT": "Logout",
         "PROFILE": "View My Profile"
@@ -252,10 +262,17 @@
     }
   },
   "FORM": {
+    "LABEL": {
+      "OPTIONAL": "(optional)",
+      "CLEAR": "Clear",
+      "CHOOSE": "Choose",
+      "SAVE": "Save"
+    },
     "ERROR": {
       "REQUIRED": "This field is required",
       "EMAIL":"This field must contain a valid email address",
-      "MINLENGTH": "This field must contain at least {{length}} characters"
+      "MINLENGTH": "This field must contain at least {{length}} characters",
+      "DATE": "Invalid date - expected format YYYY-MM-DD"
     },
     "JOBEXPERIENCE": {
       "EXPLANATION": "If possible please provide this response in English so it can be more easily reviewed by our team. If you feel more comfortable using your native language please do so and we will have a translator convert it for our team.",
@@ -263,8 +280,8 @@
         "CANDIDATEOCCUPATIONID": "Occupation",
         "COMPANYNAME": "Company Name",
         "COUNTRY": "Country",
-        "STARTDATE": "Started (dd/mm/yyyy)",
-        "ENDDATE": "Finished (dd/mm/yyyy)",
+        "STARTDATE": "Start Date",
+        "ENDDATE": "Finish Date",
         "ROLE": "Job Title",
         "DESCRIPTION": "Job Description",
         "CONTRACTTYPE": {
@@ -315,5 +332,31 @@
     "EDUCATION": {
       "MAJOR": "Majoring in {{major}}"
     }
+  },
+  "GENDER": {
+     "MALE": "Male",
+     "FEMALE": "Female",
+     "OTHER": "Other"
+  },
+  "EDUCATIONTYPE": {
+    "ASSOCIATE": "Associate",
+    "VOCATIONAL": "Vocational",
+    "BACHELOR": "Bachelor",
+    "MASTERS": "Masters",
+    "DOCTORAL": "Doctoral"
+  },
+  "ERROR": {
+    "EMAIL_TAKEN": "An account has already been taken with that email",
+    "PHONE_TAKEN": "An account has already been taken with that phone",
+    "WHATSAPP_TAKEN": "An account has already been taken with that whatsapp number",
+    "USER_DEACTIVATED": "This account has been deactivated",
+    "INVALID_PASSWORD_MATCH": "The confirmation password did not match",
+    "PASSWORD_EXPIRED": "Password has expired for this account",
+    "MISSING_OBJECT": "Cannot find the data your requested",
+    "INVALID_PASSWORD_TOKEN": "The reset password token is not valid",
+    "INVALID_PASSWORD_FORMAT": "Your password does not match password rules",
+    "FILE_DOWNLOAD_FAILED": "The requested file could not be downloaded",
+    "EXPIRED_PASSWORD_TOKEN": "The reset password token has expired",
+    "ENTITY_REFERENCED": "You cannot delete this record because it is linked to another"
   }
 }

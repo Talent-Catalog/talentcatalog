@@ -14,7 +14,7 @@
     <i *ngIf="!candidateOccupation.verified" class="fa fa-question" title="Candidate specified, not verified"></i>
 
     <div class="button-group pull-right" *ngIf="editable">
-      <button class="btn btn-sm btn-outline-dark mr-2" (click)="verifyOccupation()">
+      <button class="btn btn-sm btn-outline-dark mr-2" *ngIf="!candidateOccupation?.verified" (click)="verifyOccupation()">
         <i class="fa fa-check"></i>
       </button>
 
@@ -52,18 +52,18 @@
 
         <div class="col-12" *ngIf="experience.description">
 
-          <div *ngIf="!expanded">
+          <div *ngIf="!experience.expanded">
             {{ (experience.description | slice:0:50) + (experience.description.length > 50 ? ' ...' : '')}}
             <button class="btn btn-sm btn-default"
                     *ngIf="experience.description.length > 50"
-                    (click)="expanded = true">
+                    (click)="experience.expanded = true">
               <i class="fa fa-toggle-down"></i>
             </button>
           </div>
 
-          <div *ngIf="expanded">
+          <div *ngIf="experience.expanded">
             {{ experience.description }}
-            <button type="button" class="btn btn-sm btn-default" (click)="expanded = false">
+            <button type="button" class="btn btn-sm btn-default" (click)="experience.expanded = false">
               <i class="fa fa-toggle-up"></i>
             </button>
           </div>

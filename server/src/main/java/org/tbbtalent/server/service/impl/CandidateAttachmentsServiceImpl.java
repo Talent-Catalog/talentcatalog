@@ -1,5 +1,6 @@
 package org.tbbtalent.server.service.impl;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.tbbtalent.server.repository.CandidateRepository;
 import org.tbbtalent.server.request.SearchRequest;
 import org.tbbtalent.server.request.attachment.CreateCandidateAttachmentRequest;
 import org.tbbtalent.server.request.attachment.SearchCandidateAttachmentsRequest;
+import org.tbbtalent.server.request.attachment.UpdateCandidateAttachmentRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.CandidateAttachmentService;
 import org.tbbtalent.server.service.aws.S3ResourceHelper;
@@ -141,11 +143,34 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         candidateAttachmentRepository.delete(candidateAttachment);
 
         // Delete the object on S3
-        s3ResourceHelper.deleteFile("candidate/" + candidate.getCandidateNumber() + "/" + candidateAttachment.getName());
+        String folder = BooleanUtils.isTrue(candidateAttachment.isMigrated()) ? "migrated" : candidate.getCandidateNumber();
+        s3ResourceHelper.deleteFile("candidate/" + folder + "/" + candidateAttachment.getName());
 
         // Update the candidate audit fields
         candidate.setAuditFields(candidate.getUser());
         candidateRepository.save(candidate);
+    }
+
+    @Override
+    @Transactional
+    public CandidateAttachment updateCandidateAttachment(UpdateCandidateAttachmentRequest request) {
+        User user = userContext.getLoggedInUser();
+
+        CandidateAttachment candidateAttachment = candidateAttachmentRepository.findByIdLoadCandidate(request.getId())
+                .orElseThrow(() -> new NoSuchObjectException(CandidateAttachment.class, request.getId()));
+
+        candidateAttachment.setName(request.getName());
+        if (candidateAttachment.getType().equals(AttachmentType.link)) {
+            candidateAttachment.setLocation(request.getLocation());
+            candidateAttachment.setAuditFields(user);
+        }
+
+        // Update the candidate audit fields
+        Candidate candidate = candidateAttachment.getCandidate();
+        candidate.setAuditFields(candidate.getUser());
+        candidateRepository.save(candidate);
+
+        return candidateAttachmentRepository.save(candidateAttachment);
     }
 
 }

@@ -304,6 +304,7 @@ public class CandidatePortalApi {
 
     private DtoBuilder candidateStatusDto() {
         return new DtoBuilder()
+                .add("user", userDto())
                 .add("status")
                 .add("candidateMessage")
                 ;

@@ -39,6 +39,9 @@ export class RegistrationEducationComponent implements OnInit {
   educationLevels: EducationLevel[];
   candidateEducationItems: CandidateEducation[];
   addingEducation: boolean;
+  educationType: string;
+
+  editTarget: CandidateEducation;
 
   constructor(private fb: FormBuilder,
               private router: Router,
@@ -52,9 +55,27 @@ export class RegistrationEducationComponent implements OnInit {
 
   ngOnInit() {
     this.saving = false;
+    this.editTarget = null;
     this.candidateEducationItems = [];
     this.form = this.fb.group({
       maxEducationLevelId: ['']
+    });
+
+    this.form.get('maxEducationLevelId').valueChanges.subscribe(value => {
+      if (value) {
+        if (this.loading) {
+          return;
+        }
+        let educationLevel: EducationLevel = this.educationLevels.find(e => e.id == value);
+        if (educationLevel){
+           let education = this.candidateEducationItems.find(e => e.educationType == educationLevel.educationType);
+           if (education){
+             return;
+           }
+        }
+        this.addingEducation = educationLevel && educationLevel.educationType != null;
+        this.educationType = educationLevel ? educationLevel.educationType : null;
+      }
     });
 
     /* Load data */
@@ -159,7 +180,7 @@ export class RegistrationEducationComponent implements OnInit {
     this.addingEducation = true;
   }
 
-  handleCandidateEducationSaved(education: CandidateEducation) {
+  handleCandidateEducationCreated(education: CandidateEducation) {
     let index = -1;
     if (this.candidateEducationItems.length) {
       index = this.candidateEducationItems.findIndex(edu => edu.id === education.id);
@@ -185,5 +206,18 @@ export class RegistrationEducationComponent implements OnInit {
         this.error = error;
         this.saving = false;
       });
+  }
+
+  cancel() {
+    this.onSave.emit();
+  }
+
+  editCandidateEducation(education: CandidateEducation) {
+    this.editTarget = education;
+  }
+
+  handleEducationSaved(education: CandidateEducation, i) {
+    this.candidateEducationItems[i] = education;
+    this.editTarget = null;
   }
 }

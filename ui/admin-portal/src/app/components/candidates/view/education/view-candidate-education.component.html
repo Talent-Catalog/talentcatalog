@@ -10,8 +10,9 @@
   <div class="card-header">
 
     <span>Education</span>
-
-    <span *ngIf="candidate.maxEducationLevel">(Max Level: {{candidate.maxEducationLevel?.name}})</span>
+    <small class="space-before text-muted" *ngIf="candidate.maxEducationLevel">
+      (Max Level: {{candidate.maxEducationLevel?.name}})
+    </small>
 
     <div class="pull-right" *ngIf="editable">
       <button class="btn btn-primary btn-sm" (click)="createCandidateEducation()">

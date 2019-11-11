@@ -31,7 +31,6 @@ export class SaveSearchComponent implements OnInit {
       update: [this.savedSearchId ? true : false, Validators.required],
       searchCandidateRequest: [this.searchCandidateRequest]
     });
-    console.log(this.form.value);
     if (this.savedSearchId) {
       this.savedSearchService.get(this.savedSearchId).subscribe(
         (savedSearch) => {
@@ -49,9 +48,9 @@ export class SaveSearchComponent implements OnInit {
   save() {
     this.saving = true;
     let request = this.form.value;
-    console.log('request', request);
+    // console.log('request', request);
     if (request.update == true && this.savedSearchId) {
-      console.log('updating', request);
+      // console.log('updating', request);
 
       request.name = this.savedSearch.name;
 
@@ -65,7 +64,7 @@ export class SaveSearchComponent implements OnInit {
           this.saving = false;
         });
     } else
-      console.log('creatimng', request);
+      // console.log('creatimng', request);
 
     this.savedSearchService.create(this.form.value).subscribe(
         (savedSearch) => {

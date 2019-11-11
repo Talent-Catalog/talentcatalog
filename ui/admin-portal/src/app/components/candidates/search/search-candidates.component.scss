@@ -1,4 +1,3 @@
-// Extend bootstrap style to override default layout type of form row
 :host {
   ::ng-deep .dropdown-btn {
     background-color: #fff;
@@ -18,7 +17,7 @@ label {
 }
 
 .filter-group {
-  border: 1px solid grey;
+  background: #CCCCCC;
   padding-top: 1rem;
 }
 

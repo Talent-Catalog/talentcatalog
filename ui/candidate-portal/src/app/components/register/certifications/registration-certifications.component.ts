@@ -90,13 +90,16 @@ export class RegistrationCertificationsComponent implements OnInit {
     );
   }
 
-    next() {
-      this.onSave.emit();
-      this.registrationService.next();
-    }
+  next() {
+    this.onSave.emit();
+    this.registrationService.next();
+  }
 
-    back() {
-      this.registrationService.back();
-    }
+  back() {
+    this.registrationService.back();
+  }
 
+  finishEditing() {
+    this.onSave.emit();
+  }
 }

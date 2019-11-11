@@ -8,11 +8,11 @@
         <label for="educationType">{{ 'FORM.EDUCATION.EDUCATIONTYPE' | translate }} <sup>*</sup></label>
         <select class="form-control" id="educationType" [formControlName]="'educationType'">
           <option value=""></option>
-          <option value="Associate">Associate</option>
-          <option value="Vocational">Vocational</option>
-          <option value="Bachelor">Bachelor</option>
-          <option value="Masters">Masters</option>
-          <option value="Doctoral">Doctoral</option>
+          <option value="Associate">{{ 'EDUCATIONTYPE.ASSOCIATE' | translate }}</option>
+          <option value="Vocational">{{ 'EDUCATIONTYPE.VOCATIONAL' | translate }}</option>
+          <option value="Bachelor">{{ 'EDUCATIONTYPE.BACHELOR' | translate }}</option>
+          <option value="Masters">{{ 'EDUCATIONTYPE.MASTERS' | translate }}</option>
+          <option value="Doctoral">{{ 'EDUCATIONTYPE.DOCTORAL' | translate }}</option>
         </select>
       </div>
     </div>
@@ -66,8 +66,8 @@
     <!-- GRADUATION YEAR -->
     <div class="col-8 col-md-4">
       <div class="form-group">
-        <label for="dateCompleted">{{ 'FORM.EDUCATION.DATECOMPLETED' | translate }} <sup>*</sup></label>
-        <select class="form-control" name="dateCompleted" id="dateCompleted" [formControlName]="'dateCompleted'">
+        <label for="yearCompleted">{{ 'FORM.EDUCATION.DATECOMPLETED' | translate }} <sup>*</sup></label>
+        <select class="form-control" name="yearCompleted" id="yearCompleted" [formControlName]="'yearCompleted'">
           <option value=""></option>
           <option *ngFor="let year of years" [value]="year">{{year}}</option>
         </select>
@@ -92,7 +92,7 @@
     <button class="btn btn-primary"
             [disabled]="form.invalid"
             (click)="save()">
-      Save
+      {{ 'FORM.LABEL.SAVE' | translate }}
     </button>
   </div>
 

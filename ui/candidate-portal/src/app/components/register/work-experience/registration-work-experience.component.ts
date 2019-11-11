@@ -102,12 +102,15 @@ export class RegistrationWorkExperienceComponent implements OnInit {
     );
   }
 
+  closeEdit() {
+    this.onSave.emit();
+  }
+
   back() {
     this.registrationService.back();
   }
 
   next() {
-    this.onSave.emit();
     this.registrationService.next();
   }
 

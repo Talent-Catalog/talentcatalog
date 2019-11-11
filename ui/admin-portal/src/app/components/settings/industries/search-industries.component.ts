@@ -104,7 +104,7 @@ export class SearchIndustriesComponent implements OnInit {
 
     deleteIndustryModal.result
       .then((result) => {
-        console.log(result);
+        // console.log(result);
         if (result === true) {
           this.industryService.delete(industry.id).subscribe(
             (industry) => {

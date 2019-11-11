@@ -13,6 +13,7 @@ export class CandidateEducationCardComponent implements OnInit {
   @Input() candidateEducation: CandidateEducation;
 
   @Output() onDelete = new EventEmitter();
+  @Output() onEdit = new EventEmitter<CandidateEducation>();
 
   constructor() { }
 
@@ -21,5 +22,9 @@ export class CandidateEducationCardComponent implements OnInit {
 
   delete() {
     this.onDelete.emit()
+  }
+
+  edit() {
+    this.onEdit.emit(this.candidateEducation);
   }
 }

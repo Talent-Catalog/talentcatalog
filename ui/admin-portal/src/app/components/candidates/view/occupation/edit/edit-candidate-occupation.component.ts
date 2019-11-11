@@ -41,7 +41,7 @@ export class EditCandidateOccupationComponent implements OnInit {
     this.occupationService.listOccupations().subscribe(
       (response) => {
         this.occupations = response;
-        console.log(this.occupations);
+        // console.log(this.occupations);
         this.loading = false;
       },
       (error) => {

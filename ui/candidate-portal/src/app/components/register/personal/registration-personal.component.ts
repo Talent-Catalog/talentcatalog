@@ -7,8 +7,8 @@ import {NationalityService} from "../../../services/nationality.service";
 import {Nationality} from "../../../model/nationality";
 import {CountryService} from "../../../services/country.service";
 import {Country} from "../../../model/country";
-import {years} from "../../../model/years";
 import {RegistrationService} from "../../../services/registration.service";
+import {generateYearArray} from "../../../util/year-helper";
 
 @Component({
   selector: 'app-registration-personal',
@@ -46,17 +46,17 @@ export class RegistrationPersonalComponent implements OnInit {
 
   ngOnInit() {
     this.saving = false;
-    this.years = years;
+    this.years = generateYearArray();
     this.form = this.fb.group({
       /* PERSONAL */
       firstName: [null, Validators.required],
       lastName: [null, Validators.required],
       gender: [null, Validators.required],
-      dob: [null, Validators.required],
+      dob: [null],
       /* LOCATION */
       countryId: ['', Validators.required],
-      city: ['', Validators.required],
-      yearOfArrival: ['', Validators.required],
+      city: [''],
+      yearOfArrival: [''],
       /* NATIONALITY */
       nationality: ['', Validators.required],
       // registeredWithUN: ['', Validators.required],
@@ -164,6 +164,10 @@ export class RegistrationPersonalComponent implements OnInit {
   get loading() {
     const l = this._loading;
     return l.candidate || l.countries || l.nationalities;
+  }
+
+  cancel() {
+    this.onSave.emit();
   }
 
 }

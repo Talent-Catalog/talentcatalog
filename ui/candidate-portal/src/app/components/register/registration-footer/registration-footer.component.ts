@@ -17,7 +17,7 @@ export class RegistrationFooterComponent {
   @Output() backClicked = new EventEmitter();
   @Output() nextClicked = new EventEmitter();
 
-  constructor(public registrationService: RegistrationService) { }
+  constructor(public regoService: RegistrationService) { }
 
   back() {
     this.backClicked.emit();

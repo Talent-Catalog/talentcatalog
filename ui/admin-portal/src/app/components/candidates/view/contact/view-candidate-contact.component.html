@@ -19,10 +19,23 @@
     <div class="row">
 
       <div class="form-group col-12">
-        <label class="col-form-label"><i class="fa fa-map-marker"></i>Address</label>
+        <label class="col-form-label">
+          <i class="fa fa-map-marker"></i>
+          Address
+        </label>
 
-        <div class="form-control-plaintext">
-          <span>{{candidate.address1}} {{candidate.city}} {{candidate.country?.name}}</span>
+        <div class="form-control-plaintext address">
+
+          <span class="field" *ngIf="candidate.address1">{{candidate.address1}}</span>
+
+          <span class="comma"></span>
+
+          <span class="field" *ngIf="candidate.city">{{candidate.city}}</span>
+
+          <span class="comma"></span>
+
+          <span class="field" *ngIf="candidate.country">{{candidate.country?.name}}</span>
+
         </div>
       </div>
 
