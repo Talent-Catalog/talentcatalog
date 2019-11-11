@@ -3,14 +3,12 @@ package org.tbbtalent.server.request.search;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 public class CreateSavedSearchRequest {
 
     @NotBlank
     private String name;
 
-    @NotNull
     private SearchCandidateRequest searchCandidateRequest;
 
     public String getName() {

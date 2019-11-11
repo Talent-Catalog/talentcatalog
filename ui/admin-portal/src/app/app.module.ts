@@ -98,6 +98,8 @@ import {ChangeUsernameComponent} from './components/candidates/view/account/chan
 import {CreateCandidateAttachmentComponent} from './components/candidates/view/attachment/create/create-candidate-attachment.component';
 import {EditCandidateAttachmentComponent} from './components/candidates/view/attachment/edit/edit-candidate-attachment.component';
 import {FileUploadComponent} from "./components/util/file-upload/file-upload.component";
+import {SavedSearchesComponent} from './components/home/search/saved-searches.component';
+import {EditSavedSearchComponent} from './components/home/search/edit/edit-saved-search.component';
 
 @NgModule({
   declarations: [
@@ -187,7 +189,9 @@ import {FileUploadComponent} from "./components/util/file-upload/file-upload.com
     ChangeUsernameComponent,
     CreateCandidateAttachmentComponent,
     EditCandidateAttachmentComponent,
-    FileUploadComponent
+    FileUploadComponent,
+    SavedSearchesComponent,
+    EditSavedSearchComponent
   ],
   imports: [
     BrowserModule,
@@ -249,7 +253,8 @@ import {FileUploadComponent} from "./components/util/file-upload/file-upload.com
     EditCandidateLanguageComponent,
     ChangePasswordComponent,
     ChangeUsernameComponent,
-    CreateCandidateAttachmentComponent
+    CreateCandidateAttachmentComponent,
+    EditSavedSearchComponent
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},

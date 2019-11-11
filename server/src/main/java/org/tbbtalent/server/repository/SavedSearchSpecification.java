@@ -2,8 +2,8 @@ package org.tbbtalent.server.repository;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
-import org.tbbtalent.server.model.Nationality;
 import org.tbbtalent.server.model.SavedSearch;
+import org.tbbtalent.server.model.Status;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
 
 import javax.persistence.criteria.Predicate;
@@ -24,8 +24,8 @@ public class SavedSearchSpecification {
                                 builder.like(builder.lower(savedSearch.get("name")), likeMatchTerm)
                         ));
             }
-
-        
+            // ONLY SHOW ACTIVE SAVED SEARCHES
+            conjunction.getExpressions().add(builder.equal(savedSearch.get("status"), Status.active));
 
             return conjunction;
         };
