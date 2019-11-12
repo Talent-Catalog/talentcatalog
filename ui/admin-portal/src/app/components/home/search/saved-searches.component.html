@@ -37,6 +37,8 @@
       <div class="btn-group pull-right">
         <button type="button" class="btn btn-default" (click)="editSavedSearch(savedSearch)"><i
           class="fa fa-edit"></i></button>
+        <button type="button" class="btn btn-default"  [routerLink]="['/candidates/search/'+savedSearch.id]"><i
+          class="fa fa-upload"></i></button>
         <button type="button" class="btn btn-default" (click)="deleteSavedSearch(savedSearch)"><i
           class="fa fa-trash"></i></button>
       </div>

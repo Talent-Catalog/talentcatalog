@@ -195,7 +195,7 @@ import {EditSavedSearchComponent} from './components/home/search/edit/edit-saved
     FileUploadComponent,
     CandidateAdditionalInfoTabComponent,
     ViewCandidateAdditionalInfoComponent,
-    ViewCandidateSkillComponent
+    ViewCandidateSkillComponent,
     FileUploadComponent,
     SavedSearchesComponent,
     EditSavedSearchComponent
@@ -261,7 +261,7 @@ import {EditSavedSearchComponent} from './components/home/search/edit/edit-saved
     ChangePasswordComponent,
     ChangeUsernameComponent,
     CreateCandidateAttachmentComponent,
-    EditCandidateAttachmentComponent
+    EditCandidateAttachmentComponent,
     CreateCandidateAttachmentComponent,
     EditSavedSearchComponent
   ],
