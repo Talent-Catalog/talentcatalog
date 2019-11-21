@@ -52,6 +52,7 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-thymeleaf')
     implementation('javax.mail:javax.mail-api:1.6.0')
     implementation('com.sun.mail:javax.mail:1.6.0')
+    implementation('com.opencsv:opencsv:5.0')
 
     runtimeOnly('org.postgresql:postgresql')
     runtimeOnly('mysql:mysql-connector-java:8.0.15')

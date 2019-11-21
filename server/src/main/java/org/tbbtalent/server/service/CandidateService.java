@@ -6,6 +6,9 @@ import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.candidate.*;
 
+import java.io.PrintWriter;
+import java.rmi.server.ExportException;
+
 public interface CandidateService {
 
     Page<Candidate> searchCandidates(SearchCandidateRequest request);
@@ -46,5 +49,5 @@ public interface CandidateService {
 
     Candidate findByCandidateNumber(String candidateNumber);
 
-
+    void exportToCsv(SearchCandidateRequest request, PrintWriter writer) throws ExportException;
 }

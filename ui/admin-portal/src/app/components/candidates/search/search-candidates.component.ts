@@ -36,6 +36,7 @@ import {LanguageLevelService} from '../../../services/language-level.service';
 import {DateRangePickerComponent} from "../../util/form/date-range-picker/date-range-picker.component";
 import {LanguageLevelFormControlComponent} from "../../util/form/language-proficiency/language-level-form-control.component";
 import {ActivatedRoute} from "@angular/router";
+import {HttpClient} from "@angular/common/http";
 
 
 @Component({
@@ -49,6 +50,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   @ViewChild('englishLanguage', {static: true}) englishLanguagePicker: LanguageLevelFormControlComponent;
   @ViewChild('otherLanguage', {static: true}) otherLanguagePicker: LanguageLevelFormControlComponent;
   @ViewChild('formWrapper', {static: true}) formWrapper: ElementRef;
+  @ViewChild('downloadCsvErrorModal', {static: true}) downloadCsvErrorModal;
 
   error: any;
   _loading = {
@@ -109,7 +111,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   englishLanguageModel: LanguageLevelFormControlModel;
   otherLanguageModel: LanguageLevelFormControlModel;
 
-  constructor(private fb: FormBuilder,
+  constructor(private http: HttpClient, private fb: FormBuilder,
               private candidateService: CandidateService,
               private nationalityService: NationalityService,
               private countryService: CountryService,
@@ -559,5 +561,56 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       this.sortDirection = 'ASC';
     }
     this.search();
+  }
+
+  exportCandidates() {
+    this.searching = true;
+    let request = this.searchForm.value;
+    request.size = 10000;
+    this.candidateService.export(request).subscribe(
+      result => {
+        let options = {type: 'text/csv;charset=utf-8;'};
+        let filename = 'sn-spend.csv';
+        this.createAndDownloadBlobFile(result, options, filename);
+        this.searching = false;
+      },
+      err => {
+        const reader = new FileReader();
+        let _this = this;
+        reader.addEventListener('loadend', function () {
+          if (typeof reader.result === 'string') {
+            _this.error = JSON.parse(reader.result);
+            const modalRef = _this.modalService.open(_this.downloadCsvErrorModal);
+            modalRef.result
+              .then(() => {
+              })
+              .catch(() => {
+              });
+          }
+        });
+        reader.readAsText(err.error);
+        this.searching = false;
+      }
+    );
+  }
+
+  createAndDownloadBlobFile(body, options, filename) {
+    let blob = new Blob([body], options);
+    if (navigator.msSaveBlob) {
+      // IE 10+
+      navigator.msSaveBlob(blob, filename);
+    } else {
+      let link = document.createElement('a');
+      // Browsers that support HTML5 download attribute
+      if (link.download !== undefined) {
+        let url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    }
   }
 }

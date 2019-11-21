@@ -1,12 +1,12 @@
 package org.tbbtalent.server.service.impl;
 
+import com.opencsv.CSVWriter;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
@@ -25,6 +25,8 @@ import org.tbbtalent.server.service.CandidateService;
 import org.tbbtalent.server.service.SavedSearchService;
 import org.tbbtalent.server.service.email.EmailHelper;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -431,5 +433,40 @@ public class CandidateServiceImpl implements CandidateService {
             }
         }
     }
+
+    @Override
+    public void exportToCsv(SearchCandidateRequest request, PrintWriter writer) {
+        try (CSVWriter csvWriter = new CSVWriter(writer)) {
+
+            csvWriter.writeNext(new String[] {
+                    "Candidate Number", "Candidate First Name", "Candidate Last Name", "Current Country"
+            });
+
+            request.setPageNumber(0);
+            request.setPageSize(500);
+            boolean hasMore = true;
+            while (hasMore) {
+                Page<Candidate> result = this.searchCandidates(request);
+
+                for (Candidate candidate : result.getContent()) {
+                    csvWriter.writeNext(new String[] {
+                            candidate.getCandidateNumber(),
+                            candidate.getUser().getFirstName(),
+                            candidate.getUser().getLastName(),
+                            candidate.getCountry() != null ? candidate.getCountry().getName() : candidate.getMigrationCountry()
+                    });
+                }
+
+                if (result.getNumber() * request.getPageSize() < result.getTotalElements()) {
+                    request.setPageNumber(request.getPageNumber()+1);
+                } else {
+                    hasMore = false;
+                }
+            }
+        } catch (IOException e) {
+            throw new ExportFailedException( e);
+        }
+    }
+
 
 }

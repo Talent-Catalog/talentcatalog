@@ -2,6 +2,7 @@ package org.tbbtalent.server.api.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.Candidate;
@@ -12,6 +13,9 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tbbtalent.server.service.CandidateService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.rmi.server.ExportException;
 import java.util.Map;
 
 @RestController()
@@ -59,6 +63,14 @@ public class CandidateAdminApi {
     @DeleteMapping("{id}")
     public boolean delete(@PathVariable("id") long id) {
         return this.candidateService.deleteCandidate(id);
+    }
+
+
+    @PostMapping(value = "export/csv", produces = MediaType.TEXT_PLAIN_VALUE)
+    public void export(@RequestBody SearchCandidateRequest request,
+                       HttpServletResponse response) throws IOException, ExportException {
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + "candidates.csv\"");
+        candidateService.exportToCsv(request, response.getWriter());
     }
 
     private DtoBuilder candidateDto() {
