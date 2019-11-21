@@ -19,4 +19,7 @@ public interface NationalityRepository extends JpaRepository<Nationality, Long>,
             + " where lower(n.name) = lower(:name)"
             + " and n.status != 'deleted' order by n.name asc" )
     Nationality findByNameIgnoreCase(@Param("name") String name);
-}
+
+    @Query(" select n.name from Nationality n "
+            + " where id in (:ids) order by n.name asc" )
+    List<String> getNamesForIds(@Param("ids") List<Long> ids);}

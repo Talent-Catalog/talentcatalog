@@ -20,4 +20,8 @@ public interface CountryRepository extends JpaRepository<Country, Long>, JpaSpec
             + " where lower(c.name) = lower(:name)"
             + " and c.status != 'deleted' order by c.name asc" )
     Country findByNameIgnoreCase(@Param("name") String name);
+
+    @Query(" select c.name from Country c "
+            + " where id in (:ids) order by c.name asc" )
+    List<String> getNamesForIds(@Param("ids") List<Long> ids);
 }

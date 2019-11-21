@@ -20,4 +20,7 @@ public interface OccupationRepository extends JpaRepository<Occupation, Long>, J
             + " and o.status != 'deleted' order by o.name asc" )
     Occupation findByNameIgnoreCase(@Param("name") String name);
 
+    @Query(" select o.name from Occupation o "
+            + " where o.id in (:ids) order by o.name asc" )
+    List<String> getNamesForIds(@Param("ids") List<Long> ids);
 }

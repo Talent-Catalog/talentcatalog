@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.*;
@@ -32,18 +33,26 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final SavedSearchRepository savedSearchRepository;
     private final SearchJoinRepository searchJoinRepository;
     private final LanguageLevelRepository languageLevelRepository;
-    private final EducationLevelRepository educationLevelRepository;
     private final LanguageRepository languageRepository;
+    private final CountryRepository countryRepository;
+    private final NationalityRepository nationalityRepository;
+    private final OccupationRepository occupationRepository;
+    private final EducationMajorRepository educationMajorRepository;
     private final UserContext userContext;
 
     @Autowired
-    public SavedSearchServiceImpl(CandidateRepository candidateRepository, SavedSearchRepository savedSearchRepository, SearchJoinRepository searchJoinRepository, LanguageLevelRepository languageLevelRepository, EducationLevelRepository educationLevelRepository, LanguageRepository languageRepository, UserContext userContext) {
+    public SavedSearchServiceImpl(CandidateRepository candidateRepository, SavedSearchRepository savedSearchRepository,
+                                  SearchJoinRepository searchJoinRepository, LanguageLevelRepository languageLevelRepository,
+                                  LanguageRepository languageRepository, CountryRepository countryRepository, NationalityRepository nationalityRepository, OccupationRepository occupationRepository, EducationMajorRepository educationMajorRepository, UserContext userContext) {
         this.candidateRepository = candidateRepository;
         this.savedSearchRepository = savedSearchRepository;
         this.searchJoinRepository = searchJoinRepository;
         this.languageLevelRepository = languageLevelRepository;
-        this.educationLevelRepository = educationLevelRepository;
         this.languageRepository = languageRepository;
+        this.countryRepository = countryRepository;
+        this.nationalityRepository = nationalityRepository;
+        this.occupationRepository = occupationRepository;
+        this.educationMajorRepository = educationMajorRepository;
         this.userContext = userContext;
     }
 
@@ -64,8 +73,40 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     @Override
     public SavedSearch getSavedSearch(long id) {
-        return this.savedSearchRepository.findById(id)
+        SavedSearch savedSearch = this.savedSearchRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+
+        Map<Integer, String> languageLevelMap = languageLevelRepository.findAllActive().stream().collect(
+                Collectors.toMap(LanguageLevel::getLevel, LanguageLevel::getName, (l1, l2) -> {return l1;}));
+        if (!StringUtils.isEmpty(savedSearch.getCountryIds())){
+            savedSearch.setCountryNames(countryRepository.getNamesForIds(getIdsFromString(savedSearch.getCountryIds())));
+        }
+        if (!StringUtils.isEmpty(savedSearch.getNationalityIds())){
+            savedSearch.setNationalityNames(nationalityRepository.getNamesForIds(getIdsFromString(savedSearch.getNationalityIds())));
+        }
+        if (!StringUtils.isEmpty(savedSearch.getOccupationIds())){
+            savedSearch.setOccupationNames(occupationRepository.getNamesForIds(getIdsFromString(savedSearch.getOccupationIds())));
+        }
+        if (!StringUtils.isEmpty(savedSearch.getVerifiedOccupationIds())){
+            savedSearch.setVettedOccupationNames(occupationRepository.getNamesForIds(getIdsFromString(savedSearch.getVerifiedOccupationIds())));
+        }
+        if (!StringUtils.isEmpty(savedSearch.getEducationMajorIds())){
+            savedSearch.setEducationMajors(educationMajorRepository.getNamesForIds(getIdsFromString(savedSearch.getEducationMajorIds())));
+        }
+        if (savedSearch.getEnglishMinWrittenLevel() != null){
+            savedSearch.setEnglishWrittenLevel(languageLevelMap.get(savedSearch.getEnglishMinWrittenLevel()));
+        }
+        if (savedSearch.getEnglishMinSpokenLevel() != null){
+            savedSearch.setEnglishSpokenLevel(languageLevelMap.get(savedSearch.getEnglishMinSpokenLevel()));
+        }
+        if (savedSearch.getOtherMinSpokenLevel() != null){
+            savedSearch.setOtherSpokenLevel(languageLevelMap.get(savedSearch.getOtherMinSpokenLevel()));
+        }
+        if (savedSearch.getOtherMinWrittenLevel() != null){
+            savedSearch.setOtherWrittenLevel(languageLevelMap.get(savedSearch.getOtherMinWrittenLevel()));
+        }
+        return savedSearch;
+
     }
 
     @Override

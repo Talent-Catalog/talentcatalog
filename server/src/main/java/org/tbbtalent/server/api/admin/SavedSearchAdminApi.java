@@ -36,7 +36,7 @@ public class SavedSearchAdminApi {
     @GetMapping("{id}")
     public Map<String, Object> get(@PathVariable("id") long id) {
         SavedSearch savedSearch = this.savedSearchService.getSavedSearch(id);
-        return savedSearchDto().build(savedSearch);
+        return savedSearchDtoExtended().build(savedSearch);
     }
 
     @GetMapping("{id}/load")
@@ -72,6 +72,7 @@ public class SavedSearchAdminApi {
                 .add("gender")
                 .add("occupationIds")
                 .add("orProfileKeyword")
+                .add("verifiedOccupationIds")
                 .add("verifiedOccupationSearchType")
                 .add("nationalityIds")
                 .add("nationalitySearchType")
@@ -97,6 +98,34 @@ public class SavedSearchAdminApi {
                 .add("id")
                 .add("name")
                 .add("status")
+                ;
+    }
+
+    public DtoBuilder savedSearchDtoExtended(){
+        return savedSearchDto()
+                .add("countryNames")
+                .add("nationalityNames")
+                .add("vettedOccupationNames")
+                .add("occupationNames")
+                .add("educationMajors")
+                .add("englishWrittenLevel")
+                .add("englishSpokenLevel")
+                .add("otherWrittenLevel")
+                .add("otherSpokenLevel")
+                .add("searchJoins", searchJoinDto());
+
+    }
+
+    private DtoBuilder searchJoinDto() {
+        return new DtoBuilder()
+                .add("childSavedSearch", savedSearchNameDto())
+                .add("searchType")
+                ;
+    }
+
+    private DtoBuilder savedSearchNameDto() {
+        return new DtoBuilder()
+                .add("name")
                 ;
     }
 
