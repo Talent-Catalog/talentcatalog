@@ -277,7 +277,12 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     this.route.params.subscribe(params => {
       this.savedSearchId = params['savedSearchId'];
       if (this.savedSearchId) {
-        this.loadSavedSearch(this.savedSearchId);
+        this.savedSearchService.get(this.savedSearchId).subscribe(result => {
+          this.savedSearch = result;
+          this.loadSavedSearch(this.savedSearchId);
+        }, err => {
+          this.error = err;
+        })
       } else {
         this.search();
       }
