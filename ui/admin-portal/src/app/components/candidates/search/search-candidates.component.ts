@@ -65,6 +65,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     verifiedOccupations: true,
   };
   searching: boolean;
+  exporting: boolean;
 
   searchForm: FormGroup;
   moreFilters: boolean;
@@ -296,7 +297,9 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    if (this.subscription){
+      this.subscription.unsubscribe();
+    }
   }
 
   /* MULTI SELECT METHODS */
@@ -331,6 +334,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   /* SEARCH FORM */
   search() {
     this.searching = true;
+    this.results = null;
     this.error = null;
     const request = this.searchForm.value;
     if (request.shortlistStatus == '') {
@@ -353,7 +357,9 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   clearForm() {
     this.searchForm.reset();
-    this.modifiedDatePicker.clearDates();
+    this.searchForm.controls['searchJoinRequests'] = this.fb.array([]);
+
+      this.modifiedDatePicker.clearDates();
     this.englishLanguagePicker.clearProficiencies();
     this.otherLanguagePicker.form.reset();
     this.savedSearch = null;
@@ -564,15 +570,15 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   }
 
   exportCandidates() {
-    this.searching = true;
+    this.exporting = true;
     let request = this.searchForm.value;
     request.size = 10000;
     this.candidateService.export(request).subscribe(
       result => {
         let options = {type: 'text/csv;charset=utf-8;'};
-        let filename = 'sn-spend.csv';
+        let filename = 'candidates.csv';
         this.createAndDownloadBlobFile(result, options, filename);
-        this.searching = false;
+        this.exporting = false;
       },
       err => {
         const reader = new FileReader();
@@ -589,7 +595,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
           }
         });
         reader.readAsText(err.error);
-        this.searching = false;
+        this.exporting = false;
       }
     );
   }

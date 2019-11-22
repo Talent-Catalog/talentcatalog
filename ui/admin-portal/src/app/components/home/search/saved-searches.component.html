@@ -28,17 +28,17 @@
   Found {{results?.totalElements}} saved searches
 </div>
 
-<table class="table">
+<table class="table" style="border: 1px">
 
   <tbody>
   <tr *ngFor="let savedSearch of results?.content" (click)="selectSearch(savedSearch)"  [ngClass]="{'selected': savedSearch.id == selectedSearch?.id}">
-    <td><app-saved-search [savedSearch]="savedSearch"></app-saved-search></td>
+    <td width="85%"><app-saved-search [savedSearch]="savedSearch"></app-saved-search></td>
     <td class="align-middle">
       <div class="btn-group pull-right">
         <button type="button" class="btn btn-default" (click)="editSavedSearch(savedSearch)"><i
           class="fa fa-edit"></i></button>
         <button type="button" class="btn btn-default"  [routerLink]="['/candidates/search/'+savedSearch.id]"><i
-          class="fa fa-upload"></i></button>
+          class="fa fa-external-link"></i></button>
         <button type="button" class="btn btn-default" (click)="deleteSavedSearch(savedSearch)"><i
           class="fa fa-trash"></i></button>
       </div>
