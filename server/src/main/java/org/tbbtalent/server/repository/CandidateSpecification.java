@@ -10,7 +10,6 @@ import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import javax.persistence.criteria.*;
 import java.time.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class CandidateSpecification {
@@ -31,13 +30,13 @@ public class CandidateSpecification {
                 query.distinct(true);
 
                 Fetch<Object, Object> userFetch = candidate.fetch("user", JoinType.INNER);
-                user = (Join<Object, Object>)userFetch;
+                user = (Join<Object, Object>) userFetch;
 
                 Fetch<Object, Object> nationalityFetch = candidate.fetch("nationality", JoinType.INNER);
-                nationality = (Join<Object, Object>)nationalityFetch;
+                nationality = (Join<Object, Object>) nationalityFetch;
 
                 Fetch<Object, Object> countryFetch = candidate.fetch("country", JoinType.INNER);
-                country = (Join<Object, Object>)countryFetch;
+                country = (Join<Object, Object>) countryFetch;
 
                 String[] sort = request.getSortFields();
                 List<Order> orders = new ArrayList<>();
@@ -49,24 +48,20 @@ public class CandidateSpecification {
                     if (property.startsWith("user.")) {
                         join = user;
                         subProperty = property.replaceAll("user.", "");
-                    }
-                    else if (property.startsWith("nationality.")) {
+                    } else if (property.startsWith("nationality.")) {
                         join = nationality;
                         subProperty = property.replaceAll("nationality.", "");
-                    }
-                    else if (property.startsWith("country.")) {
+                    } else if (property.startsWith("country.")) {
                         join = country;
                         subProperty = property.replaceAll("country.", "");
-                    }
-                    else {
+                    } else {
                         subProperty = property;
                     }
 
                     Path<Object> path = null;
                     if (join != null) {
                         path = join.get(subProperty);
-                    }
-                    else {
+                    } else {
                         path = candidate.get(subProperty);
                     }
                     orders.add(request.getSortDirection().equals(Sort.Direction.ASC) ? builder.asc(path) : builder.desc(path));
@@ -76,8 +71,10 @@ public class CandidateSpecification {
 
             } else {
                 user = candidate.join("user");
-                nationality = candidate.join("nationality");;
-                country = candidate.join("country");;
+                nationality = candidate.join("nationality");
+                ;
+                country = candidate.join("country");
+                ;
             }
             //Short lists
             if (request.getSavedSearchId() != null) {
@@ -100,16 +97,16 @@ public class CandidateSpecification {
             if (!StringUtils.isBlank(request.getKeyword())) {
                 String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
                 String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
-                conjunction.getExpressions().add(
-                        builder.or(
-                                builder.like(builder.lower(candidate.get("candidateNumber")), likeMatchTerm),
-                                builder.like(builder.lower(user.get("firstName")), likeMatchTerm),
-                                builder.like(builder.lower(user.get("lastName")), likeMatchTerm),
-                                builder.like(builder.lower(user.get("email")), likeMatchTerm),
-                                builder.like(builder.lower(candidate.get("phone")), likeMatchTerm),
-                                builder.like(builder.lower(candidate.get("whatsapp")), likeMatchTerm),
-                                builder.like(builder.lower(candidate.get("additionalInfo")), likeMatchTerm)
-                        ));
+                conjunction.getExpressions().add(builder.and(builder.or(
+                            builder.like(builder.lower(candidate.get("candidateNumber")), likeMatchTerm),
+                            builder.like(builder.lower(user.get("firstName")), likeMatchTerm),
+                            builder.like(builder.lower(user.get("lastName")), likeMatchTerm),
+                            builder.like(builder.lower(user.get("email")), likeMatchTerm),
+                            builder.like(builder.lower(candidate.get("phone")), likeMatchTerm),
+                            builder.like(builder.lower(candidate.get("whatsapp")), likeMatchTerm),
+                            builder.like(builder.lower(candidate.get("additionalInfo")), likeMatchTerm)
+                    )));
+
             }
             // STATUS SEARCH
             if (!Collections.isEmpty(request.getStatuses())) {
@@ -147,45 +144,62 @@ public class CandidateSpecification {
                                 builder.isTrue(occupation.get("id").in(request.getOccupationIds()))
                         );
                     } else if (Collections.isEmpty(request.getOccupationIds())) {
-                        String lowerCaseMatchTerm = request.getOrProfileKeyword().toLowerCase();
-                        String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
                         Join<Candidate, CandidateJobExperience> candidateJobExperiences = candidate.join("candidateJobExperiences", JoinType.LEFT);
                         Join<Candidate, CandidateSkill> candidateSkills = candidate.join("candidateSkills", JoinType.LEFT);
                         candidateEducations = candidateEducations == null ? candidate.join("candidateEducations", JoinType.LEFT) : candidateEducations;
 
-                        conjunction.getExpressions().add(
-                                builder.or(
-                                        builder.like(builder.lower(candidate.get("additionalInfo")), likeMatchTerm),
-                                        builder.like(builder.lower(candidateJobExperiences.get("description")), likeMatchTerm),
-                                        builder.like(builder.lower(candidateJobExperiences.get("role")), likeMatchTerm),
-                                        builder.like(builder.lower(candidateEducations.get("courseName")), likeMatchTerm),
-                                        builder.like(builder.lower(candidateOccupations.get("migrationOccupation")), likeMatchTerm),
-                                        builder.like(builder.lower(candidateSkills.get("skill")), likeMatchTerm)
-                                )
-                        );
+                        String lowerCaseMatchTerm = request.getOrProfileKeyword().toLowerCase();
+                        String[] splittedText = lowerCaseMatchTerm.split("\\s+|,\\s*|\\.\\s*");
+                        List<Predicate> predicates = new ArrayList<>();
+                        for (String s : splittedText) {
+                            String likeMatchTerm = "%" + s + "%";
+                            predicates.add(builder.or(
+                                    builder.like(builder.lower(candidate.get("additionalInfo")), likeMatchTerm),
+                                    builder.like(builder.lower(candidateJobExperiences.get("description")), likeMatchTerm),
+                                    builder.like(builder.lower(candidateJobExperiences.get("role")), likeMatchTerm),
+                                    builder.like(builder.lower(candidateEducations.get("courseName")), likeMatchTerm),
+                                    builder.like(builder.lower(candidateOccupations.get("migrationOccupation")), likeMatchTerm),
+                                    builder.like(builder.lower(candidateSkills.get("skill")), likeMatchTerm)
+                            ));
+                        }
+                        if (predicates.size() > 1){
+                            conjunction.getExpressions().add(builder.and(builder.or(predicates.toArray(new Predicate[0]))));
+                        } else {
+                            conjunction.getExpressions().add(builder.and(predicates.toArray(new Predicate[0])));
+                        }
+
                     } else {
                         String lowerCaseMatchTerm = request.getOrProfileKeyword().toLowerCase();
-                        String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
                         Join<Candidate, CandidateJobExperience> candidateJobExperiences = candidate.join("candidateJobExperiences", JoinType.LEFT);
                         Join<Candidate, CandidateSkill> candidateSkills = candidate.join("candidateSkills", JoinType.LEFT);
                         candidateEducations = candidateEducations == null ? candidate.join("candidateEducations", JoinType.LEFT) : candidateEducations;
 
-                        conjunction.getExpressions().add(builder.or(
-                                builder.isTrue(occupation.get("id").in(request.getOccupationIds())),
-                                builder.or(
-                                        builder.like(builder.lower(candidate.get("additionalInfo")), likeMatchTerm),
-                                        builder.like(builder.lower(candidateJobExperiences.get("description")), likeMatchTerm),
-                                        builder.like(builder.lower(candidateJobExperiences.get("role")), likeMatchTerm),
-                                        builder.like(builder.lower(candidateEducations.get("courseName")), likeMatchTerm),
-                                        builder.like(builder.lower(candidateOccupations.get("migrationOccupation")), likeMatchTerm),
-                                        builder.like(builder.lower(candidateSkills.get("skill")), likeMatchTerm)
-                                ))
-                        );
+                        String[] splittedText = lowerCaseMatchTerm.split("\\s+|,\\s*|\\.\\s*");
+                        List<Predicate> predicates = new ArrayList<>();
+                        for (String s : splittedText) {
+                            String likeMatchTerm = "%" + s + "%";
+                            predicates.add(builder.or(
+                                    builder.like(builder.lower(candidate.get("additionalInfo")), likeMatchTerm),
+                                    builder.like(builder.lower(candidateJobExperiences.get("description")), likeMatchTerm),
+                                    builder.like(builder.lower(candidateJobExperiences.get("role")), likeMatchTerm),
+                                    builder.like(builder.lower(candidateEducations.get("courseName")), likeMatchTerm),
+                                    builder.like(builder.lower(candidateOccupations.get("migrationOccupation")), likeMatchTerm),
+                                    builder.like(builder.lower(candidateSkills.get("skill")), likeMatchTerm)
+                            ));
+                        }
+                        if (predicates.size() > 1){
+                            conjunction.getExpressions().add(builder.or(
+                                    builder.isTrue(occupation.get("id").in(request.getOccupationIds())),
+                                    builder.or(builder.or(predicates.toArray(new Predicate[0])))));
+                        } else {
+                            conjunction.getExpressions().add(builder.or(
+                                    builder.isTrue(occupation.get("id").in(request.getOccupationIds())),
+                                    builder.or(predicates.toArray(new Predicate[0]))));
+                        }
                     }
 
                 }
             }
-
 
 
             // UN REGISTERED SEARCH

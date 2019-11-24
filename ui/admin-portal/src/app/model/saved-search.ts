@@ -35,6 +35,7 @@ export interface SavedSearch {
   englishSpokenLevel: string;
   otherWrittenLevel: string;
   otherSpokenLevel: string;
+  minEducationLevelName: string;
 
   searchJoins: SavedSearchJoin[];
 }

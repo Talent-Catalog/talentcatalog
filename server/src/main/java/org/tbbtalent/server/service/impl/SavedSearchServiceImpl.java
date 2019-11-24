@@ -38,12 +38,13 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final NationalityRepository nationalityRepository;
     private final OccupationRepository occupationRepository;
     private final EducationMajorRepository educationMajorRepository;
+    private final EducationLevelRepository educationLevelRepository;
     private final UserContext userContext;
 
     @Autowired
     public SavedSearchServiceImpl(CandidateRepository candidateRepository, SavedSearchRepository savedSearchRepository,
                                   SearchJoinRepository searchJoinRepository, LanguageLevelRepository languageLevelRepository,
-                                  LanguageRepository languageRepository, CountryRepository countryRepository, NationalityRepository nationalityRepository, OccupationRepository occupationRepository, EducationMajorRepository educationMajorRepository, UserContext userContext) {
+                                  LanguageRepository languageRepository, CountryRepository countryRepository, NationalityRepository nationalityRepository, OccupationRepository occupationRepository, EducationMajorRepository educationMajorRepository, EducationLevelRepository educationLevelRepository, UserContext userContext) {
         this.candidateRepository = candidateRepository;
         this.savedSearchRepository = savedSearchRepository;
         this.searchJoinRepository = searchJoinRepository;
@@ -53,6 +54,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         this.nationalityRepository = nationalityRepository;
         this.occupationRepository = occupationRepository;
         this.educationMajorRepository = educationMajorRepository;
+        this.educationLevelRepository = educationLevelRepository;
         this.userContext = userContext;
     }
 
@@ -77,7 +79,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
 
         Map<Integer, String> languageLevelMap = languageLevelRepository.findAllActive().stream().collect(
-                Collectors.toMap(LanguageLevel::getLevel, LanguageLevel::getName, (l1, l2) -> {return l1;}));
+                Collectors.toMap(LanguageLevel::getLevel, LanguageLevel::getName, (l1, l2) ->  l1));
+        Map<Integer, String> educationLevelMap = educationLevelRepository.findAllActive().stream().collect(
+                Collectors.toMap(EducationLevel::getLevel, EducationLevel::getName, (l1, l2) ->  l1));
+
         if (!StringUtils.isEmpty(savedSearch.getCountryIds())){
             savedSearch.setCountryNames(countryRepository.getNamesForIds(getIdsFromString(savedSearch.getCountryIds())));
         }
@@ -104,6 +109,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
         if (savedSearch.getOtherMinWrittenLevel() != null){
             savedSearch.setOtherWrittenLevel(languageLevelMap.get(savedSearch.getOtherMinWrittenLevel()));
+        }
+        if (savedSearch.getMinEducationLevel() != null){
+            savedSearch.setMinEducationLevelName(educationLevelMap.get(savedSearch.getMinEducationLevel()));
         }
         return savedSearch;
 

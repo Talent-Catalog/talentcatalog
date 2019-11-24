@@ -112,6 +112,9 @@ public class SavedSearchAdminApi {
                 .add("englishSpokenLevel")
                 .add("otherWrittenLevel")
                 .add("otherSpokenLevel")
+                .add("minEducationLevelName")
+                .add("updatedBy", userDto())
+                .add("updatedDate")
                 .add("searchJoins", searchJoinDto());
 
     }
@@ -126,6 +129,14 @@ public class SavedSearchAdminApi {
     private DtoBuilder savedSearchNameDto() {
         return new DtoBuilder()
                 .add("name")
+                ;
+    }
+
+    private DtoBuilder userDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("firstName")
+                .add("lastName")
                 ;
     }
 

@@ -32,7 +32,8 @@ public class CandidateAdminApi {
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchCandidateRequest request) {
         Page<Candidate> candidates = this.candidateService.searchCandidates(request);
-        return candidateDto().buildPage(candidates);
+        Map<String, Object> map = candidateBaseDto().buildPage(candidates);
+        return map;
     }
 
     @GetMapping("{id}")
@@ -73,7 +74,7 @@ public class CandidateAdminApi {
         candidateService.exportToCsv(request, response.getWriter());
     }
 
-    private DtoBuilder candidateDto() {
+    private DtoBuilder candidateBaseDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("status")
@@ -87,13 +88,18 @@ public class CandidateAdminApi {
                 .add("yearOfArrival")
                 .add("additionalInfo")
                 .add("candidateMessage")
-                .add("maxEducationLevel", educationLevelDto())
                 .add("country", countryDto())
                 .add("nationality", nationalityDto())
                 .add("user", userDto())
                 .add("candidateShortlistItems", shortlistDto())
-                .add("migrationEducationMajor", educationMajor())
-                .add("migrationCountry")
+                ;
+    }
+
+    private DtoBuilder candidateDto() {
+        return candidateBaseDto()
+                .add("maxEducationLevel", educationLevelDto())
+                .add("user", userDto())
+                .add("candidateShortlistItems", shortlistDto())
                 ;
     }
 

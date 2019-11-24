@@ -67,6 +67,7 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
     @Transient private String englishSpokenLevel;
     @Transient private String otherWrittenLevel;
     @Transient private String otherSpokenLevel;
+    @Transient private String minEducationLevelName;
 
 
     public SavedSearch() {
@@ -362,5 +363,13 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
 
     public void setOtherSpokenLevel(String otherSpokenLevel) {
         this.otherSpokenLevel = otherSpokenLevel;
+    }
+
+    public String getMinEducationLevelName() {
+        return minEducationLevelName;
+    }
+
+    public void setMinEducationLevelName(String minEducationLevelName) {
+        this.minEducationLevelName = minEducationLevelName;
     }
 }
