@@ -15,18 +15,7 @@
   </form>
 </div>
 
-<div class="text-muted mb-2 align-middle">
 
-  <ngb-pagination class="pull-right"
-                  [boundaryLinks]="true"
-                  [pageSize]="pageSize"
-                  [collectionSize]="results?.totalElements"
-                  [(page)]="pageNumber"
-                  (pageChange)="search()">
-  </ngb-pagination>
-
-  Found {{results?.totalElements}} saved searches
-</div>
 
 <table class="table" style="border: 1px">
 
@@ -44,6 +33,19 @@
       </div>
     </td>
   </tr>
+
+  <div class="text-muted mb-2 align-middle">
+
+    <ngb-pagination class="pull-right"
+                    [boundaryLinks]="true"
+                    [pageSize]="pageSize"
+                    [collectionSize]="results?.totalElements"
+                    [(page)]="pageNumber"
+                    (pageChange)="search()">
+    </ngb-pagination>
+
+    Found {{results?.totalElements}} saved searches
+  </div>
 
   <!-- loading -->
   <tr *ngIf="loading">
