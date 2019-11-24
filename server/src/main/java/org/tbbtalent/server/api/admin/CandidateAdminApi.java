@@ -2,6 +2,7 @@ package org.tbbtalent.server.api.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.Candidate;
@@ -12,6 +13,9 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tbbtalent.server.service.CandidateService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.rmi.server.ExportException;
 import java.util.Map;
 
 @RestController()
@@ -28,7 +32,8 @@ public class CandidateAdminApi {
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchCandidateRequest request) {
         Page<Candidate> candidates = this.candidateService.searchCandidates(request);
-        return candidateDto().buildPage(candidates);
+        Map<String, Object> map = candidateBaseDto().buildPage(candidates);
+        return map;
     }
 
     @GetMapping("{id}")
@@ -61,7 +66,15 @@ public class CandidateAdminApi {
         return this.candidateService.deleteCandidate(id);
     }
 
-    private DtoBuilder candidateDto() {
+
+    @PostMapping(value = "export/csv", produces = MediaType.TEXT_PLAIN_VALUE)
+    public void export(@RequestBody SearchCandidateRequest request,
+                       HttpServletResponse response) throws IOException, ExportException {
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + "candidates.csv\"");
+        candidateService.exportToCsv(request, response.getWriter());
+    }
+
+    private DtoBuilder candidateBaseDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("status")
@@ -75,13 +88,18 @@ public class CandidateAdminApi {
                 .add("yearOfArrival")
                 .add("additionalInfo")
                 .add("candidateMessage")
-                .add("maxEducationLevel", educationLevelDto())
                 .add("country", countryDto())
                 .add("nationality", nationalityDto())
                 .add("user", userDto())
                 .add("candidateShortlistItems", shortlistDto())
-                .add("migrationEducationMajor", educationMajor())
-                .add("migrationCountry")
+                ;
+    }
+
+    private DtoBuilder candidateDto() {
+        return candidateBaseDto()
+                .add("maxEducationLevel", educationLevelDto())
+                .add("user", userDto())
+                .add("candidateShortlistItems", shortlistDto())
                 ;
     }
 

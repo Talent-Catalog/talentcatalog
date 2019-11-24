@@ -1,0 +1,69 @@
+
+<div class="section">
+  <div class="alert alert-danger" *ngIf="error">
+    {{error}}
+  </div>
+  <form [formGroup]="searchForm" (ngSubmit)="search()">
+
+    <div class="form-row d-flex justify-content-between align-items-end">
+
+      <div class="form-group col-4">
+        <input type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword"
+               id="keyword">
+      </div>
+    </div>
+  </form>
+</div>
+
+
+
+<table class="table" style="border: 1px">
+
+  <tbody>
+  <tr *ngFor="let savedSearch of results?.content" (click)="selectSearch(savedSearch)"  [ngClass]="{'selected': savedSearch.id == selectedSearch?.id}">
+    <td width="85%"><app-saved-search [savedSearch]="savedSearch"></app-saved-search></td>
+    <td class="align-middle">
+      <div class="btn-group pull-right">
+        <button type="button" class="btn btn-default" (click)="editSavedSearch(savedSearch)"><i
+          class="fa fa-edit"></i></button>
+        <button type="button" class="btn btn-default"  [routerLink]="['/candidates/search/'+savedSearch.id]"><i
+          class="fa fa-external-link"></i></button>
+        <button type="button" class="btn btn-default" (click)="deleteSavedSearch(savedSearch)"><i
+          class="fa fa-trash"></i></button>
+      </div>
+    </td>
+  </tr>
+
+  <div class="text-muted mb-2 align-middle">
+
+    <ngb-pagination class="pull-right"
+                    [boundaryLinks]="true"
+                    [pageSize]="pageSize"
+                    [collectionSize]="results?.totalElements"
+                    [(page)]="pageNumber"
+                    (pageChange)="search()">
+    </ngb-pagination>
+
+    Found {{results?.totalElements}} saved searches
+  </div>
+
+  <!-- loading -->
+  <tr *ngIf="loading">
+    <td colspan="42">
+      <i class="fa fa-spinner fa-spin"></i> Loading...
+    </td>
+  </tr>
+
+  <!-- no results -->
+  <tr *ngIf="!loading && !results?.totalElements">
+    <td colspan="42">
+      <span class="text-muted">(no matching searches)</span>
+    </td>
+  </tr>
+
+  </tbody>
+
+</table>
+
+
+

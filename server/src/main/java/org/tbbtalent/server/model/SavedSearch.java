@@ -3,6 +3,7 @@ package org.tbbtalent.server.model;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -56,6 +57,18 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "savedSearch", cascade = CascadeType.MERGE)
     private Set<SearchJoin> searchJoins = new HashSet<>();
+
+    @Transient private List<String> countryNames;
+    @Transient private List<String> nationalityNames;
+    @Transient private List<String> vettedOccupationNames;
+    @Transient private List<String> occupationNames;
+    @Transient private List<String> educationMajors;
+    @Transient private String englishWrittenLevel;
+    @Transient private String englishSpokenLevel;
+    @Transient private String otherWrittenLevel;
+    @Transient private String otherSpokenLevel;
+    @Transient private String minEducationLevelName;
+
 
     public SavedSearch() {
         this.status = Status.active;
@@ -278,5 +291,85 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
 
     public void setSearchJoins(Set<SearchJoin> searchJoins) {
         this.searchJoins = searchJoins;
+    }
+
+    public List<String> getCountryNames() {
+        return countryNames;
+    }
+
+    public void setCountryNames(List<String> countryNames) {
+        this.countryNames = countryNames;
+    }
+
+    public List<String> getNationalityNames() {
+        return nationalityNames;
+    }
+
+    public void setNationalityNames(List<String> nationalityNames) {
+        this.nationalityNames = nationalityNames;
+    }
+
+    public List<String> getVettedOccupationNames() {
+        return vettedOccupationNames;
+    }
+
+    public void setVettedOccupationNames(List<String> vettedOccupationNames) {
+        this.vettedOccupationNames = vettedOccupationNames;
+    }
+
+    public List<String> getOccupationNames() {
+        return occupationNames;
+    }
+
+    public void setOccupationNames(List<String> occupationNames) {
+        this.occupationNames = occupationNames;
+    }
+
+    public List<String> getEducationMajors() {
+        return educationMajors;
+    }
+
+    public void setEducationMajors(List<String> educationMajors) {
+        this.educationMajors = educationMajors;
+    }
+
+    public String getEnglishWrittenLevel() {
+        return englishWrittenLevel;
+    }
+
+    public void setEnglishWrittenLevel(String englishWrittenLevel) {
+        this.englishWrittenLevel = englishWrittenLevel;
+    }
+
+    public String getEnglishSpokenLevel() {
+        return englishSpokenLevel;
+    }
+
+    public void setEnglishSpokenLevel(String englishSpokenLevel) {
+        this.englishSpokenLevel = englishSpokenLevel;
+    }
+
+    public String getOtherWrittenLevel() {
+        return otherWrittenLevel;
+    }
+
+    public void setOtherWrittenLevel(String otherWrittenLevel) {
+        this.otherWrittenLevel = otherWrittenLevel;
+    }
+
+    public String getOtherSpokenLevel() {
+        return otherSpokenLevel;
+    }
+
+    public void setOtherSpokenLevel(String otherSpokenLevel) {
+        this.otherSpokenLevel = otherSpokenLevel;
+    }
+
+    public String getMinEducationLevelName() {
+        return minEducationLevelName;
+    }
+
+    public void setMinEducationLevelName(String minEducationLevelName) {
+        this.minEducationLevelName = minEducationLevelName;
     }
 }

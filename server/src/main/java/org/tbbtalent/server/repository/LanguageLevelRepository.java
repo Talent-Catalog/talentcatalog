@@ -25,4 +25,8 @@ public interface LanguageLevelRepository extends JpaRepository<LanguageLevel, Lo
             + " where l.level = :level"
             + " and l.status != 'deleted'" )
     LanguageLevel findByLevelIgnoreCase(@Param("level") int level);
+
+    @Query(" select distinct l from LanguageLevel l "
+            + " where l.status != 'active'" )
+    List<LanguageLevel> findAllActive();
 }

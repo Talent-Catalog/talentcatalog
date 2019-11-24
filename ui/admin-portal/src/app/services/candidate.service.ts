@@ -1,9 +1,9 @@
-import { Injectable } from '@angular/core';
-import { Candidate } from '../model/candidate';
-import { Observable } from 'rxjs/index';
-import { environment } from '../../environments/environment';
-import { HttpClient } from '@angular/common/http';
-import { SearchResults } from '../model/search-results';
+import {Injectable} from '@angular/core';
+import {Candidate} from '../model/candidate';
+import {Observable} from 'rxjs/index';
+import {environment} from '../../environments/environment';
+import {HttpClient} from '@angular/common/http';
+import {SearchResults} from '../model/search-results';
 
 @Injectable({providedIn: 'root'})
 export class CandidateService {
@@ -34,6 +34,10 @@ export class CandidateService {
 
   delete(id: number): Observable<boolean>  {
     return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
+  }
+
+  export(request) {
+    return this.http.post(`${this.apiUrl}/export/csv`, request, {responseType: 'blob'});
   }
 
 

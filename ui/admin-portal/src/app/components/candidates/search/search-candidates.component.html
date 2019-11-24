@@ -51,10 +51,12 @@
       <div class="operator">
         <button class="btn btn-link" type="button"
                 [class.active]="searchForm.value.verifiedOccupationSearchType === 'or'"
-                (click)="handleSearchTypeChange('verifiedOccupationSearchType', 'or')">any</button>
+                (click)="handleSearchTypeChange('verifiedOccupationSearchType', 'or')">any
+        </button>
         <button class="btn btn-link" type="button"
                 [class.active]="searchForm.value.verifiedOccupationSearchType === 'not'"
-                (click)="handleSearchTypeChange('verifiedOccupationSearchType', 'not')">not</button>
+                (click)="handleSearchTypeChange('verifiedOccupationSearchType', 'not')">not
+        </button>
       </div>
 
       <ng-multiselect-dropdown
@@ -225,10 +227,12 @@
         <div class="operator">
           <button class="btn btn-link" type="button"
                   [class.active]="searchForm.value.nationalitySearchType === 'or'"
-                  (click)="handleSearchTypeChange('nationalitySearchType', 'or')">any</button>
+                  (click)="handleSearchTypeChange('nationalitySearchType', 'or')">any
+          </button>
           <button class="btn btn-link" type="button"
                   [class.active]="searchForm.value.nationalitySearchType === 'not'"
-                  (click)="handleSearchTypeChange('nationalitySearchType', 'not')">not</button>
+                  (click)="handleSearchTypeChange('nationalitySearchType', 'not')">not
+          </button>
         </div>
 
         <ng-multiselect-dropdown
@@ -267,7 +271,7 @@
 
       <hr class="w-100">
 
-      <div class="col-12">
+      <div class="form-group col-12">
         <span>Joined Searches</span>
         <div class="pull-right">
           <button class="btn btn-primary" (click)="addSavedSearchJoin()">Add</button>
@@ -281,10 +285,13 @@
             {{join.searchType}}
           </div>
         </div>
-        <div class="form-group col-6 offset-4">
+        <div class="form-group col-5 offset-4">
           <div class="form-control">
             {{join.name}}
           </div>
+        </div>
+        <div class="form-group col-1">
+          <button class="btn btn-danger" (click)="deleteSavedSearchJoin(join)"><i class="fa fa-trash"></i></button>
         </div>
       </ng-container>
 
@@ -294,15 +301,21 @@
     <hr class="w-100">
 
     <!-- LOAD SAVED SEARCH  -->
-    <div class="form-group col-6">
+    <div class="form-group col-4">
       <button type="button" class="btn btn-outline-dark w-100" (click)="showSavedSearches()">Load Saved Search</button>
     </div>
 
     <!-- SAVE SEARCH  -->
-    <div class="form-group col-6">
-      <button type="button"  class="btn btn-outline-primary w-100" (click)="openSavedSearchModal()">Save Search</button>
+    <div class="form-group col-4">
+      <button type="button" class="btn btn-outline-primary w-100" (click)="openSavedSearchModal()">Save Search</button>
     </div>
 
+    <div class="form-group col-4">
+      <button class="btn btn-outline-primary w-100" (click)="exportCandidates()">
+        <i class="fa fa-spinner fa-spin" *ngIf=exporting></i>
+        Download
+      </button>
+    </div>
     <!-- SHORT LIST STATUS FILTER -->
     <div class="form-group col-12" *ngIf="savedSearch">
       <label for="shortlistStatus">Candidate review status</label>
@@ -348,13 +361,35 @@
 
         <thead>
         <tr>
-          <th class="w-25" (click)="toggleSort('id')"><app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by> Candidate #</th>
-          <th (click)="toggleSort('user.firstName')"><app-sorted-by [column]="'user.firstName'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>First Name</th>
-          <th (click)="toggleSort('user.lastName')"><app-sorted-by [column]="'user.lastName'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>Last Name</th>
+          <th class="w-25" (click)="toggleSort('id')">
+            <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
+            Candidate #
+          </th>
+          <th (click)="toggleSort('user.firstName')">
+            <app-sorted-by [column]="'user.firstName'" [sortColumn]="sortField"
+                           [sortDirection]="sortDirection"></app-sorted-by>
+            First Name
+          </th>
+          <th (click)="toggleSort('user.lastName')">
+            <app-sorted-by [column]="'user.lastName'" [sortColumn]="sortField"
+                           [sortDirection]="sortDirection"></app-sorted-by>
+            Last Name
+          </th>
           <th *ngIf="savedSearch">Reviewed</th>
-          <th (click)="toggleSort('nationality.name')"><app-sorted-by [column]="'nationality.name'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>Nationality</th>
-          <th (click)="toggleSort('country.name')"><app-sorted-by [column]="'country.name'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>Location</th>
-          <th (click)="toggleSort('gender')"><app-sorted-by [column]="'gender'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>Gender</th>
+          <th (click)="toggleSort('nationality.name')">
+            <app-sorted-by [column]="'nationality.name'" [sortColumn]="sortField"
+                           [sortDirection]="sortDirection"></app-sorted-by>
+            Nationality
+          </th>
+          <th (click)="toggleSort('country.name')">
+            <app-sorted-by [column]="'country.name'" [sortColumn]="sortField"
+                           [sortDirection]="sortDirection"></app-sorted-by>
+            Location
+          </th>
+          <th (click)="toggleSort('gender')">
+            <app-sorted-by [column]="'gender'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
+            Gender
+          </th>
         </tr>
         </thead>
 
@@ -405,3 +440,27 @@
 
   </div>
 </div>
+
+<!-- Modals -->
+<ng-template #downloadCsvErrorModal let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">CSV download failed</h4>
+
+    <button type="button" class="close" aria-label="Close" (click)="d(false)">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p><strong>Oops! Something went wrong</strong></p>
+
+    <p>
+      It looks like an error occurred while we were trying to export your spend:
+      <strong>{{error.message}}.</strong>
+    </p>
+
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="d(false)">Close</button>
+  </div>
+</ng-template>
+

@@ -1,12 +1,13 @@
 package org.tbbtalent.server.service.impl;
 
+import com.opencsv.CSVWriter;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
@@ -25,8 +26,13 @@ import org.tbbtalent.server.service.CandidateService;
 import org.tbbtalent.server.service.SavedSearchService;
 import org.tbbtalent.server.service.email.EmailHelper;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class CandidateServiceImpl implements CandidateService {
@@ -431,5 +437,89 @@ public class CandidateServiceImpl implements CandidateService {
             }
         }
     }
+
+    @Override
+    public void exportToCsv(SearchCandidateRequest request, PrintWriter writer) {
+        try (CSVWriter csvWriter = new CSVWriter(writer)) {
+
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-mm-yyyy");
+            csvWriter.writeNext(new String[] {
+                    "Candidate Number", "Candidate First Name", "Candidate Last Name","Gender", "Country Residing", "Nationality",
+                    "Dob","Max Education Level", "Education Major", "English Spoken Level", "Occupation"
+            });
+
+            request.setPageNumber(0);
+            request.setPageSize(500);
+            boolean hasMore = true;
+            while (hasMore) {
+                Page<Candidate> result = this.searchCandidates(request);
+
+                for (Candidate candidate : result.getContent()) {
+                    csvWriter.writeNext(new String[] {
+                            candidate.getCandidateNumber(),
+                            candidate.getUser().getFirstName(),
+                            candidate.getUser().getLastName(),
+                            candidate.getGender() != null ? candidate.getGender().toString() : null,
+                            candidate.getCountry() != null ? candidate.getCountry().getName() : candidate.getMigrationCountry(),
+                            candidate.getNationality() != null ? candidate.getNationality().getName() : null,
+                            candidate.getDob() != null ? candidate.getDob().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) : null,
+                            candidate.getMaxEducationLevel() != null ? candidate.getMaxEducationLevel().getName() : null,
+                            formatCandidateMajor(candidate.getCandidateEducations()),
+                            getEnglishSpokenProficiency(candidate.getCandidateLanguages()),
+                            formatCandidateOccupation(candidate.getCandidateOccupations())
+
+                    });
+                }
+
+                if (result.getNumber() * request.getPageSize() < result.getTotalElements()) {
+                    request.setPageNumber(request.getPageNumber()+1);
+                } else {
+                    hasMore = false;
+                }
+            }
+        } catch (IOException e) {
+            throw new ExportFailedException( e);
+        }
+    }
+
+    public String formatCandidateMajor(Set<CandidateEducation> candidateEducations){
+        StringBuffer buffer = new StringBuffer();
+        if (!CollectionUtils.isEmpty(candidateEducations)){
+            for (CandidateEducation candidateEducation : candidateEducations) {
+                if (candidateEducation.getEducationMajor() != null){
+                    buffer.append(candidateEducation.getEducationMajor().getName()).append("\n");
+                }
+            }
+        }
+        return buffer.toString();
+
+    }
+
+    public String formatCandidateOccupation(Set<CandidateOccupation> candidateOccupations){
+        StringBuffer buffer = new StringBuffer();
+        if (!CollectionUtils.isEmpty(candidateOccupations)){
+            for (CandidateOccupation candidateOccupation : candidateOccupations) {
+                if (candidateOccupation.getOccupation() != null){
+                    buffer.append(candidateOccupation.getOccupation().getName()).append("\n");
+                }
+            }
+        }
+        return buffer.toString();
+
+    }
+
+    public String getEnglishSpokenProficiency(Set<CandidateLanguage> candidateLanguages){
+        StringBuffer buffer = new StringBuffer();
+        if (!CollectionUtils.isEmpty(candidateLanguages)){
+            for (CandidateLanguage candidateLanguage : candidateLanguages) {
+                if ("english".equalsIgnoreCase(candidateLanguage.getLanguage().getName())){
+                    buffer.append(candidateLanguage.getSpokenLevel().getName()).append("\n");
+                }
+            }
+        }
+        return buffer.toString();
+
+    }
+
 
 }

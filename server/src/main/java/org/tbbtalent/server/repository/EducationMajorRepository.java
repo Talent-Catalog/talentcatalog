@@ -19,4 +19,8 @@ public interface EducationMajorRepository extends JpaRepository<EducationMajor, 
             + " where lower(m.name) = lower(:name)"
             + " and m.status != 'deleted'" )
     EducationMajor findByNameIgnoreCase(@Param("name") String name);
+
+    @Query(" select m.name from EducationMajor m "
+            + " where m.id in (:ids) order by m.name asc" )
+    List<String> getNamesForIds(@Param("ids") List<Long> ids);
 }

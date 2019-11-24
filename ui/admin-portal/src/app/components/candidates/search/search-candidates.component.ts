@@ -35,6 +35,8 @@ import {LanguageLevel} from "../../../model/language-level";
 import {LanguageLevelService} from '../../../services/language-level.service';
 import {DateRangePickerComponent} from "../../util/form/date-range-picker/date-range-picker.component";
 import {LanguageLevelFormControlComponent} from "../../util/form/language-proficiency/language-level-form-control.component";
+import {ActivatedRoute} from "@angular/router";
+import {HttpClient} from "@angular/common/http";
 
 
 @Component({
@@ -48,6 +50,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   @ViewChild('englishLanguage', {static: true}) englishLanguagePicker: LanguageLevelFormControlComponent;
   @ViewChild('otherLanguage', {static: true}) otherLanguagePicker: LanguageLevelFormControlComponent;
   @ViewChild('formWrapper', {static: true}) formWrapper: ElementRef;
+  @ViewChild('downloadCsvErrorModal', {static: true}) downloadCsvErrorModal;
 
   error: any;
   _loading = {
@@ -62,11 +65,13 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     verifiedOccupations: true,
   };
   searching: boolean;
+  exporting: boolean;
 
   searchForm: FormGroup;
   moreFilters: boolean;
   results: SearchResults<Candidate>;
   savedSearch;
+  savedSearchId;
   subscription: Subscription;
   pageNumber: number;
   pageSize: number;
@@ -107,7 +112,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   englishLanguageModel: LanguageLevelFormControlModel;
   otherLanguageModel: LanguageLevelFormControlModel;
 
-  constructor(private fb: FormBuilder,
+  constructor(private http: HttpClient, private fb: FormBuilder,
               private candidateService: CandidateService,
               private nationalityService: NationalityService,
               private countryService: CountryService,
@@ -117,12 +122,15 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
               private educationMajorService: EducationMajorService,
               private candidateOccupationService: CandidateOccupationService,
               private languageLevelService: LanguageLevelService,
-              private modalService: NgbModal) {
+              private modalService: NgbModal,
+              private route: ActivatedRoute) {
   }
 
   get loading() {
     for (let prop of Object.keys(this._loading)) {
-      if (this._loading[prop]) { return true; }
+      if (this._loading[prop]) {
+        return true;
+      }
     }
   }
 
@@ -266,6 +274,20 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
         this._loading.candidateOccupations = false;
       });
 
+    this.route.params.subscribe(params => {
+      this.savedSearchId = params['savedSearchId'];
+      if (this.savedSearchId) {
+        this.savedSearchService.get(this.savedSearchId).subscribe(result => {
+          this.savedSearch = result;
+          this.loadSavedSearch(this.savedSearchId);
+        }, err => {
+          this.error = err;
+        })
+      } else {
+        this.search();
+      }
+    });
+
     /* SEARCH ON CHANGE*/
     this.searchForm.get('shortlistStatus').valueChanges
       .pipe(
@@ -277,11 +299,12 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
           this.search();
         }
       });
-    this.search();
   }
 
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    if (this.subscription){
+      this.subscription.unsubscribe();
+    }
   }
 
   /* MULTI SELECT METHODS */
@@ -316,6 +339,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   /* SEARCH FORM */
   search() {
     this.searching = true;
+    this.results = null;
     this.error = null;
     const request = this.searchForm.value;
     if (request.shortlistStatus == '') {
@@ -338,14 +362,16 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   clearForm() {
     this.searchForm.reset();
-    this.modifiedDatePicker.clearDates();
+    this.searchForm.controls['searchJoinRequests'] = this.fb.array([]);
+
+      this.modifiedDatePicker.clearDates();
     this.englishLanguagePicker.clearProficiencies();
     this.otherLanguagePicker.form.reset();
     this.savedSearch = null;
-   }
+  }
 
   loadSavedSearch(id) {
-    this._loading.savedSearch = true;
+    // this._loading.savedSearch = true;
     this.searchForm.controls['savedSearchId'].patchValue(id);
     this.savedSearchService.load(id).subscribe(
       request => {
@@ -353,7 +379,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       },
       error => {
         this.error = error;
-        this._loading.savedSearch = false;
+        // this._loading.savedSearch = false;
       });
   }
 
@@ -401,7 +427,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
     /* VERIFIED OCCUPATIONS */
     let verifiedOccupations = [];
-    if (request.verifiedOccupationIds) {
+    if (request.verifiedOccupationIds && this.verifiedOccupations) {
       verifiedOccupations = this.verifiedOccupations.filter(c => request.verifiedOccupationIds.indexOf(c.id) != -1);
     }
     this.searchForm.controls['verifiedOccupations'].patchValue(verifiedOccupations);
@@ -414,7 +440,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
     /* UNVERIFIED OCCUPATIONS */
     let occupations = [];
-    if (request.occupationIds) {
+    if (request.occupationIds && this.candidateOccupations) {
       occupations = this.candidateOccupations.filter(c => request.occupationIds.indexOf(c.id) != -1);
     }
     this.searchForm.controls['occupations'].patchValue(occupations);
@@ -433,14 +459,14 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
     /* COUNTRIES */
     let countries = [];
-    if (request.countryIds) {
+    if (request.countryIds && this.countries) {
       countries = this.countries.filter(c => request.countryIds.indexOf(c.id) != -1);
     }
     this.searchForm.controls['countries'].patchValue(countries);
 
     /* EDUCATION MAJORS */
     let educationMajors = [];
-    if (request.educationMajorIds) {
+    if (request.educationMajorIds && this.educationMajors) {
       educationMajors = this.educationMajors.filter(c => request.educationMajorIds.indexOf(c.id) != -1);
     }
     this.searchForm.controls['educationMajors'].patchValue(educationMajors);
@@ -454,7 +480,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
     /* NATIONALITIES */
     let nationalities = [];
-    if (request.nationalityIds) {
+    if (request.nationalityIds && this.nationalities) {
       nationalities = this.nationalities.filter(c => request.nationalityIds.indexOf(c.id) != -1);
     }
     this.searchForm.controls['nationalities'].patchValue(nationalities);
@@ -495,19 +521,23 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       });
   }
 
-  viewCandidate(candidate: Candidate) {
+  deleteSavedSearchJoin(joinToRemove) {
+    this.searchJoinArray.removeAt(this.searchJoinArray.value.findIndex(join => join.name === joinToRemove.name && join.searchType === joinToRemove.searchType))
+  }
+
+    viewCandidate(candidate: Candidate) {
     this.selectedCandidate = candidate;
   }
 
-  handleDateSelected(e: {fromDate: NgbDateStruct, toDate: NgbDateStruct}, control: string) {
+  handleDateSelected(e: { fromDate: NgbDateStruct, toDate: NgbDateStruct }, control: string) {
     if (e.fromDate) {
       // console.log(e);
-      this.searchForm.controls[control + 'From'].patchValue(e.fromDate.year + '-' + ('0' + e.fromDate.month).slice(-2)  + '-' + ('0' + e.fromDate.day).slice(-2));
+      this.searchForm.controls[control + 'From'].patchValue(e.fromDate.year + '-' + ('0' + e.fromDate.month).slice(-2) + '-' + ('0' + e.fromDate.day).slice(-2));
     } else {
       this.searchForm.controls[control + 'From'].patchValue(null);
     }
     if (e.toDate) {
-      this.searchForm.controls[control + 'To'].patchValue(e.toDate.year + '-' + ('0' + e.toDate.month).slice(-2) + '-' +('0' + e.toDate.day).slice(-2));
+      this.searchForm.controls[control + 'To'].patchValue(e.toDate.year + '-' + ('0' + e.toDate.month).slice(-2) + '-' + ('0' + e.toDate.day).slice(-2));
     } else {
       this.searchForm.controls[control + 'To'].patchValue(null);
     }
@@ -534,13 +564,64 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     this.searchForm.controls[control].patchValue(value);
   }
 
-  toggleSort(column){
-    if (this.sortField == column){
+  toggleSort(column) {
+    if (this.sortField == column) {
       this.sortDirection = this.sortDirection == 'ASC' ? 'DESC' : 'ASC';
     } else {
       this.sortField = column;
       this.sortDirection = 'ASC';
     }
     this.search();
+  }
+
+  exportCandidates() {
+    this.exporting = true;
+    let request = this.searchForm.value;
+    request.size = 10000;
+    this.candidateService.export(request).subscribe(
+      result => {
+        let options = {type: 'text/csv;charset=utf-8;'};
+        let filename = 'candidates.csv';
+        this.createAndDownloadBlobFile(result, options, filename);
+        this.exporting = false;
+      },
+      err => {
+        const reader = new FileReader();
+        let _this = this;
+        reader.addEventListener('loadend', function () {
+          if (typeof reader.result === 'string') {
+            _this.error = JSON.parse(reader.result);
+            const modalRef = _this.modalService.open(_this.downloadCsvErrorModal);
+            modalRef.result
+              .then(() => {
+              })
+              .catch(() => {
+              });
+          }
+        });
+        reader.readAsText(err.error);
+        this.exporting = false;
+      }
+    );
+  }
+
+  createAndDownloadBlobFile(body, options, filename) {
+    let blob = new Blob([body], options);
+    if (navigator.msSaveBlob) {
+      // IE 10+
+      navigator.msSaveBlob(blob, filename);
+    } else {
+      let link = document.createElement('a');
+      // Browsers that support HTML5 download attribute
+      if (link.download !== undefined) {
+        let url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    }
   }
 }

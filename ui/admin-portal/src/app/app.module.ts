@@ -101,6 +101,8 @@ import {FileUploadComponent} from "./components/util/file-upload/file-upload.com
 import {CandidateAdditionalInfoTabComponent} from './components/candidates/view/tab/candidate-additional-info-tab/candidate-additional-info-tab.component';
 import {ViewCandidateAdditionalInfoComponent} from './components/candidates/view/additional-info/view-candidate-additional-info.component';
 import {ViewCandidateSkillComponent} from "./components/candidates/view/skill/view-candidate-skill.component";
+import {SavedSearchesComponent} from './components/home/search/saved-searches.component';
+import {EditSavedSearchComponent} from './components/home/search/edit/edit-saved-search.component';
 
 @NgModule({
   declarations: [
@@ -193,7 +195,10 @@ import {ViewCandidateSkillComponent} from "./components/candidates/view/skill/vi
     FileUploadComponent,
     CandidateAdditionalInfoTabComponent,
     ViewCandidateAdditionalInfoComponent,
-    ViewCandidateSkillComponent
+    ViewCandidateSkillComponent,
+    FileUploadComponent,
+    SavedSearchesComponent,
+    EditSavedSearchComponent
   ],
   imports: [
     BrowserModule,
@@ -256,7 +261,9 @@ import {ViewCandidateSkillComponent} from "./components/candidates/view/skill/vi
     ChangePasswordComponent,
     ChangeUsernameComponent,
     CreateCandidateAttachmentComponent,
-    EditCandidateAttachmentComponent
+    EditCandidateAttachmentComponent,
+    CreateCandidateAttachmentComponent,
+    EditSavedSearchComponent
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},

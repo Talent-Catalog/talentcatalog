@@ -26,12 +26,23 @@ export interface SavedSearch {
   maxAge: number;
   minEducationLevel: number;
   educationMajorIds: number[];
+  countryNames: string[];
+  nationalityNames: string[];
+  vettedOccupationNames: string[];
+  occupationNames: string[];
+  educationMajors: string[];
+  englishWrittenLevel: string;
+  englishSpokenLevel: string;
+  otherWrittenLevel: string;
+  otherSpokenLevel: string;
+  minEducationLevelName: string;
 
-  //todo filters
+  searchJoins: SavedSearchJoin[];
 }
 
 export interface SavedSearchJoin {
   savedSearchId: number;
   name: string;
   searchType: 'and' | 'or';
+  childSavedSearch: SavedSearch;
 }

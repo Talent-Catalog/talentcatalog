@@ -9,7 +9,7 @@ spring:
     username: tbbtalent
     password: tbbtalent
   jpa:
-    show-sql: false
+    show-sql: true
     properties:
       hibernate:
         temp:

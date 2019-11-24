@@ -9,6 +9,7 @@ import {LoginComponent} from "./components/login/login.component";
 import {SearchUsersComponent} from "./components/settings/users/search-users.component";
 import {SettingsComponent} from "./components/settings/settings.component";
 import {SearchSavedSearchesComponent} from "./components/candidates/search/saved-search/search-saved-searches.component";
+import {HomeComponent} from "./components/home/home.component";
 
 const routes: Routes = [
   {
@@ -17,8 +18,7 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'candidates',
-        pathMatch: 'full'
+        component: HomeComponent
       },
       {
         path: 'candidates',
