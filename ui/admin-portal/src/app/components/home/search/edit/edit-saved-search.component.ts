@@ -16,6 +16,7 @@ export class EditSavedSearchComponent implements OnInit {
   error;
   loading: boolean;
   saving: boolean;
+  savedSearch;
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
@@ -25,6 +26,7 @@ export class EditSavedSearchComponent implements OnInit {
   ngOnInit() {
     this.loading = true;
     this.savedSearchService.get(this.savedSearchId).subscribe(savedSearch => {
+      this.savedSearch = savedSearch;
       this.savedSearchForm = this.fb.group({
         name: [savedSearch.name, Validators.required]
       });

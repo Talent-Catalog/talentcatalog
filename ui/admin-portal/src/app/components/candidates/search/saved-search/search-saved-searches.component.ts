@@ -38,7 +38,7 @@ export class SearchSavedSearchesComponent implements OnInit {
       keyword: ['']
     });
     this.pageNumber = 1;
-    this.pageSize = 50;
+    this.pageSize = 6;
 
     this.onChanges();
   }

@@ -10,10 +10,10 @@ import {SavedSearchService} from "../../../services/saved-search.service";
 export class SavedSearchComponent implements OnInit {
 
   @Input() savedSearch: SavedSearch;
+  @Input() showAll: boolean;
 
   loading;
   error;
-  showAll;
 
   constructor(private savedSearchService: SavedSearchService) {
   }
