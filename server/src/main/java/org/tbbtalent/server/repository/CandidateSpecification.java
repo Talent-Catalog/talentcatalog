@@ -96,16 +96,26 @@ public class CandidateSpecification {
             // KEYWORD SEARCH
             if (!StringUtils.isBlank(request.getKeyword())) {
                 String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
-                String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
-                conjunction.getExpressions().add(builder.and(builder.or(
-                            builder.like(builder.lower(candidate.get("candidateNumber")), likeMatchTerm),
+                String[] splittedText = lowerCaseMatchTerm.split("\\s+|,\\s*|\\.\\s*");
+                List<Predicate> predicates = new ArrayList<>();
+                for (String s : splittedText) {
+                    String likeMatchTerm = "%" + s + "%";
+                    predicates.add(builder.or(
+                            builder.like(builder.lower(candidate.get("candidateNumber")), lowerCaseMatchTerm),
                             builder.like(builder.lower(user.get("firstName")), likeMatchTerm),
                             builder.like(builder.lower(user.get("lastName")), likeMatchTerm),
                             builder.like(builder.lower(user.get("email")), likeMatchTerm),
-                            builder.like(builder.lower(candidate.get("phone")), likeMatchTerm),
-                            builder.like(builder.lower(candidate.get("whatsapp")), likeMatchTerm),
+                            builder.like(builder.lower(candidate.get("phone")), lowerCaseMatchTerm),
+                            builder.like(builder.lower(candidate.get("whatsapp")), lowerCaseMatchTerm),
                             builder.like(builder.lower(candidate.get("additionalInfo")), likeMatchTerm)
-                    )));
+                    ));
+                }
+                if (predicates.size() > 1){
+                    conjunction.getExpressions().add(builder.and(builder.and(predicates.toArray(new Predicate[0]))));
+                } else {
+                    conjunction.getExpressions().add(builder.and(predicates.toArray(new Predicate[0])));
+                }
+
 
             }
             // STATUS SEARCH
