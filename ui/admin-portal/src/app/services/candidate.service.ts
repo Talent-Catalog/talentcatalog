@@ -16,6 +16,10 @@ export class CandidateService {
     return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/search`, request);
   }
 
+  find(request): Observable<SearchResults<Candidate>> {
+    return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/find`, request);
+  }
+
   get(id: number): Observable<Candidate> {
     return this.http.get<Candidate>(`${this.apiUrl}/${id}`);
   }

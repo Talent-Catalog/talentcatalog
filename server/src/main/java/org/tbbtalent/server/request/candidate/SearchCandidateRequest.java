@@ -48,7 +48,8 @@ public class SearchCandidateRequest extends SearchRequest {
     private Integer maxAge;
     private Integer minEducationLevel;
     private List<Long> educationMajorIds;
-    private ShortlistStatus shortlistStatus;
+    private List<ShortlistStatus> shortlistStatus;
+    private boolean includeNew;
 
     public SearchCandidateRequest() {
         super(Sort.Direction.DESC, new String[]{"id"});
@@ -272,12 +273,20 @@ public class SearchCandidateRequest extends SearchRequest {
         this.searchJoinRequests = searchJoinRequests;
     }
 
-    public ShortlistStatus getShortlistStatus() {
+    public List<ShortlistStatus> getShortlistStatus() {
         return shortlistStatus;
     }
 
-    public void setShortlistStatus(ShortlistStatus shortlistStatus) {
+    public void setShortlistStatus(List<ShortlistStatus> shortlistStatus) {
         this.shortlistStatus = shortlistStatus;
+    }
+
+    public boolean isIncludeNew() {
+        return includeNew;
+    }
+
+    public void setIncludeNew(boolean includeNew) {
+        this.includeNew = includeNew;
     }
 }
 

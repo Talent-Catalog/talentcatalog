@@ -1,6 +1,7 @@
 package org.tbbtalent.server.repository;
 
 import io.jsonwebtoken.lang.Collections;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -72,20 +73,34 @@ public class CandidateSpecification {
             } else {
                 user = candidate.join("user");
                 nationality = candidate.join("nationality");
-                ;
                 country = candidate.join("country");
-                ;
             }
             //Short lists
             if (request.getSavedSearchId() != null) {
-                if (request.getShortlistStatus() != null) {
-                    //Filter for short list candidates by status
-                    Join<Candidate, CandidateShortlistItem> candidateShortlistItem = candidate.join("candidateShortlistItems", JoinType.LEFT);
-                    Join<CandidateShortlistItem, SavedSearch> savedSearch = candidateShortlistItem.join("savedSearch", JoinType.LEFT);
+                if (CollectionUtils.isNotEmpty(request.getShortlistStatus())) {
+                    Predicate pendingPredicate = null;
+                    if (request.getShortlistStatus().contains(ShortlistStatus.pending)) {
+                        Subquery<Candidate> sq = query.subquery(Candidate.class);
+                        Root<Candidate> subCandidate = sq.from(Candidate.class);
+                        Join<Object, Object> subShortList = subCandidate.join("candidateShortlistItems");
+                        Join<Object, Object> subSavedSearch = subShortList.join("savedSearch");
+                        sq.select(subCandidate).where(builder.equal(subSavedSearch.get("id"), request.getSavedSearchId()));
+                        pendingPredicate = builder.not(builder.in(candidate.get("id")).value(sq));
+                    }
 
-                    conjunction.getExpressions().add(
-                            builder.and(builder.equal(candidateShortlistItem.get("shortlistStatus"), request.getShortlistStatus()),
-                                    builder.equal(savedSearch.get("id"), request.getSavedSearchId())));
+                    Subquery<Candidate> sq = query.subquery(Candidate.class);
+                    Root<Candidate> subCandidate = sq.from(Candidate.class);
+                    Join<Object, Object> subShortList = subCandidate.join("candidateShortlistItems");
+                    Join<Object, Object> subSavedSearch = subShortList.join("savedSearch");
+                    sq.select(subCandidate).where(builder.and(builder.equal(subSavedSearch.get("id"), request.getSavedSearchId()), subShortList.get("shortlistStatus").in(request.getShortlistStatus())));
+                    Predicate statusPredicate = builder.in(candidate.get("id")).value(sq);
+
+                    if (pendingPredicate != null) {
+                        conjunction.getExpressions().add(builder.and(builder.or(pendingPredicate, statusPredicate)));
+                    } else {
+                        conjunction.getExpressions().add(statusPredicate);
+                    }
+
                     //Fetch short lists todo only fetch for specific search
                 } else if (query.getResultType().equals(Candidate.class)) {
                     Fetch<Candidate, CandidateShortlistItem> candidateShortlistItem = candidate.fetch("candidateShortlistItems", JoinType.LEFT);
@@ -110,7 +125,7 @@ public class CandidateSpecification {
                             builder.like(builder.lower(candidate.get("additionalInfo")), likeMatchTerm)
                     ));
                 }
-                if (predicates.size() > 1){
+                if (predicates.size() > 1) {
                     conjunction.getExpressions().add(builder.and(builder.and(predicates.toArray(new Predicate[0]))));
                 } else {
                     conjunction.getExpressions().add(builder.and(predicates.toArray(new Predicate[0])));
@@ -172,7 +187,7 @@ public class CandidateSpecification {
                                     builder.like(builder.lower(candidateSkills.get("skill")), likeMatchTerm)
                             ));
                         }
-                        if (predicates.size() > 1){
+                        if (predicates.size() > 1) {
                             conjunction.getExpressions().add(builder.and(builder.or(predicates.toArray(new Predicate[0]))));
                         } else {
                             conjunction.getExpressions().add(builder.and(predicates.toArray(new Predicate[0])));
@@ -197,7 +212,7 @@ public class CandidateSpecification {
                                     builder.like(builder.lower(candidateSkills.get("skill")), likeMatchTerm)
                             ));
                         }
-                        if (predicates.size() > 1){
+                        if (predicates.size() > 1) {
                             conjunction.getExpressions().add(builder.or(
                                     builder.isTrue(occupation.get("id").in(request.getOccupationIds())),
                                     builder.or(builder.or(predicates.toArray(new Predicate[0])))));

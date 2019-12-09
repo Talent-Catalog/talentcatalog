@@ -13,6 +13,8 @@ public interface CandidateService {
 
     Page<Candidate> searchCandidates(SearchCandidateRequest request);
 
+    Page<Candidate> searchCandidates(CandidateQuickSearchRequest request);
+
     Candidate getCandidate(long id);
 
     Candidate createCandidate(CreateCandidateRequest request) throws UsernameTakenException;

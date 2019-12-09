@@ -25,7 +25,7 @@ export class SavedSearchesComponent implements OnInit {
   pageNumber: number;
   pageSize: number;
   results: SearchResults<SavedSearch>;
-  selectedSearch;
+  // selectedSearch;
 
 
   constructor(private fb: FormBuilder,
@@ -68,8 +68,8 @@ export class SavedSearchesComponent implements OnInit {
     });
   }
 
-  selectSearch(savedSearch){
-    this.selectedSearch = savedSearch;
+  openSearch(savedSearch){
+    this.router.navigate(['candidates', 'search', savedSearch.id]);
   }
 
   editSavedSearch(savedSearch) {

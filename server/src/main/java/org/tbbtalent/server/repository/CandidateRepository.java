@@ -1,5 +1,7 @@
 package org.tbbtalent.server.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -20,6 +22,10 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
 
     /* Used for JWT token parsing */
     Candidate findByCandidateNumber(String number);
+
+    @Query(" select distinct c from Candidate c "
+            + " where lower(c.candidateNumber) like lower(:candidateNumber) ")
+    Page<Candidate> searchCandidateNumber(@Param("candidateNumber") String candidateNumber, Pageable pageable);
 
     /* Used for candidate registration to check for existing accounts with different username options */
 //    Candidate findByEmailIgnoreCase(String email);

@@ -169,7 +169,8 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       minEducationLevel: [null],
       educationMajorIds: [[]],
       searchJoinRequests: this.fb.array([]),
-      shortlistStatus: null,
+      shortListStatusField: [null],
+      shortlistStatus: [],
       //for display purposes
       occupations: [[]],
       verifiedOccupations: [[]],
@@ -500,7 +501,8 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     /* Perform a mouse event to force the multi-select components to update */
     this.formWrapper.nativeElement.click();
 
-    this.search();
+    this.searchForm.controls['shortListStatusField'].patchValue('valid');
+    this.setSortListStatus('valid');
   }
 
   get searchJoinArray() {
@@ -572,6 +574,17 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       this.sortDirection = 'ASC';
     }
     this.search();
+  }
+
+  setSortListStatus(value: string){
+    let statuses: string[] = [];
+    if (value == 'valid'){
+      statuses.push('pending', 'verified')
+    } else {
+      statuses.push(value);
+    }
+    this.searchForm.controls['shortlistStatus'].patchValue(statuses);
+
   }
 
   exportCandidates() {

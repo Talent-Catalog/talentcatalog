@@ -5,12 +5,10 @@
 
     <h4>{{candidate.candidateNumber}} <small>{{candidate.status | titlecase}}</small></h4>
 
-    <div class="actions">
-
-      <a class="btn btn-primary" [routerLink]="['/candidates', candidate.id]">View Profile</a>
-
-      <button class="btn btn-secondary" (click)="close()">x</button>
-
+    <div class="btn-toolbar">
+      <button class="btn btn-sm btn-primary" [routerLink]="['/candidates', candidate.id]"><i class="fa fa-folder-open-o"></i></button>
+      <a class="btn btn-sm btn-primary" target="_blank"  [routerLink]="['/candidates', candidate.id]"><i class="fa fa-external-link"></i></a>
+      <button class="btn btn-sm btn-secondary" (click)="close()">x</button>
     </div>
 
   </div>

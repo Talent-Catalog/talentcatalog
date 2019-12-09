@@ -2,6 +2,7 @@
   <div class="container">
     <a class="navbar-brand" [routerLink]="'/'">TBB Admin</a>
 
+
     <button class="navbar-toggler hidden-sm-up" type="button"
             (click)="isNavbarCollapsed = !isNavbarCollapsed"
             data-target="#navbarsDefault" aria-controls="navbarsDefault" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,11 +22,26 @@
         </li>
       </ul>
 
+      <div class="form-group">
+        <input id="savedSearch"
+               type="text" class="form-control"
+               [ngbTypeahead]="doSearch"
+               [resultTemplate]="rt"
+               [inputFormatter]="renderCandidateRow"
+               [editable]="false"
+               (selectItem)="selectSearchResult($event)"
+               placeholder="Search by candidate number ..."/>
+        <ng-template #rt let-r="result" let-t="term">
+          <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
+        </ng-template>
+      </div>
+
+
       <ul class="navbar-nav">
         <li class="nav-item dropdown" ngbDropdown>
 
           <a class="nav-link dropdown-toggle" ngbDropdownToggle>
-            My Account
+            <i class="fa fa-user"></i>
           </a>
           <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
             <a class="dropdown-item" (click)="logout()">Logout</a>

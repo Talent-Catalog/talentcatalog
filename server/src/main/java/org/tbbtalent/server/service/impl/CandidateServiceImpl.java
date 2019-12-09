@@ -81,13 +81,20 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         Specification<Candidate> query = CandidateSpecification.buildSearchQuery(request);
-        if (!request.getSearchJoinRequests().isEmpty()) {
+        if (CollectionUtils.isNotEmpty(request.getSearchJoinRequests())) {
             for (SearchJoinRequest searchJoinRequest : request.getSearchJoinRequests()) {
                 query = addQuery(query, searchJoinRequest, searchIds);
             }
         }
 
         Page<Candidate> candidates = candidateRepository.findAll(query, request.getPageRequestWithoutSort());
+        log.info("Found " + candidates.getTotalElements() + " candidates in search");
+        return candidates;
+    }
+
+    @Override
+    public Page<Candidate> searchCandidates(CandidateQuickSearchRequest request) {
+        Page<Candidate> candidates = candidateRepository.searchCandidateNumber(request.getCandidateNumber()+'%', request.getPageRequestWithoutSort() );
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
         return candidates;
     }

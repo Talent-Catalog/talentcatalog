@@ -1,7 +1,17 @@
-<div class="card" (click)="loadSavedSearch()">
+<div class="card">
   <div *ngIf="loading"><i class="fa fa-spinner"></i></div>
   <div *ngIf="!loading" class="card-body">
-    <div class="row"><strong>{{savedSearch.name}}</strong></div>
+    <div class="row">
+      <div class="w-50"><strong>{{savedSearch.name}}</strong></div>
+      <div class="w-50 text-right">
+        <div class="btn-toolbar"></div>
+        <button class="btn" *ngIf="showMore" (click)="loadSavedSearch()"><i class="fa fa-ellipsis-h" ></i></button>
+        <button class="btn" *ngIf="showOpen" (click)="doOpenSearch()"><i class="fa fa-external-link"></i></button>
+        <button class="btn" *ngIf="showEdit" (click)="doEditSearch()"><i class="fa fa-edit"></i></button>
+        <button class="btn" *ngIf="showDelete" (click)="doDeleteSearch()"><i class="fa fa-trash"></i></button>
+
+      </div>
+    </div>
     <div class="row" *ngIf="showAll">
       <div class="w-100" *ngIf="savedSearch.keyword">Keyword: {{savedSearch.keyword}},</div>
       <div class="w-100" *ngIf="savedSearch.statuses">Statuses: {{savedSearch.statuses}},</div>

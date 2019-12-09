@@ -7,7 +7,6 @@
 
 <div class="d-flex justify-content-between mb-4">
   <h3 class="m-0">Candidate Search</h3>
-  <button class="btn btn-primary" [routerLink]="['create']">Add</button>
 </div>
 
 <div [hidden]="loading">
@@ -319,8 +318,9 @@
     <!-- SHORT LIST STATUS FILTER -->
     <div class="form-group col-12" *ngIf="savedSearch">
       <label for="shortlistStatus">Candidate review status</label>
-      <select class="form-control" id="shortlistStatus" [formControlName]="'shortlistStatus'">
-        <option value="">All</option>
+      <select class="form-control" id="shortlistStatus"  [formControlName]="'shortListStatusField'" (change)="setSortListStatus($event.target.value)">
+        <option value="valid">New And Verified</option>
+        <option value="pending">New</option>
         <option value="verified">Verified</option>
         <option value="rejected">Rejected</option>
       </select>
@@ -394,13 +394,8 @@
         </thead>
 
         <tbody>
-        <tr *ngFor="let candidate of results?.content">
-          <td class="candidate-number">
-            <a (click)="viewCandidate(candidate)">
-              {{candidate.candidateNumber}}
-            </a>
-          </td>
-          <td>{{candidate.user.firstName}}</td>
+        <tr *ngFor="let candidate of results?.content" (click)="viewCandidate(candidate)" [ngClass]="{'selected': selectedCandidate?.id == candidate.id}">
+          <td>{{candidate.candidateNumber}}<td>{{candidate.user.firstName}}</td>
           <td>{{candidate.user.lastName}}</td>
           <td *ngIf="savedSearch">
             <app-candidate-shortlist-item [candidateId]="candidate.id"

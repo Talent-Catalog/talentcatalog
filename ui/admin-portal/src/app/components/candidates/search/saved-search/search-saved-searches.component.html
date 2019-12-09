@@ -41,8 +41,8 @@
 
 
     <tbody>
-    <tr *ngFor="let savedSearch of results?.content" (click)="selectSearch(savedSearch)"  [ngClass]="{'selected': savedSearch.id == selectedSearch?.id}">
-      <td><app-saved-search [savedSearch]="savedSearch" [showAll]="false"></app-saved-search></td>
+    <tr *ngFor="let savedSearch of results?.content">
+      <td><app-saved-search [savedSearch]="savedSearch" [showAll]="false" (openSearch)="openSearch($event)"></app-saved-search></td>
     </tr>
 
     <!-- loading -->

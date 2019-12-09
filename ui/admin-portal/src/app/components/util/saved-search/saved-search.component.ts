@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {SavedSearch} from "../../../model/saved-search";
 import {SavedSearchService} from "../../../services/saved-search.service";
 
@@ -11,6 +11,13 @@ export class SavedSearchComponent implements OnInit {
 
   @Input() savedSearch: SavedSearch;
   @Input() showAll: boolean;
+  @Input() showMore: boolean = true;
+  @Input() showOpen: boolean = true;
+  @Input() showEdit: boolean = false;
+  @Input() showDelete: boolean = false;
+  @Output() openSearch = new EventEmitter<SavedSearch>();
+  @Output() editSearch = new EventEmitter<SavedSearch>();
+  @Output() deleteSearch = new EventEmitter<SavedSearch>();
 
   loading;
   error;
@@ -33,6 +40,18 @@ export class SavedSearchComponent implements OnInit {
       this.loading = false;
       this.error = err;
     })
+  }
+
+  doOpenSearch(){
+    this.openSearch.emit(this.savedSearch);
+  }
+
+  doEditSearch(){
+    this.editSearch.emit(this.savedSearch);
+  }
+
+  doDeleteSearch(){
+    this.deleteSearch.emit(this.savedSearch);
   }
 
 }
