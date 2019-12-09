@@ -59,14 +59,11 @@ export class HeaderComponent implements OnInit {
     this.router.navigate(['login']);
   }
 
+  selectSearchResult ($event, input) {
+    $event.preventDefault();
+    input.value = '';
+    console.log('going to', $event.item);
+    this.router.navigate(['candidates',  $event.item.id]);
 
-
-
-
-
-  selectSearchResult (selectedItem) {
-    console.log('going to', selectedItem.item);
-    this.router.navigate(['candidates',  selectedItem.item.id]);
-
-  };
+  }
 }

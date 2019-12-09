@@ -24,12 +24,12 @@
 
       <div class="form-group">
         <input id="savedSearch"
-               type="text" class="form-control"
+               type="text" class="form-control" #input
                [ngbTypeahead]="doSearch"
                [resultTemplate]="rt"
                [inputFormatter]="renderCandidateRow"
                [editable]="false"
-               (selectItem)="selectSearchResult($event)"
+               (selectItem)="selectSearchResult($event, input)"
                placeholder="Search by candidate number ..."/>
         <ng-template #rt let-r="result" let-t="term">
           <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
