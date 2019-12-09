@@ -122,17 +122,10 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
 
   }
 
-  truncateHTML(text: string): string {
+  showNote(note){
+    note.showDetail = !note.showDetail;
 
-    if(!text || text.length <= this.characterLimit )
-    {
-      return text;
-    }
-
-
-    let without_html = text.replace(/<(?:.|\n)*?>/gm, '');
-    let shortened = without_html.substring(0, this.characterLimit) + "...";
-    return shortened;
   }
+
 
 }

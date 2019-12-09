@@ -1,16 +1,13 @@
-
 <div *ngIf="loading">
   <i class="fa fa-spinner fa-spin"></i> loading...
 </div>
 <div *ngIf="error">
   {{error}}
 </div>
-
-
 <div class="h3" *ngIf="!loading">
-  Notes
-  <div class="pull-right" *ngIf="editable">
-    <button type="button" class="btn btn-sm btn-primary" (click)="createCandidateNote()"><i class="fa fa-plus"></i></button>
+  <div class="text-right" *ngIf="editable">
+    <button type="button" class="btn btn-sm btn-primary" (click)="createCandidateNote()"><i class="fa fa-plus"></i>
+    </button>
   </div>
 </div>
 
@@ -27,23 +24,20 @@
 <div *ngFor="let candidateNote of notes; let i = index">
   <div class="card">
     <div class="card-header">
-      <div class="pull-right" *ngIf="editable">
-        <button type="button" class="btn btn-sm btn-default" (click)="editCandidateNote(candidateNote)"><i
-          class="fa fa-edit"></i></button>
+        {{candidateNote.title}}
+        <div class="text-right">
+          <div class="btn-toolbar">
+            <button *ngIf="candidateNote.comment" class="btn btn-sm btn-default" (click)="showNote(candidateNote)"><i
+              class="fa fa-ellipsis-h"></i></button>
+            <button *ngIf="editable" class="btn btn-sm btn-default" (click)="editCandidateNote(candidateNote)"><i
+              class="fa fa-edit"></i></button>
+          </div>
       </div>
-      {{candidateNote.title}}
     </div>
 
     <div class="card-body">
-      <div *ngIf="candidateNote.comment">
-        <div *ngIf="!expanded">
-          <div [innerHTML]="truncateHTML(candidateNote.comment)"></div>
-          <button *ngIf="candidateNote.comment.length > characterLimit" type="button" class="btn btn-sm btn-default" (click)="expanded = true"><i class="fa fa-toggle-down"></i></button>
-        </div>
-        <div *ngIf="expanded">
-          <div [innerHTML]="candidateNote.comment"></div>
-          <button type="button" class="btn btn-sm btn-default" (click)="expanded = false"><i class="fa fa-toggle-up"></i></button>
-        </div>
+      <div *ngIf="candidateNote.comment && candidateNote.showDetail">
+        <div [innerHTML]="candidateNote.comment"></div>
       </div>
 
       <div *ngIf="candidateNote">
