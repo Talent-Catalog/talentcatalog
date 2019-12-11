@@ -1,0 +1,15 @@
+<ng-container *ngIf="loading">
+  <i class="fa fa-spinner"></i>
+</ng-container>
+<ng-container *ngIf="!loading">
+  <div class="row ">
+    <div class="col-sm-6">
+      <div class="section p-0">
+        <h6 class="mb-3">Candidates by Nationality</h6>
+        <app-chart [chartData]="nationalityData"></app-chart>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+
