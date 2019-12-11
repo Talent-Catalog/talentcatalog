@@ -43,7 +43,8 @@ public class CandidateOccupationAdminApi {
     @PutMapping("{id}")
     public Map<String, Object> update(@PathVariable("id") long id,
                                       @RequestBody VerifyCandidateOccupationRequest request) {
-        CandidateOccupation candidateOccupation = this.candidateOccupationService.verifyCandidateOccupation(id, request);
+        request.setId(id);
+        CandidateOccupation candidateOccupation = this.candidateOccupationService.verifyCandidateOccupation(request);
         return candidateOccupationDto().build(candidateOccupation);
     }
 
@@ -61,6 +62,16 @@ public class CandidateOccupationAdminApi {
                 .add("occupation", occupationDto())
                 .add("yearsExperience")
                 .add("verified")
+                .add("updatedBy", userDto())
+                .add("updatedDate")
+                ;
+    }
+
+    private DtoBuilder userDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("firstName")
+                .add("lastName")
                 ;
     }
 

@@ -28,6 +28,7 @@ import org.tbbtalent.server.service.email.EmailHelper;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
@@ -446,6 +447,12 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    public List<DataRow> getNationalityStats() {
+        List<DataRow> nationalityDateRows = candidateRepository.countByNationalityOrderByCount();
+        return limitRows(nationalityDateRows, 15);
+    }
+
+    @Override
     public void exportToCsv(SearchCandidateRequest request, PrintWriter writer) {
         try (CSVWriter csvWriter = new CSVWriter(writer)) {
 
@@ -527,6 +534,23 @@ public class CandidateServiceImpl implements CandidateService {
         return buffer.toString();
 
     }
+
+    private List<DataRow> limitRows(List<DataRow> rawData, int limit) {
+        if (rawData.size() > limit) {
+            List<DataRow> result = new ArrayList<>(rawData.subList(0, limit - 1));
+            BigDecimal other = BigDecimal.ZERO;
+            for (int i = limit-1; i < rawData.size(); i++) {
+                other = other.add(rawData.get(i).getValue());
+            }
+            if (other.compareTo(BigDecimal.ZERO) != 0) {
+                result.add(new DataRow("Other", other));
+            }
+            return result;
+        } else {
+            return rawData;
+        }
+    }
+
 
 
 }

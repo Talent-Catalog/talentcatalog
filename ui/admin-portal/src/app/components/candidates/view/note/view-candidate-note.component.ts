@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from "../../../../model/candidate";
 import {CandidateNote} from "../../../../model/candidate-note";
@@ -17,6 +17,7 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
   @Input() candidate: Candidate;
   @Input() editable: boolean;
   @Input() characterLimit: number;
+  @Output() onResize = new EventEmitter();
 
   candidateNoteForm: FormGroup;
   loading: boolean;
@@ -24,8 +25,7 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
   error;
   notes: CandidateNote[];
   hasMore: boolean;
-  editedNote: CandidateNote;
-  candidateNote: CandidateNote
+  fullPanel: boolean = false;
 
   constructor(private candidateNoteService: CandidateNoteService,
               private modalService: NgbModal,
@@ -124,7 +124,11 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
 
   showNote(note){
     note.showDetail = !note.showDetail;
+  }
 
+  resize(){
+    this.fullPanel = !this.fullPanel;
+    this.onResize.emit()
   }
 
 

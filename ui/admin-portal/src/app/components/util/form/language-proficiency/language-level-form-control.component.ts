@@ -27,7 +27,9 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
 
   constructor(private languageService: LanguageService,
               private languageLevelService: LanguageLevelService,
-              private fb: FormBuilder) { }
+              private fb: FormBuilder) {
+
+  }
 
   ngOnInit() {
     this.form = this.fb.group({

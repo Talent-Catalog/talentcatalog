@@ -16,7 +16,8 @@
   <div>
     <div class="pull-right">
       <div class="input-group">
-        <input type="text" class="form-control" id="status" title="{{candidate.candidateMessage}}" value="{{candidate.status | titlecase}}" disabled>
+        <input type="text" class="form-control" id="status" title="{{candidate.candidateMessage}}"
+               value="{{candidate.status | titlecase}}" disabled>
         <div class="input-group-append">
           <button class="btn btn-outline-dark" (click)="editCandidate()"><i class="fa fa-edit"></i></button>
         </div>
@@ -28,7 +29,7 @@
   </div>
 
   <div class="row">
-    <div class="col-sm-8">
+    <div class="col-sm-{{mainColWidth}}">
       <!-- TABS -->
       <ngb-tabset>
 
@@ -77,29 +78,36 @@
 
       </ngb-tabset>
     </div>
-    <div class="col-sm-4 admin-panel">
-      <!-- TABS -->
-<!--      <ngb-tabset>-->
+    <div class="col-sm-{{sidePanelColWidth}} admin-panel">
+      <div class="w-100">
+        <div class="pull-right">
+          <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
+            class="fa fa-arrow-{{sidePanelColWidth == 8 ? 'right' : 'left'}}"></i></button>
+        </div>
 
-        <!-- HISTORY -->
-<!--        <ngb-tab [title]="'History'">-->
-<!--          <ng-template ngbTabContent>-->
-            <app-candidate-history-tab
-              [candidate]="candidate"
-              [characterLimit]="1000"
-              [editable]="true">
-            </app-candidate-history-tab>
-<!--          </ng-template>-->
-<!--        </ngb-tab>-->
+        <ngb-tabset>
 
-        <!-- HISTORY -->
-<!--        <ngb-tab [title]="'Eligibility'">-->
-<!--          <ng-template ngbTabContent>-->
-<!--            <app-candidate-eligibility-tab></app-candidate-eligibility-tab>-->
-<!--          </ng-template>-->
-<!--        </ngb-tab>-->
+          <!--         HISTORY -->
+          <ngb-tab [title]="'History'">
+            <ng-template ngbTabContent>
+              <app-candidate-history-tab
+                [candidate]="candidate"
+                [characterLimit]="1000"
+                [editable]="true"
+                (onResize)="resizeSidePanel()">
+              </app-candidate-history-tab>
+            </ng-template>
+          </ngb-tab>
 
-<!--      </ngb-tabset>-->
+          <!--         HISTORY -->
+          <ngb-tab [title]="'Audit'">
+            <!--          <ng-template ngbTabContent>-->
+            <!--            <app-candidate-eligibility-tab></app-candidate-eligibility-tab>-->
+            <!--          </ng-template>-->
+          </ngb-tab>
+
+        </ngb-tabset>
+      </div>
     </div>
   </div>
 

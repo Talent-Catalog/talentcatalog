@@ -103,6 +103,9 @@ import {ViewCandidateAdditionalInfoComponent} from './components/candidates/view
 import {ViewCandidateSkillComponent} from "./components/candidates/view/skill/view-candidate-skill.component";
 import {SavedSearchesComponent} from './components/home/search/saved-searches.component';
 import {EditSavedSearchComponent} from './components/home/search/edit/edit-saved-search.component';
+import {ChartsModule} from "ng2-charts";
+import {InfographicComponent} from './components/infograhics/infographic.component';
+import {ChartComponent} from './components/infograhics/chart/chart.component';
 
 @NgModule({
   declarations: [
@@ -198,7 +201,9 @@ import {EditSavedSearchComponent} from './components/home/search/edit/edit-saved
     ViewCandidateSkillComponent,
     FileUploadComponent,
     SavedSearchesComponent,
-    EditSavedSearchComponent
+    EditSavedSearchComponent,
+    InfographicComponent,
+    ChartComponent
   ],
   imports: [
     BrowserModule,
@@ -208,6 +213,7 @@ import {EditSavedSearchComponent} from './components/home/search/edit/edit-saved
     NgbModule,
     InfiniteScrollModule,
     NgMultiSelectDropDownModule.forRoot(),
+    ChartsModule,
     LocalStorageModule.forRoot({
       prefix: 'tbb-admin',
       storageType: 'localStorage'

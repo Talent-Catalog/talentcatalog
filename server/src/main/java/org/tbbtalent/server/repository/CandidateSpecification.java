@@ -22,6 +22,10 @@ public class CandidateSpecification {
             Join nationality = null;
             Join country = null;
             Join<Candidate, CandidateEducation> candidateEducations = null;
+            Join<Candidate, CandidateOccupation> candidateOccupations = null;
+            Join<CandidateOccupation, Occupation> occupation = null;
+            Join<Candidate, CandidateJobExperience> candidateJobExperiences = null;
+            Join<Candidate, CandidateSkill> candidateSkills = null;
 
             conjunction.getExpressions().add(
                     builder.notEqual(candidate.get("status"), CandidateStatus.draft)
@@ -113,6 +117,12 @@ public class CandidateSpecification {
                 String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
                 String[] splittedText = lowerCaseMatchTerm.split("\\s+|,\\s*|\\.\\s*");
                 List<Predicate> predicates = new ArrayList<>();
+                candidateJobExperiences = candidateJobExperiences != null ? candidateJobExperiences : candidate.join("candidateJobExperiences", JoinType.LEFT);
+                candidateSkills = candidateSkills != null ? candidateSkills : candidate.join("candidateSkills", JoinType.LEFT);
+                candidateEducations = candidateEducations == null ? candidate.join("candidateEducations", JoinType.LEFT) : candidateEducations;
+                candidateOccupations = candidate.join("candidateOccupations", JoinType.LEFT);
+                occupation = candidateOccupations.join("occupation", JoinType.LEFT);
+
                 for (String s : splittedText) {
                     String likeMatchTerm = "%" + s + "%";
                     predicates.add(builder.or(
@@ -122,7 +132,13 @@ public class CandidateSpecification {
                             builder.like(builder.lower(user.get("email")), likeMatchTerm),
                             builder.like(builder.lower(candidate.get("phone")), lowerCaseMatchTerm),
                             builder.like(builder.lower(candidate.get("whatsapp")), lowerCaseMatchTerm),
-                            builder.like(builder.lower(candidate.get("additionalInfo")), likeMatchTerm)
+                            builder.like(builder.lower(candidate.get("additionalInfo")), likeMatchTerm),
+                            builder.like(builder.lower(candidateJobExperiences.get("description")), likeMatchTerm),
+                            builder.like(builder.lower(candidateJobExperiences.get("role")), likeMatchTerm),
+                            builder.like(builder.lower(candidateEducations.get("courseName")), likeMatchTerm),
+                            builder.like(builder.lower(candidateOccupations.get("migrationOccupation")), likeMatchTerm),
+                            builder.like(builder.lower(candidateSkills.get("skill")), likeMatchTerm),
+                            builder.like(builder.lower(occupation.get("name")), likeMatchTerm)
                     ));
                 }
                 if (predicates.size() > 1) {
@@ -141,16 +157,14 @@ public class CandidateSpecification {
             }
 
             // occupations SEARCH
-            Join<Candidate, CandidateOccupation> candidateOccupations = null;
-            Join<CandidateOccupation, Occupation> occupation = null;
+
 
             if (!Collections.isEmpty(request.getVerifiedOccupationIds())
                     || !Collections.isEmpty(request.getOccupationIds())
                     || !StringUtils.isBlank(request.getOrProfileKeyword())
             ) {
-                candidateOccupations = candidate.join("candidateOccupations", JoinType.LEFT);
-                occupation = candidateOccupations.join("occupation", JoinType.LEFT);
-
+                candidateOccupations = candidateOccupations != null ? candidateOccupations: candidate.join("candidateOccupations", JoinType.LEFT);
+                occupation = occupation != null ? occupation : candidateOccupations.join("occupation", JoinType.LEFT);
 
                 if (!Collections.isEmpty(request.getVerifiedOccupationIds())) {
                     if (SearchType.not.equals(request.getVerifiedOccupationSearchType())) {
@@ -160,7 +174,6 @@ public class CandidateSpecification {
                                 builder.isTrue(occupation.get("id").in(request.getVerifiedOccupationIds()))
                         ));
                     }
-
                 }
 
                 if (!Collections.isEmpty(request.getOccupationIds()) || !StringUtils.isBlank(request.getOrProfileKeyword())) {
@@ -169,8 +182,8 @@ public class CandidateSpecification {
                                 builder.isTrue(occupation.get("id").in(request.getOccupationIds()))
                         );
                     } else if (Collections.isEmpty(request.getOccupationIds())) {
-                        Join<Candidate, CandidateJobExperience> candidateJobExperiences = candidate.join("candidateJobExperiences", JoinType.LEFT);
-                        Join<Candidate, CandidateSkill> candidateSkills = candidate.join("candidateSkills", JoinType.LEFT);
+                        candidateJobExperiences = candidateJobExperiences != null ? candidateJobExperiences : candidate.join("candidateJobExperiences", JoinType.LEFT);
+                        candidateSkills = candidateSkills != null ? candidateSkills : candidate.join("candidateSkills", JoinType.LEFT);
                         candidateEducations = candidateEducations == null ? candidate.join("candidateEducations", JoinType.LEFT) : candidateEducations;
 
                         String lowerCaseMatchTerm = request.getOrProfileKeyword().toLowerCase();
@@ -184,6 +197,7 @@ public class CandidateSpecification {
                                     builder.like(builder.lower(candidateJobExperiences.get("role")), likeMatchTerm),
                                     builder.like(builder.lower(candidateEducations.get("courseName")), likeMatchTerm),
                                     builder.like(builder.lower(candidateOccupations.get("migrationOccupation")), likeMatchTerm),
+                                    builder.like(builder.lower(occupation.get("name")), likeMatchTerm),
                                     builder.like(builder.lower(candidateSkills.get("skill")), likeMatchTerm)
                             ));
                         }
@@ -195,8 +209,8 @@ public class CandidateSpecification {
 
                     } else {
                         String lowerCaseMatchTerm = request.getOrProfileKeyword().toLowerCase();
-                        Join<Candidate, CandidateJobExperience> candidateJobExperiences = candidate.join("candidateJobExperiences", JoinType.LEFT);
-                        Join<Candidate, CandidateSkill> candidateSkills = candidate.join("candidateSkills", JoinType.LEFT);
+                        candidateJobExperiences = candidateJobExperiences != null ? candidateJobExperiences : candidate.join("candidateJobExperiences", JoinType.LEFT);
+                        candidateSkills = candidateSkills != null ? candidateSkills :candidate.join("candidateSkills", JoinType.LEFT);
                         candidateEducations = candidateEducations == null ? candidate.join("candidateEducations", JoinType.LEFT) : candidateEducations;
 
                         String[] splittedText = lowerCaseMatchTerm.split("\\s+|,\\s*|\\.\\s*");
@@ -241,7 +255,9 @@ public class CandidateSpecification {
                             builder.isTrue(candidate.get("nationality").in(request.getNationalityIds()))
                     );
                 } else {
-
+                    conjunction.getExpressions().add(
+                            builder.isFalse(candidate.get("nationality").in(request.getNationalityIds()))
+                    );
                 }
             }
 
@@ -281,13 +297,13 @@ public class CandidateSpecification {
             //Min / Max Age
             if (request.getMinAge() != null) {
                 LocalDate minDob = LocalDate.now().minusYears(request.getMinAge() + 1);
-                conjunction.getExpressions().add(builder.lessThanOrEqualTo(candidate.get("dob"), minDob));
+                conjunction.getExpressions().add(builder.or(builder.lessThanOrEqualTo(candidate.get("dob"), minDob), builder.isNull(candidate.get("dob"))));
             }
 
             if (request.getMaxAge() != null) {
                 LocalDate maxDob = LocalDate.now().minusYears(request.getMaxAge() + 1);
 
-                conjunction.getExpressions().add(builder.greaterThan(candidate.get("dob"), maxDob));
+                conjunction.getExpressions().add(builder.or(builder.greaterThan(candidate.get("dob"), maxDob), builder.isNull(candidate.get("dob"))));
             }
 
             // EDUCATION LEVEL SEARCH

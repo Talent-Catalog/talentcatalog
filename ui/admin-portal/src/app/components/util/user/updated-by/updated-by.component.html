@@ -9,7 +9,7 @@
 
   <!-- DATE -->
   <span class="date" *ngIf="object?.updatedDate || object?.createdDate">
-    {{ (object.updatedDate ? object.updatedDate : object.createdDate) | date: 'long' }}
+    {{ (object.updatedDate ? object.updatedDate : object.createdDate) | date: 'short' }}
   </span>
 
 </div>

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tbbtalent.server.model.Candidate;
+import org.tbbtalent.server.model.DataRow;
 
 import java.util.List;
 import java.util.Optional;
@@ -96,5 +97,9 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             + " where c.user.id = :id ")
     Candidate findByUserIdLoadProfile(@Param("id") Long userId);
 
-    //TO DO FIND BY COUNTRY ID & FIND BY LANGUAGE ID
+    @Query("select new org.tbbtalent.server.model.DataRow(c.nationality.name, count(c))"
+            + " from Candidate c "
+            +" group by c.nationality.name order by count(c) desc")
+    List<DataRow> countByNationalityOrderByCount();
+
 }

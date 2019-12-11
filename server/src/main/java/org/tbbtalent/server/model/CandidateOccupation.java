@@ -5,7 +5,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "candidate_occupation")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_occupation_id_seq", allocationSize = 1)
-public class CandidateOccupation extends AbstractDomainObject<Long> {
+public class CandidateOccupation extends AbstractAuditableDomainObject<Long> {
 
 
     @ManyToOne(fetch = FetchType.LAZY)

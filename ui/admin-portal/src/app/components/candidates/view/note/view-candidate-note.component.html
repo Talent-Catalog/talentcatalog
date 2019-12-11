@@ -4,8 +4,9 @@
 <div *ngIf="error">
   {{error}}
 </div>
-<div class="h3" *ngIf="!loading">
-  <div class="text-right" *ngIf="editable">
+<div class="h3" *ngIf="!loading && editable">
+  Notes
+  <div class="pull-right">
     <button type="button" class="btn btn-sm btn-primary" (click)="createCandidateNote()"><i class="fa fa-plus"></i>
     </button>
   </div>

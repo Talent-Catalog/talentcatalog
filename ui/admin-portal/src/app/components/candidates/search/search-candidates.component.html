@@ -395,7 +395,10 @@
 
         <tbody>
         <tr *ngFor="let candidate of results?.content" (click)="viewCandidate(candidate)" [ngClass]="{'selected': selectedCandidate?.id == candidate.id}">
-          <td>{{candidate.candidateNumber}}<td>{{candidate.user.firstName}}</td>
+          <td><a class="btn btn-sm" target="_blank"  [routerLink]="['/candidates', candidate.id]" title="Open in new window"><i class="fa fa-external-link"></i></a>
+            {{candidate.candidateNumber}}
+          </td>
+          <td>{{candidate.user.firstName}}</td>
           <td>{{candidate.user.lastName}}</td>
           <td *ngIf="savedSearch">
             <app-candidate-shortlist-item [candidateId]="candidate.id"

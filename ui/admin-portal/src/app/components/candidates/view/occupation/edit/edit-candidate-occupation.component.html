@@ -66,6 +66,11 @@
         </div>
 
       </div>
+      <div class="row">
+        <div class="col-12">
+          <app-updated-by *ngIf="candidateOccupation.updatedDate" [object]="candidateOccupation"></app-updated-by>
+        </div>
+      </div>
 
 
       <div class="modal-footer">
@@ -76,6 +81,7 @@
         </button>
       </div>
     </form>
+
 
   </div>
 </div>

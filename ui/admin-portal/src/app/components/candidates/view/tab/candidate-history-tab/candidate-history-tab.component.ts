@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {Candidate} from "../../../../../model/candidate";
 
 @Component({
@@ -11,6 +11,7 @@ export class CandidateHistoryTabComponent implements OnInit, OnChanges {
   @Input() characterLimit: number;
   @Input() candidate: Candidate;
   @Input() editable: boolean;
+  @Output() onResize = new EventEmitter();
 
 
 
@@ -36,5 +37,9 @@ export class CandidateHistoryTabComponent implements OnInit, OnChanges {
 
   onAddNote($event) {
     // TODO
+  }
+
+  resize(){
+    this.onResize.emit();
   }
 }

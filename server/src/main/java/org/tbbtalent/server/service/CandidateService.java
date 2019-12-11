@@ -3,11 +3,13 @@ package org.tbbtalent.server.service;
 import org.springframework.data.domain.Page;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.Candidate;
+import org.tbbtalent.server.model.DataRow;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.candidate.*;
 
 import java.io.PrintWriter;
 import java.rmi.server.ExportException;
+import java.util.List;
 
 public interface CandidateService {
 
@@ -52,4 +54,6 @@ public interface CandidateService {
     Candidate findByCandidateNumber(String candidateNumber);
 
     void exportToCsv(SearchCandidateRequest request, PrintWriter writer) throws ExportException;
+
+    List<DataRow> getNationalityStats();
 }

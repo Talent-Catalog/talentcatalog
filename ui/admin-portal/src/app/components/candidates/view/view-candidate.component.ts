@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { CandidateService } from '../../../services/candidate.service';
-import { Candidate } from '../../../model/candidate';
-import { ActivatedRoute, Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { DeleteCandidateComponent } from './delete/delete-candidate.component';
+import {Component, OnInit} from '@angular/core';
+import {CandidateService} from '../../../services/candidate.service';
+import {Candidate} from '../../../model/candidate';
+import {ActivatedRoute, Router} from '@angular/router';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {DeleteCandidateComponent} from './delete/delete-candidate.component';
 import {EditCandidateStatusComponent} from "./status/edit-candidate-status.component";
 
 @Component({
@@ -16,6 +16,8 @@ export class ViewCandidateComponent implements OnInit {
   loading: boolean;
   error;
   candidate: Candidate;
+  mainColWidth=8;
+  sidePanelColWidth=4;
 
   constructor(private candidateService: CandidateService,
               private route: ActivatedRoute,
@@ -50,5 +52,13 @@ export class ViewCandidateComponent implements OnInit {
     modal.result.then(result => {
       this.candidate = result;
     });
+  }
+
+  resizeSidePanel(){
+
+    this.mainColWidth = this.mainColWidth == 8 ? this.mainColWidth - 4 : this.mainColWidth + 4;
+    this.sidePanelColWidth = this.mainColWidth == 4 ? this.sidePanelColWidth + 4 : this.sidePanelColWidth - 4;
+    console.log(this.mainColWidth);
+    console.log(this.sidePanelColWidth);
   }
 }

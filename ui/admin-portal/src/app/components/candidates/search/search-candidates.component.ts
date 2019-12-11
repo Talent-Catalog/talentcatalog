@@ -37,6 +37,7 @@ import {DateRangePickerComponent} from "../../util/form/date-range-picker/date-r
 import {LanguageLevelFormControlComponent} from "../../util/form/language-proficiency/language-level-form-control.component";
 import {ActivatedRoute} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
+import {LocalStorageService} from "angular-2-local-storage";
 
 
 @Component({
@@ -123,23 +124,8 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
               private candidateOccupationService: CandidateOccupationService,
               private languageLevelService: LanguageLevelService,
               private modalService: NgbModal,
+              private localStorage: LocalStorageService,
               private route: ActivatedRoute) {
-  }
-
-  get loading() {
-    for (let prop of Object.keys(this._loading)) {
-      if (this._loading[prop]) {
-        return true;
-      }
-    }
-  }
-
-  ngOnInit() {
-    this.moreFilters = false;
-    this.selectedCandidate = null;
-    this.pageNumber = 1;
-    this.pageSize = 50;
-
     /* SET UP FORM */
     this.searchForm = this.fb.group({
       savedSearchId: [null],
@@ -180,6 +166,25 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       statusesDisplay: [[]],
 
     });
+
+  }
+
+  get loading() {
+    for (let prop of Object.keys(this._loading)) {
+      if (this._loading[prop]) {
+        return true;
+      }
+    }
+
+  }
+
+  ngOnInit() {
+    this.moreFilters = false;
+    this.selectedCandidate = null;
+    this.pageNumber = 1;
+    this.pageSize = 50;
+
+
 
     /* LOAD NATIONALITIES */
     this.nationalityService.listNationalities().subscribe(
@@ -281,13 +286,25 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
         this.savedSearchService.get(this.savedSearchId).subscribe(result => {
           this.savedSearch = result;
           this.loadSavedSearch(this.savedSearchId);
+          console.log('searching as shortlist changes');
+
         }, err => {
           this.error = err;
         })
       } else {
         this.search();
+        console.log('generic search');
+        let localStorageSearchRequest = JSON.parse(localStorage.getItem("searchRequest"));
+        console.log(localStorageSearchRequest);
+        console.log(this.searchForm);
+        if (localStorageSearchRequest){
+          this.populateFormWithSavedSearch(localStorageSearchRequest);
+        }
+
       }
     });
+
+
 
     /* SEARCH ON CHANGE*/
     this.searchForm.get('shortlistStatus').valueChanges
@@ -296,11 +313,15 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
         distinctUntilChanged()
       )
       .subscribe(res => {
+        console.log('searching as shortlist changes');
         if (!this.searching) {
           this.search();
         }
       });
+
+
   }
+
 
   ngOnDestroy(): void {
     if (this.subscription){
@@ -311,21 +332,21 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   /* MULTI SELECT METHODS */
   onItemSelect(item: any, formControlName: string) {
     const values = this.searchForm.controls[formControlName].value || [];
-    const addValue = item.id || item;
+    const addValue = item.id != null ? item.id : item;
     values.push(addValue);
     this.searchForm.controls[formControlName].patchValue(values);
   }
 
   onSelectAll(items: any[], formControlName: string) {
     const values = this.searchForm.controls[formControlName].value || [];
-    items = items.map(i => i.id || i);
+    items = items.map(i =>  i.id != null ? i.id : i);
     values.push(...items);
     this.searchForm.controls[formControlName].patchValue(values);
   }
 
   onItemDeSelect(item: any, formControlName: string) {
     const values = this.searchForm.controls[formControlName].value || [];
-    const removeValue = item.id || item;
+    const removeValue = item.id != null ? item.id : item;
     const indexToRemove = values.findIndex(val => val === removeValue);
     if (indexToRemove >= 0) {
       values.splice(indexToRemove, 1);
@@ -350,6 +371,8 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     request.pageSize = this.pageSize;
     request.sortFields = [this.sortField];
     request.sortDirection = this.sortDirection;
+    localStorage.setItem("searchRequest", JSON.stringify(request));
+
     this.subscription = this.candidateService.search(request).subscribe(
       results => {
         this.results = results;
@@ -363,9 +386,11 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   clearForm() {
     this.searchForm.reset();
-    this.searchForm.controls['searchJoinRequests'] = this.fb.array([]);
+    while (this.searchJoinArray.length) {
+      this.searchJoinArray.removeAt(0); // Clear the form array
+    }
 
-      this.modifiedDatePicker.clearDates();
+    this.modifiedDatePicker.clearDates();
     this.englishLanguagePicker.clearProficiencies();
     this.otherLanguagePicker.form.reset();
     this.savedSearch = null;
@@ -417,7 +442,8 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   }
 
   populateFormWithSavedSearch(request) {
-
+    console.log(request);
+    console.log(this.searchForm);
     /* Do a blanket patch of all form fields */
     Object.keys(this.searchForm.controls).forEach(name => {
       this.searchForm.controls[name].patchValue(request[name]);
@@ -517,7 +543,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
     joinSavedSearchComponent.result
       .then((join) => {
-        this.searchJoinArray.push(this.fb.group(join))
+        this.searchJoinArray.push(this.fb.group(join));
       })
       .catch(() => { /* Isn't possible */
       });

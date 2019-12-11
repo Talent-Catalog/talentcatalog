@@ -10,6 +10,7 @@ import {SearchUsersComponent} from "./components/settings/users/search-users.com
 import {SettingsComponent} from "./components/settings/settings.component";
 import {SearchSavedSearchesComponent} from "./components/candidates/search/saved-search/search-saved-searches.component";
 import {HomeComponent} from "./components/home/home.component";
+import {InfographicComponent} from "./components/infograhics/infographic.component";
 
 const routes: Routes = [
   {
@@ -62,6 +63,16 @@ const routes: Routes = [
           {
             path: 'users',
             component: SearchUsersComponent
+          }
+        ]
+      },
+      {
+        path:  'infographics',
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            component: InfographicComponent
           }
         ]
       }

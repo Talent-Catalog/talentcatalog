@@ -1,3 +1,4 @@
+<script src="../view-candidate-occupation.component.ts"></script>
 <div *ngIf="loading">
   <i class="fa fa-spinner fa-spin"></i> loading...
 </div>
@@ -59,7 +60,7 @@
 
         <div class="col-12">
           <small class="text-muted">
-            {{experience.startDate | date }} - {{experience.endDate | date }}
+            {{experience.startDate | date :'MMM-yyyy' }} - {{experience.endDate | date :'MMM-yyyy'}}
           </small>
         </div>
 

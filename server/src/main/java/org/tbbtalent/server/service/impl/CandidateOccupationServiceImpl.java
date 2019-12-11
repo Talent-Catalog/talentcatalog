@@ -21,6 +21,9 @@ import org.tbbtalent.server.request.note.CreateCandidateNoteRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.CandidateNoteService;
 import org.tbbtalent.server.service.CandidateOccupationService;
+import org.tbbtalent.server.service.audit.Audit;
+import org.tbbtalent.server.service.audit.AuditAction;
+import org.tbbtalent.server.service.audit.AuditType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -167,9 +170,10 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
     }
 
     @Override
-    public CandidateOccupation verifyCandidateOccupation(long id, VerifyCandidateOccupationRequest request) {
-        CandidateOccupation candidateOccupation = candidateOccupationRepository.findByIdLoadCandidate(id)
-                .orElseThrow(() -> new NoSuchObjectException(CandidateOccupation.class, id));
+    @Audit(type = AuditType.CANDIDATE_OCCUPATION, action = AuditAction.VERIFY, extraInfo = "Set verified to {input.verified} with comment: {input.comment}")
+    public CandidateOccupation verifyCandidateOccupation(VerifyCandidateOccupationRequest request) {
+        CandidateOccupation candidateOccupation = candidateOccupationRepository.findByIdLoadCandidate(request.getId())
+                .orElseThrow(() -> new NoSuchObjectException(CandidateOccupation.class, request.getId()));
 
         // Load the verified occupation from the database - throw an exception if not found
         Occupation verifiedOccupation = occupationRepository.findById(request.getOccupationId())
@@ -184,6 +188,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         candidateOccupation.setOccupation(verifiedOccupation);
         candidateOccupation.setVerified(request.isVerified());
 
+        candidateOccupation.setAuditFields(userContext.getLoggedInUser());
         candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(candidateOccupation.getCandidate().getId(),
                 candidateOccupation.getOccupation().getName() +" verification status set to "+request.isVerified(), request.getComment()));
 

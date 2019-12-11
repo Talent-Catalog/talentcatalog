@@ -26,5 +26,5 @@ public interface CandidateOccupationService {
 
     List<CandidateOccupation> updateCandidateOccupations(UpdateCandidateOccupationsRequest request);
 
-    CandidateOccupation verifyCandidateOccupation(long id, VerifyCandidateOccupationRequest request);
+    CandidateOccupation verifyCandidateOccupation(VerifyCandidateOccupationRequest request);
 }
