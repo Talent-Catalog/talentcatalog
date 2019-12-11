@@ -26,7 +26,6 @@ export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
     candidate: true
   };
   error;
-  candidateOccupation: CandidateOccupation;
   candidateOccupations: CandidateOccupation[];
   experiences: CandidateJobExperience[];
   orderOccupation: boolean;
@@ -50,7 +49,7 @@ export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
       pageSize: 10,
       pageNumber: 0,
       sortDirection: 'DESC',
-      sortFields: [['endDate']]
+      sortFields: [['startDate']]
     });
     if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
       this.doSearch();
