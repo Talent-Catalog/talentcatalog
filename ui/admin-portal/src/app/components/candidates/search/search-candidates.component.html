@@ -318,7 +318,8 @@
     <!-- SHORT LIST STATUS FILTER -->
     <div class="form-group col-12" *ngIf="savedSearch">
       <label for="shortlistStatus">Candidate review status</label>
-      <select class="form-control" id="shortlistStatus"  [formControlName]="'shortListStatusField'" (change)="setSortListStatus($event.target.value)">
+      <select class="form-control" id="shortlistStatus" [formControlName]="'shortListStatusField'"
+              (change)="setSortListStatus($event.target.value)">
         <option value="valid">New And Verified</option>
         <option value="pending">New</option>
         <option value="verified">Verified</option>
@@ -390,12 +391,14 @@
             <app-sorted-by [column]="'gender'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
             Gender
           </th>
+          <th></th>
         </tr>
         </thead>
 
         <tbody>
-        <tr *ngFor="let candidate of results?.content" (click)="viewCandidate(candidate)" [ngClass]="{'selected': selectedCandidate?.id == candidate.id}">
-          <td><a class="btn btn-sm" target="_blank"  [routerLink]="['/candidates', candidate.id]" title="Open in new window"><i class="fa fa-external-link"></i></a>
+        <tr *ngFor="let candidate of results?.content" (click)="viewCandidate(candidate)"
+            [ngClass]="{'selected': selectedCandidate?.id == candidate.id}">
+          <td>
             {{candidate.candidateNumber}}
           </td>
           <td>{{candidate.user.firstName}}</td>
@@ -409,6 +412,18 @@
           <td>{{candidate.nationality?.name}}</td>
           <td>{{candidate.country?.name}}</td>
           <td>{{candidate.gender | titlecase}}</td>
+          <td>
+            <div ngbDropdown placement="bottom-right" (click)="$event.stopPropagation();">
+              <button class="btn btn-xs hide-after" ngbDropdownToggle>
+                <i class="fa fa-ellipsis-h"></i>
+              </button>
+              <ul ngbDropdownMenu>
+                <li ngbDropdownItem (click)="downloadCv(candidate)">Download CV</li>
+                <li class="dropdown-divider"></li>
+                <li ngbDropdownItem><a target="_blank" class="no-link" [routerLink]="['/candidates', candidate.id]">Open in new tab</a></li>
+              </ul>
+            </div>
+          </td>
 
         </tr>
 

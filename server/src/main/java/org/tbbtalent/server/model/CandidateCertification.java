@@ -2,7 +2,6 @@ package org.tbbtalent.server.model;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.Date;
 
 @Entity
 @Table(name = "candidate_certification")
@@ -18,6 +17,13 @@ public class CandidateCertification extends AbstractDomainObject<Long>  {
     private LocalDate dateCompleted;
 
     public CandidateCertification() {
+    }
+
+    public CandidateCertification(Candidate candidate, String name, String institution, LocalDate dateCompleted) {
+        this.candidate = candidate;
+        this.name = name;
+        this.institution = institution;
+        this.dateCompleted = dateCompleted;
     }
 
     public Candidate getCandidate() {

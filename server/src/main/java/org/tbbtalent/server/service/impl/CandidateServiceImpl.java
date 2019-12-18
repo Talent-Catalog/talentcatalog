@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
@@ -25,6 +26,7 @@ import org.tbbtalent.server.service.CandidateNoteService;
 import org.tbbtalent.server.service.CandidateService;
 import org.tbbtalent.server.service.SavedSearchService;
 import org.tbbtalent.server.service.email.EmailHelper;
+import org.tbbtalent.server.service.pdf.PdfHelper;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -33,7 +35,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class CandidateServiceImpl implements CandidateService {
@@ -50,6 +51,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final SavedSearchService savedSearchService;
     private final CandidateNoteService candidateNoteService;
     private final EmailHelper emailHelper;
+    private final PdfHelper pdfHelper;
 
     @Autowired
     public CandidateServiceImpl(UserRepository userRepository,
@@ -61,7 +63,7 @@ public class CandidateServiceImpl implements CandidateService {
                                 UserContext userContext,
                                 SavedSearchService savedSearchService,
                                 CandidateNoteService candidateNoteService,
-                                EmailHelper emailHelper) {
+                                EmailHelper emailHelper, PdfHelper pdfHelper) {
         this.userRepository = userRepository;
         this.candidateRepository = candidateRepository;
         this.countryRepository = countryRepository;
@@ -72,6 +74,7 @@ public class CandidateServiceImpl implements CandidateService {
         this.savedSearchService = savedSearchService;
         this.candidateNoteService = candidateNoteService;
         this.emailHelper = emailHelper;
+        this.pdfHelper = pdfHelper;
     }
 
     @Override
@@ -453,6 +456,11 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    public Resource generateCv(Candidate candidate) {
+       return pdfHelper.generatePdf(candidate);
+    }
+
+    @Override
     public void exportToCsv(SearchCandidateRequest request, PrintWriter writer) {
         try (CSVWriter csvWriter = new CSVWriter(writer)) {
 
@@ -496,7 +504,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-    public String formatCandidateMajor(Set<CandidateEducation> candidateEducations){
+    public String formatCandidateMajor(List<CandidateEducation> candidateEducations){
         StringBuffer buffer = new StringBuffer();
         if (!CollectionUtils.isEmpty(candidateEducations)){
             for (CandidateEducation candidateEducation : candidateEducations) {
@@ -509,7 +517,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     }
 
-    public String formatCandidateOccupation(Set<CandidateOccupation> candidateOccupations){
+    public String formatCandidateOccupation(List<CandidateOccupation> candidateOccupations){
         StringBuffer buffer = new StringBuffer();
         if (!CollectionUtils.isEmpty(candidateOccupations)){
             for (CandidateOccupation candidateOccupation : candidateOccupations) {
@@ -522,7 +530,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     }
 
-    public String getEnglishSpokenProficiency(Set<CandidateLanguage> candidateLanguages){
+    public String getEnglishSpokenProficiency(List<CandidateLanguage> candidateLanguages){
         StringBuffer buffer = new StringBuffer();
         if (!CollectionUtils.isEmpty(candidateLanguages)){
             for (CandidateLanguage candidateLanguage : candidateLanguages) {

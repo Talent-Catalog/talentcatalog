@@ -1,5 +1,6 @@
 package org.tbbtalent.server.service;
 
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.Candidate;
@@ -56,4 +57,6 @@ public interface CandidateService {
     void exportToCsv(SearchCandidateRequest request, PrintWriter writer) throws ExportException;
 
     List<DataRow> getNationalityStats();
+
+    Resource generateCv(Candidate candidate);
 }

@@ -1,6 +1,8 @@
 package org.tbbtalent.server.api.admin;
 
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +14,7 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
 import java.rmi.server.ExportException;
 import java.util.Map;
 
@@ -76,6 +79,22 @@ public class CandidateAdminApi {
                        HttpServletResponse response) throws IOException, ExportException {
         response.setHeader("Content-Disposition", "attachment; filename=\"" + "candidates.csv\"");
         candidateService.exportToCsv(request, response.getWriter());
+    }
+
+    @GetMapping(value = "{id}/cv.pdf")
+    public void downloadStudentListAsPdf(@PathVariable("id") long id, HttpServletResponse response)
+            throws IOException {
+
+        Candidate candidate = candidateService.getCandidate(id);
+        String name = candidate.getUser().getDisplayName()+"-"+ "CV";
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=" + name + ".pdf");
+
+        Resource report = candidateService.generateCv(candidate);
+        try (InputStream reportStream = report.getInputStream()) {
+            IOUtils.copy(reportStream, response.getOutputStream());
+            response.flushBuffer();
+        }
     }
 
     private DtoBuilder candidateBaseDto() {

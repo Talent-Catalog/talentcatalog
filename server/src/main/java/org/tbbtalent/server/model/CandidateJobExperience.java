@@ -31,6 +31,18 @@ public class CandidateJobExperience extends AbstractDomainObject<Long> {
     public CandidateJobExperience() {
     }
 
+    public CandidateJobExperience(Candidate candidate, Country country, CandidateOccupation candidateOccupation, String companyName, String role, LocalDate startDate, LocalDate endDate, String description) {
+
+        this.candidate = candidate;
+        this.country = country;
+        this.candidateOccupation = candidateOccupation;
+        this.companyName = companyName;
+        this.role = role;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.description = description;
+    }
+
     public Candidate getCandidate() {
         return candidate;
     }
@@ -82,4 +94,6 @@ public class CandidateJobExperience extends AbstractDomainObject<Long> {
     public String getDescription() { return description; }
 
     public void setDescription(String description) { this.description = description; }
+
+
 }

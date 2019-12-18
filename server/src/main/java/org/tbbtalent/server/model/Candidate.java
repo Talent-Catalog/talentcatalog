@@ -3,8 +3,7 @@ package org.tbbtalent.server.model;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Table(name = "candidate")
@@ -52,25 +51,25 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private User registered_by;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
-    private Set<CandidateOccupation> candidateOccupations = new HashSet<>();
+    private List<CandidateOccupation> candidateOccupations;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
-    private Set<CandidateEducation> candidateEducations = new HashSet<>();
+    private List<CandidateEducation> candidateEducations;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
-    private Set<CandidateLanguage> candidateLanguages = new HashSet<>();
+    private List<CandidateLanguage> candidateLanguages;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
-    private Set<CandidateJobExperience> candidateJobExperiences = new HashSet<>();
+    private List<CandidateJobExperience> candidateJobExperiences;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
-    private Set<CandidateCertification> candidateCertifications = new HashSet<>();
+    private List<CandidateCertification> candidateCertifications;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
-    private Set<CandidateShortlistItem> candidateShortlistItems = new HashSet<>();
+    private List<CandidateShortlistItem> candidateShortlistItems;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
-    private Set<CandidateSkill> candidateSkills = new HashSet<>();
+    private List<CandidateSkill> candidateSkills;
 
     //old data only links to candidate needs to be searchable
     @OneToOne(fetch = FetchType.LAZY)
@@ -243,51 +242,51 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.registered_by = registered_by;
     }
 
-    public Set<CandidateOccupation> getCandidateOccupations() {
+    public List<CandidateOccupation> getCandidateOccupations() {
         return candidateOccupations;
     }
 
-    public void setCandidateOccupations(Set<CandidateOccupation> candidateOccupations) {
+    public void setCandidateOccupations(List<CandidateOccupation> candidateOccupations) {
         this.candidateOccupations = candidateOccupations;
     }
 
-    public Set<CandidateEducation> getCandidateEducations() {
+    public List<CandidateEducation> getCandidateEducations() {
         return candidateEducations;
     }
 
-    public void setCandidateEducations(Set<CandidateEducation> candidateEducations) {
+    public void setCandidateEducations(List<CandidateEducation> candidateEducations) {
         this.candidateEducations = candidateEducations;
     }
 
-    public Set<CandidateLanguage> getCandidateLanguages() {
+    public List<CandidateLanguage> getCandidateLanguages() {
         return candidateLanguages;
     }
 
-    public void setCandidateLanguages(Set<CandidateLanguage> candidateLanguages) {
+    public void setCandidateLanguages(List<CandidateLanguage> candidateLanguages) {
         this.candidateLanguages = candidateLanguages;
     }
 
-    public Set<CandidateJobExperience> getCandidateJobExperiences() {
+    public List<CandidateJobExperience> getCandidateJobExperiences() {
         return candidateJobExperiences;
     }
 
-    public void setCandidateJobExperiences(Set<CandidateJobExperience> candidateJobExperiences) {
+    public void setCandidateJobExperiences(List<CandidateJobExperience> candidateJobExperiences) {
         this.candidateJobExperiences = candidateJobExperiences;
     }
 
-    public Set<CandidateCertification> getCandidateCertifications() {
+    public List<CandidateCertification> getCandidateCertifications() {
         return candidateCertifications;
     }
 
-    public void setCandidateCertifications(Set<CandidateCertification> candidateCertifications) {
+    public void setCandidateCertifications(List<CandidateCertification> candidateCertifications) {
         this.candidateCertifications = candidateCertifications;
     }
 
-    public Set<CandidateShortlistItem> getCandidateShortlistItems() {
+    public List<CandidateShortlistItem> getCandidateShortlistItems() {
         return candidateShortlistItems;
     }
 
-    public void setCandidateShortlistItems(Set<CandidateShortlistItem> candidateShortlistItems) {
+    public void setCandidateShortlistItems(List<CandidateShortlistItem> candidateShortlistItems) {
         this.candidateShortlistItems = candidateShortlistItems;
     }
 
@@ -300,11 +299,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.migrationEducationMajor = migrationEducationMajor;
     }
 
-    public Set<CandidateSkill> getCandidateSkills() {
+    public List<CandidateSkill> getCandidateSkills() {
         return candidateSkills;
     }
 
-    public void setCandidateSkills(Set<CandidateSkill> candidateSkills) {
+    public void setCandidateSkills(List<CandidateSkill> candidateSkills) {
         this.candidateSkills = candidateSkills;
     }
 

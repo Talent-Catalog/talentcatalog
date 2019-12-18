@@ -33,6 +33,18 @@ public class CandidateEducation extends AbstractDomainObject<Long> {
     public CandidateEducation() {
     }
 
+    public CandidateEducation(Candidate candidate, EducationType educationType, Country country, EducationMajor educationMajor, Integer lengthOfCourseYears, String institution, String courseName, Integer yearCompleted, Boolean incomplete) {
+        this.candidate = candidate;
+        this.educationType = educationType;
+        this.country = country;
+        this.educationMajor = educationMajor;
+        this.lengthOfCourseYears = lengthOfCourseYears;
+        this.institution = institution;
+        this.courseName = courseName;
+        this.yearCompleted = yearCompleted;
+        this.incomplete = incomplete;
+    }
+
     public Candidate getCandidate() {
         return candidate;
     }

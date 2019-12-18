@@ -4,6 +4,7 @@ import {Observable} from 'rxjs/index';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
+import {map} from "rxjs/operators";
 
 @Injectable({providedIn: 'root'})
 export class CandidateService {
@@ -42,6 +43,12 @@ export class CandidateService {
 
   export(request) {
     return this.http.post(`${this.apiUrl}/export/csv`, request, {responseType: 'blob'});
+  }
+
+  downloadCv(candidateId: number) {
+    return this.http.get(`${this.apiUrl}/${candidateId}/cv.pdf`, {responseType: 'blob'}).pipe(map(res => {
+      return new Blob([res], { type: 'application/pdf', });
+    }));
   }
 
 

@@ -663,4 +663,20 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       }
     }
   }
+
+  downloadCv(candidate){
+    let tab = window.open();
+    this.candidateService.downloadCv(candidate.id).subscribe(
+      result => {
+        console.log(result);
+        const fileUrl = URL.createObjectURL(result);
+        tab.location.href = fileUrl;
+      },
+      error => {
+          this.error = error;
+      }
+    )
+  }
+
+
 }
