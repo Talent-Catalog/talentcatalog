@@ -47,7 +47,7 @@ Download and install the latest of the following tools:
 ```
 Started TbbTalentApplication in 2.217 seconds (JVM running for 2.99)
 ```
-- your server will be running on port 8080
+- your server will be running on port 8080 (can be overriden by setting server.port)
 - To test it open a browser to [http://localhost:8080/test]()
 
 
