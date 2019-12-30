@@ -29,11 +29,16 @@ Download and install the latest of the following tools:
 - PostgreSQL [https://www.postgresql.org/download/]()
 - NodeJS [https://nodejs.org/en/]()
 - Angular CLI [https://angular.io/cli]()
+- Flyway [https://flywaydb.org/]()
 - IntelliJ IDEA (or the IDE of your choice) [https://www.jetbrains.com/idea/download/]()
+
+(On a Mac, installing with Homebrew works well. eg "brew install node" to install Node.js. 
+However, Flyway and Postgres don't install with Homebrew)
 
 ### Setup your local database ###
 
-- todo: we don't have a database yet, so this step will be filled in later
+- The database details are defined in bundle/all/resources/application.yml
+- The database is populated/updated using Flyway at start up - see TbbTalentApplication
 
 ### Download and edit the code ###
 
@@ -47,7 +52,8 @@ Download and install the latest of the following tools:
 ```
 Started TbbTalentApplication in 2.217 seconds (JVM running for 2.99)
 ```
-- your server will be running on port 8080 (can be overriden by setting server.port)
+- your server will be running on port 8080 
+(can be overriden by setting server.port and updating environment.ts in portals)
 - To test it open a browser to [http://localhost:8080/test]()
 
 
