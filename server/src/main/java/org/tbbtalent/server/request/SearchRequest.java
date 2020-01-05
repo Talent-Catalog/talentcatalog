@@ -3,9 +3,6 @@ package org.tbbtalent.server.request;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class SearchRequest {
     private Integer pageSize;
     private Integer pageNumber;
@@ -61,7 +58,7 @@ public class SearchRequest {
             return PageRequest.of(
                     pageNumber != null ? pageNumber : 0,
                     pageSize != null ? pageSize : 25,
-                    new Sort(sortDirection, sortFields));
+                    Sort.by(sortDirection, sortFields));
         }
     }
 
