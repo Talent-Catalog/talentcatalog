@@ -69,7 +69,7 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
 
   ngOnChanges(c: SimpleChanges) {
     if (c.form && c.form.currentValue !== c.form.previousValue
-      &&c.model && c.model.currentValue !== c.model.previousValue) {
+      && c.model && c.model.currentValue !== c.model.previousValue) {
       this.form.patchValue(c.model.currentValue);
     }
   }
@@ -118,5 +118,6 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
     for (let key of Object.keys(model)) {
       this.form.controls[key].patchValue(model[key]);
     }
+
   }
 }

@@ -68,6 +68,8 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   searching: boolean;
   exporting: boolean;
 
+  searchKey = 'searchRequest';
+
   searchForm: FormGroup;
   moreFilters: boolean;
   results: SearchResults<Candidate>;
@@ -182,7 +184,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     this.moreFilters = false;
     this.selectedCandidate = null;
     this.pageNumber = 1;
-    this.pageSize = 50;
+    this.pageSize = 20;
 
 
 
@@ -286,21 +288,21 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
         this.savedSearchService.get(this.savedSearchId).subscribe(result => {
           this.savedSearch = result;
           this.loadSavedSearch(this.savedSearchId);
-          console.log('searching as shortlist changes');
-
         }, err => {
           this.error = err;
         })
       } else {
-        this.search();
-        console.log('generic search');
-        let localStorageSearchRequest = JSON.parse(localStorage.getItem("searchRequest"));
+        let localStorageSearchRequest = JSON.parse(localStorage.getItem(this.searchKey));
         console.log(localStorageSearchRequest);
         console.log(this.searchForm);
         if (localStorageSearchRequest){
-          this.populateFormWithSavedSearch(localStorageSearchRequest);
+          setTimeout(() => {
+            this.populateFormWithSavedSearch(localStorageSearchRequest);
+            this.search();
+          }, 200);
+        } else {
+          this.search();
         }
-
       }
     });
 
@@ -371,7 +373,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     request.pageSize = this.pageSize;
     request.sortFields = [this.sortField];
     request.sortDirection = this.sortDirection;
-    localStorage.setItem("searchRequest", JSON.stringify(request));
+    localStorage.setItem(this.searchKey, JSON.stringify(request));
 
     this.subscription = this.candidateService.search(request).subscribe(
       results => {
