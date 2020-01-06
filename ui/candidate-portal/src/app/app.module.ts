@@ -47,6 +47,7 @@ import {InputFilterDirective} from './directives/input-filter.directive';
 import {CustomDateAdapter, CustomDateParserFormatter} from "./util/date-adapter/ngb-date-adapter";
 import {UserPipe} from './pipes/user.pipe';
 import {TrimPipe} from './pipes/trim.pipe';
+import {MonthPickerComponent} from './components/common/month-picker/month-picker.component';
 
 export function createTranslateLoader(http: HttpClient) {
     return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -88,7 +89,8 @@ export function createTranslateLoader(http: HttpClient) {
     FileUploadComponent,
     InputFilterDirective,
     UserPipe,
-    TrimPipe
+    TrimPipe,
+    MonthPickerComponent
   ],
   imports: [
     BrowserModule,

@@ -100,6 +100,7 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
 
   save() {
     this.saving = true;
+    console.log(this.form.value);
     if (this.form.value.id) {
       this.jobExperienceService.updateJobExperience(this.form.value).subscribe(
         (response) => this.emitSaveEvent(response),

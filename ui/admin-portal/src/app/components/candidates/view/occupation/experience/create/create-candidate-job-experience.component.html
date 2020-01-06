@@ -41,17 +41,14 @@
       <!-- START DATE -->
       <div class="form-group">
         <label for="startDate">Start Date</label>
-        <input type="date" id="startDate" class="form-control" [formControlName]="'startDate'" datepicker-popup
-               is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions"
-               date-disabled="disabled(date, mode)" ng-required="true" close-text="Close"/>
+        <app-month-picker id="startDate" [control]="candidateForm.get('startDate')"></app-month-picker>
       </div>
 
       <!-- END DATE -->
       <div class="form-group">
         <label for="endDate">End Date</label>
-        <input type="date" id="endDate" class="form-control" [formControlName]="'endDate'" datepicker-popup
-               is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions"
-               date-disabled="disabled(date, mode)" close-text="Close"/>
+        <app-month-picker id="endDate" [control]="candidateForm.get('endDate')"></app-month-picker>
+
       </div>
 
       <!-- FULL TIME -->

@@ -55,10 +55,7 @@ export class ViewCandidateComponent implements OnInit {
   }
 
   resizeSidePanel(){
-
     this.mainColWidth = this.mainColWidth == 8 ? this.mainColWidth - 4 : this.mainColWidth + 4;
     this.sidePanelColWidth = this.mainColWidth == 4 ? this.sidePanelColWidth + 4 : this.sidePanelColWidth - 4;
-    console.log(this.mainColWidth);
-    console.log(this.sidePanelColWidth);
   }
 }

@@ -11,7 +11,7 @@ import {SearchCandidatesComponent} from './components/candidates/search/search-c
 import {HomeComponent} from './components/home/home.component';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {CreateCandidateComponent} from './components/candidates/create/create-candidate.component';
-import {ReactiveFormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ViewCandidateComponent} from './components/candidates/view/view-candidate.component';
 import {EditCandidateStatusComponent} from './components/candidates/view/status/edit-candidate-status.component';
 import {DeleteCandidateComponent} from './components/candidates/view/delete/delete-candidate.component';
@@ -106,6 +106,7 @@ import {EditSavedSearchComponent} from './components/home/search/edit/edit-saved
 import {ChartsModule} from "ng2-charts";
 import {InfographicComponent} from './components/infograhics/infographic.component';
 import {ChartComponent} from './components/infograhics/chart/chart.component';
+import {MonthPickerComponent} from "./components/util/month-picker/month-picker.component";
 
 @NgModule({
   declarations: [
@@ -203,7 +204,8 @@ import {ChartComponent} from './components/infograhics/chart/chart.component';
     SavedSearchesComponent,
     EditSavedSearchComponent,
     InfographicComponent,
-    ChartComponent
+    ChartComponent,
+    MonthPickerComponent
   ],
   imports: [
     BrowserModule,
@@ -211,6 +213,7 @@ import {ChartComponent} from './components/infograhics/chart/chart.component';
     HttpClientModule,
     ReactiveFormsModule,
     NgbModule,
+    FormsModule,
     InfiniteScrollModule,
     NgMultiSelectDropDownModule.forRoot(),
     ChartsModule,

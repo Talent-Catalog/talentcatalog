@@ -11,9 +11,11 @@
         {{ 'FORM.JOBEXPERIENCE.LABEL.CANDIDATEOCCUPATIONID' | translate }} <sup>*</sup>
       </label>
 
-      <select class="form-control" name="candidateOccupationId" id="candidateOccupationId" [formControlName]="'candidateOccupationId'">
+      <select class="form-control" name="candidateOccupationId" id="candidateOccupationId"
+              [formControlName]="'candidateOccupationId'">
         <option value=""></option>
-        <option *ngFor="let candidateOccupation of candidateOccupations" [value]="candidateOccupation.id">{{candidateOccupation.occupation.name}}</option>
+        <option *ngFor="let candidateOccupation of candidateOccupations"
+                [value]="candidateOccupation.id">{{candidateOccupation.occupation.name}}</option>
       </select>
 
       <app-form-control-error [control]="form.controls.candidateOccupationId"></app-form-control-error>
@@ -55,29 +57,7 @@
       <label for="startDate">
         {{ 'FORM.JOBEXPERIENCE.LABEL.STARTDATE' | translate }} <sup>*</sup>
       </label>
-
-      <div class="input-group">
-        <input id="startDate" type="text" class="form-control" placeholder="YYYY-MM"
-               ngbDatepicker #startDate="ngbDatepicker"
-               [formControlName]="'startDate'"
-               (dateSelect)="form.controls.startDate.markAsDirty()"
-               [autoClose]="true"
-               [outsideDays]="'hidden'"
-               [container]="'#startDate'">
-
-        <div class="input-group-append">
-          <small class="btn btn-link text-secondary" *ngIf="form.controls.startDate.value"
-                 (click)="form.controls.startDate.patchValue(null); form.controls.startDate.markAsDirty();">
-            <span>{{ 'FORM.LABEL.CLEAR' | translate }}</span>
-          </small>
-
-          <div class="btn btn-link" *ngIf="!form.controls.startDate.value"
-               (click)="startDate.toggle()">
-            <span>{{ 'FORM.LABEL.CHOOSE' | translate}}</span>
-          </div>
-        </div>
-      </div>
-
+      <app-month-picker id="startDate" [control]="form.get('startDate')"></app-month-picker>
       <app-form-control-error [control]="form.controls.startDate"></app-form-control-error>
     </div>
   </div>
@@ -88,30 +68,9 @@
       <label for="endDate">
         {{ 'FORM.JOBEXPERIENCE.LABEL.ENDDATE' | translate }}
       </label>
-
-      <div class="input-group">
-        <input id="endDate" type="text" class="form-control" placeholder="YYYY-MM"
-               ngbDatepicker #endDate="ngbDatepicker"
-               [formControlName]="'endDate'"
-               (dateSelect)="form.controls.endDate.markAsDirty()"
-               [autoClose]="true"
-               [outsideDays]="'hidden'"
-               [container]="'#endDate'">
-
-        <div class="input-group-append">
-          <small class="btn btn-link text-secondary" *ngIf="form.controls.endDate.value"
-                 (click)="form.controls.endDate.patchValue(null); form.controls.endDate.markAsDirty();">
-            <span>{{ 'FORM.LABEL.CLEAR' | translate }}</span>
-          </small>
-
-          <div class="btn btn-link" *ngIf="!form.controls.endDate.value"
-               (click)="endDate.toggle()">
-            <span>{{ 'FORM.LABEL.CHOOSE' | translate}}</span>
-          </div>
-        </div>
-      </div>
-
+      <app-month-picker id="endDate" [control]="form.get('endDate')"></app-month-picker>
       <app-form-control-error [control]="form.controls.endDate"></app-form-control-error>
+
     </div>
   </div>
 
@@ -141,7 +100,8 @@
         {{ 'FORM.JOBEXPERIENCE.LABEL.DESCRIPTION' | translate }} <sup>*</sup>
       </label>
 
-      <textarea class="form-control" id="description" placeholder="" rows="5" [formControlName]="'description'"></textarea>
+      <textarea class="form-control" id="description" placeholder="" rows="5"
+                [formControlName]="'description'"></textarea>
 
       <app-form-control-error [control]="form.controls.description"></app-form-control-error>
     </div>
