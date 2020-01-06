@@ -1,0 +1,83 @@
+<!-- LOADING -->
+<div *ngIf="loading">
+  <i class="fa fa-spinner fa-spin"></i> loading...
+</div>
+
+<!-- ERROR -->
+<div *ngIf="error">
+  {{error}}
+</div>
+
+<ng-container *ngIf="!loading">
+
+  <!-- ORDER BY -->
+  <div class="dropdown" ngbDropdown>
+    <a class="dropdown-toggle btn btn-sm" ngbDropdownToggle>
+      Order By {{orderOccupation ? 'Occupation' : 'Date'}}
+    </a>
+    <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
+      <a class="dropdown-item" (click)="orderOccupation = true">Occupation</a>
+      <a class="dropdown-item" (click)="orderOccupation = false">Date</a>
+    </div>
+  </div>
+
+  <!-- OCCUPATION VIEW -->
+  <ng-container *ngIf="orderOccupation">
+
+    <app-view-candidate-job-experience *ngFor="let occupation of candidateOccupations"
+                                       [candidate]="candidate"
+                                       [candidateOccupation]="occupation"
+                                       [editable]="editable">
+    </app-view-candidate-job-experience>
+
+  </ng-container>
+
+  <!-- EXPERIENCE VIEW -->
+  <ng-container *ngIf="!orderOccupation">
+
+    <div class="card mb-4" *ngFor="let experience of experiences">
+
+      <!-- HEADER -->
+      <div class="card-header">
+        <span>{{experience.role}}</span>
+
+        <div class="pull-right" *ngIf="editable">
+          <button type="button" class="btn btn-default" (click)="editCandidateJobExperience(experience)"><i
+            class="fa fa-edit"></i></button>
+        </div>
+      </div>
+
+      <!-- BODY -->
+      <div class="card-body">
+
+        <div class="row">
+
+          <!-- DESCRIPTION -->
+          <div class="col-12" *ngIf="experience.description">
+            {{experience.description}}
+          </div>
+
+          <!-- COMPANY DETAILS -->
+          <div class="col-12">
+            <span>{{experience.companyName}}, {{experience.country.name}}</span>
+          </div>
+
+          <!-- DATES -->
+          <div class="col-12">
+            <span class="text-muted small">{{experience.startDate | date }} - {{experience.endDate | date }}</span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="text-center" *ngIf="hasMore">
+      <button class="btn btn-primary" (click)="loadJobExperiences(true)">Load more</button>
+    </div>
+
+  </ng-container>
+
+</ng-container>
+

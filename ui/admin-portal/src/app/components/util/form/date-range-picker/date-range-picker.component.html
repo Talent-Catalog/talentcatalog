@@ -1,0 +1,32 @@
+<div class="input-group" id="date-container">
+  <input class="form-control" placeholder="yyyy-mm-dd" name="dp" ngbDatepicker #picker="ngbDatepicker"
+         [autoClose]="'outside'"
+         [dayTemplate]="t"
+         [displayMonths]="2"
+         [outsideDays]="'hidden'"
+         [container]="'#date-container'"
+         [value]="displayDate"
+         (dateSelect)="selectDate($event)">
+
+  <div class="input-group-append">
+
+    <button class="btn btn-outline-secondary calendar" (click)="clearDates()">
+      <span class="fa fa-close"></span>
+    </button>
+
+    <button class="btn btn-outline-secondary calendar" (click)="picker.toggle()">
+      <span class="fa fa-calendar"></span>
+    </button>
+  </div>
+</div>
+
+<ng-template #t let-date let-focused="focused">
+  <span class="custom-day"
+        [class.focused]="focused"
+        [class.range]="isRange(date)"
+        [class.faded]="isHovered(date) || isInside(date)"
+        (mouseenter)="hoveredDate = date"
+        (mouseleave)="hoveredDate = null">
+    {{ date.day }}
+  </span>
+</ng-template>

@@ -1,0 +1,81 @@
+<div class="container">
+
+  <app-loading [loading]="loading"></app-loading>
+
+  <ng-container *ngIf="!loading">
+
+    <h2>{{ ('HOME.TITLE' | translate:{name: (user | user: 'fullName') ? ' ' + (user | user: 'fullName') : '' }) | trim }}!</h2>
+
+    <ng-container [ngSwitch]="candidate?.status">
+
+      <!-- DRAFT - prompt candidate to complete registration -->
+      <ng-container *ngSwitchCase="'draft'">
+        <p>
+          {{ 'HOME.DRAFT.EXPLANATION' | translate }}
+        </p>
+
+        <div class="text-left">
+          <a class="btn btn-primary" [routerLink]="'/register'">{{ 'HOME.DRAFT.BUTTON' | translate }}</a>
+        </div>
+      </ng-container>
+
+      <!-- PENDING - prompt the user to review their profile -->
+      <ng-container *ngSwitchCase="'pending'">
+        <p>
+          {{ 'HOME.PENDING.EXPLANATION' | translate }}
+        </p>
+
+        <div class="text-left">
+          <a class="btn btn-primary" [routerLink]="'/profile'">{{ 'HOME.PENDING.BUTTON' | translate }}</a>
+        </div>
+      </ng-container>
+
+      <!-- ACTIVE - prompt the user to review their profile -->
+      <ng-container *ngSwitchCase="'active'">
+        <p>
+          {{ 'HOME.ACTIVE.EXPLANATION' | translate }}
+        </p>
+
+        <div class="text-left">
+          <a class="btn btn-primary" [routerLink]="'/profile'">{{ 'HOME.ACTIVE.BUTTON' | translate }}</a>
+        </div>
+      </ng-container>
+
+      <!-- EMPLOYED - prompt the user to review their profile -->
+      <ng-container *ngSwitchCase="'employed'">
+        <p>
+          {{ 'HOME.EMPLOYED.EXPLANATION' | translate }}
+        </p>
+
+        <div class="text-left">
+          <a class="btn btn-primary" [routerLink]="'/profile'">{{ 'HOME.ACTIVE.BUTTON' | translate }}</a>
+        </div>
+      </ng-container>
+
+      <!-- INCOMPLETE - show reason and ability to resubmit?? -->
+      <ng-container *ngSwitchCase="'incomplete'">
+        <p>
+          {{ 'HOME.INCOMPLETE.EXPLANATION' | translate }}
+        </p>
+
+        <p class="alert alert-warning" *ngIf="candidate.candidateMessage">
+          {{candidate.candidateMessage}}
+        </p>
+
+        <div class="text-left">
+          <a class="btn btn-primary" [routerLink]="'/register'">{{ 'HOME.INCOMPLETE.BUTTON' | translate }}</a>
+        </div>
+      </ng-container>
+
+      <!-- default -->
+      <ng-container *ngSwitchDefault>
+        <p>
+          {{ 'HOME.INACTIVE.EXPLANATION' | translate }}
+        </p>
+      </ng-container>
+
+    </ng-container>
+
+  </ng-container>
+
+</div>

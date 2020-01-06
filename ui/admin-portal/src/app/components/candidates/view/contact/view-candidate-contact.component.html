@@ -1,0 +1,92 @@
+<div *ngIf="loading">
+  <i class="fa fa-spinner fa-spin"></i> loading...
+</div>
+<div *ngIf="error">
+  {{error}}
+</div>
+<div class="card" *ngIf="!loading">
+
+  <div class="card-header">
+    Contact Information
+    <div class="pull-right" *ngIf="editable">
+      <button class="btn btn-sm btn-outline-secondary" (click)="editContactDetails()">
+        <i class="fa fa-edit"></i></button>
+    </div>
+  </div>
+
+  <div class="card-body">
+
+    <div class="row">
+
+      <div class="form-group col-12">
+        <label class="col-form-label">
+          <i class="fa fa-map-marker"></i>
+          Address
+        </label>
+
+        <div class="form-control-plaintext address">
+
+          <span class="field" *ngIf="candidate.address1">{{candidate.address1}}</span>
+
+          <span class="comma"></span>
+
+          <span class="field" *ngIf="candidate.city">{{candidate.city}}</span>
+
+          <span class="comma"></span>
+
+          <span class="field" *ngIf="candidate.country">{{candidate.country?.name}}</span>
+
+        </div>
+      </div>
+
+      <div class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fa fa-phone"></i>Phone</label>
+
+        <div class="form-control-plaintext">
+          <span>{{candidate.phone}}</span>
+        </div>
+      </div>
+
+      <div class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fa fa-gift"></i>D.O.B.</label>
+
+        <div class="form-control-plaintext">
+          <span>{{candidate.dob}}</span>
+        </div>
+      </div>
+
+      <div class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fa fa-whatsapp"></i>Whatsapp</label>
+
+        <div class="form-control-plaintext">
+          <span>{{candidate.whatsapp}}</span>
+        </div>
+      </div>
+
+      <div class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fa fa-envelope"></i>Email</label>
+
+        <div class="form-control-plaintext">
+          <span>{{candidate.user.email}}</span>
+        </div>
+      </div>
+
+      <div class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fa fa-globe"></i>Nationality</label>
+
+        <div class="form-control-plaintext">
+          <span>{{candidate.nationality?.name}}</span>
+        </div>
+      </div>
+
+      <div class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fa fa-calendar"></i> Year of arrival</label>
+
+        <div class="form-control-plaintext">
+          <span>{{candidate.yearOfArrival}}</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

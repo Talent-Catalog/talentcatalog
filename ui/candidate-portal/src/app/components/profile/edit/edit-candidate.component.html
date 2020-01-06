@@ -1,0 +1,56 @@
+<div class="container-fluid step-header">
+
+  <div class="container">
+
+    <h5>{{ 'EDIT.TITLE.EDITING' | translate }}</h5>
+
+    <h3>{{ 'EDIT.TITLE.' + (section | uppercase) | translate }}</h3>
+
+  </div>
+
+</div>
+
+<div class="step-body" [ngSwitch]="section">
+
+  <app-registration-contact *ngSwitchCase="'contact'"
+                            [edit]="true"
+                            (onSave)="handleSave()">
+  </app-registration-contact>
+
+  <app-registration-personal *ngSwitchCase="'personal'"
+                             [edit]="true"
+                             (onSave)="handleSave()">
+  </app-registration-personal>
+
+  <app-registration-candidate-occupation *ngSwitchCase="'occupations'"
+                                         [edit]="true"
+                                         (onSave)="handleSave()">
+  </app-registration-candidate-occupation>
+
+  <app-registration-work-experience *ngSwitchCase="'experience'"
+                                    [edit]="true"
+                                    (onSave)="handleSave()">
+  </app-registration-work-experience>
+
+  <app-registration-education *ngSwitchCase="'education'"
+                              [edit]="true"
+                              (onSave)="handleSave()">
+  </app-registration-education>
+
+  <app-registration-language *ngSwitchCase="'languages'"
+                             [edit]="true"
+                             (onSave)="handleSave()">
+  </app-registration-language>
+
+  <app-registration-certifications *ngSwitchCase="'certifications'"
+                                   [edit]="true"
+                                   (onSave)="handleSave()">
+  </app-registration-certifications>
+
+  <app-registration-additional-info *ngSwitchCase="'other'"
+                                    [edit]="true"
+                                    (onSave)="handleSave()"
+                                    [submitApplication]="false">
+  </app-registration-additional-info>
+
+</div>

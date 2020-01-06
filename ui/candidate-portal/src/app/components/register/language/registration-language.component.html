@@ -1,0 +1,78 @@
+<div class="container">
+
+  <app-loading [loading]="loading"></app-loading>
+
+  <ng-container *ngIf="!loading">
+
+    <!-- REVIEW LANGUAGES -->
+    <div class="card" *ngFor="let language of candidateLanguages; let i = index;">
+
+      <app-candidate-language-card [language]="language"
+                                   [languages]="languages"
+                                   [languageLevels]="languageLevels"
+                                   (onDelete)="deleteCandidateLanguage(i)">
+      </app-candidate-language-card>
+
+    </div>
+
+    <!-- LANGUAGE FORM -->
+    <form class="card" [formGroup]="form" *ngIf="addingLanguage">
+
+      <!-- WHICH LANGUAGE -->
+      <div class="form-group" *ngIf="!isEnglish()">
+        <label for="id">{{ 'REGISTRATION.LANGUAGE.LABEL.LANGUAGE' | translate }} <sup>*</sup></label>
+        <select class="form-control" name="id" id="id" [disabled]="" [formControlName]="'languageId'">
+          <option value=""></option>
+          <option *ngFor="let l of filteredLanguages" [value]="l.id">{{l.name}}</option>
+        </select>
+      </div>
+
+      <ng-container *ngIf="selectedFormLanguage">
+
+        <!-- HOW WELL DO YOU SPEAK -->
+        <div class="form-group">
+          <label for="spokenLevelId">
+            {{ 'REGISTRATION.LANGUAGE.LABEL.SPEAK' | translate:{languageName: getLanguageName()} }} <sup>*</sup>
+          </label>
+          <select class="form-control" name="spokenLevelId" id="spokenLevelId" [formControlName]="'spokenLevelId'">
+            <option value=""></option>
+            <option *ngFor="let l of languageLevels" [value]="l.id">{{l.name}}</option>
+          </select>
+        </div>
+
+        <!-- HOW WELL DO YOU READ AND WRITE -->
+        <div class="form-group">
+          <label for="writtenLevelId">
+            {{ 'REGISTRATION.LANGUAGE.LABEL.WRITTEN' | translate:{languageName: getLanguageName()} }} <sup>*</sup>
+          </label>
+          <select class="form-control" name="writtenLevelId" id="writtenLevelId" [formControlName]="'writtenLevelId'">
+            <option value=""></option>
+            <option *ngFor="let l of languageLevels" [value]="l.id">{{l.name}}</option>
+          </select>
+        </div>
+
+      </ng-container>
+
+    </form>
+
+    <div class="text-center mt-4">
+      <button class="btn"
+              [class.btn-outline-primary]="!addingLanguage"
+              [class.btn-primary]="addingLanguage"
+              [disabled]="addingLanguage && form.invalid || saving || loading"
+              (click)="addLanguage()">
+        {{ 'REGISTRATION.LANGUAGE.BUTTON.ADD' | translate }}
+      </button>
+    </div>
+
+    <app-error [error]="error"></app-error>
+
+  </ng-container>
+
+</div>
+
+<app-registration-footer [nextDisabled]="loading || saving"
+                         [type]="edit ? 'update' : 'step'"
+                         (backClicked)="edit ? cancel() : back() "
+                         (nextClicked)="next()">
+</app-registration-footer>

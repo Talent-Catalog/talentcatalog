@@ -1,0 +1,53 @@
+<div *ngIf="loading">
+  <i class="fa fa-spinner fa-spin"></i> loading...
+</div>
+<div *ngIf="error">
+  {{error}}
+</div>
+<div class="card" *ngIf="!loading">
+
+  <div class="card-header">
+    Account Information
+<!--    <div class="pull-right" *ngIf="editable">-->
+<!--      <button type="button" class="btn btn-default" (click)="editAccountDetails()"><i-->
+<!--        class="fa fa-edit"></i></button>-->
+<!--    </div>-->
+  </div>
+
+  <div class="card-body">
+    <div class="row">
+
+      <div class="form-group col-sm-12 col-md-6">
+        <label class="col-form-label">Account Created:</label>
+        <div >
+          <span class="form-control-plaintext">{{user.createdDate | date: 'medium' }}</span>
+        </div>
+      </div>
+      <div class="form-group col-sm-12 col-md-6">
+        <label class="col-form-label">Last Logged In:</label>
+        <div >
+          <span class="form-control-plaintext">{{user.lastLogin | date: 'medium' }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group col-sm-12 col-md-6">
+        <label class="col-form-label">Username:</label>
+        <div>
+          <span class="form-control-plaintext">{{user.username}}</span>
+          <span><a class="small" [routerLink]="" (click)="updateUsername(user)">update</a></span>
+        </div>
+      </div>
+      <div class="form-group col-sm-12 col-md-6">
+        <label class="col-form-label">Password:</label>
+        <div>
+          <span class="form-control-plaintext">*********</span>
+          <span><a class="small" [routerLink]="" (click)="updatePassword(user)">reset</a></span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

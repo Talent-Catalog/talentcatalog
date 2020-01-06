@@ -1,0 +1,15 @@
+<div class="text-muted small">
+
+  <span>Last updated</span>
+
+  <!-- NAME -->
+  <span class="name" *ngIf="object?.updatedBy || object?.createdBy">
+    {{ (object.updatedBy ? object.updatedBy : object.createdBy) | user: 'fullName'}}
+  </span>
+
+  <!-- DATE -->
+  <span class="date" *ngIf="object?.updatedDate || object?.createdDate">
+    {{ (object.updatedDate ? object.updatedDate : object.createdDate) | date: 'short' }}
+  </span>
+
+</div>

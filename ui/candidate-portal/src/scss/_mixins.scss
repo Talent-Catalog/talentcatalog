@@ -1,0 +1,35 @@
+// Setup a colour map
+$variables: (
+  primary-lightest: #e9f7fc,
+  primary-lighter: #a7e2f4,
+  primary-light: #4fc6ea,
+  primary: #0eb1e3,
+  primary-dark: #0b81a6,
+  primary-darker: #075168,
+
+  accent-lightest: #fcf9eb,
+  accent-lighter: #f0e39d,
+  accent-light: #e7d362,
+  accent: #dec328,
+  accent-dark: #a28e1e,
+  accent-darker: #655913,
+
+  text-primary: #272b2b,
+  text-secondary: #888888,
+  text-inactive: #b0b1b1,
+
+  border: #d7d8d8,
+  background: #f2f2f2
+);
+
+@mixin color($color-key: 'primary') {
+  color: map_get($variables, $color-key);
+}
+
+@mixin background-color($color-key: 'primary') {
+  background-color: map_get($variables, $color-key);
+}
+
+@mixin border-color($color-key: 'primary') {
+  border-color: map_get($variables, $color-key);
+}

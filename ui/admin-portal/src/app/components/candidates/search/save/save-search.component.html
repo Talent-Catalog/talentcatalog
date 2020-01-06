@@ -1,0 +1,49 @@
+<div class="modal-header">
+
+  <h4 class="modal-title">Save Search</h4>
+
+  <button type="button" class="close" aria-label="Close" (click)="dismiss()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+
+</div>
+
+<div class="modal-body">
+
+  <div class="alert alert-danger" *ngIf="error">
+    {{error}}
+  </div>
+
+  <form [formGroup]="form">
+    <div class="form-check">
+      <label>
+        <input type="radio" [value]="false" formControlName="update">
+        <span>Create new search</span>
+      </label>
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-control" id="name" formControlName="name">
+    </div>
+    <hr/>
+
+    <div *ngIf="savedSearch">
+      <div class="form-check">
+        <label>
+          <input type="radio" [value]="true" formControlName="update">
+          <span>Replace search</span>
+        </label>
+      </div>
+      <div>
+        <app-saved-search [savedSearch]="savedSearch" [showAll]="true" [showMore]="false" [showOpen]="false"></app-saved-search>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary" (click)="save()"
+          [disabled]="saving">
+    <i class="fa fa-spinner fa-spin" *ngIf="saving"></i>
+    Save
+  </button>
+</div>

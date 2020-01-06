@@ -1,0 +1,48 @@
+@import "mixins";
+
+/* Overrides for third party library styles */
+.card {
+  box-shadow: 0 1px 0 0 #d7d8d8;
+  border-radius: 0px;
+  border-color: transparent;
+  padding: 24px;
+
+  @media screen and (min-width: 768px) {
+    padding: 24px;
+  }
+}
+
+.card + .card {
+  margin: 1em 0 0 0;
+}
+
+.form-group {
+  margin: 0 0 20px 0;
+
+  @media screen and (min-width: 768px) {
+    margin: 0 0 20px 0;
+  }
+
+  label {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .form-control {
+    @include border-color("border");
+    border-radius: 0;
+  }
+
+}
+
+.form-check {
+  .form-check-label {
+    font-weight: normal;
+  }
+}
+
+.text-muted {
+  @include color("text-inactive");
+  margin-bottom: 8px;
+}

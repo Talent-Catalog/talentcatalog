@@ -1,0 +1,70 @@
+@import "mixins";
+
+body {
+  font-family: 'Lato', sans-serif;
+  color: #272b2b;
+  font-size: 16px;
+}
+
+h1 {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+h2 {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.38;
+}
+
+h3 {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: normal;
+}
+
+h4 {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.33;
+}
+
+h5 {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.33;
+}
+
+@media screen and (min-width: 768px) {
+  h1 {
+    font-size: 40px;
+  }
+
+  h2 {
+    font-size: 32px;
+  }
+
+  h3 {
+    font-size: 28px;
+  }
+
+  h4 {
+    font-size: 24px;
+  }
+
+  h5 {
+    font-size: 18px;
+  }
+}
+
+p {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.text-inactive {
+  font-size: 14px;
+  @include color("text-inactive");
+  line-height: 1.29;
+}

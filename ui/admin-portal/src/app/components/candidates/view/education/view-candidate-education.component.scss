@@ -1,0 +1,8 @@
+.card-body :last-child > hr {
+  display: none;
+}
+
+.space-before::before {
+  content: ' ';
+}
+

@@ -1,0 +1,20 @@
+<div class="text-right" *ngIf="!preview">
+  <button class="btn btn-danger btn-card"
+          [disabled]="disabled"
+          (click)="delete()">&times;</button>
+
+  <button class="btn btn-primary btn-card"
+          [disabled]="disabled"
+          (click)="edit()">&copy;</button>
+</div>
+
+<p>{{candidateEducation.educationType | translate}}</p>
+
+<h5>{{candidateEducation.courseName}}</h5>
+
+<p>{{candidateEducation.institution}} | {{candidateEducation.country?.name}}</p>
+
+<p *ngIf="candidateEducation.educationMajor">
+  {{ 'CARD.EDUCATION.MAJOR' | translate: { major: candidateEducation.educationMajor?.name } }}
+</p>
+

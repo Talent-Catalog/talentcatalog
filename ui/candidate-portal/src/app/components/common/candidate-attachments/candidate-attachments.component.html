@@ -1,0 +1,55 @@
+<h5 class="mb-3">{{ 'REGISTRATION.ATTACHMENTS.TITLE' | translate }}</h5>
+
+<p *ngIf="!loading && !attachments.length">
+  {{ 'REGISTRATION.ATTACHMENTS.EMPTYSTATE' | translate }}
+</p>
+
+<div class="attachments">
+  <div class="mb-3" *ngFor="let attachment of attachments; let i = index;" [class.card]="!preview">
+
+    <div class="text-right" *ngIf="!preview">
+      <button class="btn btn-danger btn-card"
+              [disabled]="deleting"
+              (click)="deleteAttachment(attachment)">&times;</button>
+    </div>
+
+    <div class="row">
+
+      <div class="col-12">
+
+        <div class="form-group">
+          <label>{{ 'REGISTRATION.ATTACHMENTS.LABEL.NAME' | translate }}</label>
+          <p><a [href]="getAttachmentUrl(attachment)" target="_blank">{{attachment.name}}</a></p>
+        </div>
+
+      </div>
+
+      <div class="col-12 col-md-6">
+
+        <div class="form-group m-md-0">
+          <label>{{ 'REGISTRATION.ATTACHMENTS.LABEL.CREATEDBY' | translate }}</label>
+          <p *ngIf="attachment.createdBy">{{attachment.createdBy.firstName}} {{attachment.createdBy.lastName}}</p>
+          <p *ngIf="!attachment.createdBy">Unknown</p>
+        </div>
+
+      </div>
+
+      <div class="col-12 col-md-6">
+
+        <div class="form-group m-md-0">
+          <label>{{ 'REGISTRATION.ATTACHMENTS.LABEL.CREATEDDATE' | translate }}</label>
+          <p>{{attachment.createdDate | date}}</p>
+        </div>
+
+      </div>
+
+    </div>
+
+    <hr *ngIf="preview && i < attachments?.length - 1">
+
+  </div>
+</div>
+
+<app-error [error]="error"></app-error>
+
+<app-file-upload *ngIf="!preview && !loading" (fileUploaded)="handleAttachmentUploaded($event)"></app-file-upload>

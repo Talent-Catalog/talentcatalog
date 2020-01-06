@@ -1,0 +1,77 @@
+<div *ngIf="loading">
+  <i class="fa fa-spinner fa-spin"></i> loading...
+</div>
+
+<div *ngIf="error">
+  {{error}}
+</div>
+
+<div class="card">
+
+  <!-- HEADER -->
+  <div class="card-header justify-content-between">
+
+    <span>Attachments</span>
+
+    <div class="pull-right" *ngIf="editable">
+      <button class="btn btn-sm btn-primary" (click)="addAttachment('link')">
+        <i class="fa fa-plus"></i> Link
+      </button>
+
+      <button class="btn btn-sm btn-primary ml-2" (click)="addAttachment('file')">
+        <i class="fa fa-plus"></i> File
+      </button>
+    </div>
+
+  </div>
+
+  <!-- BODY -->
+  <div class="card-body">
+
+    <!-- EMPTY STATE -->
+    <p *ngIf="!attachments?.length">
+      No files have been uploaded by the candidate.
+    </p>
+
+    <!-- ATTACHMENTS -->
+    <div class="row position-relative mb-3" *ngFor="let attachment of attachments; let i = index">
+
+      <!-- EDIT -->
+      <div class="actions" *ngIf="editable">
+        <button class="btn btn-sm btn-outline-primary" (click)="editCandidateAttachment(attachment)">
+          <i class="fa fa-edit"></i>
+        </button>
+
+        <button class="btn btn-sm btn-outline-danger" (click)="deleteCandidateAttachment(attachment)">
+          <i class="fa fa-trash"></i>
+        </button>
+      </div>
+
+      <!-- NAME -->
+      <div class="col-12" [class.edit-padding]="editable">
+
+        <a target="_blank" [href]="getAttachmentUrl(attachment)">
+          {{attachment.name}}
+        </a>
+
+      </div>
+
+      <!-- AUDIT DATA -->
+      <div class="col-12" *ngIf="attachment">
+        <app-updated-by [object]="attachment"></app-updated-by>
+      </div>
+
+    </div>
+
+    <!-- LOAD MORE -->
+    <div class="text-center" *ngIf="hasMore">
+      <button type="button" class="btn btn-sm btn-outline-dark" (click)="loadMore()">Load More</button>
+    </div>
+
+  </div>
+
+</div>
+
+
+
+

@@ -1,0 +1,58 @@
+<div class="container">
+
+  <app-loading [loading]="loading"></app-loading>
+
+  <ng-container *ngIf="!loading">
+
+    <!-- REVIEW -->
+    <div class="card" *ngFor="let occupation of candidateOccupations; let i = index;">
+
+      <app-candidate-occupation-card [(candidateOccupation)]="occupation"
+                                     [occupations]="occupations"
+                                     [disabled]="saving || loading"
+                                     (onDelete)="deleteOccupation(i)">
+      </app-candidate-occupation-card>
+
+    </div>
+
+    <!-- CREATE -->
+    <form class="card" [formGroup]="form" *ngIf="!loading && showForm">
+
+      <!-- FIELD -->
+      <div class="form-group">
+        <label for="occupation">{{ 'REGISTRATION.OCCUPATION.LABEL.OCCUPATION' | translate }} <sup>*</sup></label>
+        <select class="form-control" name="occupation" id="occupation" [formControlName]="'occupationId'">
+          <option value=""></option>
+          <option *ngFor="let occupation of filteredOccupations" [value]="occupation.id">{{occupation.name}}</option>
+        </select>
+        <app-form-control-error [control]="form.controls.occupationId"></app-form-control-error>
+      </div>
+
+      <!-- YEARS OF EXPERIENCE -->
+      <div class="form-group">
+        <label class="m-0" for="yearsExperience">{{ 'REGISTRATION.OCCUPATION.LABEL.YEARSEXPERIENCE' | translate }} <sup>*</sup></label>
+        <p class="text-muted">{{ 'REGISTRATION.OCCUPATION.LABEL.DISCLAIMER' | translate }}</p>
+        <input type="number" class="form-control" name="yearsExperience" id="yearsExperience" [formControlName]="'yearsExperience'">
+        <app-form-control-error [control]="form.controls.yearsExperience"></app-form-control-error>
+      </div>
+
+    </form>
+
+    <div class="text-center mt-4">
+      <button class="btn btn-outline-primary"
+              (click)="addOccupation()"
+              [disabled]="loading || saving">
+        {{ 'REGISTRATION.OCCUPATION.BUTTON.ADD' | translate }}
+      </button>
+    </div>
+  </ng-container>
+
+  <app-error [error]="error"></app-error>
+
+</div>
+
+<app-registration-footer [nextDisabled]="!form.valid && !candidateOccupations?.length"
+                         [type]="edit ? 'update' : 'step'"
+                         (backClicked)="edit ? cancel() : back()"
+                         (nextClicked)="next()">
+</app-registration-footer>

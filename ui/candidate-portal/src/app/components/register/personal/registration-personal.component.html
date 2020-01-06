@@ -1,0 +1,170 @@
+<div class="container">
+
+  <app-loading [loading]="loading"></app-loading>
+
+  <form class="row" [formGroup]="form" *ngIf="!loading">
+
+    <!-- FIRST NAME -->
+    <div class="col-12 col-md-6">
+      <div class="form-group">
+        <label for="firstName">{{ 'REGISTRATION.PERSONAL.LABEL.FIRSTNAME' | translate }} <sup>*</sup></label>
+        <input type="text" class="form-control" id="firstName" placeholder="Enter first name" [formControlName]="'firstName'">
+        <app-form-control-error [control]="form.controls.firstName"></app-form-control-error>
+      </div>
+    </div>
+
+    <!-- LAST NAME -->
+    <div class="col-12 col-md-6">
+      <div class="form-group">
+        <label for="lastName">{{ 'REGISTRATION.PERSONAL.LABEL.LASTNAME' | translate }} <sup>*</sup></label>
+        <input type="text" class="form-control" id="lastName" placeholder="Enter last name" [formControlName]="'lastName'">
+        <app-form-control-error [control]="form.controls.lastName"></app-form-control-error>
+      </div>
+    </div>
+
+    <!-- GENDER -->
+    <div class="col-12 col-md-6">
+      <div class="form-group">
+        <label for="gender">{{ 'REGISTRATION.PERSONAL.LABEL.GENDER' | translate }} <sup>*</sup></label>
+
+        <select class="form-control" name="gender" id="gender" [formControlName]="'gender'">
+          <option value=""></option>
+          <option value="female">{{ 'GENDER.FEMALE' | translate }}</option>
+          <option value="male">{{ 'GENDER.MALE' | translate }}</option>
+          <option value="other">{{ 'GENDER.OTHER' | translate }}</option>
+        </select>
+
+        <app-form-control-error [control]="form.controls.gender"></app-form-control-error>
+      </div>
+    </div>
+
+    <!-- DOB -->
+<!--    <div class="col-12 col-md-6">-->
+<!--      <div class="form-group">-->
+<!--        <label for="dob">{{ 'REGISTRATION.PERSONAL.LABEL.DOB' | translate }} <sup>*</sup></label>-->
+<!--        <input type="date" id="dob" class="form-control" [formControlName]="'dob'" datepicker-popup-->
+<!--               is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions"-->
+<!--               date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />-->
+<!--        <app-form-control-error [control]="form.controls.dob"></app-form-control-error>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--    <hr class="col-12">-->
+
+    <!-- DOB -->
+    <div class="col-12 col-md-6">
+      <div class="form-group">
+        <label for="dob">{{ 'REGISTRATION.PERSONAL.LABEL.DOB' | translate }} <sup>*</sup></label>
+
+        <div class="input-group">
+          <input id="dob" type="text" class="form-control" placeholder="YYYY-MM-DD"
+                 ngbDatepicker #picker="ngbDatepicker"
+                 [formControlName]="'dob'"
+                 (dateSelect)="form.controls.dob.markAsDirty()"
+                 [autoClose]="true"
+                 [outsideDays]="'hidden'"
+                 [container]="'#dob'">
+
+          <div class="input-group-append">
+            <small class="btn btn-link text-secondary" *ngIf="form.controls.dob.value"
+                   (click)="form.controls.dob.patchValue(null); form.controls.dob.markAsDirty();">
+              <span>{{ 'FORM.LABEL.CLEAR' | translate }}</span>
+            </small>
+
+            <div class="btn btn-link" *ngIf="!form.controls.dob.value"
+                 (click)="picker.toggle()">
+              <span>{{ 'FORM.LABEL.CHOOSE' | translate}}</span>
+            </div>
+          </div>
+        </div>
+
+        <app-form-control-error [control]="form.controls.dob"></app-form-control-error>
+      </div>
+    </div>
+
+    <hr class="col-12">
+
+    <!-- COUNTRY -->
+    <div class="col-12 col-md-6">
+      <div class="form-group">
+        <label for="countryId">{{ 'REGISTRATION.PERSONAL.LABEL.COUNTRYID' | translate }} <sup>*</sup></label>
+        <select class="form-control" name="countryId" id="countryId" [formControlName]="'countryId'">
+          <option value=""></option>
+          <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
+        </select>
+        <app-form-control-error [control]="form.controls.countryId"></app-form-control-error>
+      </div>
+    </div>
+
+    <!-- CITY -->
+    <div class="col-12 col-md-6">
+      <div class="form-group">
+        <label for="city">
+          {{ 'REGISTRATION.PERSONAL.LABEL.CITY' | translate }}
+          <small class="text-muted">{{ 'FORM.LABEL.OPTIONAL' | translate}}</small>
+        </label>
+        <input type="text" class="form-control" id="city" placeholder="" [formControlName]="'city'">
+<!--        <app-form-control-error [control]="form.controls.city"></app-form-control-error>-->
+      </div>
+    </div>
+
+    <!-- YEAR OF ARRIVAL -->
+    <div class="col-12">
+      <div class="form-group">
+        <label for="yearOfArrival">
+          {{ 'REGISTRATION.PERSONAL.LABEL.YEAROFARRIVAL' | translate }}
+          <small class="text-muted">{{ 'FORM.LABEL.OPTIONAL' | translate}}</small>
+        </label>
+        <select class="form-control" name="yearOfArrival" id="yearOfArrival" [formControlName]="'yearOfArrival'">
+          <option value=""></option>
+          <option *ngFor="let year of years" [value]="year">{{year}}</option>
+        </select>
+<!--        <app-form-control-error [control]="form.controls.yearOfArrival"></app-form-control-error>-->
+      </div>
+    </div>
+
+    <hr class="col-12">
+
+    <!-- NATIONALITY -->
+    <div class="col-12">
+      <div class="form-group">
+        <label for="nationality">{{ 'REGISTRATION.PERSONAL.LABEL.NATIONALITY' | translate }} <sup>*</sup></label>
+        <select class="form-control" name="nationality" id="nationality" [formControlName]="'nationality'">
+          <option value=""></option>
+          <option *ngFor="let nationality of nationalities" [value]="nationality.id">{{nationality.name}}</option>
+        </select>
+        <app-form-control-error [control]="form.controls.nationality"></app-form-control-error>
+      </div>
+    </div>
+
+    <!-- UN REGISTRATION - removed for now -->
+    <!--    <div class="form-group">-->
+    <!--      <label for="registeredWithUN">{{ 'REGISTRATION.PERSONAL.LABEL.REGISTEREDWITHUN' | translate }}</label>-->
+    <!--      <select class="form-control" name="nationality" id="registeredWithUN" [formControlName]="'registeredWithUN'">-->
+    <!--        <option value=""></option>-->
+    <!--        <option [value]="true">Yes</option>-->
+    <!--        <option [value]="false">No</option>-->
+    <!--      </select>-->
+
+    <!--      <p class="text-muted">-->
+    <!--        You do not need to be registered with the UN to be eligible for TBB.-->
+    <!--      </p>-->
+    <!--    </div>-->
+
+    <!--    &lt;!&ndash; REGISTRATION NUMBER &ndash;&gt;-->
+    <!--    <div class="form-group" *ngIf="form.value.registeredWithUN === 'true'">-->
+    <!--      <label for="registrationId">{{ 'REGISTRATION.PERSONAL.LABEL.REGISTRATIONID' | translate }}</label>-->
+    <!--      <input type="text" class="form-control" id="registrationId" placeholder="" [formControlName]="'registrationId'">-->
+    <!--    </div>-->
+
+  </form>
+
+  <app-error [error]="error"></app-error>
+
+</div>
+
+<app-registration-footer [nextDisabled]="form?.invalid || loading || saving"
+                         [type]="edit ? 'update' : 'step'"
+                         (backClicked)="edit ? cancel() : back()"
+                         (nextClicked)="next()">
+</app-registration-footer>

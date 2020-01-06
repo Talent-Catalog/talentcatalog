@@ -1,0 +1,79 @@
+<script src="../view-candidate-occupation.component.ts"></script>
+<div *ngIf="loading">
+  <i class="fa fa-spinner fa-spin"></i> loading...
+</div>
+
+<div *ngIf="error">
+  {{error}}
+</div>
+
+<div class="card" *ngIf="!loading">
+
+  <div class="card-header">
+    {{candidateOccupation.occupation.name}} ({{candidateOccupation.yearsExperience}} years)
+
+    <div class="button-group pull-right" *ngIf="editable">
+      <button class="btn btn-sm btn-outline-dark mr-2" (click)="verifyOccupation()">
+        <i *ngIf="candidateOccupation.verified" class="fa fa-check" title="Verified by TBB"></i>
+        <i *ngIf="!candidateOccupation.verified" class="fa fa-question" title="Candidate specified, not verified"></i>
+      </button>
+
+      <button class="btn btn-sm btn-primary" (click)="createCandidateJobExperience()">
+        <i class="fa fa-plus"></i>
+      </button>
+    </div>
+
+    <div *ngIf="candidateOccupation.migrationOccupation" class="col-sm-12">
+      Migrated Occupation: {{candidateOccupation.migrationOccupation}}
+    </div>
+  </div>
+
+  <div class="card-body">
+
+    <!-- EMPTY STATE -->
+    <p *ngIf="!experiences?.length">
+      No job experience data has been entered by this candidate.
+    </p>
+
+    <!-- JOB EXPERIENCE CARDS -->
+    <ng-container *ngFor="let experience of experiences; let i = index">
+
+      <div class="row">
+
+        <div class="col-11">
+          <h6 class="card-title">{{experience.role}}</h6>
+        </div>
+
+        <div class="col-1">
+          <button class="btn btn-default" *ngIf="editable" (click)="editCandidateJobExperience(experience)">
+            <i class="fa fa-edit"></i>
+          </button>
+        </div>
+
+        <div class="col-12" *ngIf="experience.description">
+          {{experience.description}}
+        </div>
+
+        <div class="col-12">
+          <span>{{experience.companyName}}, {{experience.country.name}}</span>
+        </div>
+
+        <div class="col-12">
+          <small class="text-muted">
+            {{experience.startDate | date :'MMM-yyyy' }} - {{experience.endDate | date :'MMM-yyyy'}}
+          </small>
+        </div>
+
+      </div>
+
+      <hr *ngIf="i < experiences?.length - 1">
+
+    </ng-container>
+
+    <div class="pull-right" *ngIf="hasMore">
+      <button type="button" class="btn btn-sm btn-outline-dark" (click)="loadMore()">Load More</button>
+    </div>
+
+  </div>
+
+</div>

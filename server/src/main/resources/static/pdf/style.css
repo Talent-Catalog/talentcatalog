@@ -1,0 +1,113 @@
+
+body {
+    font-family: sans-serif;
+    font-size: 12px;
+}
+
+@page {
+
+    @bottom-left {
+        content: element(footer);
+        vertical-align: top;
+        padding-top: 10px;
+    }
+
+    @top-right {
+        content: element(header);
+        vertical-align: bottom;
+        padding-bottom: 10px;
+    }
+
+    margin-top: 3.3cm;
+    margin-left: 2cm;
+    margin-right: 2cm;
+    margin-bottom: 3.3cm;
+
+    size: A4 portrait;
+}
+
+div.header {
+    position: running(header);
+}
+
+div.footer {
+    display: block;
+    margin-top: 0.5cm;
+    position: running(footer);
+}
+
+#pagenumber:before {
+    content: counter(page);
+}
+
+#pagecount:before {
+    content: counter(pages);
+}
+
+.logo-container {
+    text-align: right;
+}
+
+.page-count {
+    text-align: right;
+}
+
+.logo {
+    width: 275px;
+}
+
+h1 {
+    font-size: 18px;
+    margin-top: 40px;
+}
+
+p {
+    font-size: 12px;
+}
+
+.footer {
+    text-align: center;
+}
+
+@font-face {
+    font-family: "Arial";
+}
+
+.right {
+    text-align: right;
+}
+
+.left {
+    text-align: left;
+}
+
+.center {
+    text-align: center;
+}
+
+.bottom {
+    vertical-align: bottom;
+}
+
+.address-block {
+    height: 100px;
+}
+
+table {
+    width: 100%;
+}
+
+hr {
+    background-color: #000000;
+    border: dashed #000000 0.5px;
+    height: 1px;
+}
+
+.page-break {
+    page-break-after: always;
+}
+
+.next-page {
+    page-break-before: always
+}
+

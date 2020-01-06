@@ -1,0 +1,98 @@
+@import "variables";
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
+@import "~bootstrap/scss/buttons";
+
+.btn {
+  @include button-size(8px, 1em, 18px, 1.25, 0);
+}
+
+.btn + .btn {
+  margin-left: 1em;
+}
+
+.btn-primary {
+  @include button-variant($color-primary, $color-primary, $color-primary-dark, $color-primary-dark, $color-primary-darker, $color-primary-darker);
+}
+
+.btn-outline-primary {
+  @include button-outline-variant($color-primary, white, $color-primary-dark, $color-primary-darker);
+
+  &:hover {
+    border-color: $color-primary;
+  }
+
+  &:not(:disabled):not(.disabled){
+    &:hover {
+      border-color: $color-primary-dark;
+      background: $color-primary-dark;
+    }
+
+    &:active {
+      background-color: $color-primary-darker;
+      border-color: $color-primary-darker;
+    }
+  }
+}
+
+.btn-card {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  line-height: 1em;
+  border-radius: 4px;
+}
+
+.btn-link {
+  color: $color-primary;
+  background-color: transparent;
+
+  &:hover {
+    color: $color-primary-dark;
+    text-decoration: none;
+    background-color: transparent;
+    border-color: transparent;
+  }
+
+  &:active {
+    color: $color-primary-darker;
+  }
+
+  &:disabled,
+  &.disabled {
+    color: $color-text-inactive;
+  }
+}
+
+a {
+  color: $color-primary;
+  background-color: transparent;
+
+  &:hover {
+    color: $color-primary-dark;
+    text-decoration: none;
+    background-color: transparent;
+    border-color: transparent;
+  }
+
+  &:active {
+    color: $color-primary-darker;
+  }
+
+  &:disabled,
+  &.disabled {
+    color: $color-text-inactive;
+  }
+}
+
+/* Disabled styles are last so that they always take precedence */
+.btn.disabled,
+.btn:disabled {
+  @include background-color("border");
+  @include border-color("border");
+  @include color("text-inactive");
+}

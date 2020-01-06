@@ -1,0 +1,34 @@
+<ng-container *ngIf="control?.dirty || showAlways">
+
+  <small *ngIf="control?.errors?.required">
+    {{ 'FORM.ERROR.REQUIRED' | translate }}
+  </small>
+
+  <small *ngIf="control?.errors?.email">
+    {{ 'FORM.ERROR.EMAIL' | translate }}
+  </small>
+
+  <small *ngIf="control?.errors?.minlength">
+    {{ 'FORM.ERROR.MINLENGTH' | translate: {length: control?.errors?.minlength?.requiredLength} }}
+  </small>
+
+<!--  <small *ngIf="control?.errors?.pattern && control?.errors?.pattern.requiredPattern === '^[\\w-]*$'">-->
+<!--    This field must contain letters, numbers, dashes and underscores only-->
+<!--  </small>-->
+
+<!--  <small *ngIf="control?.errors?.max">-->
+<!--    This field should have a max value of {{control?.errors?.max?.max}}-->
+<!--  </small>-->
+
+<!--  <small *ngIf="control?.errors?.min">-->
+<!--    This field should have a min value of {{control?.errors?.min?.min}}-->
+<!--  </small>-->
+
+  <small *ngIf="control?.errors?.ngbDate?.invalid">
+    {{ 'FORM.ERROR.DATE' | translate}}
+  </small>
+
+  <!-- For debugging - print unknown error types -->
+  <!--{{control?.errors | json}}-->
+
+</ng-container>

@@ -1,0 +1,57 @@
+<nav class="navbar navbar-expand-md navbar-light fixed-top bg-light">
+
+  <div class="container">
+
+    <!-- LOGO -->
+    <a [routerLink]="'/'">
+      <img class="logo" src="assets/images/logo.png" alt="Logo">
+    </a>
+
+    <!-- MOBILE NAV TOGGLE -->
+    <button class="navbar-toggler hidden-sm-up" type="button"
+            data-target="#headerNav" aria-controls="headerNav" aria-expanded="false" aria-label="Toggle navigation"
+            (click)="isNavbarCollapsed = !isNavbarCollapsed">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div [ngbCollapse]="isNavbarCollapsed" class="collapse navbar-collapse" id="navbarsDefault">
+
+      <!-- TRANSLATION -->
+      <ul class="navbar-nav">
+        <div class="nav-item dropdown" ngbDropdown>
+          <a class="dropdown-toggle translation-toggle" ngbDropdownToggle>
+            {{selectedLanguage}}
+          </a>
+
+          <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
+            <a class="dropdown-item" *ngFor="let lang of languages" (click)="setLanguage(lang.language)">{{lang.label}}</a>
+          </div>
+        </div>
+      </ul>
+
+      <!-- ACCOUNT -->
+      <ul class="navbar-nav" *ngIf="(authService.user$ | async)">
+        <li class="nav-item dropdown" ngbDropdown>
+
+          <a class="nav-link dropdown-toggle" ngbDropdownToggle>
+            {{ 'HEADER.NAV.ACCOUNT' | translate }}
+          </a>
+          <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
+            <a class="dropdown-item" (click)="logout()">
+              {{ 'HEADER.NAV.LOGOUT' | translate }}
+            </a>
+          </div>
+
+        </li>
+      </ul>
+
+      <!-- LOGIN -->
+      <a class="btn btn-link" [routerLink]="['']" *ngIf="!(authService.user$ | async)">
+        {{ 'HEADER.NAV.LOGIN' | translate }}
+      </a>
+
+    </div>
+
+  </div>
+
+</nav>

@@ -1,0 +1,170 @@
+<span #top></span>
+
+<app-error [error]="error"></app-error>
+
+<form class="row" [formGroup]="form" *ngIf="!loading && !error">
+
+  <!-- OCCUPATION -->
+  <div class="col-12" *ngIf="!candidateOccupation">
+    <div class="form-group">
+      <label for="candidateOccupationId">
+        {{ 'FORM.JOBEXPERIENCE.LABEL.CANDIDATEOCCUPATIONID' | translate }} <sup>*</sup>
+      </label>
+
+      <select class="form-control" name="candidateOccupationId" id="candidateOccupationId"
+              [formControlName]="'candidateOccupationId'">
+        <option value=""></option>
+        <option *ngFor="let candidateOccupation of candidateOccupations"
+                [value]="candidateOccupation.id">{{candidateOccupation.occupation.name}}</option>
+      </select>
+
+      <app-form-control-error [control]="form.controls.candidateOccupationId"></app-form-control-error>
+    </div>
+  </div>
+
+  <!-- COMPANY NAME -->
+  <div class="col-12 col-md-6">
+    <div class="form-group">
+      <label for="companyName">
+        {{ 'FORM.JOBEXPERIENCE.LABEL.COMPANYNAME' | translate }} <sup>*</sup>
+      </label>
+
+      <input type="text" class="form-control" name="companyName" id="companyName" [formControlName]="'companyName'">
+
+      <app-form-control-error [control]="form.controls.companyName"></app-form-control-error>
+    </div>
+  </div>
+
+  <!-- COMPANY LOCATION -->
+  <div class="col-12 col-md-6">
+    <div class="form-group">
+      <label for="country">
+        {{ 'FORM.JOBEXPERIENCE.LABEL.COUNTRY' | translate }} <sup>*</sup>
+      </label>
+
+      <select class="form-control" name="country" id="country" [formControlName]="'country'">
+        <option value=""></option>
+        <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
+      </select>
+
+      <app-form-control-error [control]="form.controls.country"></app-form-control-error>
+    </div>
+  </div>
+
+  <!-- START DATE -->
+  <div class="col-12 col-md-6">
+    <div class="form-group">
+      <label for="startDate">
+        {{ 'FORM.JOBEXPERIENCE.LABEL.STARTDATE' | translate }} <sup>*</sup>
+      </label>
+      <app-month-picker id="startDate" [control]="form.get('startDate')"></app-month-picker>
+      <app-form-control-error [control]="form.controls.startDate"></app-form-control-error>
+    </div>
+  </div>
+
+  <!-- END DATE -->
+  <div class="col-12 col-md-6">
+    <div class="form-group">
+      <label for="endDate">
+        {{ 'FORM.JOBEXPERIENCE.LABEL.ENDDATE' | translate }}
+      </label>
+      <app-month-picker id="endDate" [control]="form.get('endDate')"></app-month-picker>
+      <app-form-control-error [control]="form.controls.endDate"></app-form-control-error>
+
+    </div>
+  </div>
+
+  <div class="col-12">
+    <p>
+      {{ 'FORM.JOBEXPERIENCE.EXPLANATION' | translate }}
+    </p>
+  </div>
+
+  <!-- JOB TITLE -->
+  <div class="col-12">
+    <div class="form-group">
+      <label for="role">
+        {{ 'FORM.JOBEXPERIENCE.LABEL.ROLE' | translate }} <sup>*</sup>
+      </label>
+
+      <input type="text" class="form-control" name="role" id="role" [formControlName]="'role'">
+
+      <app-form-control-error [control]="form.controls.role"></app-form-control-error>
+    </div>
+  </div>
+
+  <!-- ROLE DESCRIPTION -->
+  <div class="col-12">
+    <div class="form-group">
+      <label for="description">
+        {{ 'FORM.JOBEXPERIENCE.LABEL.DESCRIPTION' | translate }} <sup>*</sup>
+      </label>
+
+      <textarea class="form-control" id="description" placeholder="" rows="5"
+                [formControlName]="'description'"></textarea>
+
+      <app-form-control-error [control]="form.controls.description"></app-form-control-error>
+    </div>
+  </div>
+
+  <!-- FULLTIME? -->
+  <div class="col-12">
+    <div class="form-group">
+      <label>{{ 'FORM.JOBEXPERIENCE.LABEL.CONTRACTTYPE.TITLE' | translate }} <sup>*</sup></label>
+
+      <div class="form-check">
+        <input class="form-check-input" type="radio" id="fullTime" [value]="true" [formControlName]="'fullTime'">
+        <label class="form-check-label" for="fullTime">
+          {{ 'FORM.JOBEXPERIENCE.LABEL.CONTRACTTYPE.FULLTIME' | translate }}
+        </label>
+      </div>
+
+      <div class="form-check">
+        <input class="form-check-input" type="radio" id="partTime" [value]="false" [formControlName]="'fullTime'">
+        <label class="form-check-label" for="partTime">
+          {{ 'FORM.JOBEXPERIENCE.LABEL.CONTRACTTYPE.PARTTIME' | translate }}
+        </label>
+      </div>
+
+      <app-form-control-error [control]="form.controls.fullTime"></app-form-control-error>
+    </div>
+  </div>
+
+  <!-- VOLUNTEER / PAID -->
+  <div class="col-12">
+    <div class="form-group">
+      <label>{{ 'FORM.JOBEXPERIENCE.LABEL.EMPLOYMENTTYPE.TITLE' | translate }} <sup>*</sup></label>
+
+      <div class="form-check">
+        <input class="form-check-input" type="radio" id="paid" [value]="true" [formControlName]="'paid'">
+        <label class="form-check-label" for="paid">
+          {{ 'FORM.JOBEXPERIENCE.LABEL.EMPLOYMENTTYPE.PAID' | translate }}
+        </label>
+      </div>
+
+      <div class="form-check">
+        <input class="form-check-input" type="radio" id="voluntary" [value]="false" [formControlName]="'paid'">
+        <label class="form-check-label" for="voluntary">
+          {{ 'FORM.JOBEXPERIENCE.LABEL.EMPLOYMENTTYPE.VOLUNTARY' | translate }}
+        </label>
+      </div>
+
+      <app-form-control-error [control]="form.controls.paid"></app-form-control-error>
+    </div>
+  </div>
+
+  <div class="col-12 text-right mb-4">
+    <button class="btn btn-outline-primary"
+            [disabled]="loading || saving"
+            (click)="cancel()">
+      {{ 'FORM.JOBEXPERIENCE.BUTTON.CANCEL' | translate }}
+    </button>
+
+    <button class="btn btn-primary"
+            [disabled]="form.invalid || loading || saving"
+            (click)="save()">
+      <span *ngIf="!candidateJobExperience">{{ 'FORM.JOBEXPERIENCE.BUTTON.ADD' | translate }}</span>
+      <span *ngIf="candidateJobExperience">{{ 'FORM.JOBEXPERIENCE.BUTTON.SAVE' | translate }}</span>
+    </button>
+  </div>
+</form>

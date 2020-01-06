@@ -1,0 +1,28 @@
+<div class="container-fluid step-footer">
+
+  <div class="container" [class.justify-content-end]="hideBack">
+
+    <button class="btn btn-outline-primary"
+            [hidden]="hideBack"
+            [disabled]="regoService.registering && regoService.currentStepIndex == 0 || backDisabled"
+            (click)="back()">
+      <span [ngSwitch]="type">
+        <ng-container *ngSwitchCase="'update'">{{ 'REGISTRATION.FOOTER.CANCEL' | translate }}</ng-container>
+        <ng-container *ngSwitchDefault>{{ 'REGISTRATION.FOOTER.BACK' | translate }}</ng-container>
+      </span>
+    </button>
+
+    <button class="btn btn-primary"
+            [hidden]="hideNext"
+            [disabled]="regoService.registering && regoService.currentStepIndex >= regoService.steps.length - 1 || nextDisabled"
+            (click)="next()">
+      <span [ngSwitch]="type">
+        <ng-container *ngSwitchCase="'update'">{{ 'REGISTRATION.FOOTER.UPDATE' | translate }}</ng-container>
+        <ng-container *ngSwitchCase="'submit'">{{ 'REGISTRATION.FOOTER.SUBMIT' | translate }}</ng-container>
+        <ng-container *ngSwitchDefault>{{ 'REGISTRATION.FOOTER.NEXT' | translate }}</ng-container>
+      </span>
+    </button>
+
+  </div>
+
+</div>

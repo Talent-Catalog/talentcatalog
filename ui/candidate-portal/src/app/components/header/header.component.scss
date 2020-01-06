@@ -1,0 +1,28 @@
+$navbar-height: 80px;
+
+:host {
+  display: block;
+  width: 100%;
+  height: $navbar-height;
+}
+
+.navbar {
+  background-color: white;
+  width: 100%;
+  min-height: $navbar-height;
+
+  .logo {
+    max-height: calc(#{$navbar-height} - 20px);
+  }
+
+  @media screen and (min-width: 768px) {
+    .navbar-collapse {
+      display: flex;
+      justify-content: flex-end;
+    }
+  }
+}
+
+.translation-toggle {
+  color: #0eb1e3 !important;
+}

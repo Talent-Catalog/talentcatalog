@@ -1,0 +1,7 @@
+<div class="chart-wrapper" *ngIf="chartData">
+  <canvas height="300" baseChart
+          [data]="chartMultiData"
+          [labels]="chartLabels"
+          [chartType]="doughnutChartType">
+  </canvas>
+</div>

@@ -1,0 +1,29 @@
+<div class="modal-header">
+
+  <h4 class="modal-title">Confirmation</h4>
+
+  <button type="button" class="close" aria-label="Close" (click)="dismiss()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+
+</div>
+
+<div class="modal-body">
+
+  <span *ngIf="message">
+    {{message}}
+  </span>
+
+  <span *ngIf="!message">
+    Are you sure?
+  </span>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary" (click)="close()">
+    Ok
+  </button>
+  <button type="button" class="btn btn-primary" (click)="dismiss()">
+    Cancel
+  </button>
+</div>

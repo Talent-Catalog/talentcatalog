@@ -1,0 +1,75 @@
+<div class="candidate-card" *ngIf="!!candidate">
+
+  <!-- HEADER -->
+  <div class="candidate-header">
+
+    <h4>{{candidate.candidateNumber}} <small>{{candidate.status | titlecase}}</small></h4>
+
+    <div class="btn-toolbar">
+      <button class="btn btn-sm btn-outline-primary" [routerLink]="['/candidates', candidate.id]" title="Open"><i class="fa fa-external-link-square"></i></button>
+      <button class="btn btn-sm btn-secondary" (click)="close()">x</button>
+    </div>
+
+  </div>
+
+  <!-- NAME -->
+  <h5>{{candidate.user?.firstName}} {{candidate.user?.lastName}}</h5>
+
+  <!-- TABS -->
+  <ngb-tabset>
+
+    <!-- GENERAL -->
+    <ngb-tab [title]="'General'">
+      <ng-template ngbTabContent>
+        <app-candidate-general-tab
+          [candidate]="candidate"
+          [editable]="false">
+        </app-candidate-general-tab>
+      </ng-template>
+    </ngb-tab>
+
+    <!-- EXPERIENCE -->
+    <ngb-tab [title]="'Experience'">
+      <ng-template ngbTabContent>
+        <app-candidate-experience-tab
+          [candidate]="candidate"
+          [editable]="false">
+        </app-candidate-experience-tab>
+      </ng-template>
+    </ngb-tab>
+
+    <!-- EDUCATION -->
+    <ngb-tab [title]="'Education'">
+      <ng-template ngbTabContent>
+        <app-candidate-education-tab
+          [candidate]="candidate"
+          [editable]="false">
+        </app-candidate-education-tab>
+      </ng-template>
+    </ngb-tab>
+
+    <!-- HISTORY -->
+    <ngb-tab [title]="'History'">
+      <ng-template ngbTabContent>
+        <app-candidate-history-tab
+          [candidate]="candidate"
+          [characterLimit]="100"
+          [editable]="false">
+        </app-candidate-history-tab>
+      </ng-template>
+    </ngb-tab>
+
+    <!-- Additional Info --
+    <ngb-tab [title]="'Additional Info'">
+      <ng-template ngbTabContent>
+        <app-candidate-additional-info-tab
+          [candidate]="candidate"
+          [editable]="false">
+        </app-candidate-additional-info-tab>
+      </ng-template>
+    </ngb-tab>
+    -->
+
+  </ngb-tabset>
+
+</div>

@@ -1,0 +1,103 @@
+<div class="modal-header">
+
+  <h4 class="modal-title">Edit Education</h4>
+
+  <button type="button" class="close" aria-label="Close" (click)="dismiss()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+
+</div>
+
+<div class="modal-body">
+
+  <div *ngIf="loading">
+    <i class="fa fa-spinner fa-spin"></i>
+  </div>
+
+  <div *ngIf="!loading">
+    <div class="alert alert-danger" *ngIf="error">
+      {{error}}
+    </div>
+
+    <form [formGroup]="candidateForm">
+
+      <!-- EDUCATION TYPE -->
+      <div class="form-group">
+        <label for="educationType">Education Type</label>
+        <select class="form-control" name="educationType" id="educationType" [formControlName]="'educationType'">
+          <option value=""></option>
+<!--          <option value="School">School</option>-->
+          <option value="Vocational">Vocational</option>
+          <option value="Associate">Associate</option>
+          <option value="Bachelor">Bachelor</option>
+          <option value="Masters">Masters</option>
+          <option value="Doctoral">Doctoral</option>
+        </select>
+      </div>
+
+      <!-- MAJOR -->
+      <div class="form-group">
+        <label for="majorId">Major *</label>
+        <select class="form-control" name="country" id="majorId" [formControlName]="'majorId'">
+          <option value=""></option>
+          <option *ngFor="let major of majors" [value]="major.id">{{major.name}}</option>
+        </select>
+      </div>
+
+      <!-- COURSE NAME -->
+      <div class="form-group">
+        <label for="courseName">Course Name</label>
+        <input type="text" class="form-control" id="courseName"
+               [formControlName]="'courseName'">
+      </div>
+
+      <!-- INSTITUTION NAME -->
+      <div class="form-group">
+        <label for="institution">Institution</label>
+        <input type="text" class="form-control" id="institution" [formControlName]="'institution'">
+      </div>
+
+      <!-- COUNTRY -->
+      <div class="form-group">
+        <label for="countryId">Country *</label>
+        <select class="form-control" name="country" id="countryId" [formControlName]="'countryId'">
+          <option value=""></option>
+          <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
+        </select>
+      </div>
+
+      <!-- COURSE LENGTH -->
+      <div class="form-group">
+        <label for="lengthOfCourseYears">Length of Course Years</label>
+        <input type="number" class="form-control" placeholder="" id="lengthOfCourseYears"
+               [formControlName]="'lengthOfCourseYears'">
+      </div>
+      <!-- Year -->
+      <div class="form-group">
+        <label for="yearCompleted">Year of completion</label>
+        <select class="form-control" name="yearCompleted" id="yearCompleted" [formControlName]="'yearCompleted'">
+          <option value=""></option>
+          <option *ngFor="let year of years" [value]="year">{{year}}</option>
+        </select>
+      </div>
+
+
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input"  id="incomplete" [value]="true" [formControlName]="'incomplete'">
+        <label class="form-check-label" for="incomplete">
+          Not completed
+        </label>
+      </div>
+
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="onSave()"
+                [disabled]="candidateForm.invalid || loading || saving">
+          <i class="fa fa-spinner fa-spin" *ngIf="saving"></i>
+          Save
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>

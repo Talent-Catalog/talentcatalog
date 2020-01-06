@@ -4,6 +4,10 @@
 $fa-font-path: "../node_modules/font-awesome/fonts";
 @import '~font-awesome/scss/font-awesome.scss';
 
+@import "~src/scss/common";
+@import "~src/scss/page";
+
+
 body {
   padding-top: 4.5rem;
 }
@@ -25,4 +29,42 @@ h1 {
     color: $link-hover-color;
     text-decoration: $link-hover-decoration;
   }
+}
+
+.multiselect-dropdown .dropdown-btn {
+    border: 1px solid #ced4da !important;
+
+}
+
+.multiselect-dropdown .dropdown-btn .dropdown-down{
+  border-top: 6px solid #999 !important;
+  border-left: 6px solid transparent !important;
+  border-right: 6px solid transparent !important;
+}
+
+.multiselect-dropdown .dropdown-btn .dropdown-up{
+  border-bottom: 6px solid #999 !important;
+  border-left: 6px solid transparent !important;
+  border-right: 6px solid transparent !important;
+}
+
+.multiselect-dropdown .dropdown-btn {
+  border: 1px solid #cccccc!important;
+}
+
+.dropdown-btn > span {
+  color: #6C757C;
+}
+
+ng-multiselect-dropdown div.dropdown-list {
+  font-size: 12px !important;
+}
+
+ng-multiselect-dropdown div.multiselect-dropdown {
+  color: red !important;
+}
+
+/* FONT AWESOME */
+label > i.fa {
+  margin-right: 8px;
 }

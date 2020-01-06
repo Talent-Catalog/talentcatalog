@@ -1,1 +1,16 @@
 /* You can add global styles to this file, and also import other style files */
+@import "scss/typography";
+@import "scss/btn";
+@import "scss/overrides";
+
+@import "scss/rtl";
+
+/* Component specific styles */
+@import "scss/component/registration-step";
+
+
+// Card specific
+.card.parent-card .card {
+  padding: 0;
+  box-shadow: none;
+}

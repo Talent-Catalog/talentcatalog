@@ -1,0 +1,60 @@
+<div class="backdrop" *ngIf="showMenu" (click)="close()"></div>
+
+<div class="position-relative">
+
+  <div class="input-group" (click)="toggle()">
+
+    <div class="form-control">
+      <div class="language-label">
+        {{renderLevel()}}
+      </div>
+    </div>
+
+    <div class="input-group-append">
+      <button type="button" class="btn btn-outline-secondary">
+        <span class="fa fa-angle-down"></span>
+      </button>
+    </div>
+
+  </div>
+
+  <form [formGroup]="form" class="language-dropdown" *ngIf="showMenu">
+
+    <!-- LANGUAGE -->
+    <div class="form-group" [hidden]="languageDisabled">
+      <label>Language</label>
+
+      <select class="form-control" name="language" [formControlName]="'languageId'" [disabled]="languageDisabled">
+        <option [value]="language.id" *ngFor="let language of languages">{{language.name}}</option>
+      </select>
+    </div>
+
+    <!-- SPOKEN LEVEL -->
+    <div class="form-group">
+      <label>Spoken Level</label>
+
+      <div class="radio" *ngFor="let level of languageLevels">
+        <label><input type="radio" [formControlName]="'spokenLevel'" [value]="level.level">{{level.name}}</label>
+      </div>
+    </div>
+
+    <div class="text-right">
+      <button class="btn btn-link" (click)="clearSpoken()">Clear</button>
+    </div>
+
+    <!-- WRITTEN LEVEL -->
+    <div class="form-group">
+      <label>Written Level</label>
+
+      <div class="radio" *ngFor="let level of languageLevels">
+        <label><input type="radio" [formControlName]="'writtenLevel'" [value]="level.level">{{level.name}}</label>
+      </div>
+    </div>
+
+    <div class="text-right">
+      <button class="btn btn-link" (click)="clearWritten()">Clear</button>
+    </div>
+
+  </form>
+
+</div>

@@ -1,0 +1,60 @@
+tbb:
+  cors:
+    urls: http://localhost:4200,http://localhost:4201,https://tbbtalent-staging.herokuapp.com
+
+spring:
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/tbbtalent
+    username: tbbtalent
+    password: tbbtalent
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false
+
+jwt:
+  secret: JWTSuperSecretKey
+  expirationInMs: 604800000
+
+server:
+  url: https://tbbtalent-staging.herokuapp.com
+web:
+  portal: https://tbbtalent-staging.herokuapp.com/candidate-portal
+  admin: https://tbbtalent-staging.herokuapp.com/admin-portal
+
+flyway:
+  ignoreMissingMigrations: true
+  repair: true
+
+aws:
+   s3:
+      files-bucket: dev.files.tbbtalent.org
+      region: us-east-1
+      max-size: 52428800
+      upload-folder: temp
+   credentials:
+      access-key: AKIA6C7ESOA6FCQTELMN
+      secret-key: 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
+
+#email:
+#   type: SMTP # STUB or SMTP
+#   host: smtp.gmail.com
+#   port: 587
+#   user: tbbtalent@talentbeyondboundaries.org
+#   password: //check passpack
+#   authenticated: true
+#   default-email: tbbtalent@talentbeyondboundaries.org
+#   test-override-email: tbbtalent@talentbeyondboundaries.org
+
+email:
+  type: SMTP # STUB or SMTP
+  host: smtp.gmail.com
+  port: 587
+  user: devtestingdp@gmail.com
+  password: H@6J9bpcIDHa
+  authenticated: true
+  default-email: jthatcher@digitalpurpose.com.au
+  test-override-email: jthatcher+tbb@digitalpurpose.com.au

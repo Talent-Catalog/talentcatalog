@@ -1,0 +1,53 @@
+<div class="modal-header">
+  <h4 class="modal-title">Edit Candidate Status</h4>
+  <button type="button" class="close" aria-label="Close"
+          [disabled]="loading" (click)="cancel()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div *ngIf="loading">
+    <i class="fa fa-spinner fa-spin"></i> loading...
+  </div>
+
+  <div class="alert alert-danger" *ngIf="error">
+    {{error}}
+  </div>
+
+
+  <div *ngIf="!loading">
+    <form [formGroup]="candidateForm" (ngSubmit)="onSave()">
+
+      <div class="form-group">
+        <label for="status">Status</label>
+        <select class="form-control" name="status" id="status" [formControlName]="'status'">
+          <option value=""></option>
+          <option value="pending">Pending</option>
+          <option value="active">Active</option>
+          <option value="incomplete">Incomplete</option>
+          <option value="employed">Employed</option>
+          <option value="inactive">Inactive</option>
+          <option value="deleted">Deleted</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="comment">Admin Note</label>
+        <textarea  class="form-control"  id="comment" [formControlName]="'comment'"></textarea>
+      </div>
+
+      <div *ngIf="showCandidateMessage" class="form-group">
+        <label for="candidateMessage">Please provide a message to the candidate (visible to them)</label>
+        <textarea  class="form-control"  id="candidateMessage" [formControlName]="'candidateMessage'"></textarea>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="modal-footer">
+  <span *ngIf="saving"><i class="fa fa-spinner fa-spin"></i> saving...</span>
+  <button type="button" class="btn btn-primary"
+          [disabled]="saving"
+          (click)="onSave()">Save</button>
+  <button type="button" class="btn btn-secondary"
+          [disabled]="saving"
+          (click)="cancel()">Cancel</button>
+</div>

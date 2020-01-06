@@ -1,0 +1,46 @@
+<div class="text-right" *ngIf="!isEnglish(language.languageId) && !preview">
+  <button class="btn btn-danger btn-card" (click)="delete()">&times;</button>
+</div>
+
+<!-- WHICH LANGUAGE -->
+<div class="form-group" *ngIf="!isEnglish(language.languageId)">
+  <label>{{ 'REGISTRATION.LANGUAGE.LABEL.LANGUAGE' | translate }}</label>
+
+  <select class="form-control" [disabled]="" [(ngModel)]="language.languageId" disabled *ngIf="!preview">
+    <option *ngFor="let l of languages" [value]="l.id">{{l.name}}</option>
+  </select>
+
+  <p class="m-0" *ngIf="preview">
+    {{language.language.name}}
+  </p>
+</div>
+
+<!-- HOW WELL DO YOU SPEAK -->
+<div class="form-group">
+  <label translate dir="auto">
+    {{ 'REGISTRATION.LANGUAGE.LABEL.SPEAK' | translate:{languageName: getLanguageName(language.languageId)} }}
+  </label>
+
+  <select class="form-control" [(ngModel)]="language.spokenLevelId" *ngIf="!preview">
+    <option *ngFor="let l of languageLevels" [value]="l.id">{{l.name}}</option>
+  </select>
+
+  <p class="m-0" *ngIf="preview">
+    {{language.spokenLevel.name}}
+  </p>
+</div>
+
+<!-- HOW WELL DO YOU READ AND WRITE -->
+<div class="form-group">
+  <label translate dir="auto" [translateParams]="{languageName: getLanguageName(language.languageId)}">
+    {{ 'REGISTRATION.LANGUAGE.LABEL.WRITTEN' | translate:{languageName: getLanguageName(language.languageId)} }}
+  </label>
+
+  <select class="form-control" [(ngModel)]="language.writtenLevelId" *ngIf="!preview">
+    <option *ngFor="let l of languageLevels" [value]="l.id">{{l.name}}</option>
+  </select>
+
+  <p class="m-0" *ngIf="preview">
+    {{language.writtenLevel.name}}
+  </p>
+</div>

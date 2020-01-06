@@ -1,0 +1,64 @@
+<div class="container">
+
+  <app-loading [loading]="loading"></app-loading>
+
+  <form [formGroup]="form" *ngIf="!loading">
+
+    <!-- EMAIL -->
+    <div class="form-group">
+      <label for="email">{{'REGISTRATION.CONTACT.LABEL.EMAIL' | translate }} <sup>*</sup></label>
+      <input type="email" class="form-control" id="email" placeholder="Enter email" [formControlName]="'email'">
+      <app-form-control-error [control]="form.controls.email"></app-form-control-error>
+    </div>
+
+    <!-- PHONE # -->
+    <div class="form-group">
+      <label for="phone">{{ 'REGISTRATION.CONTACT.LABEL.PHONE' | translate }} <sup>*</sup></label>
+      <input type="text" class="form-control" id="phone" placeholder="Enter phone number" appInputFilter
+             [formControlName]="'phone'">
+      <app-form-control-error [control]="form.controls.phone"></app-form-control-error>
+    </div>
+
+    <!-- WHATSAPP -->
+    <div class="form-group">
+      <label for="whatsapp">{{ 'REGISTRATION.CONTACT.LABEL.WHATSAPP' | translate }}</label>
+      <input type="text" class="form-control" id="whatsapp" placeholder="Enter WhatsApp" appInputFilter
+             [formControlName]="'whatsapp'">
+    </div>
+
+    <ng-container *ngIf="!authenticated">
+<!--      <div class="form-group">-->
+<!--        <label for="username" >{{ 'REGISTRATION.CONTACT.LABEL.USERNAME' | translate}} <sup>*</sup></label>-->
+<!--        <input type="username" class="form-control" id="username" placeholder="Enter username" [formControlName]="'username'">-->
+<!--      </div>-->
+
+      <div class="form-group">
+        <label for="password">{{ 'REGISTRATION.CONTACT.LABEL.PASSWORD' | translate }} <sup>*</sup></label>
+        <input type="password" class="form-control" id="password" placeholder="Enter password"
+               [formControlName]="'password'">
+        <app-form-control-error [control]="form.controls.password"></app-form-control-error>
+      </div>
+
+      <div class="form-group">
+        <label for="passwordConfirmation">{{ 'REGISTRATION.CONTACT.LABEL.PASSWORDCONFIRMATION' | translate }} <sup>*</sup></label>
+        <input type="password" class="form-control" id="passwordConfirmation" placeholder="Enter confirmation password"
+               [formControlName]="'passwordConfirmation'">
+        <app-form-control-error [control]="form.controls.passwordConfirmation"></app-form-control-error>
+      </div>
+
+    </ng-container>
+
+  </form>
+
+  <app-error [error]="error"></app-error>
+
+</div>
+
+
+<app-registration-footer [nextDisabled]="form.invalid"
+                         [hideBack]="!edit"
+                         [type]="edit ? 'update' : 'step'"
+                         (backClicked)="cancel()"
+                         (nextClicked)="save()">
+</app-registration-footer>
+

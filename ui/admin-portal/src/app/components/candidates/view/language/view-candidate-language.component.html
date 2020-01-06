@@ -1,0 +1,57 @@
+<div *ngIf="loading">
+  <i class="fa fa-spinner fa-spin"></i> loading...
+</div>
+<div *ngIf="error">
+  {{error}}
+</div>
+<div class="card" *ngIf="!loading">
+
+  <!-- HEADER -->
+  <div class="card-header">Languages</div>
+
+  <!-- BODY -->
+  <div class="card-body">
+
+    <!-- EMPTY STATE -->
+    <p class="m-0" *ngIf="!candidateLanguages?.length">
+      No language data has been entered by this candidate.
+    </p>
+
+    <!-- LANGUAGE CARDS -->
+    <ng-container *ngFor="let language of candidateLanguages; let i = index;">
+
+      <div class="row">
+
+        <div class="col-sm-11">
+          {{language.language.name}}
+        </div>
+
+        <div class="col-1">
+          <button class="btn btn-default"
+                  *ngIf="editable"
+                  (click)="editCandidateLanguage(language)">
+            <i class="fa fa-edit"></i>
+          </button>
+        </div>
+
+        <div class="col-12" *ngIf="language.migrationLanguage">
+          Migrated Language: {{language.migrationLanguage}}
+        </div>
+
+        <div class="col-sm-12 col-md-6">
+          <span>Speaking: {{language.spokenLevel.name}}</span>
+        </div>
+
+        <div class="col-sm-12 col-md-6">
+          <span>Reading and Writing: {{language.writtenLevel.name}}</span>
+        </div>
+
+      </div>
+
+      <hr *ngIf="i < candidateLanguages?.length - 1">
+
+    </ng-container>
+
+  </div>
+
+</div>

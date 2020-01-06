@@ -1,0 +1,89 @@
+<div>
+  <div class="section">
+    <div>
+      <div class="pull-right">
+        <button class="btn btn-primary" (click)="addCountry()">Add</button>
+      </div>
+    </div>
+    <div class="alert alert-danger" *ngIf="error">
+      {{error}}
+    </div>
+    <form [formGroup]="searchForm" (ngSubmit)="search()">
+
+      <div class="form-row d-flex justify-content-between align-items-end">
+
+        <div class="form-group col-4">
+          <input type="text" class="form-control" placeholder="Search..." aria-label="Search" formControlName="keyword"
+                 id="keyword">
+        </div>
+
+        <div class="form-group col-4">
+          <select class="form-control" id="status" formControlName="status">
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+
+      </div>
+    </form>
+  </div>
+
+  <div class="text-muted mb-2 align-middle">
+
+    <ngb-pagination class="pull-right"
+                    [boundaryLinks]="true"
+                    [pageSize]="pageSize"
+                    [collectionSize]="results?.totalElements"
+                    [(page)]="pageNumber"
+                    (pageChange)="search()">
+    </ngb-pagination>
+
+    Found {{results?.totalElements}} countries
+  </div>
+
+  <table class="table">
+
+    <thead>
+    <tr>
+      <th>Name</th>
+      <th>Status</th>
+      <th>Translation count</th>
+      <th></th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr *ngFor="let country of results?.content">
+      <td>{{country.name}}</td>
+      <td>{{country.status}}</td>
+      <td></td>
+      <td>
+        <div class="btn-group">
+          <button type="button" class="btn btn-default" (click)="editCountry(country)"><i
+            class="fa fa-edit"></i></button>
+          <button type="button" class="btn btn-default" (click)="deleteCountry(country)"><i
+            class="fa fa-trash"></i></button>
+        </div>
+      </td>
+    </tr>
+
+    <!-- loading -->
+    <tr *ngIf="loading">
+      <td colspan="42">
+        <i class="fa fa-spinner fa-spin"></i> Loading...
+      </td>
+    </tr>
+
+    <!-- no results -->
+    <tr *ngIf="!loading && !results?.totalElements">
+      <td colspan="42">
+        <span class="text-muted">(no matching countries)</span>
+      </td>
+    </tr>
+
+    </tbody>
+
+  </table>
+
+</div>
+

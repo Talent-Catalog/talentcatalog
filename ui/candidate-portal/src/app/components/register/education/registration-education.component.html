@@ -1,0 +1,69 @@
+<div class="container">
+
+  <app-loading [loading]="loading"></app-loading>
+
+  <ng-container *ngIf="!loading">
+
+    <app-error [error]="error"></app-error>
+
+    <form [formGroup]="form">
+
+      <!-- MAX EDUCATION LEVEL -->
+      <div class="form-group">
+        <label for="maxEducationLevelId">{{ 'REGISTRATION.EDUCATION.LABEL.MAXEDUCATIONLEVELID' | translate }}</label>
+        <select class="form-control" id="maxEducationLevelId" [formControlName]="'maxEducationLevelId'" >
+          <option value=""></option>
+          <option *ngFor="let educationLevel of educationLevels" [value]="educationLevel.id">{{educationLevel.name}}</option>
+        </select>
+      </div>
+
+    </form>
+
+    <!-- EDUCATIONS -->
+    <div class="card parent-card" *ngFor="let item of candidateEducationItems; let i = index;">
+
+      <app-candidate-education-card *ngIf="editTarget?.id !== item.id"
+                                    [candidateEducation]="item"
+                                    [disabled]="saving"
+                                    (onDelete)="deleteCandidateEducation(i)"
+                                    (onEdit)="editCandidateEducation($event)">
+      </app-candidate-education-card>
+
+      <app-candidate-education-form *ngIf="editTarget?.id == item.id"
+                                    [candidateEducation]="item"
+                                    [countries]="countries"
+                                    [majors]="majors"
+                                    (saved)="handleEducationSaved($event, i)">
+      </app-candidate-education-form>
+
+    </div>
+
+    <p *ngIf="addingEducation && !candidateEducationItems.length">
+      {{ 'REGISTRATION.EDUCATION.MESSAGE' | translate }}}
+    </p>
+
+    <!-- CREATE NEW EDUCATION -->
+    <app-candidate-education-form *ngIf="addingEducation" class="mt-4"
+                                  [educationType]="educationType"
+                                  [countries]="countries"
+                                  [majors]="majors"
+                                  (saved)="handleCandidateEducationCreated($event)">
+    </app-candidate-education-form>
+
+    <div class="text-center mt-4" *ngIf="!addingEducation">
+      <button class="btn btn-outline-primary"
+              [disabled]="loading || saving"
+              (click)="addEducation()">
+        {{ 'REGISTRATION.EDUCATION.BUTTON.ADD' | translate }}
+      </button>
+    </div>
+
+  </ng-container>
+
+</div>
+
+<app-registration-footer [nextDisabled]="loading || saving"
+                         [type]="edit ? 'update' : 'step'"
+                         (backClicked)="edit ? cancel() : back()"
+                         (nextClicked)="next()">
+</app-registration-footer>
