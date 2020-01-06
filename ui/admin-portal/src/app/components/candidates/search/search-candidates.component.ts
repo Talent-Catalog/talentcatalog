@@ -297,6 +297,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
         console.log(this.searchForm);
         if (localStorageSearchRequest){
           setTimeout(() => {
+            console.log('Populate from local storage');
             this.populateFormWithSavedSearch(localStorageSearchRequest);
             this.search();
           }, 200);
