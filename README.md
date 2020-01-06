@@ -37,6 +37,11 @@ However, Flyway and Postgres don't install with Homebrew)
 
 ### Setup your local database ###
 
+Use PostreSQL pgAdmin tool to...
+
+- Create a new login role (ie user) called tbbtalent, password tbbtalent with 
+full privileges
+- Create a new database called tbbtalent and set tbbtalent as the owner
 - The database details are defined in bundle/all/resources/application.yml
 - The database is populated/updated using Flyway at start up - see TbbTalentApplication
 
