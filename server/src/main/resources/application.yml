@@ -19,6 +19,8 @@ jwt:
   secret: JWTSuperSecretKey
   expirationInMs: 604800000
 
+server:
+  url: http://localhost:8080
 web:
   portal: http://localhost:4200
   admin:  http://localhost:4201

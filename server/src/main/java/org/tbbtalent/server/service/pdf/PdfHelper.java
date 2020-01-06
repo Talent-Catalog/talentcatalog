@@ -2,6 +2,7 @@ package org.tbbtalent.server.service.pdf;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,9 @@ import static org.thymeleaf.templatemode.TemplateMode.HTML;
 @Service
 public class PdfHelper {
 
+    @Value("${server.url}")
+    private String serverUrl;
+
     private static final String UTF_8 = "UTF-8";
     private final TemplateEngine pdfTemplateEngine;
 
@@ -56,13 +60,7 @@ public class PdfHelper {
 
             ITextRenderer renderer = new ITextRenderer();
 
-            String baseUrl = FileSystems
-                    .getDefault()
-                    .getPath("server","src","main","resources","pdf")
-                    .toUri()
-                    .toURL()
-                    .toString();
-            renderer.setDocumentFromString(xHtml, baseUrl);
+            renderer.setDocumentFromString(xHtml, serverUrl+"/pdf/");
             renderer.layout();
 
             // And finally, we create the PDF:

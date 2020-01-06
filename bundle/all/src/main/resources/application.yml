@@ -19,6 +19,8 @@ jwt:
   secret: JWTSuperSecretKey
   expirationInMs: 604800000
 
+server:
+  url: https://tbbtalent-staging.herokuapp.com
 web:
   portal: https://tbbtalent-staging.herokuapp.com/candidate-portal
   admin: https://tbbtalent-staging.herokuapp.com/admin-portal
