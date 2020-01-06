@@ -11,7 +11,7 @@ pipelines: # We set up all the pipeline or actions beneath test
           script:
             - bash ./gradlew clean stage
           artifacts:
-            - target/aeg-server-0.1.0.jar
+            - bundle/all/build/libs/all.jar
       - step:
           name: "Deploy to Production"
           image: atlassian/default-image:2
