@@ -1,4 +1,4 @@
-package org.tbbtalent;
+package org.tbbtalent.server;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

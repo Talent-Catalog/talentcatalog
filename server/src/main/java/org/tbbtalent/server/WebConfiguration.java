@@ -1,4 +1,4 @@
-package org.tbbtalent;
+package org.tbbtalent.server;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,6 @@ public class WebConfiguration implements WebMvcConfigurer {
                 new UIBundle("candidate-portal", "candidate-portal"),
                 new UIBundle("admin-portal", "admin-portal")
         };
-
 
         for (UIBundle uiBundle : uiBundles) {
 

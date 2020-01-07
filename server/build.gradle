@@ -2,6 +2,7 @@ buildscript {
     ext {
         springBootVersion = '2.2.2.RELEASE'
         dependencyManagementPluginVersion = '1.0.1.RELEASE'
+        isDev = System.properties['env'] == 'dev'
     }
     repositories {
         mavenCentral()
@@ -28,19 +29,14 @@ dependencyManagement {
         mavenBom 'com.amazonaws:aws-java-sdk-bom:1.11.656'
     }
 }
-//bootJar {
-//    baseName = 'tbbtalent'
-//    version =  '2.0.0'
-//}
-
-//repositories {
-//    mavenCentral()
-//}
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
+    implementation(project(':ui:admin-portal'))
+    implementation(project(':ui:candidate-portal'))
+
     implementation('commons-beanutils:commons-beanutils:1.9.3')
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-security")
@@ -59,7 +55,6 @@ dependencies {
     implementation('org.xhtmlrenderer:flying-saucer-core:9.1.6')
     implementation('org.xhtmlrenderer:flying-saucer-pdf-itext5:9.1.6')
     implementation('net.sf.jtidy:jtidy:r938')
-
     runtimeOnly('org.postgresql:postgresql')
     runtimeOnly('mysql:mysql-connector-java:8.0.15')
 
