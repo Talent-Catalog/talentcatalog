@@ -16,7 +16,7 @@ import {SearchSavedSearchesComponent} from "./saved-search/search-saved-searches
 import {SaveSearchComponent} from "./save/save-search.component";
 import {SavedSearchService} from "../../../services/saved-search.service";
 import {IDropdownSettings} from 'ng-multiselect-dropdown';
-import {Subscription} from "rxjs";
+import {forkJoin, Subscription} from "rxjs";
 import {JoinSavedSearchComponent} from "./join-search/join-saved-search.component";
 import {EducationLevel} from "../../../model/education-level";
 import {EducationLevelService} from "../../../services/education-level.service";
@@ -54,17 +54,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   @ViewChild('downloadCsvErrorModal', {static: true}) downloadCsvErrorModal;
 
   error: any;
-  _loading = {
-    candidateOccupations: true,
-    countries: true,
-    educationLevels: true,
-    educationMajors: true,
-    languageLevels: true,
-    languages: true,
-    nationalities: true,
-    savedSearch: false,
-    verifiedOccupations: true,
-  };
+  loading: boolean;
   searching: boolean;
   exporting: boolean;
 
@@ -88,7 +78,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     singleSelection: false,
     selectAllText: 'Select All',
     unSelectAllText: 'Deselect All',
-    itemsShowLimit: 1,
+    itemsShowLimit: 2,
     allowSearchFilter: true
   };
 
@@ -168,16 +158,6 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       statusesDisplay: [[]],
 
     });
-
-  }
-
-  get loading() {
-    for (let prop of Object.keys(this._loading)) {
-      if (this._loading[prop]) {
-        return true;
-      }
-    }
-
   }
 
   ngOnInit() {
@@ -186,128 +166,60 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     this.pageNumber = 1;
     this.pageSize = 20;
 
+    forkJoin({
+      'nationalities': this.nationalityService.listNationalities(),
+      'countries': this.countryService.listCountries(),
+      'languages': this.languageService.listLanguages(),
+      'languageLevels': this.languageLevelService.listLanguageLevels(),
+      'educationLevels': this.educationLevelService.listEducationLevels(),
+      'majors': this.educationMajorService.listMajors(),
+      'verifiedOccupation': this.candidateOccupationService.listVerifiedOccupations(),
+      'occupations': this.candidateOccupationService.listOccupations()
+    }).subscribe(results => {
+      this.loading = false;
+      this.nationalities = results['nationalities'];
+      this.countries = results['countries'];
+      this.languages = results['languages'];
+      this.languageLevels = results['languageLevels'];
+      this.educationLevels = results['educationLevels'];
+      this.educationMajors = results['majors'];
+      this.verifiedOccupations = results['verifiedOccupation'];
+      this.candidateOccupations = results['occupations'];
 
+      const englishLanguageObj = this.languages.find(l => l.name.toLowerCase() === 'english');
+      this.englishLanguageModel = Object.assign(emptyLanguageLevelFormControlModel, {languageId: englishLanguageObj.id || null});
 
-    /* LOAD NATIONALITIES */
-    this.nationalityService.listNationalities().subscribe(
-      (response) => {
-        this.nationalities = response;
-        this._loading.nationalities = false;
-      },
-      (error) => {
-        this.error = error;
-        this._loading.nationalities = false;
-      }
-    );
-
-    /* LOAD COUNTRIES */
-    this.countryService.listCountries().subscribe(
-      (response) => {
-        this.countries = response;
-        this._loading.countries = false;
-      },
-      (error) => {
-        this.error = error;
-        this._loading.countries = false;
-      }
-    );
-
-    /* LOAD LANGUAGES */
-    this.languageService.listLanguages().subscribe(
-      (response) => {
-        this.languages = response;
-
-        const englishLanguageObj = this.languages.find(l => l.name.toLowerCase() === 'english');
-        this.englishLanguageModel = Object.assign(emptyLanguageLevelFormControlModel, {languageId: englishLanguageObj.id || null});
-
-        this._loading.languages = false;
-      },
-      (error) => {
-        this.error = error;
-        this._loading.languages = false;
-      }
-    );
-
-    this.languageLevelService.listLanguageLevels().subscribe(
-      (response) => {
-        this.languageLevels = response;
-        this._loading.languageLevels = false;
-      },
-      (error) => {
-        this.error = error;
-        this._loading.languageLevels = false;
-      });
-
-    /* LOAD EDUCATIONAL LEVELS */
-    this.educationLevelService.listEducationLevels().subscribe(
-      (response) => {
-        this.educationLevels = response;
-        this._loading.educationLevels = false;
-      },
-      (error) => {
-        this.error = error;
-        this._loading.educationLevels = false;
-      });
-
-    /* LOAD EDUCATIONAL MAJORS */
-    this.educationMajorService.listMajors().subscribe(
-      (response) => {
-        this.educationMajors = response;
-        this._loading.educationMajors = false;
-      },
-      (error) => {
-        this.error = error;
-        this._loading.educationMajors = false;
-      });
-
-    /* LOAD VERIFIED OCCUPATIONS */
-    this.candidateOccupationService.listVerifiedOccupations().subscribe(
-      (response) => {
-        this.verifiedOccupations = response;
-        this._loading.verifiedOccupations = false;
-      },
-      (error) => {
-        this.error = error;
-        this._loading.verifiedOccupations = false;
-      });
-
-    /* LOAD CANDIDATE OCCUPATIONS (includes unverified) */
-    this.candidateOccupationService.listOccupations().subscribe(
-      (response) => {
-        this.candidateOccupations = response;
-        this._loading.candidateOccupations = false;
-      },
-      (error) => {
-        this.error = error;
-        this._loading.candidateOccupations = false;
-      });
-
-    this.route.params.subscribe(params => {
-      this.savedSearchId = params['savedSearchId'];
-      if (this.savedSearchId) {
-        this.savedSearchService.get(this.savedSearchId).subscribe(result => {
-          this.savedSearch = result;
-          this.loadSavedSearch(this.savedSearchId);
-        }, err => {
-          this.error = err;
-        })
-      } else {
-        let localStorageSearchRequest = JSON.parse(localStorage.getItem(this.searchKey));
-        console.log(localStorageSearchRequest);
-        console.log(this.searchForm);
-        if (localStorageSearchRequest){
-          setTimeout(() => {
-            console.log('Populate from local storage');
-            this.populateFormWithSavedSearch(localStorageSearchRequest);
-            this.search();
-          }, 200);
+      // start listening to route params after everything is loaded
+      this.route.params.subscribe(params => {
+        this.savedSearchId = params['savedSearchId'];
+        if (this.savedSearchId) {
+          this.savedSearchService.get(this.savedSearchId).subscribe(result => {
+            this.savedSearch = result;
+            this.loadSavedSearch(this.savedSearchId);
+          }, err => {
+            this.error = err;
+          })
         } else {
-          this.search();
+          let localStorageSearchRequest = JSON.parse(localStorage.getItem(this.searchKey));
+          console.log(localStorageSearchRequest);
+          console.log(this.searchForm);
+          if (localStorageSearchRequest){
+            setTimeout(() => {
+              console.log('Populate from local storage');
+              this.populateFormWithSavedSearch(localStorageSearchRequest);
+              this.search();
+            }, 200);
+          } else {
+            this.search();
+          }
         }
-      }
+      });
+
+
+    }, error => {
+      this.loading = false;
+      this.error = error;
     });
-
-
 
     /* SEARCH ON CHANGE*/
     this.searchForm.get('shortlistStatus').valueChanges
@@ -321,8 +233,6 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
           this.search();
         }
       });
-
-
   }
 
 
@@ -524,8 +434,6 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
         this.searchJoinArray.push(this.fb.group(join)) // If present, repopulate the array from the request
       });
     }
-
-    this._loading.savedSearch = false;
 
     /* Perform a mouse event to force the multi-select components to update */
     this.formWrapper.nativeElement.click();
