@@ -84,6 +84,7 @@ export class FileUploadComponent implements OnInit {
 
     /* Validate the file */
     if (!this.validFile(file)) {
+      console.log(file);
       this.uploading = false;
       return;
     }
