@@ -32,19 +32,25 @@ export class MonthPickerComponent implements OnInit {
   updateMonth(){
     if (!this.date){
       this.date = new Date();
-      this.date.setDate(1);
     }
-    this.date.setMonth(this.month-1);
+    if (this.month){
+      this.date.setMonth(this.month-1);
+    } else {
+      this.date = null;
+    }
     this.control.patchValue(this.date);
+
   }
 
   updateYear(){
     if (!this.date){
       this.date = new Date();
-      this.date.setDate(1);
-
     }
-    this.date.setFullYear(this.year);
+    if (this.year){
+      this.date.setFullYear(this.year);
+    } else {
+      this.date = null;
+    }
     this.control.patchValue(this.date);
   }
 
