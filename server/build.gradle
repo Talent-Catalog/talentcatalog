@@ -1,7 +1,6 @@
 buildscript {
     ext {
         springBootVersion = '2.2.2.RELEASE'
-        dependencyManagementPluginVersion = '1.0.1.RELEASE'
         isDev = System.properties['env'] == 'dev'
     }
     repositories {
@@ -24,6 +23,7 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -55,8 +55,4 @@ dependencies {
     runtimeOnly('mysql:mysql-connector-java:8.0.15')
 
     testCompile("junit:junit")
-}
-
-jar {
-    enabled=true
 }
