@@ -6,6 +6,11 @@ plugins {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+node {
+  version = '10.15.1'
+  download = true
+}
+
 apply plugin: 'com.moowork.node'
 
 task npm_build_ui_bundle(type: NpmTask) {
