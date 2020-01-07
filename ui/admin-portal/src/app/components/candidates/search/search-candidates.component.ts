@@ -88,7 +88,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     singleSelection: false,
     selectAllText: 'Select All',
     unSelectAllText: 'Deselect All',
-    itemsShowLimit: 3,
+    itemsShowLimit: 1,
     allowSearchFilter: true
   };
 
