@@ -21,7 +21,7 @@ pipelines: # We set up all the pipeline or actions beneath test
               variables:
                 AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
                 AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
-                AWS_DEFAULT_REGION: "ap-southeast-2"
+                AWS_DEFAULT_REGION: "us-east-1"
                 APPLICATION_NAME: "tbb-app-prod"
                 ENVIRONMENT_NAME: 'TbbAppProd-env'
                 ZIP_FILE: "server/build/libs/server.jar"
