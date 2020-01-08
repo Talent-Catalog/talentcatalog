@@ -11,7 +11,7 @@ pipelines: # We set up all the pipeline or actions beneath test
           script:
             - bash ./gradlew clean stage
           artifacts:
-            - bundle/all/build/libs/all.jar
+            - server/build/libs/server.jar
       - step:
           name: "Deploy to Production"
           image: atlassian/default-image:2
@@ -24,4 +24,4 @@ pipelines: # We set up all the pipeline or actions beneath test
                 AWS_DEFAULT_REGION: "ap-southeast-2"
                 APPLICATION_NAME: "tbb-app-prod"
                 ENVIRONMENT_NAME: 'TbbAppProd-env'
-                ZIP_FILE: "bundle/all/build/libs/all.jar"
+                ZIP_FILE: "server/build/libs/server.jar"

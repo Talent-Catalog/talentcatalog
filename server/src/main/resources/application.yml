@@ -32,13 +32,13 @@ flyway:
 
 aws:
   s3:
-    files-bucket: ${AWS_S3_FILES-BUCKET:dev.files.tbbtalent.org}
+    bucketName: ${AWS_S3_BUCKETNAME:dev.files.tbbtalent.org}
     region: us-east-1
     max-size: 52428800
     upload-folder: temp
   credentials:
-    access-key: ${AWS_CREDENTIALS_ACCESS-KEY:AKIA6C7ESOA6FCQTELMN}
-    secret-key: ${AWS_CREDENTIALS_SECRET-KEY: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}
+    accessKey: ${AWS_CREDENTIALS_ACCESSKEY:AKIA6C7ESOA6FCQTELMN}
+    secretKey: ${AWS_CREDENTIALS_SECRETKEY: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}
 
 #email:
 #   type: SMTP # STUB or SMTP
@@ -47,8 +47,8 @@ aws:
 #   user: tbbtalent@talentbeyondboundaries.org
 #   password: //check passpack
 #   authenticated: true
-#   default-email: tbbtalent@talentbeyondboundaries.org
-#   test-override-email: tbbtalent@talentbeyondboundaries.org
+#   defaultEmail: tbbtalent@talentbeyondboundaries.org
+#   testOverrideEmail: tbbtalent@talentbeyondboundaries.org
 
 email:
   type: SMTP # STUB or SMTP
@@ -57,5 +57,5 @@ email:
   user: ${EMAIL_USER:devtestingdp@gmail.com}
   password: ${EMAIL_PASSWORD:H@6J9bpcIDHa}
   authenticated: true
-  default-email: ${EMAIL_DEFAULT-EMAIL:jthatcher@digitalpurpose.com.au}
-  test-override-email: ${EMAIL_TEST-OVERRIDE-EMAIL:jthatcher+tbb@digitalpurpose.com.au}
+  defaultEmail: ${EMAIL_DEFAULTEMAIL:jthatcher@digitalpurpose.com.au}
+  testOverrideEmail: ${EMAIL_TESTOVERRIDEEMAIL:jthatcher+tbb@digitalpurpose.com.au}

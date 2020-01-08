@@ -1,6 +1,8 @@
 package org.tbbtalent.server.api.system;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,13 +21,15 @@ import java.util.Base64.Encoder;
 @RequestMapping("api/system/upload")
 public class SystemUploadApi {
 
-    @Value("${aws.credentials.access-key}")
+    private static final Logger log = LoggerFactory.getLogger(SystemUploadApi.class);
+
+    @Value("${aws.credentials.accessKey}")
     private String accessKey;
 
-    @Value("${aws.credentials.secret-key}")
+    @Value("${aws.credentials.secretKey}")
     private String secretKey;
 
-    @Value("${aws.s3.files-bucket}")
+    @Value("${aws.s3.bucketName}")
     private String bucket;
 
     @Value("${aws.s3.upload-folder}")
@@ -36,6 +40,8 @@ public class SystemUploadApi {
 
     @GetMapping(value = "policy/{s3Key}")
     public S3UploadData getUploadPolicy(@PathVariable("s3Key") String s3Key) throws Exception {
+        log.info("access key"+accessKey);
+        log.info("bucket"+bucket);
         if (StringUtils.isNotBlank(uploadFolder)) {
             s3Key = uploadFolder + "/" + s3Key;
         }
