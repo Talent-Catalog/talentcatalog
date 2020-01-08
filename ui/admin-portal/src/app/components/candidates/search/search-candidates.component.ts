@@ -298,6 +298,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   }
 
   clearForm() {
+    localStorage.setItem(this.searchKey, null);
     this.searchForm.reset();
     while (this.searchJoinArray.length) {
       this.searchJoinArray.removeAt(0); // Clear the form array
@@ -355,8 +356,6 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   }
 
   populateFormWithSavedSearch(request) {
-    console.log(request);
-    console.log(this.searchForm);
     /* Do a blanket patch of all form fields */
     Object.keys(this.searchForm.controls).forEach(name => {
       this.searchForm.controls[name].patchValue(request[name]);
@@ -496,7 +495,6 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   handleCandidateShortlistSaved(candidateShortlistItem: CandidateShortlistItem) {
     this.search();
-    //todo partial update
   }
 
   handleSearchTypeChange(control: string, value: 'or' | 'not') {
@@ -579,7 +577,6 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     let tab = window.open();
     this.candidateService.downloadCv(candidate.id).subscribe(
       result => {
-        console.log(result);
         const fileUrl = URL.createObjectURL(result);
         tab.location.href = fileUrl;
       },
