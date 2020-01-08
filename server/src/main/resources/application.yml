@@ -1,15 +1,16 @@
 tbb:
   cors:
-    urls: http://localhost:4200,http://localhost:4201
+    urls: ${TBB_CORS_URLS:http://localhost:4200,http://localhost:4201,https://tbbtalent-staging.herokuapp.com}
 
 spring:
   datasource:
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/tbbtalent
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/tbbtalent}
     username: tbbtalent
-    password: tbbtalent
+    password: ${SPRING_DATASOURCE_PASSWORD:tbbtalent}
   jpa:
-    show-sql: true
+    show-sql: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     properties:
       hibernate:
         temp:
@@ -20,10 +21,10 @@ jwt:
   expirationInMs: 604800000
 
 server:
-  url: http://localhost:8080
+  url: https://tbbtalent-staging.herokuapp.com
 web:
-  portal: http://localhost:4200
-  admin:  http://localhost:4201
+  portal: ${WEB_PORTAL:https://tbbtalent-staging.herokuapp.com/candidate-portal}
+  admin: ${WEB_ADMIN:https://tbbtalent-staging.herokuapp.com/admin-portal}
 
 flyway:
   ignoreMissingMigrations: true
@@ -31,20 +32,30 @@ flyway:
 
 aws:
   s3:
-    files-bucket: dev.files.tbbtalent.org
+    bucketName: ${AWS_S3_BUCKETNAME:dev.files.tbbtalent.org}
     region: us-east-1
     max-size: 52428800
     upload-folder: temp
   credentials:
-    access-key: AKIA6C7ESOA6FCQTELMN
-    secret-key: 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
+    accessKey: ${AWS_CREDENTIALS_ACCESSKEY:AKIA6C7ESOA6FCQTELMN}
+    secretKey: ${AWS_CREDENTIALS_SECRETKEY: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}
+
+#email:
+#   type: SMTP # STUB or SMTP
+#   host: smtp.gmail.com
+#   port: 587
+#   user: tbbtalent@talentbeyondboundaries.org
+#   password: //check passpack
+#   authenticated: true
+#   defaultEmail: tbbtalent@talentbeyondboundaries.org
+#   testOverrideEmail: tbbtalent@talentbeyondboundaries.org
 
 email:
-   type: SMTP # STUB or SMTP
-   host: smtp.gmail.com
-   port: 587
-   user: devtestingdp@gmail.com
-   password: H@6J9bpcIDHa
-   authenticated: true
-   default-email: jthatcher@digitalpurpose.com.au
-   test-override-email: jthatcher+tbb@digitalpurpose.com.au
+  type: SMTP # STUB or SMTP
+  host: ${EMAIL_HOST:smtp.gmail.com}
+  port: 587
+  user: ${EMAIL_USER:devtestingdp@gmail.com}
+  password: ${EMAIL_PASSWORD:H@6J9bpcIDHa}
+  authenticated: true
+  defaultEmail: ${EMAIL_DEFAULTEMAIL:jthatcher@digitalpurpose.com.au}
+  testOverrideEmail: ${EMAIL_TESTOVERRIDEEMAIL:jthatcher+tbb@digitalpurpose.com.au}

@@ -34,7 +34,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     private final UserContext userContext;
     private final S3ResourceHelper s3ResourceHelper;
 
-    @Value("{aws.s3.files-bucket}")
+    @Value("{aws.s3.bucketName}")
     String s3Bucket;
 
     @Autowired

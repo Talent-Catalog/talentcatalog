@@ -1,11 +1,12 @@
 package org.tbbtalent.server.service.aws;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.*;
+import com.amazonaws.services.s3.transfer.*;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,21 +17,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.FileDownloadException;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.CopyObjectRequest;
-import com.amazonaws.services.s3.model.ListObjectsRequest;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.amazonaws.services.s3.transfer.Download;
-import com.amazonaws.services.s3.transfer.TransferManager;
-import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
-import com.amazonaws.services.s3.transfer.TransferManagerConfiguration;
-import com.amazonaws.services.s3.transfer.Upload;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 
 public class S3ResourceHelper {
     private static final Logger log = LoggerFactory.getLogger(S3ResourceHelper.class);
@@ -38,14 +29,14 @@ public class S3ResourceHelper {
 
     private AmazonS3 amazonS3;
 
-    @Value("${aws.s3.files-bucket}")
+    @Value("${aws.s3.bucketName}")
     private String s3Bucket;
 
     private TransferManager transferManager;
 
     @Autowired
-    public S3ResourceHelper(@Value("${aws.credentials.access-key}") String accessKey,
-                            @Value("${aws.credentials.secret-key}") String secretKey,
+    public S3ResourceHelper(@Value("${aws.credentials.accessKey}") String accessKey,
+                            @Value("${aws.credentials.secretKey}") String secretKey,
                             @Value("${aws.s3.region}") String s3Region) {
         AWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
         amazonS3 = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(credentials))

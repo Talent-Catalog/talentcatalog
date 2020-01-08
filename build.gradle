@@ -1,6 +1,4 @@
-task buildBundleAll(dependsOn: [':bundle:all:build'])
-
 task buildServerCore(dependsOn: [':server:build'])
 
 // called by Heroku by default
-task stage(dependsOn: [':buildBundleAll'])
+task stage(dependsOn: [':buildServerCore'])

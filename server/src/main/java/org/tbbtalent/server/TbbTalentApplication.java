@@ -1,4 +1,4 @@
-package org.tbbtalent;
+package org.tbbtalent.server;
 
 import org.flywaydb.core.Flyway;
 import org.springframework.boot.SpringApplication;
