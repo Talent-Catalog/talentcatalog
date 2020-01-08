@@ -29,10 +29,10 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
-//    if (!isDev) {
-//        implementation(project(':ui:admin-portal'))
-//        implementation(project(':ui:candidate-portal'))
-//    }
+    if (!isDev) {
+        implementation(project(':ui:admin-portal'))
+        implementation(project(':ui:candidate-portal'))
+    }
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
