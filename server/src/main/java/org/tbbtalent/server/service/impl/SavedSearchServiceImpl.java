@@ -193,6 +193,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         SavedSearch savedSearch = new SavedSearch();
         savedSearch.setName(request.getName());
+        
+        savedSearch.setType(request.getType());
+        
         savedSearch.setKeyword(request.getSearchCandidateRequest().getKeyword());
         savedSearch.setStatuses(getStatusListAsString(request.getSearchCandidateRequest().getStatuses()));
         savedSearch.setGender(request.getSearchCandidateRequest().getGender());

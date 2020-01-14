@@ -12,6 +12,10 @@ import java.util.Set;
 public class SavedSearch extends AbstractAuditableDomainObject<Long> {
 
     private String name;
+
+    @Enumerated(EnumType.STRING)
+    private SavedSearchType type;
+    
     @Enumerated(EnumType.STRING)
     private Status status;
     private String keyword;
@@ -371,5 +375,13 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
 
     public void setMinEducationLevelName(String minEducationLevelName) {
         this.minEducationLevelName = minEducationLevelName;
+    }
+
+    public SavedSearchType getType() {
+        return type;
+    }
+
+    public void setType(SavedSearchType type) {
+        this.type = type;
     }
 }

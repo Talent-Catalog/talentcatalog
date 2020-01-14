@@ -1,5 +1,7 @@
 package org.tbbtalent.server.request.search;
 
+import org.tbbtalent.server.model.SavedSearch;
+import org.tbbtalent.server.model.SavedSearchType;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 
 import javax.validation.constraints.NotBlank;
@@ -8,6 +10,8 @@ public class CreateSavedSearchRequest {
 
     @NotBlank
     private String name;
+    
+    private SavedSearchType type;
 
     private SearchCandidateRequest searchCandidateRequest;
 
@@ -17,6 +21,14 @@ public class CreateSavedSearchRequest {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public SavedSearchType getType() {
+        return type;
+    }
+
+    public void setType(SavedSearchType type) {
+        this.type = type;
     }
 
     public SearchCandidateRequest getSearchCandidateRequest() {
