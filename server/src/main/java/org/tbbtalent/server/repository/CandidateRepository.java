@@ -33,12 +33,12 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     @Query("select distinct c from Candidate c "
             + " where (lower(c.phone) = lower(?1) )"
             + " and c.status != 'deleted'")
-    Candidate findByPhoneIgnoreCase(String phone);
+    Candidate findByPhoneIgnoreCase(@Param("phone") String phone);
 
     @Query("select distinct c from Candidate c "
             + " where (lower(c.whatsapp) = lower(:whatsapp) )"
             + " and c.status != 'deleted'")
-    Candidate findByWhatsappIgnoreCase(String whatsapp);
+    Candidate findByWhatsappIgnoreCase(@Param("whatsapp") String whatsapp);
 
     @Query(" select distinct c from Candidate c "
             + " left join c.candidateOccupations p "
