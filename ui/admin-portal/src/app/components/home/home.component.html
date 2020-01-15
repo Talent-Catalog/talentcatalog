@@ -1,8 +1,29 @@
 <h1>Welcome!</h1>
 
-<p>
-  Below are the stored saved searches for candidates
-</p>
+<ngb-tabset>
 
-<app-saved-searches></app-saved-searches>
+  <ngb-tab [title]="'Profession searches'">
+    <ng-template ngbTabContent>
+      <app-saved-searches [savedSearchType]="'profession'"></app-saved-searches>
+    </ng-template>
+  </ngb-tab>
+
+  <ngb-tab [title]="'Job searches'">
+    <ng-template ngbTabContent>
+      <app-saved-searches [savedSearchType]="'job'"></app-saved-searches>
+    </ng-template>
+  </ngb-tab>
+
+  <ngb-tab [title]="'Other searches'">
+    <ng-template ngbTabContent>
+      <app-saved-searches [savedSearchType]="'other'"></app-saved-searches>
+    </ng-template>
+  </ngb-tab>
+
+  <ngb-tab [title]="'All'">
+    <ng-template ngbTabContent>
+      <app-saved-searches></app-saved-searches>
+    </ng-template>
+  </ngb-tab>
+</ngb-tabset>
 

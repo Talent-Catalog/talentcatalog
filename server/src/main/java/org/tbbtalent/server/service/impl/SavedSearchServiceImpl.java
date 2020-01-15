@@ -131,10 +131,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     @Override
     @Transactional
     public SavedSearch updateSavedSearch(long id, UpdateSavedSearchRequest request) throws EntityExistsException {
-        // if no search candidate request, only update the search name
+        // if no search candidate request, only update the search name and type
         if(request.getSearchCandidateRequest() == null){
             SavedSearch savedSearch = savedSearchRepository.findById(id).orElse(null);
             savedSearch.setName(request.getName());
+            savedSearch.setType(request.getType());
             return savedSearchRepository.save(savedSearch);
         }
 

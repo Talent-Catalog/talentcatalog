@@ -14,6 +14,7 @@ export class SaveSearchComponent implements OnInit {
 
   form: FormGroup;
   error;
+  public replacing: boolean;
   saving: boolean;
   savedSearchId;
   savedSearch;
@@ -26,9 +27,11 @@ export class SaveSearchComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.replacing = this.savedSearchId ? true : false;
     this.form = this.fb.group({
       name: [null, Validators.required],
-      update: [this.savedSearchId ? true : false, Validators.required],
+      type: [null, Validators.required],
+      update: [!this.replacing, Validators.required],
       searchCandidateRequest: [this.searchCandidateRequest]
     });
     if (this.savedSearchId) {
@@ -47,7 +50,7 @@ export class SaveSearchComponent implements OnInit {
 
   save() {
     this.saving = true;
-    let request = this.form.value;
+    const request = this.form.value;
     // console.log('request', request);
     if (request.update == true && this.savedSearchId) {
       // console.log('updating', request);

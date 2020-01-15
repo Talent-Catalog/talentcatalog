@@ -15,21 +15,25 @@
   </div>
 
   <form [formGroup]="form">
-    <div class="form-check">
-      <label>
-        <input type="radio" [value]="false" formControlName="update">
-        <span>Create new search</span>
-      </label>
-    </div>
-    <div class="form-group">
+    <input type="radio" formControlName="update">
+    <span>Create new search</span>
+    <div class="form-group" >
+      <label for="name">Name</label>
       <input type="text" class="form-control" id="name" formControlName="name">
+
+      <label for="type">Type</label>
+      <select class="form-control" id="type" formControlName="type">
+        <option value="profession">Profession</option>
+        <option value="job">Job</option>
+        <option value="other">Other</option>
+      </select>
     </div>
     <hr/>
 
     <div *ngIf="savedSearch">
       <div class="form-check">
         <label>
-          <input type="radio" [value]="true" formControlName="update">
+          <input type="radio" formControlName="update">
           <span>Replace search</span>
         </label>
       </div>
@@ -37,6 +41,7 @@
         <app-saved-search [savedSearch]="savedSearch" [showAll]="true" [showMore]="false" [showOpen]="false"></app-saved-search>
       </div>
     </div>
+
   </form>
 </div>
 

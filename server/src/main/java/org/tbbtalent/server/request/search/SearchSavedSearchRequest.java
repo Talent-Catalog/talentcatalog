@@ -1,10 +1,12 @@
 package org.tbbtalent.server.request.search;
 
+import org.tbbtalent.server.model.SavedSearchType;
 import org.tbbtalent.server.request.SearchRequest;
 
 public class SearchSavedSearchRequest extends SearchRequest {
 
     private String keyword;
+    private SavedSearchType savedSearchType;
 
     public String getKeyword() {
         return keyword;
@@ -12,6 +14,14 @@ public class SearchSavedSearchRequest extends SearchRequest {
 
     public void setKeyword(String keyword) {
         this.keyword = keyword;
+    }
+
+    public SavedSearchType getSavedSearchType() {
+        return savedSearchType;
+    }
+
+    public void setSavedSearchType(SavedSearchType savedSearchType) {
+        this.savedSearchType = savedSearchType;
     }
 }
 

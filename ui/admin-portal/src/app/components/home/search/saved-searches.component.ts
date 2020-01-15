@@ -1,11 +1,11 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 
 import {SearchResults} from '../../../model/search-results';
 
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
-import {SavedSearch} from '../../../model/saved-search';
+import {SavedSearch, SavedSearchType} from '../../../model/saved-search';
 import {SavedSearchService} from '../../../services/saved-search.service';
 import {Router} from '@angular/router';
 import {EditSavedSearchComponent} from './edit/edit-saved-search.component';
@@ -19,8 +19,9 @@ import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 })
 export class SavedSearchesComponent implements OnInit {
 
+  @Input() savedSearchType: SavedSearchType;
   searchForm: FormGroup;
-  loading: boolean;
+  public loading: boolean;
   error: any;
   pageNumber: number;
   pageSize: number;
@@ -59,7 +60,8 @@ export class SavedSearchesComponent implements OnInit {
 
   search(){
     this.loading = true;
-    let request = this.searchForm.value;
+    const request = this.searchForm.value;
+    request.savedSearchType = this.savedSearchType;
     request.pageNumber = this.pageNumber - 1;
     request.pageSize = this.pageSize;
     this.savedSearchService.search(request).subscribe(results => {

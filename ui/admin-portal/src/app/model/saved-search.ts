@@ -1,8 +1,15 @@
 import {Language} from "./language";
 
+export enum SavedSearchType {
+  profession = 'profession',
+  job = 'job',
+  other = 'other'
+}
+
 export interface SavedSearch {
   id: number;
   name: string;
+  type: SavedSearchType;
   keyword: string;
   gender: string;
   statuses: string;

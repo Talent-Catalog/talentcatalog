@@ -31,7 +31,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     /* Used for candidate registration to check for existing accounts with different username options */
 //    Candidate findByEmailIgnoreCase(String email);
     @Query("select distinct c from Candidate c "
-            + " where (lower(c.phone) = lower(:phone) )"
+            + " where (lower(c.phone) = lower(?1) )"
             + " and c.status != 'deleted'")
     Candidate findByPhoneIgnoreCase(String phone);
 

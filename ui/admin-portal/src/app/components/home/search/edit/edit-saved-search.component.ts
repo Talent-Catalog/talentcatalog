@@ -28,7 +28,8 @@ export class EditSavedSearchComponent implements OnInit {
     this.savedSearchService.get(this.savedSearchId).subscribe(savedSearch => {
       this.savedSearch = savedSearch;
       this.savedSearchForm = this.fb.group({
-        name: [savedSearch.name, Validators.required]
+        name: [savedSearch.name, Validators.required],
+        type: [savedSearch.type, Validators.required]
       });
       this.loading = false;
     });

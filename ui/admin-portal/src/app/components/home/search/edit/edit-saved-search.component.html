@@ -23,6 +23,12 @@
       <div class="form-group">
         <label for="name">Name</label>
         <input type="text" class="form-control" id="name" formControlName="name">
+        <label for="type">Type</label>
+        <select class="form-control" id="type" formControlName="type">
+          <option value="profession">Profession</option>
+          <option value="job">Job</option>
+          <option value="other">Other</option>
+        </select>
       </div>
 
       <app-saved-search [savedSearch]="savedSearch" [showAll]="true" [showMore]="false" [showOpen]="false" ></app-saved-search>
