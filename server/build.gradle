@@ -45,7 +45,6 @@ dependencies {
     implementation('com.sun.mail:jakarta.mail')
     implementation('com.opencsv:opencsv:5.0')
     implementation('commons-beanutils:commons-beanutils:1.9.3')
-    implementation('org.thymeleaf:thymeleaf-spring5')
     implementation('org.thymeleaf.extras:thymeleaf-extras-java8time')
     implementation('org.xhtmlrenderer:flying-saucer-core:9.1.6')
     implementation('org.xhtmlrenderer:flying-saucer-pdf-itext5:9.1.6')
