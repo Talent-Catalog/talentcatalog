@@ -44,7 +44,7 @@ full privileges
 - Create a new database called tbbtalent and set tbbtalent as the owner
 - The database details are defined in bundle/all/resources/application.yml
 - The database is populated/updated using Flyway at start up - see TbbTalentApplication
-
+- Run data migration script to add additional data localhost:8080/api/admin/system/migrate
 ### Download and edit the code ###
 
 - Clone [the repository](https://bitbucket.org/johncameron/tbbtalentv2/src/master/) to your local system
