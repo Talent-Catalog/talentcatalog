@@ -27,8 +27,8 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
             + " and u.status != 'deleted'")
     User findByEmailIgnoreCase(@Param("email") String email);
 
-    @Query("select u from User u where u.resetToken = ?1 and u.status != 'deleted'")
-    User findByResetToken(String token);
+    @Query("select u from User u where u.resetToken = :token and u.status != 'deleted'")
+    User findByResetToken(@Param("token") String token);
 
 
 }
