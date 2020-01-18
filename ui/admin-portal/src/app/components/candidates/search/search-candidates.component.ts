@@ -355,6 +355,20 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       });
   }
 
+  updateSavedSearch() {
+
+    const details = this.savedSearch;
+    details.searchCandidateRequest = this.searchForm.value;
+    this.savedSearchService.update(this.savedSearch.id, details).subscribe(
+      (savedSearch) => {
+        alert("Sterwth");
+      },
+      (error) => {
+        this.error = error;
+      });
+
+  }
+
   populateFormWithSavedSearch(request) {
     /* Do a blanket patch of all form fields */
     Object.keys(this.searchForm.controls).forEach(name => {

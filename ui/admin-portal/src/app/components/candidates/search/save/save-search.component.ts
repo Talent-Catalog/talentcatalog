@@ -51,8 +51,11 @@ export class SaveSearchComponent implements OnInit {
   save() {
     this.saving = true;
     const request = this.form.value;
+
+    // todo Note that this is all a bit complicated - maybe unnecessary.
+    // this.form.value gets a copy of the search form value in searchCandidateRequest
     // console.log('request', request);
-    if (request.update == true && this.savedSearchId) {
+    if (this.savedSearchId) {
       // console.log('updating', request);
 
       request.name = this.savedSearch.name;
@@ -66,20 +69,10 @@ export class SaveSearchComponent implements OnInit {
           this.error = error;
           this.saving = false;
         });
-    } else
-      // console.log('creatimng', request);
-
-    this.savedSearchService.create(this.form.value).subscribe(
-        (savedSearch) => {
-          this.closeModal(savedSearch);
-          this.saving = false;
-        },
-        (error) => {
-          this.error = error;
-          this.saving = false;
-        });
-
-
+    } else {
+      this.closeModal(null);
+      this.saving = false;
+    }
   }
 
 

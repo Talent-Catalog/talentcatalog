@@ -1,6 +1,6 @@
 <div class="modal-header">
 
-  <h4 class="modal-title">Save Search</h4>
+  <h4 class="modal-title">Make New Saved Search</h4>
 
   <button type="button" class="close" aria-label="Close" (click)="dismiss()">
     <span aria-hidden="true">&times;</span>
@@ -15,8 +15,6 @@
   </div>
 
   <form [formGroup]="form">
-    <input type="radio" formControlName="update">
-    <span>Create new search</span>
     <div class="form-group" >
       <label for="name">Name</label>
       <input type="text" class="form-control" id="name" formControlName="name">
@@ -29,19 +27,9 @@
       </select>
     </div>
     <hr/>
-
-    <div *ngIf="savedSearch">
-      <div class="form-check">
-        <label>
-          <input type="radio" formControlName="update">
-          <span>Replace search</span>
-        </label>
-      </div>
-      <div>
-        <app-saved-search [savedSearch]="savedSearch" [showAll]="true" [showMore]="false" [showOpen]="false"></app-saved-search>
-      </div>
+    <div>
+      <app-saved-search [savedSearch]="savedSearch" [showAll]="true" [showMore]="false" [showOpen]="false"></app-saved-search>
     </div>
-
   </form>
 </div>
 
