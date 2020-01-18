@@ -32,8 +32,10 @@ Download and install the latest of the following tools:
 - Flyway [https://flywaydb.org/]()
 - IntelliJ IDEA (or the IDE of your choice) [https://www.jetbrains.com/idea/download/]()
 
-(On a Mac, installing with Homebrew works well. eg "brew install node" to install Node.js. 
-However, Flyway and Postgres don't install with Homebrew)
+(On a Mac, installing with Homebrew works well. eg "brew install xxx". 
+However, Flyway and Postgres don't install with Homebrew, and the book 
+"Angular Up & Running" book notes that installing Node.js using Homebrew on a 
+can also have problems.)
 
 ### Setup your local database ###
 
