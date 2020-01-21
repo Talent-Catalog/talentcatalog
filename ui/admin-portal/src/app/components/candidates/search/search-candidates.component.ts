@@ -13,7 +13,7 @@ import {SearchResults} from '../../../model/search-results';
 import {NgbDate, NgbDateStruct, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormArray, FormBuilder, FormGroup} from "@angular/forms";
 import {SearchSavedSearchesComponent} from "./saved-search/search-saved-searches.component";
-import {SaveSearchComponent} from "./save/save-search.component";
+import {CreateSearchComponent} from "./create/create-search.component";
 import {SavedSearchService} from "../../../services/saved-search.service";
 import {IDropdownSettings} from 'ng-multiselect-dropdown';
 import {forkJoin, Subscription} from "rxjs";
@@ -39,7 +39,6 @@ import {ActivatedRoute} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
 import {LocalStorageService} from "angular-2-local-storage";
 import {UpdateSearchComponent} from "./update/update-search.component";
-import {SavedSearchComponent} from "../../util/saved-search/saved-search.component";
 
 
 @Component({
@@ -340,8 +339,8 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       });
   }
 
-  openSavedSearchModal() {
-    const showSaveModal = this.modalService.open(SaveSearchComponent);
+  createNewSavedSearchModal() {
+    const showSaveModal = this.modalService.open(CreateSearchComponent);
 
     showSaveModal.componentInstance.savedSearchId = this.savedSearch ? this.savedSearch.id : null;
     showSaveModal.componentInstance.searchCandidateRequest = this.searchForm.value;
@@ -354,7 +353,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       });
   }
 
-  openUpdateSavedSearchModal() {
+  updateSavedSearchModal() {
     const showSaveModal = this.modalService.open(UpdateSearchComponent);
 
     showSaveModal.componentInstance.savedSearch = this.savedSearch;
@@ -523,13 +522,16 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     this.search();
   }
 
-  setSortListStatus(value: string){
+  setSortListStatus(event: any) {
     let statuses: string[] = [];
+
+    const value: string = event.target.value;
     if (value == 'valid'){
       statuses.push('pending', 'verified')
     } else {
       statuses.push(value);
     }
+
     this.searchForm.controls['shortlistStatus'].patchValue(statuses);
 
   }

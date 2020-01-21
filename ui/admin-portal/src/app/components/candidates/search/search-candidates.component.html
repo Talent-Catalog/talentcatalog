@@ -13,8 +13,8 @@
     <div>
       <button type="button" class="btn btn-outline-dark mr-2" [disabled]="loading" (click)="clearForm()">Clear Search</button>
       <button type="button" class="btn btn-outline-dark" (click)="showSavedSearches()">Load Search</button>
-      <button type="button" class="ml-2 btn btn-outline-primary" [disabled]="!savedSearch" (click)="openUpdateSavedSearchModal()">Update Search</button>
-      <button type="button" class="ml-2 btn btn-outline-primary" (click)="openSavedSearchModal()">Make New Saved Search</button>
+      <button type="button" class="ml-2 btn btn-outline-primary" [disabled]="!savedSearch" (click)="updateSavedSearchModal()">Update Search</button>
+      <button type="button" class="ml-2 btn btn-outline-primary" (click)="createNewSavedSearchModal()">Make New Saved Search</button>
     </div>
 
   </div>
@@ -101,7 +101,7 @@
       <div class="form-group col-12  col-md-2" *ngIf="savedSearch">
         <label for="shortlistStatus">Review status</label>
         <select class="form-control" id="shortlistStatus" [formControlName]="'shortListStatusField'"
-                (change)="setSortListStatus($event.target.value)">
+                (change)="setSortListStatus($event)">
           <option value="valid">New And Verified</option>
           <option value="pending">New</option>
           <option value="verified">Verified</option>

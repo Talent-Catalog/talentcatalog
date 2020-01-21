@@ -14,7 +14,7 @@ import org.tbbtalent.server.model.*;
 import org.tbbtalent.server.repository.*;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.candidate.SearchJoinRequest;
-import org.tbbtalent.server.request.search.CreateSavedSearchRequest;
+import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.SavedSearchService;
@@ -118,7 +118,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     @Override
     @Transactional
-    public SavedSearch createSavedSearch(CreateSavedSearchRequest request) throws EntityExistsException {
+    public SavedSearch createSavedSearch(UpdateSavedSearchRequest request) throws EntityExistsException {
         SavedSearch savedSearch = convertToSavedSearch(request);
         checkDuplicates(null, request.getName());
         savedSearch.setAuditFields(userContext.getLoggedInUser());
@@ -129,7 +129,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     @Override
     @Transactional
-    public SavedSearch updateSavedSearch(long id, CreateSavedSearchRequest request) throws EntityExistsException {
+    public SavedSearch updateSavedSearch(long id, UpdateSavedSearchRequest request) throws EntityExistsException {
         // if no search candidate request, only update the search name and type
         if(request.getSearchCandidateRequest() == null){
             SavedSearch savedSearch = savedSearchRepository.findById(id).orElse(null);
@@ -169,7 +169,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
     }
 
-    private SavedSearch addSearchJoins(CreateSavedSearchRequest request, SavedSearch savedSearch) {
+    private SavedSearch addSearchJoins(UpdateSavedSearchRequest request, SavedSearch savedSearch) {
         Set<SearchJoin> searchJoins = new HashSet<>();
         if (!CollectionUtils.isEmpty(request.getSearchCandidateRequest().getSearchJoinRequests())){
             for (SearchJoinRequest searchJoinRequest : request.getSearchCandidateRequest().getSearchJoinRequests()) {
@@ -187,7 +187,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
 
     //---------------------------------------------------------------------------------------------------
-    private SavedSearch convertToSavedSearch(CreateSavedSearchRequest request) {
+    private SavedSearch convertToSavedSearch(UpdateSavedSearchRequest request) {
 
 
         SavedSearch savedSearch = new SavedSearch();

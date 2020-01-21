@@ -5,7 +5,7 @@ import javax.validation.constraints.NotBlank;
 import org.tbbtalent.server.model.SavedSearchType;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 
-public class CreateSavedSearchRequest {
+public class UpdateSavedSearchRequest {
 
     @NotBlank
     private String name;

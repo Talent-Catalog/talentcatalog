@@ -5,12 +5,12 @@ import {SavedSearchService} from "../../../../services/saved-search.service";
 import {SavedSearch} from "../../../../model/saved-search";
 
 @Component({
-  selector: 'app-save-search',
-  templateUrl: './save-search.component.html',
-  styleUrls: ['./save-search.component.scss']
+  selector: 'app-create-search',
+  templateUrl: './create-search.component.html',
+  styleUrls: ['./create-search.component.scss']
 })
 
-export class SaveSearchComponent implements OnInit {
+export class CreateSearchComponent implements OnInit {
 
   form: FormGroup;
   error;
