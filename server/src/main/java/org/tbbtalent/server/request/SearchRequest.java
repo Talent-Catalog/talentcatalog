@@ -51,9 +51,7 @@ public class SearchRequest {
 
     public PageRequest getPageRequest() {
         if (sortFields == null) {
-            return PageRequest.of(
-                    pageNumber != null ? pageNumber : 0,
-                    pageSize != null ? pageSize : 25);
+            return getPageRequestWithoutSort();
         } else {
             return PageRequest.of(
                     pageNumber != null ? pageNumber : 0,
