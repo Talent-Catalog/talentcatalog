@@ -17,7 +17,6 @@ import java.util.List;
 public class SearchCandidateRequest extends SearchRequest {
 
     private Long savedSearchId;
-    private String savedSearchName;
     private String keyword;
     private List<CandidateStatus> statuses;
     @Enumerated(EnumType.STRING)
@@ -57,14 +56,6 @@ public class SearchCandidateRequest extends SearchRequest {
     }
 
     private List<SearchJoinRequest> searchJoinRequests;
-
-    public String getSavedSearchName() {
-        return savedSearchName;
-    }
-
-    public void setSavedSearchName(String savedSearchName) {
-        this.savedSearchName = savedSearchName;
-    }
 
     public Long getSavedSearchId() {
         return savedSearchId;

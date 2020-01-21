@@ -37,7 +37,9 @@ export class EditSavedSearchComponent implements OnInit {
 
   onSave() {
     this.saving = true;
-    this.savedSearchService.update(this.savedSearchId, this.savedSearchForm.value).subscribe(
+    this.savedSearch.name = this.savedSearchForm.value.name;
+    this.savedSearch.type = this.savedSearchForm.value.type;
+    this.savedSearchService.update(this.savedSearch).subscribe(
       (savedSearch) => {
         this.closeModal(savedSearch);
         this.saving = false;

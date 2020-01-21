@@ -27,7 +27,7 @@
       </select>
     </div>
     <hr/>
-    <div>
+    <div *ngIf="savedSearch">
       <app-saved-search [savedSearch]="savedSearch" [showAll]="true" [showMore]="false" [showOpen]="false"></app-saved-search>
     </div>
   </form>

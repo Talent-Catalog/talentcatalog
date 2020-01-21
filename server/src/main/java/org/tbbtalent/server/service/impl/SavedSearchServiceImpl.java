@@ -16,7 +16,6 @@ import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.candidate.SearchJoinRequest;
 import org.tbbtalent.server.request.search.CreateSavedSearchRequest;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
-import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.SavedSearchService;
 
@@ -130,7 +129,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     @Override
     @Transactional
-    public SavedSearch updateSavedSearch(long id, UpdateSavedSearchRequest request) throws EntityExistsException {
+    public SavedSearch updateSavedSearch(long id, CreateSavedSearchRequest request) throws EntityExistsException {
         // if no search candidate request, only update the search name and type
         if(request.getSearchCandidateRequest() == null){
             SavedSearch savedSearch = savedSearchRepository.findById(id).orElse(null);
@@ -140,7 +139,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
 
         SavedSearch savedSearch = convertToSavedSearch(request);
-        savedSearch.setId(id);
         //delete and recreate all joined searches
         searchJoinRepository.deleteBySearchId(id);
 
@@ -194,36 +192,38 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         SavedSearch savedSearch = new SavedSearch();
         savedSearch.setName(request.getName());
-        
         savedSearch.setType(request.getType());
-        
-        savedSearch.setKeyword(request.getSearchCandidateRequest().getKeyword());
-        savedSearch.setStatuses(getStatusListAsString(request.getSearchCandidateRequest().getStatuses()));
-        savedSearch.setGender(request.getSearchCandidateRequest().getGender());
-        savedSearch.setOccupationIds(getListAsString(request.getSearchCandidateRequest().getOccupationIds()));
-        savedSearch.setOrProfileKeyword(request.getSearchCandidateRequest().getOrProfileKeyword());
-        savedSearch.setVerifiedOccupationIds(getListAsString(request.getSearchCandidateRequest().getVerifiedOccupationIds()));
-        savedSearch.setVerifiedOccupationSearchType(request.getSearchCandidateRequest().getVerifiedOccupationSearchType());
-        savedSearch.setNationalityIds(getListAsString(request.getSearchCandidateRequest().getNationalityIds()));
-        savedSearch.setNationalitySearchType(request.getSearchCandidateRequest().getNationalitySearchType());
-        savedSearch.setCountryIds(getListAsString(request.getSearchCandidateRequest().getCountryIds()));
-        savedSearch.setEnglishMinSpokenLevel(request.getSearchCandidateRequest().getEnglishMinSpokenLevel());
-        savedSearch.setEnglishMinWrittenLevel(request.getSearchCandidateRequest().getEnglishMinWrittenLevel());
-        Optional<Language> language = request.getSearchCandidateRequest().getOtherLanguageId() != null ? languageRepository.findById(request.getSearchCandidateRequest().getOtherLanguageId()) : null;
-        if (language != null && language.isPresent()){
-            savedSearch.setOtherLanguage(language.get());
-        }
-        savedSearch.setOtherMinSpokenLevel(request.getSearchCandidateRequest().getOtherMinSpokenLevel());
-        savedSearch.setOtherMinWrittenLevel(request.getSearchCandidateRequest().getOtherMinWrittenLevel());
-        savedSearch.setUnRegistered(request.getSearchCandidateRequest().getUnRegistered());
-        savedSearch.setLastModifiedFrom(request.getSearchCandidateRequest().getLastModifiedFrom());
-        savedSearch.setLastModifiedTo(request.getSearchCandidateRequest().getLastModifiedTo());
+
+        final SearchCandidateRequest searchCandidateRequest = request.getSearchCandidateRequest();
+        if (searchCandidateRequest != null) {
+            savedSearch.setKeyword(searchCandidateRequest.getKeyword());
+            savedSearch.setStatuses(getStatusListAsString(searchCandidateRequest.getStatuses()));
+            savedSearch.setGender(searchCandidateRequest.getGender());
+            savedSearch.setOccupationIds(getListAsString(searchCandidateRequest.getOccupationIds()));
+            savedSearch.setOrProfileKeyword(searchCandidateRequest.getOrProfileKeyword());
+            savedSearch.setVerifiedOccupationIds(getListAsString(searchCandidateRequest.getVerifiedOccupationIds()));
+            savedSearch.setVerifiedOccupationSearchType(searchCandidateRequest.getVerifiedOccupationSearchType());
+            savedSearch.setNationalityIds(getListAsString(searchCandidateRequest.getNationalityIds()));
+            savedSearch.setNationalitySearchType(searchCandidateRequest.getNationalitySearchType());
+            savedSearch.setCountryIds(getListAsString(searchCandidateRequest.getCountryIds()));
+            savedSearch.setEnglishMinSpokenLevel(searchCandidateRequest.getEnglishMinSpokenLevel());
+            savedSearch.setEnglishMinWrittenLevel(searchCandidateRequest.getEnglishMinWrittenLevel());
+            Optional<Language> language = searchCandidateRequest.getOtherLanguageId() != null ? languageRepository.findById(searchCandidateRequest.getOtherLanguageId()) : null;
+            if (language != null && language.isPresent()) {
+                savedSearch.setOtherLanguage(language.get());
+            }
+            savedSearch.setOtherMinSpokenLevel(searchCandidateRequest.getOtherMinSpokenLevel());
+            savedSearch.setOtherMinWrittenLevel(searchCandidateRequest.getOtherMinWrittenLevel());
+            savedSearch.setUnRegistered(searchCandidateRequest.getUnRegistered());
+            savedSearch.setLastModifiedFrom(searchCandidateRequest.getLastModifiedFrom());
+            savedSearch.setLastModifiedTo(searchCandidateRequest.getLastModifiedTo());
 //        savedSearch.setCreatedFrom(request.getSearchCandidateRequest().getRegisteredFrom());
 //        savedSearch.setCreatedTo(request.getSearchCandidateRequest().getRegisteredTo());
-        savedSearch.setMinAge(request.getSearchCandidateRequest().getMinAge());
-        savedSearch.setMaxAge(request.getSearchCandidateRequest().getMaxAge());
-        savedSearch.setMinEducationLevel(request.getSearchCandidateRequest().getMinEducationLevel());
-        savedSearch.setEducationMajorIds(getListAsString(request.getSearchCandidateRequest().getEducationMajorIds()));
+            savedSearch.setMinAge(searchCandidateRequest.getMinAge());
+            savedSearch.setMaxAge(searchCandidateRequest.getMaxAge());
+            savedSearch.setMinEducationLevel(searchCandidateRequest.getMinEducationLevel());
+            savedSearch.setEducationMajorIds(getListAsString(searchCandidateRequest.getEducationMajorIds()));
+        }
 
         return savedSearch;
 
@@ -232,7 +232,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private SearchCandidateRequest convertToSearchCandidateRequest(SavedSearch request) {
         SearchCandidateRequest searchCandidateRequest = new SearchCandidateRequest();
         searchCandidateRequest.setSavedSearchId(request.getId());
-        searchCandidateRequest.setSavedSearchName(request.getName());
         searchCandidateRequest.setKeyword(request.getKeyword());
         searchCandidateRequest.setStatuses(getStatusListFromString(request.getStatuses()));
         searchCandidateRequest.setGender(request.getGender());

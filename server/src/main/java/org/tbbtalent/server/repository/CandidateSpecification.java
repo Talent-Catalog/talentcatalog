@@ -79,7 +79,9 @@ public class CandidateSpecification {
                 nationality = candidate.join("nationality");
                 country = candidate.join("country");
             }
-            //Short lists
+            //Review status
+            //Only saved searches support review status - ie has this candidate 
+            //been reviewed as belonging in this saved search.
             if (request.getSavedSearchId() != null) {
                 if (CollectionUtils.isNotEmpty(request.getShortlistStatus())) {
                     Predicate pendingPredicate = null;
@@ -110,8 +112,8 @@ public class CandidateSpecification {
                     Fetch<Candidate, CandidateShortlistItem> candidateShortlistItem = candidate.fetch("candidateShortlistItems", JoinType.LEFT);
                     Fetch<CandidateShortlistItem, SavedSearch> savedSearch = candidateShortlistItem.fetch("savedSearch", JoinType.LEFT);
                 }
-
             }
+
             // KEYWORD SEARCH
             if (!StringUtils.isBlank(request.getKeyword())) {
                 String lowerCaseMatchTerm = request.getKeyword().toLowerCase();

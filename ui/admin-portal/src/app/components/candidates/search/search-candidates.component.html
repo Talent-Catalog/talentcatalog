@@ -13,7 +13,7 @@
     <div>
       <button type="button" class="btn btn-outline-dark mr-2" [disabled]="loading" (click)="clearForm()">Clear Search</button>
       <button type="button" class="btn btn-outline-dark" (click)="showSavedSearches()">Load Search</button>
-      <button type="button" class="ml-2 btn btn-outline-primary" [disabled]="!savedSearch" (click)="updateSavedSearch()">Update Search</button>
+      <button type="button" class="ml-2 btn btn-outline-primary" [disabled]="!savedSearch" (click)="openUpdateSavedSearchModal()">Update Search</button>
       <button type="button" class="ml-2 btn btn-outline-primary" (click)="openSavedSearchModal()">Make New Saved Search</button>
     </div>
 

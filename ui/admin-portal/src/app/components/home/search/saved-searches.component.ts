@@ -58,7 +58,7 @@ export class SavedSearchesComponent implements OnInit {
     this.search();
   }
 
-  search(){
+  search() {
     this.loading = true;
     const request = this.searchForm.value;
     request.savedSearchType = this.savedSearchType;
@@ -70,7 +70,7 @@ export class SavedSearchesComponent implements OnInit {
     });
   }
 
-  openSearch(savedSearch){
+  openSearch(savedSearch) {
     this.router.navigate(['candidates', 'search', savedSearch.id]);
   }
 

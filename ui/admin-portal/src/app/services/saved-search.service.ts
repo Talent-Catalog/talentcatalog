@@ -26,12 +26,12 @@ export class SavedSearchService {
     return this.http.get<SavedSearch>(`${this.apiUrl}/${id}`);
   }
 
-  create(details): Observable<SavedSearch>  {
-    return this.http.post<SavedSearch>(`${this.apiUrl}`, details);
+  create(savedSearch: SavedSearch): Observable<SavedSearch>  {
+    return this.http.post<SavedSearch>(`${this.apiUrl}`, savedSearch);
   }
 
-  update(id: number, details): Observable<SavedSearch>  {
-    return this.http.put<SavedSearch>(`${this.apiUrl}/${id}`, details);
+  update(savedSearch: SavedSearch): Observable<SavedSearch>  {
+    return this.http.put<SavedSearch>(`${this.apiUrl}/${savedSearch.id}`, savedSearch);
   }
 
   delete(id: number): Observable<boolean>  {

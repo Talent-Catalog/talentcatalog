@@ -38,6 +38,8 @@ import {LanguageLevelFormControlComponent} from "../../util/form/language-profic
 import {ActivatedRoute} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
 import {LocalStorageService} from "angular-2-local-storage";
+import {UpdateSearchComponent} from "./update/update-search.component";
+import {SavedSearchComponent} from "../../util/saved-search/saved-search.component";
 
 
 @Component({
@@ -339,10 +341,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   }
 
   openSavedSearchModal() {
-    const showSaveModal = this.modalService.open(SaveSearchComponent, {
-      centered: true,
-      backdrop: 'static'
-    });
+    const showSaveModal = this.modalService.open(SaveSearchComponent);
 
     showSaveModal.componentInstance.savedSearchId = this.savedSearch ? this.savedSearch.id : null;
     showSaveModal.componentInstance.searchCandidateRequest = this.searchForm.value;
@@ -355,18 +354,17 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       });
   }
 
-  updateSavedSearch() {
+  openUpdateSavedSearchModal() {
+    const showSaveModal = this.modalService.open(UpdateSearchComponent);
 
-    const details = this.savedSearch;
-    details.searchCandidateRequest = this.searchForm.value;
-    this.savedSearchService.update(this.savedSearch.id, details).subscribe(
-      (savedSearch) => {
-        alert("Sterwth");
-      },
-      (error) => {
-        this.error = error;
+    showSaveModal.componentInstance.savedSearch = this.savedSearch;
+    showSaveModal.componentInstance.searchCandidateRequest = this.searchForm.value;
+
+    showSaveModal.result
+      .then(() => {
+      })
+      .catch(() => { /* Isn't possible */
       });
-
   }
 
   populateFormWithSavedSearch(request) {

@@ -9,7 +9,6 @@ import org.tbbtalent.server.model.SavedSearch;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.search.CreateSavedSearchRequest;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
-import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.service.SavedSearchService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -44,6 +43,7 @@ public class SavedSearchAdminApi {
         return this.savedSearchService.loadSavedSearch(id);
     }
 
+    //todo Rename CreateSavedSearchRequest to UpdateSavedSearchRequest
     @PostMapping
     public Map<String, Object> create(@Valid @RequestBody CreateSavedSearchRequest request) throws EntityExistsException {
         SavedSearch savedSearch = this.savedSearchService.createSavedSearch(request);
@@ -52,7 +52,7 @@ public class SavedSearchAdminApi {
 
     @PutMapping("{id}")
     public Map<String, Object> update(@PathVariable("id") long id,
-                                      @Valid @RequestBody UpdateSavedSearchRequest request) throws EntityExistsException  {
+                                      @Valid @RequestBody CreateSavedSearchRequest request) throws EntityExistsException  {
         SavedSearch savedSearch = this.savedSearchService.updateSavedSearch(id, request);
         return savedSearchDto().build(savedSearch);
     }

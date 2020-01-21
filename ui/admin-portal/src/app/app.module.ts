@@ -107,6 +107,7 @@ import {ChartsModule} from "ng2-charts";
 import {InfographicComponent} from './components/infograhics/infographic.component';
 import {ChartComponent} from './components/infograhics/chart/chart.component';
 import {MonthPickerComponent} from "./components/util/month-picker/month-picker.component";
+import {UpdateSearchComponent} from "./components/candidates/search/update/update-search.component";
 
 @NgModule({
   declarations: [
@@ -134,6 +135,7 @@ import {MonthPickerComponent} from "./components/util/month-picker/month-picker.
     CreateNationalityComponent,
     SearchSavedSearchesComponent,
     SaveSearchComponent,
+    UpdateSearchComponent,
     CandidateSearchCardComponent,
     CandidateGeneralTabComponent,
     CandidateExperienceTabComponent,
@@ -252,6 +254,7 @@ import {MonthPickerComponent} from "./components/util/month-picker/month-picker.
     CreateUserComponent,
     ConfirmationComponent,
     SaveSearchComponent,
+    UpdateSearchComponent,
     EditCandidateContactComponent,
     JoinSavedSearchComponent,
     CreateCandidateNoteComponent,
