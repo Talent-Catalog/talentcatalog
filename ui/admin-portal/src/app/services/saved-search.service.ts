@@ -3,7 +3,7 @@ import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
-import {SavedSearch} from "../model/saved-search";
+import {SavedSearch, SavedSearchRequest} from "../model/saved-search";
 
 @Injectable({
   providedIn: 'root'
@@ -26,12 +26,12 @@ export class SavedSearchService {
     return this.http.get<SavedSearch>(`${this.apiUrl}/${id}`);
   }
 
-  create(savedSearch: SavedSearch): Observable<SavedSearch>  {
-    return this.http.post<SavedSearch>(`${this.apiUrl}`, savedSearch);
+  create(savedSearchRequest: SavedSearchRequest): Observable<SavedSearch>  {
+    return this.http.post<SavedSearch>(`${this.apiUrl}`, savedSearchRequest);
   }
 
-  update(savedSearch: SavedSearch): Observable<SavedSearch>  {
-    return this.http.put<SavedSearch>(`${this.apiUrl}/${savedSearch.id}`, savedSearch);
+  update(savedSearchRequest: SavedSearchRequest): Observable<SavedSearch>  {
+    return this.http.put<SavedSearch>(`${this.apiUrl}/${savedSearchRequest.id}`, savedSearchRequest);
   }
 
   delete(id: number): Observable<boolean>  {
