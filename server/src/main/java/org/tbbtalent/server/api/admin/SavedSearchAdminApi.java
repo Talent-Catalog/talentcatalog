@@ -43,7 +43,6 @@ public class SavedSearchAdminApi {
         return this.savedSearchService.loadSavedSearch(id);
     }
 
-    //todo Rename CreateSavedSearchRequest to UpdateSavedSearchRequest
     @PostMapping
     public Map<String, Object> create(@Valid @RequestBody UpdateSavedSearchRequest request) throws EntityExistsException {
         SavedSearch savedSearch = this.savedSearchService.createSavedSearch(request);

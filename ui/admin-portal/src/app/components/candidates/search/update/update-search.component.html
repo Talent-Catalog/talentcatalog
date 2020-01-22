@@ -7,7 +7,9 @@
 </div>
 <div class="modal-body">
   <p>Are you sure you want to update this search?</p>
-<!--  <app-saved-search [savedSearch]="savedSearch" [showAll]="true" [showMore]="false" [showOpen]="false"></app-saved-search>-->
+  <div *ngIf="savedSearch">
+    <app-saved-search [savedSearch]="savedSearch" [showAll]="true" [showMore]="false" [showOpen]="false"></app-saved-search>
+  </div>
 </div>
 <div class="modal-footer">
   <span *ngIf="updating"><i class="fa fa-spinner fa-spin"></i> updating...</span>

@@ -342,7 +342,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   createNewSavedSearchModal() {
     const showSaveModal = this.modalService.open(CreateSearchComponent);
 
-    showSaveModal.componentInstance.savedSearchId = this.savedSearch ? this.savedSearch.id : null;
+    showSaveModal.componentInstance.savedSearch = this.savedSearch;
     showSaveModal.componentInstance.searchCandidateRequest = this.searchForm.value;
 
     showSaveModal.result
@@ -525,7 +525,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   setSortListStatus(event: any) {
     let statuses: string[] = [];
 
-    const value: string = event.target.value;
+    const value: string = typeof event === "string" ? event : event.target.value;
     if (value == 'valid'){
       statuses.push('pending', 'verified')
     } else {

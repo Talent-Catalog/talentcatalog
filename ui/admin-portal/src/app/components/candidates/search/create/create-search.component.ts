@@ -16,7 +16,6 @@ export class CreateSearchComponent implements OnInit {
   error;
   public replacing: boolean;
   saving: boolean;
-  savedSearchId;
   savedSearch;
   searchCandidateRequest;
   update;
@@ -27,24 +26,16 @@ export class CreateSearchComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.replacing = this.savedSearchId ? true : false;
+    this.replacing = false;
     this.form = this.fb.group({
       name: [null, Validators.required],
       type: [null, Validators.required],
       update: [!this.replacing, Validators.required],
       searchCandidateRequest: [this.searchCandidateRequest]
     });
-    if (this.savedSearchId) {
-      this.savedSearchService.get(this.savedSearchId).subscribe(
-        (savedSearch) => {
-          this.savedSearch = savedSearch;
-        },
-        (error) => {
-          this.error = error;
-          this.saving = false;
-        });
+    if (this.savedSearch) {
+      this.savedSearch.searchCandidateRequest = this.searchCandidateRequest;
     }
-
   }
 
 

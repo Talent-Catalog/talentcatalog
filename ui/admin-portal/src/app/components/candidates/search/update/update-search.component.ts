@@ -24,6 +24,7 @@ export class UpdateSearchComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.savedSearch.searchCandidateRequest = this.searchCandidateRequest;
   }
 
   cancel() {
@@ -33,7 +34,6 @@ export class UpdateSearchComponent implements OnInit {
   confirm() {
     this.updating = true;
 
-    this.savedSearch.searchCandidateRequest = this.searchCandidateRequest;
     this.savedSearchService.update(this.savedSearch).subscribe(
       (savedSearch) => {
         this.updating = false;
