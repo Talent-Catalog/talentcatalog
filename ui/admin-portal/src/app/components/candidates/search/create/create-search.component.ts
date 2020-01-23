@@ -18,9 +18,6 @@ export class CreateSearchComponent implements OnInit {
 
   form: FormGroup;
   error;
-
-  //todo I don't think this is ever used
-  public replacing: boolean;
   saving: boolean;
   savedSearch: SavedSearch;
   searchCandidateRequest: SearchCandidateRequest;
@@ -32,16 +29,9 @@ export class CreateSearchComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.replacing = false;
     this.form = this.fb.group({
       name: [null, Validators.required],
       type: [null, Validators.required],
-
-      //todo I don't think this is ever used
-      update: [!this.replacing, Validators.required],
-
-      //todo I don't think we need this now
-      searchCandidateRequest: [this.searchCandidateRequest]
     });
     if (this.savedSearch) {
       //Copy the form values in so that they can be displayed in any summary
@@ -54,10 +44,10 @@ export class CreateSearchComponent implements OnInit {
     this.saving = true;
 
     //Update the saved search with the name and value from the form.
-    const request = this.form.value;
+    const formValues = this.form.value;
     this.savedSearch.id = 0;
-    this.savedSearch.name = request.name;
-    this.savedSearch.type = request.type;
+    this.savedSearch.name = formValues.name;
+    this.savedSearch.type = formValues.type;
     //And create a SavedSearchRequest from the SavedSearch and the search request
     this.savedSearchService.create(
       convertToSavedSearchRequest(this.savedSearch, this.searchCandidateRequest)
