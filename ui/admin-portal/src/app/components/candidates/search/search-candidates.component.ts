@@ -39,6 +39,7 @@ import {ActivatedRoute} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
 import {LocalStorageService} from "angular-2-local-storage";
 import {UpdateSearchComponent} from "./update/update-search.component";
+import {SavedSearch} from "../../../model/saved-search";
 
 
 @Component({
@@ -64,7 +65,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   searchForm: FormGroup;
   moreFilters: boolean;
   results: SearchResults<Candidate>;
-  savedSearch;
+  savedSearch: SavedSearch;
   savedSearchId;
   subscription: Subscription;
   pageNumber: number;

@@ -1,6 +1,4 @@
 import {SearchCandidateRequest} from "./search-candidate-request";
-import {Language} from "./language";
-
 
 export enum SavedSearchType {
   profession = 'profession',
@@ -8,59 +6,48 @@ export enum SavedSearchType {
   other = 'other'
 }
 
-export interface SavedSearch {
-  id: number;
-  name: string;
-  type: SavedSearchType;
-  keyword: string;
-  gender: string;
-  statuses: string;
-  occupationIds: number[];
-  orProfileKeyword: string;
-  verifiedOccupationIds: number[];
-  verifiedOccupationSearchType: string;
-  nationalityIds: number[];
-  nationalitySearchType: string;
-  countryIds: number[];
-  englishMinWrittenLevel: number;
-  englishMinSpokenLevel: number;
-  otherLanguage: Language;
-  otherMinWrittenLevel: number;
-  otherMinSpokenLevel: number;
-  lastModifiedFrom: string;
-  lastModifiedTo: string;
-  createdFrom: string;
-  createdTo: string;
-  minAge: number;
-  maxAge: number;
-  minEducationLevel: number;
-  educationMajorIds: number[];
-  countryNames: string[];
-  nationalityNames: string[];
-  vettedOccupationNames: string[];
-  occupationNames: string[];
-  educationMajors: string[];
-  englishWrittenLevel: string;
-  englishSpokenLevel: string;
-  otherWrittenLevel: string;
-  otherSpokenLevel: string;
-  minEducationLevelName: string;
-
-  searchJoins: SavedSearchJoin[];
-
-}
-
-export interface SavedSearchRequest {
-  id: number;
-  name: string;
-  type: SavedSearchType;
-
-  searchCandidateRequest: SearchCandidateRequest;
-}
-
 export interface SavedSearchJoin {
   savedSearchId: number;
   name: string;
   searchType: 'and' | 'or';
   childSavedSearch: SavedSearch;
+}
+
+/**
+ * This is what saved searches look like when received from the server.
+ */
+export interface SavedSearch extends SearchCandidateRequest {
+  id: number;
+  name: string;
+  type: SavedSearchType;
+}
+
+/**
+ * This is what saved searches look like when they are sent to the server
+ * (as create or update requests).
+ * <p/>
+ * Note that the actual search fields are broken out as a separate object field.
+ */
+export interface SavedSearchRequest {
+  id?: number;
+  name?: string;
+  type?: SavedSearchType;
+
+  searchCandidateRequest?: SearchCandidateRequest;
+}
+
+/**
+ * Create a SavedSearchRequest from a SavedSearch and a search request.
+ * @param savedSearch
+ * @param searchCandidateRequest
+ */
+export function convertToSavedSearchRequest
+(savedSearch: SavedSearch, searchCandidateRequest: SearchCandidateRequest):
+  SavedSearchRequest {
+  const savedSearchRequest: SavedSearchRequest = {};
+  savedSearchRequest.id = savedSearch.id;
+  savedSearchRequest.name = savedSearch.name;
+  savedSearchRequest.type = savedSearch.type;
+  savedSearchRequest.searchCandidateRequest = searchCandidateRequest;
+  return savedSearchRequest;
 }

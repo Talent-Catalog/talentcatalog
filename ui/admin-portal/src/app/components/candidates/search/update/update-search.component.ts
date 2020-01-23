@@ -1,9 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {SavedSearchService} from "../../../../services/saved-search.service";
-import {SavedSearch} from "../../../../model/saved-search";
-import {Candidate} from "../../../../model/candidate";
+import {
+  convertToSavedSearchRequest,
+  SavedSearch
+} from "../../../../model/saved-search";
 import {SearchCandidateRequest} from "../../../../model/search-candidate-request";
 
 @Component({
@@ -24,7 +25,9 @@ export class UpdateSearchComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.savedSearch.searchCandidateRequest = this.searchCandidateRequest;
+    //Copy the form values in so that they can be displayed in any summary
+    //(Otherwise we just see the unmodified search values)
+    this.savedSearch = Object.assign(this.savedSearch, this.searchCandidateRequest);
   }
 
   cancel() {
@@ -34,8 +37,11 @@ export class UpdateSearchComponent implements OnInit {
   confirm() {
     this.updating = true;
 
-    this.savedSearchService.update(this.savedSearch).subscribe(
-      (savedSearch) => {
+    //Create a SavedSearchRequest from the SavedSearch and the search request
+    this.savedSearchService.update(
+      convertToSavedSearchRequest(this.savedSearch, this.searchCandidateRequest)
+    ).subscribe(
+      () => {
         this.updating = false;
         this.activeModal.close();
       },

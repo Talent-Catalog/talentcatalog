@@ -1,7 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {SavedSearch} from '../../../../model/saved-search';
+import {
+  convertToSavedSearchRequest,
+  SavedSearch
+} from '../../../../model/saved-search';
 import {SavedSearchService} from '../../../../services/saved-search.service';
 
 @Component({
@@ -16,7 +19,7 @@ export class EditSavedSearchComponent implements OnInit {
   error;
   loading: boolean;
   saving: boolean;
-  savedSearch;
+  savedSearch: SavedSearch;
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
@@ -25,6 +28,8 @@ export class EditSavedSearchComponent implements OnInit {
 
   ngOnInit() {
     this.loading = true;
+
+    //Retrieve full SavedSearch so that we can display details in dialog
     this.savedSearchService.get(this.savedSearchId).subscribe(savedSearch => {
       this.savedSearch = savedSearch;
       this.savedSearchForm = this.fb.group({
@@ -37,9 +42,14 @@ export class EditSavedSearchComponent implements OnInit {
 
   onSave() {
     this.saving = true;
+
+    //Populate name and type
     this.savedSearch.name = this.savedSearchForm.value.name;
     this.savedSearch.type = this.savedSearchForm.value.type;
-    this.savedSearchService.update(this.savedSearch).subscribe(
+    //Create a SavedSearchRequest from the SavedSearch and the search request
+    this.savedSearchService.update(
+      convertToSavedSearchRequest(this.savedSearch, null)
+    ).subscribe(
       (savedSearch) => {
         this.closeModal(savedSearch);
         this.saving = false;
