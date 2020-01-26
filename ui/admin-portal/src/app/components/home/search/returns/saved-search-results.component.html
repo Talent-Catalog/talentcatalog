@@ -1,0 +1,19 @@
+<div *ngIf="savedSearch">
+  {{savedSearch.name}}
+</div>
+<div *ngIf="error">
+  Error: {{error}}
+</div>
+
+<div *ngIf="results">
+  We have {{results.totalElements}} results
+  <ul>
+    <li *ngFor="let candidate of results?.content">
+      {{candidate.candidateNumber}}
+    </li>
+  </ul>
+
+</div>
+<div *ngIf="!results">
+  No results
+</div>

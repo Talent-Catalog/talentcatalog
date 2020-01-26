@@ -15,6 +15,9 @@ export interface SavedSearchJoin {
 
 /**
  * This is what saved searches look like when received from the server.
+ * todo - there are clearly different types depending on the call: get, load or search
+ * todo - for example, with search occupation ids are strings - not array of numbers
+ * todo no paging info
  */
 export interface SavedSearch extends SearchCandidateRequest {
   id: number;

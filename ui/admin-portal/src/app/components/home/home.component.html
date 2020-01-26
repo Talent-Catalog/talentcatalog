@@ -2,6 +2,12 @@
 
 <ngb-tabset>
 
+  <ngb-tab [title]="'Test'">
+    <ng-template ngbTabContent>
+      <app-browse-saved-searches></app-browse-saved-searches>
+    </ng-template>
+  </ngb-tab>
+
   <ngb-tab [title]="'Profession searches'">
     <ng-template ngbTabContent>
       <app-saved-searches [savedSearchType]="'profession'"></app-saved-searches>

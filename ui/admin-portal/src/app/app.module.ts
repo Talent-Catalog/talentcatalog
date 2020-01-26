@@ -101,6 +101,7 @@ import {FileUploadComponent} from "./components/util/file-upload/file-upload.com
 import {CandidateAdditionalInfoTabComponent} from './components/candidates/view/tab/candidate-additional-info-tab/candidate-additional-info-tab.component';
 import {ViewCandidateAdditionalInfoComponent} from './components/candidates/view/additional-info/view-candidate-additional-info.component';
 import {ViewCandidateSkillComponent} from "./components/candidates/view/skill/view-candidate-skill.component";
+import {BrowseSavedSearchesComponent} from './components/home/search/browse/browse-saved-searches.component';
 import {SavedSearchesComponent} from './components/home/search/saved-searches.component';
 import {EditSavedSearchComponent} from './components/home/search/edit/edit-saved-search.component';
 import {ChartsModule} from "ng2-charts";
@@ -108,6 +109,7 @@ import {InfographicComponent} from './components/infograhics/infographic.compone
 import {ChartComponent} from './components/infograhics/chart/chart.component';
 import {MonthPickerComponent} from "./components/util/month-picker/month-picker.component";
 import {UpdateSearchComponent} from "./components/candidates/search/update/update-search.component";
+import { SavedSearchResultsComponent } from './components/home/search/returns/saved-search-results.component';
 
 @NgModule({
   declarations: [
@@ -203,11 +205,13 @@ import {UpdateSearchComponent} from "./components/candidates/search/update/updat
     ViewCandidateAdditionalInfoComponent,
     ViewCandidateSkillComponent,
     FileUploadComponent,
+    BrowseSavedSearchesComponent,
     SavedSearchesComponent,
     EditSavedSearchComponent,
     InfographicComponent,
     ChartComponent,
-    MonthPickerComponent
+    MonthPickerComponent,
+    SavedSearchResultsComponent
   ],
   imports: [
     BrowserModule,

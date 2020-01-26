@@ -1,0 +1,37 @@
+.admin-panel {
+  display: flex;
+  justify-content: space-between;
+  //align-items: flex-end;
+  //background-color: #efefef;
+  padding: 1em;
+}
+
+.searches {
+  margin: 0 0 2em 0;
+  list-style-type: none;
+  padding: 0;
+  width: 20em;
+}
+.searches li {
+  cursor: pointer;
+  position: relative;
+  left: 0;
+  background-color: #EEE;
+  margin: .5em;
+  padding: .3em 0;
+  height: 1.6em;
+  border-radius: 4px;
+}
+.searches li:hover {
+  color: #607D8B;
+  background-color: #DDD;
+  left: .1em;
+}
+.searches li.selected {
+  background-color: #CFD8DC;
+  color: white;
+}
+.searches li.selected:hover {
+  background-color: #BBD8DC;
+  color: white;
+}
