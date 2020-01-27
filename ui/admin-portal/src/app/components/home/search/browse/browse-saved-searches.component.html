@@ -17,10 +17,10 @@
 
 <div class="row">
   <div class="col-sm-6">
-    <ul class="searches">
-      <li *ngFor="let savedSearch of results?.content"
+    <ul class="searches" (window:keydown)="keyDown($event)">
+      <li *ngFor="let savedSearch of results?.content; let i = index"
           [class.selected]="savedSearch === selectedSavedSearch"
-          (click)="onSelect(savedSearch)" >
+          (click)="onSelect(savedSearch)"  >
         {{savedSearch.name}}
       </li>
 

@@ -10,7 +10,6 @@ import {SavedSearchService} from '../../../../services/saved-search.service';
 import {Router} from '@angular/router';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 
-//todo Add support for arrows selection
 //todo Use local storage
 //todo Display loading
 //todo Support paging/sorting request
@@ -31,6 +30,7 @@ export class BrowseSavedSearchesComponent implements OnInit {
   pageSize: number;
   results: SearchResults<SavedSearch>;
   selectedSavedSearch: SavedSearch;
+  selectedIndex = 0;
 
   constructor(private fb: FormBuilder,
               private router: Router,
@@ -73,7 +73,27 @@ export class BrowseSavedSearchesComponent implements OnInit {
     });
   }
 
+  //todo When change is by mouse click, need to compute index.
   onSelect(savedSearch: SavedSearch) {
     this.selectedSavedSearch = savedSearch;
+  }
+
+  keyDown(event: KeyboardEvent) {
+    const oldSelectedIndex = this.selectedIndex;
+    switch (event.key) {
+      case 'ArrowUp':
+        if (this.selectedIndex > 0) {
+          this.selectedIndex--;
+        }
+        break;
+      case 'ArrowDown':
+        if (this.selectedIndex < this.results.content.length - 1) {
+          this.selectedIndex++;
+        }
+        break;
+    }
+    if (this.selectedIndex != oldSelectedIndex) {
+      this.onSelect(this.results.content[this.selectedIndex])
+    }
   }
 }
