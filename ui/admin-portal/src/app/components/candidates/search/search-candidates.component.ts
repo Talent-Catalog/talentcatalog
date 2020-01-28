@@ -203,11 +203,8 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
           })
         } else {
           let localStorageSearchRequest = JSON.parse(localStorage.getItem(this.searchKey));
-          console.log(localStorageSearchRequest);
-          console.log(this.searchForm);
           if (localStorageSearchRequest){
             setTimeout(() => {
-              console.log('Populate from local storage');
               this.populateFormWithSavedSearch(localStorageSearchRequest);
               this.search();
             }, 200);
@@ -273,8 +270,13 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     this.searchForm.controls[formControlName].patchValue([]);
   }
 
-  /* SEARCH FORM */
   search() {
+    this.pageNumber = 1;
+    this.doSearch();
+  }
+
+    /* SEARCH FORM */
+  doSearch() {
     this.searching = true;
     this.results = null;
     this.error = null;

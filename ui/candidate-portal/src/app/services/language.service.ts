@@ -25,6 +25,11 @@ export class LanguageService {
     );
   }
 
+
+  getLanguage(language){
+    return this.http.get<Language>(`${this.apiUrl}/${language}`)
+  }
+
   listSystemLanguages(): Observable<SystemLanguage[]> {
     return this.http.get<SystemLanguage[]>(`${this.apiUrl}/system`);
   }
