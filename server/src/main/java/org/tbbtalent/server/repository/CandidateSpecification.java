@@ -30,10 +30,8 @@ public class CandidateSpecification {
             conjunction.getExpressions().add(
                     builder.notEqual(candidate.get("status"), CandidateStatus.draft)
             );
-
+            query.distinct(true);
             if (query.getResultType().equals(Candidate.class)) {
-                query.distinct(true);
-
                 Fetch<Object, Object> userFetch = candidate.fetch("user", JoinType.INNER);
                 user = (Join<Object, Object>) userFetch;
 
