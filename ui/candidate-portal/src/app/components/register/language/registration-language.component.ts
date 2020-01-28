@@ -115,9 +115,11 @@ export class RegistrationLanguageComponent implements OnInit {
           }) || [];
         } else {
           // Patch the form with the english language id
-          const english = this.languages.find(lang => lang.name.toLowerCase().trim() === 'english');
-          this.form.patchValue({languageId: english.id});
-          this.addingLanguage = true;
+          const english = this.languageService.getLanguage('english').subscribe(result => {
+            this.form.patchValue({languageId: result.id});
+            this.addingLanguage = true;
+          }, error => {});
+
         }
         this._loading.candidate = false;
       },

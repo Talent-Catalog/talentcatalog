@@ -1,7 +1,6 @@
 package org.tbbtalent.server.service.impl;
 
-import java.util.List;
-
+import io.jsonwebtoken.lang.Collections;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +25,7 @@ import org.tbbtalent.server.request.language.UpdateLanguageRequest;
 import org.tbbtalent.server.service.LanguageService;
 import org.tbbtalent.server.service.TranslationService;
 
-import io.jsonwebtoken.lang.Collections;
+import java.util.List;
 
 @Service
 public class LanguageServiceImpl implements LanguageService {
@@ -59,6 +58,11 @@ public class LanguageServiceImpl implements LanguageService {
     @Override
     public List<SystemLanguage> listSystemLanguages() {
         return systemLanguageRepository.findByStatus(Status.active);
+    }
+
+    @Override
+    public Language getLanguage(String languageName) {
+        return languageRepository.findByNameIgnoreCase(languageName);
     }
 
     @Override

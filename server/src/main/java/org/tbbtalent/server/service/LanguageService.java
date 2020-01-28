@@ -27,4 +27,5 @@ public interface LanguageService {
 
     List<SystemLanguage> listSystemLanguages();
 
+    Language getLanguage(String languageName);
 }
