@@ -25,7 +25,7 @@
 
 <div *ngIf="results">
   <div *ngIf="timestamp">
-    Timestamp {{timestamp}}
+    Timestamp {{timestamp | date: 'yyyy-MM-dd HH:mm:ss'}}
   </div>
   We have {{results.totalElements}} results
   <ul>
