@@ -10,7 +10,7 @@
   Error: {{error}}
 </div>
 
-<div class="text-muted mb-2 align-middle">
+<div class="text-muted mb-2 align-middle" *ngIf="!searching">
 
   <ngb-pagination
     [boundaryLinks]="true"
@@ -18,7 +18,7 @@
     [collectionSize]="results?.totalElements"
     [(page)]="pageNumber"
     (pageChange)="search(true)"
-    [maxSize]="5"
+    maxSize=5
   >
   </ngb-pagination>
 </div>

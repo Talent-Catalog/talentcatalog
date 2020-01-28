@@ -21,8 +21,8 @@ import {CachedSearchResults} from "../../../../model/cached-search-results";
 })
 export class SavedSearchResultsComponent implements OnInit, OnChanges, OnDestroy {
   private error: null;
-  private pageNumber: number = 1;
-  private pageSize: number = 10;
+  private pageNumber: number;
+  private pageSize: number;
   private results: SearchResults<Candidate>;
   @Input() savedSearch: SavedSearch;
   private searching: boolean;
@@ -36,6 +36,8 @@ constructor(
   ) { };
 
   ngOnInit() {
+    this.pageNumber = 1;
+    this.pageSize = 25;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -85,7 +87,7 @@ constructor(
 
   private searchFromRequest(request: any) {
 
-    request.pageNumber = this.pageNumber;
+    request.pageNumber = this.pageNumber - 1;
     request.pageSize = this.pageSize;
     this.subscription = this.candidateService.search(request).subscribe(
       results => {
