@@ -5,14 +5,14 @@ import {
   OnInit,
   SimpleChanges
 } from '@angular/core';
-import {SavedSearch, SavedSearchRequest} from "../../../../model/saved-search";
+import {SavedSearch} from "../../../../model/saved-search";
 import {Subscription} from "rxjs";
 import {CandidateService} from "../../../../services/candidate.service";
 import {Candidate} from "../../../../model/candidate";
 import {SearchResults} from "../../../../model/search-results";
-import {Validators} from "@angular/forms";
 import {SavedSearchService} from "../../../../services/saved-search.service";
-import {SearchCandidateRequest} from "../../../../model/search-candidate-request";
+import {LocalStorageService} from "angular-2-local-storage";
+import {CachedSearchResults} from "../../../../model/cached-search-results";
 
 @Component({
   selector: 'app-saved-search-results',
@@ -20,14 +20,18 @@ import {SearchCandidateRequest} from "../../../../model/search-candidate-request
   styleUrls: ['./saved-search-results.component.scss']
 })
 export class SavedSearchResultsComponent implements OnInit, OnChanges, OnDestroy {
+  private error: null;
+  private pageNumber: number = 1;
+  private pageSize: number = 10;
+  private results: SearchResults<Candidate>;
   @Input() savedSearch: SavedSearch;
   private searching: boolean;
-  public results: SearchResults<Candidate>;
-  private error: null;
   private subscription: Subscription;
+  private timestamp: number;
 
-  constructor(
+constructor(
     private candidateService: CandidateService,
+    private localStorage: LocalStorageService,
     private savedSearchService: SavedSearchService
   ) { };
 
@@ -35,7 +39,7 @@ export class SavedSearchResultsComponent implements OnInit, OnChanges, OnDestroy
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.search();
+    this.search(false);
   }
 
   ngOnDestroy(): void {
@@ -44,27 +48,59 @@ export class SavedSearchResultsComponent implements OnInit, OnChanges, OnDestroy
     }
   }
 
-  search() {
-    this.searching = true;
+  private cacheKey(): string {
+    return "Search" + this.savedSearch.id;
+  }
+
+  search(refresh: boolean) {
     this.results = null;
+    this.timestamp = null;
     this.error = null;
 
-    this.savedSearchService.load(this.savedSearch.id).subscribe(
-      request => {
-        this.searchFromRequest(request);
-      },
-      error => {
-        this.error = error;
-        // this._loading.savedSearch = false;
-      });
+
+    let done: boolean = false;
+    if (!refresh) {
+      let cached: CachedSearchResults = JSON.parse(localStorage.getItem(this.cacheKey()));
+      if (cached) {
+        this.results = cached.results;
+        this.pageNumber = cached.pageNumber;
+        this.timestamp = cached.timestamp;
+        done = true;
+      }
+    }
+
+    if (!done) {
+      this.searching = true;
+      this.savedSearchService.load(this.savedSearch.id).subscribe(
+        request => {
+          this.searchFromRequest(request);
+        },
+        error => {
+          this.error = error;
+          // this._loading.savedSearch = false;
+        });
+    }
 
   }
 
-  private searchFromRequest(request: SearchCandidateRequest) {
+  private searchFromRequest(request: any) {
 
+    request.pageNumber = this.pageNumber;
+    request.pageSize = this.pageSize;
     this.subscription = this.candidateService.search(request).subscribe(
       results => {
+        this.timestamp = Date.now();
         this.results = results;
+
+        let cachedResults: CachedSearchResults = {
+          searchID: this.savedSearch.id,
+          pageNumber: this.pageNumber,
+          pageSize: this.pageSize,
+          results: this.results,
+          timestamp: this.timestamp
+        };
+        localStorage.setItem(this.cacheKey(), JSON.stringify(cachedResults));
+
         this.searching = false;
       },
       error => {

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 
 import {SearchResults} from '../../../../model/search-results';
@@ -10,8 +10,6 @@ import {SavedSearchService} from '../../../../services/saved-search.service';
 import {Router} from '@angular/router';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 
-//todo Use local storage
-//todo Display loading
 //todo Support paging/sorting request
 //todo Fix up types to match Java types.
 
@@ -34,8 +32,7 @@ export class BrowseSavedSearchesComponent implements OnInit {
 
   constructor(private fb: FormBuilder,
               private router: Router,
-              private savedSearchService: SavedSearchService,
-              private modalService: NgbModal) {
+              private savedSearchService: SavedSearchService) {
   }
 
   ngOnInit() {
@@ -73,9 +70,10 @@ export class BrowseSavedSearchesComponent implements OnInit {
     });
   }
 
-  //todo When change is by mouse click, need to compute index.
   onSelect(savedSearch: SavedSearch) {
     this.selectedSavedSearch = savedSearch;
+
+    this.selectedIndex = this.results.content.indexOf(this.selectedSavedSearch);
   }
 
   keyDown(event: KeyboardEvent) {

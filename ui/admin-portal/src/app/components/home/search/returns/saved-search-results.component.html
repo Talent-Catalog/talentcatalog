@@ -1,11 +1,32 @@
 <div *ngIf="savedSearch">
   {{savedSearch.name}}
 </div>
+<button class="btn" *ngIf="timestamp" (click)="search(true)"><i class="fa fa-refresh" title="Refresh search"></i></button>
+
+<div *ngIf="pageNumber">
+  Page {{pageNumber}}
+</div>
 <div *ngIf="error">
   Error: {{error}}
 </div>
 
+<div class="text-muted mb-2 align-middle">
+
+  <ngb-pagination
+    [boundaryLinks]="true"
+    [pageSize]="pageSize"
+    [collectionSize]="results?.totalElements"
+    [(page)]="pageNumber"
+    (pageChange)="search(true)"
+    [maxSize]="5"
+  >
+  </ngb-pagination>
+</div>
+
 <div *ngIf="results">
+  <div *ngIf="timestamp">
+    Timestamp {{timestamp}}
+  </div>
   We have {{results.totalElements}} results
   <ul>
     <li *ngFor="let candidate of results?.content">
@@ -14,6 +35,10 @@
   </ul>
 
 </div>
-<div *ngIf="!results">
+<div *ngIf="!results && !searching">
   No results
+</div>
+<!-- loading -->
+<div *ngIf="searching">
+  <i class="fa fa-spinner fa-spin"></i> Loading...
 </div>
