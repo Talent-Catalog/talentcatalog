@@ -83,7 +83,7 @@
   },
   "REGISTRATION": {
     "HEADER": {
-      "STEP": "الخطوة {{registrationService?.currentStep.section}} of {{registrationService?.totalSections}}",
+      "STEP": "الخطوة {{current}} of {{total}}",
       "TITLE": {
         "CONTACT": "كيف يمكننا الاتّصال بك؟",
         "CONTACT/ALTERNATE": "كيف يمكننا الاتّصال بك؟",
