@@ -339,15 +339,15 @@
 
   <div class="results-area">
 
-    <div class="filter-results text-muted">
+    <div class="filter-results text-muted" *ngIf="!searching">
       <span>{{results?.totalElements}} candidates</span>
 
       <ngb-pagination [boundaryLinks]="true"
                       [pageSize]="pageSize"
                       [collectionSize]="results?.totalElements"
                       [(page)]="pageNumber"
-                      [maxSize]="5"
-                      (pageChange)="search()">
+                      maxSize="5"
+                      (pageChange)="doSearch()">
       </ngb-pagination>
 
       <button class="btn btn-outline-secondary" (click)="exportCandidates()">

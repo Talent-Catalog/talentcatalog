@@ -115,14 +115,14 @@ export class RegistrationLanguageComponent implements OnInit {
           }) || [];
         } else {
           // Patch the form with the english language id
-          const english = this.languages.find(lang => lang.name.toLowerCase().trim() === 'english');
-          if (english) {
-            this.form.patchValue({languageId: english.id});
+          const english = this.languageService.getLanguage('english').subscribe(result => {
+            this.form.patchValue({languageId: result.id});
             this.addingLanguage = true;
-          } else {
+          }, error => {
             this.error = 'English is not defined as a language in language table';
             this._loading.candidate = false;
-          }
+          });
+
         }
         this._loading.candidate = false;
       },
