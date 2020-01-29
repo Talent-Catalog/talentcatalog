@@ -37,7 +37,7 @@ constructor(
 
   ngOnInit() {
     this.pageNumber = 1;
-    this.pageSize = 25;
+    this.pageSize = 20;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
