@@ -1,16 +1,15 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {SearchCandidatesComponent} from './components/candidates/search/search-candidates.component';
-import {CreateCandidateComponent} from './components/candidates/create/create-candidate.component';
 import {ViewCandidateComponent} from './components/candidates/view/view-candidate.component';
 import {EditCandidateStatusComponent} from './components/candidates/view/status/edit-candidate-status.component';
 import {AuthGuard} from "./services/auth.guard";
 import {LoginComponent} from "./components/login/login.component";
 import {SearchUsersComponent} from "./components/settings/users/search-users.component";
 import {SettingsComponent} from "./components/settings/settings.component";
-import {SearchSavedSearchesComponent} from "./components/candidates/search/saved-search/search-saved-searches.component";
 import {HomeComponent} from "./components/home/home.component";
 import {InfographicComponent} from "./components/infograhics/infographic.component";
+import {NotFoundComponent} from "./not-found/not-found.component";
 
 const routes: Routes = [
   {
@@ -30,16 +29,8 @@ const routes: Routes = [
             component: SearchCandidatesComponent
           },
           {
-            path: 'search/saved-search',
-            component: SearchSavedSearchesComponent
-          },
-          {
             path: 'search/:savedSearchId',
             component: SearchCandidatesComponent
-          },
-          {
-            path: 'create',
-            component: CreateCandidateComponent
           },
           {
             path: ':candidateId',
@@ -53,7 +44,7 @@ const routes: Routes = [
         ]
       },
       {
-        path:  'settings',
+        path: 'settings',
         children: [
           {
             path: '',
@@ -67,7 +58,7 @@ const routes: Routes = [
         ]
       },
       {
-        path:  'infographics',
+        path: 'infographics',
         children: [
           {
             path: '',
@@ -85,6 +76,14 @@ const routes: Routes = [
       hideHeader: true
     }
   },
+  {
+    path: '**',
+    component: NotFoundComponent,
+    data: {
+      hideHeader: true
+    }
+  }
+
 ];
 
 @NgModule({

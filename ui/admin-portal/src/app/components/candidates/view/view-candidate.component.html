@@ -4,7 +4,7 @@
 <div class="alert alert-danger" *ngIf="error">
   {{error}}
 </div>
-<div *ngIf="!loading">
+<div *ngIf="!loading && !loadingError">
 
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">

@@ -10,7 +10,6 @@ import {HeaderComponent} from './components/header/header.component';
 import {SearchCandidatesComponent} from './components/candidates/search/search-candidates.component';
 import {HomeComponent} from './components/home/home.component';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
-import {CreateCandidateComponent} from './components/candidates/create/create-candidate.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ViewCandidateComponent} from './components/candidates/view/view-candidate.component';
 import {EditCandidateStatusComponent} from './components/candidates/view/status/edit-candidate-status.component';
@@ -107,6 +106,7 @@ import {ChartsModule} from "ng2-charts";
 import {InfographicComponent} from './components/infograhics/infographic.component';
 import {ChartComponent} from './components/infograhics/chart/chart.component';
 import {MonthPickerComponent} from "./components/util/month-picker/month-picker.component";
+import {NotFoundComponent} from "./not-found/not-found.component";
 
 @NgModule({
   declarations: [
@@ -116,7 +116,6 @@ import {MonthPickerComponent} from "./components/util/month-picker/month-picker.
     ConfirmationComponent,
     SearchCandidatesComponent,
     HomeComponent,
-    CreateCandidateComponent,
     ViewCandidateComponent,
     EditCandidateStatusComponent,
     DeleteCandidateComponent,
@@ -205,7 +204,8 @@ import {MonthPickerComponent} from "./components/util/month-picker/month-picker.
     EditSavedSearchComponent,
     InfographicComponent,
     ChartComponent,
-    MonthPickerComponent
+    MonthPickerComponent,
+    NotFoundComponent
   ],
   imports: [
     BrowserModule,
