@@ -20,7 +20,7 @@
   },
   "RESETPASSWORD": {
     "TITLE": "نسيت كلمة المرور",
-    "ERROR": "We cannot find an account with your email, please contact us on facebook.",
+    "ERROR": "لم نستطع إيجاد حساب لبريدك الإلكتروني، يُرجى التواصل معنا عبر فيسبوك.",
     "SUCCESS": ".لقد أرسلنا لك بريدًا إلكترونيًا يتضمّن إرشادات حول كيفية إعادة تعيين كلمة المرور",
     "LABEL": {
       "EMAIL": "عنوان البريد الإلكتروني"
@@ -66,11 +66,11 @@
       "BUTTON": "اختبارات اختبارات"
     },
     "EMPLOYED": {
-      "EXPLANATION": "?Thank you for completing your profile on the Talent Catalog! ? ",
-      "BUTTON": "Review registration"
+      "EXPLANATION": "?شكرًا لاستكمال ملفّك في دليل المواهب!? ",
+      "BUTTON": "مراجعة التسجيل"
     },
     "INACTIVE": {
-      "EXPLANATION": "?Your profile did not contain enough information to be included in the Talent Catalog?"
+      "EXPLANATION": "?لا يحتوي ملفّك على معلومات كافية لإدراجه في دليل المواهب?"
     },
     "PENDING": {
       "EXPLANATION": ".تهانينا، لقد أنهيْتَ طلب التسجيل الخاصّ بك. سنُراجِع طلبك في أقرب وقتٍ ممكن. في غضون ذلك، يمكنك مراجعة ملفّك",
@@ -83,7 +83,7 @@
   },
   "REGISTRATION": {
     "HEADER": {
-      "STEP": "الخطوة {{current}} of {{total}}",
+      "STEP": "الخطوة {{current}} من {{total}}",
       "TITLE": {
         "CONTACT": "كيف يمكننا الاتّصال بك؟",
         "CONTACT/ALTERNATE": "كيف يمكننا الاتّصال بك؟",
@@ -250,23 +250,23 @@
   },
   "EDIT": {
     "TITLE": {
-      "EDITING": "You are now editing",
-      "CONTACT": "Contact details",
-      "OCCUPATIONS":"Occupation details",
-      "PERSONAL":"Personal details",
-      "OCCUPATION": "Occupations",
-      "EXPERIENCE":"Work experience",
-      "EDUCATION": "Education history",
-      "LANGUAGES":"Languages",
-      "CERTIFICATIONS": "Certifications",
-      "OTHER":"Any other information"
+      "EDITING": "التنقيح جارٍ",
+      "CONTACT": "تفاصيل الاتّصال",
+      "OCCUPATIONS":"تفاصيل المهنة",
+      "PERSONAL":"التفاصيل الشخصية",
+      "OCCUPATION": "المهن",
+      "EXPERIENCE":"خبرة العمل",
+      "EDUCATION": "التحصيل العلمي",
+      "LANGUAGES":"اللغات",
+      "CERTIFICATIONS": "الشهادات",
+      "OTHER":"أيّ معلومات أخرى"
     }
   },
   "FORM": {
     "ERROR": {
       "REQUIRED": "هذه الخانة مطلوبة",
       "EMAIL":"يجب أن يحتوي هذا الحقل على عنوان بريد إلكتروني صالح",
-      "MINLENGTH": "يجب ان يحتوي هذا الحقل على {{طول}} أحرف على الأقل",
+      "MINLENGTH": "يجب ان يحتوي هذا الحقل على {{length}} أحرف على الأقل",
       "DATE": "اختبارات اختبارات - اختبارات اختبارات YYYY-MM-DD"
     },
     "LABEL": {
@@ -337,27 +337,28 @@
   "GENDER": {
     "MALE": "الذكر",
     "FEMALE": "أنثى",
-    "OTHER": "Other?"
+    "OTHER": "غير ذلك؟"
   },
   "EDUCATIONTYPE": {
-    "ASSOCIATE": "Associate?",
-    "VOCATIONAL": "Vocational?",
-    "BACHELOR": "Bachelor?",
-    "MASTERS": "Masters?",
-    "DOCTORAL": "Doctoral?"
+    "ASSOCIATE": "مشارك؟",
+    "VOCATIONAL": "مهني؟",
+    "BACHELOR": "إجازة؟",
+    "MASTERS": "ماجستير؟",
+    "DOCTORAL": "دكتوراه"
   },
   "ERROR": {
-    "USERNAME_TAKEN": "?An account has already been taken with that email",
-    "PHONE_TAKEN": "?An account has already been taken with that phone",
-    "WHATSAPP_TAKEN": "?An account has already been taken with that whatsapp number",
-    "USER_DEACTIVATED": "?This account has been deactivated",
-    "INVALID_PASSWORD_MATCH": "?The confirmation password did not match",
-    "PASSWORD_EXPIRED": "?Password has expired for this account",
-    "MISSING_OBJECT": "?Cannot find the data your requested",
-    "INVALID_PASSWORD_TOKEN": "?The reset password token is not valid",
-    "INVALID_PASSWORD_FORMAT": "?Your password does not match password rules",
-    "FILE_DOWNLOAD_FAILED": "?The requested file could not be downloaded",
-    "EXPIRED_PASSWORD_TOKEN": "?The reset password token has expired",
-    "ENTITY_REFERENCED": "?You cannot delete this record because it is linked to another?"
+    "EMAIL_TAKEN": "?يوجد حساب مسجّل لهذا البريد الإلكتروني",
+    "PHONE_TAKEN": "?يوجد حساب مسجّل لهذا الرقم",
+    "WHATSAPP_TAKEN": "?يوجد حساب مسجّل لرقم الواتساب هذا",
+    "USER_DEACTIVATED": "?تمّ إيقاف هذا الحساب",
+    "INVALID_PASSWORD_MATCH": "?كلمة المرور غير مطابقة",
+    "PASSWORD_EXPIRED": "?لم تعد كلمة المرور صالحة لهذا الحساب",
+    "MISSING_OBJECT": "?لم نعثر على البيانات التي طلبتها",
+    "INVALID_PASSWORD_TOKEN": "?إنّ رمز إعادة تعيين كلمة المرور غير صحيح",
+    "INVALID_PASSWORD_FORMAT": "?إنّ كلمة المرور الخاصّة بك غير مطابقة لقواعد كلمة المرور",
+    "FILE_DOWNLOAD_FAILED": "?لا يمكن تنزيل الملفّ المطلوب",
+    "EXPIRED_PASSWORD_TOKEN": "?انتهت صلاحية رمز إعادة تعيين كلمة المرور",
+    "ENTITY_REFERENCED": "?لا يمكنك حذف هذا السجلّ لأنّه مرتبط بسجلّ آخر?"
   }
 }
+
