@@ -1,7 +1,6 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {SearchCandidatesComponent} from './components/candidates/search/search-candidates.component';
-import {CreateCandidateComponent} from './components/candidates/create/create-candidate.component';
 import {ViewCandidateComponent} from './components/candidates/view/view-candidate.component';
 import {EditCandidateStatusComponent} from './components/candidates/view/status/edit-candidate-status.component';
 import {AuthGuard} from "./services/auth.guard";
@@ -12,6 +11,7 @@ import {SearchSavedSearchesComponent} from "./components/candidates/search/saved
 import {HomeComponent} from "./components/home/home.component";
 import {InfographicComponent} from "./components/infograhics/infographic.component";
 import {DefineSearchComponent} from "./components/search/define-search/define-search.component";
+import {NotFoundComponent} from "./not-found/not-found.component";
 
 const routes: Routes = [
   {
@@ -44,18 +44,9 @@ const routes: Routes = [
             pathMatch: 'full',
             component: SearchCandidatesComponent
           },
-          //todo I don't think that some of these paths work
-          {
-            path: 'search/saved-search',
-            component: SearchSavedSearchesComponent
-          },
           {
             path: 'search/:savedSearchId',
             component: SearchCandidatesComponent
-          },
-          {
-            path: 'create',
-            component: CreateCandidateComponent
           },
           {
             path: ':candidateId',
@@ -69,7 +60,7 @@ const routes: Routes = [
         ]
       },
       {
-        path:  'settings',
+        path: 'settings',
         children: [
           {
             path: '',
@@ -83,7 +74,7 @@ const routes: Routes = [
         ]
       },
       {
-        path:  'infographics',
+        path: 'infographics',
         children: [
           {
             path: '',
@@ -101,6 +92,14 @@ const routes: Routes = [
       hideHeader: true
     }
   },
+  {
+    path: '**',
+    component: NotFoundComponent,
+    data: {
+      hideHeader: true
+    }
+  }
+
 ];
 
 @NgModule({
