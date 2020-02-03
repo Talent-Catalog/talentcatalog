@@ -93,7 +93,8 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             + " left join c.candidateEducations edu "
             + " left join edu.educationMajor maj "
             + " left join c.candidateCertifications cert "
-            + " left join c.candidateLanguages lang "
+            + " left join c.candidateLanguages clang "
+            + " left join clang.language lang "
             + " where c.user.id = :id ")
     Candidate findByUserIdLoadProfile(@Param("id") Long userId);
 

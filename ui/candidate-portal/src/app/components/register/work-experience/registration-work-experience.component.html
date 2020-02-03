@@ -8,7 +8,7 @@
 
       <div class="card occupation-card">
         <div class="card occupation-heading">
-          <h5>{{occupation.occupation?.name}}</h5>
+          <h5>{{occupation.occupation | translation : 'occupation'}}</h5>
 
           <button class="btn btn-outline-primary d-none d-md-block"
                   (click)="addExperience(occupation)">

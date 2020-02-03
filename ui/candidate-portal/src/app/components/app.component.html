@@ -1,4 +1,6 @@
 <app-header (languageUpdated)="setLanguage($event)"></app-header>
-
-<router-outlet></router-outlet>
+<ng-container *ngIf="loading">
+  Loading ...
+</ng-container>
+<router-outlet *ngIf="!loading"></router-outlet>
 

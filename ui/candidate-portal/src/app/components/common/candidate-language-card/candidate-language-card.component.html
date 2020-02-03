@@ -11,7 +11,7 @@
   </select>
 
   <p class="m-0" *ngIf="preview">
-    {{language.language.name}}
+    {{language.language | translation :'language'}}
   </p>
 </div>
 
@@ -26,7 +26,7 @@
   </select>
 
   <p class="m-0" *ngIf="preview">
-    {{language.spokenLevel.name}}
+    {{language.spokenLevel | translation :'language_level'}}
   </p>
 </div>
 
@@ -41,6 +41,6 @@
   </select>
 
   <p class="m-0" *ngIf="preview">
-    {{language.writtenLevel.name}}
+    {{language.writtenLevel | translation :'language_level'}}
   </p>
 </div>

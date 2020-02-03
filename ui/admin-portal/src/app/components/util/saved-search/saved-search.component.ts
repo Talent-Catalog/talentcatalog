@@ -31,15 +31,20 @@ export class SavedSearchComponent implements OnInit {
   }
 
   loadSavedSearch(){
-    this.loading = true;
-    this.savedSearchService.get(this.savedSearch.id).subscribe(result => {
-      this.savedSearch = result;
-      this.showAll = true;
-      this.loading = false;
-    }, err => {
-      this.loading = false;
-      this.error = err;
-    })
+    if (this.showAll == true){
+      this.showAll = false;
+    } else {
+      this.loading = true;
+      this.savedSearchService.get(this.savedSearch.id).subscribe(result => {
+        this.savedSearch = result;
+        this.showAll = true;
+        this.loading = false;
+      }, err => {
+        this.loading = false;
+        this.error = err;
+      })
+    }
+
   }
 
   doOpenSearch(){

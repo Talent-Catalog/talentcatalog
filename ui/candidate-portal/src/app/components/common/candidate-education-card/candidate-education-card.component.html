@@ -8,13 +8,13 @@
           (click)="edit()">&copy;</button>
 </div>
 
-<p>{{candidateEducation.educationType | translate}}</p>
+<p>{{'EDUCATIONTYPE.'+candidateEducation.educationType  | uppercase | translate}}</p>
 
 <h5>{{candidateEducation.courseName}}</h5>
 
-<p>{{candidateEducation.institution}} | {{candidateEducation.country?.name}}</p>
+<p>{{candidateEducation.institution}} | {{candidateEducation.country  | translation :'country'}}</p>
 
 <p *ngIf="candidateEducation.educationMajor">
-  {{ 'CARD.EDUCATION.MAJOR' | translate: { major: candidateEducation.educationMajor?.name } }}
+  {{ 'CARD.EDUCATION.MAJOR' | translate: { major: candidateEducation.educationMajor | translation :'education_major'  } }}
 </p>
 
