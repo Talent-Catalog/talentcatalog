@@ -12,6 +12,7 @@ import {LanguageService} from "../services/language.service";
 export class AppComponent {
 
   @HostBinding('class.rtl-wrapper') rtl: boolean;
+  loading: boolean;
 
   constructor(private router: Router,
               private translate: TranslateService,
@@ -26,9 +27,15 @@ export class AppComponent {
 
   setLanguage(lang) {
     // Add .rtl-wrapper class to app root if the language is arabic
+    this.loading = true;
     this.rtl = lang === 'ar';
     this.translate.use(lang);
-    this.languageService.setSelectedLanguage(lang);
+    this.languageService.setSelectedLanguage(lang).subscribe(
+      result => {
+        this.loading = false;
+      }, error => {
+        this.loading = false;
+      });
     this.localStorage.set('language', lang);
   }
 
