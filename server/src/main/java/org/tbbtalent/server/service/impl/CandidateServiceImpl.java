@@ -35,6 +35,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class CandidateServiceImpl implements CandidateService {
@@ -42,6 +44,7 @@ public class CandidateServiceImpl implements CandidateService {
     private static final Logger log = LoggerFactory.getLogger(CandidateServiceImpl.class);
 
     private final UserRepository userRepository;
+    private final SavedSearchRepository savedSearchRepository;
     private final CandidateRepository candidateRepository;
     private final CountryRepository countryRepository;
     private final EducationLevelRepository educationLevelRepository;
@@ -55,6 +58,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Autowired
     public CandidateServiceImpl(UserRepository userRepository,
+                                SavedSearchRepository savedSearchRepository,
                                 CandidateRepository candidateRepository,
                                 CountryRepository countryRepository,
                                 EducationLevelRepository educationLevelRepository,
@@ -65,6 +69,7 @@ public class CandidateServiceImpl implements CandidateService {
                                 CandidateNoteService candidateNoteService,
                                 EmailHelper emailHelper, PdfHelper pdfHelper) {
         this.userRepository = userRepository;
+        this.savedSearchRepository = savedSearchRepository;
         this.candidateRepository = candidateRepository;
         this.countryRepository = countryRepository;
         this.educationLevelRepository = educationLevelRepository;
@@ -75,6 +80,84 @@ public class CandidateServiceImpl implements CandidateService {
         this.candidateNoteService = candidateNoteService;
         this.emailHelper = emailHelper;
         this.pdfHelper = pdfHelper;
+    }
+
+    @Override
+    public Page<Candidate> searchCandidates(SavedSearchRunRequest request) {
+        
+        Long savedSearchId = request.getSavedSearchId(); 
+        SavedSearch savedSearch = this.savedSearchRepository.findByIdLoadSearchJoins(savedSearchId)
+                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, savedSearchId));
+        SearchCandidateRequest searchCandidateRequest = convertToSearchCandidateRequest(savedSearch);
+        
+        searchCandidateRequest.setPageNumber(request.getPageNumber());
+        searchCandidateRequest.setPageSize(request.getPageSize());
+        searchCandidateRequest.setSortDirection(request.getSortDirection());
+        searchCandidateRequest.setSortFields(request.getSortFields());
+        
+        return searchCandidates(searchCandidateRequest);
+    }
+
+//todo this is horrible cloned code duplicated from SavedSearchServiceImpl - factor it out.
+    private SearchCandidateRequest convertToSearchCandidateRequest(SavedSearch request) {
+        SearchCandidateRequest searchCandidateRequest = new SearchCandidateRequest();
+        searchCandidateRequest.setSavedSearchId(request.getId());
+        searchCandidateRequest.setKeyword(request.getKeyword());
+        searchCandidateRequest.setStatuses(getStatusListFromString(request.getStatuses()));
+        searchCandidateRequest.setGender(request.getGender());
+        searchCandidateRequest.setOccupationIds(getIdsFromString(request.getOccupationIds()));
+        searchCandidateRequest.setOrProfileKeyword(request.getOrProfileKeyword());
+        searchCandidateRequest.setVerifiedOccupationIds(getIdsFromString(request.getVerifiedOccupationIds()));
+        searchCandidateRequest.setVerifiedOccupationSearchType(request.getVerifiedOccupationSearchType());
+        searchCandidateRequest.setNationalityIds(getIdsFromString(request.getNationalityIds()));
+        searchCandidateRequest.setNationalitySearchType(request.getNationalitySearchType());
+        searchCandidateRequest.setCountryIds(getIdsFromString(request.getCountryIds()));
+        searchCandidateRequest.setEnglishMinSpokenLevel(request.getEnglishMinSpokenLevel());
+        searchCandidateRequest.setEnglishMinWrittenLevel(request.getEnglishMinWrittenLevel());
+        searchCandidateRequest.setOtherLanguageId(request.getOtherLanguage() != null ? request.getOtherLanguage().getId() : null);
+        searchCandidateRequest.setOtherMinSpokenLevel(request.getOtherMinSpokenLevel());
+        searchCandidateRequest.setOtherMinWrittenLevel(request.getOtherMinWrittenLevel());
+        searchCandidateRequest.setUnRegistered(request.isUnRegistered());
+        searchCandidateRequest.setLastModifiedFrom(request.getLastModifiedFrom());
+        searchCandidateRequest.setLastModifiedTo(request.getLastModifiedTo());
+//        searchCandidateRequest.setRegisteredFrom(request.getCreatedFrom());
+//        searchCandidateRequest.setRegisteredTo(request.getCreatedTo());
+        searchCandidateRequest.setMinAge(request.getMinAge());
+        searchCandidateRequest.setMaxAge(request.getMaxAge());
+        searchCandidateRequest.setMinEducationLevel(request.getMinEducationLevel());
+        searchCandidateRequest.setEducationMajorIds(getIdsFromString(request.getEducationMajorIds()));
+
+        List<SearchJoinRequest> searchJoinRequests = new ArrayList<>();
+        for (SearchJoin searchJoin : request.getSearchJoins()) {
+            searchJoinRequests.add(new SearchJoinRequest(searchJoin.getChildSavedSearch().getId(), searchJoin.getChildSavedSearch().getName(), searchJoin.getSearchType()));
+        }
+        searchCandidateRequest.setSearchJoinRequests(searchJoinRequests);
+
+        return searchCandidateRequest;
+
+    }
+
+
+    String getListAsString(List<Long> ids){
+        return !org.springframework.util.CollectionUtils.isEmpty(ids) ? ids.stream().map(String::valueOf)
+                .collect(Collectors.joining(",")) : null;
+    }
+
+    List<Long> getIdsFromString(String listIds){
+        return listIds != null ? Stream.of(listIds.split(","))
+                .map(Long::parseLong)
+                .collect(Collectors.toList()) : null;
+    }
+
+    String getStatusListAsString(List<CandidateStatus> statuses){
+        return !org.springframework.util.CollectionUtils.isEmpty(statuses) ? statuses.stream().map(String::valueOf)
+                .collect(Collectors.joining(",")) : null;
+    }
+
+    List<CandidateStatus> getStatusListFromString(String statusList){
+        return statusList != null ? Stream.of(statusList.split(","))
+                .map(s -> CandidateStatus.valueOf(s))
+                .collect(Collectors.toList()) : null;
     }
 
     @Override

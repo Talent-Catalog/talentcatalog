@@ -11,6 +11,7 @@ import {SettingsComponent} from "./components/settings/settings.component";
 import {SearchSavedSearchesComponent} from "./components/candidates/search/saved-search/search-saved-searches.component";
 import {HomeComponent} from "./components/home/home.component";
 import {InfographicComponent} from "./components/infograhics/infographic.component";
+import {DefineSearchComponent} from "./components/search/define-search/define-search.component";
 
 const routes: Routes = [
   {
@@ -22,6 +23,20 @@ const routes: Routes = [
         component: HomeComponent
       },
       {
+        path: 'search',
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            component: DefineSearchComponent
+          },
+          {
+            path: ':savedSearchId',
+            component: DefineSearchComponent
+          },
+        ]
+      },
+      {
         path: 'candidates',
         children: [
           {
@@ -29,6 +44,7 @@ const routes: Routes = [
             pathMatch: 'full',
             component: SearchCandidatesComponent
           },
+          //todo I don't think that some of these paths work
           {
             path: 'search/saved-search',
             component: SearchSavedSearchesComponent

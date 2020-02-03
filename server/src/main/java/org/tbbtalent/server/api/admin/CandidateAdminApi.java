@@ -29,6 +29,13 @@ public class CandidateAdminApi {
         this.candidateService = candidateService;
     }
 
+    @PostMapping("runsavedsearch")
+    public Map<String, Object> runSavedSearch(@RequestBody SavedSearchRunRequest request) {
+        Page<Candidate> candidates = this.candidateService.searchCandidates(request);
+        Map<String, Object> map = candidateBaseDto().buildPage(candidates);
+        return map;
+    }
+
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchCandidateRequest request) {
         Page<Candidate> candidates = this.candidateService.searchCandidates(request);

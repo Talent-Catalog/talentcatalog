@@ -39,6 +39,15 @@ export interface SavedSearchRequest {
   searchCandidateRequest?: SearchCandidateRequest;
 }
 
+export interface SavedSearchRunRequest {
+  savedSearchId: number;
+  reviewStatus?: string;
+  pageNumber?: number;
+  pageSize?: number;
+  sortFields?: string[];
+  sortDirection?: string;
+}
+
 /**
  * Create a SavedSearchRequest from a SavedSearch and a search request.
  * @param savedSearch

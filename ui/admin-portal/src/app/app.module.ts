@@ -110,6 +110,7 @@ import {ChartComponent} from './components/infograhics/chart/chart.component';
 import {MonthPickerComponent} from "./components/util/month-picker/month-picker.component";
 import {UpdateSearchComponent} from "./components/candidates/search/update/update-search.component";
 import { SavedSearchResultsComponent } from './components/home/search/returns/saved-search-results.component';
+import { DefineSearchComponent } from './components/search/define-search/define-search.component';
 
 @NgModule({
   declarations: [
@@ -211,7 +212,8 @@ import { SavedSearchResultsComponent } from './components/home/search/returns/sa
     InfographicComponent,
     ChartComponent,
     MonthPickerComponent,
-    SavedSearchResultsComponent
+    SavedSearchResultsComponent,
+    DefineSearchComponent,
   ],
   imports: [
     BrowserModule,
