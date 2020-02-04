@@ -14,6 +14,7 @@ import {EditCandidateStatusComponent} from "./status/edit-candidate-status.compo
 export class ViewCandidateComponent implements OnInit {
 
   loading: boolean;
+  loadingError : boolean;
   error;
   candidate: Candidate;
   mainColWidth=8;
@@ -25,6 +26,7 @@ export class ViewCandidateComponent implements OnInit {
               private modalService: NgbModal) { }
 
   ngOnInit() {
+    this.loadingError = false;
     this.route.paramMap.subscribe(params => {
       let candidateId = +params.get('candidateId');
       this.loading = true;
@@ -32,7 +34,8 @@ export class ViewCandidateComponent implements OnInit {
         this.candidate = candidate;
         this.loading = false;
       },error => {
-        this.error = error;
+        this.loadingError = true;
+        this.error = isNaN(candidateId) ? 'Cannot load candidate with id: '+params.get('candidateId') + ', the id must be a number': error;
         this.loading = false;
       });
     });

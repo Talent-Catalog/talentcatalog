@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.model.Language;
 import org.tbbtalent.server.model.SystemLanguage;
+import org.tbbtalent.server.model.Translation;
 import org.tbbtalent.server.service.LanguageService;
+import org.tbbtalent.server.service.TranslationService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 import java.util.List;
@@ -18,10 +20,13 @@ import java.util.Map;
 public class LanguagePortalApi {
 
     private final LanguageService languageService;
+    private final TranslationService translationService;
+
 
     @Autowired
-    public LanguagePortalApi(LanguageService languageService) {
+    public LanguagePortalApi(LanguageService languageService, TranslationService translationService) {
         this.languageService = languageService;
+        this.translationService = translationService;
     }
 
     @GetMapping()
@@ -42,6 +47,12 @@ public class LanguagePortalApi {
         return systemLanguageDto().buildList(languages);
     }
 
+    @GetMapping(value = "translations")
+    public List<Map<String, Object>> getTranslations() {
+        List<Translation> translations = translationService.list();
+        return translationDto().buildList(translations);
+    }
+
     private DtoBuilder languageDto() {
         return new DtoBuilder()
                 .add("id")
@@ -54,6 +65,15 @@ public class LanguagePortalApi {
                 .add("id")
                 .add("language")
                 .add("label")
+                ;
+    }
+
+    private DtoBuilder translationDto() {
+        return new DtoBuilder(true)
+                .add("objectId")
+                .add("objectType")
+                .add("language")
+                .add("value")
                 ;
     }
 

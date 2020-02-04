@@ -10,7 +10,6 @@ import {HeaderComponent} from './components/header/header.component';
 import {SearchCandidatesComponent} from './components/candidates/search/search-candidates.component';
 import {HomeComponent} from './components/home/home.component';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
-import {CreateCandidateComponent} from './components/candidates/create/create-candidate.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ViewCandidateComponent} from './components/candidates/view/view-candidate.component';
 import {EditCandidateStatusComponent} from './components/candidates/view/status/edit-candidate-status.component';
@@ -111,6 +110,7 @@ import {MonthPickerComponent} from "./components/util/month-picker/month-picker.
 import {UpdateSearchComponent} from "./components/candidates/search/update/update-search.component";
 import { SavedSearchResultsComponent } from './components/home/search/returns/saved-search-results.component';
 import { DefineSearchComponent } from './components/search/define-search/define-search.component';
+import {NotFoundComponent} from "./not-found/not-found.component";
 
 @NgModule({
   declarations: [
@@ -120,7 +120,6 @@ import { DefineSearchComponent } from './components/search/define-search/define-
     ConfirmationComponent,
     SearchCandidatesComponent,
     HomeComponent,
-    CreateCandidateComponent,
     ViewCandidateComponent,
     EditCandidateStatusComponent,
     DeleteCandidateComponent,
@@ -214,6 +213,8 @@ import { DefineSearchComponent } from './components/search/define-search/define-
     MonthPickerComponent,
     SavedSearchResultsComponent,
     DefineSearchComponent,
+    MonthPickerComponent,
+    NotFoundComponent
   ],
   imports: [
     BrowserModule,

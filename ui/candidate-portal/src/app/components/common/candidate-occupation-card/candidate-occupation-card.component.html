@@ -12,7 +12,7 @@
     </select>
 
     <p class="m-0" *ngIf="preview">
-      {{candidateOccupation.occupation.name}}
+      {{candidateOccupation.occupation | translation :'occupation'}}
     </p>
   </div>
 
