@@ -1,20 +1,20 @@
 import {Component, OnInit} from '@angular/core';
-import {SearchResults} from '../../../model/search-results';
+import {SearchResults} from '../../../../model/search-results';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {LanguageService} from "../../../services/language.service";
-import {CountryService} from "../../../services/country.service";
-import {TranslationService} from "../../../services/translation.service";
-import {TranslationItem} from '../../../model/translation-item';
-import {SystemLanguage} from '../../../model/language';
+import {LanguageService} from "../../../../services/language.service";
+import {CountryService} from "../../../../services/country.service";
+import {TranslationService} from "../../../../services/translation.service";
+import {TranslationItem} from '../../../../model/translation-item';
+import {SystemLanguage} from '../../../../model/language';
 
 @Component({
-  selector: 'app-translations',
-  templateUrl: './translations.component.html',
-  styleUrls: ['./translations.component.scss']
+  selector: 'app-dropdown-translations',
+  templateUrl: './dropdown-translations.component.html',
+  styleUrls: ['./dropdown-translations.component.scss']
 })
-export class TranslationsComponent implements OnInit {
+export class DropdownTranslationsComponent implements OnInit {
 
   searchForm: FormGroup;
   loading: boolean;
