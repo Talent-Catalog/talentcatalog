@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {Candidate} from "../../../model/candidate";
@@ -16,7 +16,7 @@ import {LangChangeEvent, TranslateService} from "@ngx-translate/core";
   templateUrl: './registration-personal.component.html',
   styleUrls: ['./registration-personal.component.scss']
 })
-export class RegistrationPersonalComponent implements OnInit {
+export class RegistrationPersonalComponent implements OnInit, OnDestroy {
 
   /* A flag to indicate if the component is being used on the profile component */
   @Input() edit: boolean = false;
@@ -37,6 +37,7 @@ export class RegistrationPersonalComponent implements OnInit {
   countries: Country[];
   nationalities: Nationality[];
   years: number[];
+  subscription;
 
   constructor(private fb: FormBuilder,
               private router: Router,
@@ -66,8 +67,7 @@ export class RegistrationPersonalComponent implements OnInit {
     });
     this.loadDropDownData();
     //listen for change of language and save
-    this.translateService.onLangChange.subscribe((event: LangChangeEvent) => {
-      console.log('reload');
+    this.subscription = this.translateService.onLangChange.subscribe((event: LangChangeEvent) => {
       this.loadDropDownData();
     });
 
@@ -181,6 +181,10 @@ export class RegistrationPersonalComponent implements OnInit {
 
   cancel() {
     this.onSave.emit();
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 
 }

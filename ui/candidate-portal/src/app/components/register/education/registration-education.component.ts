@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
@@ -18,7 +18,7 @@ import {LangChangeEvent, TranslateService} from "@ngx-translate/core";
   templateUrl: './registration-education.component.html',
   styleUrls: ['./registration-education.component.scss']
 })
-export class RegistrationEducationComponent implements OnInit {
+export class RegistrationEducationComponent implements OnInit, OnDestroy {
 
   /* A flag to indicate if the component is being used on the profile component */
   @Input() edit: boolean = false;
@@ -43,6 +43,7 @@ export class RegistrationEducationComponent implements OnInit {
   educationType: string;
 
   editTarget: CandidateEducation;
+  subscription;
 
   constructor(private fb: FormBuilder,
               private router: Router,
@@ -82,7 +83,7 @@ export class RegistrationEducationComponent implements OnInit {
 
     this.loadDropDownData();
     //listen for change of language and save
-    this.translateService.onLangChange.subscribe((event: LangChangeEvent) => {
+    this.subscription = this.translateService.onLangChange.subscribe((event: LangChangeEvent) => {
       this.loadDropDownData();
     });
 
@@ -235,5 +236,9 @@ export class RegistrationEducationComponent implements OnInit {
   handleEducationSaved(education: CandidateEducation, i) {
     this.candidateEducationItems[i] = education;
     this.editTarget = null;
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }

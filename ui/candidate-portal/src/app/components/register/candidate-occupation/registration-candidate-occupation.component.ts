@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
@@ -14,7 +14,7 @@ import {LangChangeEvent, TranslateService} from "@ngx-translate/core";
   templateUrl: './registration-candidate-occupation.component.html',
   styleUrls: ['./registration-candidate-occupation.component.scss']
 })
-export class RegistrationCandidateOccupationComponent implements OnInit {
+export class RegistrationCandidateOccupationComponent implements OnInit, OnDestroy {
 
   /* A flag to indicate if the component is being used on the profile component */
   @Input() edit: boolean = false;
@@ -31,6 +31,7 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
   candidateOccupations: CandidateOccupation[];
   occupations: Occupation[];
   showForm;
+  subscription;
 
   constructor(private fb: FormBuilder,
               private router: Router,
@@ -49,7 +50,7 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
 
     this.loadDropDownData();
     //listen for change of language and save
-    this.translateService.onLangChange.subscribe((event: LangChangeEvent) => {
+    this.subscription = this.translateService.onLangChange.subscribe((event: LangChangeEvent) => {
       this.loadDropDownData();
     });
 
@@ -157,5 +158,9 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
       );
       return this.occupations.filter(occ => !existingIds.includes(occ.id.toString()))
     }
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }
