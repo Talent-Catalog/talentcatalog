@@ -31,4 +31,7 @@ export class TranslationService {
     return this.http.put<Translation>(`${this.apiUrl}/${id}`, details);
   }
 
+  updateTranslationFile(language: string, translations) {
+    return this.http.put<Translation>(`${this.apiUrl}/file/${language}`, translations);
+  }
 }

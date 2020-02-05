@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Observable} from "rxjs";
 import {environment} from "../../../../../environments/environment";
+import {TranslationService} from "../../../../services/translation.service";
 
 @Component({
   selector: 'app-general-translations',
@@ -14,7 +15,10 @@ export class GeneralTranslationsComponent implements OnInit {
   language: string;
   fields;
 
-  constructor() {
+  saving: boolean;
+  saveError: any;
+
+  constructor(private translationService: TranslationService) {
   }
 
   ngOnInit() {
@@ -70,7 +74,18 @@ export class GeneralTranslationsComponent implements OnInit {
         }
       }
     });
-    console.log('Result', result);
+
+    this.saving = true;
+    this.saveError = null;
+    this.translationService.updateTranslationFile(this.language, result).subscribe(
+      result => {
+        this.saving = false;
+      },
+      error => {
+        this.saving = false;
+        this.saveError = error;
+      }
+    );
   }
 
 }
