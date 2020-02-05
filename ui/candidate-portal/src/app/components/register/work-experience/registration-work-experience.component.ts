@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
@@ -16,7 +16,7 @@ import {LangChangeEvent, TranslateService} from "@ngx-translate/core";
   templateUrl: './registration-work-experience.component.html',
   styleUrls: ['./registration-work-experience.component.scss']
 })
-export class RegistrationWorkExperienceComponent implements OnInit {
+export class RegistrationWorkExperienceComponent implements OnInit, OnDestroy {
 
   @Input() edit: boolean;
 
@@ -39,6 +39,8 @@ export class RegistrationWorkExperienceComponent implements OnInit {
   experienceFormOpen: boolean;
   occupation: CandidateOccupation;
   experience: CandidateJobExperience;
+
+  subscription;
 
   constructor(private fb: FormBuilder,
               private router: Router,
@@ -93,7 +95,7 @@ export class RegistrationWorkExperienceComponent implements OnInit {
 
     this.loadDropDownData();
     //listen for change of language and save
-    this.translateService.onLangChange.subscribe((event: LangChangeEvent) => {
+    this.subscription = this.translateService.onLangChange.subscribe((event: LangChangeEvent) => {
       this.loadDropDownData();
     });
 
@@ -185,5 +187,9 @@ export class RegistrationWorkExperienceComponent implements OnInit {
         .filter(exp => exp.candidateOccupation.id === occ.id)
         .sort((a, b) => a.id > b.id ? -1 : 1);
     }
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }
