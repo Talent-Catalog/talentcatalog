@@ -88,6 +88,9 @@ export class GeneralTranslationsComponent implements OnInit {
     );
   }
 
+  isBlank(value) {
+    return (!value || /^\s*$/.test(value));
+  }
 }
 
 const ALL_FIELDS =
