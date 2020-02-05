@@ -56,7 +56,7 @@ export class GeneralTranslationsComponent implements OnInit {
   }
 
   save() {
-    let result = Object.assign({}, ALL_FIELDS);
+    let result = {};
     this.fields.forEach(field => {
       let path = field.path.split('.');
       let target = result;
@@ -65,6 +65,7 @@ export class GeneralTranslationsComponent implements OnInit {
         if (i == path.length - 1) {
           target[next] = field.value;
         } else {
+          target[next] = target[next] ? target[next] : {};
           target = target[next];
         }
       }
