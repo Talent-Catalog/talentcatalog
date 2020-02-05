@@ -74,7 +74,7 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
       fullTime: [this.candidateJobExperience ? this.candidateJobExperience.fullTime : null, Validators.required],
       paid: [this.candidateJobExperience ? this.candidateJobExperience.paid : null, Validators.required],
       description: [this.candidateJobExperience ? this.candidateJobExperience.description : '', Validators.required]
-    });
+    },{validator: this.startDateBeforeEndDate('startDate', 'endDate')});
 
     this.form.controls['paid'].valueChanges.subscribe(
       (val) => {
@@ -91,6 +91,20 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
       this.form.controls['candidateOccupationId'].patchValue(exp.candidateOccupation.id || exp.candidateOccupationId);
     } else if (this.candidateOccupation && !this.candidateJobExperience) {
       this.form.controls['candidateOccupationId'].patchValue(this.candidateOccupation.id);
+    }
+  }
+
+  startDateBeforeEndDate(from: string, to: string) {
+    console.log(from, to);
+    return (group: FormGroup): { [key: string]: any } => {
+      let f = group.controls[from];
+      let t = group.controls[to];
+      if (f.value && t.value && f.value > t.value) {
+        return {
+          invalidDate: "Date from should be less than Date to"
+        };
+      }
+      return {};
     }
   }
 

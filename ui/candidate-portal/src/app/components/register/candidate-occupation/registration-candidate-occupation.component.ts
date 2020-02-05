@@ -7,6 +7,7 @@ import {CandidateOccupation} from "../../../model/candidate-occupation";
 import {Occupation} from "../../../model/occupation";
 import {OccupationService} from "../../../services/occupation.service";
 import {RegistrationService} from "../../../services/registration.service";
+import {LangChangeEvent, TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-registration-candidate-occupation',
@@ -36,7 +37,8 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
               private candidateService: CandidateService,
               private occupationService: OccupationService,
               private candidateOccupationService: CandidateOccupationService,
-              public registrationService: RegistrationService) {
+              public registrationService: RegistrationService,
+              public translateService: TranslateService) {
   }
 
   ngOnInit() {
@@ -45,16 +47,11 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
     this.showForm = true;
     this.setUpForm();
 
-    this.occupationService.listOccupations().subscribe(
-      (response) => {
-        this.occupations = response;
-        this._loading.occupations = false;
-      },
-      (error) => {
-        this.error = error;
-        this._loading.occupations = false;
-      }
-    );
+    this.loadDropDownData();
+    //listen for change of language and save
+    this.translateService.onLangChange.subscribe((event: LangChangeEvent) => {
+      this.loadDropDownData();
+    });
 
     this.candidateService.getCandidateCandidateOccupations().subscribe(
       (candidate) => {
@@ -75,11 +72,26 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
     );
   }
 
+  loadDropDownData(){
+    this._loading.occupations = true;
+
+    this.occupationService.listOccupations().subscribe(
+      (response) => {
+        this.occupations = response;
+        this._loading.occupations = false;
+      },
+      (error) => {
+        this.error = error;
+        this._loading.occupations = false;
+      }
+    );
+  }
+
   setUpForm() {
     this.form = this.fb.group({
       id: [null],
       occupationId: [null, Validators.required],
-      yearsExperience: [null, Validators.required],
+      yearsExperience: [null, [Validators.required, Validators.min(0)]],
     });
   }
 

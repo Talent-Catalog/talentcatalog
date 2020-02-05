@@ -6,6 +6,7 @@ public class BaseCandidateContactRequest {
     private String email;
     private String phone;
     private String whatsapp;
+    private String preferredLanguage;
 
     public Long getId() {
         return id;
@@ -33,5 +34,13 @@ public class BaseCandidateContactRequest {
 
     public void setWhatsapp(String whatsapp) {
         this.whatsapp = whatsapp;
+    }
+
+    public String getPreferredLanguage() {
+        return preferredLanguage;
+    }
+
+    public void setPreferredLanguage(String preferredLanguage) {
+        this.preferredLanguage = preferredLanguage;
     }
 }

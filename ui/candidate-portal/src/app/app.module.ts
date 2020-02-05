@@ -49,6 +49,8 @@ import {UserPipe} from './pipes/user.pipe';
 import {TrimPipe} from './pipes/trim.pipe';
 import {MonthPickerComponent} from './components/common/month-picker/month-picker.component';
 import {TranslationPipe} from "./pipes/translation.pipe";
+import {FaIconLibrary, FontAwesomeModule} from "@fortawesome/angular-fontawesome";
+import {faEdit} from "@fortawesome/free-solid-svg-icons";
 
 export function createTranslateLoader(http: HttpClient) {
     return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -111,7 +113,9 @@ export function createTranslateLoader(http: HttpClient) {
             useFactory: (createTranslateLoader),
             deps: [HttpClient]
         }
-    })
+    }),
+    FontAwesomeModule
+
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
@@ -125,7 +129,10 @@ export function createTranslateLoader(http: HttpClient) {
 })
 export class AppModule {
 
-  constructor(private datepickerConfig: NgbDatepickerConfig) {
+  constructor(private datepickerConfig: NgbDatepickerConfig, library: FaIconLibrary) {
     this.datepickerConfig.minDate = {year: 1950, month: 1, day: 1};
+    library.addIcons(
+      faEdit
+    );
   }
 }

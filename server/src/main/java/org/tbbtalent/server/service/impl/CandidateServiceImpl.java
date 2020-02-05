@@ -156,6 +156,7 @@ public class CandidateServiceImpl implements CandidateService {
 
         String candidateNumber = String.format("CN%04d", candidate.getId());
         candidate.setCandidateNumber(candidateNumber);
+        candidate.setPreferredLanguage(request.getPreferredLanguage());
         candidate = this.candidateRepository.save(candidate);
 
         return candidate;
@@ -173,7 +174,7 @@ public class CandidateServiceImpl implements CandidateService {
         if (!request.getStatus().equals(originalStatus)){
             candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(id, "Status change from " + originalStatus + " to " + request.getStatus(), request.getComment()));
             if (request.getStatus().equals(CandidateStatus.incomplete)) {
-                emailHelper.sendIncompleteApplication(candidate.getUser(), request.getCandidateMessage());
+                emailHelper.sendIncompleteApplication(candidate.getUser(), request.getCandidateMessage(), candidate.getPreferredLanguage());
             }
         }
         if (candidate.getStatus().equals(CandidateStatus.deleted)){
@@ -264,6 +265,7 @@ public class CandidateServiceImpl implements CandidateService {
         createCandidateRequest.setEmail(request.getEmail());
         createCandidateRequest.setPhone(request.getPhone());
         createCandidateRequest.setWhatsapp(request.getWhatsapp());
+        createCandidateRequest.setPreferredLanguage(request.getPreferredLanguage());
         Candidate candidate = createCandidate(createCandidateRequest);
 
         /* Update the password */
@@ -289,6 +291,7 @@ public class CandidateServiceImpl implements CandidateService {
         Candidate candidate = user.getCandidate();
         candidate.setPhone(request.getPhone());
         candidate.setWhatsapp(request.getWhatsapp());
+        candidate.setPreferredLanguage(request.getPreferredLanguage());
         candidate.setAuditFields(user);
         candidate = candidateRepository.save(candidate);
         candidate.setUser(user);
@@ -347,7 +350,7 @@ public class CandidateServiceImpl implements CandidateService {
         if (BooleanUtils.isTrue(request.getSubmit()) && !candidate.getStatus().equals(CandidateStatus.pending)) {
             updateCandidateStatus(candidate.getId(), new UpdateCandidateStatusRequest(CandidateStatus.pending, "Candidate submitted"));
 
-            emailHelper.sendRegistrationEmail(candidate.getUser());
+            emailHelper.sendRegistrationEmail(candidate.getUser(), candidate.getPreferredLanguage());
         }
         candidate.setAuditFields(candidate.getUser());
         return candidateRepository.save(candidate);

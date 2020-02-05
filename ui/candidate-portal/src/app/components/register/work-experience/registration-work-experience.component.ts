@@ -9,6 +9,7 @@ import {CountryService} from "../../../services/country.service";
 import {CandidateOccupation} from "../../../model/candidate-occupation";
 import {CandidateOccupationService} from "../../../services/candidate-occupation.service";
 import {RegistrationService} from "../../../services/registration.service";
+import {LangChangeEvent, TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-registration-work-experience',
@@ -45,6 +46,7 @@ export class RegistrationWorkExperienceComponent implements OnInit {
               private candidateOccupationService: CandidateOccupationService,
               private jobExperienceService: CandidateJobExperienceService,
               private countryService: CountryService,
+              private translateService: TranslateService,
               public registrationService: RegistrationService) { }
 
 
@@ -88,6 +90,18 @@ export class RegistrationWorkExperienceComponent implements OnInit {
         this._loading.candidate = false;
       }
     );
+
+    this.loadDropDownData();
+    //listen for change of language and save
+    this.translateService.onLangChange.subscribe((event: LangChangeEvent) => {
+      this.loadDropDownData();
+    });
+
+
+  }
+
+  loadDropDownData(){
+    this._loading.countries = true;
 
     /* Load countries */
     this.countryService.listCountries().subscribe(

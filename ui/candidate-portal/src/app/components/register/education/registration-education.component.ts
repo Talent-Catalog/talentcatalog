@@ -11,6 +11,7 @@ import {EducationMajorService} from "../../../services/education-major.service";
 import {EducationMajor} from "../../../model/education-major";
 import {Country} from "../../../model/country";
 import {CountryService} from "../../../services/country.service";
+import {LangChangeEvent, TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-registration-education',
@@ -50,6 +51,7 @@ export class RegistrationEducationComponent implements OnInit {
               private countryService: CountryService,
               private educationLevelService: EducationLevelService,
               private educationMajorService: EducationMajorService,
+              private translateService: TranslateService,
               public registrationService: RegistrationService) {
   }
 
@@ -77,6 +79,36 @@ export class RegistrationEducationComponent implements OnInit {
         this.educationType = educationLevel ? educationLevel.educationType : null;
       }
     });
+
+    this.loadDropDownData();
+    //listen for change of language and save
+    this.translateService.onLangChange.subscribe((event: LangChangeEvent) => {
+      this.loadDropDownData();
+    });
+
+
+
+    this.candidateService.getCandidateEducation().subscribe(
+      (candidate) => {
+        this.form.patchValue({
+          maxEducationLevelId: candidate.maxEducationLevel ? candidate.maxEducationLevel.id : null,
+        });
+        if (candidate.candidateEducations) {
+          this.candidateEducationItems = candidate.candidateEducations
+        }
+        this._loading.candidate = false;
+      },
+      (error) => {
+        this.error = error;
+        this._loading.candidate = false;
+      }
+    );
+  }
+
+  loadDropDownData(){
+    this._loading.educationMajors = true;
+    this._loading.countries = true;
+    this._loading.levels = true;
 
     /* Load data */
     this.educationMajorService.listMajors().subscribe(
@@ -107,22 +139,6 @@ export class RegistrationEducationComponent implements OnInit {
       (error) => {
         this.error = error;
         this._loading.levels = false;
-      }
-    );
-
-    this.candidateService.getCandidateEducation().subscribe(
-      (candidate) => {
-        this.form.patchValue({
-          maxEducationLevelId: candidate.maxEducationLevel ? candidate.maxEducationLevel.id : null,
-        });
-        if (candidate.candidateEducations) {
-          this.candidateEducationItems = candidate.candidateEducations
-        }
-        this._loading.candidate = false;
-      },
-      (error) => {
-        this.error = error;
-        this._loading.candidate = false;
       }
     );
   }

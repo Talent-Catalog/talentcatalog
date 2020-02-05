@@ -9,6 +9,7 @@ import {CountryService} from "../../../services/country.service";
 import {Country} from "../../../model/country";
 import {RegistrationService} from "../../../services/registration.service";
 import {generateYearArray} from "../../../util/year-helper";
+import {LangChangeEvent, TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-registration-personal',
@@ -42,6 +43,7 @@ export class RegistrationPersonalComponent implements OnInit {
               private candidateService: CandidateService,
               private countryService: CountryService,
               private nationalityService: NationalityService,
+              public translateService: TranslateService,
               public registrationService: RegistrationService) { }
 
   ngOnInit() {
@@ -62,29 +64,12 @@ export class RegistrationPersonalComponent implements OnInit {
       // registeredWithUN: ['', Validators.required],
       // registrationId: ['', Validators.required]
     });
-
-    /* Load the countries */
-    this.countryService.listCountries().subscribe(
-      (response) => {
-        this.countries = response;
-        this._loading.countries = false;
-      },
-      (error) => {
-        this.error = error;
-        this._loading.countries = false;
-      }
-    );
-
-    this.nationalityService.listNationalities().subscribe(
-      (response) => {
-        this.nationalities = response;
-        this._loading.nationalities = false;
-      },
-      (error) => {
-        this.error = error;
-        this._loading.nationalities = false;
-      }
-    );
+    this.loadDropDownData();
+    //listen for change of language and save
+    this.translateService.onLangChange.subscribe((event: LangChangeEvent) => {
+      console.log('reload');
+      this.loadDropDownData();
+    });
 
     this.candidateService.getCandidatePersonal().subscribe(
       (response) => {
@@ -109,6 +94,34 @@ export class RegistrationPersonalComponent implements OnInit {
       (error) => {
         this.error = error;
         this._loading.candidate = false;
+      }
+    );
+  }
+
+  loadDropDownData(){
+    this._loading.countries = true;
+    this._loading.nationalities = true;
+
+    /* Load the countries */
+    this.countryService.listCountries().subscribe(
+      (response) => {
+        this.countries = response;
+        this._loading.countries = false;
+      },
+      (error) => {
+        this.error = error;
+        this._loading.countries = false;
+      }
+    );
+
+    this.nationalityService.listNationalities().subscribe(
+      (response) => {
+        this.nationalities = response;
+        this._loading.nationalities = false;
+      },
+      (error) => {
+        this.error = error;
+        this._loading.nationalities = false;
       }
     );
   }
