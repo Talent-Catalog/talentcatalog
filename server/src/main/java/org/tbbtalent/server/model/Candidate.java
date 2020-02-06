@@ -23,7 +23,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private String unRegistrationNumber;
     private String additionalInfo;
     private String candidateMessage;
-    private String preferredLanguage;
 
     @Enumerated(EnumType.STRING)
     private CandidateStatus status;
@@ -316,14 +315,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setMigrationCountry(String migrationCountry) {
         this.migrationNationality = migrationCountry;
-    }
-
-    public String getPreferredLanguage() {
-        return preferredLanguage;
-    }
-
-    public void setPreferredLanguage(String preferredLanguage) {
-        this.preferredLanguage = preferredLanguage;
     }
 
     public String getMigrationNationality() {

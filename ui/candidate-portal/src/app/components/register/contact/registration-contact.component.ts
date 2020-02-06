@@ -5,8 +5,6 @@ import {CandidateService} from "../../../services/candidate.service";
 import {AuthService} from "../../../services/auth.service";
 import {Candidate} from "../../../model/candidate";
 import {RegistrationService} from "../../../services/registration.service";
-import {LanguageService} from "../../../services/language.service";
-import {SystemLanguage} from "../../../model/language";
 
 @Component({
   selector: 'app-registration-contact',
@@ -29,13 +27,10 @@ export class RegistrationContactComponent implements OnInit {
   authenticated: boolean;
   candidate: Candidate;
 
-  systemLanguages: SystemLanguage[];
-
   constructor(private fb: FormBuilder,
               private router: Router,
               private candidateService: CandidateService,
               private authService: AuthService,
-              private languageService: LanguageService,
               private registrationService: RegistrationService) { }
 
   ngOnInit() {
@@ -45,15 +40,9 @@ export class RegistrationContactComponent implements OnInit {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required]],
-      preferredLanguage: ['', [Validators.required]],
       whatsapp: [''],
       // username: ['']
     });
-
-    this.languageService.listSystemLanguages().subscribe(
-      (response) => this.systemLanguages = response,
-      (error) => this.error = error
-    );
 
     if (this.authService.isAuthenticated()) {
       this.authenticated = true;
@@ -64,7 +53,6 @@ export class RegistrationContactComponent implements OnInit {
             email: candidate.user ? candidate.user.email : '',
             phone: candidate.phone,
             whatsapp: candidate.whatsapp,
-            preferredLanguage: candidate.preferredLanguage,
             //username: candidate.user ? response.user.username : ''
           });
           this.loading = false;

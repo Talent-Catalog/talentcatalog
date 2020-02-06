@@ -254,7 +254,7 @@ public class UserServiceImpl implements UserService {
 
             try {
                 Candidate candidate = candidateRepository.findByUserId(user.getId());
-                emailHelper.sendResetPasswordEmail(user, candidate != null ? candidate.getPreferredLanguage() : null);
+                emailHelper.sendResetPasswordEmail(user);
             } catch (EmailSendFailedException e) {
                 log.error("unable to send reset password email for " + user.getEmail());
             }

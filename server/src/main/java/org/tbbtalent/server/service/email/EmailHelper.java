@@ -33,7 +33,7 @@ public class EmailHelper {
         this.htmlTemplateEngine = htmlTemplateEngine;
     }
 
-    public void sendRegistrationEmail(User user, String preferredLanguage) throws EmailSendFailedException {
+    public void sendRegistrationEmail(User user) throws EmailSendFailedException {
 
         String email = user.getEmail();
         String displayName = user.getDisplayName();
@@ -49,8 +49,8 @@ public class EmailHelper {
             ctx.setVariable("year", currentYear());
 
             subject = "Talent Beyond Boundaries - Thank you for your application";
-            bodyText = textTemplateEngine.process(getPath(preferredLanguage)+"registration", ctx);
-            bodyHtml = htmlTemplateEngine.process(getPath(preferredLanguage)+"registration", ctx);
+            bodyText = textTemplateEngine.process("registration", ctx);
+            bodyHtml = htmlTemplateEngine.process("registration", ctx);
 
             emailSender.sendAsync(email, subject, bodyText, bodyHtml);
         } catch (Exception e) {
@@ -59,7 +59,7 @@ public class EmailHelper {
         }
     }
     
-    public void sendResetPasswordEmail(User user, String preferredLanguage) throws EmailSendFailedException {
+    public void sendResetPasswordEmail(User user) throws EmailSendFailedException {
         
         String email = user.getEmail();
         String displayName = user.getDisplayName();
@@ -75,8 +75,8 @@ public class EmailHelper {
             ctx.setVariable("year", currentYear());
             
             subject = "Talent Beyond Boundaries - Reset Your Password";
-            bodyText = textTemplateEngine.process(getPath(preferredLanguage)+"reset-password", ctx);
-            bodyHtml = htmlTemplateEngine.process(getPath(preferredLanguage)+"reset-password", ctx);
+            bodyText = textTemplateEngine.process("reset-password", ctx);
+            bodyHtml = htmlTemplateEngine.process("reset-password", ctx);
             
             emailSender.sendAsync(email, subject, bodyText, bodyHtml);
         } catch (Exception e) {
@@ -85,7 +85,7 @@ public class EmailHelper {
         }
     }
 
-    public void sendIncompleteApplication(User user, String message, String preferredLanguage) throws EmailSendFailedException {
+    public void sendIncompleteApplication(User user, String message) throws EmailSendFailedException {
 
         String email = user.getEmail();
         String displayName = user.getDisplayName();
@@ -102,8 +102,8 @@ public class EmailHelper {
             ctx.setVariable("year", currentYear());
 
             subject = "Talent Beyond Boundaries - Please provide more details application";
-            bodyText = textTemplateEngine.process(getPath(preferredLanguage)+"incomplete-application", ctx);
-            bodyHtml = htmlTemplateEngine.process(getPath(preferredLanguage)+"incomplete-application", ctx);
+            bodyText = textTemplateEngine.process("incomplete-application", ctx);
+            bodyHtml = htmlTemplateEngine.process("incomplete-application", ctx);
 
             emailSender.sendAsync(email, subject, bodyText, bodyHtml);
         } catch (Exception e) {
@@ -112,12 +112,7 @@ public class EmailHelper {
         }
     }
 
-    private String getPath(String preferredLanguage){
-        if (preferredLanguage == null){
-            preferredLanguage = "en";
-        }
-        return preferredLanguage + "/";
-    }
+
     private String currentYear() {
         return LocalDate.now().getYear() + "";
     }

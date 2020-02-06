@@ -125,7 +125,6 @@ public class CandidatePortalApi {
                 .add("user", userDto())
                 .add("phone")
                 .add("whatsapp")
-                .add("preferredLanguage")
                 ;
     }
 
@@ -317,7 +316,6 @@ public class CandidatePortalApi {
                 .add("user", userDto())
                 /* CONTACT */
                 .add("candidateNumber")
-                .add("preferredLanguage")
                 .add("phone")
                 .add("whatsapp")
                 /* PERSONAL */

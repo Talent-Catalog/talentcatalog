@@ -14,7 +14,6 @@ export interface Candidate {
   candidateNumber: string;
   phone: string;
   whatsapp: string;
-  preferredLanguage: string;
   gender: string;
   dob: string;
   candidateOccupations: CandidateOccupation[];

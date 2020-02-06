@@ -367,8 +367,10 @@ const ALL_FIELDS =
       "ERROR": {
         "REQUIRED": null,
         "EMAIL": null,
+        "MINVALUE": null,
         "MINLENGTH": null,
-        "DATE": null
+        "DATE": null,
+        "INVALIDDATERANGE": null
       },
       "JOBEXPERIENCE": {
         "EXPLANATION": null,

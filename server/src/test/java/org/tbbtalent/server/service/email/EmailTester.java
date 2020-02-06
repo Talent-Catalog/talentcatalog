@@ -20,13 +20,13 @@ public class EmailTester {
     private static void testStubSend() {
         EmailSender emailSender = stubEmailSender();
         EmailHelper helper = new EmailHelper(emailSender, textTemplateEngine(), htmlTemplateEngine());
-        helper.sendResetPasswordEmail(user(), null);
+        helper.sendResetPasswordEmail(user());
     }
     
     private static void testSmtpSend() {
         EmailSender emailSender = smtpEmailSender();
         EmailHelper helper = new EmailHelper(emailSender, textTemplateEngine(), htmlTemplateEngine());
-        helper.sendResetPasswordEmail(user(), null);
+        helper.sendResetPasswordEmail(user());
     }
     
     private static User user() {

@@ -26,18 +26,6 @@
              [formControlName]="'whatsapp'">
     </div>
 
-    <!-- GENDER -->
-    <div class="form-group">
-      <label for="preferredLanguage">{{ 'REGISTRATION.CONTACT.LABEL.PREFERREDLANGUAGE' | translate }}
-        <sup>*</sup></label>
-
-      <select class="form-control" name="preferredLanguage" id="preferredLanguage"
-              [formControlName]="'preferredLanguage'">
-        <option *ngFor="let systemLanguage of systemLanguages"
-                [value]="systemLanguage.language">{{systemLanguage.label}}</option>
-      </select>
-      <app-form-control-error [control]="form.controls.gender"></app-form-control-error>
-    </div>
 
     <ng-container *ngIf="!authenticated">
       <!--      <div class="form-group">-->
