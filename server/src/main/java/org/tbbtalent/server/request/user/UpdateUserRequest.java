@@ -1,5 +1,6 @@
 package org.tbbtalent.server.request.user;
 
+import org.tbbtalent.server.model.Role;
 import org.tbbtalent.server.model.Status;
 
 import javax.validation.constraints.NotBlank;
@@ -17,6 +18,8 @@ public class UpdateUserRequest {
     private String username;
     @NotNull
     private Status status;
+    @NotNull
+    private Role role;
 
     public String getFirstName() {
         return firstName;
@@ -45,4 +48,8 @@ public class UpdateUserRequest {
     public Status getStatus() { return status; }
 
     public void setStatus(Status status) { this.status = status; }
+
+    public Role getRole() { return role; }
+
+    public void setRole(Role role) { this.role = role; }
 }

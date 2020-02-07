@@ -30,7 +30,8 @@ export class EditUserComponent implements OnInit {
         username: [user.username, Validators.required],
         firstName: [user.firstName, Validators.required],
         lastName: [user.lastName, Validators.required],
-        status: [user.status, Validators.required]
+        status: [user.status, Validators.required],
+        role: [user.role, Validators.required]
       });
       this.loading = false;
     });

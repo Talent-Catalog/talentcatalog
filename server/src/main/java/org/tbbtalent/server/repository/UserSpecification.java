@@ -1,5 +1,6 @@
 package org.tbbtalent.server.repository;
 
+import io.jsonwebtoken.lang.Collections;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.tbbtalent.server.model.User;
@@ -27,8 +28,14 @@ public class UserSpecification {
                         ));
             }
 
-            if (request.getRole() != null){
-                conjunction.getExpressions().add(builder.equal(user.get("role"), request.getRole()));
+//            if (request.getRole() != null){
+//                conjunction.getExpressions().add(builder.equal(user.get("role"), request.getRole()));
+//            }
+            // ROLE SEARCH
+            if (!Collections.isEmpty(request.getRole())) {
+                conjunction.getExpressions().add(
+                        builder.isTrue(user.get("role").in(request.getRole()))
+                );
             }
 
             if (request.getStatus() != null){

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -54,8 +55,23 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/portal/**").hasAnyRole("USER")
                 .antMatchers("/api/admin/auth").permitAll  ()
                 .antMatchers("/api/admin/auth/**").permitAll()
+
+                // Intern allow all searches/find
+                .antMatchers(HttpMethod.POST, "/api/admin/**/search").hasAnyRole("INTERN", "ADMIN")
+                .antMatchers(HttpMethod.POST, "/api/admin/**/find").hasAnyRole("INTERN", "ADMIN")
+
+                // Intern allow csv export
+                .antMatchers(HttpMethod.POST, "/api/admin/candidate/export/csv").hasAnyRole("INTERN", "ADMIN")
+
+                // Intern GET all other end points
+                .antMatchers(HttpMethod.GET, "/api/admin/**/*").hasAnyRole("INTERN", "ADMIN")
+
+                // Admin only
                 .antMatchers("/api/admin/system/migrate").hasAnyRole("ADMIN")
-                .antMatchers("/api/admin/**").hasAnyRole("ADMIN")
+                .antMatchers(HttpMethod.DELETE, "/api/admin/**/*").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT, "/api/admin/**/*").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST, "/api/admin/**/*").hasRole("ADMIN")
+
                 .and()
             .csrf().disable()
             ;

@@ -27,7 +27,8 @@ export class CreateUserComponent implements OnInit {
       username: [null, Validators.required],
       password: [null, Validators.required],
       firstName: [null, Validators.required],
-      lastName: [null, Validators.required]
+      lastName: [null, Validators.required],
+      role: [null, Validators.required]
     });
   }
 

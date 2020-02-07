@@ -74,6 +74,7 @@ public class UserAdminApi {
                 .add("firstName")
                 .add("lastName")
                 .add("email")
+                .add("role")
                 .add("status")
                 .add("createdDate")
                 .add("lastLogin")

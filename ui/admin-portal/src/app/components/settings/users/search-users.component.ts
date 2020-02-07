@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
 
-import { SearchResults } from '../../../model/search-results';
+import {SearchResults} from '../../../model/search-results';
 
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
@@ -35,7 +35,7 @@ export class SearchUsersComponent implements OnInit {
   /* SET UP FORM */
     this.searchForm = this.fb.group({
       keyword: [''],
-      role: ['admin'],
+      role: [['intern', 'admin']],
       status: ['active']
     });
     this.pageNumber = 1;

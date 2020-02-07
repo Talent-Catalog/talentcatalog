@@ -1,6 +1,9 @@
 package org.tbbtalent.server.request.user;
 
+import org.tbbtalent.server.model.Role;
+
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 public class CreateUserRequest {
 
@@ -14,6 +17,8 @@ public class CreateUserRequest {
     private String password;
     @NotBlank
     private String email;
+    @NotNull
+    private Role role;
 
 
     public String getFirstName() {
@@ -48,4 +53,7 @@ public class CreateUserRequest {
 
     public void setEmail(String email) { this.email = email; }
 
+    public Role getRole() { return role; }
+
+    public void setRole(Role role) { this.role = role; }
 }

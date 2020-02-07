@@ -11,7 +11,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.*;
-import org.tbbtalent.server.model.Role;
 import org.tbbtalent.server.model.Status;
 import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.repository.UserRepository;
@@ -81,7 +80,7 @@ public class UserServiceImpl implements UserService {
                 request.getFirstName(),
                 request.getLastName(),
                 request.getEmail(),
-                Role.admin);
+                request.getRole());
 
         /* Validate the password before account creation */
         String passwordEncrypted = passwordHelper.validateAndEncodePassword(request.getPassword());
@@ -117,6 +116,7 @@ public class UserServiceImpl implements UserService {
         user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
         user.setStatus(request.getStatus());
+        user.setRole(request.getRole());
 
         return userRepository.save(user);
     }
