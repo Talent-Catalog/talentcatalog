@@ -48,6 +48,7 @@ import {CustomDateAdapter, CustomDateParserFormatter} from "./util/date-adapter/
 import {UserPipe} from './pipes/user.pipe';
 import {TrimPipe} from './pipes/trim.pipe';
 import {MonthPickerComponent} from './components/common/month-picker/month-picker.component';
+import {TranslationPipe} from "./pipes/translation.pipe";
 
 export function createTranslateLoader(http: HttpClient) {
     return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -90,6 +91,7 @@ export function createTranslateLoader(http: HttpClient) {
     InputFilterDirective,
     UserPipe,
     TrimPipe,
+    TranslationPipe,
     MonthPickerComponent
   ],
   imports: [

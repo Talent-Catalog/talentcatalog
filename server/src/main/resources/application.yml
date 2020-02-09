@@ -2,12 +2,17 @@ tbb:
   cors:
     urls: ${TBB_CORS_URLS:http://localhost:4200,http://localhost:4201,https://tbbtalent-staging.herokuapp.com}
 
+
 spring:
   datasource:
     driverClassName: org.postgresql.Driver
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/tbbtalent}
     username: tbbtalent
     password: ${SPRING_DATASOURCE_PASSWORD:tbbtalent}
+    hikari:
+      maximum-pool-size: ${SPRING_DBPOOL_MAX:10}
+      minimum-idle:  ${SPRING_DBPOOL_MIN:10}
+
   jpa:
     show-sql: false
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -15,6 +20,8 @@ spring:
       hibernate:
         temp:
           use_jdbc_metadata_defaults: false
+
+
 
 jwt:
   secret: JWTSuperSecretKey

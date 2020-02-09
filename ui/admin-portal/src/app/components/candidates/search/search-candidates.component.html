@@ -91,7 +91,7 @@
             <td>{{candidate.country?.name}}</td>
             <td>{{candidate.gender | titlecase}}</td>
             <td>
-              <div ngbDropdown placement="bottom-right" (click)="$event.stopPropagation();">
+              <div ngbDropdown placement="bottom-right" (click)="$event.stopPropagation();" container="body">
                 <button class="btn btn-xs hide-after" ngbDropdownToggle>
                   <i class="fa fa-ellipsis-h"></i>
                 </button>

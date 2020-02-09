@@ -13,6 +13,17 @@ import {InfographicComponent} from "./components/infograhics/infographic.compone
 import {DefineSearchComponent} from "./components/search/define-search/define-search.component";
 import {NotFoundComponent} from "./not-found/not-found.component";
 
+/*
+Urls:
+/ -> redirects to /candidates
+/candidates - Saved search list
+/candidates/:id - saved search preview results
+    (child of above - see Angular router example - but maybe not needed because
+    always same component on display - it is not a "router outlet" based on url)
+/candidates/search/:id - Display results of saved search id
+/candidates/candidate/:id - Display candidate id
+ */
+
 const routes: Routes = [
   {
     path: '',

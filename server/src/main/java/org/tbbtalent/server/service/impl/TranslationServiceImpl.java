@@ -1,10 +1,5 @@
 package org.tbbtalent.server.service.impl;
 
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +14,11 @@ import org.tbbtalent.server.request.translation.CreateTranslationRequest;
 import org.tbbtalent.server.request.translation.UpdateTranslationRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.TranslationService;
+
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class TranslationServiceImpl implements TranslationService {
@@ -85,6 +85,10 @@ public class TranslationServiceImpl implements TranslationService {
         return translationRepository.save(translation);
     }
 
+    @Override
+    public List<Translation> list() {
+        return translationRepository.findAll();
+    }
 
 
 }

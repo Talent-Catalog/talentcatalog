@@ -45,9 +45,12 @@ export class CreateSearchComponent implements OnInit {
 
     //Update the saved search with the name and value from the form.
     const formValues = this.form.value;
-    this.savedSearch.id = 0;
-    this.savedSearch.name = formValues.name;
-    this.savedSearch.type = formValues.type;
+    this.savedSearch = {
+      id: 0,
+      name: formValues.name,
+      type: formValues.type
+    };
+
     //And create a SavedSearchRequest from the SavedSearch and the search request
     this.savedSearchService.create(
       convertToSavedSearchRequest(this.savedSearch, this.searchCandidateRequest)
