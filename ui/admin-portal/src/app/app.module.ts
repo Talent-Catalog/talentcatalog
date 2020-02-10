@@ -274,7 +274,8 @@ import {GeneralTranslationsComponent} from './components/settings/translations/g
     CreateCandidateAttachmentComponent,
     EditCandidateAttachmentComponent,
     CreateCandidateAttachmentComponent,
-    EditSavedSearchComponent
+    EditSavedSearchComponent,
+    SearchSavedSearchesComponent
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
