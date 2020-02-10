@@ -7,7 +7,6 @@ import {AuthGuard} from "./services/auth.guard";
 import {LoginComponent} from "./components/login/login.component";
 import {SearchUsersComponent} from "./components/settings/users/search-users.component";
 import {SettingsComponent} from "./components/settings/settings.component";
-import {SearchSavedSearchesComponent} from "./components/candidates/search/saved-search/search-saved-searches.component";
 import {HomeComponent} from "./components/home/home.component";
 import {InfographicComponent} from "./components/infograhics/infographic.component";
 import {DefineSearchComponent} from "./components/search/define-search/define-search.component";
@@ -31,7 +30,7 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        component: HomeComponent
+        redirectTo: '/candidates', pathMatch: 'full'
       },
       {
         path: 'search',
@@ -53,7 +52,7 @@ const routes: Routes = [
           {
             path: '',
             pathMatch: 'full',
-            component: SearchCandidatesComponent
+            component: HomeComponent
           },
           {
             path: 'search/:savedSearchId',

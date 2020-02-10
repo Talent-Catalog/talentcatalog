@@ -53,12 +53,23 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.selectedCandidate = null;
-    this.pageNumber = 1;
-    this.pageSize = 20;
 
     // start listening to route params after everything is loaded
-    this.route.params.subscribe(params => {
-      this.savedSearchId = params['savedSearchId'];
+    this.route.queryParamMap.subscribe(
+      params => {
+        this.pageNumber = +params.get('pageNumber');
+        if (!this.pageNumber) {
+          this.pageNumber = 1;
+        }
+        this.pageSize = +params.get('pageSize');
+        if (!this.pageSize) {
+          this.pageSize = 20;
+        }
+      }
+    );
+
+    this.route.paramMap.subscribe(params => {
+      this.savedSearchId = +params.get('savedSearchId');
       if (this.savedSearchId) {
 
         //Load saved search to get name and type
@@ -68,7 +79,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
           this.error = err;
         });
 
-        this.search();
+        this.doSearch();
       }
     });
 

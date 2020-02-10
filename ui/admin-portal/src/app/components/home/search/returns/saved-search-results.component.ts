@@ -13,6 +13,7 @@ import {SearchResults} from "../../../../model/search-results";
 import {SavedSearchService} from "../../../../services/saved-search.service";
 import {LocalStorageService} from "angular-2-local-storage";
 import {CachedSearchResults} from "../../../../model/cached-search-results";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-saved-search-results',
@@ -32,6 +33,7 @@ export class SavedSearchResultsComponent implements OnInit, OnChanges, OnDestroy
 constructor(
     private candidateService: CandidateService,
     private localStorage: LocalStorageService,
+    private router: Router,
     private savedSearchService: SavedSearchService
   ) { };
 
@@ -52,6 +54,14 @@ constructor(
 
   private cacheKey(): string {
     return "Search" + this.savedSearch.id;
+  }
+
+  openSearch() {
+    //Open search at same page number, size
+    this.router.navigate(['candidates', 'search', this.savedSearch.id],
+      {
+        queryParams: {pageNumber: this.pageNumber, pageSize: this.pageSize}
+      });
   }
 
   search(refresh: boolean) {

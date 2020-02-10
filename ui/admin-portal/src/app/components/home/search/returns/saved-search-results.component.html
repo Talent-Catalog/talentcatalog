@@ -2,6 +2,7 @@
   {{savedSearch.name}}
 </div>
 <button class="btn" *ngIf="timestamp" (click)="search(true)"><i class="fa fa-refresh" title="Refresh search"></i></button>
+<button class="btn" (click)="openSearch()"><i class="fa fa-external-link-square" title="Open saved search"></i></button>
 
 <div *ngIf="pageNumber">
   Page {{pageNumber}}
