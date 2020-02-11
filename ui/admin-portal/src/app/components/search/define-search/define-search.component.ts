@@ -119,7 +119,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
               private candidateOccupationService: CandidateOccupationService,
               private languageLevelService: LanguageLevelService,
               private modalService: NgbModal,
-              private localStorage: LocalStorageService,
+              private localStorageService: LocalStorageService,
               private route: ActivatedRoute) {
     /* SET UP FORM */
     this.searchForm = this.fb.group({

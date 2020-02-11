@@ -11,9 +11,11 @@ import {CandidateService} from "../../../../services/candidate.service";
 import {Candidate} from "../../../../model/candidate";
 import {SearchResults} from "../../../../model/search-results";
 import {SavedSearchService} from "../../../../services/saved-search.service";
-import {LocalStorageService} from "angular-2-local-storage";
-import {CachedSearchResults} from "../../../../model/cached-search-results";
 import {Router} from "@angular/router";
+import {
+  CachedSearchResults,
+  SavedSearchResultsCacheService
+} from "../../../../services/saved-search-results-cache.service";
 
 @Component({
   selector: 'app-saved-search-results',
@@ -32,9 +34,9 @@ export class SavedSearchResultsComponent implements OnInit, OnChanges, OnDestroy
 
 constructor(
     private candidateService: CandidateService,
-    private localStorage: LocalStorageService,
     private router: Router,
-    private savedSearchService: SavedSearchService
+    private savedSearchService: SavedSearchService,
+    private savedSearchResultsCacheService: SavedSearchResultsCacheService
   ) { };
 
   ngOnInit() {
@@ -50,10 +52,6 @@ constructor(
     if (this.subscription){
       this.subscription.unsubscribe();
     }
-  }
-
-  private cacheKey(): string {
-    return "Search" + this.savedSearch.id;
   }
 
   openSearch() {
@@ -72,11 +70,13 @@ constructor(
 
     let done: boolean = false;
     if (!refresh) {
-      let cached: CachedSearchResults = JSON.parse(localStorage.getItem(this.cacheKey()));
+      const cached: CachedSearchResults =
+        this.savedSearchResultsCacheService.getFromCache(this.savedSearch.id);
       if (cached) {
         this.results = cached.results;
         this.pageNumber = cached.pageNumber;
         this.timestamp = cached.timestamp;
+        //todo What about page size
         done = true;
       }
     }
@@ -104,14 +104,13 @@ constructor(
         this.timestamp = Date.now();
         this.results = results;
 
-        let cachedResults: CachedSearchResults = {
+        this.savedSearchResultsCacheService.cache({
           searchID: this.savedSearch.id,
           pageNumber: this.pageNumber,
           pageSize: this.pageSize,
           results: this.results,
           timestamp: this.timestamp
-        };
-        localStorage.setItem(this.cacheKey(), JSON.stringify(cachedResults));
+        });
 
         this.searching = false;
       },

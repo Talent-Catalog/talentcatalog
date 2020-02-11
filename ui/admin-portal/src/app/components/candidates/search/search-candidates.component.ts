@@ -14,8 +14,11 @@ import {Subscription} from "rxjs";
 import {CandidateShortlistItem} from "../../../model/candidate-shortlist-item";
 import {ActivatedRoute} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
-import {LocalStorageService} from "angular-2-local-storage";
 import {SavedSearch, SavedSearchRunRequest} from "../../../model/saved-search";
+import {
+  CachedSearchResults,
+  SavedSearchResultsCacheService
+} from "../../../services/saved-search-results-cache.service";
 
 
 @Component({
@@ -42,13 +45,17 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   sortDirection = 'DESC';
 
   selectedCandidate: Candidate;
+  private timestamp: number;
+
 
   constructor(private http: HttpClient,
               private candidateService: CandidateService,
               private savedSearchService: SavedSearchService,
               private modalService: NgbModal,
-              private localStorage: LocalStorageService,
-              private route: ActivatedRoute) {
+              private route: ActivatedRoute,
+              private savedSearchResultsCacheService: SavedSearchResultsCacheService
+
+  ) {
   }
 
   ngOnInit() {
@@ -111,21 +118,46 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   doSearch() {
 
-    this.searching = true;
     this.results = null;
     this.error = null;
 
-    // todo - should do some caching localStorage.setItem(this.searchKey, JSON.stringify(request));
+    //todo pass refresh in. Add refresh to display
+    let refresh = false;
 
-    this.subscription = this.candidateService.runSavedSearch(this.constructRunRequest()).subscribe(
-      results => {
-        this.results = results;
-        this.searching = false;
-      },
-      error => {
-        this.error = error;
-        this.searching = false;
-      });
+    let done: boolean = false;
+    if (!refresh) {
+      const cached: CachedSearchResults =
+        this.savedSearchResultsCacheService.getFromCache(this.savedSearchId);
+      if (cached) {
+        this.results = cached.results;
+        this.pageNumber = cached.pageNumber;
+        this.timestamp = cached.timestamp;
+        done = true;
+      }
+    }
+
+    if (!done) {
+      this.searching = true;
+
+      this.subscription = this.candidateService.runSavedSearch(this.constructRunRequest()).subscribe(
+        results => {
+          this.results = results;
+
+          this.savedSearchResultsCacheService.cache({
+            searchID: this.savedSearchId,
+            pageNumber: this.pageNumber,
+            pageSize: this.pageSize,
+            results: this.results,
+            timestamp: this.timestamp
+          });
+
+          this.searching = false;
+        },
+        error => {
+          this.error = error;
+          this.searching = false;
+        });
+    }
   }
 
   viewCandidate(candidate: Candidate) {
