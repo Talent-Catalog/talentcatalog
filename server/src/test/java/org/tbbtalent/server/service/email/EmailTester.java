@@ -1,7 +1,5 @@
 package org.tbbtalent.server.service.email;
 
-import java.nio.charset.StandardCharsets;
-
 import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.service.email.EmailSender.EmailType;
 import org.thymeleaf.TemplateEngine;
@@ -9,6 +7,8 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
+
+import java.nio.charset.StandardCharsets;
 
 public class EmailTester {
 

@@ -21,8 +21,7 @@
     <label>{{ 'REGISTRATION.OCCUPATION.LABEL.YEARSEXPERIENCE' | translate }}</label>
 
     <p class="text-muted" *ngIf="!preview">{{ 'REGISTRATION.OCCUPATION.LABEL.DISCLAIMER' | translate }}</p>
-
-    <input type="number" class="form-control" [(ngModel)]="candidateOccupation.yearsExperience" *ngIf="!preview">
+    <input type="number" min=0 class="form-control" min="0" [(ngModel)]="candidateOccupation.yearsExperience" *ngIf="!preview">
 
     <p class="m-0" *ngIf="preview">
       {{candidateOccupation.yearsExperience}}

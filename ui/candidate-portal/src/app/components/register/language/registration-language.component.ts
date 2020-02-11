@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateLanguage} from "../../../model/candidate-language";
@@ -9,7 +9,7 @@ import {LanguageService} from "../../../services/language.service";
 import {LanguageLevel} from "../../../model/language-level";
 import {LanguageLevelService} from "../../../services/language-level.service";
 import {RegistrationService} from "../../../services/registration.service";
-import {TranslateService} from "@ngx-translate/core";
+import {LangChangeEvent, TranslateService} from "@ngx-translate/core";
 import {Occupation} from "../../../model/occupation";
 
 
@@ -18,7 +18,7 @@ import {Occupation} from "../../../model/occupation";
   templateUrl: './registration-language.component.html',
   styleUrls: ['./registration-language.component.scss']
 })
-export class RegistrationLanguageComponent implements OnInit {
+export class RegistrationLanguageComponent implements OnInit, OnDestroy {
 
   /* A flag to indicate if the component is being used on the profile component */
   @Input() edit: boolean = false;
@@ -28,6 +28,7 @@ export class RegistrationLanguageComponent implements OnInit {
   error: any;
   _loading = {
     candidate: true,
+    english: true,
     languages: true,
     lanuageLevels: true
   };
@@ -36,8 +37,11 @@ export class RegistrationLanguageComponent implements OnInit {
   addingLanguage: boolean;
   form: FormGroup;
   candidateLanguages: CandidateLanguage[];
+  english: Language;
   languages: Language[];
   languageLevels: LanguageLevel[];
+
+  subscription;
 
   constructor(private fb: FormBuilder,
               private router: Router,
@@ -46,7 +50,8 @@ export class RegistrationLanguageComponent implements OnInit {
               private languageService: LanguageService,
               private languageLevelService: LanguageLevelService,
               private registrationService: RegistrationService,
-              private translate: TranslateService) { }
+              private translateService: TranslateService) {
+  }
 
   ngOnInit() {
     this.candidateLanguages = [];
@@ -56,6 +61,27 @@ export class RegistrationLanguageComponent implements OnInit {
       languageId: ['', Validators.required],
       spokenLevelId: ['', Validators.required],
       writtenLevelId: ['', Validators.required]
+    });
+
+    this.loadDropDownData();
+    //listen for change of language and save
+    this.subscription =this.translateService.onLangChange.subscribe((event: LangChangeEvent) => {
+      this.loadDropDownData();
+    });
+
+  }
+
+  loadDropDownData() {
+    this._loading.languages = true;
+    this._loading.lanuageLevels = true;
+    this._loading.english = true;
+
+    this.languageService.getLanguage('english').subscribe(result => {
+      this.english = result;
+      this._loading.english = false;
+    }, error => {
+      this.error = error;
+      this._loading.english = false;
     });
 
     /* Load the languages */
@@ -115,13 +141,8 @@ export class RegistrationLanguageComponent implements OnInit {
           }) || [];
         } else {
           // Patch the form with the english language id
-          const english = this.languageService.getLanguage('english').subscribe(result => {
-            this.form.patchValue({languageId: result.id});
+            this.form.patchValue({languageId: this.english.id});
             this.addingLanguage = true;
-          }, error => {
-            this.error = 'English is not defined as a language in language table';
-            this._loading.candidate = false;
-          });
 
         }
         this._loading.candidate = false;
@@ -181,7 +202,7 @@ export class RegistrationLanguageComponent implements OnInit {
 
   get loading() {
     const l = this._loading;
-    return l.candidate ||  l.languages || l.lanuageLevels;
+    return l.candidate || l.languages || l.lanuageLevels;
   }
 
   get selectedFormLanguage() {
@@ -201,7 +222,7 @@ export class RegistrationLanguageComponent implements OnInit {
   isEnglish(id?: number) {
     id = id || this.form.value.languageId;
     if (id) {
-      return this.languages.find(lang => lang.id == id).name.toLowerCase().trim() === 'english';
+     return id == this.english.id;
     }
     return false;
   }
@@ -209,8 +230,7 @@ export class RegistrationLanguageComponent implements OnInit {
   get filteredLanguages(): Occupation[] {
     if (!this.languages) {
       return [];
-    }
-    else if (!this.candidateLanguages || !this.languages.length) {
+    } else if (!this.candidateLanguages || !this.languages.length) {
       return this.languages
     } else {
       const existingIds = this.candidateLanguages.map(candidateLang => candidateLang.language
@@ -223,5 +243,9 @@ export class RegistrationLanguageComponent implements OnInit {
 
   cancel() {
     this.onSave.emit();
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }

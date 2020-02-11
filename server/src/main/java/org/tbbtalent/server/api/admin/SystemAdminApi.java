@@ -1,24 +1,5 @@
 package org.tbbtalent.server.api.admin;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +10,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.model.*;
 import org.tbbtalent.server.security.UserContext;
+
+import java.sql.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/admin/system")
@@ -279,6 +271,7 @@ public class SystemAdminApi {
         Set<Long> eduLevelIds = loadReferenceIds(targetConn, "education_level");
         Set<Long> eduMajorIds = loadReferenceIds(targetConn, "education_major");
 
+
         // load other options
         Map<Long, String> otherNationalities = loadOtherReferenceIds(sourceStmt, "nationality");
         
@@ -302,7 +295,7 @@ public class SystemAdminApi {
             insert.setDate(i++, convertToDate(result.getString("dob")));
             insert.setString(i++, result.getString("phone_number"));
             insert.setString(i++, result.getString("phone_wapp"));
-            insert.setString(i++, getCandidateStatus(result.getInt("status")));
+            insert.setString(i++, getCandidateStatus(result.getInt("status"), result.getInt("nationality"), result.getInt("country")));
             int origCountryId = result.getInt("country");
             Long countryId = checkReference(origCountryId, countryIds);
             if (countryId == null) {
@@ -888,18 +881,24 @@ public class SystemAdminApi {
         return Status.deleted.name();
     }
 
-    private String getCandidateStatus(Integer status) {
+    private String getCandidateStatus(Integer status, Integer nationalityId, Integer countryId) {
+        if (nationalityId == null || nationalityId == 0 || countryId == null || countryId == 0){
+            return CandidateStatus.draft.name();
+        }
         switch (status) {
             case 0:
                 return CandidateStatus.deleted.name();
             case 1:
                 return CandidateStatus.incomplete.name();
             case 2:
+                return CandidateStatus.pending.name();
             case 3:
             case 4:
             case 5:
             case 6:
+                return CandidateStatus.inactive.name();
             case 7:
+                return CandidateStatus.incomplete.name();
             case 8:
                 return CandidateStatus.inactive.name();
             case 9:

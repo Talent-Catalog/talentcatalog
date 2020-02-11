@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {Candidate} from "../../../model/candidate";
@@ -9,13 +9,14 @@ import {CountryService} from "../../../services/country.service";
 import {Country} from "../../../model/country";
 import {RegistrationService} from "../../../services/registration.service";
 import {generateYearArray} from "../../../util/year-helper";
+import {LangChangeEvent, TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-registration-personal',
   templateUrl: './registration-personal.component.html',
   styleUrls: ['./registration-personal.component.scss']
 })
-export class RegistrationPersonalComponent implements OnInit {
+export class RegistrationPersonalComponent implements OnInit, OnDestroy {
 
   /* A flag to indicate if the component is being used on the profile component */
   @Input() edit: boolean = false;
@@ -36,12 +37,14 @@ export class RegistrationPersonalComponent implements OnInit {
   countries: Country[];
   nationalities: Nationality[];
   years: number[];
+  subscription;
 
   constructor(private fb: FormBuilder,
               private router: Router,
               private candidateService: CandidateService,
               private countryService: CountryService,
               private nationalityService: NationalityService,
+              public translateService: TranslateService,
               public registrationService: RegistrationService) { }
 
   ngOnInit() {
@@ -62,29 +65,11 @@ export class RegistrationPersonalComponent implements OnInit {
       // registeredWithUN: ['', Validators.required],
       // registrationId: ['', Validators.required]
     });
-
-    /* Load the countries */
-    this.countryService.listCountries().subscribe(
-      (response) => {
-        this.countries = response;
-        this._loading.countries = false;
-      },
-      (error) => {
-        this.error = error;
-        this._loading.countries = false;
-      }
-    );
-
-    this.nationalityService.listNationalities().subscribe(
-      (response) => {
-        this.nationalities = response;
-        this._loading.nationalities = false;
-      },
-      (error) => {
-        this.error = error;
-        this._loading.nationalities = false;
-      }
-    );
+    this.loadDropDownData();
+    //listen for change of language and save
+    this.subscription = this.translateService.onLangChange.subscribe((event: LangChangeEvent) => {
+      this.loadDropDownData();
+    });
 
     this.candidateService.getCandidatePersonal().subscribe(
       (response) => {
@@ -109,6 +94,34 @@ export class RegistrationPersonalComponent implements OnInit {
       (error) => {
         this.error = error;
         this._loading.candidate = false;
+      }
+    );
+  }
+
+  loadDropDownData(){
+    this._loading.countries = true;
+    this._loading.nationalities = true;
+
+    /* Load the countries */
+    this.countryService.listCountries().subscribe(
+      (response) => {
+        this.countries = response;
+        this._loading.countries = false;
+      },
+      (error) => {
+        this.error = error;
+        this._loading.countries = false;
+      }
+    );
+
+    this.nationalityService.listNationalities().subscribe(
+      (response) => {
+        this.nationalities = response;
+        this._loading.nationalities = false;
+      },
+      (error) => {
+        this.error = error;
+        this._loading.nationalities = false;
       }
     );
   }
@@ -168,6 +181,10 @@ export class RegistrationPersonalComponent implements OnInit {
 
   cancel() {
     this.onSave.emit();
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 
 }

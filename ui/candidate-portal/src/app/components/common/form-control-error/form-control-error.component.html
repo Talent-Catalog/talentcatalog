@@ -20,9 +20,9 @@
 <!--    This field should have a max value of {{control?.errors?.max?.max}}-->
 <!--  </small>-->
 
-<!--  <small *ngIf="control?.errors?.min">-->
-<!--    This field should have a min value of {{control?.errors?.min?.min}}-->
-<!--  </small>-->
+  <small *ngIf="control?.errors?.min">
+    {{ 'FORM.ERROR.MINVALUE' | translate: {min: control?.errors?.min?.min} }}
+  </small>
 
   <small *ngIf="control?.errors?.ngbDate?.invalid">
     {{ 'FORM.ERROR.DATE' | translate}}

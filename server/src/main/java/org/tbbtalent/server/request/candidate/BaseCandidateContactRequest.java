@@ -34,4 +34,5 @@ public class BaseCandidateContactRequest {
     public void setWhatsapp(String whatsapp) {
         this.whatsapp = whatsapp;
     }
+
 }

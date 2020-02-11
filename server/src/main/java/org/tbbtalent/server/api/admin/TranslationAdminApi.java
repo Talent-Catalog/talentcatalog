@@ -18,6 +18,7 @@ import org.tbbtalent.server.service.*;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController()
@@ -105,6 +106,22 @@ public class TranslationAdminApi {
 
         Translation translation = this.translationService.updateTranslation(id, request);
         return translationDto().build(translation);
+    }
+//
+//    @DeleteMapping("{id}")
+//    public boolean delete(@PathVariable("id") long id) throws EntityReferencedException {
+//        return this.translationService.deleteTranslation(id);
+//    }
+
+
+    @PutMapping("file/{language}")
+    public Map<String, Object> updateTranslationFile(
+            @PathVariable("language") String language,
+            @Valid @RequestBody Map translations) {
+        this.translationService.updateTranslationFile(language, translations);
+        Map<String, Object> result = new HashMap<>();
+        result.put("status", "success");
+        return result;
     }
 //
 //    @DeleteMapping("{id}")

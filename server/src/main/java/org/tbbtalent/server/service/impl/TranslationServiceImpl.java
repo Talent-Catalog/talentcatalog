@@ -1,11 +1,15 @@
 package org.tbbtalent.server.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.exception.ServiceException;
 import org.tbbtalent.server.model.AbstractTranslatableDomainObject;
 import org.tbbtalent.server.model.Translation;
 import org.tbbtalent.server.model.User;
@@ -14,7 +18,10 @@ import org.tbbtalent.server.request.translation.CreateTranslationRequest;
 import org.tbbtalent.server.request.translation.UpdateTranslationRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.TranslationService;
+import org.tbbtalent.server.service.aws.S3ResourceHelper;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -24,11 +31,14 @@ import java.util.stream.Collectors;
 public class TranslationServiceImpl implements TranslationService {
 
     private final TranslationRepository translationRepository;
+    private final S3ResourceHelper s3ResourceHelper;
     private final UserContext userContext;
 
     @Autowired
     public TranslationServiceImpl(TranslationRepository translationRepository,
+                                  S3ResourceHelper s3ResourceHelper,
                                   UserContext userContext) {
+        this.s3ResourceHelper = s3ResourceHelper;
         this.userContext = userContext;
         this.translationRepository = translationRepository;
     }
@@ -88,6 +98,27 @@ public class TranslationServiceImpl implements TranslationService {
     @Override
     public List<Translation> list() {
         return translationRepository.findAll();
+    }
+
+    @Override
+    public void updateTranslationFile(String language, Map translations) {
+        try {
+            String json = new ObjectMapper().writeValueAsString(translations);
+            SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+
+            this.s3ResourceHelper.copyObject(
+                    "translations/" + language + ".json",
+                    "translations/old-versions/" + language + ".json." + fmt.format(new Date()));
+
+            this.s3ResourceHelper.uploadFile(this.s3ResourceHelper.getS3Bucket(), json,
+                    "translations/" + language + ".json", "text/json");
+
+        } catch (JsonProcessingException e) {
+            throw new ServiceException("invalid_json", "The translation data could not be converted to JSON", e);
+        } catch (FileUploadException e) {
+            throw new ServiceException("file_upload", "The JSON file could not be uploaded to s3", e);
+        }
+
     }
 
 

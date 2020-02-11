@@ -41,8 +41,11 @@ export class LanguageService {
     return this.selectedLanguage;
   }
 
-  setSelectedLanguage(selectedLanguage: string): Observable<boolean> {
+  setSelectedLanguage(selectedLanguage: string) {
     this.selectedLanguage = selectedLanguage;
+  }
+
+  loadTranslations(): Observable<boolean> {
     if (this.selectedLanguage != 'en'){
       return this.http.get<Translation[]>(`${this.apiUrl}/translations`).pipe(map(result => {
         this.translations = result;

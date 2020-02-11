@@ -78,6 +78,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     private String migrationNationality;
 
+
+
     public Candidate() {
     }
 
@@ -313,5 +315,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setMigrationCountry(String migrationCountry) {
         this.migrationNationality = migrationCountry;
+    }
+
+    public String getMigrationNationality() {
+        return migrationNationality;
+    }
+
+    public void setMigrationNationality(String migrationNationality) {
+        this.migrationNationality = migrationNationality;
     }
 }
