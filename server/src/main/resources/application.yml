@@ -2,7 +2,6 @@ tbb:
   cors:
     urls: ${TBB_CORS_URLS:http://localhost:4200,http://localhost:4201,https://tbbtalent-staging.herokuapp.com}
 
-
 spring:
   datasource:
     driverClassName: org.postgresql.Driver
@@ -28,6 +27,9 @@ jwt:
   expirationInMs: 604800000
 
 server:
+  tomcat:
+    remote_ip_header: x-forwarded-for
+    protocol_header: x-forwarded-proto
   url: https://tbbtalent-staging.herokuapp.com
 web:
   portal: ${WEB_PORTAL:https://tbbtalent-staging.herokuapp.com/candidate-portal}

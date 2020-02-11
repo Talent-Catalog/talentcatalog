@@ -59,7 +59,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/admin/**").hasAnyRole("ADMIN")
                 .and()
             .csrf().disable()
-            ;
+            .requiresChannel().anyRequest().requiresSecure()
+
+        ;
 
         // Add the JWT security filter
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
