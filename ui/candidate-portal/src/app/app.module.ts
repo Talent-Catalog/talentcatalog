@@ -56,15 +56,7 @@ import {environment} from "../environments/environment";
 export function createTranslateLoader(http: HttpClient) {
   return {
     getTranslation(lang: string): Observable<any> {
-      let url = `${environment.apiUrl}/language/translations/file/${lang}`;
-      return new Observable(observer => {
-        fetch(url).then((res: Response) => {
-          res.json().then(json => {
-            observer.next(json);
-            observer.complete();
-          });
-        })
-      });
+      return http.get(`${environment.apiUrl}/language/translations/file/${lang}`);
     }
   };
 }
