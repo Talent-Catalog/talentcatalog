@@ -294,7 +294,7 @@ public class SystemAdminApi {
             insert.setDate(i++, convertToDate(result.getString("dob")));
             insert.setString(i++, result.getString("phone_number"));
             insert.setString(i++, result.getString("phone_wapp"));
-            insert.setString(i++, getCandidateStatus(result.getInt("status")));
+            insert.setString(i++, getCandidateStatus(result.getInt("status"), result.getInt("nationality"), result.getInt("country")));
             int origCountryId = result.getInt("country");
             Long countryId = checkReference(origCountryId, countryIds);
             if (countryId == null) {
@@ -880,7 +880,10 @@ public class SystemAdminApi {
         return Status.deleted.name();
     }
 
-    private String getCandidateStatus(Integer status) {
+    private String getCandidateStatus(Integer status, Integer nationalityId, Integer countryId) {
+        if (nationalityId == null || nationalityId == 0 || countryId == null || countryId == 0){
+            return CandidateStatus.draft.name();
+        }
         switch (status) {
             case 0:
                 return CandidateStatus.deleted.name();
