@@ -156,6 +156,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         if (savedSearch != null) {
             savedSearch.setStatus(Status.deleted);
+            //Change name so that that name can be reused
+            savedSearch.setName("__deleted__" + savedSearch.getName());
             savedSearchRepository.save(savedSearch);
             return true;
         }
@@ -164,8 +166,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     private void checkDuplicates(Long id, String name) {
         SavedSearch existing = savedSearchRepository.findByNameIgnoreCase(name);
-        if (existing != null && !existing.getId().equals(id) || (existing != null && id == null)){
-            throw new EntityExistsException("savedSearch");
+        if (existing != null && existing.getStatus() != Status.deleted) {
+            if (!existing.getId().equals(id)) {
+                throw new EntityExistsException("savedSearch");
+            }
         }
     }
 

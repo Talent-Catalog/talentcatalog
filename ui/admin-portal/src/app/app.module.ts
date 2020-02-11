@@ -33,7 +33,7 @@ import {SearchLanguagesComponent} from './components/settings/languages/search-l
 import {CreateLanguageComponent} from './components/settings/languages/create/create-language.component';
 import {EditLanguageComponent} from './components/settings/languages/edit/edit-language.component';
 import {SearchSavedSearchesComponent} from "./components/candidates/search/saved-search/search-saved-searches.component";
-import {CreateSearchComponent} from "./components/candidates/search/create/create-search.component";
+import {CreateSearchComponent} from "./components/search/create/create-search.component";
 import {CandidateSearchCardComponent} from './components/candidates/search/candidate-search-card/candidate-search-card.component';
 import {CandidateGeneralTabComponent} from './components/candidates/view/tab/candidate-general-tab/candidate-general-tab.component';
 import {CandidateExperienceTabComponent} from './components/candidates/view/tab/candidate-experience-tab/candidate-experience-tab.component';
@@ -107,7 +107,7 @@ import {ChartsModule} from "ng2-charts";
 import {InfographicComponent} from './components/infograhics/infographic.component';
 import {ChartComponent} from './components/infograhics/chart/chart.component';
 import {MonthPickerComponent} from "./components/util/month-picker/month-picker.component";
-import {UpdateSearchComponent} from "./components/candidates/search/update/update-search.component";
+import {UpdateSearchComponent} from "./components/search/update/update-search.component";
 import { SavedSearchResultsComponent } from './components/home/search/returns/saved-search-results.component';
 import { DefineSearchComponent } from './components/search/define-search/define-search.component';
 import {NotFoundComponent} from "./not-found/not-found.component";

@@ -13,7 +13,7 @@ import {SearchResults} from '../../../model/search-results';
 import {NgbDate, NgbDateStruct, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormArray, FormBuilder, FormGroup} from "@angular/forms";
 import {SearchSavedSearchesComponent} from "../../candidates/search/saved-search/search-saved-searches.component";
-import {CreateSearchComponent} from "../../candidates/search/create/create-search.component";
+import {CreateSearchComponent} from "../create/create-search.component";
 import {SavedSearchService} from "../../../services/saved-search.service";
 import {IDropdownSettings} from 'ng-multiselect-dropdown';
 import {forkJoin, Subscription} from "rxjs";
@@ -38,7 +38,7 @@ import {LanguageLevelFormControlComponent} from "../../util/form/language-profic
 import {ActivatedRoute} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
 import {LocalStorageService} from "angular-2-local-storage";
-import {UpdateSearchComponent} from "../../candidates/search/update/update-search.component";
+import {UpdateSearchComponent} from "../update/update-search.component";
 import {SavedSearch} from "../../../model/saved-search";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 

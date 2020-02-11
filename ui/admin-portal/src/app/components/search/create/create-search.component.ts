@@ -1,12 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {SavedSearchService} from "../../../../services/saved-search.service";
+import {SavedSearchService} from "../../../services/saved-search.service";
 import {
   convertToSavedSearchRequest,
   SavedSearch
-} from "../../../../model/saved-search";
-import {SearchCandidateRequest} from "../../../../model/search-candidate-request";
+} from "../../../model/saved-search";
+import {SearchCandidateRequest} from "../../../model/search-candidate-request";
 
 @Component({
   selector: 'app-create-search',
