@@ -59,7 +59,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/admin/**").hasAnyRole("ADMIN")
                 .and()
             .csrf().disable()
-            .requiresChannel().anyRequest().requiresSecure()
+            .requiresChannel().requestMatchers( r -> r.getHeader("X-Forwarded-Proto") != null).requiresSecure()
 
         ;
 
