@@ -53,6 +53,11 @@ public class LanguagePortalApi {
         return translationDto().buildList(translations);
     }
 
+    @GetMapping("translations/file/{language}")
+    public Map<String, Object> getTranslationFile(@PathVariable("language") String language) {
+        return this.translationService.getTranslationFile(language);
+    }
+
     private DtoBuilder languageDto() {
         return new DtoBuilder()
                 .add("id")

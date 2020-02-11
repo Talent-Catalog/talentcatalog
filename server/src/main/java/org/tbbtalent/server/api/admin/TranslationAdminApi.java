@@ -88,12 +88,6 @@ public class TranslationAdminApi {
         return translatedObjectDto().buildPage(educationMajors);
     }
 
-//    @GetMapping("{id}")
-//    public Map<String, Object> get(@PathVariable("id") long id) {
-//        Translation translation = this.translationService.getTranslation(id);
-//        return translationDto().build(translation);
-//    }
-//
     @PostMapping
     public Map<String, Object> create(@Valid @RequestBody CreateTranslationRequest request) throws EntityExistsException {
         Translation translation = this.translationService.createTranslation(request);
@@ -107,12 +101,11 @@ public class TranslationAdminApi {
         Translation translation = this.translationService.updateTranslation(id, request);
         return translationDto().build(translation);
     }
-//
-//    @DeleteMapping("{id}")
-//    public boolean delete(@PathVariable("id") long id) throws EntityReferencedException {
-//        return this.translationService.deleteTranslation(id);
-//    }
 
+    @GetMapping("file/{language}")
+    public Map<String, Object> getTranslationFile(@PathVariable("language") String language) {
+        return this.translationService.getTranslationFile(language);
+    }
 
     @PutMapping("file/{language}")
     public Map<String, Object> updateTranslationFile(
@@ -123,13 +116,6 @@ public class TranslationAdminApi {
         result.put("status", "success");
         return result;
     }
-//
-//    @DeleteMapping("{id}")
-//    public boolean delete(@PathVariable("id") long id) throws EntityReferencedException {
-//        return this.translationService.deleteTranslation(id);
-//    }
-
-
 
     private DtoBuilder translatedObjectDto() {
         return new DtoBuilder(true)

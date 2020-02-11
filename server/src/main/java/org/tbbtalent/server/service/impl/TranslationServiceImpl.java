@@ -20,6 +20,8 @@ import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.TranslationService;
 import org.tbbtalent.server.service.aws.S3ResourceHelper;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -101,6 +103,17 @@ public class TranslationServiceImpl implements TranslationService {
     }
 
     @Override
+    public Map<String, Object> getTranslationFile(String language) {
+        try {
+            File file = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(),
+                    "translations/" + language + ".json");
+            return new ObjectMapper().readValue(file, Map.class);
+        } catch (IOException e) {
+            throw new ServiceException("json_error", "Error reading JSON file from s3", e);
+        }
+    }
+
+    @Override
     public void updateTranslationFile(String language, Map translations) {
         try {
             String json = new ObjectMapper().writeValueAsString(translations);
@@ -120,6 +133,7 @@ public class TranslationServiceImpl implements TranslationService {
         }
 
     }
+
 
 
 }

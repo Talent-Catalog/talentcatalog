@@ -56,7 +56,7 @@ import {environment} from "../environments/environment";
 export function createTranslateLoader(http: HttpClient) {
   return {
     getTranslation(lang: string): Observable<any> {
-      let url = `${environment.s3BucketUrl}/translations/${lang}.json`;
+      let url = `${environment.apiUrl}/language/translations/file/${lang}`;
       return new Observable(observer => {
         fetch(url).then((res: Response) => {
           res.json().then(json => {
