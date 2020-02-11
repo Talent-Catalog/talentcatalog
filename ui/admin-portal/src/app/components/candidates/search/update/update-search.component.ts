@@ -6,6 +6,7 @@ import {
   SavedSearch
 } from "../../../../model/saved-search";
 import {SearchCandidateRequest} from "../../../../model/search-candidate-request";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 
 @Component({
   selector: 'app-update-search',
@@ -19,12 +20,18 @@ export class UpdateSearchComponent implements OnInit {
   savedSearch: SavedSearch;
   searchCandidateRequest: SearchCandidateRequest;
   updating: boolean;
+  form: FormGroup;
 
   constructor(private activeModal: NgbActiveModal,
+              private fb: FormBuilder,
               private savedSearchService: SavedSearchService) {
   }
 
   ngOnInit() {
+    this.form = this.fb.group({
+      name: [this.savedSearch.name, Validators.required],
+      type: [this.savedSearch.type, Validators.required],
+    });
     //Copy the form values in so that they can be displayed in any summary
     //(Otherwise we just see the unmodified search values)
     this.savedSearch = Object.assign(this.savedSearch, this.searchCandidateRequest);
@@ -36,6 +43,10 @@ export class UpdateSearchComponent implements OnInit {
 
   confirm() {
     this.updating = true;
+
+    const formValues = this.form.value;
+    this.savedSearch.name = formValues.name;
+    this.savedSearch.type = formValues.type;
 
     //Create a SavedSearchRequest from the SavedSearch and the search request
     this.savedSearchService.update(

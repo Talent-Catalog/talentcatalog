@@ -6,10 +6,30 @@
   </button>
 </div>
 <div class="modal-body">
-  <p>Are you sure you want to update this search?</p>
-  <div *ngIf="savedSearch">
-    <app-saved-search [savedSearch]="savedSearch" [showAll]="true" [showMore]="false" [showOpen]="false"></app-saved-search>
+
+  <div class="alert alert-danger" *ngIf="error">
+    {{error}}
   </div>
+
+  <form [formGroup]="form">
+    <div class="form-group" >
+      <label for="name">Name</label>
+      <input type="text" class="form-control" id="name" formControlName="name">
+
+      <label for="type">Type</label>
+      <select class="form-control" id="type" formControlName="type">
+        <option value="profession">Profession</option>
+        <option value="job">Job</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <hr/>
+
+    <p>Are you sure you want to update this search?</p>
+    <div *ngIf="savedSearch">
+      <app-saved-search [savedSearch]="savedSearch" [showAll]="true" [showMore]="false" [showOpen]="false"></app-saved-search>
+    </div>
+  </form>
 </div>
 <div class="modal-footer">
   <span *ngIf="updating"><i class="fa fa-spinner fa-spin"></i> updating...</span>

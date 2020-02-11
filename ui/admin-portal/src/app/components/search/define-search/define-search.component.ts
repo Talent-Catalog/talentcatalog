@@ -40,6 +40,7 @@ import {HttpClient} from "@angular/common/http";
 import {LocalStorageService} from "angular-2-local-storage";
 import {UpdateSearchComponent} from "../../candidates/search/update/update-search.component";
 import {SavedSearch} from "../../../model/saved-search";
+import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 
 
 @Component({
@@ -354,6 +355,32 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
       })
       .catch(() => { /* Isn't possible */
       });
+  }
+
+  deleteSavedSearchModal() {
+    const deleteSavedSearchModal = this.modalService.open(ConfirmationComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    deleteSavedSearchModal.componentInstance.message =
+      'Are you sure you want to delete "'+ this.savedSearch.name + '"';
+
+    deleteSavedSearchModal.result
+      .then((result) => {
+        if (result === true) {
+          this.savedSearchService.delete(this.savedSearch.id).subscribe(
+            (savedSearch) => {
+              this.savedSearch = null;
+              this.loading = false;
+            },
+            (error) => {
+              this.error = error;
+              this.loading = false;
+            });
+        }
+      })
+      .catch(() => { /* Isn't possible */ });
   }
 
   updateSavedSearchModal() {
