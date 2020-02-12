@@ -54,7 +54,7 @@ import {EditEducationLevelComponent} from './components/settings/education-level
 import {SearchEducationMajorsComponent} from './components/settings/education-majors/search-education-majors.component';
 import {CreateEducationMajorComponent} from './components/settings/education-majors/create/create-education-major.component';
 import {EditEducationMajorComponent} from './components/settings/education-majors/edit/edit-education-major.component';
-import {TranslationsComponent} from './components/settings/translations/translations.component';
+import {DropdownTranslationsComponent} from './components/settings/translations/dropdowns/dropdown-translations.component';
 
 import {ViewCandidateContactComponent} from "./components/candidates/view/contact/view-candidate-contact.component";
 import {ViewCandidateLanguageComponent} from "./components/candidates/view/language/view-candidate-language.component";
@@ -92,8 +92,8 @@ import {EditCandidateOccupationComponent} from "./components/candidates/view/occ
 import {SortedByComponent} from "./components/util/sort/sorted-by.component";
 import {EditCandidateLanguageComponent} from './components/candidates/view/language/edit/edit-candidate-language.component';
 import {ViewCandidateAccountComponent} from './components/candidates/view/account/view-candidate-account.component';
-import {ChangePasswordComponent} from './components/candidates/view/account/change-password/change-password.component';
-import {ChangeUsernameComponent} from './components/candidates/view/account/change-username/change-username.component';
+import {ChangePasswordComponent} from './components/account/change-password/change-password.component';
+import {ChangeUsernameComponent} from './components/account/change-username/change-username.component';
 import {CreateCandidateAttachmentComponent} from './components/candidates/view/attachment/create/create-candidate-attachment.component';
 import {EditCandidateAttachmentComponent} from './components/candidates/view/attachment/edit/edit-candidate-attachment.component';
 import {FileUploadComponent} from "./components/util/file-upload/file-upload.component";
@@ -108,6 +108,7 @@ import {ChartComponent} from './components/infograhics/chart/chart.component';
 import {MonthPickerComponent} from "./components/util/month-picker/month-picker.component";
 import {UpdateSearchComponent} from "./components/candidates/search/update/update-search.component";
 import {NotFoundComponent} from "./not-found/not-found.component";
+import {GeneralTranslationsComponent} from './components/settings/translations/general/general-translations.component';
 
 @NgModule({
   declarations: [
@@ -176,7 +177,7 @@ import {NotFoundComponent} from "./not-found/not-found.component";
     CandidateShortlistItemComponent,
     EditCandidateShortlistItemComponent,
     DateRangePickerComponent,
-    TranslationsComponent,
+    DropdownTranslationsComponent,
     LanguageLevelFormControlComponent,
     DateRangePickerComponent,
     SavedSearchComponent,
@@ -207,7 +208,8 @@ import {NotFoundComponent} from "./not-found/not-found.component";
     InfographicComponent,
     ChartComponent,
     MonthPickerComponent,
-    NotFoundComponent
+    NotFoundComponent,
+    GeneralTranslationsComponent
   ],
   imports: [
     BrowserModule,
@@ -263,7 +265,7 @@ import {NotFoundComponent} from "./not-found/not-found.component";
     EditCandidateEducationComponent,
     CreateCandidateCertificationComponent,
     EditCandidateCertificationComponent,
-    TranslationsComponent,
+    DropdownTranslationsComponent,
     EditCandidateCertificationComponent,
     EditCandidateShortlistItemComponent,
     CreateCandidateJobExperienceComponent,
@@ -275,7 +277,8 @@ import {NotFoundComponent} from "./not-found/not-found.component";
     CreateCandidateAttachmentComponent,
     EditCandidateAttachmentComponent,
     CreateCandidateAttachmentComponent,
-    EditSavedSearchComponent
+    EditSavedSearchComponent,
+    SearchSavedSearchesComponent
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},

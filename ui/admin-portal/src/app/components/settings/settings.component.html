@@ -74,10 +74,18 @@
   </ngb-tab>
 
   <!-- Translations -->
-  <ngb-tab [title]="'Translations'">
+  <ngb-tab [title]="'Translations (general)'">
     <ng-template ngbTabContent>
-      <app-translations>
-      </app-translations>
+      <app-general-translations>
+      </app-general-translations>
+    </ng-template>
+  </ngb-tab>
+
+  <!-- Translations -->
+  <ngb-tab [title]="'Translations (dropdowns)'">
+    <ng-template ngbTabContent>
+      <app-dropdown-translations>
+      </app-dropdown-translations>
     </ng-template>
   </ngb-tab>
 

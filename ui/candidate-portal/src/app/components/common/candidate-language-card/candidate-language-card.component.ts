@@ -14,6 +14,7 @@ export class CandidateLanguageCardComponent {
   @Output() languageChange = new EventEmitter<CandidateLanguage>();
 
   @Input() preview: boolean = false;
+  @Input() english: Language;
   @Input() languages: Language[];
   @Input() languageLevels: LanguageLevel[];
 
@@ -37,7 +38,7 @@ export class CandidateLanguageCardComponent {
 
   isEnglish(id?: number) {
     if (id) {
-      return this.languages.find(lang => lang.id == id).name.toLowerCase().trim() === 'english';
+      return id == this.english.id;
     }
     return false;
   }

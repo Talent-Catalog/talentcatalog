@@ -59,6 +59,9 @@
       </label>
       <app-month-picker id="startDate" [control]="form.get('startDate')"></app-month-picker>
       <app-form-control-error [control]="form.controls.startDate"></app-form-control-error>
+        <small *ngIf="form.hasError('invalidDate')">
+          {{ 'FORM.ERROR.INVALIDDATERANGE' | translate }}
+        </small>
     </div>
   </div>
 
@@ -73,6 +76,7 @@
 
     </div>
   </div>
+
 
   <div class="col-12">
     <p>

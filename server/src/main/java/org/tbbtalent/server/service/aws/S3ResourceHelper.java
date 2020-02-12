@@ -44,6 +44,10 @@ public class S3ResourceHelper {
         transferManager = TransferManagerBuilder.standard().withS3Client(amazonS3).build();
     }
 
+    public String getS3Bucket() {
+        return s3Bucket;
+    }
+
     public File downloadFile(String key) throws FileDownloadException {
         return downloadFile(s3Bucket, key);
     }

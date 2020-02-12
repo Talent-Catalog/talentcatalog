@@ -30,9 +30,9 @@
 
       <!-- YEARS OF EXPERIENCE -->
       <div class="form-group">
-        <label class="m-0" for="yearsExperience">{{ 'REGISTRATION.OCCUPATION.LABEL.YEARSEXPERIENCE' | translate }} <sup>*</sup></label>
+        <label class="m-0" for="yearsExperience">{{ 'REGISTRATION.OCCUPATION.LABEL.YEARSEXPERIENCE' | translate }}<sup>*</sup></label>
         <p class="text-muted">{{ 'REGISTRATION.OCCUPATION.LABEL.DISCLAIMER' | translate }}</p>
-        <input type="number" class="form-control" name="yearsExperience" id="yearsExperience" [formControlName]="'yearsExperience'">
+        <input type="number" min="0" class="form-control" name="yearsExperience" id="yearsExperience" [formControlName]="'yearsExperience'">
         <app-form-control-error [control]="form.controls.yearsExperience"></app-form-control-error>
       </div>
 

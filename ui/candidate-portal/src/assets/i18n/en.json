@@ -117,6 +117,7 @@
         "EMAIL": "Email",
         "PHONE": "Phone",
         "WHATSAPP": "Whatsapp",
+        "PREFERREDLANGUAGE": "Preferred Language (for system emails)",
         "USERNAME": "Username",
         "PASSWORD": "Password",
         "PASSWORDCONFIRMATION": "Confirmation password"
@@ -211,7 +212,8 @@
       "TITLE": "Contact",
       "EMAIL": "Email address",
       "PHONE": "Phone",
-      "WHATSAPP": "WhatsApp"
+      "WHATSAPP": "WhatsApp",
+      "PREFERREDLANGUAGE": "Preferred Language (for system emails)"
     },
     "PERSONAL": {
       "TITLE": "Personal Information",
@@ -272,7 +274,9 @@
       "REQUIRED": "This field is required",
       "EMAIL":"This field must contain a valid email address",
       "MINLENGTH": "This field must contain at least {{length}} characters",
-      "DATE": "Invalid date - expected format YYYY-MM-DD"
+      "MINVALUE": "This field must have a min value of {{min}}",
+      "DATE": "Invalid date - expected format YYYY-MM-DD",
+      "INVALIDDATERANGE": "Start date must be before end date"
     },
     "JOBEXPERIENCE": {
       "EXPLANATION": "If possible please provide this response in English so it can be more easily reviewed by our team. If you feel more comfortable using your native language please do so and we will have a translator convert it for our team.",
