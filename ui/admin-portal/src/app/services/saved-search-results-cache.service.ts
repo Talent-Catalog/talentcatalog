@@ -25,17 +25,15 @@ export class SavedSearchResultsCacheService {
     return "Search" + savedSearchID;
   }
 
-  //todo search for and get rid of use of localStorage global.
-
   cache(cachedSearchResults: CachedSearchResults) {
     const cacheKey = SavedSearchResultsCacheService.cacheKey(cachedSearchResults.searchID);
-    // localStorage.setItem(cacheKey, JSON.stringify(cachedSearchResults));
+    // alternative using global localStorage localStorage.setItem(cacheKey, JSON.stringify(cachedSearchResults));
     this.localStorageService.set(cacheKey, cachedSearchResults);
   }
 
   getFromCache(savedSearchID: number): CachedSearchResults {
     const cacheKey = SavedSearchResultsCacheService.cacheKey(savedSearchID);
     return this.localStorageService.get<CachedSearchResults>(cacheKey);
-    // return JSON.parse(localStorage.getItem(cacheKey))
+    // alternative using global localStorage  return JSON.parse(localStorage.getItem(cacheKey))
   }
 }
