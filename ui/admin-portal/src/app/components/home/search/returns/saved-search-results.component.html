@@ -24,14 +24,68 @@
 <div *ngIf="results">
   <div *ngIf="timestamp">
     <button class="btn" *ngIf="timestamp" (click)="search(true)"><i class="fa fa-refresh" title="Refresh search"></i></button>
-    Timestamp {{timestamp | date: 'yyyy-MM-dd HH:mm:ss'}}
+    {{results.totalElements}} results. Timestamp {{timestamp | date: 'yyyy-MM-dd HH:mm:ss'}}
   </div>
-  We have {{results.totalElements}} results
-  <ul>
-    <li *ngFor="let candidate of results?.content">
-      {{candidate.candidateNumber}}
-    </li>
-  </ul>
+
+  <!-- loading -->
+  <div *ngIf="searching">
+      <i class="fa fa-spinner fa-spin"></i> Loading...
+  </div>
+
+  <div class="table-wrapper">
+    <table class="table">
+
+      <thead>
+      <tr>
+        <th class="candidate-number-row" (click)="toggleSort('id')">
+          <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
+          Candidate #
+        </th>
+        <th>
+          Name
+        </th>
+        <th (click)="toggleSort('nationality.name')">
+          <app-sorted-by [column]="'nationality.name'" [sortColumn]="sortField"
+                         [sortDirection]="sortDirection"></app-sorted-by>
+          Nationality
+        </th>
+        <th (click)="toggleSort('country.name')">
+          <app-sorted-by [column]="'country.name'" [sortColumn]="sortField"
+                         [sortDirection]="sortDirection"></app-sorted-by>
+          Location
+        </th>
+        <th (click)="toggleSort('gender')">
+          <app-sorted-by [column]="'gender'" [sortColumn]="sortField"
+                         [sortDirection]="sortDirection"></app-sorted-by>
+          Gender
+        </th>
+        <th></th>
+      </tr>
+      </thead>
+
+      <tbody>
+
+      <tr *ngFor="let candidate of results?.content">
+        <td>
+            {{candidate.candidateNumber}}
+        </td>
+        <td>{{candidate.user.firstName}} {{candidate.user.lastName}}</td>
+        <td>{{candidate.nationality?.name}}</td>
+        <td>{{candidate.country?.name}}</td>
+        <td>{{candidate.gender | titlecase}}</td>
+      </tr>
+
+      <!-- no results -->
+      <tr *ngIf="!searching && !results?.totalElements">
+        <td colspan="42">
+          <span class="text-muted">(no matching candidates)</span>
+        </td>
+      </tr>
+
+      </tbody>
+
+    </table>
+  </div>
 
 </div>
 <div *ngIf="!results && !searching">

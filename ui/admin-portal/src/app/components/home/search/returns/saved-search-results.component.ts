@@ -100,6 +100,10 @@ constructor(
   private searchFromRequest(request: any) {
 
     //todo Is this the best place to do the defaulting?
+    //todo Need do defaulting in search request, then pick up actual info
+    //from returned results.
+    //todo Currently server sends back used page number and size but does
+    //not echo back sort info. It should be changed to do so.
     if (!this.pageNumber) {
       this.pageNumber = 1;
     }
@@ -115,6 +119,8 @@ constructor(
 
     request.pageNumber = this.pageNumber - 1;
     request.pageSize = this.pageSize;
+    request.sortFields = [this.sortField];
+    request.sortDirection = this.sortDirection;
     this.subscription = this.candidateService.search(request).subscribe(
       results => {
         this.timestamp = Date.now();
@@ -138,4 +144,15 @@ constructor(
       });
 
   }
+
+  toggleSort(column) {
+    if (this.sortField == column) {
+      this.sortDirection = this.sortDirection == 'ASC' ? 'DESC' : 'ASC';
+    } else {
+      this.sortField = column;
+      this.sortDirection = 'ASC';
+    }
+    this.search(true);
+  }
+
 }
