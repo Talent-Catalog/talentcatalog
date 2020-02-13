@@ -40,8 +40,6 @@ constructor(
   ) { };
 
   ngOnInit() {
-    this.pageNumber = 1;
-    this.pageSize = 20;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -66,7 +64,7 @@ constructor(
     this.results = null;
     this.timestamp = null;
     this.error = null;
-
+    this.searching = true;
 
     let done: boolean = false;
     if (!refresh) {
@@ -75,14 +73,14 @@ constructor(
       if (cached) {
         this.results = cached.results;
         this.pageNumber = cached.pageNumber;
+        this.pageSize = cached.pageSize;
         this.timestamp = cached.timestamp;
-        //todo What about page size
         done = true;
+        this.searching = false;
       }
     }
 
     if (!done) {
-      this.searching = true;
       this.savedSearchService.load(this.savedSearch.id).subscribe(
         request => {
           this.searchFromRequest(request);

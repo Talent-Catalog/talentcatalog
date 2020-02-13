@@ -1,34 +1,28 @@
 <h1>Welcome!</h1>
+{{savedSearchType}}
+<ngb-tabset [activeId]="activeId" (tabChange)="onTabChanged($event)">
 
-<ngb-tabset>
+  <ngb-tab [id]="savedSearchTypeTabs[0]" [title]="'Profession searches'">
+    <ng-template ngbTabContent>
+      <app-browse-saved-searches [savedSearchType]="savedSearchTypeTabs[0]"></app-browse-saved-searches>
+    </ng-template>
+  </ngb-tab>
 
-  <ngb-tab [title]="'Test'">
+  <ngb-tab [id]="savedSearchTypeTabs[1]" [title]="'Job searches'">
+    <ng-template ngbTabContent>
+      <app-browse-saved-searches [savedSearchType]="savedSearchTypeTabs[1]"></app-browse-saved-searches>
+    </ng-template>
+  </ngb-tab>
+
+  <ngb-tab [id]="savedSearchTypeTabs[2]" [title]="'Other searches'">
+    <ng-template ngbTabContent>
+      <app-browse-saved-searches [savedSearchType]="savedSearchTypeTabs[2]"></app-browse-saved-searches>
+    </ng-template>
+  </ngb-tab>
+
+  <ngb-tab id="all" [title]="'All'">
     <ng-template ngbTabContent>
       <app-browse-saved-searches></app-browse-saved-searches>
-    </ng-template>
-  </ngb-tab>
-
-  <ngb-tab [title]="'Profession searches'">
-    <ng-template ngbTabContent>
-      <app-saved-searches [savedSearchType]="'profession'"></app-saved-searches>
-    </ng-template>
-  </ngb-tab>
-
-  <ngb-tab [title]="'Job searches'">
-    <ng-template ngbTabContent>
-      <app-saved-searches [savedSearchType]="'job'"></app-saved-searches>
-    </ng-template>
-  </ngb-tab>
-
-  <ngb-tab [title]="'Other searches'">
-    <ng-template ngbTabContent>
-      <app-saved-searches [savedSearchType]="'other'"></app-saved-searches>
-    </ng-template>
-  </ngb-tab>
-
-  <ngb-tab [title]="'All'">
-    <ng-template ngbTabContent>
-      <app-saved-searches></app-saved-searches>
     </ng-template>
   </ngb-tab>
 </ngb-tabset>

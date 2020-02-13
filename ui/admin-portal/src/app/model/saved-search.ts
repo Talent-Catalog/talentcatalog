@@ -25,6 +25,15 @@ export interface SavedSearch extends SearchCandidateRequest {
   type: SavedSearchType;
 }
 
+export function indexOfSavedSearch(savedSearchID: number, savedSearches: SavedSearch[]) {
+  for (let i = 0; i < savedSearches.length; i++) {
+    if (savedSearches[i].id == savedSearchID) {
+      return i;
+    }
+  }
+  return -1;
+}
+
 /**
  * This is what saved searches look like when they are sent to the server
  * (as create or update requests).

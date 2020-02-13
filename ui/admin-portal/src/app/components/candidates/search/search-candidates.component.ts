@@ -86,7 +86,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
           this.error = err;
         });
 
-        this.doSearch();
+        this.doSearch(false);
       }
     });
 
@@ -102,7 +102,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   search() {
     this.pageNumber = 1;
-    this.doSearch();
+    this.doSearch(false);
   }
 
   private constructRunRequest(): SavedSearchRunRequest {
@@ -116,13 +116,10 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     }
   }
 
-  doSearch() {
+  doSearch(refresh: boolean) {
 
     this.results = null;
     this.error = null;
-
-    //todo pass refresh in. Add refresh to display
-    let refresh = false;
 
     let done: boolean = false;
     if (!refresh) {
@@ -131,6 +128,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       if (cached) {
         this.results = cached.results;
         this.pageNumber = cached.pageNumber;
+        this.pageSize = cached.pageSize;
         this.timestamp = cached.timestamp;
         done = true;
       }
@@ -141,6 +139,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
       this.subscription = this.candidateService.runSavedSearch(this.constructRunRequest()).subscribe(
         results => {
+          this.timestamp = Date.now();
           this.results = results;
 
           this.savedSearchResultsCacheService.cache({

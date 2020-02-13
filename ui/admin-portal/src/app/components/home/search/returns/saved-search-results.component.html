@@ -5,16 +5,11 @@
   >
   </app-saved-search>
 </div>
-
-<div *ngIf="pageNumber">
-  Page {{pageNumber}} <button class="btn" *ngIf="timestamp" (click)="search(true)"><i class="fa fa-refresh" title="Refresh search"></i></button>
-</div>
 <div *ngIf="error">
   Error: {{error}}
 </div>
 
 <div class="text-muted mb-2 align-middle" *ngIf="!searching">
-
   <ngb-pagination
     [boundaryLinks]="true"
     [pageSize]="pageSize"
@@ -28,6 +23,7 @@
 
 <div *ngIf="results">
   <div *ngIf="timestamp">
+    <button class="btn" *ngIf="timestamp" (click)="search(true)"><i class="fa fa-refresh" title="Refresh search"></i></button>
     Timestamp {{timestamp | date: 'yyyy-MM-dd HH:mm:ss'}}
   </div>
   We have {{results.totalElements}} results

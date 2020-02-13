@@ -5,10 +5,15 @@ import {SearchResults} from '../../../../model/search-results';
 
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
-import {SavedSearch, SavedSearchType} from '../../../../model/saved-search';
+import {
+  indexOfSavedSearch,
+  SavedSearch,
+  SavedSearchType
+} from '../../../../model/saved-search';
 import {SavedSearchService} from '../../../../services/saved-search.service';
 import {Router} from '@angular/router';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {LocalStorageService} from "angular-2-local-storage";
 
 //todo Support paging/sorting request
 //todo Fix up types to match Java types.
@@ -19,6 +24,8 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
   styleUrls: ['./browse-saved-searches.component.scss']
 })
 export class BrowseSavedSearchesComponent implements OnInit {
+
+  private savedStateKeyPrefix: string = 'BrowseKey';
 
   @Input() savedSearchType: SavedSearchType;
   searchForm: FormGroup;
@@ -31,6 +38,7 @@ export class BrowseSavedSearchesComponent implements OnInit {
   selectedIndex = 0;
 
   constructor(private fb: FormBuilder,
+              private localStorageService: LocalStorageService,
               private router: Router,
               private savedSearchService: SavedSearchService) {
   }
@@ -66,6 +74,16 @@ export class BrowseSavedSearchesComponent implements OnInit {
     request.pageSize = this.pageSize;
     this.savedSearchService.search(request).subscribe(results => {
       this.results = results;
+
+      //Selected previously search if any
+      const savedSearchID: number = this.localStorageService.get(this.savedStateKey());
+      if (savedSearchID) {
+        this.selectedIndex = indexOfSavedSearch(savedSearchID, this.results.content);
+        if (this.selectedIndex >= 0) {
+          this.selectedSavedSearch = this.results.content[this.selectedIndex];
+        }
+      }
+
       this.loading = false;
     });
   }
@@ -73,7 +91,14 @@ export class BrowseSavedSearchesComponent implements OnInit {
   onSelect(savedSearch: SavedSearch) {
     this.selectedSavedSearch = savedSearch;
 
-    this.selectedIndex = this.results.content.indexOf(this.selectedSavedSearch);
+    let savedSearchID: number = savedSearch.id;
+    this.localStorageService.set(this.savedStateKey(), savedSearchID);
+
+    this.selectedIndex = indexOfSavedSearch(savedSearchID, this.results.content);
+  }
+
+  private savedStateKey() {
+    return this.savedStateKeyPrefix + this.savedSearchType;
   }
 
   keyDown(event: KeyboardEvent) {
