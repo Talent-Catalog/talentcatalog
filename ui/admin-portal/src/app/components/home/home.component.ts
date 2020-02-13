@@ -15,7 +15,7 @@ interface TabInfo {
 })
 export class HomeComponent implements OnInit {
 
-  private activeId: string;
+  activeId: string;
   private lastTabKey: string = 'HomeLastTab';
 
   tabInfos: TabInfo[] = [
