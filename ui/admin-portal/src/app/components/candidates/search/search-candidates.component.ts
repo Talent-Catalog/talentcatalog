@@ -100,11 +100,6 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     }
   }
 
-  search() {
-    this.pageNumber = 1;
-    this.doSearch(false);
-  }
-
   private constructRunRequest(): SavedSearchRunRequest {
     return {
       savedSearchId: this.savedSearchId,
@@ -129,6 +124,8 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
         this.results = cached.results;
         this.pageNumber = cached.pageNumber;
         this.pageSize = cached.pageSize;
+        this.sortField = cached.sortFields[0];
+        this.sortDirection = cached.sortDirection;
         this.timestamp = cached.timestamp;
         done = true;
       }
@@ -146,6 +143,8 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
             searchID: this.savedSearchId,
             pageNumber: this.pageNumber,
             pageSize: this.pageSize,
+            sortFields: [this.sortField],
+            sortDirection: this.sortDirection,
             results: this.results,
             timestamp: this.timestamp
           });
@@ -164,7 +163,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   }
 
   handleCandidateShortlistSaved(candidateShortlistItem: CandidateShortlistItem) {
-    this.search();
+    this.doSearch(true);
   }
 
   toggleSort(column) {
@@ -174,13 +173,13 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       this.sortField = column;
       this.sortDirection = 'ASC';
     }
-    this.search();
+    this.doSearch(true);
   }
 
   exportCandidates() {
     this.exporting = true;
     let request = this.constructRunRequest();
-    //todo implment this
+    //todo Test this
     this.candidateService.exportFromSavedSearch(request, 10000).subscribe(
       result => {
         let options = {type: 'text/csv;charset=utf-8;'};

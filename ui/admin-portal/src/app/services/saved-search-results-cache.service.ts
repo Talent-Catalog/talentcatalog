@@ -7,6 +7,8 @@ export interface CachedSearchResults {
   searchID: number;
   pageNumber: number;
   pageSize: number;
+  sortFields: string[],
+  sortDirection: string,
   results: SearchResults<Candidate>;
   timestamp: number;
 }

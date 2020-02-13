@@ -29,6 +29,8 @@ export class SavedSearchResultsComponent implements OnInit, OnChanges, OnDestroy
   private results: SearchResults<Candidate>;
   @Input() savedSearch: SavedSearch;
   private searching: boolean;
+  private sortField: string;
+  private sortDirection: string;
   private subscription: Subscription;
   private timestamp: number;
 
@@ -74,6 +76,8 @@ constructor(
         this.results = cached.results;
         this.pageNumber = cached.pageNumber;
         this.pageSize = cached.pageSize;
+        this.sortField = cached.sortFields[0];
+        this.sortDirection = cached.sortDirection;
         this.timestamp = cached.timestamp;
         done = true;
         this.searching = false;
@@ -95,6 +99,20 @@ constructor(
 
   private searchFromRequest(request: any) {
 
+    //todo Is this the best place to do the defaulting?
+    if (!this.pageNumber) {
+      this.pageNumber = 1;
+    }
+    if (!this.pageSize) {
+      this.pageSize = 20;
+    }
+    if (!this.sortField) {
+      this.sortField = 'id';
+    }
+    if (!this.sortDirection) {
+      this.sortDirection = 'DESC';
+    }
+
     request.pageNumber = this.pageNumber - 1;
     request.pageSize = this.pageSize;
     this.subscription = this.candidateService.search(request).subscribe(
@@ -106,6 +124,8 @@ constructor(
           searchID: this.savedSearch.id,
           pageNumber: this.pageNumber,
           pageSize: this.pageSize,
+          sortFields: [this.sortField],
+          sortDirection: this.sortDirection,
           results: this.results,
           timestamp: this.timestamp
         });

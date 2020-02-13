@@ -21,7 +21,7 @@
                       [collectionSize]="results?.totalElements"
                       [(page)]="pageNumber"
                       maxSize="5"
-                      (pageChange)="doSearch()">
+                      (pageChange)="doSearch(true)">
       </ngb-pagination>
 
       <button class="btn btn-outline-secondary" (click)="exportCandidates()">
@@ -30,7 +30,7 @@
       </button>
     </div>
 
-    <div *ngIf="timestamp">
+    <div *ngIf="!searching">
       <button class="btn" *ngIf="timestamp" (click)="doSearch(true)"><i class="fa fa-refresh" title="Refresh search"></i></button>
       Timestamp {{timestamp | date: 'yyyy-MM-dd HH:mm:ss'}}
     </div>
