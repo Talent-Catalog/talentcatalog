@@ -23,16 +23,16 @@ import {
   styleUrls: ['./saved-search-results.component.scss']
 })
 export class SavedSearchResultsComponent implements OnInit, OnChanges, OnDestroy {
-  private error: null;
-  private pageNumber: number;
+  error: null;
+  pageNumber: number;
   private pageSize: number;
-  private results: SearchResults<Candidate>;
+  results: SearchResults<Candidate>;
   @Input() savedSearch: SavedSearch;
-  private searching: boolean;
+  searching: boolean;
   private sortField: string;
   private sortDirection: string;
   private subscription: Subscription;
-  private timestamp: number;
+  timestamp: number;
 
 constructor(
     private candidateService: CandidateService,
