@@ -92,8 +92,8 @@ import {EditCandidateOccupationComponent} from "./components/candidates/view/occ
 import {SortedByComponent} from "./components/util/sort/sorted-by.component";
 import {EditCandidateLanguageComponent} from './components/candidates/view/language/edit/edit-candidate-language.component';
 import {ViewCandidateAccountComponent} from './components/candidates/view/account/view-candidate-account.component';
-import {ChangePasswordComponent} from './components/candidates/view/account/change-password/change-password.component';
-import {ChangeUsernameComponent} from './components/candidates/view/account/change-username/change-username.component';
+import {ChangePasswordComponent} from './components/account/change-password/change-password.component';
+import {ChangeUsernameComponent} from './components/account/change-username/change-username.component';
 import {CreateCandidateAttachmentComponent} from './components/candidates/view/attachment/create/create-candidate-attachment.component';
 import {EditCandidateAttachmentComponent} from './components/candidates/view/attachment/edit/edit-candidate-attachment.component';
 import {FileUploadComponent} from "./components/util/file-upload/file-upload.component";

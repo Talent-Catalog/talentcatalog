@@ -62,9 +62,17 @@
       <td>{{user.email}}</td>
       <td>{{user.status}}</td>
       <td>
-        <div class="btn-group">
-          <button type="button" class="btn btn-default" (click)="editUser(user)"><i class="fa fa-edit"></i></button>
-          <button type="button" class="btn btn-default" (click)="deleteUser(user)"><i class="fa fa-trash"></i></button>
+        <div ngbDropdown placement="bottom-right" (click)="$event.stopPropagation();" container="body">
+          <button class="btn btn-xs hide-after" ngbDropdownToggle>
+            <i class="fa fa-ellipsis-h"></i>
+          </button>
+          <ul ngbDropdownMenu>
+            <li ngbDropdownItem (click)="editUser(user)">Edit User</li>
+            <li ngbDropdownItem (click)="deleteUser(user)">Delete User</li>
+            <li class="dropdown-divider"></li>
+            <li ngbDropdownItem (click)="updatePassword(user)">Change Password</li>
+            <li ngbDropdownItem (click)="updateUsername(user)">Change Username</li>
+          </ul>
         </div>
       </td>
     </tr>

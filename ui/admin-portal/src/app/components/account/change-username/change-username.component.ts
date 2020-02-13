@@ -1,15 +1,15 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {UserService} from '../../../../../services/user.service';
-import {User} from '../../../../../model/user';
+import {UserService} from '../../../services/user.service';
+import {User} from '../../../model/user';
 
 @Component({
-  selector: 'app-change-password',
-  templateUrl: './change-password.component.html',
-  styleUrls: ['./change-password.component.scss']
+  selector: 'app-change-username',
+  templateUrl: './change-username.component.html',
+  styleUrls: ['./change-username.component.scss']
 })
-export class ChangePasswordComponent implements OnInit {
+export class ChangeUsernameComponent implements OnInit {
 
   user: User;
 
@@ -32,17 +32,16 @@ export class ChangePasswordComponent implements OnInit {
     this.updated = false;
     this.tokenInvalid = false;
     this.form = this.fb.group({
-        password: ['', Validators.required],
-        passwordConfirmation: ['', Validators.required]
+      username: ['', Validators.required],
     });
   }
 
-  updatePassword() {
+  updateUsername() {
     this.updated = false;
     this.error = null;
-    this.userService.updatePassword(this.user.id, this.form.value).subscribe(
-      () => {
-        this.closeModal(this.user);
+    this.userService.updateUsername(this.user.id, this.form.value).subscribe(
+      (user) => {
+        this.closeModal(user);
         this.updated = true;
       },
       (error) => {

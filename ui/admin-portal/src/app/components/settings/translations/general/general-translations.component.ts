@@ -1,6 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {Observable} from "rxjs";
-import {environment} from "../../../../../environments/environment";
 import {TranslationService} from "../../../../services/translation.service";
 
 @Component({
@@ -28,7 +26,7 @@ export class GeneralTranslationsComponent implements OnInit {
   setLanguage(language: string) {
     this.language = language;
     this.loading = true;
-    this.loadTranslations(this.language).subscribe(translations => {
+    this.translationService.loadTranslationsFile(this.language).subscribe(translations => {
       this.loading = false;
       this.fields = [];
       this.getFields(this.fields, null, ALL_FIELDS, translations);
@@ -43,19 +41,6 @@ export class GeneralTranslationsComponent implements OnInit {
       } else {
         this.getFields(results, subPath,  value, data ? data[key] : null);
       }
-    });
-  }
-
-  loadTranslations(lang: string): Observable<any> {
-    // note use fetch to avoid s3 CORS issues (or change CORS on s3)
-    let url = `${environment.s3BucketUrl}/translations/${lang}.json`;
-    return new Observable(observer => {
-      fetch(url).then((res: Response) => {
-        res.json().then(json => {
-          observer.next(json);
-          observer.complete();
-        });
-      })
     });
   }
 
