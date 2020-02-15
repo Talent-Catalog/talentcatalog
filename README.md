@@ -10,10 +10,10 @@ make up the TBB Talent Portal system. In particular it contains:
 
 - **server**: the backend module of the system providing secure API (REST) access to the 
 data, stored in an SQL Database. This module is written in Java / Spring Boot.
-- **candidate-portal (coming soon)**: the frontend module through which candidates (refugees seeking skilled 
+- **candidate-portal**: the frontend module through which candidates (refugees seeking skilled 
 migration) are able to register and manage their details. This is written in Angular and connects 
 to the REST API endpoints under `/api/candidate` provided by the server. 
-- **admin-portal (coming soon)**: the frontend module through which TBB staff are able to view, manage and annotate 
+- **admin-portal**: the frontend module through which TBB staff are able to view, manage and annotate 
 candidate details. This is written in Angular and connects to the REST API endpoints under 
 `/api/admin` provided by the server.
      
@@ -46,8 +46,10 @@ full privileges
 - Create a new database called tbbtalent and set tbbtalent as the owner
 - The database details are defined in bundle/all/resources/application.yml
 - The database is populated/updated using Flyway at start up - see TbbTalentApplication
-- Run data migration script to add additional data - using tool like postman or curl call login http://localhost:8080/api/admin/auth/login
- and save token call curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" http://localhost:8080/api/admin/system/migrate
+- Run data migration script to add additional data - using tool like postman or curl 
+  - call login http://localhost:8080/api/admin/auth/login
+ and save token 
+   - call curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" http://localhost:8080/api/admin/system/migrate
 ### Download and edit the code ###
 
 - Clone [the repository](https://bitbucket.org/johncameron/tbbtalentv2/src/master/) to your local system
