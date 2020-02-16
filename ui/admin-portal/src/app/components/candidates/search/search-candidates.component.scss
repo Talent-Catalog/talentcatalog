@@ -8,6 +8,11 @@ label {
   font-size: 14px;
 }
 
+.fa-disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
 .filter-form {
   background-color: #efefef;
   padding: 1em;

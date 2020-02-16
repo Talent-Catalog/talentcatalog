@@ -6,7 +6,8 @@
     <h4>{{candidate.candidateNumber}} <small>{{candidate.status | titlecase}}</small></h4>
 
     <div class="btn-toolbar">
-      <button class="btn btn-sm btn-outline-primary" [routerLink]="['/candidates', candidate.id]" title="Open"><i class="fa fa-external-link-square"></i></button>
+      <button class="btn btn-sm btn-outline-primary" [routerLink]="['/candidates', candidate.id]" title="Open">
+        <i class="fas fa-external-link-square-alt"></i></button>
       <button class="btn btn-sm btn-secondary" (click)="close()">x</button>
     </div>
 

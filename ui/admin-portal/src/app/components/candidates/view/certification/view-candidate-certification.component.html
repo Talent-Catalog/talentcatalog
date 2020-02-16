@@ -1,5 +1,5 @@
 <div *ngIf="loading">
-  <i class="fa fa-spinner fa-spin"></i> loading...
+  <i class="fas fa-spinner fa-spin"></i> loading...
 </div>
 <div *ngIf="error">
   {{error}}
@@ -10,7 +10,7 @@
     Certifications
     <div class="pull-right" *ngIf="editable">
       <button type="button" class="btn btn-primary btn-sm" (click)="createCandidateCertification()">
-        <i class="fa fa-plus"></i>
+        <i class="fas fa-plus"></i>
       </button>
     </div>
   </div>
@@ -31,7 +31,7 @@
         <div class="col-6">
           <div class="pull-right" *ngIf="editable">
             <button type="button" class="btn btn-default" (click)="editCandidateCertification(candidateCertification)"><i
-              class="fa fa-edit"></i></button>
+              class="fas fa-edit"></i></button>
           </div>
         </div>
       </div>

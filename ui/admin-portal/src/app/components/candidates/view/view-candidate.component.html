@@ -1,5 +1,5 @@
 <div *ngIf="loading">
-  <i class="fa fa-spinner fa-spin"></i> loading...
+  <i class="fas fa-spinner fa-spin"></i> loading...
 </div>
 <div class="alert alert-danger" *ngIf="error">
   {{error}}
@@ -19,7 +19,7 @@
         <input type="text" class="form-control" id="status" title="{{candidate.candidateMessage}}"
                value="{{candidate.status | titlecase}}" disabled>
         <div class="input-group-append">
-          <button class="btn btn-outline-dark" (click)="editCandidate()"><i class="fa fa-edit"></i></button>
+          <button class="btn btn-outline-dark" (click)="editCandidate()"><i class="fas fa-edit"></i></button>
         </div>
       </div>
     </div>
@@ -82,7 +82,7 @@
       <div class="w-100">
         <div class="pull-right">
           <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
-            class="fa fa-arrow-{{sidePanelColWidth == 8 ? 'right' : 'left'}}"></i></button>
+            class="fas fa-arrow-{{sidePanelColWidth == 8 ? 'right' : 'left'}}"></i></button>
         </div>
 
         <ngb-tabset>

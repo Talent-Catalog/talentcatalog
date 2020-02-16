@@ -23,13 +23,13 @@
 
 <div *ngIf="results">
   <div *ngIf="timestamp">
-    <button class="btn" *ngIf="timestamp" (click)="search(true)"><i class="fa fa-refresh" title="Refresh search"></i></button>
+    <button class="btn" *ngIf="timestamp" (click)="search(true)"><i class="fas fa-sync" title="Refresh search"></i></button>
     {{results.totalElements}} results. Timestamp {{timestamp | date: 'yyyy-MM-dd HH:mm:ss'}}
   </div>
 
   <!-- loading -->
   <div *ngIf="searching">
-      <i class="fa fa-spinner fa-spin"></i> Loading...
+      <i class="fas fa-spinner fa-spin"></i> Loading...
   </div>
 
   <div class="table-wrapper">
@@ -93,5 +93,5 @@
 </div>
 <!-- loading -->
 <div *ngIf="searching">
-  <i class="fa fa-spinner fa-spin"></i> Loading...
+  <i class="fas fa-spinner fa-spin"></i> Loading...
 </div>

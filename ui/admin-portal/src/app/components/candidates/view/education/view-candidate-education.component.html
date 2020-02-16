@@ -1,5 +1,5 @@
 <div *ngIf="loading">
-  <i class="fa fa-spinner fa-spin"></i> loading...
+  <i class="fas fa-spinner fa-spin"></i> loading...
 </div>
 <div *ngIf="error">
   {{error}}
@@ -16,7 +16,7 @@
 
     <div class="pull-right" *ngIf="editable">
       <button class="btn btn-primary btn-sm" (click)="createCandidateEducation()">
-        <i class="fa fa-plus"></i>
+        <i class="fas fa-plus"></i>
       </button>
     </div>
 
@@ -41,7 +41,7 @@
         <div class="col-1">
           <div class="pull-right" *ngIf="editable">
             <button type="button" class="btn btn-default" (click)="editCandidateEducation(edu)">
-              <i class="fa fa-edit"></i>
+              <i class="fas fa-edit"></i>
             </button>
           </div>
         </div>

@@ -1,14 +1,14 @@
 <div class="card">
-  <div *ngIf="loading"><i class="fa fa-spinner"></i></div>
+  <div *ngIf="loading"><i class="fas fa-spinner fa-spin"></i></div>
   <div *ngIf="!loading" class="card-body">
     <div class="row">
       <div class="w-75"><strong>{{savedSearch.name}}</strong></div>
       <div class="w-25 pull-right">
         <div class="btn-toolbar">
-          <button class="btn" *ngIf="showMore" (click)="loadSavedSearch()"><i class="fa fa-ellipsis-h" title="View details"></i></button>
-          <button class="btn" *ngIf="showOpen" (click)="doOpenSearch()"><i class="fa fa-external-link-square" title="Open saved search"></i></button>
-          <button class="btn" *ngIf="showEdit" (click)="doEditSearch()"><i class="fa fa-edit" title="Rename saved search"></i></button>
-          <button class="btn" *ngIf="showDelete" (click)="doDeleteSearch()"><i class="fa fa-trash" title="Delete saved search"></i></button>
+          <button class="btn" *ngIf="showMore" (click)="loadSavedSearch()"><i class="fas fa-ellipsis-h" title="View details"></i></button>
+          <button class="btn" *ngIf="showOpen" (click)="doOpenSearch()"><i class="fas fa-external-link-square-alt" title="Open saved search"></i></button>
+          <button class="btn" *ngIf="showEdit" (click)="doEditSearch()"><i class="fas fa-edit" title="Rename saved search"></i></button>
+          <button class="btn" *ngIf="showDelete" (click)="doDeleteSearch()"><i class="fas fa-trash" title="Delete saved search"></i></button>
         </div>
       </div>
     </div>
