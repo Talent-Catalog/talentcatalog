@@ -72,6 +72,8 @@ export class BrowseSavedSearchesComponent implements OnInit {
     request.savedSearchType = this.savedSearchType;
     request.pageNumber = this.pageNumber - 1;
     request.pageSize = this.pageSize;
+    request.sortFields = ['name'];
+    request.sortDirection = 'ASC';
     this.savedSearchService.search(request).subscribe(results => {
       this.results = results;
 
