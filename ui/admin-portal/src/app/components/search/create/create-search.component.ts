@@ -1,7 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {SavedSearchService} from "../../../services/saved-search.service";
+import {
+  SavedSearchService, SavedSearchTypeInfo,
+  SavedSearchTypeSubInfo
+} from "../../../services/saved-search.service";
 import {
   convertToSavedSearchRequest,
   SavedSearch
@@ -21,17 +24,21 @@ export class CreateSearchComponent implements OnInit {
   saving: boolean;
   savedSearch: SavedSearch;
   searchCandidateRequest: SearchCandidateRequest;
+  savedSearchTypeInfos: SavedSearchTypeInfo[];
+  savedSearchTypeSubInfos: SavedSearchTypeSubInfo[];
   update;
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
               private savedSearchService: SavedSearchService) {
+    this.savedSearchTypeInfos = savedSearchService.getSavedSearchTypeInfos();
   }
 
   ngOnInit() {
     this.form = this.fb.group({
       name: [null, Validators.required],
-      type: [null, Validators.required],
+      savedSearchType: [null, Validators.required],
+      savedSearchSubtype: [null, Validators.required],
     });
     if (this.savedSearch) {
       //Copy the form values in so that they can be displayed in any summary
@@ -48,7 +55,9 @@ export class CreateSearchComponent implements OnInit {
     this.savedSearch = {
       id: 0,
       name: formValues.name,
-      type: formValues.type
+      //Use parseInt rather than +, because + returns zero when null or undefined.
+      savedSearchType: parseInt(formValues.savedSearchType),
+      savedSearchSubtype: parseInt(formValues.savedSearchSubtype),
     };
 
     //And create a SavedSearchRequest from the SavedSearch and the search request
@@ -72,5 +81,19 @@ export class CreateSearchComponent implements OnInit {
 
   dismiss() {
     this.activeModal.dismiss(false);
+  }
+
+  onSavedSearchTypeChange($event: Event) {
+    const formValues = this.form.value;
+    const selectedSavedSearchType = formValues.savedSearchType;
+    if (selectedSavedSearchType === undefined) {
+      this.savedSearchTypeSubInfos = null;
+    } else {
+      this.savedSearchTypeSubInfos =
+        this.savedSearchTypeInfos[selectedSavedSearchType].categories;
+      if (!this.savedSearchTypeSubInfos) {
+        this.form.controls["savedSearchSubtype"].patchValue(null);
+      }
+    }
   }
 }

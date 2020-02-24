@@ -1,33 +1,33 @@
-import {Component, Input, OnInit} from '@angular/core';
-
-
+import {
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges
+} from '@angular/core';
 import {SearchResults} from '../../../../model/search-results';
-
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
 import {
   indexOfSavedSearch,
-  SavedSearch,
+  SavedSearch, SavedSearchSubtype,
   SavedSearchType
 } from '../../../../model/saved-search';
 import {SavedSearchService} from '../../../../services/saved-search.service';
 import {Router} from '@angular/router';
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {LocalStorageService} from "angular-2-local-storage";
-
-//todo Support paging/sorting request
-//todo Fix up types to match Java types.
 
 @Component({
   selector: 'app-browse-saved-searches',
   templateUrl: './browse-saved-searches.component.html',
   styleUrls: ['./browse-saved-searches.component.scss']
 })
-export class BrowseSavedSearchesComponent implements OnInit {
+export class BrowseSavedSearchesComponent implements OnInit, OnChanges {
 
   private savedStateKeyPrefix: string = 'BrowseKey';
 
   @Input() savedSearchType: SavedSearchType;
+  @Input() savedSearchSubtype: SavedSearchSubtype;
   searchForm: FormGroup;
   public loading: boolean;
   error: any;
@@ -54,6 +54,10 @@ export class BrowseSavedSearchesComponent implements OnInit {
     this.onChanges();
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    this.search();
+  }
+
   onChanges(): void {
     this.searchForm.valueChanges
       .pipe(
@@ -68,8 +72,9 @@ export class BrowseSavedSearchesComponent implements OnInit {
 
   search() {
     this.loading = true;
-    const request = this.searchForm.value;
+    const request = this.searchForm ? this.searchForm.value : {keyword: ""};
     request.savedSearchType = this.savedSearchType;
+    request.savedSearchSubtype = this.savedSearchSubtype;
     request.pageNumber = this.pageNumber - 1;
     request.pageSize = this.pageSize;
     request.sortFields = ['name'];

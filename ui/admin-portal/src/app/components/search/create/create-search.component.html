@@ -19,12 +19,19 @@
       <label for="name">Name</label>
       <input type="text" class="form-control" id="name" formControlName="name">
 
-      <label for="type">Type</label>
-      <select class="form-control" id="type" formControlName="type">
-        <option value="profession">Profession</option>
-        <option value="job">Job</option>
-        <option value="other">Other</option>
+      <label for="savedSearchType">Type</label>
+      <select class="form-control" id="savedSearchType" formControlName="savedSearchType"
+      (change)="onSavedSearchTypeChange($event)">
+        <option *ngFor="let typeInfo of savedSearchTypeInfos"
+                [value]="typeInfo.savedSearchType">{{typeInfo.title}}</option>
       </select>
+
+      <div *ngIf="savedSearchTypeSubInfos">
+        <label for="savedSearchSubtype">Category</label>
+        <select class="form-control" id="savedSearchSubtype" formControlName="savedSearchSubtype">
+          <option *ngFor="let subtypeInfo of savedSearchTypeSubInfos" [value]="subtypeInfo.savedSearchSubtype">{{subtypeInfo.title}}</option>
+        </select>
+      </div>
     </div>
     <hr/>
     <div *ngIf="savedSearch">

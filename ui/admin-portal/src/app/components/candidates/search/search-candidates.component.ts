@@ -14,7 +14,11 @@ import {Subscription} from "rxjs";
 import {CandidateShortlistItem} from "../../../model/candidate-shortlist-item";
 import {ActivatedRoute} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
-import {SavedSearch, SavedSearchRunRequest} from "../../../model/saved-search";
+import {
+  SavedSearch,
+  SavedSearchRunRequest,
+  SavedSearchType
+} from "../../../model/saved-search";
 import {
   CachedSearchResults,
   SavedSearchResultsCacheService
@@ -240,5 +244,10 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     )
   }
 
-
+  //todo Duplictaed code
+  getBreadcrumb() {
+    let infos = this.savedSearchService.getSavedSearchTypeInfos();
+    return this.savedSearch ? (infos[SavedSearchType.profession].title +
+      ': ' + this.savedSearch.name) : 'Search'
+  }
 }

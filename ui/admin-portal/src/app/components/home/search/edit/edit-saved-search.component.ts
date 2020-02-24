@@ -1,3 +1,5 @@
+//todo Is this still used anywhere?
+
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
@@ -34,7 +36,7 @@ export class EditSavedSearchComponent implements OnInit {
       this.savedSearch = savedSearch;
       this.savedSearchForm = this.fb.group({
         name: [savedSearch.name, Validators.required],
-        type: [savedSearch.type, Validators.required]
+        type: [savedSearch.savedSearchType, Validators.required]
       });
       this.loading = false;
     });
@@ -45,7 +47,7 @@ export class EditSavedSearchComponent implements OnInit {
 
     //Populate name and type
     this.savedSearch.name = this.savedSearchForm.value.name;
-    this.savedSearch.type = this.savedSearchForm.value.type;
+    this.savedSearch.savedSearchType = this.savedSearchForm.value.type;
     //Create a SavedSearchRequest from the SavedSearch and the search request
     this.savedSearchService.update(
       convertToSavedSearchRequest(this.savedSearch, null)

@@ -62,6 +62,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         Page<SavedSearch> savedSearches = savedSearchRepository.findAll(
                 SavedSearchSpecification.buildSearchQuery(request), request.getPageRequest());
         log.info("Found " + savedSearches.getTotalElements() + " savedSearches in search");
+
+        for (SavedSearch savedSearch: savedSearches) {
+            savedSearch.parseType();
+        }
+        
         return savedSearches;
     }
 
@@ -69,6 +74,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     public SearchCandidateRequest loadSavedSearch(long id) {
         SavedSearch savedSearch = this.savedSearchRepository.findByIdLoadSearchJoins(id)
                 .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+        savedSearch.parseType();
         return convertToSearchCandidateRequest(savedSearch);
     }
 
@@ -76,6 +82,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     public SavedSearch getSavedSearch(long id) {
         SavedSearch savedSearch = this.savedSearchRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+
+        savedSearch.parseType();
 
         Map<Integer, String> languageLevelMap = languageLevelRepository.findAllActive().stream().collect(
                 Collectors.toMap(LanguageLevel::getLevel, LanguageLevel::getName, (l1, l2) ->  l1));
@@ -134,7 +142,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if(request.getSearchCandidateRequest() == null){
             SavedSearch savedSearch = savedSearchRepository.findById(id).orElse(null);
             savedSearch.setName(request.getName());
-            savedSearch.setType(request.getType());
+            savedSearch.setType(request.getSavedSearchType(), request.getSavedSearchSubtype());
             return savedSearchRepository.save(savedSearch);
         }
 
@@ -196,7 +204,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         SavedSearch savedSearch = new SavedSearch();
         savedSearch.setName(request.getName());
-        savedSearch.setType(request.getType());
+        savedSearch.setType(request.getSavedSearchType(), request.getSavedSearchSubtype());
 
         final SearchCandidateRequest searchCandidateRequest = request.getSearchCandidateRequest();
         if (searchCandidateRequest != null) {

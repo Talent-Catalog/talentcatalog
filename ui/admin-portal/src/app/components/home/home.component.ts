@@ -1,12 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {NgbTabChangeEvent} from "@ng-bootstrap/ng-bootstrap";
-import {SavedSearchType} from "../../model/saved-search";
+import {SavedSearchSubtype, SavedSearchType} from "../../model/saved-search";
 import {LocalStorageService} from "angular-2-local-storage";
-
-interface TabInfo {
-  savedSearchType?: SavedSearchType;
-  title: string;
-}
+import {
+  SavedSearchService,
+  SavedSearchTypeInfo, SavedSearchTypeSubInfo
+} from "../../services/saved-search.service";
+import {FormBuilder, FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-home',
@@ -16,32 +16,63 @@ interface TabInfo {
 export class HomeComponent implements OnInit {
 
   activeId: string;
+  categoryForm: FormGroup;
   private lastTabKey: string = 'HomeLastTab';
-
-  tabInfos: TabInfo[] = [
-    {savedSearchType: SavedSearchType.profession,
-      title: 'Professions'},
-    {savedSearchType: SavedSearchType.job,
-      title: 'Jobs'},
-    {savedSearchType: SavedSearchType.other,
-      title: 'Other'},
-    {title: 'All'},
-  ];
+  private lastCategoryTabKey: string = 'HomeLastCategoryTab';
+  savedSearchTypeInfos: SavedSearchTypeInfo[];
+  savedSearchTypeSubInfos: SavedSearchTypeSubInfo[];
+  selectedSavedSearchSubtype: SavedSearchSubtype;
 
   constructor(
-    private localStorageService: LocalStorageService
-  ) { }
-
-  ngOnInit() {
-    this.selectDefaultTab();
+    private fb: FormBuilder,
+    private localStorageService: LocalStorageService,
+    private savedSearchService: SavedSearchService
+  ) {
+    this.savedSearchTypeInfos = savedSearchService.getSavedSearchTypeInfos();
   }
 
-  private selectDefaultTab() {
-    this.activeId = this.localStorageService.get(this.lastTabKey);
+  ngOnInit() {
+
+    this.categoryForm = this.fb.group({
+      savedSearchSubtype: [this.selectedSavedSearchSubtype]
+    });
+
+    this.selectDefaultTab()
   }
 
   onTabChanged(event: NgbTabChangeEvent) {
-    this.activeId = event.nextId;
+    this.setActiveId(event.nextId);
+
     this.localStorageService.set(this.lastTabKey, this.activeId);
+  }
+
+  onSavedSearchSubtypeChange($event: Event) {
+    const formValues = this.categoryForm.value;
+    this.setSelectedSavedSearchSubtype(formValues.savedSearchSubtype);
+  }
+
+  private selectDefaultTab() {
+    this.setActiveId(this.localStorageService.get(this.lastTabKey));
+    this.setSelectedSavedSearchSubtype(this.localStorageService.get(this.lastCategoryTabKey));
+  }
+
+  private setActiveId(activeId: string) {
+    this.activeId = activeId;
+
+    //todo this won't work if there are non category tabs because activeId is a
+    // tab number which is not the same as an enum value
+    if (activeId === undefined) {
+      this.savedSearchTypeSubInfos = null;
+    } else {
+      this.savedSearchTypeSubInfos =
+        this.savedSearchTypeInfos[activeId].categories;
+    }
+  }
+
+  private setSelectedSavedSearchSubtype(selectedSavedSearchSubtype: number) {
+    this.selectedSavedSearchSubtype = selectedSavedSearchSubtype;
+    this.categoryForm.controls['savedSearchSubtype'].patchValue(selectedSavedSearchSubtype);
+
+    this.localStorageService.set(this.lastCategoryTabKey, this.selectedSavedSearchSubtype);
   }
 }

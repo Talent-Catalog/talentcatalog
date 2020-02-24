@@ -3,7 +3,9 @@
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a [routerLink]="['/candidates']">Candidates</a></li>
-      <li class="breadcrumb-item active" aria-current="page">{{savedSearch ? (savedSearch.name + ': ' + savedSearch.type) : 'Search'}}</li>
+      <li class="breadcrumb-item active" aria-current="page">
+        {{getBreadcrumb()}}
+        </li>
     </ol>
   </nav>
 
@@ -13,6 +15,8 @@
     <div>
       <button type="button" class="btn btn-outline-dark mr-2" [disabled]="loading" (click)="clearForm()">Clear Search</button>
       <button type="button" class="btn btn-outline-dark" (click)="showSavedSearches()">Load Search</button>
+    </div>
+    <div>
       <button type="button" class="ml-2 btn btn-outline-primary" [disabled]="!savedSearch" (click)="updateSavedSearchModal()">Update Saved Search</button>
       <button type="button" class="ml-2 btn btn-outline-primary" [disabled]="!savedSearch" (click)="deleteSavedSearchModal()">Delete Saved Search</button>
       <button type="button" class="ml-2 btn btn-outline-primary" (click)="createNewSavedSearchModal()">Make New Saved Search</button>

@@ -1,9 +1,32 @@
 import {SearchCandidateRequest} from "./search-candidate-request";
 
 export enum SavedSearchType {
-  profession = 'profession',
-  job = 'job',
-  other = 'other'
+  profession,
+  job ,
+  other
+}
+
+export enum SavedSearchSubtype {
+   //Profession subtypes
+   business,
+   agriculture,
+   healthcare,
+   engineering,
+   food,
+   education,
+   labourer,
+   trade,
+   arts,
+   it,
+   social,
+   science,
+   law,
+   other,
+
+   //Job subtypes
+   au,
+   ca,
+   uk
 }
 
 export interface SavedSearchJoin {
@@ -13,19 +36,14 @@ export interface SavedSearchJoin {
   childSavedSearch: SavedSearch;
 }
 
-/**
- * This is what saved searches look like when received from the server.
- * todo - there are clearly different types depending on the call: get, load or search
- * todo - for example, with search occupation ids are strings - not array of numbers
- * todo no paging info
- */
 export interface SavedSearch extends SearchCandidateRequest {
   id: number;
   name: string;
-  type: SavedSearchType;
+  savedSearchType: SavedSearchType;
+  savedSearchSubtype: SavedSearchSubtype;
 }
 
-export function indexOfSavedSearch(savedSearchID: number, savedSearches: SavedSearch[]) {
+export function indexOfSavedSearch(savedSearchID: number, savedSearches: SavedSearch[]): number {
   for (let i = 0; i < savedSearches.length; i++) {
     if (savedSearches[i].id == savedSearchID) {
       return i;
@@ -43,7 +61,8 @@ export function indexOfSavedSearch(savedSearchID: number, savedSearches: SavedSe
 export interface SavedSearchRequest {
   id?: number;
   name?: string;
-  type?: SavedSearchType;
+  savedSearchType?: SavedSearchType;
+  savedSearchSubtype?: SavedSearchSubtype;
 
   searchCandidateRequest?: SearchCandidateRequest;
 }
@@ -68,7 +87,8 @@ export function convertToSavedSearchRequest
   const savedSearchRequest: SavedSearchRequest = {};
   savedSearchRequest.id = savedSearch.id;
   savedSearchRequest.name = savedSearch.name;
-  savedSearchRequest.type = savedSearch.type;
+  savedSearchRequest.savedSearchType = savedSearch.savedSearchType;
+  savedSearchRequest.savedSearchSubtype = savedSearch.savedSearchSubtype;
   savedSearchRequest.searchCandidateRequest = searchCandidateRequest;
   return savedSearchRequest;
 }
