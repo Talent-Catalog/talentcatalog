@@ -1,6 +1,6 @@
 <div class="card">
-  <div *ngIf="loading"><i class="fas fa-spinner fa-spin"></i></div>
-  <div *ngIf="!loading" class="card-body">
+<!--  <div *ngIf="loading"><i class="fas fa-spinner fa-spin"></i></div>-->
+  <div class="card-body">
     <div class="row">
       <div class="w-75"><strong>{{savedSearch.name}}</strong></div>
       <div class="w-25 pull-right">
@@ -15,6 +15,7 @@
     <div class="row" *ngIf="showAll">
       <div class="w-100" *ngIf="savedSearch.keyword">Keyword: {{savedSearch.keyword}},</div>
       <div class="w-100" *ngIf="savedSearch.statuses">Statuses: {{savedSearch.statuses}},</div>
+      <div class="w-100" *ngIf="savedSearch.includeDraftAndDeleted">Includes deleted and draft candidates,</div>
       <div class="w-100" *ngIf="savedSearch.vettedOccupationNames">Vetted Occupations: <span
         *ngFor="let name of savedSearch.vettedOccupationNames">{{name}},</span></div>
       <div class="w-100" *ngIf="savedSearch.englishMinWrittenLevel">English Written: {{savedSearch.englishWrittenLevel}}

@@ -50,6 +50,7 @@ public class SearchCandidateRequest extends SearchRequest {
     private List<Long> educationMajorIds;
     private List<ShortlistStatus> shortlistStatus;
     private boolean includeNew;
+    private Boolean includeDraftAndDeleted;
 
     public SearchCandidateRequest() {
         super(Sort.Direction.DESC, new String[]{"id"});
@@ -287,6 +288,14 @@ public class SearchCandidateRequest extends SearchRequest {
 
     public void setIncludeNew(boolean includeNew) {
         this.includeNew = includeNew;
+    }
+
+    public Boolean getIncludeDraftAndDeleted() {
+        return includeDraftAndDeleted;
+    }
+
+    public void setIncludeDraftAndDeleted(Boolean includeDraftAndDeleted) {
+        this.includeDraftAndDeleted = includeDraftAndDeleted;
     }
 }
 

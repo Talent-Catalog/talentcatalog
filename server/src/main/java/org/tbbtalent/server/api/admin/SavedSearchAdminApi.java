@@ -7,8 +7,8 @@ import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.model.SavedSearch;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
-import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
+import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.service.SavedSearchService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -70,6 +70,7 @@ public class SavedSearchAdminApi {
                 .add("savedSearchSubtype")
                 .add("keyword")
                 .add("statuses")
+                .add("includeDraftAndDeleted")
                 .add("gender")
                 .add("occupationIds")
                 .add("orProfileKeyword")

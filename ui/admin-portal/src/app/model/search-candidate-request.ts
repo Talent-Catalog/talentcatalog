@@ -35,6 +35,6 @@ export interface SearchCandidateRequest {
   otherWrittenLevel?: string;
   otherSpokenLevel?: string;
   minEducationLevelName?: string;
-
+  includeDraftAndDeleted?: boolean;
   searchJoins?: SavedSearchJoin[];
 }

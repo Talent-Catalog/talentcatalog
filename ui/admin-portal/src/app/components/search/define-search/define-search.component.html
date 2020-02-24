@@ -53,6 +53,13 @@
           (onSelectAll)="onSelectAll($event, 'statuses')"
           (onDeSelectAll)="onDeSelectAll('statuses')">
         </ng-multiselect-dropdown>
+        <div class="operator">
+          <input type="checkbox" class="custom-checkbox"  id="includeDraftAndDeleted" [value]="true" [formControlName]="'includeDraftAndDeleted'">
+          <label for="includeDraftAndDeleted" class="custom-checkbox">
+            Include Draft and Deleted
+          </label>
+        </div>
+
       </div>
 
       <!-- OCCUPATION (VETTED) -->

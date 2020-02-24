@@ -1,18 +1,10 @@
 package org.tbbtalent.server.model;
 
+import org.apache.commons.lang3.StringUtils;
+
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import org.apache.commons.lang3.StringUtils;
 
 @Entity
 @Table(name = "users")
@@ -43,7 +35,6 @@ public class User extends AbstractAuditableDomainObject<Long> {
     @Column(name = "password_updated_date")
     private LocalDateTime passwordUpdatedDate;
 
-    // TODO: needs to change to oneToMany to use lazy fetching - particularly for admin portal
     @OneToOne(mappedBy = "user")
     private Candidate candidate;
 

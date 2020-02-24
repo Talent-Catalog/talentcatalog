@@ -1,10 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  OnDestroy,
-  OnInit,
-  ViewChild
-} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 
 import {Candidate} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
@@ -105,7 +99,6 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     {id: 'pending', name: 'pending'},
     {id: 'incomplete', name: 'incomplete'},
     {id: 'employed', name: 'employed'},
-    {id: 'deleted', name: 'deleted'},
     {id: 'active', name: 'active'},
     {id: 'inactive', name: 'inactive'},
   ];
@@ -165,7 +158,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
       educationMajors: [[]],
       nationalities: [[]],
       statusesDisplay: [[]],
-
+      includeDraftAndDeleted: false
     });
   }
 
@@ -642,6 +635,8 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
       }
     )
   }
+
+
 
 
 }

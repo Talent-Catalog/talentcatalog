@@ -39,7 +39,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @JoinColumn(name = "nationality_id")
     private Nationality nationality;
 
-    // TODO: need to fetch to manyToOne to allow lazy-fetching
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;

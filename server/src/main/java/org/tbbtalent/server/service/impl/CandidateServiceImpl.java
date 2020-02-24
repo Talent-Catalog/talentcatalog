@@ -235,7 +235,14 @@ public class CandidateServiceImpl implements CandidateService {
 
         Candidate candidate = new Candidate(user, request.getPhone(), request.getWhatsapp(), user);
         candidate.setCandidateNumber("TEMP%04d" + RandomStringUtils.random(6));
+
+        //set country and nationality to unknown on create as required for search
+        candidate.setCountry(countryRepository.getOne(0l));
+        candidate.setNationality(nationalityRepository.getOne(0l));
+
         candidate = this.candidateRepository.save(candidate);
+
+
 
         String candidateNumber = String.format("CN%04d", candidate.getId());
         candidate.setCandidateNumber(candidateNumber);

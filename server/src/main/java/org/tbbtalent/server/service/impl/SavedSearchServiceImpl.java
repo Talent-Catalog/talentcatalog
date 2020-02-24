@@ -14,8 +14,8 @@ import org.tbbtalent.server.model.*;
 import org.tbbtalent.server.repository.*;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.candidate.SearchJoinRequest;
-import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
+import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.SavedSearchService;
 
@@ -235,6 +235,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setMaxAge(searchCandidateRequest.getMaxAge());
             savedSearch.setMinEducationLevel(searchCandidateRequest.getMinEducationLevel());
             savedSearch.setEducationMajorIds(getListAsString(searchCandidateRequest.getEducationMajorIds()));
+            savedSearch.setIncludeDraftAndDeleted(searchCandidateRequest.getIncludeDraftAndDeleted());
         }
 
         return savedSearch;
@@ -268,7 +269,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setMaxAge(request.getMaxAge());
         searchCandidateRequest.setMinEducationLevel(request.getMinEducationLevel());
         searchCandidateRequest.setEducationMajorIds(getIdsFromString(request.getEducationMajorIds()));
-
+        searchCandidateRequest.setIncludeDraftAndDeleted(request.getIncludeDraftAndDeleted());
         List<SearchJoinRequest> searchJoinRequests = new ArrayList<>();
         for (SearchJoin searchJoin : request.getSearchJoins()) {
             searchJoinRequests.add(new SearchJoinRequest(searchJoin.getChildSavedSearch().getId(), searchJoin.getChildSavedSearch().getName(), searchJoin.getSearchType()));

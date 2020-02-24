@@ -1,12 +1,12 @@
 package org.tbbtalent.server.model;
 
+import org.springframework.util.StringUtils;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.springframework.util.StringUtils;
 
 @Entity
 @Table(name = "saved_search")
@@ -59,6 +59,8 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
 
     private Integer minEducationLevel;
     private String educationMajorIds;
+
+    private Boolean includeDraftAndDeleted;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "savedSearch", cascade = CascadeType.MERGE)
     private Set<SearchJoin> searchJoins = new HashSet<>();
@@ -423,7 +425,7 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
     public void setSavedSearchSubtype(SavedSearchSubtype savedSearchSubtype) {
         this.savedSearchSubtype = savedSearchSubtype;
     }
-    
+
     public void parseType() {
         if (!StringUtils.isEmpty(type)) {
             String[] parts = type.split("/");
@@ -437,5 +439,13 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
                 setSavedSearchSubtype(savedSearchSubtype);
             }
         }
+    }
+
+    public Boolean getIncludeDraftAndDeleted() {
+        return includeDraftAndDeleted;
+    }
+
+    public void setIncludeDraftAndDeleted(Boolean includeDraftAndDeleted) {
+        this.includeDraftAndDeleted = includeDraftAndDeleted;
     }
 }

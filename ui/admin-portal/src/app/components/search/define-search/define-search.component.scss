@@ -83,6 +83,13 @@ $candidate-card-width: 375px;
 .operator {
   display: inline-flex;
 
+  .custom-checkbox {
+    padding: 0 8px;
+    line-height: 1;
+    border-radius: 0;
+    font-size: 12px;
+  }
+
   .btn {
     padding: 0 8px;
     line-height: 1;

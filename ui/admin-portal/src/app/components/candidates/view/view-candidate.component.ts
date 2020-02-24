@@ -30,6 +30,8 @@ export class ViewCandidateComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       let candidateId = +params.get('candidateId');
       this.loading = true;
+      this.error = null;
+      this.loadingError = false;
       this.candidateService.get(candidateId).subscribe(candidate => {
         this.candidate = candidate;
         this.loading = false;

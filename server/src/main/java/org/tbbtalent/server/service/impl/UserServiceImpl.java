@@ -213,11 +213,6 @@ public class UserServiceImpl implements UserService {
 
         /* Check that the old passwords match */
         User user = userContext.getLoggedInUser();
-        // TODO extend PasswordEncoder to expose BCrypts `checkpw` method (to compare plaintext and hashed passwords)
-//        String oldPasswordEnc = passwordHelper.encodePassword(request.getOldPassword());
-//        if (!passwordHelper.isValidPassword(user.getPasswordEnc(), oldPasswordEnc)) {
-//            throw new InvalidCredentialsException("Invalid credentials for this user");
-//        }
 
         /* Change the password */
         String passwordEnc = passwordHelper.validateAndEncodePassword(request.getPassword());

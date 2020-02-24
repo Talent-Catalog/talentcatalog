@@ -59,8 +59,61 @@ public class SystemAdminApi {
         api.setTargetPwd("tbbtalent");
         api.migrate();
     }
-    
-    @GetMapping("migrate")
+
+    @GetMapping("migrate/status")
+    public String migrateStatus() {
+        try {
+            Long userId = 1L;
+            if (userContext != null) {
+                User loggedInUser = userContext.getLoggedInUser();
+                if (loggedInUser != null){
+                    userId = loggedInUser.getId();
+                }
+            }
+
+            Connection sourceConn = DriverManager.getConnection("jdbc:mysql://v1.tbbtalent.org/yiitbb?useUnicode=yes&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull", "sayre", "MoroccoBound");
+            Statement sourceStmt = sourceConn.createStatement();
+
+            Connection targetConn = DriverManager.getConnection(targetJdbcUrl, targetUser, targetPwd);
+
+            log.info("Migration data for candidates");
+
+            String updateSql = "update candidate set migration_status =  ? where candidate_number = ? ";
+            String selectSql = "select user_id, u.status from  user_jobseeker j join user u on u.id = j.user_id";
+            PreparedStatement update = targetConn.prepareStatement(updateSql);
+            ResultSet result = sourceStmt.executeQuery(selectSql);
+            int count = 0;
+            while (result.next()) {
+                int i = 1;
+                update.setString(i++, result.getString("status"));
+                update.setString(i++, result.getString("user_id"));
+                update.addBatch();
+
+                if (count%100 == 0) {
+                    update.executeBatch();
+                    log.info("candidates - saving batch  " + count);
+                }
+
+                count++;
+            }
+            update.executeBatch();
+            log.info("candidates - saving batch " + count);
+            log.info("Migration data for candidates");
+
+            updateSql = "update candidate set status =  'deleted' where migration_status = '0' ";
+            update = targetConn.prepareStatement(updateSql);
+            update.execute();
+            log.info("candidates - fix deleted " + count);
+
+        } catch (Exception e){
+            log.error("unable to migrate status data", e);
+        }
+
+        return "done";
+    }
+
+    //Hidden for now as should no longer be required - can probably delete
+//    @GetMapping("migrate")
     public String migrate() {
         try {
             Long userId = 1L; 

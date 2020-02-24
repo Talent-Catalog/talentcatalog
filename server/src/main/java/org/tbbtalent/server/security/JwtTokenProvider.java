@@ -30,10 +30,6 @@ public class JwtTokenProvider {
             AuthenticatedUser user = (AuthenticatedUser) authentication.getPrincipal();
             subject = user.getUsername();
         }
-        /* TODO admin */
-//        else if (authentication.getPrincipal() instanceof AuthenticatedAdmin) {
-//
-//        }
 
         return Jwts.builder()
                 .setSubject(subject)
