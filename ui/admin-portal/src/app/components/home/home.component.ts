@@ -65,7 +65,7 @@ export class HomeComponent implements OnInit {
       this.savedSearchTypeSubInfos = null;
     } else {
       this.savedSearchTypeSubInfos =
-        this.savedSearchTypeInfos[activeId].categories;
+        this.savedSearchTypeInfos[+activeId].categories;
     }
   }
 
