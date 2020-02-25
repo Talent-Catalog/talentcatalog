@@ -134,3 +134,28 @@ The Admin Portal is now running locally and you can open a browser (chrome prefe
 
 __Note:__ _this is for development mode only. In production, the Admin Portal module will be bundled 
 into the server and serve through Apache Tomcat._ 
+
+## Version Control ##
+
+We use Bitbucket - [https://bitbucket.org/dashboard/overview]()
+
+Our repository is called tbbtalentv2 - John Cameron is the owner.
+
+The main branch is "master". We only merge into "master" when we are deploying
+to production (deployment to production is automatic, triggered by any push
+to "master" - see Deployment section below).
+
+The "staging" branch is used for versions of the software about to go into
+production. 
+
+## Deployment ##
+
+Deployment to production is triggered by pushing to the master branch on our
+Bitbucket version control. See Version Control section above.
+
+The "master" branch is associated with a pipeline which automatically builds
+and deploys (to AWS). This build process is controlled by 
+bitbucket-pipelines.yml.
+
+Deployment can take around 10 minutes during which time the production software
+is unavailable.
