@@ -19,7 +19,7 @@
     "@angular/platform-browser": "~8.2.12",
     "@angular/platform-browser-dynamic": "~8.2.12",
     "@angular/router": "~8.2.12",
-    "@fortawesome/fontawesome-free-webfonts": "^1.0.9",
+    "@fortawesome/fontawesome-free": "^5.12.1",
     "@ng-bootstrap/ng-bootstrap": "^5.1.2",
     "angular-2-local-storage": "^3.0.2",
     "angular-local-storage": "^0.7.1",
