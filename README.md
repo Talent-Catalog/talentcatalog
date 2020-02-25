@@ -146,10 +146,13 @@ to production (deployment to production is automatic, triggered by any push
 to "master" - see Deployment section below).
 
 The "staging" branch is used for versions of the software about to go into
-production. 
+production. Normally you should only merge and push your finished changes
+to the staging branch. Master should only be accessed directly when staging
+is merged into it, triggering deployment to production. 
 
 ## Deployment ##
 
+### Production ###
 Deployment to production is triggered by pushing to the master branch on our
 Bitbucket version control. See Version Control section above.
 
@@ -159,3 +162,29 @@ bitbucket-pipelines.yml.
 
 Deployment can take around 10 minutes during which time the production software
 is unavailable.
+
+### Test ###
+We use Heroku to host deployments to a test system.
+
+John Cameron has a Heroku account where there is a server called 
+tbbtalent-staging - [https://tbbtalent-staging.herokuapp.com/]()
+
+
+Once you have installed the Heroku command line 
+[https://devcenter.heroku.com/articles/heroku-cli]()
+ 
+... you can add the Heroku remote to your local repository (once only) with 
+this command:
+
+> heroku git:remote -a tbbtalent-staging
+  
+... then you can push your local staging branch any time to Heroku's master branch 
+with this command:
+
+> git push heroku staging:master
+
+That will automatically build and deploy to our Heroku test server at
+[https://tbbtalent-staging.herokuapp.com/]().
+
+ 
+
