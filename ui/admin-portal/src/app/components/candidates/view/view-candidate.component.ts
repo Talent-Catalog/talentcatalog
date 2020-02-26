@@ -5,6 +5,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {DeleteCandidateComponent} from './delete/delete-candidate.component';
 import {EditCandidateStatusComponent} from "./status/edit-candidate-status.component";
+import {Title} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-view-candidate',
@@ -23,7 +24,8 @@ export class ViewCandidateComponent implements OnInit {
   constructor(private candidateService: CandidateService,
               private route: ActivatedRoute,
               private router: Router,
-              private modalService: NgbModal) { }
+              private modalService: NgbModal,
+              private titleService: Title) { }
 
   ngOnInit() {
     this.loadingError = false;
@@ -33,7 +35,7 @@ export class ViewCandidateComponent implements OnInit {
       this.error = null;
       this.loadingError = false;
       this.candidateService.get(candidateId).subscribe(candidate => {
-        this.candidate = candidate;
+        this.setCandidate(candidate);
         this.loading = false;
       },error => {
         this.loadingError = true;
@@ -55,12 +57,20 @@ export class ViewCandidateComponent implements OnInit {
     let modal = this.modalService.open(EditCandidateStatusComponent);
     modal.componentInstance.candidateId = this.candidate.id;
     modal.result.then(result => {
-      this.candidate = result;
+      this.setCandidate(result);
     });
   }
 
   resizeSidePanel(){
     this.mainColWidth = this.mainColWidth == 8 ? this.mainColWidth - 4 : this.mainColWidth + 4;
     this.sidePanelColWidth = this.mainColWidth == 4 ? this.sidePanelColWidth + 4 : this.sidePanelColWidth - 4;
+  }
+
+
+  setCandidate(value: Candidate) {
+    this.candidate = value;
+
+    this.titleService.setTitle(this.candidate.user.firstName + ' '
+      + this.candidate.user.lastName + ' ' + this.candidate.candidateNumber);
   }
 }
