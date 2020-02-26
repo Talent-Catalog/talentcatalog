@@ -163,6 +163,7 @@ const ALL_FIELDS =
     },
     "REGISTRATION": {
       "HEADER": {
+        "EXPLANATION": null,
         "STEP": null,
         "TITLE": {
           "CONTACT": null,
@@ -264,9 +265,6 @@ const ALL_FIELDS =
       "SUBMIT": {
         "LABEL": {
           "ADDITIONALINFO": null
-        },
-        "TEXT": {
-          "EXPLANATION": null
         }
       },
       "COMPLETE": {
@@ -358,7 +356,6 @@ const ALL_FIELDS =
         "INVALIDDATERANGE": null
       },
       "JOBEXPERIENCE": {
-        "EXPLANATION": null,
         "LABEL": {
           "CANDIDATEOCCUPATIONID": null,
           "COMPANYNAME": null,
