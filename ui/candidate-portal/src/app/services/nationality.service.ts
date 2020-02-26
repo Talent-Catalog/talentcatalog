@@ -5,6 +5,7 @@ import {Nationality} from "../model/nationality";
 import {Observable, throwError} from "rxjs";
 import {catchError, map} from "rxjs/operators";
 import {LanguageService} from "./language.service";
+import {Country} from "../model/country";
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +21,16 @@ export class NationalityService {
     const locale = this.languageService.getSelectedLanguage() || 'en';
     return this.http.get<Nationality[]>(`${this.apiUrl}`).pipe(
       map((items: Nationality[], index: number) => {
-        return items.sort((a, b) => a.name.localeCompare(b.name, locale));
+        items.sort((a, b) => a.name.localeCompare(b.name, locale));
+        let iraqi: Nationality = items.find(x=> x.name == "Iraqi");
+        let jordanian: Nationality = items.find(x=> x.name == "Jordanian");
+        let palestinian: Nationality = items.find(x=> x.name == "Palestinian");
+        let syrian: Nationality = items.find(x=> x.name == "Syrian");
+        items.splice(0,0, syrian);
+        items.splice(0,0, palestinian);
+        items.splice(0,0, jordanian);
+        items.splice(0,0, iraqi);
+        return items;
       }),
       catchError(e => throwError(e))
     );
