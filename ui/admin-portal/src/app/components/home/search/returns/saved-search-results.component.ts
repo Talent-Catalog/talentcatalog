@@ -121,6 +121,9 @@ constructor(
     request.pageSize = this.pageSize;
     request.sortFields = [this.sortField];
     request.sortDirection = this.sortDirection;
+
+    //todo Hard coding this for now. Saved searches with joins crash without it.
+    request.shortlistStatus = ["pending", "verified"];
     this.subscription = this.candidateService.search(request).subscribe(
       results => {
         this.timestamp = Date.now();
