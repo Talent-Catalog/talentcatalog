@@ -1,9 +1,9 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {CandidateService} from "../../../../services/candidate.service";
+import {CandidateService} from "../../../services/candidate.service";
 import {EditCandidateShortlistItemComponent} from "./edit/edit-candidate-shortlist-item.component";
-import {SavedSearch} from "../../../../model/saved-search";
-import {CandidateShortlistItem} from "../../../../model/candidate-shortlist-item";
+import {SavedSearch} from "../../../model/saved-search";
+import {CandidateShortlistItem} from "../../../model/candidate-shortlist-item";
 
 @Component({
   selector: 'app-candidate-shortlist-item',

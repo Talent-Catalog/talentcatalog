@@ -12,12 +12,12 @@ import {SearchResults} from '../../../model/search-results';
 
 import {NgbDate, NgbDateStruct, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormArray, FormBuilder, FormGroup} from "@angular/forms";
-import {SearchSavedSearchesComponent} from "../../candidates/search/saved-search/search-saved-searches.component";
+import {SearchSavedSearchesComponent} from "../load-search/search-saved-searches.component";
 import {CreateSearchComponent} from "../create/create-search.component";
 import {SavedSearchService} from "../../../services/saved-search.service";
 import {IDropdownSettings} from 'ng-multiselect-dropdown';
 import {forkJoin, Subscription} from "rxjs";
-import {JoinSavedSearchComponent} from "../../candidates/search/join-search/join-saved-search.component";
+import {JoinSavedSearchComponent} from "../join-search/join-saved-search.component";
 import {EducationLevel} from "../../../model/education-level";
 import {EducationLevelService} from "../../../services/education-level.service";
 import {EducationMajor} from "../../../model/education-major";

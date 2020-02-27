@@ -32,9 +32,9 @@ import {EditCountryComponent} from "./components/settings/countries/edit/edit-co
 import {SearchLanguagesComponent} from './components/settings/languages/search-languages.component';
 import {CreateLanguageComponent} from './components/settings/languages/create/create-language.component';
 import {EditLanguageComponent} from './components/settings/languages/edit/edit-language.component';
-import {SearchSavedSearchesComponent} from "./components/candidates/search/saved-search/search-saved-searches.component";
+import {SearchSavedSearchesComponent} from "./components/search/load-search/search-saved-searches.component";
 import {CreateSearchComponent} from "./components/search/create/create-search.component";
-import {CandidateSearchCardComponent} from './components/candidates/search/candidate-search-card/candidate-search-card.component';
+import {CandidateSearchCardComponent} from './components/util/candidate-search-card/candidate-search-card.component';
 import {CandidateGeneralTabComponent} from './components/candidates/view/tab/candidate-general-tab/candidate-general-tab.component';
 import {CandidateExperienceTabComponent} from './components/candidates/view/tab/candidate-experience-tab/candidate-experience-tab.component';
 import {CandidateHistoryTabComponent} from './components/candidates/view/tab/candidate-history-tab/candidate-history-tab.component';
@@ -76,12 +76,12 @@ import {ViewCandidateJobExperienceComponent} from './components/candidates/view/
 import {EditUserComponent} from './components/settings/users/edit/edit-user.component';
 import {CreateUserComponent} from './components/settings/users/create/create-user.component';
 import {CandidateEducationTabComponent} from "./components/candidates/view/tab/candidate-education-tab/candidate-education-tab.component";
-import {JoinSavedSearchComponent} from "./components/candidates/search/join-search/join-saved-search.component";
+import {JoinSavedSearchComponent} from "./components/search/join-search/join-saved-search.component";
 import {SavedSearchComponent} from "./components/util/saved-search/saved-search.component";
 import {LanguageLevelFormControlComponent} from './components/util/form/language-proficiency/language-level-form-control.component';
 import {CandidatePipe} from './pipes/candidate.pipe';
-import {EditCandidateShortlistItemComponent} from "./components/candidates/search/shortlist/edit/edit-candidate-shortlist-item.component";
-import {CandidateShortlistItemComponent} from "./components/candidates/search/shortlist/candidate-shortlist-item.component";
+import {EditCandidateShortlistItemComponent} from "./components/util/candidate-review/edit/edit-candidate-shortlist-item.component";
+import {CandidateShortlistItemComponent} from "./components/util/candidate-review/candidate-shortlist-item.component";
 import {UserPipe} from "./components/util/user/user.pipe";
 import {UpdatedByComponent} from "./components/util/user/updated-by/updated-by.component";
 import {DateRangePickerComponent} from './components/util/form/date-range-picker/date-range-picker.component';
@@ -101,8 +101,6 @@ import {CandidateAdditionalInfoTabComponent} from './components/candidates/view/
 import {ViewCandidateAdditionalInfoComponent} from './components/candidates/view/additional-info/view-candidate-additional-info.component';
 import {ViewCandidateSkillComponent} from "./components/candidates/view/skill/view-candidate-skill.component";
 import {BrowseSavedSearchesComponent} from './components/home/search/browse/browse-saved-searches.component';
-import {SavedSearchesComponent} from './components/home/search/saved-searches.component';
-import {EditSavedSearchComponent} from './components/home/search/edit/edit-saved-search.component';
 import {ChartsModule} from "ng2-charts";
 import {InfographicComponent} from './components/infograhics/infographic.component';
 import {ChartComponent} from './components/infograhics/chart/chart.component';
@@ -207,8 +205,6 @@ import {GeneralTranslationsComponent} from './components/settings/translations/g
     ViewCandidateSkillComponent,
     FileUploadComponent,
     BrowseSavedSearchesComponent,
-    SavedSearchesComponent,
-    EditSavedSearchComponent,
     InfographicComponent,
     ChartComponent,
     MonthPickerComponent,
@@ -285,7 +281,6 @@ import {GeneralTranslationsComponent} from './components/settings/translations/g
     CreateCandidateAttachmentComponent,
     EditCandidateAttachmentComponent,
     CreateCandidateAttachmentComponent,
-    EditSavedSearchComponent,
     SearchSavedSearchesComponent
   ],
   providers: [

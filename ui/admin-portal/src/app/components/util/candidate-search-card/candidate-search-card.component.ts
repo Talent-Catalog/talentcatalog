@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-import {Candidate} from "../../../../model/candidate";
+import {Candidate} from "../../../model/candidate";
 
 @Component({
   selector: 'app-candidate-search-card',

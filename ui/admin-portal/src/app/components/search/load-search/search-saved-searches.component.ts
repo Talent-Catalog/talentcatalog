@@ -1,14 +1,14 @@
 import {Component, OnInit} from '@angular/core';
 
 
-import {SearchResults} from '../../../../model/search-results';
+import {SearchResults} from '../../../model/search-results';
 
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {
   SavedSearch
-} from "../../../../model/saved-search";
-import {SavedSearchService} from "../../../../services/saved-search.service";
+} from "../../../model/saved-search";
+import {SavedSearchService} from "../../../services/saved-search.service";
 import {Router} from "@angular/router";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 

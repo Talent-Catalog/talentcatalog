@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {SavedSearch} from "../../../../../model/saved-search";
-import {CandidateShortlistService} from "../../../../../services/candidate-shortlist.service";
-import {CandidateShortlistItem} from "../../../../../model/candidate-shortlist-item";
+import {SavedSearch} from "../../../../model/saved-search";
+import {CandidateShortlistService} from "../../../../services/candidate-shortlist.service";
+import {CandidateShortlistItem} from "../../../../model/candidate-shortlist-item";
 
 @Component({
   selector: 'app-edit-candidate-shortlist-item',
