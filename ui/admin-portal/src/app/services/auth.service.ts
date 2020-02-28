@@ -7,6 +7,7 @@ import {Router} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
 import {LocalStorageService} from "angular-2-local-storage";
 import {Candidate} from "../model/candidate";
+import {User} from "../model/user";
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,8 @@ export class AuthService {
   apiUrl = environment.apiUrl + '/auth';
 
   private user: Candidate;
+  private loggedInUser: User;
+  private loggedInUserRole: string;
 
   constructor(private router: Router,
               private http: HttpClient,
@@ -46,6 +49,12 @@ export class AuthService {
       this.user = <Candidate>user;
     }
     return this.user;
+  }
+
+  getLoggedInUserRole(): User {
+    const user = this.localStorageService.get('user');
+    this.loggedInUser = <User>user;
+    return this.loggedInUser;
   }
 
   getToken(): string {

@@ -11,6 +11,7 @@ import {CreateUserComponent} from "./create/create-user.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {EditUserComponent} from "./edit/edit-user.component";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
+import {AuthService} from '../../../services/auth.service';
 
 @Component({
   selector: 'app-search-users',
@@ -25,10 +26,12 @@ export class SearchUsersComponent implements OnInit {
   pageNumber: number;
   pageSize: number;
   results: SearchResults<User>;
+  loggedInUser: User;
 
   constructor(private fb: FormBuilder,
               private userService: UserService,
-              private modalService: NgbModal) { }
+              private modalService: NgbModal,
+              private authService: AuthService) { }
 
   ngOnInit() {
 
@@ -40,6 +43,9 @@ export class SearchUsersComponent implements OnInit {
     });
     this.pageNumber = 1;
     this.pageSize = 50;
+
+    /* GET LOGGED IN USER ROLE */
+    this.loggedInUser = this.authService.getLoggedInUserRole();
 
     this.onChanges();
   }
@@ -100,7 +106,7 @@ export class SearchUsersComponent implements OnInit {
       backdrop: 'static'
     });
 
-    deleteUserModal.componentInstance.message = 'Are you sure you want to delete '+user.username;
+    deleteUserModal.componentInstance.message = 'Are you sure you want to delete ' + user.username;
 
     deleteUserModal.result
       .then((result) => {

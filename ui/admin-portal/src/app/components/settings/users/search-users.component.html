@@ -2,7 +2,7 @@
   <div class="section">
     <div>
       <div class="pull-right">
-        <button class="btn btn-primary" (click)="addUser()">Add</button>
+        <button *ngIf="loggedInUser.role === 'admin'" class="btn btn-primary" (click)="addUser()">Add</button>
       </div>
     </div>
     <div class="alert alert-danger" *ngIf="error">
@@ -64,9 +64,9 @@
       <td>{{user.role}}</td>
       <td>{{user.status}}</td>
       <td>
-        <div class="btn-group">
-          <button type="button" class="btn btn-default" (click)="editUser(user)"><i class="fa fa-edit"></i></button>
-          <button type="button" class="btn btn-default" (click)="deleteUser(user)"><i class="fa fa-trash"></i></button>
+        <div  class="btn-group">
+          <button *ngIf="loggedInUser.role === 'admin'" type="button" class="btn btn-default" (click)="editUser(user)"><i class="fa fa-edit"></i></button>
+          <button *ngIf="loggedInUser.role === 'admin'" type="button" class="btn btn-default" (click)="deleteUser(user)"><i class="fa fa-trash"></i></button>
         </div>
       </td>
     </tr>
