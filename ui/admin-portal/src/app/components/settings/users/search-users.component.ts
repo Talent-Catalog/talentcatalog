@@ -44,8 +44,7 @@ export class SearchUsersComponent implements OnInit {
     this.pageNumber = 1;
     this.pageSize = 50;
 
-    /* GET LOGGED IN USER ROLE */
-    this.loggedInUser = this.authService.getLoggedInUserRole();
+    this.getLoggedInUser();
 
     this.onChanges();
   }
@@ -60,6 +59,12 @@ export class SearchUsersComponent implements OnInit {
       .subscribe(res => {
         this.search();
       });
+    this.search();
+  }
+
+  getLoggedInUser(){
+    /* GET LOGGED IN USER ROLE FROM LOCAL STORAGE */
+    this.loggedInUser = this.authService.getLoggedInUser();
     this.search();
   }
 
@@ -96,9 +101,16 @@ export class SearchUsersComponent implements OnInit {
     editUserModal.componentInstance.userId = user.id;
 
     editUserModal.result
-      .then((user) => this.search())
+      .then((user) => {
+        this.search()
+        // UPDATES VIEW IF LOGGED IN ADMIN USER CHANGES TO THEMSELVES TO INTERN
+        if(this.loggedInUser.id === user.id){
+          this.loggedInUser.role = user.role
+        }
+      })
       .catch(() => { /* Isn't possible */ });
   }
+
 
   deleteUser(user) {
     const deleteUserModal = this.modalService.open(ConfirmationComponent, {

@@ -51,7 +51,7 @@ export class AuthService {
     return this.user;
   }
 
-  getLoggedInUserRole(): User {
+  getLoggedInUser(): User {
     const user = this.localStorageService.get('user');
     this.loggedInUser = <User>user;
     return this.loggedInUser;

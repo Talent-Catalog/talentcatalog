@@ -3,6 +3,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {User} from "../../../../model/user";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {UserService} from "../../../../services/user.service";
+import {AuthService} from "../../../../services/auth.service";
 
 @Component({
   selector: 'app-edit-user',
@@ -19,7 +20,8 @@ export class EditUserComponent implements OnInit {
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
-              private userService: UserService) {
+              private userService: UserService,
+              private authService: AuthService) {
   }
 
   ngOnInit() {
