@@ -244,7 +244,7 @@ public class CandidateServiceImpl implements CandidateService {
 
 
 
-        String candidateNumber = String.format("CN%04d", candidate.getId());
+        String candidateNumber = String.format("%04d", candidate.getId());
         candidate.setCandidateNumber(candidateNumber);
         candidate = this.candidateRepository.save(candidate);
 
