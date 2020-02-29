@@ -82,12 +82,21 @@ export class BrowseSavedSearchesComponent implements OnInit, OnChanges {
     this.savedSearchService.search(request).subscribe(results => {
       this.results = results;
 
-      //Selected previously search if any
-      const savedSearchID: number = this.localStorageService.get(this.savedStateKey());
-      if (savedSearchID) {
-        this.selectedIndex = indexOfSavedSearch(savedSearchID, this.results.content);
-        if (this.selectedIndex >= 0) {
-          this.selectedSavedSearch = this.results.content[this.selectedIndex];
+      if (results.content.length > 0) {
+        //Selected previously search if any
+        const savedSearchID: number = this.localStorageService.get(this.savedStateKey());
+        if (savedSearchID) {
+          this.selectedIndex = indexOfSavedSearch(savedSearchID, this.results.content);
+          if (this.selectedIndex >= 0) {
+            this.selectedSavedSearch = this.results.content[this.selectedIndex];
+          } else {
+            //Select the first search if can't find previous (category of search
+            // may have changed)
+            this.onSelect(this.results.content[0]);
+          }
+        } else {
+          //Select the first search if no previous
+          this.onSelect(this.results.content[0]);
         }
       }
 
@@ -105,7 +114,8 @@ export class BrowseSavedSearchesComponent implements OnInit, OnChanges {
   }
 
   private savedStateKey() {
-    return this.savedStateKeyPrefix + this.savedSearchType;
+    return this.savedStateKeyPrefix + this.savedSearchType +
+      (this.savedSearchSubtype ? '/' + this.savedSearchSubtype : "");
   }
 
   keyDown(event: KeyboardEvent) {
