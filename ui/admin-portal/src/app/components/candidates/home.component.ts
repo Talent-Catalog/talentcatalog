@@ -52,8 +52,15 @@ export class HomeComponent implements OnInit {
   }
 
   private selectDefaultTab() {
-    this.setActiveId(this.localStorageService.get(this.lastTabKey));
-    this.setSelectedSavedSearchSubtype(this.localStorageService.get(this.lastCategoryTabKey));
+    const defaultActiveID: string = this.localStorageService.get(this.lastTabKey);
+    this.setActiveId(defaultActiveID == null ? "0" : defaultActiveID);
+
+    if (defaultActiveID == null) {
+      this.setSelectedSavedSearchSubtype(this.savedSearchTypeSubInfos[0].savedSearchSubtype);
+    } else {
+      const defaultCategory: string = this.localStorageService.get(this.lastCategoryTabKey);
+      this.setSelectedSavedSearchSubtype(defaultCategory == null ? 0 : +defaultCategory);
+    }
   }
 
   private setActiveId(activeId: string) {
@@ -61,7 +68,7 @@ export class HomeComponent implements OnInit {
 
     //todo this won't work if there are non category tabs because activeId is a
     // tab number which is not the same as an enum value
-    if (activeId === undefined) {
+    if (activeId === null) {
       this.savedSearchTypeSubInfos = null;
     } else {
       this.savedSearchTypeSubInfos =
