@@ -5,7 +5,7 @@ import {ViewCandidateComponent} from './components/candidates/view/view-candidat
 import {AuthGuard} from "./services/auth.guard";
 import {LoginComponent} from "./components/login/login.component";
 import {SettingsComponent} from "./components/settings/settings.component";
-import {HomeComponent} from "./components/home/home.component";
+import {HomeComponent} from "./components/candidates/home.component";
 import {InfographicComponent} from "./components/infograhics/infographic.component";
 import {DefineSearchComponent} from "./components/search/define-search/define-search.component";
 import {NotFoundComponent} from "./not-found/not-found.component";
