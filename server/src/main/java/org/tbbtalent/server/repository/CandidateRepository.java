@@ -28,6 +28,11 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             + " where lower(c.candidateNumber) like lower(:candidateNumber) ")
     Page<Candidate> searchCandidateNumber(@Param("candidateNumber") String candidateNumber, Pageable pageable);
 
+    @Query(" select distinct c from Candidate c left join c.user u "
+            + " where lower(u.firstName) like lower(:candidateName) "
+            + " or lower(u.lastName) like lower(:candidateName) ")
+    Page<Candidate> searchCandidateName(@Param("candidateName") String candidateName, Pageable pageable);
+
     /* Used for candidate registration to check for existing accounts with different username options */
 //    Candidate findByEmailIgnoreCase(String email);
     @Query("select distinct c from Candidate c "

@@ -181,7 +181,18 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Page<Candidate> searchCandidates(CandidateQuickSearchRequest request) {
-        Page<Candidate> candidates = candidateRepository.searchCandidateNumber(request.getCandidateNumber()+'%', request.getPageRequestWithoutSort() );
+        String s = request.getCandidateNumberOrName();
+        boolean searchForNumber = s.length() > 0 && Character.isDigit(s.charAt(0));
+
+        Page<Candidate> candidates;
+        if (searchForNumber) {
+            candidates = candidateRepository.searchCandidateNumber(
+                    s +'%', request.getPageRequestWithoutSort());
+        } else {
+            candidates = candidateRepository.searchCandidateName(
+                    '%' + s +'%', request.getPageRequestWithoutSort());
+            
+        }
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
         return candidates;
     }

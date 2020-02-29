@@ -27,14 +27,14 @@
       </ul>
 
       <div class="form-group">
-        <input id="savedSearch"
+        <input id="quickSearch"
                type="text" class="form-control" #input
                [ngbTypeahead]="doSearch"
                [resultTemplate]="rt"
                [inputFormatter]="renderCandidateRow"
                [editable]="false"
                (selectItem)="selectSearchResult($event, input)"
-               placeholder="Search by candidate number ..."/>
+               placeholder="Number or name..."/>
         <ng-template #rt let-r="result" let-t="term">
           <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
         </ng-template>

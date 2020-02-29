@@ -35,8 +35,8 @@ export class HeaderComponent implements OnInit {
           this.searching = true;
           this.error = null
         }),
-        switchMap(candidateNumber =>
-          this.candidateService.find({candidateNumber: candidateNumber, pageSize: 10}).pipe(
+        switchMap(candidateNumberOrName =>
+          this.candidateService.find({candidateNumberOrName: candidateNumberOrName, pageSize: 10}).pipe(
             tap(() => this.searchFailed = false),
             map(result => result.content),
             catchError(() => {

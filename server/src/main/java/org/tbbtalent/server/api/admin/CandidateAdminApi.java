@@ -44,7 +44,7 @@ public class CandidateAdminApi {
     }
 
     @PostMapping("find")
-    public Map<String, Object> findByCandidateNumber(@RequestBody CandidateQuickSearchRequest request) {
+    public Map<String, Object> findByCandidateNumberOrName(@RequestBody CandidateQuickSearchRequest request) {
         Page<Candidate> candidates = this.candidateService.searchCandidates(request);
         Map<String, Object> map = candidateBaseDto().buildPage(candidates);
         return map;
