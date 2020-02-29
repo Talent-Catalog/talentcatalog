@@ -56,9 +56,9 @@ export class ViewCandidateComponent implements OnInit {
   editCandidate() {
     let modal = this.modalService.open(EditCandidateStatusComponent);
     modal.componentInstance.candidateId = this.candidate.id;
-    modal.result.then(result => {
-      this.setCandidate(result);
-    });
+    modal.result
+      .then(result => {this.setCandidate(result);})
+      .catch(() => { /* Isn't possible */ });
   }
 
   resizeSidePanel(){

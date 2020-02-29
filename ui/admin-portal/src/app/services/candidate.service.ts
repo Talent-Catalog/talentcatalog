@@ -34,6 +34,10 @@ export class CandidateService {
     return this.http.post<Candidate>(`${this.apiUrl}`, details);
   }
 
+  updateLinks(id: number, details): Observable<Candidate>  {
+    return this.http.put<Candidate>(`${this.apiUrl}/${id}/links`, details);
+  }
+
   updateStatus(id: number, details): Observable<Candidate>  {
     return this.http.put<Candidate>(`${this.apiUrl}/${id}/status`, details);
   }

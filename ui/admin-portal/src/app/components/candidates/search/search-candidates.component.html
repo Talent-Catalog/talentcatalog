@@ -84,7 +84,12 @@
               <a [routerLink]="['/candidates',candidate.id]">
                 {{candidate.candidateNumber}}
               </a>
-              <i class="fab fa-salesforce fa-disabled"></i><i class="fab fa-google-drive fa-disabled"></i>
+              <a *ngIf="candidate.sflink" [href]="candidate.sflink" target="_blank">
+                <i class="fab fa-salesforce"></i>
+              </a>
+              <a *ngIf="candidate.folderlink" [href]="candidate.folderlink" target="_blank">
+                <i class="fab fa-google-drive"></i>
+              </a>
 
             </td>
             <td>{{candidate.user.firstName}}</td>

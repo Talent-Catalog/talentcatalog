@@ -77,6 +77,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     private String migrationNationality;
 
+    private String folderlink;
+
+    private String sflink;
+
 
 
     public Candidate() {
@@ -322,5 +326,21 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setMigrationNationality(String migrationNationality) {
         this.migrationNationality = migrationNationality;
+    }
+
+    public String getFolderlink() {
+        return folderlink;
+    }
+
+    public void setFolderlink(String folderlink) {
+        this.folderlink = folderlink;
+    }
+
+    public String getSflink() {
+        return sflink;
+    }
+
+    public void setSflink(String sflink) {
+        this.sflink = sflink;
     }
 }

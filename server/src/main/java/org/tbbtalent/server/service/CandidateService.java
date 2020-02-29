@@ -26,6 +26,8 @@ public interface CandidateService {
 
     Candidate updateCandidateStatus(long id, UpdateCandidateStatusRequest request);
 
+    Candidate updateCandidateLinks(long id, UpdateCandidateLinksRequest request);
+
     Candidate updateCandidate(long id, UpdateCandidateRequest request);
 
     boolean deleteCandidate(long id);

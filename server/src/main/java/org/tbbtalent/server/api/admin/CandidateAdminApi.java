@@ -61,6 +61,13 @@ public class CandidateAdminApi {
         return candidateDto().build(candidate);
     }
 
+    @PutMapping("{id}/links")
+    public Map<String, Object> updateLinks(@PathVariable("id") long id,
+                            @RequestBody UpdateCandidateLinksRequest request) {
+        Candidate candidate = this.candidateService.updateCandidateLinks(id, request);
+        return candidateDto().build(candidate);
+    }
+
     @PutMapping("{id}/status")
     public Map<String, Object> update(@PathVariable("id") long id,
                             @RequestBody UpdateCandidateStatusRequest request) {
@@ -118,6 +125,8 @@ public class CandidateAdminApi {
                 .add("yearOfArrival")
                 .add("additionalInfo")
                 .add("candidateMessage")
+                .add("folderlink")
+                .add("sflink")
                 .add("country", countryDto())
                 .add("nationality", nationalityDto())
                 .add("user", userDto())

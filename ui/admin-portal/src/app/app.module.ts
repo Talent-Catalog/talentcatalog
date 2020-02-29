@@ -110,6 +110,8 @@ import { SavedSearchResultsComponent } from './components/home/search/returns/sa
 import { DefineSearchComponent } from './components/search/define-search/define-search.component';
 import {NotFoundComponent} from "./not-found/not-found.component";
 import {GeneralTranslationsComponent} from './components/settings/translations/general/general-translations.component';
+import { ViewCandidateSpecialLinksComponent } from './components/candidates/view/special-links/view-candidate-special-links.component';
+import { EditCandidateSpecialLinksComponent } from './components/candidates/view/special-links/edit/edit-candidate-special-links.component';
 
 @NgModule({
   declarations: [
@@ -213,7 +215,9 @@ import {GeneralTranslationsComponent} from './components/settings/translations/g
     SavedSearchResultsComponent,
     DefineSearchComponent,
     MonthPickerComponent,
-    NotFoundComponent
+    NotFoundComponent,
+    ViewCandidateSpecialLinksComponent,
+    EditCandidateSpecialLinksComponent
   ],
   imports: [
     BrowserModule,
@@ -281,7 +285,9 @@ import {GeneralTranslationsComponent} from './components/settings/translations/g
     CreateCandidateAttachmentComponent,
     EditCandidateAttachmentComponent,
     CreateCandidateAttachmentComponent,
-    SearchSavedSearchesComponent
+    SearchSavedSearchesComponent,
+    EditCandidateSpecialLinksComponent,
+    EditCandidateStatusComponent
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},

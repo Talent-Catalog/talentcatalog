@@ -275,6 +275,16 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    public Candidate updateCandidateLinks(long id, UpdateCandidateLinksRequest request) {
+        Candidate candidate = this.candidateRepository.findByIdLoadUser(id)
+                .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
+        candidate.setSflink(request.getSflink());
+        candidate.setFolderlink(request.getFolderlink());
+        candidate = candidateRepository.save(candidate);
+        return candidate;
+    }
+
+    @Override
     public Candidate updateCandidate(long id, UpdateCandidateRequest request) {
         Candidate candidate = this.candidateRepository.findByIdLoadUser(id)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));

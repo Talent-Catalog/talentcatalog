@@ -23,5 +23,7 @@ export interface Candidate {
   migrationEducationMajor: EducationMajor;
   additionalInfo: string;
   candidateMessage: string;
-  maxEducationLevel: EducationLevel
+  maxEducationLevel: EducationLevel;
+  folderlink: string;
+  sflink: string;
 }
