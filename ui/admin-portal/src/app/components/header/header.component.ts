@@ -66,4 +66,9 @@ export class HeaderComponent implements OnInit {
     this.router.navigate(['candidates',  $event.item.id]);
 
   }
+
+  clearCache() {
+    this.logout();
+    localStorage.clear();
+  }
 }

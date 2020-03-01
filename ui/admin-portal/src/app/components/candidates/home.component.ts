@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {NgbTabChangeEvent} from "@ng-bootstrap/ng-bootstrap";
-import {SavedSearchSubtype, SavedSearchType} from "../../model/saved-search";
+import {SavedSearchSubtype} from "../../model/saved-search";
 import {LocalStorageService} from "angular-2-local-storage";
 import {
   SavedSearchService,
@@ -42,8 +42,6 @@ export class HomeComponent implements OnInit {
 
   onTabChanged(event: NgbTabChangeEvent) {
     this.setActiveId(event.nextId);
-
-    this.localStorageService.set(this.lastTabKey, this.activeId);
   }
 
   onSavedSearchSubtypeChange($event: Event) {
@@ -66,14 +64,9 @@ export class HomeComponent implements OnInit {
   private setActiveId(activeId: string) {
     this.activeId = activeId;
 
-    //todo this won't work if there are non category tabs because activeId is a
-    // tab number which is not the same as an enum value
-    if (activeId === null) {
-      this.savedSearchTypeSubInfos = null;
-    } else {
-      this.savedSearchTypeSubInfos =
-        this.savedSearchTypeInfos[+activeId].categories;
-    }
+    this.savedSearchTypeSubInfos = this.savedSearchTypeInfos[+activeId].categories;
+
+    this.localStorageService.set(this.lastTabKey, this.activeId);
   }
 
   private setSelectedSavedSearchSubtype(selectedSavedSearchSubtype: number) {
