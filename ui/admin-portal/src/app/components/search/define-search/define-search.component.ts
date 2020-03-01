@@ -485,7 +485,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     this.formWrapper.nativeElement.click();
 
     this.searchForm.controls['shortListStatusField'].patchValue('valid');
-    this.setSortListStatus('valid');
+    this.setReviewStatus('valid');
   }
 
   get searchJoinArray() {
@@ -558,7 +558,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     this.search();
   }
 
-  setSortListStatus(event: any) {
+  setReviewStatus(event: any) {
     let statuses: string[] = [];
 
     const value: string = typeof event === "string" ? event : event.target.value;

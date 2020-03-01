@@ -45,7 +45,6 @@ export class CandidateShortlistItemComponent implements OnInit, OnChanges {
     if (this.candidateShortlistItems && this.savedSearch) {
       this.candidateShortlistItem = this.candidateShortlistItems.find(
         s => s.savedSearch.id == this.savedSearch.id);
-      console.log('review ' + this.candidateShortlistItem);
     }
   }
 

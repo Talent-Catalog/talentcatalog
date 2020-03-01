@@ -7,9 +7,10 @@ export interface CachedSearchResults {
   searchID: number;
   pageNumber: number;
   pageSize: number;
-  sortFields: string[],
-  sortDirection: string,
-  results: SearchResults<Candidate>;
+  sortFields: string[];
+  sortDirection: string;
+  shortlistStatus?: string[];
+  results?: SearchResults<Candidate>;
   timestamp: number;
 }
 
@@ -23,19 +24,18 @@ export class SavedSearchResultsCacheService {
 
   ) { }
 
-  private static cacheKey(savedSearchID: number): string {
-    return "Search" + savedSearchID;
+  private static cacheKey(savedSearchID: number, shortlistStatus: string[]): string {
+    return "Search" + savedSearchID + '/' + shortlistStatus;
   }
 
   cache(cachedSearchResults: CachedSearchResults) {
-    const cacheKey = SavedSearchResultsCacheService.cacheKey(cachedSearchResults.searchID);
-    // alternative using global localStorage localStorage.setItem(cacheKey, JSON.stringify(cachedSearchResults));
+    const cacheKey = SavedSearchResultsCacheService.cacheKey(
+      cachedSearchResults.searchID, cachedSearchResults.shortlistStatus);
     this.localStorageService.set(cacheKey, cachedSearchResults);
   }
 
-  getFromCache(savedSearchID: number): CachedSearchResults {
-    const cacheKey = SavedSearchResultsCacheService.cacheKey(savedSearchID);
+  getFromCache(savedSearchID: number, shortlistStatus: string[]): CachedSearchResults {
+    const cacheKey = SavedSearchResultsCacheService.cacheKey(savedSearchID, shortlistStatus);
     return this.localStorageService.get<CachedSearchResults>(cacheKey);
-    // alternative using global localStorage  return JSON.parse(localStorage.getItem(cacheKey))
   }
 }

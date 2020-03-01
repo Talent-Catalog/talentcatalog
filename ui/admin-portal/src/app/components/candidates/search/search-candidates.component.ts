@@ -23,7 +23,7 @@ import {
   CachedSearchResults,
   SavedSearchResultsCacheService
 } from "../../../services/saved-search-results-cache.service";
-
+import {FormBuilder, FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-search-candidates',
@@ -38,6 +38,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   loading: boolean;
   searching: boolean;
   exporting: boolean;
+  searchForm: FormGroup;
 
   results: SearchResults<Candidate>;
   savedSearch: SavedSearch;
@@ -47,12 +48,14 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   pageSize: number;
   sortField = 'id';
   sortDirection = 'DESC';
+  shortlistStatus: string[];
 
   selectedCandidate: Candidate;
   private timestamp: number;
 
 
   constructor(private http: HttpClient,
+              private fb: FormBuilder,
               private candidateService: CandidateService,
               private savedSearchService: SavedSearchService,
               private modalService: NgbModal,
@@ -60,6 +63,10 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
               private savedSearchResultsCacheService: SavedSearchResultsCacheService
 
   ) {
+    this.searchForm = this.fb.group({
+      shortListStatusField: ['valid'],
+    });
+
   }
 
   ngOnInit() {
@@ -94,8 +101,6 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       }
     });
 
-    //todo implement review status field change
-    /* SEARCH ON Review status changes*/
   }
 
   ngOnDestroy(): void {
@@ -111,7 +116,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       pageSize: this.pageSize,
       sortFields: [this.sortField],
       sortDirection: this.sortDirection,
-      // todo add reviewStatus
+      shortlistStatus: this.shortlistStatus
     }
   }
 
@@ -123,13 +128,14 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     let done: boolean = false;
     if (!refresh) {
       const cached: CachedSearchResults =
-        this.savedSearchResultsCacheService.getFromCache(this.savedSearchId);
+        this.savedSearchResultsCacheService.getFromCache(this.savedSearchId, this.shortlistStatus);
       if (cached) {
         this.results = cached.results;
         this.pageNumber = cached.pageNumber;
         this.pageSize = cached.pageSize;
         this.sortField = cached.sortFields[0];
         this.sortDirection = cached.sortDirection;
+        this.setShortlistStatus(cached.shortlistStatus);
         this.timestamp = cached.timestamp;
         done = true;
       }
@@ -149,6 +155,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
             pageSize: this.pageSize,
             sortFields: [this.sortField],
             sortDirection: this.sortDirection,
+            shortlistStatus: this.shortlistStatus,
             results: this.results,
             timestamp: this.timestamp
           });
@@ -244,10 +251,36 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     )
   }
 
-  //todo Duplictaed code
+  //todo Duplicated code
   getBreadcrumb() {
     let infos = this.savedSearchService.getSavedSearchTypeInfos();
     return this.savedSearch ? (infos[SavedSearchType.profession].title +
       ': ' + this.savedSearch.name) : 'Search'
   }
+
+  onReviewStatusChange(event: any) {
+    this.shortlistStatus = [];
+
+    const value: string = typeof event === "string" ? event : event.target.value;
+    if (value == 'valid'){
+      this.shortlistStatus.push('pending', 'verified')
+    } else {
+      this.shortlistStatus.push(value);
+    }
+
+    this.doSearch(true);
+  }
+
+  private setShortlistStatus(shortlistStatus: string[]) {
+    this.shortlistStatus = shortlistStatus;
+
+    if (shortlistStatus) {
+      if (shortlistStatus.length > 1) {
+        this.searchForm.controls['shortListStatusField'].patchValue('valid');
+      } else {
+        this.searchForm.controls['shortListStatusField'].patchValue(shortlistStatus[0]);
+      }
+    }
+  }
+
 }

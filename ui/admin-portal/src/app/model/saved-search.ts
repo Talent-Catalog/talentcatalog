@@ -69,7 +69,7 @@ export interface SavedSearchRequest {
 
 export interface SavedSearchRunRequest {
   savedSearchId: number;
-  reviewStatus?: string;
+  shortlistStatus?: string[];
   pageNumber?: number;
   pageSize?: number;
   sortFields?: string[];

@@ -34,6 +34,10 @@ export class SavedSearchResultsComponent implements OnInit, OnChanges, OnDestroy
   private subscription: Subscription;
   timestamp: number;
 
+  //Review status is hard coded for this simple display as we don't want
+  //to display or modify review status.
+  private readonly shortlistStatus: string[] = ['pending', 'verified'];
+
 constructor(
     private candidateService: CandidateService,
     private router: Router,
@@ -71,7 +75,7 @@ constructor(
     let done: boolean = false;
     if (!refresh) {
       const cached: CachedSearchResults =
-        this.savedSearchResultsCacheService.getFromCache(this.savedSearch.id);
+        this.savedSearchResultsCacheService.getFromCache(this.savedSearch.id, this.shortlistStatus);
       if (cached) {
         this.results = cached.results;
         this.pageNumber = cached.pageNumber;
@@ -122,8 +126,8 @@ constructor(
     request.sortFields = [this.sortField];
     request.sortDirection = this.sortDirection;
 
-    //todo Hard coding this for now. Saved searches with joins crash without it.
-    request.shortlistStatus = ["pending", "verified"];
+    //Hard code review status
+    request.shortlistStatus = this.shortlistStatus;
     this.subscription = this.candidateService.search(request).subscribe(
       results => {
         this.timestamp = Date.now();
@@ -135,6 +139,7 @@ constructor(
           pageSize: this.pageSize,
           sortFields: [this.sortField],
           sortDirection: this.sortDirection,
+          shortlistStatus: this.shortlistStatus,
           results: this.results,
           timestamp: this.timestamp
         });

@@ -94,6 +94,7 @@ public class CandidateServiceImpl implements CandidateService {
         searchCandidateRequest.setPageSize(request.getPageSize());
         searchCandidateRequest.setSortDirection(request.getSortDirection());
         searchCandidateRequest.setSortFields(request.getSortFields());
+        searchCandidateRequest.setShortlistStatus(request.getShortlistStatus());
         
         return searchCandidates(searchCandidateRequest);
     }

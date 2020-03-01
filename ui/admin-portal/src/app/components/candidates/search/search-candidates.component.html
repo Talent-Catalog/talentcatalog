@@ -36,6 +36,20 @@
       {{results?.totalElements}} candidates. Timestamp {{timestamp | date: 'yyyy-MM-dd HH:mm:ss'}}
     </div>
 
+    <form class="filter-form" [formGroup]="searchForm">
+      <!-- REVIEW STATUS FILTER -->
+      <div class="form-group col-12  col-md-2">
+        <label for="reviewStatus">Review status</label>
+        <select class="form-control" id="reviewStatus" [formControlName]="'shortListStatusField'"
+                (change)="onReviewStatusChange($event)">
+          <option value="valid">Pending And Verified</option>
+          <option value="pending">Pending</option>
+          <option value="verified">Verified</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </div>
+    </form>
+
     <div class="split-view">
 
       <div class="table-wrapper">
@@ -97,12 +111,10 @@
             </td>
             <td>{{candidate.user.firstName}}</td>
             <td>{{candidate.user.lastName}}</td>
-            <td *ngIf="savedSearch">
-              <app-candidate-shortlist-item [candidateId]="candidate.id"
-                                            [candidateShortlistItems]="candidate.candidateShortlistItems"
-                                            [savedSearch]="savedSearch"
-                                            (shortlistItemSaved)="handleCandidateShortlistSaved($event)"></app-candidate-shortlist-item>
-            </td>
+            <app-candidate-shortlist-item [candidateId]="candidate.id"
+                                          [candidateShortlistItems]="candidate.candidateShortlistItems"
+                                          [savedSearch]="savedSearch"
+                                          (shortlistItemSaved)="handleCandidateShortlistSaved($event)"></app-candidate-shortlist-item>
             <td>{{candidate.nationality?.name}}</td>
             <td>{{candidate.country?.name}}</td>
             <td>{{candidate.gender | titlecase}}</td>

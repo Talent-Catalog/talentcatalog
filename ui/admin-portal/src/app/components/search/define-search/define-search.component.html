@@ -109,13 +109,13 @@
       </div>
 
 
-      <!-- SHORT LIST STATUS FILTER -->
+      <!-- REVIEW STATUS FILTER -->
       <div class="form-group col-12  col-md-2" *ngIf="savedSearch">
-        <label for="shortlistStatus">Review status</label>
-        <select class="form-control" id="shortlistStatus" [formControlName]="'shortListStatusField'"
-                (change)="setSortListStatus($event)">
-          <option value="valid">New And Verified</option>
-          <option value="pending">New</option>
+        <label for="reviewStatus">Review status</label>
+        <select class="form-control" id="reviewStatus" [formControlName]="'shortListStatusField'"
+                (change)="setReviewStatus($event)">
+          <option value="valid">Pending And Verified</option>
+          <option value="pending">Pending</option>
           <option value="verified">Verified</option>
           <option value="rejected">Rejected</option>
         </select>

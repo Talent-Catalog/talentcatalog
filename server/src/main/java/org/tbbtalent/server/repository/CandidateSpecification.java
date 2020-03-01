@@ -77,6 +77,8 @@ public class CandidateSpecification {
                 }
 
                 query.orderBy(orders);
+                
+                
 
             } else {
                 user = candidate.join("user");
@@ -86,12 +88,21 @@ public class CandidateSpecification {
             //Review status
             //Only saved searches support review status - ie has this candidate 
             //been reviewed as belonging in this saved search.
+            //We want candidates whose MOST RECENT review status for this search id is in filtered statuses.
             if (request.getSavedSearchId() != null) {
                 if (CollectionUtils.isNotEmpty(request.getShortlistStatus())) {
                     Predicate pendingPredicate = null;
                     if (request.getShortlistStatus().contains(ShortlistStatus.pending)) {
                         Subquery<Candidate> sq = query.subquery(Candidate.class);
                         Root<Candidate> subCandidate = sq.from(Candidate.class);
+                        /*
+                        select Candidate from Candidate join 
+                        CandidateShortListItems join 
+                        SavedSearch where savedSearchid = requestid
+                         pendingPredicate = candidate id not in the result of the query
+                         
+                         Is this just defaulting everything else as pending? 
+                         */
                         Join<Object, Object> subShortList = subCandidate.join("candidateShortlistItems");
                         Join<Object, Object> subSavedSearch = subShortList.join("savedSearch");
                         sq.select(subCandidate).where(builder.equal(subSavedSearch.get("id"), request.getSavedSearchId()));
@@ -102,7 +113,13 @@ public class CandidateSpecification {
                     Root<Candidate> subCandidate = sq.from(Candidate.class);
                     Join<Object, Object> subShortList = subCandidate.join("candidateShortlistItems");
                     Join<Object, Object> subSavedSearch = subShortList.join("savedSearch");
-                    sq.select(subCandidate).where(builder.and(builder.equal(subSavedSearch.get("id"), request.getSavedSearchId()), subShortList.get("shortlistStatus").in(request.getShortlistStatus())));
+                    sq.select(subCandidate).where(
+                            builder.and(
+                                    builder.equal(subSavedSearch.get("id"), request.getSavedSearchId()), 
+                                    subShortList.get("shortlistStatus").in(request.getShortlistStatus())
+                            )
+                    );
+                    
                     Predicate statusPredicate = builder.in(candidate.get("id")).value(sq);
 
                     if (pendingPredicate != null) {
