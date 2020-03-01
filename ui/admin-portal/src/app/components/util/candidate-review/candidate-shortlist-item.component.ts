@@ -1,4 +1,11 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output, SimpleChanges
+} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {CandidateService} from "../../../services/candidate.service";
 import {EditCandidateShortlistItemComponent} from "./edit/edit-candidate-shortlist-item.component";
@@ -10,7 +17,7 @@ import {CandidateShortlistItem} from "../../../model/candidate-shortlist-item";
   templateUrl: './candidate-shortlist-item.component.html',
   styleUrls: ['./candidate-shortlist-item.component.scss']
 })
-export class CandidateShortlistItemComponent implements OnInit {
+export class CandidateShortlistItemComponent implements OnInit, OnChanges {
 
   @Input() candidateId: number;
   @Input() candidateShortlistItems: CandidateShortlistItem[];
@@ -27,8 +34,18 @@ export class CandidateShortlistItemComponent implements OnInit {
               private modalService: NgbModal) { }
 
   ngOnInit() {
-    if (this.candidateShortlistItems && this.savedSearch){
-       this.candidateShortlistItem = this.candidateShortlistItems.find(s => s.savedSearch.id == this.savedSearch.id)
+    this.selectReviewStatus();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    this.selectReviewStatus();
+  }
+
+  private selectReviewStatus() {
+    if (this.candidateShortlistItems && this.savedSearch) {
+      this.candidateShortlistItem = this.candidateShortlistItems.find(
+        s => s.savedSearch.id == this.savedSearch.id);
+      console.log('review ' + this.candidateShortlistItem);
     }
   }
 
