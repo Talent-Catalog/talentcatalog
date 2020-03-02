@@ -4,8 +4,18 @@
   }
 }
 
+td {
+  padding-bottom: 0;
+  padding-top: 0;
+}
+
 label {
   font-size: 14px;
+}
+
+.fa-disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 
 .filter-form {

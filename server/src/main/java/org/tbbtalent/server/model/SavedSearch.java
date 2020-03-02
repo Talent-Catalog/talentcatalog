@@ -1,5 +1,7 @@
 package org.tbbtalent.server.model;
 
+import org.springframework.util.StringUtils;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -13,8 +15,7 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
 
     private String name;
 
-    @Enumerated(EnumType.STRING)
-    private SavedSearchType type;
+    private String type;
     
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -59,6 +60,8 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
     private Integer minEducationLevel;
     private String educationMajorIds;
 
+    private Boolean includeDraftAndDeleted;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "savedSearch", cascade = CascadeType.MERGE)
     private Set<SearchJoin> searchJoins = new HashSet<>();
 
@@ -72,6 +75,8 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
     @Transient private String otherWrittenLevel;
     @Transient private String otherSpokenLevel;
     @Transient private String minEducationLevelName;
+    @Transient private SavedSearchType savedSearchType;
+    @Transient private SavedSearchSubtype savedSearchSubtype;
 
 
     public SavedSearch() {
@@ -377,11 +382,70 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
         this.minEducationLevelName = minEducationLevelName;
     }
 
-    public SavedSearchType getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(SavedSearchType type) {
+    public void setType(String type) {
         this.type = type;
+    }
+
+    public void setType(SavedSearchType savedSearchType, SavedSearchSubtype subtype) {
+        setSavedSearchType(savedSearchType);
+        setSavedSearchSubtype(subtype);
+
+        String type = makeStringSavedSearchType(savedSearchType, subtype);
+        setType(type);
+    }
+
+    public static String makeStringSavedSearchType(
+            SavedSearchType savedSearchType, SavedSearchSubtype subtype) {
+        String type = null;
+        if (savedSearchType != null) {
+            type = savedSearchType.toString();
+            if (subtype != null) {
+                type += "/" + subtype.toString();
+            }
+        }
+        return type;
+    }
+
+    public SavedSearchType getSavedSearchType() {
+        return savedSearchType;
+    }
+
+    public void setSavedSearchType(SavedSearchType type) {
+        this.savedSearchType = type;
+    }
+
+    public SavedSearchSubtype getSavedSearchSubtype() {
+        return savedSearchSubtype;
+    }
+
+    public void setSavedSearchSubtype(SavedSearchSubtype savedSearchSubtype) {
+        this.savedSearchSubtype = savedSearchSubtype;
+    }
+
+    public void parseType() {
+        if (!StringUtils.isEmpty(type)) {
+            String[] parts = type.split("/");
+            //todo What about valueOf exceptions
+            SavedSearchType savedSearchType = SavedSearchType.valueOf(parts[0]);
+            setSavedSearchType(savedSearchType);
+
+            //Check for subtype
+            if (parts.length > 1) {
+                SavedSearchSubtype savedSearchSubtype = SavedSearchSubtype.valueOf(parts[1]);
+                setSavedSearchSubtype(savedSearchSubtype);
+            }
+        }
+    }
+
+    public Boolean getIncludeDraftAndDeleted() {
+        return includeDraftAndDeleted;
+    }
+
+    public void setIncludeDraftAndDeleted(Boolean includeDraftAndDeleted) {
+        this.includeDraftAndDeleted = includeDraftAndDeleted;
     }
 }

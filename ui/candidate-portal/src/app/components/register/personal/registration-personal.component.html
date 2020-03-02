@@ -8,7 +8,7 @@
     <div class="col-12 col-md-6">
       <div class="form-group">
         <label for="firstName">{{ 'REGISTRATION.PERSONAL.LABEL.FIRSTNAME' | translate }} <sup>*</sup></label>
-        <input type="text" class="form-control" id="firstName" placeholder="Enter first name" [formControlName]="'firstName'">
+        <input type="text" class="form-control" id="firstName" placeholder="" [formControlName]="'firstName'">
         <app-form-control-error [control]="form.controls.firstName"></app-form-control-error>
       </div>
     </div>
@@ -17,7 +17,7 @@
     <div class="col-12 col-md-6">
       <div class="form-group">
         <label for="lastName">{{ 'REGISTRATION.PERSONAL.LABEL.LASTNAME' | translate }} <sup>*</sup></label>
-        <input type="text" class="form-control" id="lastName" placeholder="Enter last name" [formControlName]="'lastName'">
+        <input type="text" class="form-control" id="lastName" placeholder="" [formControlName]="'lastName'">
         <app-form-control-error [control]="form.controls.lastName"></app-form-control-error>
       </div>
     </div>

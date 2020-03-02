@@ -16,6 +16,8 @@ public interface CandidateService {
 
     Page<Candidate> searchCandidates(SearchCandidateRequest request);
 
+    Page<Candidate> searchCandidates(SavedSearchRunRequest request);
+
     Page<Candidate> searchCandidates(CandidateQuickSearchRequest request);
 
     Candidate getCandidate(long id);
@@ -23,6 +25,8 @@ public interface CandidateService {
     Candidate createCandidate(CreateCandidateRequest request) throws UsernameTakenException;
 
     Candidate updateCandidateStatus(long id, UpdateCandidateStatusRequest request);
+
+    Candidate updateCandidateLinks(long id, UpdateCandidateLinksRequest request);
 
     Candidate updateCandidate(long id, UpdateCandidateRequest request);
 

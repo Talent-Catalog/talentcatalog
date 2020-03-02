@@ -1,4 +1,4 @@
-import {BrowserModule} from '@angular/platform-browser';
+import {BrowserModule, Title} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {NgMultiSelectDropDownModule} from 'ng-multiselect-dropdown';
@@ -8,7 +8,7 @@ import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './components/app.component';
 import {HeaderComponent} from './components/header/header.component';
 import {SearchCandidatesComponent} from './components/candidates/search/search-candidates.component';
-import {HomeComponent} from './components/home/home.component';
+import {HomeComponent} from './components/candidates/home.component';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ViewCandidateComponent} from './components/candidates/view/view-candidate.component';
@@ -32,9 +32,9 @@ import {EditCountryComponent} from "./components/settings/countries/edit/edit-co
 import {SearchLanguagesComponent} from './components/settings/languages/search-languages.component';
 import {CreateLanguageComponent} from './components/settings/languages/create/create-language.component';
 import {EditLanguageComponent} from './components/settings/languages/edit/edit-language.component';
-import {SearchSavedSearchesComponent} from "./components/candidates/search/saved-search/search-saved-searches.component";
-import {CreateSearchComponent} from "./components/candidates/search/create/create-search.component";
-import {CandidateSearchCardComponent} from './components/candidates/search/candidate-search-card/candidate-search-card.component';
+import {SearchSavedSearchesComponent} from "./components/search/load-search/search-saved-searches.component";
+import {CreateSearchComponent} from "./components/search/create/create-search.component";
+import {CandidateSearchCardComponent} from './components/util/candidate-search-card/candidate-search-card.component';
 import {CandidateGeneralTabComponent} from './components/candidates/view/tab/candidate-general-tab/candidate-general-tab.component';
 import {CandidateExperienceTabComponent} from './components/candidates/view/tab/candidate-experience-tab/candidate-experience-tab.component';
 import {CandidateHistoryTabComponent} from './components/candidates/view/tab/candidate-history-tab/candidate-history-tab.component';
@@ -54,7 +54,7 @@ import {EditEducationLevelComponent} from './components/settings/education-level
 import {SearchEducationMajorsComponent} from './components/settings/education-majors/search-education-majors.component';
 import {CreateEducationMajorComponent} from './components/settings/education-majors/create/create-education-major.component';
 import {EditEducationMajorComponent} from './components/settings/education-majors/edit/edit-education-major.component';
-import {TranslationsComponent} from './components/settings/translations/translations.component';
+import {DropdownTranslationsComponent} from './components/settings/translations/dropdowns/dropdown-translations.component';
 
 import {ViewCandidateContactComponent} from "./components/candidates/view/contact/view-candidate-contact.component";
 import {ViewCandidateLanguageComponent} from "./components/candidates/view/language/view-candidate-language.component";
@@ -76,12 +76,12 @@ import {ViewCandidateJobExperienceComponent} from './components/candidates/view/
 import {EditUserComponent} from './components/settings/users/edit/edit-user.component';
 import {CreateUserComponent} from './components/settings/users/create/create-user.component';
 import {CandidateEducationTabComponent} from "./components/candidates/view/tab/candidate-education-tab/candidate-education-tab.component";
-import {JoinSavedSearchComponent} from "./components/candidates/search/join-search/join-saved-search.component";
+import {JoinSavedSearchComponent} from "./components/search/join-search/join-saved-search.component";
 import {SavedSearchComponent} from "./components/util/saved-search/saved-search.component";
 import {LanguageLevelFormControlComponent} from './components/util/form/language-proficiency/language-level-form-control.component';
 import {CandidatePipe} from './pipes/candidate.pipe';
-import {EditCandidateShortlistItemComponent} from "./components/candidates/search/shortlist/edit/edit-candidate-shortlist-item.component";
-import {CandidateShortlistItemComponent} from "./components/candidates/search/shortlist/candidate-shortlist-item.component";
+import {EditCandidateShortlistItemComponent} from "./components/util/candidate-review/edit/edit-candidate-shortlist-item.component";
+import {CandidateShortlistItemComponent} from "./components/util/candidate-review/candidate-shortlist-item.component";
 import {UserPipe} from "./components/util/user/user.pipe";
 import {UpdatedByComponent} from "./components/util/user/updated-by/updated-by.component";
 import {DateRangePickerComponent} from './components/util/form/date-range-picker/date-range-picker.component';
@@ -92,22 +92,26 @@ import {EditCandidateOccupationComponent} from "./components/candidates/view/occ
 import {SortedByComponent} from "./components/util/sort/sorted-by.component";
 import {EditCandidateLanguageComponent} from './components/candidates/view/language/edit/edit-candidate-language.component';
 import {ViewCandidateAccountComponent} from './components/candidates/view/account/view-candidate-account.component';
-import {ChangePasswordComponent} from './components/candidates/view/account/change-password/change-password.component';
-import {ChangeUsernameComponent} from './components/candidates/view/account/change-username/change-username.component';
+import {ChangePasswordComponent} from './components/account/change-password/change-password.component';
+import {ChangeUsernameComponent} from './components/account/change-username/change-username.component';
 import {CreateCandidateAttachmentComponent} from './components/candidates/view/attachment/create/create-candidate-attachment.component';
 import {EditCandidateAttachmentComponent} from './components/candidates/view/attachment/edit/edit-candidate-attachment.component';
 import {FileUploadComponent} from "./components/util/file-upload/file-upload.component";
 import {CandidateAdditionalInfoTabComponent} from './components/candidates/view/tab/candidate-additional-info-tab/candidate-additional-info-tab.component';
 import {ViewCandidateAdditionalInfoComponent} from './components/candidates/view/additional-info/view-candidate-additional-info.component';
 import {ViewCandidateSkillComponent} from "./components/candidates/view/skill/view-candidate-skill.component";
-import {SavedSearchesComponent} from './components/home/search/saved-searches.component';
-import {EditSavedSearchComponent} from './components/home/search/edit/edit-saved-search.component';
+import {BrowseSavedSearchesComponent} from './components/candidates/search/browse/browse-saved-searches.component';
 import {ChartsModule} from "ng2-charts";
 import {InfographicComponent} from './components/infograhics/infographic.component';
 import {ChartComponent} from './components/infograhics/chart/chart.component';
 import {MonthPickerComponent} from "./components/util/month-picker/month-picker.component";
-import {UpdateSearchComponent} from "./components/candidates/search/update/update-search.component";
+import {UpdateSearchComponent} from "./components/search/update/update-search.component";
+import { SavedSearchResultsComponent } from './components/candidates/search/returns/saved-search-results.component';
+import { DefineSearchComponent } from './components/search/define-search/define-search.component';
 import {NotFoundComponent} from "./not-found/not-found.component";
+import {GeneralTranslationsComponent} from './components/settings/translations/general/general-translations.component';
+import { ViewCandidateSpecialLinksComponent } from './components/candidates/view/special-links/view-candidate-special-links.component';
+import { EditCandidateSpecialLinksComponent } from './components/candidates/view/special-links/edit/edit-candidate-special-links.component';
 
 @NgModule({
   declarations: [
@@ -176,7 +180,7 @@ import {NotFoundComponent} from "./not-found/not-found.component";
     CandidateShortlistItemComponent,
     EditCandidateShortlistItemComponent,
     DateRangePickerComponent,
-    TranslationsComponent,
+    DropdownTranslationsComponent,
     LanguageLevelFormControlComponent,
     DateRangePickerComponent,
     SavedSearchComponent,
@@ -202,12 +206,18 @@ import {NotFoundComponent} from "./not-found/not-found.component";
     ViewCandidateAdditionalInfoComponent,
     ViewCandidateSkillComponent,
     FileUploadComponent,
-    SavedSearchesComponent,
-    EditSavedSearchComponent,
+    BrowseSavedSearchesComponent,
     InfographicComponent,
     ChartComponent,
     MonthPickerComponent,
-    NotFoundComponent
+    NotFoundComponent,
+    GeneralTranslationsComponent,
+    SavedSearchResultsComponent,
+    DefineSearchComponent,
+    MonthPickerComponent,
+    NotFoundComponent,
+    ViewCandidateSpecialLinksComponent,
+    EditCandidateSpecialLinksComponent
   ],
   imports: [
     BrowserModule,
@@ -263,7 +273,7 @@ import {NotFoundComponent} from "./not-found/not-found.component";
     EditCandidateEducationComponent,
     CreateCandidateCertificationComponent,
     EditCandidateCertificationComponent,
-    TranslationsComponent,
+    DropdownTranslationsComponent,
     EditCandidateCertificationComponent,
     EditCandidateShortlistItemComponent,
     CreateCandidateJobExperienceComponent,
@@ -275,12 +285,15 @@ import {NotFoundComponent} from "./not-found/not-found.component";
     CreateCandidateAttachmentComponent,
     EditCandidateAttachmentComponent,
     CreateCandidateAttachmentComponent,
-    EditSavedSearchComponent
+    SearchSavedSearchesComponent,
+    EditCandidateSpecialLinksComponent,
+    EditCandidateStatusComponent
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
-    AuthService],
+    AuthService,
+    Title],
   bootstrap: [AppComponent]
 })
 export class AppModule {

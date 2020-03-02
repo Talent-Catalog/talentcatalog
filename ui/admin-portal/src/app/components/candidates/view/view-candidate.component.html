@@ -1,5 +1,5 @@
 <div *ngIf="loading">
-  <i class="fa fa-spinner fa-spin"></i> loading...
+  <i class="fas fa-spinner fa-spin"></i> loading...
 </div>
 <div class="alert alert-danger" *ngIf="error">
   {{error}}
@@ -19,12 +19,24 @@
         <input type="text" class="form-control" id="status" title="{{candidate.candidateMessage}}"
                value="{{candidate.status | titlecase}}" disabled>
         <div class="input-group-append">
-          <button class="btn btn-outline-dark" (click)="editCandidate()"><i class="fa fa-edit"></i></button>
+          <button class="btn btn-outline-dark" (click)="editCandidate()"><i class="fas fa-edit"></i></button>
         </div>
       </div>
     </div>
-    <h1>{{candidate.user.firstName}} {{candidate.user.lastName}}  <span
-      class="small text-muted">{{candidate.candidateNumber}}</span></h1>
+    <h1>{{candidate.user.firstName}} {{candidate.user.lastName}}
+      <span class="small text-muted">
+        {{candidate.candidateNumber}} -
+          <a target="_blank" [routerLink]="['/candidates',candidate.id]">
+            <i class="fas fa-external-link-alt" title="Show candidate in new tab"></i>
+          </a>
+          <a *ngIf="candidate.sflink" [href]="candidate.sflink" target="_blank">
+            <i class="fab fa-salesforce" title="Show candidate in Salesforce"></i>
+          </a>
+          <a *ngIf="candidate.folderlink" [href]="candidate.folderlink" target="_blank">
+            <i class="fab fa-google-drive" title="Show candidate's Google Doc folder"></i>
+          </a>
+      </span>
+    </h1>
 
   </div>
 
@@ -65,7 +77,7 @@
           </ng-template>
         </ngb-tab>
 
-        <!-- Education -->
+        <!-- Additional Info -->
         <ngb-tab [title]="'Additional Info'">
           <ng-template ngbTabContent>
             <app-candidate-additional-info-tab
@@ -82,7 +94,7 @@
       <div class="w-100">
         <div class="pull-right">
           <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
-            class="fa fa-arrow-{{sidePanelColWidth == 8 ? 'right' : 'left'}}"></i></button>
+            class="fas fa-arrow-{{sidePanelColWidth == 8 ? 'right' : 'left'}}"></i></button>
         </div>
 
         <ngb-tabset>
@@ -100,11 +112,11 @@
           </ngb-tab>
 
           <!--         HISTORY -->
-          <ngb-tab [title]="'Audit'">
+<!--          <ngb-tab [title]="'Audit'">-->
             <!--          <ng-template ngbTabContent>-->
             <!--            <app-candidate-eligibility-tab></app-candidate-eligibility-tab>-->
             <!--          </ng-template>-->
-          </ngb-tab>
+<!--          </ngb-tab>-->
 
         </ngb-tabset>
       </div>

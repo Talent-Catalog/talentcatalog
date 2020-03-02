@@ -2,14 +2,24 @@ import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {SearchCandidatesComponent} from './components/candidates/search/search-candidates.component';
 import {ViewCandidateComponent} from './components/candidates/view/view-candidate.component';
-import {EditCandidateStatusComponent} from './components/candidates/view/status/edit-candidate-status.component';
 import {AuthGuard} from "./services/auth.guard";
 import {LoginComponent} from "./components/login/login.component";
-import {SearchUsersComponent} from "./components/settings/users/search-users.component";
 import {SettingsComponent} from "./components/settings/settings.component";
-import {HomeComponent} from "./components/home/home.component";
+import {HomeComponent} from "./components/candidates/home.component";
 import {InfographicComponent} from "./components/infograhics/infographic.component";
+import {DefineSearchComponent} from "./components/search/define-search/define-search.component";
 import {NotFoundComponent} from "./not-found/not-found.component";
+
+/*
+Urls:
+/ -> redirects to /candidates
+/candidates - Saved search list
+/candidates/:id - saved search preview results
+    (child of above - see Angular router example - but maybe not needed because
+    always same component on display - it is not a "router outlet" based on url)
+/candidates/search/:id - Display results of saved search id
+/candidates/candidate/:id - Display candidate id
+ */
 
 const routes: Routes = [
   {
@@ -18,7 +28,23 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        component: HomeComponent
+        redirectTo: '/candidates', pathMatch: 'full'
+      },
+      {
+        path: 'search',
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            component: DefineSearchComponent,
+            data: {title: 'TBB Admin - Define Search'}
+          },
+          {
+            path: ':savedSearchId',
+            component: DefineSearchComponent,
+            data: {title: 'TBB Admin - Define Saved Search'}
+          },
+        ]
       },
       {
         path: 'candidates',
@@ -26,19 +52,18 @@ const routes: Routes = [
           {
             path: '',
             pathMatch: 'full',
-            component: SearchCandidatesComponent
+            component: HomeComponent,
+            data: {title: 'TBB Admin - Browse searches'}
           },
           {
             path: 'search/:savedSearchId',
-            component: SearchCandidatesComponent
+            component: SearchCandidatesComponent,
+            data: {title: 'TBB Admin - Candidate search'}
           },
           {
             path: ':candidateId',
-            component: ViewCandidateComponent
-          },
-          {
-            path: ':candidateId/edit',
-            component: EditCandidateStatusComponent
+            component: ViewCandidateComponent,
+            data: {title: 'TBB Admin - Candidate'}
           },
 
         ]
@@ -49,12 +74,9 @@ const routes: Routes = [
           {
             path: '',
             pathMatch: 'full',
-            component: SettingsComponent
+            component: SettingsComponent,
+            data: {title: 'TBB Admin - Settings'}
           },
-          {
-            path: 'users',
-            component: SearchUsersComponent
-          }
         ]
       },
       {
@@ -63,7 +85,8 @@ const routes: Routes = [
           {
             path: '',
             pathMatch: 'full',
-            component: InfographicComponent
+            component: InfographicComponent,
+            data: {title: 'TBB Admin - Infographics'}
           }
         ]
       }

@@ -2,7 +2,6 @@ tbb:
   cors:
     urls: ${TBB_CORS_URLS:http://localhost:4200,http://localhost:4201,https://tbbtalent-staging.herokuapp.com}
 
-
 spring:
   datasource:
     driverClassName: org.postgresql.Driver
@@ -28,6 +27,9 @@ jwt:
   expirationInMs: 604800000
 
 server:
+  tomcat:
+    remote_ip_header: x-forwarded-for
+    protocol_header: x-forwarded-proto
   url: https://tbbtalent-staging.herokuapp.com
 web:
   portal: ${WEB_PORTAL:https://tbbtalent-staging.herokuapp.com/candidate-portal}
@@ -64,5 +66,5 @@ email:
   user: ${EMAIL_USER:devtestingdp@gmail.com}
   password: ${EMAIL_PASSWORD:H@6J9bpcIDHa}
   authenticated: true
-  defaultEmail: ${EMAIL_DEFAULTEMAIL:jthatcher@digitalpurpose.com.au}
-  testOverrideEmail: ${EMAIL_TESTOVERRIDEEMAIL:jthatcher+tbb@digitalpurpose.com.au}
+  defaultEmail: ${EMAIL_DEFAULTEMAIL:jo@digitalpurpose.com.au}
+  testOverrideEmail: ${EMAIL_TESTOVERRIDEEMAIL:jo+tbb@digitalpurpose.com.au}

@@ -1,8 +1,11 @@
 @import '~bootstrap/scss/bootstrap-reboot';
 @import '~bootstrap/scss/bootstrap';
 
-$fa-font-path: "../node_modules/font-awesome/fonts";
-@import '~font-awesome/scss/font-awesome.scss';
+$fa-font-path: "../node_modules/@fortawesome/fontawesome-free/webfonts";
+@import '../node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss';
+@import '../node_modules/@fortawesome/fontawesome-free/scss/brands.scss';
+@import '../node_modules/@fortawesome/fontawesome-free/scss/solid.scss';
+@import '../node_modules/@fortawesome/fontawesome-free/scss/regular.scss';
 
 @import "~src/scss/common";
 @import "~src/scss/page";
@@ -65,6 +68,7 @@ ng-multiselect-dropdown div.multiselect-dropdown {
 }
 
 /* FONT AWESOME */
-label > i.fa {
+label > i.fas,i.fab {
   margin-right: 8px;
 }
+

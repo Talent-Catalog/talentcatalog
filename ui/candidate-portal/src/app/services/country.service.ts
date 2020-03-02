@@ -19,7 +19,12 @@ export class CountryService {
     const locale = this.languageService.getSelectedLanguage() || 'en';
     return this.http.get<Country[]>(`${this.apiUrl}`).pipe(
       map((items: Country[], index: number) => {
-        return items.sort((a, b) => a.name.localeCompare(b.name, locale));
+         items.sort((a, b) => a.name.localeCompare(b.name, locale));
+         let jordan: Country = items.find(x=> x.name == "Jordan");
+         let lebanon: Country = items.find(x=> x.name == "Lebanon");
+         items.splice(0,0, lebanon);
+         items.splice(0,0, jordan);
+         return items;
       }),
       catchError(e => throwError(e))
     );

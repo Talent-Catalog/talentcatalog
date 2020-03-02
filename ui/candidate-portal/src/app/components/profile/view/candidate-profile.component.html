@@ -6,6 +6,10 @@
 
   <ng-container *ngIf="!loading">
 
+    <div class="text-center">
+      <h5>TBB-{{candidate?.candidateNumber}}</h5>
+    </div>
+
     <!-- CONTACT -->
     <section>
 
@@ -144,7 +148,7 @@
             <div class="form-group">
               <label>{{ 'PROFILE.PERSONAL.NATIONALITY' | translate }}</label>
               <p>
-                {{candidate?.nationality?.name || ''}}
+                {{candidate?.nationality | translation : 'nationality'}}
               </p>
             </div>
           </div>
@@ -229,7 +233,6 @@
 
       <div class="card">
 
-        <!-- TODO -->
         <ng-container *ngFor="let education of candidate.candidateEducations; let i = index;">
           <app-candidate-education-card [candidateEducation]="education"
                                         [preview]="true">
@@ -288,7 +291,7 @@
 
         <ng-container *ngFor="let language of candidate.candidateLanguages; let i = index;">
           <app-candidate-language-card [language]="language"
-                                        [preview]="true">
+                                       [preview]="true">
           </app-candidate-language-card>
 
           <div class="text-center" *ngIf="i < candidate?.candidateLanguages?.length - 1">

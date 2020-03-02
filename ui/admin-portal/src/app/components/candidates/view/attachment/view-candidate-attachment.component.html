@@ -1,5 +1,5 @@
 <div *ngIf="loading">
-  <i class="fa fa-spinner fa-spin"></i> loading...
+  <i class="fas fa-spinner fa-spin"></i> loading...
 </div>
 
 <div *ngIf="error">
@@ -15,11 +15,11 @@
 
     <div class="pull-right" *ngIf="editable">
       <button class="btn btn-sm btn-primary" (click)="addAttachment('link')">
-        <i class="fa fa-plus"></i> Link
+        <i class="fas fa-plus"></i> Link
       </button>
 
       <button class="btn btn-sm btn-primary ml-2" (click)="addAttachment('file')">
-        <i class="fa fa-plus"></i> File
+        <i class="fas fa-plus"></i> File
       </button>
     </div>
 
@@ -39,11 +39,11 @@
       <!-- EDIT -->
       <div class="actions" *ngIf="editable">
         <button class="btn btn-sm btn-outline-primary" (click)="editCandidateAttachment(attachment)">
-          <i class="fa fa-edit"></i>
+          <i class="fas fa-edit"></i>
         </button>
 
         <button class="btn btn-sm btn-outline-danger" (click)="deleteCandidateAttachment(attachment)">
-          <i class="fa fa-trash"></i>
+          <i class="fas fa-trash"></i>
         </button>
       </div>
 

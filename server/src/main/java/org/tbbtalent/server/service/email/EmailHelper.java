@@ -1,7 +1,5 @@
 package org.tbbtalent.server.service.email;
 
-import java.time.LocalDate;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +9,8 @@ import org.tbbtalent.server.exception.EmailSendFailedException;
 import org.tbbtalent.server.model.User;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+
+import java.time.LocalDate;
 
 @Service
 public class EmailHelper {
@@ -111,6 +111,8 @@ public class EmailHelper {
             throw new EmailSendFailedException(e);
         }
     }
+
+
     private String currentYear() {
         return LocalDate.now().getYear() + "";
     }

@@ -29,14 +29,15 @@ export class AppComponent {
     // Add .rtl-wrapper class to app root if the language is arabic
     this.loading = true;
     this.rtl = lang === 'ar';
+    this.localStorage.set('language', lang);
+    this.languageService.setSelectedLanguage(lang);
     this.translate.use(lang);
-    this.languageService.setSelectedLanguage(lang).subscribe(
+    this.languageService.loadTranslations().subscribe(
       result => {
         this.loading = false;
       }, error => {
         this.loading = false;
       });
-    this.localStorage.set('language', lang);
   }
 
 }

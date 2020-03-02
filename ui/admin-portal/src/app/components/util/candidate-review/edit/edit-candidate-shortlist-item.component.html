@@ -1,0 +1,51 @@
+<div class="modal-header">
+
+  <h4 class="modal-title">Review Candidate for {{savedSearch.name}}</h4>
+
+  <button type="button" class="close" aria-label="Close" (click)="dismiss()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+
+</div>
+
+<div class="modal-body">
+
+  <div *ngIf="loading">
+    <i class="fas fa-spinner fa-spin"></i>
+  </div>
+
+  <div *ngIf="!loading">
+    <div class="alert alert-danger" *ngIf="error">
+      {{error}}
+    </div>
+
+    <form [formGroup]="form">
+
+      <div class="form-group">
+        <label for="shortlistStatus">Status</label>
+        <select class="form-control" name="shortlistStatus" id="shortlistStatus" [formControlName]="'shortlistStatus'">
+          <option value="pending">Pending</option>
+          <option value="verified">Verified</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </div>
+
+      <!-- COMMENT -->
+      <div class="form-group">
+        <label for="comment">Comment</label>
+        <textarea class="form-control" id="comment" [formControlName]="'comment'"></textarea>
+      </div>
+
+      <app-updated-by *ngIf="candidateShortListItem" [object]="candidateShortListItem"></app-updated-by>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="onSave()"
+                [disabled]="form.invalid || loading || saving">
+          <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
+          Save
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>

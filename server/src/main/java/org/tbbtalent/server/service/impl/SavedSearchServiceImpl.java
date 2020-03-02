@@ -14,8 +14,8 @@ import org.tbbtalent.server.model.*;
 import org.tbbtalent.server.repository.*;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.candidate.SearchJoinRequest;
-import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
+import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.SavedSearchService;
 
@@ -62,6 +62,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         Page<SavedSearch> savedSearches = savedSearchRepository.findAll(
                 SavedSearchSpecification.buildSearchQuery(request), request.getPageRequest());
         log.info("Found " + savedSearches.getTotalElements() + " savedSearches in search");
+
+        for (SavedSearch savedSearch: savedSearches) {
+            savedSearch.parseType();
+        }
+        
         return savedSearches;
     }
 
@@ -69,6 +74,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     public SearchCandidateRequest loadSavedSearch(long id) {
         SavedSearch savedSearch = this.savedSearchRepository.findByIdLoadSearchJoins(id)
                 .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+        savedSearch.parseType();
         return convertToSearchCandidateRequest(savedSearch);
     }
 
@@ -76,6 +82,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     public SavedSearch getSavedSearch(long id) {
         SavedSearch savedSearch = this.savedSearchRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+
+        savedSearch.parseType();
 
         Map<Integer, String> languageLevelMap = languageLevelRepository.findAllActive().stream().collect(
                 Collectors.toMap(LanguageLevel::getLevel, LanguageLevel::getName, (l1, l2) ->  l1));
@@ -134,7 +142,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if(request.getSearchCandidateRequest() == null){
             SavedSearch savedSearch = savedSearchRepository.findById(id).orElse(null);
             savedSearch.setName(request.getName());
-            savedSearch.setType(request.getType());
+            savedSearch.setType(request.getSavedSearchType(), request.getSavedSearchSubtype());
             return savedSearchRepository.save(savedSearch);
         }
 
@@ -156,6 +164,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         if (savedSearch != null) {
             savedSearch.setStatus(Status.deleted);
+            //Change name so that that name can be reused
+            savedSearch.setName("__deleted__" + savedSearch.getName());
             savedSearchRepository.save(savedSearch);
             return true;
         }
@@ -164,8 +174,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     private void checkDuplicates(Long id, String name) {
         SavedSearch existing = savedSearchRepository.findByNameIgnoreCase(name);
-        if (existing != null && !existing.getId().equals(id) || (existing != null && id == null)){
-            throw new EntityExistsException("savedSearch");
+        if (existing != null && existing.getStatus() != Status.deleted) {
+            if (!existing.getId().equals(id)) {
+                throw new EntityExistsException("savedSearch");
+            }
         }
     }
 
@@ -192,7 +204,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         SavedSearch savedSearch = new SavedSearch();
         savedSearch.setName(request.getName());
-        savedSearch.setType(request.getType());
+        savedSearch.setType(request.getSavedSearchType(), request.getSavedSearchSubtype());
 
         final SearchCandidateRequest searchCandidateRequest = request.getSearchCandidateRequest();
         if (searchCandidateRequest != null) {
@@ -223,6 +235,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setMaxAge(searchCandidateRequest.getMaxAge());
             savedSearch.setMinEducationLevel(searchCandidateRequest.getMinEducationLevel());
             savedSearch.setEducationMajorIds(getListAsString(searchCandidateRequest.getEducationMajorIds()));
+            savedSearch.setIncludeDraftAndDeleted(searchCandidateRequest.getIncludeDraftAndDeleted());
         }
 
         return savedSearch;
@@ -256,7 +269,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setMaxAge(request.getMaxAge());
         searchCandidateRequest.setMinEducationLevel(request.getMinEducationLevel());
         searchCandidateRequest.setEducationMajorIds(getIdsFromString(request.getEducationMajorIds()));
-
+        searchCandidateRequest.setIncludeDraftAndDeleted(request.getIncludeDraftAndDeleted());
         List<SearchJoinRequest> searchJoinRequests = new ArrayList<>();
         for (SearchJoin searchJoin : request.getSearchJoins()) {
             searchJoinRequests.add(new SearchJoinRequest(searchJoin.getChildSavedSearch().getId(), searchJoin.getChildSavedSearch().getName(), searchJoin.getSearchType()));
