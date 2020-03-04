@@ -20,10 +20,14 @@ export class CountryService {
     return this.http.get<Country[]>(`${this.apiUrl}`).pipe(
       map((items: Country[], index: number) => {
          items.sort((a, b) => a.name.localeCompare(b.name, locale));
-         let jordan: Country = items.find(x=> x.name == "Jordan");
-         let lebanon: Country = items.find(x=> x.name == "Lebanon");
-         items.splice(0,0, lebanon);
-         items.splice(0,0, jordan);
+        //Bit of a hack, which only works in English, for putting some names
+        //at top.
+         if (locale == 'en') {
+           let jordan: Country = items.find(x=> x.name == "Jordan");
+           let lebanon: Country = items.find(x=> x.name == "Lebanon");
+           items.splice(0,0, lebanon);
+           items.splice(0,0, jordan);
+         }
          return items;
       }),
       catchError(e => throwError(e))

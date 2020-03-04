@@ -22,14 +22,18 @@ export class NationalityService {
     return this.http.get<Nationality[]>(`${this.apiUrl}`).pipe(
       map((items: Nationality[], index: number) => {
         items.sort((a, b) => a.name.localeCompare(b.name, locale));
-        let iraqi: Nationality = items.find(x=> x.name == "Iraqi");
-        let jordanian: Nationality = items.find(x=> x.name == "Jordanian");
-        let palestinian: Nationality = items.find(x=> x.name == "Palestinian");
-        let syrian: Nationality = items.find(x=> x.name == "Syrian");
-        items.splice(0,0, syrian);
-        items.splice(0,0, palestinian);
-        items.splice(0,0, jordanian);
-        items.splice(0,0, iraqi);
+        //Bit of a hack, which only works in English, for putting some names
+        //at top.
+        if (locale == 'en') {
+          let iraqi: Nationality = items.find(x=> x.name == "Iraqi");
+          let jordanian: Nationality = items.find(x=> x.name == "Jordanian");
+          let palestinian: Nationality = items.find(x=> x.name == "Palestinian");
+          let syrian: Nationality = items.find(x=> x.name == "Syrian");
+          items.splice(0,0, syrian);
+          items.splice(0,0, palestinian);
+          items.splice(0,0, jordanian);
+          items.splice(0,0, iraqi);
+        }
         return items;
       }),
       catchError(e => throwError(e))
