@@ -6,6 +6,7 @@ import org.tbbtalent.server.request.translation.CreateTranslationRequest;
 import org.tbbtalent.server.request.translation.UpdateTranslationRequest;
 
 import java.util.List;
+import java.util.Map;
 
 public interface TranslationService {
 
@@ -18,4 +19,8 @@ public interface TranslationService {
     Translation updateTranslation(long id, UpdateTranslationRequest request);
 
     List<Translation> list();
+
+    void updateTranslationFile(String language, Map translations);
+
+    Map<String, Object> getTranslationFile(String language);
 }

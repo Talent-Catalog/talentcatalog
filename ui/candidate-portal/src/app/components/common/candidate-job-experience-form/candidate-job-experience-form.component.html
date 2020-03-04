@@ -59,6 +59,9 @@
       </label>
       <app-month-picker id="startDate" [control]="form.get('startDate')"></app-month-picker>
       <app-form-control-error [control]="form.controls.startDate"></app-form-control-error>
+        <small *ngIf="form.hasError('invalidDate')">
+          {{ 'FORM.ERROR.INVALIDDATERANGE' | translate }}
+        </small>
     </div>
   </div>
 
@@ -72,12 +75,6 @@
       <app-form-control-error [control]="form.controls.endDate"></app-form-control-error>
 
     </div>
-  </div>
-
-  <div class="col-12">
-    <p>
-      {{ 'FORM.JOBEXPERIENCE.EXPLANATION' | translate }}
-    </p>
   </div>
 
   <!-- JOB TITLE -->

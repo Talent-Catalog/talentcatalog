@@ -11,7 +11,7 @@
 <div class="modal-body">
 
   <div *ngIf="loading">
-    <i class="fa fa-spinner fa-spin"></i>
+    <i class="fas fa-spinner fa-spin"></i>
   </div>
 
   <div *ngIf="!loading">
@@ -50,7 +50,7 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="onSave()"
                 [disabled]="userForm.invalid || loading || saving">
-          <i class="fa fa-spinner fa-spin" *ngIf="saving"></i>
+          <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
           Save
         </button>
       </div>

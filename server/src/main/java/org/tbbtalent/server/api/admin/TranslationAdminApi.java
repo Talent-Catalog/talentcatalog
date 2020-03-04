@@ -18,6 +18,7 @@ import org.tbbtalent.server.service.*;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController()
@@ -87,12 +88,6 @@ public class TranslationAdminApi {
         return translatedObjectDto().buildPage(educationMajors);
     }
 
-//    @GetMapping("{id}")
-//    public Map<String, Object> get(@PathVariable("id") long id) {
-//        Translation translation = this.translationService.getTranslation(id);
-//        return translationDto().build(translation);
-//    }
-//
     @PostMapping
     public Map<String, Object> create(@Valid @RequestBody CreateTranslationRequest request) throws EntityExistsException {
         Translation translation = this.translationService.createTranslation(request);
@@ -106,13 +101,21 @@ public class TranslationAdminApi {
         Translation translation = this.translationService.updateTranslation(id, request);
         return translationDto().build(translation);
     }
-//
-//    @DeleteMapping("{id}")
-//    public boolean delete(@PathVariable("id") long id) throws EntityReferencedException {
-//        return this.translationService.deleteTranslation(id);
-//    }
 
+    @GetMapping("file/{language}")
+    public Map<String, Object> getTranslationFile(@PathVariable("language") String language) {
+        return this.translationService.getTranslationFile(language);
+    }
 
+    @PutMapping("file/{language}")
+    public Map<String, Object> updateTranslationFile(
+            @PathVariable("language") String language,
+            @Valid @RequestBody Map translations) {
+        this.translationService.updateTranslationFile(language, translations);
+        Map<String, Object> result = new HashMap<>();
+        result.put("status", "success");
+        return result;
+    }
 
     private DtoBuilder translatedObjectDto() {
         return new DtoBuilder(true)

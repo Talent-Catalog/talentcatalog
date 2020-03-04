@@ -7,6 +7,5 @@ import org.tbbtalent.server.model.CandidateNote;
 
 public interface CandidateNoteRepository extends JpaRepository<CandidateNote, Long> {
 
-
     Page<CandidateNote> findByCandidateId(Long candidateId, Pageable request);
 }

@@ -2,6 +2,7 @@ package org.tbbtalent.server.request.search;
 
 import javax.validation.constraints.NotBlank;
 
+import org.tbbtalent.server.model.SavedSearchSubtype;
 import org.tbbtalent.server.model.SavedSearchType;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 
@@ -10,7 +11,8 @@ public class UpdateSavedSearchRequest {
     @NotBlank
     private String name;
 
-    private SavedSearchType type;
+    private SavedSearchType savedSearchType;
+    private SavedSearchSubtype savedSearchSubtype;
 
     private SearchCandidateRequest searchCandidateRequest;
 
@@ -22,12 +24,20 @@ public class UpdateSavedSearchRequest {
         this.name = name;
     }
 
-    public SavedSearchType getType() {
-        return type;
+    public SavedSearchType getSavedSearchType() {
+        return savedSearchType;
     }
 
-    public void setType(SavedSearchType type) {
-        this.type = type;
+    public void setSavedSearchType(SavedSearchType savedSearchType) {
+        this.savedSearchType = savedSearchType;
+    }
+
+    public SavedSearchSubtype getSavedSearchSubtype() {
+        return savedSearchSubtype;
+    }
+
+    public void setSavedSearchSubtype(SavedSearchSubtype savedSearchSubtype) {
+        this.savedSearchSubtype = savedSearchSubtype;
     }
 
     public SearchCandidateRequest getSearchCandidateRequest() {

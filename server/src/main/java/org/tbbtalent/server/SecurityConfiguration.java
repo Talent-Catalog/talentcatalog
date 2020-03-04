@@ -52,6 +52,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/portal/user/check-token").permitAll()
                 .antMatchers("/api/portal/user/reset-password").permitAll()
                 .antMatchers("/api/portal/language/system/**").permitAll()
+                .antMatchers("/api/portal/language/translations/**").permitAll()
                 .antMatchers("/api/portal/**").hasAnyRole("USER")
                 .antMatchers("/api/admin/auth").permitAll  ()
                 .antMatchers("/api/admin/auth/**").permitAll()
@@ -74,7 +75,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
                 .and()
             .csrf().disable()
-            ;
+            .requiresChannel().requestMatchers( r -> r.getHeader("X-Forwarded-Proto") != null).requiresSecure()
+
+        ;
 
         // Add the JWT security filter
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

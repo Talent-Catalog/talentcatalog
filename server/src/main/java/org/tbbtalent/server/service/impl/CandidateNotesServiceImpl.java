@@ -13,6 +13,8 @@ import org.tbbtalent.server.request.note.UpdateCandidateNoteRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.CandidateNoteService;
 
+import javax.transaction.Transactional;
+
 @Service
 public class CandidateNotesServiceImpl implements CandidateNoteService {
 
@@ -29,6 +31,7 @@ public class CandidateNotesServiceImpl implements CandidateNoteService {
     }
 
     @Override
+    @Transactional
     public Page<CandidateNote> searchCandidateNotes(SearchCandidateNotesRequest request) {
         return candidateNoteRepository.findByCandidateId(request.getCandidateId(), request.getPageRequest());
     }

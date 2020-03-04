@@ -29,6 +29,13 @@ public class CandidateAdminApi {
         this.candidateService = candidateService;
     }
 
+    @PostMapping("runsavedsearch")
+    public Map<String, Object> runSavedSearch(@RequestBody SavedSearchRunRequest request) {
+        Page<Candidate> candidates = this.candidateService.searchCandidates(request);
+        Map<String, Object> map = candidateBaseDto().buildPage(candidates);
+        return map;
+    }
+
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchCandidateRequest request) {
         Page<Candidate> candidates = this.candidateService.searchCandidates(request);
@@ -37,7 +44,7 @@ public class CandidateAdminApi {
     }
 
     @PostMapping("find")
-    public Map<String, Object> findByCandidateNumber(@RequestBody CandidateQuickSearchRequest request) {
+    public Map<String, Object> findByCandidateNumberOrName(@RequestBody CandidateQuickSearchRequest request) {
         Page<Candidate> candidates = this.candidateService.searchCandidates(request);
         Map<String, Object> map = candidateBaseDto().buildPage(candidates);
         return map;
@@ -51,6 +58,13 @@ public class CandidateAdminApi {
     @PostMapping
     public Map<String, Object> create(@RequestBody CreateCandidateRequest request) throws UsernameTakenException {
         Candidate candidate = this.candidateService.createCandidate(request);
+        return candidateDto().build(candidate);
+    }
+
+    @PutMapping("{id}/links")
+    public Map<String, Object> updateLinks(@PathVariable("id") long id,
+                            @RequestBody UpdateCandidateLinksRequest request) {
+        Candidate candidate = this.candidateService.updateCandidateLinks(id, request);
         return candidateDto().build(candidate);
     }
 
@@ -111,6 +125,8 @@ public class CandidateAdminApi {
                 .add("yearOfArrival")
                 .add("additionalInfo")
                 .add("candidateMessage")
+                .add("folderlink")
+                .add("sflink")
                 .add("country", countryDto())
                 .add("nationality", nationalityDto())
                 .add("user", userDto())

@@ -1,5 +1,5 @@
 <div *ngIf="loading">
-  <i class="fa fa-spinner fa-spin"></i> loading...
+  <i class="fas fa-spinner fa-spin"></i> loading...
 </div>
 <div *ngIf="error">
   {{error}}
@@ -10,7 +10,7 @@
     Contact Information
     <div class="pull-right" *ngIf="editable">
       <button class="btn btn-sm btn-outline-secondary" (click)="editContactDetails()">
-        <i class="fa fa-edit"></i></button>
+        <i class="fas fa-edit"></i></button>
     </div>
   </div>
 
@@ -18,9 +18,9 @@
 
     <div class="row">
 
-      <div class="form-group col-12">
+      <div class="form-group col-8">
         <label class="col-form-label">
-          <i class="fa fa-map-marker"></i>
+          <i class="fas fa-map-marker"></i>
           Address
         </label>
 
@@ -40,7 +40,15 @@
       </div>
 
       <div class="form-group col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fa fa-phone"></i>Phone</label>
+        <label class="col-form-label"><i class="fas fa-user"></i>Gender</label>
+
+        <div class="form-control-plaintext">
+          <span>{{candidate.gender}}</span>
+        </div>
+      </div>
+
+      <div class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fas fa-phone"></i>Phone</label>
 
         <div class="form-control-plaintext">
           <span>{{candidate.phone}}</span>
@@ -48,7 +56,7 @@
       </div>
 
       <div class="form-group col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fa fa-gift"></i>D.O.B.</label>
+        <label class="col-form-label"><i class="fas fa-gift"></i>D.O.B.</label>
 
         <div class="form-control-plaintext">
           <span>{{candidate.dob}}</span>
@@ -56,7 +64,7 @@
       </div>
 
       <div class="form-group col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fa fa-whatsapp"></i>Whatsapp</label>
+        <label class="col-form-label"><i class="fab fa-whatsapp"></i>Whatsapp</label>
 
         <div class="form-control-plaintext">
           <span>{{candidate.whatsapp}}</span>
@@ -64,7 +72,7 @@
       </div>
 
       <div class="form-group col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fa fa-envelope"></i>Email</label>
+        <label class="col-form-label"><i class="fas fa-envelope"></i>Email</label>
 
         <div class="form-control-plaintext">
           <span>{{candidate.user.email}}</span>
@@ -72,7 +80,7 @@
       </div>
 
       <div class="form-group col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fa fa-globe"></i>Nationality</label>
+        <label class="col-form-label"><i class="fas fa-globe"></i>Nationality</label>
 
         <div class="form-control-plaintext">
           <span>{{candidate.nationality?.name}}</span>
@@ -80,7 +88,7 @@
       </div>
 
       <div class="form-group col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fa fa-calendar"></i> Year of arrival</label>
+        <label class="col-form-label"><i class="fas fa-calendar"></i> Year of arrival</label>
 
         <div class="form-control-plaintext">
           <span>{{candidate.yearOfArrival}}</span>

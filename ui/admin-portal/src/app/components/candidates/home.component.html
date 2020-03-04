@@ -1,0 +1,33 @@
+<ngb-tabset [activeId]="activeId" (tabChange)="onTabChanged($event)">
+
+  <div *ngFor="let typeInfo of savedSearchTypeInfos; index as i">
+    <ngb-tab [id]="i.toString()" [title]="typeInfo.title">
+      <ng-template ngbTabContent>
+        <div *ngIf="savedSearchTypeSubInfos">
+          <form [formGroup]="categoryForm" class="col-sm-4">
+            <label for="savedSearchSubtype">Category</label>
+            <select class="form-control" id="savedSearchSubtype" formControlName="savedSearchSubtype"
+                    (change)="onSavedSearchSubtypeChange($event)">
+              <option *ngFor="let subtypeInfo of savedSearchTypeSubInfos" [value]="subtypeInfo.savedSearchSubtype">{{subtypeInfo.title}}</option>
+<!--              todo we need an undefined category subtype-->
+            </select>
+          </form>
+          <app-browse-saved-searches
+            [savedSearchType]="typeInfo.savedSearchType"
+            [savedSearchSubtype]="selectedSavedSearchSubtype"
+          >
+          </app-browse-saved-searches>
+        </div>
+        <div *ngIf="!savedSearchTypeSubInfos">
+          <app-browse-saved-searches
+            [savedSearchType]="typeInfo.savedSearchType"
+            [savedSearchSubtype]="null"
+          >
+          </app-browse-saved-searches>
+        </div>
+      </ng-template>
+    </ngb-tab>
+<!--    todo we need some other tabs - how do we handle them separately from saved search tabs?-->
+  </div>
+</ngb-tabset>
+

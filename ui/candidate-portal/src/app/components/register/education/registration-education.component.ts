@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
@@ -11,13 +11,14 @@ import {EducationMajorService} from "../../../services/education-major.service";
 import {EducationMajor} from "../../../model/education-major";
 import {Country} from "../../../model/country";
 import {CountryService} from "../../../services/country.service";
+import {LangChangeEvent, TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-registration-education',
   templateUrl: './registration-education.component.html',
   styleUrls: ['./registration-education.component.scss']
 })
-export class RegistrationEducationComponent implements OnInit {
+export class RegistrationEducationComponent implements OnInit, OnDestroy {
 
   /* A flag to indicate if the component is being used on the profile component */
   @Input() edit: boolean = false;
@@ -42,6 +43,7 @@ export class RegistrationEducationComponent implements OnInit {
   educationType: string;
 
   editTarget: CandidateEducation;
+  subscription;
 
   constructor(private fb: FormBuilder,
               private router: Router,
@@ -50,6 +52,7 @@ export class RegistrationEducationComponent implements OnInit {
               private countryService: CountryService,
               private educationLevelService: EducationLevelService,
               private educationMajorService: EducationMajorService,
+              private translateService: TranslateService,
               public registrationService: RegistrationService) {
   }
 
@@ -77,6 +80,36 @@ export class RegistrationEducationComponent implements OnInit {
         this.educationType = educationLevel ? educationLevel.educationType : null;
       }
     });
+
+    this.loadDropDownData();
+    //listen for change of language and save
+    this.subscription = this.translateService.onLangChange.subscribe((event: LangChangeEvent) => {
+      this.loadDropDownData();
+    });
+
+
+
+    this.candidateService.getCandidateEducation().subscribe(
+      (candidate) => {
+        this.form.patchValue({
+          maxEducationLevelId: candidate.maxEducationLevel ? candidate.maxEducationLevel.id : null,
+        });
+        if (candidate.candidateEducations) {
+          this.candidateEducationItems = candidate.candidateEducations
+        }
+        this._loading.candidate = false;
+      },
+      (error) => {
+        this.error = error;
+        this._loading.candidate = false;
+      }
+    );
+  }
+
+  loadDropDownData(){
+    this._loading.educationMajors = true;
+    this._loading.countries = true;
+    this._loading.levels = true;
 
     /* Load data */
     this.educationMajorService.listMajors().subscribe(
@@ -107,22 +140,6 @@ export class RegistrationEducationComponent implements OnInit {
       (error) => {
         this.error = error;
         this._loading.levels = false;
-      }
-    );
-
-    this.candidateService.getCandidateEducation().subscribe(
-      (candidate) => {
-        this.form.patchValue({
-          maxEducationLevelId: candidate.maxEducationLevel ? candidate.maxEducationLevel.id : null,
-        });
-        if (candidate.candidateEducations) {
-          this.candidateEducationItems = candidate.candidateEducations
-        }
-        this._loading.candidate = false;
-      },
-      (error) => {
-        this.error = error;
-        this._loading.candidate = false;
       }
     );
   }
@@ -219,5 +236,9 @@ export class RegistrationEducationComponent implements OnInit {
   handleEducationSaved(education: CandidateEducation, i) {
     this.candidateEducationItems[i] = education;
     this.editTarget = null;
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }

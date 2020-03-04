@@ -140,6 +140,7 @@ public class CandidatePortalApi {
     private DtoBuilder candidatePersonalDto() {
         return new DtoBuilder()
                 .add("user", userDto())
+                .add("candidateNumber")
                 .add("gender")
                 .add("dob")
                 .add("country", countryDto())
@@ -314,6 +315,7 @@ public class CandidatePortalApi {
         return new DtoBuilder()
                 .add("user", userDto())
                 /* CONTACT */
+                .add("candidateNumber")
                 .add("phone")
                 .add("whatsapp")
                 /* PERSONAL */

@@ -1,24 +1,5 @@
 package org.tbbtalent.server.api.admin;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +10,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.model.*;
 import org.tbbtalent.server.security.UserContext;
+
+import java.sql.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/admin/system")
@@ -67,8 +59,61 @@ public class SystemAdminApi {
         api.setTargetPwd("tbbtalent");
         api.migrate();
     }
-    
-    @GetMapping("migrate")
+
+    @GetMapping("migrate/status")
+    public String migrateStatus() {
+        try {
+            Long userId = 1L;
+            if (userContext != null) {
+                User loggedInUser = userContext.getLoggedInUser();
+                if (loggedInUser != null){
+                    userId = loggedInUser.getId();
+                }
+            }
+
+            Connection sourceConn = DriverManager.getConnection("jdbc:mysql://v1.tbbtalent.org/yiitbb?useUnicode=yes&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull", "sayre", "MoroccoBound");
+            Statement sourceStmt = sourceConn.createStatement();
+
+            Connection targetConn = DriverManager.getConnection(targetJdbcUrl, targetUser, targetPwd);
+
+            log.info("Migration data for candidates");
+
+            String updateSql = "update candidate set migration_status =  ? where candidate_number = ? ";
+            String selectSql = "select user_id, u.status from  user_jobseeker j join user u on u.id = j.user_id";
+            PreparedStatement update = targetConn.prepareStatement(updateSql);
+            ResultSet result = sourceStmt.executeQuery(selectSql);
+            int count = 0;
+            while (result.next()) {
+                int i = 1;
+                update.setString(i++, result.getString("status"));
+                update.setString(i++, result.getString("user_id"));
+                update.addBatch();
+
+                if (count%100 == 0) {
+                    update.executeBatch();
+                    log.info("candidates - saving batch  " + count);
+                }
+
+                count++;
+            }
+            update.executeBatch();
+            log.info("candidates - saving batch " + count);
+            log.info("Migration data for candidates");
+
+            updateSql = "update candidate set status =  'deleted' where migration_status = '0' ";
+            update = targetConn.prepareStatement(updateSql);
+            update.execute();
+            log.info("candidates - fix deleted " + count);
+
+        } catch (Exception e){
+            log.error("unable to migrate status data", e);
+        }
+
+        return "done";
+    }
+
+    //Hidden for now as should no longer be required - can probably delete
+//    @GetMapping("migrate")
     public String migrate() {
         try {
             Long userId = 1L; 
@@ -79,7 +124,7 @@ public class SystemAdminApi {
                 }
             }
 
-            Connection sourceConn = DriverManager.getConnection("jdbc:mysql://tbbtalent.org/yiitbb?useUnicode=yes&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull", "sayre", "MoroccoBound");
+            Connection sourceConn = DriverManager.getConnection("jdbc:mysql://v1.tbbtalent.org/yiitbb?useUnicode=yes&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull", "sayre", "MoroccoBound");
             Statement sourceStmt = sourceConn.createStatement();
 
             Connection targetConn = DriverManager.getConnection(targetJdbcUrl, targetUser, targetPwd);
@@ -279,6 +324,7 @@ public class SystemAdminApi {
         Set<Long> eduLevelIds = loadReferenceIds(targetConn, "education_level");
         Set<Long> eduMajorIds = loadReferenceIds(targetConn, "education_major");
 
+
         // load other options
         Map<Long, String> otherNationalities = loadOtherReferenceIds(sourceStmt, "nationality");
         
@@ -302,7 +348,7 @@ public class SystemAdminApi {
             insert.setDate(i++, convertToDate(result.getString("dob")));
             insert.setString(i++, result.getString("phone_number"));
             insert.setString(i++, result.getString("phone_wapp"));
-            insert.setString(i++, getCandidateStatus(result.getInt("status")));
+            insert.setString(i++, getCandidateStatus(result.getInt("status"), result.getInt("nationality"), result.getInt("country")));
             int origCountryId = result.getInt("country");
             Long countryId = checkReference(origCountryId, countryIds);
             if (countryId == null) {
@@ -888,18 +934,24 @@ public class SystemAdminApi {
         return Status.deleted.name();
     }
 
-    private String getCandidateStatus(Integer status) {
+    private String getCandidateStatus(Integer status, Integer nationalityId, Integer countryId) {
+        if (nationalityId == null || nationalityId == 0 || countryId == null || countryId == 0){
+            return CandidateStatus.draft.name();
+        }
         switch (status) {
             case 0:
                 return CandidateStatus.deleted.name();
             case 1:
                 return CandidateStatus.incomplete.name();
             case 2:
+                return CandidateStatus.pending.name();
             case 3:
             case 4:
             case 5:
             case 6:
+                return CandidateStatus.inactive.name();
             case 7:
+                return CandidateStatus.incomplete.name();
             case 8:
                 return CandidateStatus.inactive.name();
             case 9:

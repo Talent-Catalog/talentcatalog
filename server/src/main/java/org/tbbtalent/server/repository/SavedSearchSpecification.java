@@ -3,6 +3,7 @@ package org.tbbtalent.server.repository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.tbbtalent.server.model.SavedSearch;
+import org.tbbtalent.server.model.SavedSearchSubtype;
 import org.tbbtalent.server.model.SavedSearchType;
 import org.tbbtalent.server.model.Status;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
@@ -28,7 +29,10 @@ public class SavedSearchSpecification {
             SavedSearchType savedSearchType = request.getSavedSearchType();
             if (savedSearchType != null) {
                 // Search for specified type
-                conjunction.getExpressions().add(builder.equal(savedSearch.get("type"), savedSearchType));
+                SavedSearchSubtype savedSearchSubtype = request.getSavedSearchSubtype();
+                String type = SavedSearch.makeStringSavedSearchType(
+                        savedSearchType, savedSearchSubtype);
+                conjunction.getExpressions().add(builder.equal(savedSearch.get("type"), type));
             }
             // ONLY SHOW ACTIVE SAVED SEARCHES
             conjunction.getExpressions().add(builder.equal(savedSearch.get("status"), Status.active));

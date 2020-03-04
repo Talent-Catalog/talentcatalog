@@ -4,8 +4,8 @@ import {Candidate} from '../../../../model/candidate';
 import {User} from '../../../../model/user';
 import {CandidateService} from '../../../../services/candidate.service';
 import {UserService} from '../../../../services/user.service';
-import {ChangePasswordComponent} from './change-password/change-password.component';
-import {ChangeUsernameComponent} from './change-username/change-username.component';
+import {ChangePasswordComponent} from '../../../account/change-password/change-password.component';
+import {ChangeUsernameComponent} from '../../../account/change-username/change-username.component';
 
 @Component({
   selector: 'app-view-candidate-account',

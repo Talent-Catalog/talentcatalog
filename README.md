@@ -10,10 +10,10 @@ make up the TBB Talent Portal system. In particular it contains:
 
 - **server**: the backend module of the system providing secure API (REST) access to the 
 data, stored in an SQL Database. This module is written in Java / Spring Boot.
-- **candidate-portal (coming soon)**: the frontend module through which candidates (refugees seeking skilled 
+- **candidate-portal**: the frontend module through which candidates (refugees seeking skilled 
 migration) are able to register and manage their details. This is written in Angular and connects 
 to the REST API endpoints under `/api/candidate` provided by the server. 
-- **admin-portal (coming soon)**: the frontend module through which TBB staff are able to view, manage and annotate 
+- **admin-portal**: the frontend module through which TBB staff are able to view, manage and annotate 
 candidate details. This is written in Angular and connects to the REST API endpoints under 
 `/api/admin` provided by the server.
      
@@ -46,8 +46,10 @@ full privileges
 - Create a new database called tbbtalent and set tbbtalent as the owner
 - The database details are defined in bundle/all/resources/application.yml
 - The database is populated/updated using Flyway at start up - see TbbTalentApplication
-- Run data migration script to add additional data - using tool like postman or curl call login http://localhost:8080/api/admin/auth/login
- and save token call curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" http://localhost:8080/api/admin/system/migrate
+- Run data migration script to add additional data - using tool like postman or curl 
+  - call login http://localhost:8080/api/admin/auth/login
+ and save token 
+   - call curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" http://localhost:8080/api/admin/system/migrate
 ### Download and edit the code ###
 
 - Clone [the repository](https://bitbucket.org/johncameron/tbbtalentv2/src/master/) to your local system
@@ -132,3 +134,57 @@ The Admin Portal is now running locally and you can open a browser (chrome prefe
 
 __Note:__ _this is for development mode only. In production, the Admin Portal module will be bundled 
 into the server and serve through Apache Tomcat._ 
+
+## Version Control ##
+
+We use Bitbucket - [https://bitbucket.org/dashboard/overview]()
+
+Our repository is called tbbtalentv2 - John Cameron is the owner.
+
+The main branch is "master". We only merge into "master" when we are deploying
+to production (deployment to production is automatic, triggered by any push
+to "master" - see Deployment section below).
+
+The "staging" branch is used for versions of the software about to go into
+production. Normally you should only merge and push your finished changes
+to the staging branch. Master should only be accessed directly when staging
+is merged into it, triggering deployment to production. 
+
+## Deployment ##
+
+### Production ###
+Deployment to production is triggered by pushing to the master branch on our
+Bitbucket version control. See Version Control section above.
+
+The "master" branch is associated with a pipeline which automatically builds
+and deploys (to AWS). This build process is controlled by 
+bitbucket-pipelines.yml.
+
+Deployment can take around 10 minutes during which time the production software
+is unavailable.
+
+### Test ###
+We use Heroku to host deployments to a test system.
+
+John Cameron has a Heroku account where there is a server called 
+tbbtalent-staging - [https://tbbtalent-staging.herokuapp.com/]()
+
+
+Once you have installed the Heroku command line 
+[https://devcenter.heroku.com/articles/heroku-cli]()
+ 
+... you can add the Heroku remote to your local repository (once only) with 
+this command:
+
+> heroku git:remote -a tbbtalent-staging
+  
+... then you can push your local staging branch any time to Heroku's master branch 
+with this command:
+
+> git push heroku staging:master
+
+That will automatically build and deploy to our Heroku test server at
+[https://tbbtalent-staging.herokuapp.com/]().
+
+ 
+

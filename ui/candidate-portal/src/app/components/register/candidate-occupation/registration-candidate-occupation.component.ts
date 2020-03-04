@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
@@ -7,13 +7,14 @@ import {CandidateOccupation} from "../../../model/candidate-occupation";
 import {Occupation} from "../../../model/occupation";
 import {OccupationService} from "../../../services/occupation.service";
 import {RegistrationService} from "../../../services/registration.service";
+import {LangChangeEvent, TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-registration-candidate-occupation',
   templateUrl: './registration-candidate-occupation.component.html',
   styleUrls: ['./registration-candidate-occupation.component.scss']
 })
-export class RegistrationCandidateOccupationComponent implements OnInit {
+export class RegistrationCandidateOccupationComponent implements OnInit, OnDestroy {
 
   /* A flag to indicate if the component is being used on the profile component */
   @Input() edit: boolean = false;
@@ -30,13 +31,15 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
   candidateOccupations: CandidateOccupation[];
   occupations: Occupation[];
   showForm;
+  subscription;
 
   constructor(private fb: FormBuilder,
               private router: Router,
               private candidateService: CandidateService,
               private occupationService: OccupationService,
               private candidateOccupationService: CandidateOccupationService,
-              public registrationService: RegistrationService) {
+              public registrationService: RegistrationService,
+              public translateService: TranslateService) {
   }
 
   ngOnInit() {
@@ -45,16 +48,11 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
     this.showForm = true;
     this.setUpForm();
 
-    this.occupationService.listOccupations().subscribe(
-      (response) => {
-        this.occupations = response;
-        this._loading.occupations = false;
-      },
-      (error) => {
-        this.error = error;
-        this._loading.occupations = false;
-      }
-    );
+    this.loadDropDownData();
+    //listen for change of language and save
+    this.subscription = this.translateService.onLangChange.subscribe((event: LangChangeEvent) => {
+      this.loadDropDownData();
+    });
 
     this.candidateService.getCandidateCandidateOccupations().subscribe(
       (candidate) => {
@@ -75,11 +73,26 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
     );
   }
 
+  loadDropDownData(){
+    this._loading.occupations = true;
+
+    this.occupationService.listOccupations().subscribe(
+      (response) => {
+        this.occupations = response;
+        this._loading.occupations = false;
+      },
+      (error) => {
+        this.error = error;
+        this._loading.occupations = false;
+      }
+    );
+  }
+
   setUpForm() {
     this.form = this.fb.group({
       id: [null],
       occupationId: [null, Validators.required],
-      yearsExperience: [null, Validators.required],
+      yearsExperience: [null, [Validators.required, Validators.min(0)]],
     });
   }
 
@@ -145,5 +158,9 @@ export class RegistrationCandidateOccupationComponent implements OnInit {
       );
       return this.occupations.filter(occ => !existingIds.includes(occ.id.toString()))
     }
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }

@@ -1,5 +1,5 @@
 <div *ngIf="loading">
-  <i class="fa fa-spinner fa-spin"></i> loading...
+  <i class="fas fa-spinner fa-spin"></i> loading...
 </div>
 <div *ngIf="error">
   {{error}}
@@ -7,7 +7,7 @@
 <div class="h3" *ngIf="!loading && editable">
   Notes
   <div class="pull-right">
-    <button type="button" class="btn btn-sm btn-primary" (click)="createCandidateNote()"><i class="fa fa-plus"></i>
+    <button type="button" class="btn btn-sm btn-primary" (click)="createCandidateNote()"><i class="fas fa-plus"></i>
     </button>
   </div>
 </div>
@@ -29,9 +29,9 @@
         <div class="text-right">
           <div class="btn-toolbar">
             <button *ngIf="candidateNote.comment" class="btn btn-sm btn-default" (click)="showNote(candidateNote)"><i
-              class="fa fa-ellipsis-h"></i></button>
+              class="fas fa-ellipsis-h"></i></button>
             <button *ngIf="editable" class="btn btn-sm btn-default" (click)="editCandidateNote(candidateNote)"><i
-              class="fa fa-edit"></i></button>
+              class="fas fa-edit"></i></button>
           </div>
       </div>
     </div>

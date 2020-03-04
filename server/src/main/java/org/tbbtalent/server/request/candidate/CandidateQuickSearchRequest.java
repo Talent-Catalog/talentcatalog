@@ -4,13 +4,13 @@ import org.tbbtalent.server.request.SearchRequest;
 
 public class CandidateQuickSearchRequest extends SearchRequest {
 
-    private String candidateNumber;
+    private String candidateNumberOrName;
 
-    public String getCandidateNumber() {
-        return candidateNumber;
+    public String getCandidateNumberOrName() {
+        return candidateNumberOrName;
     }
 
-    public void setCandidateNumber(String candidateNumber) {
-        this.candidateNumber = candidateNumber;
+    public void setCandidateNumberOrName(String candidateNumberOrName) {
+        this.candidateNumberOrName = candidateNumberOrName;
     }
 }

@@ -11,8 +11,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.*;
+import org.tbbtalent.server.model.Candidate;
+import org.tbbtalent.server.model.Role;
 import org.tbbtalent.server.model.Status;
 import org.tbbtalent.server.model.User;
+import org.tbbtalent.server.repository.CandidateRepository;
 import org.tbbtalent.server.repository.UserRepository;
 import org.tbbtalent.server.repository.UserSpecification;
 import org.tbbtalent.server.request.LoginRequest;
@@ -34,6 +37,7 @@ public class UserServiceImpl implements UserService {
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     private final UserRepository userRepository;
+    private final CandidateRepository candidateRepository;
     private final PasswordHelper passwordHelper;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider tokenProvider;
@@ -45,12 +49,13 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
-                           PasswordHelper passwordHelper,
+                           CandidateRepository candidateRepository, PasswordHelper passwordHelper,
                            AuthenticationManager authenticationManager,
                            JwtTokenProvider tokenProvider,
                            UserContext userContext,
                            EmailHelper emailHelper) {
         this.userRepository = userRepository;
+        this.candidateRepository = candidateRepository;
         this.passwordHelper = passwordHelper;
         this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;
@@ -209,11 +214,6 @@ public class UserServiceImpl implements UserService {
 
         /* Check that the old passwords match */
         User user = userContext.getLoggedInUser();
-        // TODO extend PasswordEncoder to expose BCrypts `checkpw` method (to compare plaintext and hashed passwords)
-//        String oldPasswordEnc = passwordHelper.encodePassword(request.getOldPassword());
-//        if (!passwordHelper.isValidPassword(user.getPasswordEnc(), oldPasswordEnc)) {
-//            throw new InvalidCredentialsException("Invalid credentials for this user");
-//        }
 
         /* Change the password */
         String passwordEnc = passwordHelper.validateAndEncodePassword(request.getPassword());
@@ -249,6 +249,7 @@ public class UserServiceImpl implements UserService {
             this.userRepository.save(user);
 
             try {
+                Candidate candidate = candidateRepository.findByUserId(user.getId());
                 emailHelper.sendResetPasswordEmail(user);
             } catch (EmailSendFailedException e) {
                 log.error("unable to send reset password email for " + user.getEmail());

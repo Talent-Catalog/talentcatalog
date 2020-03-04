@@ -7,7 +7,6 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from "@angular/common/http";
 import {NgbDateAdapter, NgbDateParserFormatter, NgbDatepickerConfig, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
-import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 
 import {RegistrationLandingComponent} from './components/register/landing/registration-landing.component';
 import {RegistrationContactComponent} from './components/register/contact/registration-contact.component';
@@ -49,9 +48,17 @@ import {UserPipe} from './pipes/user.pipe';
 import {TrimPipe} from './pipes/trim.pipe';
 import {MonthPickerComponent} from './components/common/month-picker/month-picker.component';
 import {TranslationPipe} from "./pipes/translation.pipe";
+import {FaIconLibrary, FontAwesomeModule} from "@fortawesome/angular-fontawesome";
+import {faEdit} from "@fortawesome/free-solid-svg-icons";
+import {Observable} from "rxjs";
+import {environment} from "../environments/environment";
 
 export function createTranslateLoader(http: HttpClient) {
-    return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+  return {
+    getTranslation(lang: string): Observable<any> {
+      return http.get(`${environment.apiUrl}/language/translations/file/${lang}`);
+    }
+  };
 }
 
 @NgModule({
@@ -106,12 +113,14 @@ export function createTranslateLoader(http: HttpClient) {
       storageType: 'localStorage'
     }),
     TranslateModule.forRoot({
-        loader: {
-            provide: TranslateLoader,
-            useFactory: (createTranslateLoader),
-            deps: [HttpClient]
-        }
-    })
+      loader: {
+        provide: TranslateLoader,
+        useFactory: (createTranslateLoader),
+        deps: [HttpClient]
+      }
+    }),
+    FontAwesomeModule
+
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
@@ -125,7 +134,10 @@ export function createTranslateLoader(http: HttpClient) {
 })
 export class AppModule {
 
-  constructor(private datepickerConfig: NgbDatepickerConfig) {
+  constructor(private datepickerConfig: NgbDatepickerConfig, library: FaIconLibrary) {
     this.datepickerConfig.minDate = {year: 1950, month: 1, day: 1};
+    library.addIcons(
+      faEdit
+    );
   }
 }

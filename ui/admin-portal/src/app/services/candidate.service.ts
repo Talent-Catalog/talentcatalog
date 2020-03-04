@@ -1,10 +1,11 @@
 import {Injectable} from '@angular/core';
 import {Candidate} from '../model/candidate';
-import {Observable} from 'rxjs/index';
+import {Observable} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
 import {map} from "rxjs/operators";
+import {SavedSearchRunRequest} from "../model/saved-search";
 
 @Injectable({providedIn: 'root'})
 export class CandidateService {
@@ -12,6 +13,10 @@ export class CandidateService {
   private apiUrl = environment.apiUrl + '/candidate';
 
   constructor(private http:HttpClient) {}
+
+  runSavedSearch(runRequest: SavedSearchRunRequest): Observable<SearchResults<Candidate>> {
+    return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/runsavedsearch`, runRequest);
+  }
 
   search(request): Observable<SearchResults<Candidate>> {
     return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/search`, request);
@@ -29,6 +34,10 @@ export class CandidateService {
     return this.http.post<Candidate>(`${this.apiUrl}`, details);
   }
 
+  updateLinks(id: number, details): Observable<Candidate>  {
+    return this.http.put<Candidate>(`${this.apiUrl}/${id}/links`, details);
+  }
+
   updateStatus(id: number, details): Observable<Candidate>  {
     return this.http.put<Candidate>(`${this.apiUrl}/${id}/status`, details);
   }
@@ -39,6 +48,11 @@ export class CandidateService {
 
   delete(id: number): Observable<boolean>  {
     return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
+  }
+
+  //todo Implement
+  exportFromSavedSearch(request: SavedSearchRunRequest, size: number) {
+    return this.http.post(`${this.apiUrl}/exportsearch/csv`, request, {responseType: 'blob'});
   }
 
   export(request) {

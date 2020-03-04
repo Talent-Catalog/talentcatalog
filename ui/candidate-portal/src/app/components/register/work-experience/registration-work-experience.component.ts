@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
@@ -9,13 +9,14 @@ import {CountryService} from "../../../services/country.service";
 import {CandidateOccupation} from "../../../model/candidate-occupation";
 import {CandidateOccupationService} from "../../../services/candidate-occupation.service";
 import {RegistrationService} from "../../../services/registration.service";
+import {LangChangeEvent, TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-registration-work-experience',
   templateUrl: './registration-work-experience.component.html',
   styleUrls: ['./registration-work-experience.component.scss']
 })
-export class RegistrationWorkExperienceComponent implements OnInit {
+export class RegistrationWorkExperienceComponent implements OnInit, OnDestroy {
 
   @Input() edit: boolean;
 
@@ -39,12 +40,15 @@ export class RegistrationWorkExperienceComponent implements OnInit {
   occupation: CandidateOccupation;
   experience: CandidateJobExperience;
 
+  subscription;
+
   constructor(private fb: FormBuilder,
               private router: Router,
               private candidateService: CandidateService,
               private candidateOccupationService: CandidateOccupationService,
               private jobExperienceService: CandidateJobExperienceService,
               private countryService: CountryService,
+              private translateService: TranslateService,
               public registrationService: RegistrationService) { }
 
 
@@ -88,6 +92,18 @@ export class RegistrationWorkExperienceComponent implements OnInit {
         this._loading.candidate = false;
       }
     );
+
+    this.loadDropDownData();
+    //listen for change of language and save
+    this.subscription = this.translateService.onLangChange.subscribe((event: LangChangeEvent) => {
+      this.loadDropDownData();
+    });
+
+
+  }
+
+  loadDropDownData(){
+    this._loading.countries = true;
 
     /* Load countries */
     this.countryService.listCountries().subscribe(
@@ -171,5 +187,9 @@ export class RegistrationWorkExperienceComponent implements OnInit {
         .filter(exp => exp.candidateOccupation.id === occ.id)
         .sort((a, b) => a.id > b.id ? -1 : 1);
     }
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }

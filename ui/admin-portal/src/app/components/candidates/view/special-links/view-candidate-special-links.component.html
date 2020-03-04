@@ -1,0 +1,35 @@
+<div class="card">
+
+  <div class="card-header">Special links
+    <div class="pull-right" *ngIf="editable">
+      <button class="btn btn-sm btn-outline-secondary" (click)="editSpecialLinks()">
+        <i class="fas fa-edit"></i></button>
+    </div>
+  </div>
+
+  <div class="card-body">
+
+    <div class="col-sm-12">
+      <span *ngIf="candidate.folderlink">Candidate's Google Docs Folder:
+        <a [href]="candidate.folderlink" target="_blank">
+          <i class="fab fa-google-drive"></i>
+        </a>
+      </span>
+      <span *ngIf="!candidate.folderlink" class="alert-danger">
+          Please add link to candidate's folder on Google Docs.
+      </span>
+    </div>
+
+    <div class="col-sm-12">
+      <span *ngIf="candidate.sflink">Candidate on Salesforce:
+        <a [href]="candidate.sflink" target="_blank">
+          <i class="fab fa-salesforce"></i>
+        </a>
+      </span>
+      <span *ngIf="!candidate.sflink" class="alert-danger">
+          Please add link to candidate contact on Salesforce.
+      </span>
+    </div>
+  </div>
+
+</div>

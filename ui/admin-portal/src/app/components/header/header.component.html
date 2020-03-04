@@ -11,11 +11,11 @@
 
     <div [ngbCollapse]="isNavbarCollapsed" class="collapse navbar-collapse" id="navbarsDefault">
       <ul class="navbar-nav mr-auto">
-        <li class="nav-item" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{exact: true}">
-          <a class="nav-link" [routerLink]="'/'">Home</a>
+         <li class="nav-item" [routerLinkActive]="'active'">
+          <a class="nav-link" [routerLink]="'/candidates'">Candidates</a>
         </li>
         <li class="nav-item" [routerLinkActive]="'active'">
-          <a class="nav-link" [routerLink]="'/candidates'">Candidates</a>
+          <a class="nav-link" [routerLink]="'/search'">Define Searches</a>
         </li>
         <li class="nav-item" [routerLinkActive]="'active'">
           <a class="nav-link" [routerLink]="'/infographics'">Infographics</a>
@@ -27,14 +27,14 @@
       </ul>
 
       <div class="form-group">
-        <input id="savedSearch"
+        <input id="quickSearch"
                type="text" class="form-control" #input
                [ngbTypeahead]="doSearch"
                [resultTemplate]="rt"
                [inputFormatter]="renderCandidateRow"
                [editable]="false"
                (selectItem)="selectSearchResult($event, input)"
-               placeholder="Search by candidate number ..."/>
+               placeholder="Number or name..."/>
         <ng-template #rt let-r="result" let-t="term">
           <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
         </ng-template>
@@ -45,9 +45,11 @@
         <li class="nav-item dropdown" ngbDropdown>
 
           <a class="nav-link dropdown-toggle" ngbDropdownToggle>
-            <i class="fa fa-user"></i>
+            <i class="fas fa-user"></i>
           </a>
           <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
+            <a class="dropdown-item" (click)="clearCache()">Clear cache</a>
+            <hr/>
             <a class="dropdown-item" (click)="logout()">Logout</a>
           </div>
 

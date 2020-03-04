@@ -39,7 +39,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @JoinColumn(name = "nationality_id")
     private Nationality nationality;
 
-    // TODO: need to fetch to manyToOne to allow lazy-fetching
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
@@ -77,6 +76,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private EducationMajor migrationEducationMajor;
 
     private String migrationNationality;
+
+    private String folderlink;
+
+    private String sflink;
+
+
 
     public Candidate() {
     }
@@ -313,5 +318,29 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setMigrationCountry(String migrationCountry) {
         this.migrationNationality = migrationCountry;
+    }
+
+    public String getMigrationNationality() {
+        return migrationNationality;
+    }
+
+    public void setMigrationNationality(String migrationNationality) {
+        this.migrationNationality = migrationNationality;
+    }
+
+    public String getFolderlink() {
+        return folderlink;
+    }
+
+    public void setFolderlink(String folderlink) {
+        this.folderlink = folderlink;
+    }
+
+    public String getSflink() {
+        return sflink;
+    }
+
+    public void setSflink(String sflink) {
+        this.sflink = sflink;
     }
 }
