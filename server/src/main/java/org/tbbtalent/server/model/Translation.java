@@ -57,4 +57,13 @@ public class Translation extends AbstractAuditableDomainObject<Long> {
         this.value = value;
     }
 
+    @Override
+    public String toString() {
+        return "Translation{" +
+                "objectId=" + objectId +
+                ", objectType='" + objectType + '\'' +
+                ", language='" + language + '\'' +
+                ", value='" + value + '\'' +
+                '}';
+    }
 }
