@@ -4,5 +4,8 @@ public enum Role {
 
     admin,
     user,
+    sourcepartneradmin,
+    semilimited,
+    limited,
     intern
 }

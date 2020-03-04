@@ -57,6 +57,10 @@ export class AuthService {
     return this.loggedInUser;
   }
 
+  setNewLoggedInUser(new_user) {
+    this.localStorageService.set('user', new_user);
+  }
+
   getToken(): string {
     return this.localStorageService.get('access-token');
   }

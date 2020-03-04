@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
 
-import { SearchResults } from '../../../model/search-results';
+import {SearchResults} from '../../../model/search-results';
 
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
@@ -12,8 +12,6 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {EditUserComponent} from "./edit/edit-user.component";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {AuthService} from '../../../services/auth.service';
-import {ChangePasswordComponent} from "../../account/change-password/change-password.component";
-import {ChangeUsernameComponent} from "../../account/change-username/change-username.component";
 
 @Component({
   selector: 'app-search-users',
@@ -40,14 +38,14 @@ export class SearchUsersComponent implements OnInit {
   /* SET UP FORM */
     this.searchForm = this.fb.group({
       keyword: [''],
-      role: [['intern', 'admin']],
+      role: [['intern', 'limited', 'admin']],
       status: ['active']
     });
     this.pageNumber = 1;
     this.pageSize = 50;
 
     this.getLoggedInUser();
-
+    console.log(this.loggedInUser);
     this.onChanges();
   }
 
@@ -105,14 +103,14 @@ export class SearchUsersComponent implements OnInit {
     editUserModal.result
       .then((user) => {
         this.search()
-        // UPDATES VIEW IF LOGGED IN ADMIN USER CHANGES TO THEMSELVES TO INTERN
+        // UPDATES VIEW IF LOGGED IN ADMIN USER CHANGES ROLE THEMSELVES
         if(this.loggedInUser.id === user.id){
-          this.loggedInUser.role = user.role
+          this.authService.setNewLoggedInUser(user);
+          this.getLoggedInUser();
         }
       })
       .catch(() => { /* Isn't possible */ });
   }
-
 
   deleteUser(user) {
     const deleteUserModal = this.modalService.open(ConfirmationComponent, {
@@ -120,7 +118,7 @@ export class SearchUsersComponent implements OnInit {
       backdrop: 'static'
     });
 
-    deleteUserModal.componentInstance.message = 'Are you sure you want to delete ' + user.username;
+    deleteUserModal.componentInstance.message = 'Are you sure you want to delete '+user.username;
 
     deleteUserModal.result
       .then((result) => {
@@ -139,38 +137,5 @@ export class SearchUsersComponent implements OnInit {
       })
       .catch(() => { /* Isn't possible */ });
 
-  }
-
-  updatePassword(user: User) {
-    const updatePasswordModal = this.modalService.open(ChangePasswordComponent, {
-      centered: true,
-      backdrop: 'static'
-    });
-
-    updatePasswordModal.componentInstance.user = user;
-
-    updatePasswordModal.result
-      .then((user) => console.log('password updated'))
-      .catch(() => { /* Isn't possible */ });
-
-  }
-
-  updateUsername(user: User) {
-    const updateUsernameModal = this.modalService.open(ChangeUsernameComponent, {
-      centered: true,
-      backdrop: 'static'
-    });
-
-    updateUsernameModal.componentInstance.user = user;
-
-    updateUsernameModal.result
-      .then((user) => {
-          this.loading = false;
-          this.search();
-        },
-        (error) => {
-          this.error = error;
-          this.loading = false;
-        });
   }
 }

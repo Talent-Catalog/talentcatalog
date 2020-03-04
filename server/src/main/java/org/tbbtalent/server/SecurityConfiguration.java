@@ -57,20 +57,25 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/admin/auth").permitAll  ()
                 .antMatchers("/api/admin/auth/**").permitAll()
 
-                // Intern allow all searches/find
+                // Allow all searches/find
                 .antMatchers(HttpMethod.POST, "/api/admin/**/search").hasAnyRole("INTERN", "ADMIN")
                 .antMatchers(HttpMethod.POST, "/api/admin/**/find").hasAnyRole("INTERN", "ADMIN")
 
-                // Intern allow csv export
+                // Allow csv export
                 .antMatchers(HttpMethod.POST, "/api/admin/candidate/export/csv").hasAnyRole("INTERN", "ADMIN")
 
-                // Intern GET all other end points
-                .antMatchers(HttpMethod.GET, "/api/admin/**/*").hasAnyRole("INTERN", "ADMIN")
+                // GET end points
+                .antMatchers(HttpMethod.GET, "/api/admin/**/*").hasAnyRole("INTERN", "LIMITED", "ADMIN")
 
-                // Admin only
+                // ADMIN ONLY
+
+                // Migrate database
                 .antMatchers("/api/admin/system/migrate").hasAnyRole("ADMIN")
+                //DELETE end points
                 .antMatchers(HttpMethod.DELETE, "/api/admin/**/*").hasRole("ADMIN")
+                //UPDATE/EDIT end points
                 .antMatchers(HttpMethod.PUT, "/api/admin/**/*").hasRole("ADMIN")
+                //POST end points that aren't search related
                 .antMatchers(HttpMethod.POST, "/api/admin/**/*").hasRole("ADMIN")
 
                 .and()
