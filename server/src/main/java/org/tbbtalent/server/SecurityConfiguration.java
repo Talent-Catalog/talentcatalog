@@ -58,7 +58,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/admin/auth/**").permitAll()
 
                 // Allow all searches/find
-                .antMatchers(HttpMethod.POST, "/api/admin/**/search").hasAnyRole("ADMIN")
+                .antMatchers(HttpMethod.POST, "/api/admin/**/search").hasAnyRole("INTERN", "ADMIN")
                 .antMatchers(HttpMethod.POST, "/api/admin/**/find").hasAnyRole("INTERN", "ADMIN")
 
                 // Allow csv export

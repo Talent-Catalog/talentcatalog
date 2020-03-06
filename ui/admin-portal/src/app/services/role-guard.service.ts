@@ -13,13 +13,14 @@ export class RoleGuardService implements CanActivate {
     // this will be passed from the route config
     // on the data property
     const expectedRole = route.data.expectedRole;
-    const user = this.auth.getLoggedInUser()
-    console.log(user.role)
+    const user = this.auth.getLoggedInUser();
+
     // decode the token to get its payload
     if (user.role !== expectedRole ) {
-      // this.router.navigate(['login']);
+      this.router.navigate(['']);
       return false;
+    }else{
+      return true;
     }
-    return true;
   }
 }
