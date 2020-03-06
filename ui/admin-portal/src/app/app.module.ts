@@ -106,12 +106,13 @@ import {InfographicComponent} from './components/infograhics/infographic.compone
 import {ChartComponent} from './components/infograhics/chart/chart.component';
 import {MonthPickerComponent} from "./components/util/month-picker/month-picker.component";
 import {UpdateSearchComponent} from "./components/search/update/update-search.component";
-import { SavedSearchResultsComponent } from './components/candidates/search/returns/saved-search-results.component';
-import { DefineSearchComponent } from './components/search/define-search/define-search.component';
+import {SavedSearchResultsComponent} from './components/candidates/search/returns/saved-search-results.component';
+import {DefineSearchComponent} from './components/search/define-search/define-search.component';
 import {NotFoundComponent} from "./not-found/not-found.component";
 import {GeneralTranslationsComponent} from './components/settings/translations/general/general-translations.component';
-import { ViewCandidateSpecialLinksComponent } from './components/candidates/view/special-links/view-candidate-special-links.component';
-import { EditCandidateSpecialLinksComponent } from './components/candidates/view/special-links/edit/edit-candidate-special-links.component';
+import {ViewCandidateSpecialLinksComponent} from './components/candidates/view/special-links/view-candidate-special-links.component';
+import {EditCandidateSpecialLinksComponent} from './components/candidates/view/special-links/edit/edit-candidate-special-links.component';
+import {RoleGuardService} from "./services/role-guard.service";
 
 @NgModule({
   declarations: [
@@ -293,6 +294,7 @@ import { EditCandidateSpecialLinksComponent } from './components/candidates/view
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
     AuthService,
+    RoleGuardService,
     Title],
   bootstrap: [AppComponent]
 })

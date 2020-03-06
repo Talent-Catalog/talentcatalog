@@ -21,7 +21,7 @@
           <a class="nav-link" [routerLink]="'/infographics'">Infographics</a>
         </li>
         <li class="nav-item" [routerLinkActive]="'active'">
-          <a class="nav-link" [routerLink]="'/settings'">Settings</a>
+          <a *ngIf="loggedInUser.role === 'admin'" class="nav-link" [routerLink]="'/settings'">Settings</a>
         </li>
 
       </ul>
