@@ -49,7 +49,7 @@ export class JoinSavedSearchComponent implements OnInit {
           this.error = null
         }),
         switchMap(term =>
-          this.savedSearchService.search({phrase: term}).pipe(
+          this.savedSearchService.search({keyword: term}).pipe(
             tap(() => this.searchFailed = false),
             map(result => result.content),
             catchError(() => {
