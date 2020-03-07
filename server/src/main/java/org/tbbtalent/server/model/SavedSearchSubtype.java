@@ -16,11 +16,11 @@ public enum SavedSearchSubtype {
     social,
     science,
     law,
+    other,
 
     //Job subtypes
     au,
     ca,
     uk,
 
-    other,
 }
