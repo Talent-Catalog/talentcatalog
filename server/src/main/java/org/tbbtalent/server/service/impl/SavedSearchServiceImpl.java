@@ -147,6 +147,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
 
         SavedSearch savedSearch = convertToSavedSearch(request);
+        savedSearch.setId(id);
+        
         //delete and recreate all joined searches
         searchJoinRepository.deleteBySearchId(id);
 
