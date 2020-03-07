@@ -163,7 +163,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.moreFilters = false;
+    this.moreFilters = true;
     this.selectedCandidate = null;
     this.pageNumber = 1;
     this.pageSize = 20;
