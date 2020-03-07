@@ -48,6 +48,8 @@ public class CandidateShortlistAdminApi {
                 .add("id")
                 .add("shortlistStatus")
                 .add("comment")
+                .add("createdBy", userDto())
+                .add("createdDate")
                 .add("updatedBy", userDto())
                 .add("updatedDate")
                 ;

@@ -115,6 +115,8 @@ public class SavedSearchAdminApi {
                 .add("otherWrittenLevel")
                 .add("otherSpokenLevel")
                 .add("minEducationLevelName")
+                .add("createdBy", userDto())
+                .add("createdDate")
                 .add("updatedBy", userDto())
                 .add("updatedDate")
                 .add("searchJoins", searchJoinDto());

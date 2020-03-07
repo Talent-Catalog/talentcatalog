@@ -62,6 +62,8 @@ public class CandidateOccupationAdminApi {
                 .add("occupation", occupationDto())
                 .add("yearsExperience")
                 .add("verified")
+                .add("createdBy", userDto())
+                .add("createdDate")
                 .add("updatedBy", userDto())
                 .add("updatedDate")
                 ;
