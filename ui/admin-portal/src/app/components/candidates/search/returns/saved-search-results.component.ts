@@ -85,6 +85,12 @@ constructor(
         this.timestamp = cached.timestamp;
         done = true;
         this.searching = false;
+      } else {
+        //If there is no cached value, reset all search parameters
+        this.pageNumber = 0;
+        this.pageSize = 0;
+        this.sortField = null;
+        this.sortDirection = null;
       }
     }
 
