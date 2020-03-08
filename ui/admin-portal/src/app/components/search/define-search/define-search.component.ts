@@ -39,7 +39,7 @@ import {ActivatedRoute} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
 import {LocalStorageService} from "angular-2-local-storage";
 import {UpdateSearchComponent} from "../update/update-search.component";
-import {SavedSearch, SavedSearchType} from "../../../model/saved-search";
+import {SavedSearch} from "../../../model/saved-search";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 
 
@@ -317,7 +317,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
   //todo Make this a generic function that takes SavedSearch as parameter
   getBreadcrumb() {
     let infos = this.savedSearchService.getSavedSearchTypeInfos();
-    return this.savedSearch ? (infos[SavedSearchType.profession].title +
+    return this.savedSearch ? (infos[this.savedSearch.savedSearchType].title +
       ': ' + this.savedSearch.name) : 'Search'
   }
 
