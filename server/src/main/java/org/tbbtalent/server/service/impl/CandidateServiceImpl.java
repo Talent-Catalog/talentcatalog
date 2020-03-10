@@ -176,6 +176,15 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         Page<Candidate> candidates = candidateRepository.findAll(query, request.getPageRequestWithoutSort());
+        if (request.getSavedSearchId() != null){
+            for (Candidate candidate : candidates) {
+                candidate.setCandidateShortlistItems(CollectionUtils.isNotEmpty(candidate.getCandidateShortlistItems())
+                        ? candidate.getCandidateShortlistItems().stream().filter(item -> item.getSavedSearch().getId() == request.getSavedSearchId()).collect(Collectors.toList())
+                        : null
+                );
+            }
+        }
+
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
         return candidates;
     }
