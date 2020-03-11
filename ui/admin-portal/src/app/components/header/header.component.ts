@@ -49,6 +49,7 @@ export class HeaderComponent implements OnInit {
         tap(() => this.searching = false)
       );
     this.loggedInUser = this.authService.getLoggedInUser();
+    console.log(this.loggedInUser.role);
   }
 
   renderCandidateRow(candidate: Candidate) {

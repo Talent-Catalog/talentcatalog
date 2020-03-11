@@ -54,18 +54,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/portal/language/system/**").permitAll()
                 .antMatchers("/api/portal/language/translations/**").permitAll()
                 .antMatchers("/api/portal/**").hasAnyRole("USER")
-                .antMatchers("/api/admin/auth").permitAll  ()
+                .antMatchers("/api/admin/auth").permitAll()
                 .antMatchers("/api/admin/auth/**").permitAll()
 
                 // Allow all searches/find
-                .antMatchers(HttpMethod.POST, "/api/admin/**/search").hasAnyRole("INTERN", "ADMIN")
-                .antMatchers(HttpMethod.POST, "/api/admin/**/find").hasAnyRole("INTERN", "ADMIN")
+                .antMatchers(HttpMethod.POST, "/api/admin/**/search").hasAnyRole("INTERN", "LIMITED", "SEMILIMITED", "SOURCEPARTNERADMIN", "ADMIN")
+                .antMatchers(HttpMethod.POST, "/api/admin/**/find").hasAnyRole("INTERN", "LIMITED", "SEMILIMITED", "SOURCEPARTNERADMIN","ADMIN")
 
                 // Allow csv export
-                .antMatchers(HttpMethod.POST, "/api/admin/candidate/export/csv").hasAnyRole("INTERN", "ADMIN")
+                .antMatchers(HttpMethod.POST, "/api/admin/candidate/export/csv").hasAnyRole("INTERN", "LIMITED", "SEMILIMITED", "SOURCEPARNTERADMIN", "ADMIN")
 
                 // GET end points
-                .antMatchers(HttpMethod.GET, "/api/admin/**/*").hasAnyRole("INTERN", "LIMITED", "ADMIN")
+                .antMatchers(HttpMethod.GET, "/api/admin/**/*").hasAnyRole("INTERN", "LIMITED", "SEMILIMITED", "SOURCEPARTNERADMIN", "ADMIN")
 
                 // ADMIN ONLY
 
