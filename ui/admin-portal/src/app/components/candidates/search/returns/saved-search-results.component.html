@@ -79,6 +79,9 @@
           <a *ngIf="candidate.folderlink" [href]="candidate.folderlink" target="_blank">
             <i class="fab fa-google-drive" title="Show candidate's Google Doc folder"></i>
           </a>
+          <a *ngIf="candidate.videolink" [href]="candidate.videolink" target="_blank">
+            <i class="fas fa-video" title="Show candidate's one way video"></i>
+          </a>
         </td>
         <td>{{candidate.user.firstName}} {{candidate.user.lastName}}</td>
         <td>{{candidate.nationality?.name}}</td>
