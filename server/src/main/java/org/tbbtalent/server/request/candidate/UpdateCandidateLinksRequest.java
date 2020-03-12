@@ -2,8 +2,6 @@ package org.tbbtalent.server.request.candidate;
 
 import javax.validation.constraints.NotNull;
 
-import org.tbbtalent.server.model.CandidateStatus;
-
 public class UpdateCandidateLinksRequest {
 
     @NotNull
@@ -11,13 +9,16 @@ public class UpdateCandidateLinksRequest {
 
     private String sflink;
     private String folderlink;
+    private String videolink;
 
     public UpdateCandidateLinksRequest() {
     }
 
-    public UpdateCandidateLinksRequest(String sflink, String folderlink) {
+    public UpdateCandidateLinksRequest(String sflink, String folderlink, 
+                                       String videolink) {
         this.sflink = sflink;
         this.folderlink = folderlink;
+        this.videolink = videolink;
     }
 
     public Long getCandidateId() {
@@ -42,5 +43,13 @@ public class UpdateCandidateLinksRequest {
 
     public void setFolderlink(String folderlink) {
         this.folderlink = folderlink;
+    }
+
+    public String getVideolink() {
+        return videolink;
+    }
+
+    public void setVideolink(String videolink) {
+        this.videolink = videolink;
     }
 }

@@ -30,6 +30,17 @@
           Please add link to candidate contact on Salesforce.
       </span>
     </div>
+
+    <div class="col-sm-12">
+      <span *ngIf="candidate.videolink">Candidate's one way video:
+        <a [href]="candidate.videolink" target="_blank">
+          <i class="fas fa-video"></i>
+        </a>
+      </span>
+      <span *ngIf="!candidate.videolink" class="alert-danger">
+          Please add link to candidate's one way video.
+      </span>
+    </div>
   </div>
 
 </div>

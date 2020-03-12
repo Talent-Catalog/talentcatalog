@@ -26,4 +26,5 @@ export interface Candidate {
   maxEducationLevel: EducationLevel;
   folderlink: string;
   sflink: string;
+  videolink: string;
 }

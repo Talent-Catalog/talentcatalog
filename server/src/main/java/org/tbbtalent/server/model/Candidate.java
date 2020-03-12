@@ -1,9 +1,20 @@
 package org.tbbtalent.server.model;
 
-import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "candidate")
@@ -80,6 +91,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private String folderlink;
 
     private String sflink;
+
+    private String videolink;
 
 
 
@@ -342,5 +355,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setSflink(String sflink) {
         this.sflink = sflink;
+    }
+
+    public String getVideolink() {
+        return videolink;
+    }
+
+    public void setVideolink(String videolink) {
+        this.videolink = videolink;
     }
 }

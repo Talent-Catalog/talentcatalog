@@ -29,6 +29,7 @@ export class EditCandidateSpecialLinksComponent implements OnInit {
       this.candidateForm = this.fb.group({
         sflink: [candidate.sflink],
         folderlink: [candidate.folderlink],
+        videolink: [candidate.videolink],
       });
       this.loading = false;
     });

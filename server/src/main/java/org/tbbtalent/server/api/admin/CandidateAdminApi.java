@@ -1,22 +1,36 @@
 package org.tbbtalent.server.api.admin;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.rmi.server.ExportException;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.Candidate;
-import org.tbbtalent.server.request.candidate.*;
+import org.tbbtalent.server.request.candidate.CandidateQuickSearchRequest;
+import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
+import org.tbbtalent.server.request.candidate.SavedSearchRunRequest;
+import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateLinksRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tbbtalent.server.service.CandidateService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
-
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.InputStream;
-import java.rmi.server.ExportException;
-import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate")
@@ -127,6 +141,7 @@ public class CandidateAdminApi {
                 .add("candidateMessage")
                 .add("folderlink")
                 .add("sflink")
+                .add("videolink")
                 .add("country", countryDto())
                 .add("nationality", nationalityDto())
                 .add("user", userDto())

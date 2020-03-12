@@ -331,6 +331,7 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
         candidate.setSflink(request.getSflink());
         candidate.setFolderlink(request.getFolderlink());
+        candidate.setVideolink(request.getVideolink());
         candidate = candidateRepository.save(candidate);
         return candidate;
     }
