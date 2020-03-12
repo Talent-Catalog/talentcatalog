@@ -74,6 +74,8 @@ export class EditCandidateContactComponent implements OnInit {
         email: [candidate.user.email],
         dob: [candidate.dob],
         nationalityId: [candidate.nationality ? candidate.nationality.id : null, Validators.required],
+        unRegistered: [candidate.unRegistered],
+        unRegistrationNumber: [candidate.unRegistrationNumber],
       });
       this.loading = false;
     });

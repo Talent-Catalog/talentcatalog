@@ -104,6 +104,21 @@
                [formControlName]="'whatsapp'">
       </div>
 
+      <!-- UN Registration -->
+      <div class="form-group">
+        <label for="unRegistered">UN Registered</label>
+        <select class="form-control" name="unRegistered" id="unRegistered" [formControlName]="'unRegistered'">
+          <option value="true">Registered</option>
+          <option value="false">Not registered</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="unRegistrationNumber">UN Registration Number</label>
+        <input type="text" class="form-control" id="unRegistrationNumber"
+               placeholder="Enter registration number"
+               [formControlName]="'unRegistrationNumber'">
+      </div>
+
 
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="onSave()"

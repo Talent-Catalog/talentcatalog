@@ -142,6 +142,8 @@ public class CandidateAdminApi {
                 .add("folderlink")
                 .add("sflink")
                 .add("videolink")
+                .add("unRegistered")
+                .add("unRegistrationNumber")
                 .add("country", countryDto())
                 .add("nationality", nationalityDto())
                 .add("user", userDto())

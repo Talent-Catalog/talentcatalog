@@ -368,6 +368,8 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setCountry(country);
         candidate.setYearOfArrival(request.getYearOfArrival());
         candidate.setNationality(nationality);
+        candidate.setUnRegistered(request.getUnRegistered());
+        candidate.setUnRegistrationNumber(request.getUnRegistrationNumber());
         return candidateRepository.save(candidate);
     }
 

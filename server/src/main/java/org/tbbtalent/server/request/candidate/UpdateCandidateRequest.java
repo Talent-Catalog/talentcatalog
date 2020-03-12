@@ -1,10 +1,11 @@
 package org.tbbtalent.server.request.candidate;
 
-import org.tbbtalent.server.model.Gender;
+import java.time.LocalDate;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
+
+import org.tbbtalent.server.model.Gender;
 
 public class UpdateCandidateRequest extends BaseCandidateContactRequest {
 
@@ -22,6 +23,8 @@ public class UpdateCandidateRequest extends BaseCandidateContactRequest {
     private String address1;
     private String city;
     private LocalDate dob;
+    private Boolean unRegistered;
+    private String unRegistrationNumber;
 
     public String getFirstName() {
         return firstName;
@@ -93,5 +96,21 @@ public class UpdateCandidateRequest extends BaseCandidateContactRequest {
 
     public void setDob(LocalDate dob) {
         this.dob = dob;
+    }
+
+    public Boolean getUnRegistered() {
+        return unRegistered;
+    }
+
+    public void setUnRegistered(Boolean unRegistered) {
+        this.unRegistered = unRegistered;
+    }
+
+    public String getUnRegistrationNumber() {
+        return unRegistrationNumber;
+    }
+
+    public void setUnRegistrationNumber(String unRegistrationNumber) {
+        this.unRegistrationNumber = unRegistrationNumber;
     }
 }

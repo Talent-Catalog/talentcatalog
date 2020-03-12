@@ -27,4 +27,6 @@ export interface Candidate {
   folderlink: string;
   sflink: string;
   videolink: string;
+  unRegistered: string;
+  unRegistrationNumber: string;
 }
