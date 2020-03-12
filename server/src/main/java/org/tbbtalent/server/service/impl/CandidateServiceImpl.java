@@ -1,6 +1,15 @@
 package org.tbbtalent.server.service.impl;
 
-import com.opencsv.CSVWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.math.BigDecimal;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -14,11 +23,49 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tbbtalent.server.exception.*;
-import org.tbbtalent.server.model.*;
-import org.tbbtalent.server.repository.*;
+import org.tbbtalent.server.exception.CircularReferencedException;
+import org.tbbtalent.server.exception.ExportFailedException;
+import org.tbbtalent.server.exception.InvalidRequestException;
+import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.exception.PasswordMatchException;
+import org.tbbtalent.server.exception.UsernameTakenException;
+import org.tbbtalent.server.model.Candidate;
+import org.tbbtalent.server.model.CandidateEducation;
+import org.tbbtalent.server.model.CandidateLanguage;
+import org.tbbtalent.server.model.CandidateOccupation;
+import org.tbbtalent.server.model.CandidateStatus;
+import org.tbbtalent.server.model.Country;
+import org.tbbtalent.server.model.DataRow;
+import org.tbbtalent.server.model.EducationLevel;
+import org.tbbtalent.server.model.Nationality;
+import org.tbbtalent.server.model.Role;
+import org.tbbtalent.server.model.SavedSearch;
+import org.tbbtalent.server.model.SearchJoin;
+import org.tbbtalent.server.model.SearchType;
+import org.tbbtalent.server.model.Status;
+import org.tbbtalent.server.model.User;
+import org.tbbtalent.server.repository.CandidateRepository;
+import org.tbbtalent.server.repository.CandidateSpecification;
+import org.tbbtalent.server.repository.CountryRepository;
+import org.tbbtalent.server.repository.EducationLevelRepository;
+import org.tbbtalent.server.repository.NationalityRepository;
+import org.tbbtalent.server.repository.SavedSearchRepository;
+import org.tbbtalent.server.repository.UserRepository;
 import org.tbbtalent.server.request.LoginRequest;
-import org.tbbtalent.server.request.candidate.*;
+import org.tbbtalent.server.request.candidate.BaseCandidateContactRequest;
+import org.tbbtalent.server.request.candidate.CandidateQuickSearchRequest;
+import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
+import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
+import org.tbbtalent.server.request.candidate.SavedSearchRunRequest;
+import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
+import org.tbbtalent.server.request.candidate.SearchJoinRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateContactRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateEducationRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateLinksRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tbbtalent.server.request.note.CreateCandidateNoteRequest;
 import org.tbbtalent.server.security.PasswordHelper;
 import org.tbbtalent.server.security.UserContext;
@@ -28,15 +75,7 @@ import org.tbbtalent.server.service.SavedSearchService;
 import org.tbbtalent.server.service.email.EmailHelper;
 import org.tbbtalent.server.service.pdf.PdfHelper;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.math.BigDecimal;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import com.opencsv.CSVWriter;
 
 @Service
 public class CandidateServiceImpl implements CandidateService {
@@ -176,15 +215,6 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         Page<Candidate> candidates = candidateRepository.findAll(query, request.getPageRequestWithoutSort());
-        if (request.getSavedSearchId() != null){
-            for (Candidate candidate : candidates) {
-                candidate.setCandidateShortlistItems(CollectionUtils.isNotEmpty(candidate.getCandidateShortlistItems())
-                        ? candidate.getCandidateShortlistItems().stream().filter(item -> item.getSavedSearch().getId() == request.getSavedSearchId()).collect(Collectors.toList())
-                        : null
-                );
-            }
-        }
-
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
         return candidates;
     }
