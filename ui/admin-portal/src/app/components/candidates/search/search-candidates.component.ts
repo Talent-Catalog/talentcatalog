@@ -48,7 +48,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   pageSize: number;
   sortField = 'id';
   sortDirection = 'DESC';
-  shortlistStatus: string[];
+  shortlistStatus: string[] = ['pending', 'verified'];
 
   selectedCandidate: Candidate;
   private timestamp: number;
@@ -90,7 +90,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       this.savedSearchId = +params.get('savedSearchId');
       if (this.savedSearchId) {
 
-        //Load saved search to get name and type
+        //Load saved search to get name and type to display
         this.savedSearchService.get(this.savedSearchId).subscribe(result => {
           this.savedSearch = result;
         }, err => {
