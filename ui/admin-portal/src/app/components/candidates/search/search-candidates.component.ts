@@ -130,14 +130,16 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       const cached: CachedSearchResults =
         this.savedSearchResultsCacheService.getFromCache(this.savedSearchId, this.shortlistStatus);
       if (cached) {
-        this.results = cached.results;
-        this.pageNumber = cached.pageNumber;
-        this.pageSize = cached.pageSize;
-        this.sortField = cached.sortFields[0];
-        this.sortDirection = cached.sortDirection;
-        this.setShortlistStatus(cached.shortlistStatus);
-        this.timestamp = cached.timestamp;
-        done = true;
+        //If the page number and size (extracted from url)
+        //don't match the values in the cache, can't use cache.
+        done = cached.pageNumber == this.pageNumber && cached.pageSize == this.pageSize;
+        if (done) {
+          this.results = cached.results;
+          this.sortField = cached.sortFields[0];
+          this.sortDirection = cached.sortDirection;
+          this.setShortlistStatus(cached.shortlistStatus);
+          this.timestamp = cached.timestamp;
+        }
       }
     }
 
