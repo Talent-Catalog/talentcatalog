@@ -1,8 +1,17 @@
 package org.tbbtalent.server.api.admin;
 
+import java.util.Map;
+
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.model.CandidateNote;
 import org.tbbtalent.server.request.note.CreateCandidateNoteRequest;
@@ -10,9 +19,6 @@ import org.tbbtalent.server.request.note.SearchCandidateNotesRequest;
 import org.tbbtalent.server.request.note.UpdateCandidateNoteRequest;
 import org.tbbtalent.server.service.CandidateNoteService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
-
-import javax.validation.Valid;
-import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate-note")
@@ -53,6 +59,8 @@ public class CandidateNoteAdminApi {
                 .add("comment")
                 .add("createdBy", userDto())
                 .add("createdDate")
+                .add("updatedBy", userDto())
+                .add("updatedDate")
                 ;
     }
 
