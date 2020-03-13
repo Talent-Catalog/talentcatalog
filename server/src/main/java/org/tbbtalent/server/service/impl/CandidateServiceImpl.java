@@ -577,30 +577,6 @@ public class CandidateServiceImpl implements CandidateService {
                 throw new UsernameTakenException("email");
             }
         }
-
-        // Check phone not already taken
-        if (!StringUtils.isBlank(request.getPhone())) {
-            try {
-                Candidate exists = candidateRepository.findByPhoneIgnoreCase(request.getPhone());
-                if (candidate == null && exists != null || exists != null && !exists.getId().equals(candidate.getId())) {
-                    throw new UsernameTakenException("phone");
-                }
-            } catch (IncorrectResultSizeDataAccessException e) {
-                throw new UsernameTakenException("phone");
-            }
-        }
-
-//         Check whatsapp not already taken
-        if (!StringUtils.isBlank(request.getWhatsapp())) {
-            try {
-                Candidate exists = candidateRepository.findByWhatsappIgnoreCase(request.getWhatsapp());
-                if (user == null && exists != null || exists != null && !exists.getId().equals(candidate.getId())) {
-                    throw new UsernameTakenException("whatsapp");
-                }
-            } catch (IncorrectResultSizeDataAccessException e) {
-                throw new UsernameTakenException("whatsapp");
-            }
-        }
     }
 
     @Override
