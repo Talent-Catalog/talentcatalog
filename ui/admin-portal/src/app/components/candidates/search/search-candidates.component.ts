@@ -15,6 +15,7 @@ import {CandidateShortlistItem} from "../../../model/candidate-shortlist-item";
 import {ActivatedRoute} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
 import {
+  defaultReviewStatusFilter,
   SavedSearch,
   SavedSearchRunRequest,
   SavedSearchType
@@ -48,7 +49,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   pageSize: number;
   sortField = 'id';
   sortDirection = 'DESC';
-  shortlistStatus: string[] = ['pending', 'verified'];
+  shortlistStatus: string[] = defaultReviewStatusFilter;
 
   selectedCandidate: Candidate;
   private timestamp: number;
@@ -66,7 +67,6 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     this.searchForm = this.fb.group({
       shortListStatusField: ['valid'],
     });
-
   }
 
   ngOnInit() {
@@ -151,16 +151,19 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
           this.timestamp = Date.now();
           this.results = results;
 
-          this.savedSearchResultsCacheService.cache({
-            searchID: this.savedSearchId,
-            pageNumber: this.pageNumber,
-            pageSize: this.pageSize,
-            sortFields: [this.sortField],
-            sortDirection: this.sortDirection,
-            shortlistStatus: this.shortlistStatus,
-            results: this.results,
-            timestamp: this.timestamp
-          });
+          //We only cache results with the default review status filter.
+          if (this.shortlistStatus.toString() === defaultReviewStatusFilter.toString()) {
+            this.savedSearchResultsCacheService.cache({
+              searchID: this.savedSearchId,
+              pageNumber: this.pageNumber,
+              pageSize: this.pageSize,
+              sortFields: [this.sortField],
+              sortDirection: this.sortDirection,
+              shortlistStatus: this.shortlistStatus,
+              results: this.results,
+              timestamp: this.timestamp
+            });
+          }
 
           this.searching = false;
         },

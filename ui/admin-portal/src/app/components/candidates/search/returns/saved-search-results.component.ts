@@ -5,7 +5,10 @@ import {
   OnInit,
   SimpleChanges
 } from '@angular/core';
-import {SavedSearch} from "../../../../model/saved-search";
+import {
+  defaultReviewStatusFilter,
+  SavedSearch
+} from "../../../../model/saved-search";
 import {Subscription} from "rxjs";
 import {CandidateService} from "../../../../services/candidate.service";
 import {Candidate} from "../../../../model/candidate";
@@ -33,10 +36,6 @@ export class SavedSearchResultsComponent implements OnInit, OnChanges, OnDestroy
   private sortDirection: string;
   private subscription: Subscription;
   timestamp: number;
-
-  //Review status is hard coded for this simple display as we don't want
-  //to display or modify review status.
-  private readonly shortlistStatus: string[] = ['pending', 'verified'];
 
 constructor(
     private candidateService: CandidateService,
@@ -75,7 +74,8 @@ constructor(
     let done: boolean = false;
     if (!refresh) {
       const cached: CachedSearchResults =
-        this.savedSearchResultsCacheService.getFromCache(this.savedSearch.id, this.shortlistStatus);
+        this.savedSearchResultsCacheService.getFromCache(
+          this.savedSearch.id, defaultReviewStatusFilter);
       if (cached) {
         this.results = cached.results;
         this.pageNumber = cached.pageNumber;
@@ -132,8 +132,9 @@ constructor(
     request.sortFields = [this.sortField];
     request.sortDirection = this.sortDirection;
 
-    //Hard code review status
-    request.shortlistStatus = this.shortlistStatus;
+    //Review status is hard coded for this simple display as we don't want
+    //to display or modify review status.
+    request.shortlistStatus = defaultReviewStatusFilter;
     this.subscription = this.candidateService.search(request).subscribe(
       results => {
         this.timestamp = Date.now();
@@ -145,7 +146,7 @@ constructor(
           pageSize: this.pageSize,
           sortFields: [this.sortField],
           sortDirection: this.sortDirection,
-          shortlistStatus: this.shortlistStatus,
+          shortlistStatus: defaultReviewStatusFilter,
           results: this.results,
           timestamp: this.timestamp
         });

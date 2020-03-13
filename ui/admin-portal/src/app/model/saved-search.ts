@@ -1,5 +1,10 @@
 import {SearchCandidateRequest} from "./search-candidate-request";
 
+export const defaultReviewStatusFilter: string[] = [
+  'pending',
+  'verified'
+];
+
 export enum SavedSearchType {
   profession,
   job ,
