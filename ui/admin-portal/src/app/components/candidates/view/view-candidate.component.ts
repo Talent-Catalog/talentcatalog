@@ -35,6 +35,7 @@ export class ViewCandidateComponent implements OnInit {
       this.error = null;
       this.loadingError = false;
       this.candidateService.get(candidateId).subscribe(candidate => {
+        console.log(candidate);
         this.setCandidate(candidate);
         this.loading = false;
       },error => {
@@ -69,8 +70,11 @@ export class ViewCandidateComponent implements OnInit {
 
   setCandidate(value: Candidate) {
     this.candidate = value;
-
-    this.titleService.setTitle(this.candidate.user.firstName + ' '
-      + this.candidate.user.lastName + ' ' + this.candidate.candidateNumber);
+    if(this.candidate.user.firstName && this.candidate.user.lastName){
+      this.titleService.setTitle(this.candidate.user.firstName + ' '
+        + this.candidate.user.lastName + ' ' + this.candidate.candidateNumber);
+    } else {
+      this.titleService.setTitle(this.candidate.candidateNumber)
+    }
   }
 }

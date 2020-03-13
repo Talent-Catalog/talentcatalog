@@ -8,7 +8,10 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.Candidate;
+import org.tbbtalent.server.model.Role;
+import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.request.candidate.*;
+import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.CandidateService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -23,10 +26,13 @@ import java.util.Map;
 public class CandidateAdminApi {
 
     private final CandidateService candidateService;
+    private final UserContext userContext;
 
     @Autowired
-    public CandidateAdminApi(CandidateService candidateService) {
+    public CandidateAdminApi(CandidateService candidateService,
+                             UserContext userContext) {
         this.candidateService = candidateService;
+        this.userContext = userContext;
     }
 
     @PostMapping("runsavedsearch")
@@ -53,8 +59,21 @@ public class CandidateAdminApi {
     @GetMapping("{id}")
     public Map<String, Object> get(@PathVariable("id") long id) {
         Candidate candidate = this.candidateService.getCandidate(id);
-        return candidateDto().build(candidate);
+        User user = userContext.getLoggedInUser();
+        if (user.getRole() == Role.admin) {
+            return candidateDto().build(candidate);
+        } else {
+            return candidateDtoIntern().build(candidate);
+        }
     }
+
+//    @Secured("ROLE_INTERN")
+//    @GetMapping("{id}")
+//    public Map<String, Object> get(@PathVariable("id") long id) {
+//        Candidate candidate = this.candidateService.getCandidate(id);
+//        return candidateDtoIntern().build(candidate);
+//    }
+
     @PostMapping
     public Map<String, Object> create(@RequestBody CreateCandidateRequest request) throws UsernameTakenException {
         Candidate candidate = this.candidateService.createCandidate(request);
@@ -142,11 +161,41 @@ public class CandidateAdminApi {
                 ;
     }
 
+    private DtoBuilder candidateDtoIntern() {
+        return new DtoBuilder()
+                .add("id")
+                .add("status")
+                .add("candidateNumber")
+                .add("gender")
+                .add("dob")
+                .add("phone")
+                .add("whatsapp")
+                .add("city")
+                .add("address1")
+                .add("yearOfArrival")
+                .add("additionalInfo")
+                .add("candidateMessage")
+                .add("folderlink")
+                .add("sflink")
+                .add("country", countryDto())
+                .add("user",userDtoIntern())
+                .add("nationality", nationalityDto())
+                .add("candidateShortlistItems", shortlistDto())
+                ;
+    }
+
     private DtoBuilder userDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("firstName")
                 .add("lastName")
+                .add("email")
+                ;
+    }
+
+    private DtoBuilder userDtoIntern() {
+        return new DtoBuilder()
+                .add("id")
                 .add("email")
                 ;
     }
