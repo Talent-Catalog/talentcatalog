@@ -120,7 +120,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     }
   }
 
-  doSearch(refresh: boolean) {
+  doSearch(refresh: boolean, usePageNumber = true) {
 
     this.results = null;
     this.error = null;
@@ -130,15 +130,20 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       const cached: CachedSearchResults =
         this.savedSearchResultsCacheService.getFromCache(this.savedSearchId, this.shortlistStatus);
       if (cached) {
-        //If the page number and size (extracted from url)
-        //don't match the values in the cache, can't use cache.
-        done = cached.pageNumber == this.pageNumber && cached.pageSize == this.pageSize;
+        //If we are not required to use the pageNumber (usePageNumber = false)
+        //we can take the pageNumber of whatever the cache has.
+        //If we have to use the page number, the pageNumber and size must match
+        //what is in the cache or we can't use it.
+        done = !usePageNumber ||
+          (cached.pageNumber == this.pageNumber && cached.pageSize == this.pageSize);
         if (done) {
           this.results = cached.results;
           this.sortField = cached.sortFields[0];
           this.sortDirection = cached.sortDirection;
           this.setShortlistStatus(cached.shortlistStatus);
           this.timestamp = cached.timestamp;
+          this.pageNumber = cached.pageNumber;
+          this.pageSize = cached.pageSize;
         }
       }
     }
@@ -273,7 +278,11 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       this.shortlistStatus.push(value);
     }
 
-    this.doSearch(true);
+    //We can ignore page number because changing the reviewStatus filter will
+    //completely change the number of results.
+    //Ignoring the page number will allow the cache to supply pageNumber
+    //if it has something cached.
+    this.doSearch(false, false);
   }
 
   private setShortlistStatus(shortlistStatus: string[]) {
