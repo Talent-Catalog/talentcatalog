@@ -32,12 +32,12 @@
       </div>
       <div class="form-group">
         <label for="comment">Admin Note</label>
-        <textarea  class="form-control"  id="comment" [formControlName]="'comment'"></textarea>
+        <ngx-wig id="comment" formControlName="comment"></ngx-wig>
       </div>
 
       <div *ngIf="showCandidateMessage" class="form-group">
         <label for="candidateMessage">Please provide a message to the candidate (visible to them)</label>
-        <textarea  class="form-control"  id="candidateMessage" [formControlName]="'candidateMessage'"></textarea>
+        <ngx-wig id="candidateMessage" formControlName="candidateMessage"></ngx-wig>
       </div>
     </form>
   </div>

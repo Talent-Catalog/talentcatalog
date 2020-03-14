@@ -112,6 +112,7 @@ import {NotFoundComponent} from "./not-found/not-found.component";
 import {GeneralTranslationsComponent} from './components/settings/translations/general/general-translations.component';
 import { ViewCandidateSpecialLinksComponent } from './components/candidates/view/special-links/view-candidate-special-links.component';
 import { EditCandidateSpecialLinksComponent } from './components/candidates/view/special-links/edit/edit-candidate-special-links.component';
+import {NgxWigModule} from 'ngx-wig';
 
 @NgModule({
   declarations: [
@@ -229,6 +230,7 @@ import { EditCandidateSpecialLinksComponent } from './components/candidates/view
     InfiniteScrollModule,
     NgMultiSelectDropDownModule.forRoot(),
     ChartsModule,
+    NgxWigModule,
     LocalStorageModule.forRoot({
       prefix: 'tbb-admin',
       storageType: 'localStorage'

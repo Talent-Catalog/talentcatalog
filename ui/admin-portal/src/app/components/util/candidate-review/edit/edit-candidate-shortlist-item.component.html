@@ -33,7 +33,7 @@
       <!-- COMMENT -->
       <div class="form-group">
         <label for="comment">Comment</label>
-        <textarea class="form-control" id="comment" [formControlName]="'comment'"></textarea>
+        <ngx-wig id="comment" formControlName="comment"></ngx-wig>
       </div>
 
       <app-updated-by *ngIf="candidateShortListItem" [object]="candidateShortListItem"></app-updated-by>
