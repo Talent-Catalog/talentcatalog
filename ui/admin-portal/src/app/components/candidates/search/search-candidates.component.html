@@ -39,10 +39,9 @@
     <form class="filter-form" [formGroup]="searchForm">
       <!-- REVIEW STATUS FILTER -->
       <div class="form-group col-12">
-        <label for="reviewStatus">Review status</label>
         <ng-multiselect-dropdown
           id="reviewStatus"
-          [placeholder]="'Empty displays everything'"
+          [placeholder]="'Review status: Empty displays everything'"
           [data]="statuses"
           formControlName="statusesDisplay"
           [settings]="dropdownSettings"
