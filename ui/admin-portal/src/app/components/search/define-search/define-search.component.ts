@@ -28,9 +28,7 @@ import {
   emptyLanguageLevelFormControlModel,
   LanguageLevelFormControlModel
 } from "../../util/form/language-proficiency/language-level-form-control-model";
-import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import * as moment from 'moment-timezone';
-import {CandidateShortlistItem} from "../../../model/candidate-shortlist-item";
 import {LanguageLevel} from "../../../model/language-level";
 import {LanguageLevelService} from '../../../services/language-level.service';
 import {DateRangePickerComponent} from "../../util/form/date-range-picker/date-range-picker.component";
@@ -149,8 +147,6 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
       minEducationLevel: [null],
       educationMajorIds: [[]],
       searchJoinRequests: this.fb.array([]),
-      shortListStatusField: [null],
-      shortlistStatus: [],
       //for display purposes
       occupations: [[]],
       verifiedOccupations: [[]],
@@ -219,19 +215,6 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
       this.loading = false;
       this.error = error;
     });
-
-    /* SEARCH ON CHANGE*/
-    this.searchForm.get('shortlistStatus').valueChanges
-      .pipe(
-        debounceTime(400),
-        distinctUntilChanged()
-      )
-      .subscribe(res => {
-        console.log('searching as shortlist changes');
-        if (!this.searching) {
-          this.search();
-        }
-      });
   }
 
 
@@ -281,9 +264,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     this.results = null;
     this.error = null;
     const request = this.searchForm.value;
-    if (request.shortlistStatus == '') {
-      request.shortlistStatus = null;
-    }
+    request.shortlistStatus = null;
     request.pageNumber = this.pageNumber - 1;
     request.pageSize = this.pageSize;
     request.sortFields = [this.sortField];
@@ -483,9 +464,6 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
 
     /* Perform a mouse event to force the multi-select components to update */
     this.formWrapper.nativeElement.click();
-
-    this.searchForm.controls['shortListStatusField'].patchValue('valid');
-    this.setReviewStatus('valid');
   }
 
   get searchJoinArray() {
@@ -540,10 +518,6 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     }
   }
 
-  handleCandidateShortlistSaved(candidateShortlistItem: CandidateShortlistItem) {
-    this.search();
-  }
-
   handleSearchTypeChange(control: string, value: 'or' | 'not') {
     this.searchForm.controls[control].patchValue(value);
   }
@@ -556,20 +530,6 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
       this.sortDirection = 'ASC';
     }
     this.search();
-  }
-
-  setReviewStatus(event: any) {
-    let statuses: string[] = [];
-
-    const value: string = typeof event === "string" ? event : event.target.value;
-    if (value == 'valid'){
-      statuses.push('pending', 'verified')
-    } else {
-      statuses.push(value);
-    }
-
-    this.searchForm.controls['shortlistStatus'].patchValue(statuses);
-
   }
 
   exportCandidates() {

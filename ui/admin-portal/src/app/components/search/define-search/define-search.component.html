@@ -108,19 +108,6 @@
         </app-language-level-form-control>
       </div>
 
-
-      <!-- REVIEW STATUS FILTER -->
-      <div class="form-group col-12  col-md-2" *ngIf="savedSearch">
-        <label for="reviewStatus">Review status</label>
-        <select class="form-control" id="reviewStatus" [formControlName]="'shortListStatusField'"
-                (change)="setReviewStatus($event)">
-          <option value="valid">Pending And Verified</option>
-          <option value="pending">Pending</option>
-          <option value="verified">Verified</option>
-          <option value="rejected">Rejected</option>
-        </select>
-      </div>
-
     </div>
 
     <!-- TOGGLE FILTERS -->
@@ -389,7 +376,6 @@
                              [sortDirection]="sortDirection"></app-sorted-by>
               Last Name
             </th>
-            <th *ngIf="savedSearch">Reviewed</th>
             <th (click)="toggleSort('nationality.name')">
               <app-sorted-by [column]="'nationality.name'" [sortColumn]="sortField"
                              [sortDirection]="sortDirection"></app-sorted-by>
@@ -419,12 +405,6 @@
             </td>
             <td>{{candidate.user.firstName}}</td>
             <td>{{candidate.user.lastName}}</td>
-            <td *ngIf="savedSearch">
-              <app-candidate-shortlist-item [candidateId]="candidate.id"
-                                            [candidateShortlistItems]="candidate.candidateShortlistItems"
-                                            [savedSearch]="savedSearch"
-                                            (shortlistItemSaved)="handleCandidateShortlistSaved($event)"></app-candidate-shortlist-item>
-            </td>
             <td>{{candidate.nationality?.name}}</td>
             <td>{{candidate.country?.name}}</td>
             <td>{{candidate.gender | titlecase}}</td>

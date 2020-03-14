@@ -9,7 +9,7 @@ export interface CachedSearchResults {
   pageSize: number;
   sortFields: string[];
   sortDirection: string;
-  shortlistStatus?: string[];
+  reviewStatusFilter?: string[];
   results?: SearchResults<Candidate>;
   timestamp: number;
 }
@@ -30,7 +30,7 @@ export class SavedSearchResultsCacheService {
 
   cache(cachedSearchResults: CachedSearchResults) {
     const cacheKey = SavedSearchResultsCacheService.cacheKey(
-      cachedSearchResults.searchID, cachedSearchResults.shortlistStatus);
+      cachedSearchResults.searchID, cachedSearchResults.reviewStatusFilter);
     this.localStorageService.set(cacheKey, cachedSearchResults);
   }
 

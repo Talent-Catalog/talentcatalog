@@ -1,8 +1,14 @@
 import {SearchCandidateRequest} from "./search-candidate-request";
 
+export enum ReviewedStatus {
+  pending,
+  verified,
+  rejected
+}
+
 export const defaultReviewStatusFilter: string[] = [
-  'pending',
-  'verified'
+  ReviewedStatus[ReviewedStatus.pending],
+  ReviewedStatus[ReviewedStatus.verified]
 ];
 
 export enum SavedSearchType {

@@ -23,7 +23,7 @@ export class CandidateShortlistItemComponent implements OnInit, OnChanges {
   @Input() candidateShortlistItems: CandidateShortlistItem[];
   @Input() savedSearch: SavedSearch;
 
-  @Output() shortlistItemSaved = new EventEmitter();
+  @Output() reviewStatusChange = new EventEmitter();
 
   loading: boolean;
   error;
@@ -59,7 +59,7 @@ export class CandidateShortlistItemComponent implements OnInit, OnChanges {
     editModal.componentInstance.savedSearch = this.savedSearch;
 
     editModal.result
-      .then((candidateShortListItem) => this.shortlistItemSaved.emit(candidateShortListItem))
+      .then((candidateShortListItem) => this.reviewStatusChange.emit(candidateShortListItem))
       .catch(() => { /* Isn't possible */ });
   }
 

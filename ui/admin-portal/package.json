@@ -28,7 +28,7 @@
     "core-js": "^3.3.4",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.27",
-    "ng-multiselect-dropdown": "^0.2.6",
+    "ng-multiselect-dropdown": "^0.2.10",
     "ng2-charts": "^2.3.0",
     "ngx-infinite-scroll": "^8.0.1",
     "ngx-wig": "^2.0.0",

@@ -15,7 +15,7 @@ import {CandidateShortlistItem} from "../../../model/candidate-shortlist-item";
 import {ActivatedRoute} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
 import {
-  defaultReviewStatusFilter,
+  defaultReviewStatusFilter, ReviewedStatus,
   SavedSearch,
   SavedSearchRunRequest,
   SavedSearchType
@@ -25,6 +25,8 @@ import {
   SavedSearchResultsCacheService
 } from "../../../services/saved-search-results-cache.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
+import {IDropdownSettings} from "ng-multiselect-dropdown";
+import {ListItem} from "ng-multiselect-dropdown/multiselect.model";
 
 @Component({
   selector: 'app-search-candidates',
@@ -49,10 +51,23 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   pageSize: number;
   sortField = 'id';
   sortDirection = 'DESC';
-  shortlistStatus: string[] = defaultReviewStatusFilter;
+
+  /* MULTI SELECT */
+  statuses: string[];
+  dropdownSettings: IDropdownSettings = {
+    idField: 'id',
+    textField: 'text',
+    singleSelection: false,
+    selectAllText: 'Select All',
+    unSelectAllText: 'Deselect All',
+    itemsShowLimit: 3,
+    closeDropDownOnSelection: true,
+    allowSearchFilter: true
+  };
 
   selectedCandidate: Candidate;
   private timestamp: number;
+  private reviewStatusFilter: string[] = defaultReviewStatusFilter;
 
 
   constructor(private http: HttpClient,
@@ -65,12 +80,19 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   ) {
     this.searchForm = this.fb.group({
-      shortListStatusField: ['valid'],
+      statusesDisplay: [defaultReviewStatusFilter],
     });
   }
 
   ngOnInit() {
     this.selectedCandidate = null;
+
+    this.statuses = [];
+    for (let key in ReviewedStatus) {
+      if (isNaN(Number(key))) {
+        this.statuses.push(key);
+      }
+    }
 
     // start listening to route params after everything is loaded
     this.route.queryParamMap.subscribe(
@@ -116,7 +138,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       pageSize: this.pageSize,
       sortFields: [this.sortField],
       sortDirection: this.sortDirection,
-      shortlistStatus: this.shortlistStatus
+      shortlistStatus: this.reviewStatusFilter
     }
   }
 
@@ -128,7 +150,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     let done: boolean = false;
     if (!refresh) {
       const cached: CachedSearchResults =
-        this.savedSearchResultsCacheService.getFromCache(this.savedSearchId, this.shortlistStatus);
+        this.savedSearchResultsCacheService.getFromCache(this.savedSearchId, this.reviewStatusFilter);
       if (cached) {
         //If we are not required to use the pageNumber (usePageNumber = false)
         //we can take the pageNumber of whatever the cache has.
@@ -140,7 +162,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
           this.results = cached.results;
           this.sortField = cached.sortFields[0];
           this.sortDirection = cached.sortDirection;
-          this.setShortlistStatus(cached.shortlistStatus);
+          this.reviewStatusFilter = cached.reviewStatusFilter;
           this.timestamp = cached.timestamp;
           this.pageNumber = cached.pageNumber;
           this.pageSize = cached.pageSize;
@@ -157,14 +179,14 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
           this.results = results;
 
           //We only cache results with the default review status filter.
-          if (this.shortlistStatus.toString() === defaultReviewStatusFilter.toString()) {
+          if (this.reviewStatusFilter.toString() === defaultReviewStatusFilter.toString()) {
             this.savedSearchResultsCacheService.cache({
               searchID: this.savedSearchId,
               pageNumber: this.pageNumber,
               pageSize: this.pageSize,
               sortFields: [this.sortField],
               sortDirection: this.sortDirection,
-              shortlistStatus: this.shortlistStatus,
+              reviewStatusFilter: this.reviewStatusFilter,
               results: this.results,
               timestamp: this.timestamp
             });
@@ -183,7 +205,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     this.selectedCandidate = candidate;
   }
 
-  handleCandidateShortlistSaved(candidateShortlistItem: CandidateShortlistItem) {
+  onReviewStatusChange(candidateShortlistItem: CandidateShortlistItem) {
     this.doSearch(true);
   }
 
@@ -268,15 +290,9 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       ': ' + this.savedSearch.name) : 'Search'
   }
 
-  onReviewStatusChange(event: any) {
-    this.shortlistStatus = [];
+  private onReviewStatusFilterChange() {
 
-    const value: string = typeof event === "string" ? event : event.target.value;
-    if (value == 'valid'){
-      this.shortlistStatus.push('pending', 'verified')
-    } else {
-      this.shortlistStatus.push(value);
-    }
+    this.reviewStatusFilter = this.searchForm.value.statusesDisplay;
 
     //We can ignore page number because changing the reviewStatus filter will
     //completely change the number of results.
@@ -285,16 +301,19 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     this.doSearch(false, false);
   }
 
-  private setShortlistStatus(shortlistStatus: string[]) {
-    this.shortlistStatus = shortlistStatus;
-
-    if (shortlistStatus) {
-      if (shortlistStatus.length > 1) {
-        this.searchForm.controls['shortListStatusField'].patchValue('valid');
-      } else {
-        this.searchForm.controls['shortListStatusField'].patchValue(shortlistStatus[0]);
-      }
-    }
+  onItemSelect($event: ListItem) {
+    this.onReviewStatusFilterChange();
   }
 
+  onItemDeSelect($event: ListItem) {
+    this.onReviewStatusFilterChange();
+  }
+
+  onSelectAll($event: Array<ListItem>) {
+    this.onReviewStatusFilterChange();
+  }
+
+  onDeSelectAll() {
+    this.onReviewStatusFilterChange();
+  }
 }

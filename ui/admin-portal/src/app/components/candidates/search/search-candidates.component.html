@@ -38,15 +38,19 @@
 
     <form class="filter-form" [formGroup]="searchForm">
       <!-- REVIEW STATUS FILTER -->
-      <div class="form-group col-12  col-md-2">
+      <div class="form-group col-12">
         <label for="reviewStatus">Review status</label>
-        <select class="form-control" id="reviewStatus" [formControlName]="'shortListStatusField'"
-                (change)="onReviewStatusChange($event)">
-          <option value="valid">Pending And Verified</option>
-          <option value="pending">Pending</option>
-          <option value="verified">Verified</option>
-          <option value="rejected">Rejected</option>
-        </select>
+        <ng-multiselect-dropdown
+          id="reviewStatus"
+          [placeholder]="'Empty displays everything'"
+          [data]="statuses"
+          formControlName="statusesDisplay"
+          [settings]="dropdownSettings"
+          (onSelect)="onItemSelect($event)"
+          (onDeSelect)="onItemDeSelect($event)"
+          (onSelectAll)="onSelectAll($event)"
+          (onDeSelectAll)="onDeSelectAll()">
+        </ng-multiselect-dropdown>
       </div>
     </form>
 
@@ -117,7 +121,7 @@
             <app-candidate-shortlist-item [candidateId]="candidate.id"
                                           [candidateShortlistItems]="candidate.candidateShortlistItems"
                                           [savedSearch]="savedSearch"
-                                          (shortlistItemSaved)="handleCandidateShortlistSaved($event)"></app-candidate-shortlist-item>
+                                          (reviewStatusChange)="onReviewStatusChange($event)"></app-candidate-shortlist-item>
             <td>{{candidate.nationality?.name}}</td>
             <td>{{candidate.country?.name}}</td>
             <td>{{candidate.gender | titlecase}}</td>

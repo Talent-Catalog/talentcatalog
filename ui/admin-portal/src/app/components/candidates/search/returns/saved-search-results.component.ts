@@ -146,7 +146,7 @@ constructor(
           pageSize: this.pageSize,
           sortFields: [this.sortField],
           sortDirection: this.sortDirection,
-          shortlistStatus: defaultReviewStatusFilter,
+          reviewStatusFilter: defaultReviewStatusFilter,
           results: this.results,
           timestamp: this.timestamp
         });
