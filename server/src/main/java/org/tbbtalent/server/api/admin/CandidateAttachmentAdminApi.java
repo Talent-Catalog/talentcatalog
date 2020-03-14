@@ -1,17 +1,23 @@
 package org.tbbtalent.server.api.admin;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.model.CandidateAttachment;
 import org.tbbtalent.server.request.attachment.CreateCandidateAttachmentRequest;
 import org.tbbtalent.server.request.attachment.SearchCandidateAttachmentsRequest;
 import org.tbbtalent.server.request.attachment.UpdateCandidateAttachmentRequest;
 import org.tbbtalent.server.service.CandidateAttachmentService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
-
-import java.util.Map;
 
 //import org.tbbtalent.server.request.attachment.CreateCandidateAttachmentRequest;
 //import org.tbbtalent.server.request.note.UpdateCandidateAttachmentRequest;
@@ -63,6 +69,8 @@ public class CandidateAttachmentAdminApi {
                 .add("migrated")
                 .add("createdBy", userDto())
                 .add("createdDate")
+                .add("updatedBy", userDto())
+                .add("updatedDate")
                 ;
     }
 
