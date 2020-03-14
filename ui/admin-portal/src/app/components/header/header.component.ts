@@ -14,10 +14,11 @@ import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} fro
 export class HeaderComponent implements OnInit {
 
   isNavbarCollapsed=true;
-  candidates: Candidate[];
-  doSearch;
-  searchFailed;
-  searching;
+  doEmailSearch;
+  doNumberOrNameSearch;
+  doPhoneSearch;
+  searchFailed: boolean;
+  searching: boolean;
   error;
 
 
@@ -27,7 +28,7 @@ export class HeaderComponent implements OnInit {
 
   ngOnInit() {
     //dropdown to add joined searches
-    this.doSearch = (text$: Observable<string>) =>
+    this.doNumberOrNameSearch = (text$: Observable<string>) =>
       text$.pipe(
         debounceTime(300),
         distinctUntilChanged(),
@@ -36,7 +37,47 @@ export class HeaderComponent implements OnInit {
           this.error = null
         }),
         switchMap(candidateNumberOrName =>
-          this.candidateService.find({candidateNumberOrName: candidateNumberOrName, pageSize: 10}).pipe(
+          this.candidateService.findByCandidateNumberOrName({candidateNumberOrName: candidateNumberOrName, pageSize: 10}).pipe(
+            tap(() => this.searchFailed = false),
+            map(result => result.content),
+            catchError(() => {
+              this.searchFailed = true;
+              return of([]);
+            }))
+        ),
+        tap(() => this.searching = false)
+      );
+
+    this.doPhoneSearch = (text$: Observable<string>) =>
+      text$.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        tap(() => {
+          this.searching = true;
+          this.error = null
+        }),
+        switchMap(candidatePhone =>
+          this.candidateService.findByCandidatePhone({candidatePhone: candidatePhone, pageSize: 10}).pipe(
+            tap(() => this.searchFailed = false),
+            map(result => result.content),
+            catchError(() => {
+              this.searchFailed = true;
+              return of([]);
+            }))
+        ),
+        tap(() => this.searching = false)
+      );
+
+    this.doEmailSearch = (text$: Observable<string>) =>
+      text$.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        tap(() => {
+          this.searching = true;
+          this.error = null
+        }),
+        switchMap(candidateEmail =>
+          this.candidateService.findByCandidateEmail({candidateEmail: candidateEmail, pageSize: 10}).pipe(
             tap(() => this.searchFailed = false),
             map(result => result.content),
             catchError(() => {

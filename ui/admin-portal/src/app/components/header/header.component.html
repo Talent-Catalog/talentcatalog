@@ -27,14 +27,42 @@
       </ul>
 
       <div class="form-group">
-        <input id="quickSearch"
+        <input id="quickEmailSearch"
                type="text" class="form-control" #input
-               [ngbTypeahead]="doSearch"
+               [ngbTypeahead]="doEmailSearch"
                [resultTemplate]="rt"
                [inputFormatter]="renderCandidateRow"
                [editable]="false"
                (selectItem)="selectSearchResult($event, input)"
-               placeholder="Number or name..."/>
+               placeholder="Email..."/>
+        <ng-template #rt let-r="result" let-t="term">
+          <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
+        </ng-template>
+      </div>
+
+      <div class="form-group">
+        <input id="quickPhoneSearch"
+               type="text" class="form-control" #input
+               [ngbTypeahead]="doPhoneSearch"
+               [resultTemplate]="rt"
+               [inputFormatter]="renderCandidateRow"
+               [editable]="false"
+               (selectItem)="selectSearchResult($event, input)"
+               placeholder="Phone number..."/>
+        <ng-template #rt let-r="result" let-t="term">
+          <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
+        </ng-template>
+      </div>
+
+      <div class="form-group">
+        <input id="quickNumberOrNameSearch"
+               type="text" class="form-control" #input
+               [ngbTypeahead]="doNumberOrNameSearch"
+               [resultTemplate]="rt"
+               [inputFormatter]="renderCandidateRow"
+               [editable]="false"
+               (selectItem)="selectSearchResult($event, input)"
+               placeholder="Name or number..."/>
         <ng-template #rt let-r="result" let-t="term">
           <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
         </ng-template>

@@ -1,16 +1,29 @@
 package org.tbbtalent.server.service;
 
+import java.io.PrintWriter;
+import java.rmi.server.ExportException;
+import java.util.List;
+
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.model.DataRow;
 import org.tbbtalent.server.request.LoginRequest;
-import org.tbbtalent.server.request.candidate.*;
-
-import java.io.PrintWriter;
-import java.rmi.server.ExportException;
-import java.util.List;
+import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
+import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
+import org.tbbtalent.server.request.candidate.CandidatePhoneSearchRequest;
+import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
+import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
+import org.tbbtalent.server.request.candidate.SavedSearchRunRequest;
+import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateContactRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateEducationRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateLinksRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
 
 public interface CandidateService {
 
@@ -18,7 +31,11 @@ public interface CandidateService {
 
     Page<Candidate> searchCandidates(SavedSearchRunRequest request);
 
-    Page<Candidate> searchCandidates(CandidateQuickSearchRequest request);
+    Page<Candidate> searchCandidates(CandidateEmailSearchRequest request);
+
+    Page<Candidate> searchCandidates(CandidateNumberOrNameSearchRequest request);
+
+    Page<Candidate> searchCandidates(CandidatePhoneSearchRequest request);
 
     Candidate getCandidate(long id);
 

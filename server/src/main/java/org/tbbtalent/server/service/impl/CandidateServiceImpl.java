@@ -53,7 +53,9 @@ import org.tbbtalent.server.repository.SavedSearchRepository;
 import org.tbbtalent.server.repository.UserRepository;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.candidate.BaseCandidateContactRequest;
-import org.tbbtalent.server.request.candidate.CandidateQuickSearchRequest;
+import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
+import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
+import org.tbbtalent.server.request.candidate.CandidatePhoneSearchRequest;
 import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
 import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
 import org.tbbtalent.server.request.candidate.SavedSearchRunRequest;
@@ -138,7 +140,7 @@ public class CandidateServiceImpl implements CandidateService {
         return searchCandidates(searchCandidateRequest);
     }
 
-//todo this is horrible cloned code duplicated from SavedSearchServiceImpl - factor it out.
+    //todo this is horrible cloned code duplicated from SavedSearchServiceImpl - factor it out.
     private SearchCandidateRequest convertToSearchCandidateRequest(SavedSearch request) {
         SearchCandidateRequest searchCandidateRequest = new SearchCandidateRequest();
         searchCandidateRequest.setSavedSearchId(request.getId());
@@ -220,7 +222,18 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Page<Candidate> searchCandidates(CandidateQuickSearchRequest request) {
+    public Page<Candidate> searchCandidates(CandidateEmailSearchRequest request) {
+        String s = request.getCandidateEmail();
+
+        Page<Candidate> candidates;
+        candidates = candidateRepository.searchCandidateEmail(
+                '%' + s +'%', request.getPageRequestWithoutSort());
+        log.info("Found " + candidates.getTotalElements() + " candidates in search");
+        return candidates;
+    }
+
+    @Override
+    public Page<Candidate> searchCandidates(CandidateNumberOrNameSearchRequest request) {
         String s = request.getCandidateNumberOrName();
         boolean searchForNumber = s.length() > 0 && Character.isDigit(s.charAt(0));
 
@@ -233,6 +246,17 @@ public class CandidateServiceImpl implements CandidateService {
                     '%' + s +'%', request.getPageRequestWithoutSort());
             
         }
+        log.info("Found " + candidates.getTotalElements() + " candidates in search");
+        return candidates;
+    }
+
+    @Override
+    public Page<Candidate> searchCandidates(CandidatePhoneSearchRequest request) {
+        String s = request.getCandidatePhone();
+
+        Page<Candidate> candidates;
+            candidates = candidateRepository.searchCandidatePhone(
+                    '%' + s +'%', request.getPageRequestWithoutSort());
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
         return candidates;
     }
@@ -288,8 +312,8 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setCandidateNumber("TEMP%04d" + RandomStringUtils.random(6));
 
         //set country and nationality to unknown on create as required for search
-        candidate.setCountry(countryRepository.getOne(0l));
-        candidate.setNationality(nationalityRepository.getOne(0l));
+        candidate.setCountry(countryRepository.getOne(0L));
+        candidate.setNationality(nationalityRepository.getOne(0L));
 
         candidate = this.candidateRepository.save(candidate);
 

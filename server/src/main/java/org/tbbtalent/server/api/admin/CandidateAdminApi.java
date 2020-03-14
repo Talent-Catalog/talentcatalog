@@ -22,7 +22,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.Candidate;
-import org.tbbtalent.server.request.candidate.CandidateQuickSearchRequest;
+import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
+import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
+import org.tbbtalent.server.request.candidate.CandidatePhoneSearchRequest;
 import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
 import org.tbbtalent.server.request.candidate.SavedSearchRunRequest;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
@@ -57,8 +59,22 @@ public class CandidateAdminApi {
         return map;
     }
 
-    @PostMapping("find")
-    public Map<String, Object> findByCandidateNumberOrName(@RequestBody CandidateQuickSearchRequest request) {
+    @PostMapping("findbyemail")
+    public Map<String, Object> findByCandidateEmail(@RequestBody CandidateEmailSearchRequest request) {
+        Page<Candidate> candidates = this.candidateService.searchCandidates(request);
+        Map<String, Object> map = candidateBaseDto().buildPage(candidates);
+        return map;
+    }
+
+    @PostMapping("findbynumberorname")
+    public Map<String, Object> findByCandidateNumberOrName(@RequestBody CandidateNumberOrNameSearchRequest request) {
+        Page<Candidate> candidates = this.candidateService.searchCandidates(request);
+        Map<String, Object> map = candidateBaseDto().buildPage(candidates);
+        return map;
+    }
+
+    @PostMapping("findbyphone")
+    public Map<String, Object> findByCandidatePhone(@RequestBody CandidatePhoneSearchRequest request) {
         Page<Candidate> candidates = this.candidateService.searchCandidates(request);
         Map<String, Object> map = candidateBaseDto().buildPage(candidates);
         return map;
