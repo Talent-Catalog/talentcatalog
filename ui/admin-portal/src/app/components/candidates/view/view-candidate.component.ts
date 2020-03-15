@@ -37,7 +37,7 @@ export class ViewCandidateComponent implements OnInit {
       this.candidateService.getByNumber(candidateNumber).subscribe(candidate => {
         if (candidate == null) {
           this.loadingError = true;
-          this.error = 'Cannot load candidate with id: ' + params.get('candidateNumber') + ', the id must be a number';
+          this.error = 'There is no candidate with number: ' + params.get('candidateNumber');
         } else {
           this.setCandidate(candidate);
         }
