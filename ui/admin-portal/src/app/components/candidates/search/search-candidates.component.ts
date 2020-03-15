@@ -222,7 +222,6 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   exportCandidates() {
     this.exporting = true;
     let request = this.constructRunRequest();
-    //todo Test this
     this.candidateService.exportFromSavedSearch(request, 10000).subscribe(
       result => {
         let options = {type: 'text/csv;charset=utf-8;'};

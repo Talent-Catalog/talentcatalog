@@ -3,6 +3,7 @@ package org.tbbtalent.server.service.impl;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.rmi.server.ExportException;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
@@ -612,6 +613,21 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Resource generateCv(Candidate candidate) {
        return pdfHelper.generatePdf(candidate);
+    }
+
+    @Override
+    public void exportToCsv(SavedSearchRunRequest request, PrintWriter writer) throws ExportException {
+        Long savedSearchId = request.getSavedSearchId();
+        SavedSearch savedSearch = this.savedSearchRepository.findByIdLoadSearchJoins(savedSearchId)
+                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, savedSearchId));
+        SearchCandidateRequest searchCandidateRequest = convertToSearchCandidateRequest(savedSearch);
+
+        searchCandidateRequest.setPageNumber(request.getPageNumber());
+        searchCandidateRequest.setPageSize(request.getPageSize());
+        searchCandidateRequest.setSortDirection(request.getSortDirection());
+        searchCandidateRequest.setSortFields(request.getSortFields());
+        searchCandidateRequest.setShortlistStatus(request.getShortlistStatus());
+        exportToCsv(searchCandidateRequest, writer);
     }
 
     @Override

@@ -75,6 +75,8 @@ public interface CandidateService {
 
     Candidate findByCandidateNumber(String candidateNumber);
 
+    void exportToCsv(SavedSearchRunRequest request, PrintWriter writer) throws ExportException;
+
     void exportToCsv(SearchCandidateRequest request, PrintWriter writer) throws ExportException;
 
     List<DataRow> getNationalityStats();

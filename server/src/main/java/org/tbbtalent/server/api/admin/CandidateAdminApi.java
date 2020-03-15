@@ -117,9 +117,15 @@ public class CandidateAdminApi {
         return this.candidateService.deleteCandidate(id);
     }
 
-
     @PostMapping(value = "export/csv", produces = MediaType.TEXT_PLAIN_VALUE)
     public void export(@RequestBody SearchCandidateRequest request,
+                       HttpServletResponse response) throws IOException, ExportException {
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + "candidates.csv\"");
+        candidateService.exportToCsv(request, response.getWriter());
+    }
+
+    @PostMapping(value = "exportsearch/csv", produces = MediaType.TEXT_PLAIN_VALUE)
+    public void export(@RequestBody SavedSearchRunRequest request,
                        HttpServletResponse response) throws IOException, ExportException {
         response.setHeader("Content-Disposition", "attachment; filename=\"" + "candidates.csv\"");
         candidateService.exportToCsv(request, response.getWriter());
