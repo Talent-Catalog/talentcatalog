@@ -27,7 +27,7 @@ public class SiteRedirectController {
     public String redirectOldResumeUrl(@RequestParam("id") String candidateNumber) {
         Candidate candidate = candidateService.findByCandidateNumber(candidateNumber);
         if (candidate != null){
-            return "redirect:" + adminUrl + "/candidates/" + candidate.getId();
+            return "redirect:" + adminUrl + "/candidates/" + candidateNumber;
         } else {
             return "redirect:" + adminUrl + "/candidates";
         }

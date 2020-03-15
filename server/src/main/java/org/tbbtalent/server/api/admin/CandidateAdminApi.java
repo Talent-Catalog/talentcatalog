@@ -80,6 +80,12 @@ public class CandidateAdminApi {
         return map;
     }
 
+    @GetMapping("number/{number}")
+    public Map<String, Object> get(@PathVariable("number") String number) {
+        Candidate candidate = this.candidateService.findByCandidateNumber(number);
+        return candidateDto().build(candidate);
+    }
+
     @GetMapping("{id}")
     public Map<String, Object> get(@PathVariable("id") long id) {
         Candidate candidate = this.candidateService.getCandidate(id);

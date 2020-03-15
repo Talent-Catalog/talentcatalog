@@ -61,7 +61,7 @@ const routes: Routes = [
             data: {title: 'TBB Admin - Candidate search'}
           },
           {
-            path: ':candidateId',
+            path: ':candidateNumber',
             component: ViewCandidateComponent,
             data: {title: 'TBB Admin - Candidate'}
           },

@@ -34,6 +34,10 @@ export class CandidateService {
     return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/findbyphone`, request);
   }
 
+  getByNumber(number: string): Observable<Candidate> {
+    return this.http.get<Candidate>(`${this.apiUrl}/number/${number}`);
+  }
+
   get(id: number): Observable<Candidate> {
     return this.http.get<Candidate>(`${this.apiUrl}/${id}`);
   }

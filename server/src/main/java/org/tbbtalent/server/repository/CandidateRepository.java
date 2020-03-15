@@ -14,14 +14,6 @@ import org.tbbtalent.server.model.DataRow;
 
 public interface CandidateRepository extends JpaRepository<Candidate, Long>, JpaSpecificationExecutor<Candidate> {
 
-//    /* Used for candidate authentication */
-//    @Query(" select distinct c from Candidate c "
-//            + " where lower(c.email) = lower(:username) "
-//            + " or lower(c.phone) = lower(:username) "
-//            + " or lower(c.whatsapp) = lower(:username) ")
-//    Candidate findByAnyUserIdentityIgnoreCase(@Param("username") String username);
-
-    /* Used for JWT token parsing */
     Candidate findByCandidateNumber(String number);
 
     @Query(" select distinct c from Candidate c left join c.user u "

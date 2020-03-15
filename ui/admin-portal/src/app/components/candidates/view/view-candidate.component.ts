@@ -30,16 +30,21 @@ export class ViewCandidateComponent implements OnInit {
   ngOnInit() {
     this.loadingError = false;
     this.route.paramMap.subscribe(params => {
-      let candidateId = +params.get('candidateId');
+      let candidateNumber = params.get('candidateNumber');
       this.loading = true;
       this.error = null;
       this.loadingError = false;
-      this.candidateService.get(candidateId).subscribe(candidate => {
-        this.setCandidate(candidate);
+      this.candidateService.getByNumber(candidateNumber).subscribe(candidate => {
+        if (candidate == null) {
+          this.loadingError = true;
+          this.error = 'Cannot load candidate with id: ' + params.get('candidateNumber') + ', the id must be a number';
+        } else {
+          this.setCandidate(candidate);
+        }
         this.loading = false;
       },error => {
         this.loadingError = true;
-        this.error = isNaN(candidateId) ? 'Cannot load candidate with id: '+params.get('candidateId') + ', the id must be a number': error;
+        this.error = error;
         this.loading = false;
       });
     });
