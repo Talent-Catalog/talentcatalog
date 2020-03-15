@@ -39,6 +39,7 @@ export class UpdateSearchComponent implements OnInit {
       name: [this.savedSearch.name, Validators.required],
       savedSearchType: [this.savedSearch.savedSearchType],
       savedSearchSubtype: [this.savedSearch.savedSearchSubtype],
+      reviewable: [this.savedSearch.reviewable, Validators.required],
     });
     //Copy the form values in so that they can be displayed in any summary
     //(Otherwise we just see the unmodified search values)
@@ -56,6 +57,8 @@ export class UpdateSearchComponent implements OnInit {
 
     const formValues = this.form.value;
     this.savedSearch.name = formValues.name;
+    this.savedSearch.reviewable = formValues.reviewable;
+    this.savedSearch.fixed = false;
 
     //Use parseInt rather than +, because + returns zero when null or undefined.
     this.savedSearch.savedSearchType = parseInt(formValues.savedSearchType);

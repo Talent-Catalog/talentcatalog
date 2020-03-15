@@ -7,6 +7,7 @@ import org.tbbtalent.server.request.SearchRequest;
 public class SearchSavedSearchRequest extends SearchRequest {
 
     private String keyword;
+    private Boolean fixed;
     private SavedSearchType savedSearchType;
     private SavedSearchSubtype savedSearchSubtype;
 
@@ -33,5 +34,14 @@ public class SearchSavedSearchRequest extends SearchRequest {
     public void setSavedSearchSubtype(SavedSearchSubtype savedSearchSubtype) {
         this.savedSearchSubtype = savedSearchSubtype;
     }
+
+    public Boolean getFixed() {
+        return fixed;
+    }
+
+    public void setFixed(Boolean fixed) {
+        this.fixed = fixed;
+    }
+
 }
 

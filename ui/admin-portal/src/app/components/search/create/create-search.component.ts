@@ -39,6 +39,7 @@ export class CreateSearchComponent implements OnInit {
       name: [null, Validators.required],
       savedSearchType: [null, Validators.required],
       savedSearchSubtype: [null, Validators.required],
+      reviewable: [true, Validators.required],
     });
     if (this.savedSearch) {
       //Copy the form values in so that they can be displayed in any summary
@@ -58,6 +59,8 @@ export class CreateSearchComponent implements OnInit {
       //Use parseInt rather than +, because + returns zero when null or undefined.
       savedSearchType: parseInt(formValues.savedSearchType),
       savedSearchSubtype: parseInt(formValues.savedSearchSubtype),
+      fixed: false,
+      reviewable: formValues.reviewable
     };
 
     //And create a SavedSearchRequest from the SavedSearch and the search request

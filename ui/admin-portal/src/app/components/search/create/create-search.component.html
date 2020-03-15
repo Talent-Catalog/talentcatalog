@@ -19,12 +19,22 @@
       <label for="name">Name</label>
       <input type="text" class="form-control" id="name" formControlName="name">
 
-      <label for="savedSearchType">Type</label>
-      <select class="form-control" id="savedSearchType" formControlName="savedSearchType"
-      (change)="onSavedSearchTypeChange($event)">
-        <option *ngFor="let typeInfo of savedSearchTypeInfos"
-                [value]="typeInfo.savedSearchType">{{typeInfo.title}}</option>
-      </select>
+      <div class="operator">
+        <input type="checkbox" class="custom-checkbox" id="reviewable"
+               [value]="true" formControlName="reviewable">
+        <label for="reviewable" class="custom-checkbox">
+          Should result of searches be reviewable?
+        </label>
+      </div>
+
+      <div>
+        <label for="savedSearchType">Type</label>
+        <select class="form-control" id="savedSearchType" formControlName="savedSearchType"
+                (change)="onSavedSearchTypeChange($event)">
+          <option *ngFor="let typeInfo of savedSearchTypeInfos"
+                  [value]="typeInfo.savedSearchType">{{typeInfo.title}}</option>
+        </select>
+      </div>
 
       <div *ngIf="savedSearchTypeSubInfos">
         <label for="savedSearchSubtype">Category</label>
@@ -32,6 +42,7 @@
           <option *ngFor="let subtypeInfo of savedSearchTypeSubInfos" [value]="subtypeInfo.savedSearchSubtype">{{subtypeInfo.title}}</option>
         </select>
       </div>
+
     </div>
     <hr/>
     <div *ngIf="savedSearch">

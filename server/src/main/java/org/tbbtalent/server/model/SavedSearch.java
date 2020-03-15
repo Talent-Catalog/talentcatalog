@@ -1,12 +1,23 @@
 package org.tbbtalent.server.model;
 
-import org.springframework.util.StringUtils;
-
-import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.springframework.util.StringUtils;
 
 @Entity
 @Table(name = "saved_search")
@@ -61,6 +72,8 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
     private String educationMajorIds;
 
     private Boolean includeDraftAndDeleted;
+    private Boolean fixed;
+    private Boolean reviewable;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "savedSearch", cascade = CascadeType.MERGE)
     private Set<SearchJoin> searchJoins = new HashSet<>();
@@ -222,9 +235,9 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
         this.otherMinSpokenLevel = otherMinSpokenLevel;
     }
 
-    public Boolean isUnRegistered() {
-        return unRegistered;
-    }
+  public Boolean getUnRegistered() {
+    return unRegistered;
+  }
 
     public void setUnRegistered(Boolean unRegistered) {
         this.unRegistered = unRegistered;
@@ -448,4 +461,20 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
     public void setIncludeDraftAndDeleted(Boolean includeDraftAndDeleted) {
         this.includeDraftAndDeleted = includeDraftAndDeleted;
     }
+
+  public Boolean getFixed() {
+    return fixed;
+  }
+
+  public void setFixed(Boolean fixed) {
+    this.fixed = fixed;
+  }
+
+  public Boolean getReviewable() {
+    return reviewable;
+  }
+
+  public void setReviewable(Boolean reviewable) {
+    this.reviewable = reviewable;
+  }
 }

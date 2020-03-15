@@ -50,6 +50,8 @@ export interface SavedSearchJoin {
 export interface SavedSearch extends SearchCandidateRequest {
   id: number;
   name: string;
+  fixed: boolean;
+  reviewable: boolean;
   savedSearchType: SavedSearchType;
   savedSearchSubtype: SavedSearchSubtype;
 }
@@ -72,6 +74,8 @@ export function indexOfSavedSearch(savedSearchID: number, savedSearches: SavedSe
 export interface SavedSearchRequest {
   id?: number;
   name?: string;
+  fixed?: boolean;
+  reviewable?: boolean;
   savedSearchType?: SavedSearchType;
   savedSearchSubtype?: SavedSearchSubtype;
 
@@ -98,6 +102,8 @@ export function convertToSavedSearchRequest
   const savedSearchRequest: SavedSearchRequest = {};
   savedSearchRequest.id = savedSearch.id;
   savedSearchRequest.name = savedSearch.name;
+  savedSearchRequest.fixed = savedSearch.fixed;
+  savedSearchRequest.reviewable = savedSearch.reviewable;
   savedSearchRequest.savedSearchType = savedSearch.savedSearchType;
   savedSearchRequest.savedSearchSubtype = savedSearch.savedSearchSubtype;
   savedSearchRequest.searchCandidateRequest = searchCandidateRequest;

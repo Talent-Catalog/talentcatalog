@@ -10,6 +10,8 @@ public class UpdateSavedSearchRequest {
 
     @NotBlank
     private String name;
+    private Boolean fixed;
+    private Boolean reviewable;
 
     private SavedSearchType savedSearchType;
     private SavedSearchSubtype savedSearchSubtype;
@@ -48,4 +50,19 @@ public class UpdateSavedSearchRequest {
         this.searchCandidateRequest = searchCandidateRequest;
     }
 
+    public Boolean getFixed() {
+        return fixed;
+    }
+
+    public void setFixed(Boolean fixed) {
+        this.fixed = fixed;
+    }
+
+    public Boolean getReviewable() {
+        return reviewable;
+    }
+
+    public void setReviewable(Boolean reviewable) {
+        this.reviewable = reviewable;
+    }
 }

@@ -74,7 +74,7 @@
                              [sortDirection]="sortDirection"></app-sorted-by>
               Last Name
             </th>
-            <th *ngIf="savedSearch">Reviewed</th>
+            <th *ngIf="savedSearch.reviewable">Reviewed</th>
             <th (click)="toggleSort('nationality.name')">
               <app-sorted-by [column]="'nationality.name'" [sortColumn]="sortField"
                              [sortDirection]="sortDirection"></app-sorted-by>
@@ -117,7 +117,8 @@
             </td>
             <td>{{candidate.user.firstName}}</td>
             <td>{{candidate.user.lastName}}</td>
-            <app-candidate-shortlist-item [candidateId]="candidate.id"
+            <app-candidate-shortlist-item *ngIf="savedSearch.reviewable"
+                                          [candidateId]="candidate.id"
                                           [candidateShortlistItems]="candidate.candidateShortlistItems"
                                           [savedSearch]="savedSearch"
                                           (reviewStatusChange)="onReviewStatusChange($event)"></app-candidate-shortlist-item>

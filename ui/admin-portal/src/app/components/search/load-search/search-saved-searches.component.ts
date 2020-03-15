@@ -62,6 +62,7 @@ export class SearchSavedSearchesComponent implements OnInit {
     let request = this.searchForm.value;
     request.pageNumber = this.pageNumber - 1;
     request.pageSize = this.pageSize;
+    request.fixed = false;
     this.savedSearchService.search(request).subscribe(results => {
       this.results = results;
       this.loading = false;

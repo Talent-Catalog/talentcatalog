@@ -1,5 +1,7 @@
 package org.tbbtalent.server.repository;
 
+import javax.persistence.criteria.Predicate;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.tbbtalent.server.model.SavedSearch;
@@ -7,8 +9,6 @@ import org.tbbtalent.server.model.SavedSearchSubtype;
 import org.tbbtalent.server.model.SavedSearchType;
 import org.tbbtalent.server.model.Status;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
-
-import javax.persistence.criteria.Predicate;
 
 public class SavedSearchSpecification {
 
@@ -36,6 +36,12 @@ public class SavedSearchSpecification {
             }
             // ONLY SHOW ACTIVE SAVED SEARCHES
             conjunction.getExpressions().add(builder.equal(savedSearch.get("status"), Status.active));
+
+            //If fixed is specified, only supply matching saved searches
+            if (request.getFixed() != null) {
+                conjunction.getExpressions().add(
+                        builder.equal(savedSearch.get("fixed"), request.getFixed()));
+            }
 
             return conjunction;
         };

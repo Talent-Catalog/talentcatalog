@@ -1,5 +1,14 @@
 package org.tbbtalent.server.service.impl;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,18 +19,30 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.*;
-import org.tbbtalent.server.repository.*;
+import org.tbbtalent.server.model.CandidateStatus;
+import org.tbbtalent.server.model.EducationLevel;
+import org.tbbtalent.server.model.Language;
+import org.tbbtalent.server.model.LanguageLevel;
+import org.tbbtalent.server.model.SavedSearch;
+import org.tbbtalent.server.model.SearchJoin;
+import org.tbbtalent.server.model.Status;
+import org.tbbtalent.server.repository.CandidateRepository;
+import org.tbbtalent.server.repository.CountryRepository;
+import org.tbbtalent.server.repository.EducationLevelRepository;
+import org.tbbtalent.server.repository.EducationMajorRepository;
+import org.tbbtalent.server.repository.LanguageLevelRepository;
+import org.tbbtalent.server.repository.LanguageRepository;
+import org.tbbtalent.server.repository.NationalityRepository;
+import org.tbbtalent.server.repository.OccupationRepository;
+import org.tbbtalent.server.repository.SavedSearchRepository;
+import org.tbbtalent.server.repository.SavedSearchSpecification;
+import org.tbbtalent.server.repository.SearchJoinRepository;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.candidate.SearchJoinRequest;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.SavedSearchService;
-
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class SavedSearchServiceImpl implements SavedSearchService {
@@ -142,6 +163,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if(request.getSearchCandidateRequest() == null){
             SavedSearch savedSearch = savedSearchRepository.findById(id).orElse(null);
             savedSearch.setName(request.getName());
+            savedSearch.setFixed(request.getFixed());
+            savedSearch.setReviewable(request.getReviewable());
             savedSearch.setType(request.getSavedSearchType(), request.getSavedSearchSubtype());
             return savedSearchRepository.save(savedSearch);
         }
@@ -205,6 +228,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         SavedSearch savedSearch = new SavedSearch();
         savedSearch.setName(request.getName());
+        savedSearch.setFixed(request.getFixed());
+        savedSearch.setReviewable(request.getReviewable());
         savedSearch.setType(request.getSavedSearchType(), request.getSavedSearchSubtype());
 
         final SearchCandidateRequest searchCandidateRequest = request.getSearchCandidateRequest();
@@ -261,7 +286,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setOtherLanguageId(request.getOtherLanguage() != null ? request.getOtherLanguage().getId() : null);
         searchCandidateRequest.setOtherMinSpokenLevel(request.getOtherMinSpokenLevel());
         searchCandidateRequest.setOtherMinWrittenLevel(request.getOtherMinWrittenLevel());
-        searchCandidateRequest.setUnRegistered(request.isUnRegistered());
+        searchCandidateRequest.setUnRegistered(request.getUnRegistered());
         searchCandidateRequest.setLastModifiedFrom(request.getLastModifiedFrom());
         searchCandidateRequest.setLastModifiedTo(request.getLastModifiedTo());
 //        searchCandidateRequest.setRegisteredFrom(request.getCreatedFrom());

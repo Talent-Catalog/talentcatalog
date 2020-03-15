@@ -160,7 +160,7 @@ public class CandidateServiceImpl implements CandidateService {
         searchCandidateRequest.setOtherLanguageId(request.getOtherLanguage() != null ? request.getOtherLanguage().getId() : null);
         searchCandidateRequest.setOtherMinSpokenLevel(request.getOtherMinSpokenLevel());
         searchCandidateRequest.setOtherMinWrittenLevel(request.getOtherMinWrittenLevel());
-        searchCandidateRequest.setUnRegistered(request.isUnRegistered());
+        searchCandidateRequest.setUnRegistered(request.getUnRegistered());
         searchCandidateRequest.setLastModifiedFrom(request.getLastModifiedFrom());
         searchCandidateRequest.setLastModifiedTo(request.getLastModifiedTo());
 //        searchCandidateRequest.setRegisteredFrom(request.getCreatedFrom());
