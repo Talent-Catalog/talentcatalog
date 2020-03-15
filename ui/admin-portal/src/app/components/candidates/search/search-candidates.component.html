@@ -37,8 +37,9 @@
     </div>
 
     <form class="filter-form" [formGroup]="searchForm">
+
       <!-- REVIEW STATUS FILTER -->
-      <div class="form-group col-12">
+      <div *ngIf="savedSearch?.reviewable" class="form-group col-12">
         <ng-multiselect-dropdown
           id="reviewStatus"
           [placeholder]="'Review status: Empty displays everything'"
@@ -74,7 +75,7 @@
                              [sortDirection]="sortDirection"></app-sorted-by>
               Last Name
             </th>
-            <th *ngIf="savedSearch.reviewable">Reviewed</th>
+            <th *ngIf="savedSearch?.reviewable">Reviewed</th>
             <th (click)="toggleSort('nationality.name')">
               <app-sorted-by [column]="'nationality.name'" [sortColumn]="sortField"
                              [sortDirection]="sortDirection"></app-sorted-by>
@@ -117,7 +118,7 @@
             </td>
             <td>{{candidate.user.firstName}}</td>
             <td>{{candidate.user.lastName}}</td>
-            <app-candidate-shortlist-item *ngIf="savedSearch.reviewable"
+            <app-candidate-shortlist-item *ngIf="savedSearch?.reviewable"
                                           [candidateId]="candidate.id"
                                           [candidateShortlistItems]="candidate.candidateShortlistItems"
                                           [savedSearch]="savedSearch"
