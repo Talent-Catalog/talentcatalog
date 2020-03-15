@@ -37,7 +37,7 @@
 
       <div *ngIf="showCandidateMessage" class="form-group">
         <label for="candidateMessage">Please provide a message to the candidate (visible to them)</label>
-        <ngx-wig id="candidateMessage" formControlName="candidateMessage"></ngx-wig>
+        <textarea  class="form-control"  id="candidateMessage" [formControlName]="'candidateMessage'"></textarea>
       </div>
     </form>
   </div>
