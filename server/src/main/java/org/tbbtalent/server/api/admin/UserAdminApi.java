@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.exception.UsernameTakenException;
+import org.tbbtalent.server.model.Role;
 import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.request.user.*;
+import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.UserService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -17,10 +19,12 @@ import java.util.Map;
 public class UserAdminApi {
 
     private final UserService userService;
+    private final UserContext userContext;
 
     @Autowired
-    public UserAdminApi(UserService userService) {
+    public UserAdminApi(UserService userService, UserContext userContext) {
         this.userService = userService;
+        this.userContext = userContext;
     }
 
     @PostMapping("search")
@@ -32,7 +36,13 @@ public class UserAdminApi {
     @GetMapping("{id}")
     public Map<String, Object> get(@PathVariable("id") long id) {
         User user = this.userService.getUser(id);
-        return userDto().build(user);
+        User loggedInUser = userContext.getLoggedInUser();
+        if (loggedInUser.getRole() == Role.admin) {
+            return userDto().build(user);
+        } else {
+            return userDtoSemiLimited().build(user);
+        }
+
     }
 
     @PostMapping
@@ -74,6 +84,16 @@ public class UserAdminApi {
                 .add("firstName")
                 .add("lastName")
                 .add("email")
+                .add("role")
+                .add("status")
+                .add("createdDate")
+                .add("lastLogin")
+                ;
+    }
+
+    private DtoBuilder userDtoSemiLimited() {
+        return new DtoBuilder()
+                .add("id")
                 .add("role")
                 .add("status")
                 .add("createdDate")

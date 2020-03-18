@@ -60,10 +60,12 @@ public class CandidateAdminApi {
     public Map<String, Object> get(@PathVariable("id") long id) {
         Candidate candidate = this.candidateService.getCandidate(id);
         User user = userContext.getLoggedInUser();
-        if (user.getRole() == Role.admin) {
+        if (user.getRole() == Role.admin || user.getRole() == Role.sourcepartneradmin) {
             return candidateDto().build(candidate);
+        } else if (user.getRole() == Role.semilimited){
+            return candidateDtoSemiLimited().build(candidate);
         } else {
-            return candidateDtoIntern().build(candidate);
+            return candidateDtoLimited().build(candidate);
         }
     }
 
@@ -161,7 +163,7 @@ public class CandidateAdminApi {
                 ;
     }
 
-    private DtoBuilder candidateDtoIntern() {
+    private DtoBuilder candidateDtoSemiLimited() {
         return new DtoBuilder()
                 .add("id")
                 .add("status")
@@ -178,8 +180,27 @@ public class CandidateAdminApi {
                 .add("folderlink")
                 .add("sflink")
                 .add("country", countryDto())
-                .add("user",userDtoIntern())
+                .add("user",userDtoSemiLimited())
                 .add("nationality", nationalityDto())
+                .add("candidateShortlistItems", shortlistDto())
+                ;
+    }
+
+    private DtoBuilder candidateDtoLimited() {
+        return new DtoBuilder()
+                .add("id")
+                .add("status")
+                .add("candidateNumber")
+                .add("gender")
+                .add("dob")
+                .add("phone")
+                .add("whatsapp")
+                .add("yearOfArrival")
+                .add("additionalInfo")
+                .add("candidateMessage")
+                .add("folderlink")
+                .add("sflink")
+                .add("user",userDtoSemiLimited())
                 .add("candidateShortlistItems", shortlistDto())
                 ;
     }
@@ -193,10 +214,9 @@ public class CandidateAdminApi {
                 ;
     }
 
-    private DtoBuilder userDtoIntern() {
+    private DtoBuilder userDtoSemiLimited() {
         return new DtoBuilder()
                 .add("id")
-                .add("email")
                 ;
     }
 
