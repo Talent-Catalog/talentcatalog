@@ -183,9 +183,14 @@ public class UserServiceImpl implements UserService {
             if (loggedInName.contains("@")) {
                 //User has supplied email as username.
                 //See if we have a user with this email.
-                User exists = userRepository.findByEmailIgnoreCase(loggedInName);
-                if (exists != null) {
-                   loggedInName = exists.getUsername();     
+                try {
+                    User exists = userRepository.findByEmailIgnoreCase(loggedInName);
+                    if (exists != null) {
+                        loggedInName = exists.getUsername();
+                    }
+                } catch (Exception ex) {
+                  //Just continue if we couldn't find user for email
+                    throw new InvalidCredentialsException("Sorry, that email is not unique. Log in with your username.");
                 }
             }
 
