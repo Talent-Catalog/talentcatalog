@@ -43,7 +43,7 @@
       <div class="form-group col-12 col-md-3">
         <label>Status</label>
         <ng-multiselect-dropdown
-          name="statuses"
+          id="statuses"
           [placeholder]="''"
           [data]="statuses"
           formControlName="statusesDisplay"
@@ -58,40 +58,6 @@
           <label for="includeDraftAndDeleted" class="custom-checkbox">
             Include Draft and Deleted
           </label>
-        </div>
-
-      </div>
-
-      <!-- OCCUPATION (VETTED) -->
-      <div *ngIf="false" class="form-group col-12 col-md-3">
-        <label >
-          <div>
-            <span>Occupation</span>
-            <small class="text-muted"> (TBB vetted)</small>
-          </div>
-        </label>
-
-        <ng-multiselect-dropdown
-          name="verifiedOccupationIds"
-          [placeholder]="''"
-          [data]="verifiedOccupations"
-          formControlName="verifiedOccupations"
-          [settings]="dropdownSettings"
-          (onSelect)="onItemSelect($event, 'verifiedOccupationIds')"
-          (onDeSelect)="onItemDeSelect($event, 'verifiedOccupationIds')"
-          (onSelectAll)="onSelectAll($event, 'verifiedOccupationIds')"
-          (onDeSelectAll)="onDeSelectAll('verifiedOccupationIds')">
-        </ng-multiselect-dropdown>
-
-        <div class="operator">
-          <button class="btn btn-link" type="button"
-                  [class.active]="searchForm.value.verifiedOccupationSearchType === 'or'"
-                  (click)="handleSearchTypeChange('verifiedOccupationSearchType', 'or')">any
-          </button>
-          <button class="btn btn-link" type="button"
-                  [class.active]="searchForm.value.verifiedOccupationSearchType === 'not'"
-                  (click)="handleSearchTypeChange('verifiedOccupationSearchType', 'not')">not
-          </button>
         </div>
 
       </div>
@@ -136,7 +102,7 @@
           <div class="form-group col-12">
             <label>Occupation (candidate specified)</label>
             <ng-multiselect-dropdown
-              name="occupationIds"
+              id="occupationIds"
               [placeholder]="''"
               [data]="candidateOccupations"
               formControlName="occupations"
@@ -150,8 +116,11 @@
 
           <!-- PROFILE KEYWORD -->
           <div class="form-group col-12">
-            <label for="orProfileKeyword">Or profile has any of these words</label>
-            <input id="orProfileKeyword" type="text" class="form-control" placeholder="Butcher, Meat, Beef"
+            <label for="orProfileKeyword">
+              Or profile has any of the phrases, separated by commas, below.
+              The profile must contain ALL of the words in a phrase.
+            </label>
+            <input id="orProfileKeyword" type="text" class="form-control" placeholder="Keyword search: eg welder, diesel mechanic"
                    aria-label="Search" formControlName="orProfileKeyword">
           </div>
 
@@ -194,7 +163,7 @@
           <div class="form-group col-12 col-md-4">
             <label>Country</label>
             <ng-multiselect-dropdown
-              name="country"
+              id="country"
               [data]="countries"
               formControlName="countries"
               [settings]="dropdownSettings"
@@ -221,7 +190,7 @@
           <div class="form-group col-12 col-md-4">
             <label>Education major</label>
             <ng-multiselect-dropdown
-              name="educationMajorIds"
+              id="educationMajorIds"
               [data]="educationMajors"
               formControlName="educationMajors"
               [settings]="dropdownSettings"
@@ -263,7 +232,7 @@
         </div>
 
         <ng-multiselect-dropdown
-          name="selectedNationalities"
+          id="selectedNationalities"
           [placeholder]="'Select Nationalities'"
           [data]="nationalities"
           formControlName="nationalities"

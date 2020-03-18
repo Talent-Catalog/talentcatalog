@@ -1,19 +1,48 @@
 package org.tbbtalent.server.repository;
 
-import io.jsonwebtoken.lang.Collections;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.persistence.criteria.Fetch;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.tbbtalent.server.model.*;
+import org.tbbtalent.server.model.Candidate;
+import org.tbbtalent.server.model.CandidateEducation;
+import org.tbbtalent.server.model.CandidateJobExperience;
+import org.tbbtalent.server.model.CandidateLanguage;
+import org.tbbtalent.server.model.CandidateOccupation;
+import org.tbbtalent.server.model.CandidateShortlistItem;
+import org.tbbtalent.server.model.CandidateSkill;
+import org.tbbtalent.server.model.CandidateStatus;
+import org.tbbtalent.server.model.EducationLevel;
+import org.tbbtalent.server.model.EducationMajor;
+import org.tbbtalent.server.model.Language;
+import org.tbbtalent.server.model.LanguageLevel;
+import org.tbbtalent.server.model.Occupation;
+import org.tbbtalent.server.model.SavedSearch;
+import org.tbbtalent.server.model.SearchType;
+import org.tbbtalent.server.model.ShortlistStatus;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 
-import javax.persistence.criteria.*;
-import java.time.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import io.jsonwebtoken.lang.Collections;
 
 public class CandidateSpecification {
 
@@ -207,62 +236,92 @@ public class CandidateSpecification {
                         conjunction.getExpressions().add(
                                 builder.isTrue(occupation.get("id").in(request.getOccupationIds()))
                         );
-                    } else if (Collections.isEmpty(request.getOccupationIds())) {
-                        candidateJobExperiences = candidateJobExperiences != null ? candidateJobExperiences : candidate.join("candidateJobExperiences", JoinType.LEFT);
-                        candidateSkills = candidateSkills != null ? candidateSkills : candidate.join("candidateSkills", JoinType.LEFT);
-                        candidateEducations = candidateEducations == null ? candidate.join("candidateEducations", JoinType.LEFT) : candidateEducations;
-
-                        String lowerCaseMatchTerm = request.getOrProfileKeyword().toLowerCase();
-                        String[] splittedText = lowerCaseMatchTerm.split("\\s+|,\\s*|\\.\\s*");
-                        List<Predicate> predicates = new ArrayList<>();
-                        for (String s : splittedText) {
-                            String likeMatchTerm = "%" + s + "%";
-                            predicates.add(builder.or(
-                                    builder.like(builder.lower(candidate.get("additionalInfo")), likeMatchTerm),
-                                    builder.like(builder.lower(candidateJobExperiences.get("description")), likeMatchTerm),
-                                    builder.like(builder.lower(candidateJobExperiences.get("role")), likeMatchTerm),
-                                    builder.like(builder.lower(candidateEducations.get("courseName")), likeMatchTerm),
-                                    builder.like(builder.lower(candidateOccupations.get("migrationOccupation")), likeMatchTerm),
-                                    builder.like(builder.lower(occupation.get("name")), likeMatchTerm),
-                                    builder.like(builder.lower(candidateSkills.get("skill")), likeMatchTerm)
-                            ));
-                        }
-                        if (predicates.size() > 1) {
-                            conjunction.getExpressions().add(builder.and(builder.or(predicates.toArray(new Predicate[0]))));
-                        } else {
-                            conjunction.getExpressions().add(builder.and(predicates.toArray(new Predicate[0])));
-                        }
-
                     } else {
-                        String lowerCaseMatchTerm = request.getOrProfileKeyword().toLowerCase();
-                        candidateJobExperiences = candidateJobExperiences != null ? candidateJobExperiences : candidate.join("candidateJobExperiences", JoinType.LEFT);
-                        candidateSkills = candidateSkills != null ? candidateSkills :candidate.join("candidateSkills", JoinType.LEFT);
-                        candidateEducations = candidateEducations == null ? candidate.join("candidateEducations", JoinType.LEFT) : candidateEducations;
+                        candidateJobExperiences = candidateJobExperiences != null ? 
+                                candidateJobExperiences : candidate.join
+                                ("candidateJobExperiences", JoinType.LEFT);
+                        candidateSkills = candidateSkills != null ? 
+                                candidateSkills : 
+                                candidate.join("candidateSkills", JoinType.LEFT);
+                        candidateEducations = candidateEducations == null ? 
+                                candidate.join("candidateEducations", JoinType.LEFT) : 
+                                candidateEducations;
 
-                        String[] splittedText = lowerCaseMatchTerm.split("\\s+|,\\s*|\\.\\s*");
-                        List<Predicate> predicates = new ArrayList<>();
-                        for (String s : splittedText) {
-                            String likeMatchTerm = "%" + s + "%";
-                            predicates.add(builder.or(
-                                    builder.like(builder.lower(candidate.get("additionalInfo")), likeMatchTerm),
-                                    builder.like(builder.lower(candidateJobExperiences.get("description")), likeMatchTerm),
-                                    builder.like(builder.lower(candidateJobExperiences.get("role")), likeMatchTerm),
-                                    builder.like(builder.lower(candidateEducations.get("courseName")), likeMatchTerm),
-                                    builder.like(builder.lower(candidateOccupations.get("migrationOccupation")), likeMatchTerm),
-                                    builder.like(builder.lower(candidateSkills.get("skill")), likeMatchTerm)
-                            ));
+                        String lowerCaseMatchTerm = request.getOrProfileKeyword().toLowerCase();
+                        String[] orText = lowerCaseMatchTerm.split("\\s*,\\s*");
+                        List<Predicate> orPredicates = new ArrayList<>();
+                        
+                        //For each comma separated term
+                        for (String orTerm : orText) {
+
+                            //Extract the space separated words
+                            //Each of these words must appear in a field for a match
+                            String[] words = orTerm.split("\\s+");
+
+                            //We are going to construct the "and" condition for 
+                            //each checked data base field in this array
+                            List<List<Predicate>> fieldAndPredicates = new ArrayList<>();
+                            ArrayList<Predicate> additionalInfoAnds = new ArrayList<>();
+                            fieldAndPredicates.add(additionalInfoAnds);
+                            ArrayList<Predicate> descriptionAnds = new ArrayList<>();
+                            fieldAndPredicates.add(descriptionAnds);
+                            ArrayList<Predicate> roleAnds = new ArrayList<>();
+                            fieldAndPredicates.add(roleAnds);
+                            ArrayList<Predicate> courseNameAnds = new ArrayList<>();
+                            fieldAndPredicates.add(courseNameAnds);
+                            ArrayList<Predicate> migrationOccupationAnds = new ArrayList<>();
+                            fieldAndPredicates.add(migrationOccupationAnds);
+                            ArrayList<Predicate> occupationNameAnds = new ArrayList<>();
+                            fieldAndPredicates.add(occupationNameAnds);
+                            ArrayList<Predicate> skillAnds = new ArrayList<>();
+                            fieldAndPredicates.add(skillAnds);
+                            
+                            for (String word : words) {
+                                //Create each field LIKE word for all words.
+                                String likeMatchTerm = "%" + word + "%";
+                                additionalInfoAnds.add(
+                                        builder.like(builder.lower(
+                                                candidate.get("additionalInfo")), likeMatchTerm));
+                                descriptionAnds.add(
+                                        builder.like(builder.lower(
+                                                candidateJobExperiences.get("description")), likeMatchTerm));
+                                roleAnds.add(
+                                        builder.like(builder.lower(
+                                                candidateJobExperiences.get("role")), likeMatchTerm));
+                                courseNameAnds.add(
+                                        builder.like(builder.lower(
+                                                candidateEducations.get("courseName")), likeMatchTerm));
+                                migrationOccupationAnds.add(
+                                        builder.like(builder.lower(
+                                                candidateOccupations.get("migrationOccupation")), likeMatchTerm));
+                                occupationNameAnds.add(
+                                        builder.like(builder.lower(
+                                                occupation.get("name")), likeMatchTerm));
+                                skillAnds.add(
+                                        builder.like(builder.lower(
+                                                candidateSkills.get("skill")), likeMatchTerm));
+                            }
+                            
+                            //For each field create a predicate that "AND"s 
+                            //together all the field LIKE word predicates.
+                            //Then add that predicate to our list of predicates
+                            //which are going to be OR'd together.
+                            for (List<Predicate> predicates: fieldAndPredicates) {
+                                Predicate andTerm = builder.and(predicates.toArray(new Predicate[0])); 
+                                orPredicates.add(andTerm);
+                            }                            
                         }
-                        if (predicates.size() > 1) {
-                            conjunction.getExpressions().add(builder.or(
-                                    builder.isTrue(occupation.get("id").in(request.getOccupationIds())),
-                                    builder.or(builder.or(predicates.toArray(new Predicate[0])))));
+                        if (Collections.isEmpty(request.getOccupationIds())) {
+                            conjunction.getExpressions().add(builder.and(
+                                    builder.or(orPredicates.toArray(new Predicate[0]))));
                         } else {
-                            conjunction.getExpressions().add(builder.or(
+                            conjunction.getExpressions().add(builder.and(
+                            builder.or(
                                     builder.isTrue(occupation.get("id").in(request.getOccupationIds())),
-                                    builder.or(predicates.toArray(new Predicate[0]))));
+                                    builder.or(orPredicates.toArray(new Predicate[0])))
+                            ));
                         }
                     }
-
                 }
             }
 
