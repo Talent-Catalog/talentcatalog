@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.data.domain.Page;
+import org.tbbtalent.server.model.StatReport;
 import org.tbbtalent.server.model.Translatable;
 
 public class DtoBuilder {
@@ -71,6 +72,18 @@ public class DtoBuilder {
         }
     }
 
+    public Map<String, Object> buildReport(StatReport statReport) {
+        if (statReport != null) {
+            Map<String, Object> result = new HashMap<>();
+            result.put("name", statReport.getName());
+            result.put("chartType", statReport.getChartType());
+            result.put("rows", buildList(statReport.getRows()));
+            return result;
+        } else {
+            return null;
+        }
+    }
+
     public Map<String, Object> build(Object source) {
 
         if (source == null) {
@@ -79,7 +92,7 @@ public class DtoBuilder {
 
         String propertyToTranslate = null;
         String translationContainingTranslation = null;
-        if (source != null && source.getClass().isAnnotationPresent(Translatable.class)) {
+        if (source.getClass().isAnnotationPresent(Translatable.class)) {
             Translatable translatable = source.getClass().getAnnotation(Translatable.class);
             propertyToTranslate = translatable.value();
             translationContainingTranslation = translatable.translation();

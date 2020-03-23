@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.model.DataRow;
+import org.tbbtalent.server.model.Gender;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
 import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
@@ -79,7 +80,21 @@ public interface CandidateService {
 
     void exportToCsv(SearchCandidateRequest request, PrintWriter writer) throws ExportException;
 
-    List<DataRow> getNationalityStats();
+    List<DataRow> getGenderStats();
+
+    List<DataRow> getBirthYearStats(Gender gender);
+
+    List<DataRow> getLanguageStats(Gender gender);
+
+    List<DataRow> getOccupationStats(Gender gender);
+
+    List<DataRow> getMainOccupationStats(Gender gender);
+
+    List<DataRow> getSpokenLanguageLevelStats(Gender gender, String language);
+
+    List<DataRow> getMaxEducationStats(Gender gender);
+
+    List<DataRow> getNationalityStats(Gender gender);
 
     Resource generateCv(Candidate candidate);
 }

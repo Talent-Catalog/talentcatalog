@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/index';
+import {Observable} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
-import {DataRow} from "../model/data-row";
+import {StatReport} from "../model/stat-report";
 
 @Injectable({providedIn: 'root'})
 export class CandidateStatService {
@@ -11,10 +11,8 @@ export class CandidateStatService {
 
   constructor(private http:HttpClient) {}
 
-  getNationalityData(): Observable<DataRow[]> {
-    return this.http.get<DataRow[]>(`${this.apiUrl}/nationality`);
+  getAllStats(): Observable<StatReport[]> {
+    return this.http.get<StatReport[]>(`${this.apiUrl}/all`);
   }
-
-
 
 }

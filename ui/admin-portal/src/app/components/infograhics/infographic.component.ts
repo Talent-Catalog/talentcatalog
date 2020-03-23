@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {CandidateStatService} from "../../services/candidate-stat.service";
-import {DataRow} from "../../model/data-row";
+import {StatReport} from "../../model/stat-report";
 
 @Component({
   selector: 'app-infographic',
@@ -11,24 +11,55 @@ export class InfographicComponent implements OnInit {
 
   loading: boolean = false;
   error: any;
-
-
-  nationalityData: DataRow[];
+  statReports: StatReport[];
 
   constructor(private statService: CandidateStatService) {
   }
 
   ngOnInit() {
     this.loading = true;
-    this.statService.getNationalityData().subscribe(result => {
+
+    this.statService.getAllStats().subscribe(result => {
         this.loading = false;
-        this.nationalityData = result;
+        this.statReports = result;
       },
       error => {
         this.error = error;
         this.loading = false;
       }
     )
+  }
+
+  exportStats() {
+      let options = {type: 'text/csv;charset=utf-8;'};
+      let filename = 'stats.csv';
+
+      let csv: string[] = [];
+      for (let statReport of this.statReports) {
+        csv.push(statReport.name + '\n');
+        for (let row of statReport.rows) {
+          csv.push('"' + row.label + '","' + row.value.toString() + '"\n')
+        }
+      }
+
+    let blob = new Blob(csv, options);
+
+    if (navigator.msSaveBlob) {
+      // IE 10+
+      navigator.msSaveBlob(blob, filename);
+    } else {
+      let link = document.createElement('a');
+      // Browsers that support HTML5 download attribute
+      if (link.download !== undefined) {
+        let url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    }
   }
 
 }

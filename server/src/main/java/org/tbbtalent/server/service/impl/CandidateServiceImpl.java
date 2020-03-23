@@ -3,6 +3,7 @@ package org.tbbtalent.server.service.impl;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.rmi.server.ExportException;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -38,6 +39,7 @@ import org.tbbtalent.server.model.CandidateStatus;
 import org.tbbtalent.server.model.Country;
 import org.tbbtalent.server.model.DataRow;
 import org.tbbtalent.server.model.EducationLevel;
+import org.tbbtalent.server.model.Gender;
 import org.tbbtalent.server.model.Nationality;
 import org.tbbtalent.server.model.Role;
 import org.tbbtalent.server.model.SavedSearch;
@@ -604,10 +606,68 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
+    private static String genderStr(Gender gender) {
+        return gender == null ? "%" : gender.toString();
+    }
+
+    private static List<DataRow> toRows(List<Object[]> objects) {
+        List<DataRow> dataRows = new ArrayList<>(objects.size());
+        for (Object[] row: objects) {
+            String label = row[0] == null ? "undefined" : row[0].toString(); 
+            DataRow dataRow = new DataRow(label, (BigInteger)row[1]);
+            dataRows.add(dataRow);
+        }
+        return dataRows;
+    }
+
     @Override
-    public List<DataRow> getNationalityStats() {
-        List<DataRow> nationalityDateRows = candidateRepository.countByNationalityOrderByCount();
-        return limitRows(nationalityDateRows, 15);
+    public List<DataRow> getGenderStats() {
+        return toRows(candidateRepository.countByGenderOrderByCount()); 
+    }
+
+    @Override
+    public List<DataRow> getBirthYearStats(Gender gender) {
+        return toRows(candidateRepository.
+                countByBirthYearOrderByYear(genderStr(gender))); 
+    }
+
+    @Override
+    public List<DataRow> getNationalityStats(Gender gender) {
+        List<DataRow> rows = toRows(candidateRepository.
+                countByNationalityOrderByCount(genderStr(gender))); 
+        return limitRows(rows, 15);
+    }
+    
+    @Override
+    public List<DataRow> getMaxEducationStats(Gender gender) {
+        return toRows(candidateRepository.
+                countByMaxEducationLevelOrderByCount(genderStr(gender)));
+    }
+    
+    @Override
+    public List<DataRow> getLanguageStats(Gender gender) {
+        List<DataRow> rows = toRows(candidateRepository.
+                countByLanguageOrderByCount(genderStr(gender)));
+        return limitRows(rows, 15);
+    }
+    
+    @Override
+    public List<DataRow> getOccupationStats(Gender gender) {
+        return toRows(candidateRepository.
+                countByOccupationOrderByCount(genderStr(gender)));
+    }
+    
+    @Override
+    public List<DataRow> getMainOccupationStats(Gender gender) {
+        List<DataRow> rows = toRows(candidateRepository.
+                countByMainOccupationOrderByCount(genderStr(gender)));
+        return limitRows(rows, 15);
+    }
+    
+    @Override
+    public List<DataRow> getSpokenLanguageLevelStats(Gender gender, String language) {
+        return toRows(candidateRepository.
+                countBySpokenLanguageLevelByCount(genderStr(gender), language));
     }
 
     @Override

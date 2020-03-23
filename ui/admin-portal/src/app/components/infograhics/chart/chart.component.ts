@@ -11,10 +11,11 @@ import {DataRow} from "../../../model/data-row";
 export class ChartComponent implements OnInit {
 
   @Input() chartData : DataRow[];
+  @Input() chartType: ChartType = 'doughnut';
+  @Input() chartLegend: boolean;
 
   chartLabels: Label[];
   chartMultiData: MultiDataSet;
-  doughnutChartType: ChartType = 'doughnut';
 
   constructor() { }
 

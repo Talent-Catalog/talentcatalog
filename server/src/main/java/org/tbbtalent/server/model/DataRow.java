@@ -1,12 +1,13 @@
 package org.tbbtalent.server.model;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 public class DataRow {
     String label;
     BigDecimal value;
 
-    public DataRow(String label, Integer value) {
+    public DataRow(String label, BigInteger value) {
         this.label = label;
         this.value = new BigDecimal(value);
     }
