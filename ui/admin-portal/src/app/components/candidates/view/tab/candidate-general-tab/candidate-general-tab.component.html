@@ -6,7 +6,7 @@
   [candidate]="candidate"
   [editable]="editable">
 </app-view-candidate-language>
-<app-view-candidate-account
+<app-view-candidate-account *ngIf="candidate.user.firstName"
   [candidate]="candidate"
   [editable]="editable">
 </app-view-candidate-account>
