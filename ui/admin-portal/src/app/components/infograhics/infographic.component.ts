@@ -40,6 +40,7 @@ export class InfographicComponent implements OnInit {
         for (let row of statReport.rows) {
           csv.push('"' + row.label + '","' + row.value.toString() + '"\n')
         }
+        csv.push('\n');
       }
 
     let blob = new Blob(csv, options);
