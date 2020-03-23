@@ -57,28 +57,43 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/admin/auth").permitAll()
                 .antMatchers("/api/admin/auth/**").permitAll()
 
-                // Allow all searches/find
-                .antMatchers(HttpMethod.POST, "/api/admin/**/search").hasAnyRole("INTERN", "LIMITED", "SEMILIMITED", "SOURCEPARTNERADMIN", "ADMIN")
-                .antMatchers(HttpMethod.POST, "/api/admin/**/find").hasAnyRole("INTERN", "LIMITED", "SEMILIMITED", "SOURCEPARTNERADMIN","ADMIN")
-
-                // Allow csv export
-                .antMatchers(HttpMethod.POST, "/api/admin/candidate/export/csv").hasAnyRole("INTERN", "LIMITED", "SEMILIMITED", "SOURCEPARNTERADMIN", "ADMIN")
-
-                // GET end points
-                .antMatchers(HttpMethod.GET, "/api/admin/**/*").hasAnyRole("INTERN", "LIMITED", "SEMILIMITED", "SOURCEPARTNERADMIN", "ADMIN")
-
-                // ADMIN ONLY
-
-                // Migrate database
+                // ADMIN ONLY RESTRICTIONS
+                    // Migrate database
                 .antMatchers("/api/admin/system/migrate").hasAnyRole("ADMIN")
-                //DELETE end points
+                    // ALL DELETE end points
                 .antMatchers(HttpMethod.DELETE, "/api/admin/**/*").hasRole("ADMIN")
-                //UPDATE/EDIT end points
-                .antMatchers(HttpMethod.PUT, "/api/admin/**/*").hasRole("ADMIN")
-                //POST end points that aren't search related
-                .antMatchers(HttpMethod.POST, "/api/admin/**/*").hasRole("ADMIN")
-                //Access settings
-                .antMatchers(HttpMethod.GET, "/settings").hasRole("ADMIN")
+                    // UPDATE/EDIT general settings
+                .antMatchers(HttpMethod.PUT,
+                        "/api/admin/user/*",
+                        "/api/admin/country/*",
+                        "/api/admin/nationality/*",
+                        "/api/admin/language/*",
+                        "/api/admin/language-level/*",
+                        "/api/admin/occupation/*",
+                        "/api/admin/education-level/*",
+                        "/api/admin/education-major/*",
+                        "/api/admin/translation/*",
+                        "/api/admin/translation/file/*").hasRole("ADMIN")
+                    // CREATE general settings
+                .antMatchers(HttpMethod.POST,
+                        "/api/admin/user",
+                        "/api/admin/country",
+                        "/api/admin/nationality",
+                        "/api/admin/language",
+                        "/api/admin/language-level",
+                        "/api/admin/occupation",
+                        "/api/admin/education-level",
+                        "/api/admin/education-major").hasRole("ADMIN")
+
+                // ALL OTHER END POINTS
+                    // POST
+                .antMatchers(HttpMethod.POST, "/api/admin/**").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED")
+
+                    // PUT
+                .antMatchers(HttpMethod.PUT, "/api/admin/**").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED")
+
+                    // GET
+                .antMatchers(HttpMethod.GET, "/api/admin/**").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED")
 
                 .and()
             .csrf().disable()
