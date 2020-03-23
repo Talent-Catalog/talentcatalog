@@ -31,8 +31,9 @@ public class CandidateStatAdminApi {
 
         List<StatReport> statReports = new ArrayList<>();
 
+        chartType = "bar";
         statReports.add(new StatReport("Gender",
-                this.candidateService.getGenderStats())); 
+                this.candidateService.getGenderStats(), chartType)); 
 
         title = "Birth years";
         chartType = "bar";
