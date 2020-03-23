@@ -45,8 +45,17 @@ public class CandidateAdminApi {
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchCandidateRequest request) {
         Page<Candidate> candidates = this.candidateService.searchCandidates(request);
-        Map<String, Object> map = candidateBaseDto().buildPage(candidates);
-        return map;
+        User user = userContext.getLoggedInUser();
+        if (user.getRole() == Role.admin || user.getRole() == Role.sourcepartneradmin) {
+            Map<String, Object> map = candidateBaseDto().buildPage(candidates);
+            return map;
+        } else if (user.getRole() == Role.semilimited){
+            Map<String, Object> map = candidateSemiLimitedDto().buildPage(candidates);
+            return map;
+        } else {
+            Map<String, Object> map = candidateLimitedDto().buildPage(candidates);
+            return map;
+        }
     }
 
     @PostMapping("find")
@@ -63,9 +72,9 @@ public class CandidateAdminApi {
         if (user.getRole() == Role.admin || user.getRole() == Role.sourcepartneradmin) {
             return candidateDto().build(candidate);
         } else if (user.getRole() == Role.semilimited){
-            return candidateDtoSemiLimited().build(candidate);
+            return candidateSemiLimitedDto().build(candidate);
         } else {
-            return candidateDtoLimited().build(candidate);
+            return candidateLimitedDto().build(candidate);
         }
     }
 
@@ -163,7 +172,7 @@ public class CandidateAdminApi {
                 ;
     }
 
-    private DtoBuilder candidateDtoSemiLimited() {
+    private DtoBuilder candidateSemiLimitedDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("status")
@@ -178,13 +187,13 @@ public class CandidateAdminApi {
                 .add("folderlink")
                 .add("sflink")
                 .add("country", countryDto())
-                .add("user",userDtoSemiLimited())
+                .add("user",userSemiLimitedDto())
                 .add("nationality", nationalityDto())
                 .add("candidateShortlistItems", shortlistDto())
                 ;
     }
 
-    private DtoBuilder candidateDtoLimited() {
+    private DtoBuilder candidateLimitedDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("status")
@@ -196,7 +205,7 @@ public class CandidateAdminApi {
                 .add("candidateMessage")
                 .add("folderlink")
                 .add("sflink")
-                .add("user",userDtoSemiLimited())
+                .add("user",userSemiLimitedDto())
                 .add("candidateShortlistItems", shortlistDto())
                 ;
     }
@@ -210,7 +219,7 @@ public class CandidateAdminApi {
                 ;
     }
 
-    private DtoBuilder userDtoSemiLimited() {
+    private DtoBuilder userSemiLimitedDto() {
         return new DtoBuilder()
                 .add("id")
                 ;

@@ -379,23 +379,23 @@
               <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
               Candidate #
             </th>
-            <th (click)="toggleSort('user.firstName')">
+            <th *ngIf="loggedInUser && (loggedInUser.role !== 'semilimited' && loggedInUser.role !== 'limited')" (click)="toggleSort('user.firstName')">
               <app-sorted-by [column]="'user.firstName'" [sortColumn]="sortField"
                              [sortDirection]="sortDirection"></app-sorted-by>
               First Name
             </th>
-            <th (click)="toggleSort('user.lastName')">
+            <th *ngIf="loggedInUser && (loggedInUser.role !== 'semilimited' && loggedInUser.role !== 'limited')" (click)="toggleSort('user.lastName')">
               <app-sorted-by [column]="'user.lastName'" [sortColumn]="sortField"
                              [sortDirection]="sortDirection"></app-sorted-by>
               Last Name
             </th>
             <th *ngIf="savedSearch">Reviewed</th>
-            <th (click)="toggleSort('nationality.name')">
+            <th *ngIf="loggedInUser && loggedInUser.role !== 'limited'" (click)="toggleSort('nationality.name')">
               <app-sorted-by [column]="'nationality.name'" [sortColumn]="sortField"
                              [sortDirection]="sortDirection"></app-sorted-by>
               Nationality
             </th>
-            <th (click)="toggleSort('country.name')">
+            <th *ngIf="loggedInUser && loggedInUser.role !== 'limited'" (click)="toggleSort('country.name')">
               <app-sorted-by [column]="'country.name'" [sortColumn]="sortField"
                              [sortDirection]="sortDirection"></app-sorted-by>
               Location
@@ -417,16 +417,16 @@
                 {{candidate.candidateNumber}}
               </a>
             </td>
-            <td>{{candidate.user.firstName}}</td>
-            <td>{{candidate.user.lastName}}</td>
+            <td *ngIf="loggedInUser && (loggedInUser.role !== 'semilimited' && loggedInUser.role !== 'limited')">{{candidate.user.firstName}}</td>
+            <td *ngIf="loggedInUser && (loggedInUser.role !== 'semilimited' && loggedInUser.role !== 'limited')">{{candidate.user.lastName}}</td>
             <td *ngIf="savedSearch">
               <app-candidate-shortlist-item [candidateId]="candidate.id"
                                             [candidateShortlistItems]="candidate.candidateShortlistItems"
                                             [savedSearch]="savedSearch"
                                             (shortlistItemSaved)="handleCandidateShortlistSaved($event)"></app-candidate-shortlist-item>
             </td>
-            <td>{{candidate.nationality?.name}}</td>
-            <td>{{candidate.country?.name}}</td>
+            <td *ngIf="loggedInUser && loggedInUser.role !== 'limited'">{{candidate.nationality?.name}}</td>
+            <td *ngIf="loggedInUser && loggedInUser.role !== 'limited'">{{candidate.country?.name}}</td>
             <td>{{candidate.gender | titlecase}}</td>
             <td>
               <div ngbDropdown placement="bottom-right" (click)="$event.stopPropagation();">

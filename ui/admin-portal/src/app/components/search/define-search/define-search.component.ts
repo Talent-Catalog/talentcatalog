@@ -41,6 +41,8 @@ import {LocalStorageService} from "angular-2-local-storage";
 import {UpdateSearchComponent} from "../update/update-search.component";
 import {SavedSearch, SavedSearchType} from "../../../model/saved-search";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
+import {User} from "../../../model/user";
+import {AuthService} from "../../../services/auth.service";
 
 
 @Component({
@@ -106,6 +108,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
   selectedCandidate: Candidate;
   englishLanguageModel: LanguageLevelFormControlModel;
   otherLanguageModel: LanguageLevelFormControlModel;
+  loggedInUser: User;
 
   constructor(private http: HttpClient, private fb: FormBuilder,
               private candidateService: CandidateService,
@@ -119,7 +122,8 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
               private languageLevelService: LanguageLevelService,
               private modalService: NgbModal,
               private localStorageService: LocalStorageService,
-              private route: ActivatedRoute) {
+              private route: ActivatedRoute,
+              private authService: AuthService) {
     /* SET UP FORM */
     this.searchForm = this.fb.group({
       savedSearchId: [null],
@@ -167,6 +171,8 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     this.selectedCandidate = null;
     this.pageNumber = 1;
     this.pageSize = 20;
+    this.loggedInUser = this.authService.getLoggedInUser();
+    console.log(this.loggedInUser);
 
     forkJoin({
       'nationalities': this.nationalityService.listNationalities(),
