@@ -104,7 +104,7 @@ export class HeaderComponent implements OnInit {
     $event.preventDefault();
     input.value = '';
     console.log('going to', $event.item);
-    this.router.navigate(['candidates',  $event.item.id]);
+    this.router.navigate(['candidates',  $event.item.candidateNumber]);
 
   }
 
