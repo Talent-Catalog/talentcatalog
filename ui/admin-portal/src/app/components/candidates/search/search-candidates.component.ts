@@ -1,9 +1,4 @@
-import {
-  Component,
-  OnDestroy,
-  OnInit,
-  ViewChild
-} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 
 import {Candidate} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
@@ -27,6 +22,8 @@ import {
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {IDropdownSettings} from "ng-multiselect-dropdown";
 import {ListItem} from "ng-multiselect-dropdown/multiselect.model";
+import {User} from "../../../model/user";
+import {AuthService} from "../../../services/auth.service";
 
 @Component({
   selector: 'app-search-candidates',
@@ -66,6 +63,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   };
 
   selectedCandidate: Candidate;
+  loggedInUser: User;
   private timestamp: number;
   private reviewStatusFilter: string[] = defaultReviewStatusFilter;
 
@@ -76,7 +74,8 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
               private savedSearchService: SavedSearchService,
               private modalService: NgbModal,
               private route: ActivatedRoute,
-              private savedSearchResultsCacheService: SavedSearchResultsCacheService
+              private savedSearchResultsCacheService: SavedSearchResultsCacheService,
+              private authService: AuthService
 
   ) {
     this.searchForm = this.fb.group({
@@ -86,6 +85,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.selectedCandidate = null;
+    this.loggedInUser = this.authService.getLoggedInUser();
 
     this.statuses = [];
     for (let key in ReviewedStatus) {

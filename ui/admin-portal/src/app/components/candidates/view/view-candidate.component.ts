@@ -6,6 +6,8 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {DeleteCandidateComponent} from './delete/delete-candidate.component';
 import {EditCandidateStatusComponent} from "./status/edit-candidate-status.component";
 import {Title} from "@angular/platform-browser";
+import {AuthService} from "../../../services/auth.service";
+import {User} from "../../../model/user";
 
 @Component({
   selector: 'app-view-candidate',
@@ -20,12 +22,14 @@ export class ViewCandidateComponent implements OnInit {
   candidate: Candidate;
   mainColWidth=8;
   sidePanelColWidth=4;
+  loggedInUser: User;
 
   constructor(private candidateService: CandidateService,
               private route: ActivatedRoute,
               private router: Router,
               private modalService: NgbModal,
-              private titleService: Title) { }
+              private titleService: Title,
+              private authService: AuthService) { }
 
   ngOnInit() {
     this.loadingError = false;
@@ -48,6 +52,8 @@ export class ViewCandidateComponent implements OnInit {
         this.loading = false;
       });
     });
+    this.loggedInUser = this.authService.getLoggedInUser();
+    console.log(this.loggedInUser);
   }
 
   deleteCandidate() {
@@ -74,9 +80,12 @@ export class ViewCandidateComponent implements OnInit {
 
   setCandidate(value: Candidate) {
     this.candidate = value;
-
-    this.titleService.setTitle(this.candidate.user.firstName + ' '
-      + this.candidate.user.lastName + ' ' + this.candidate.candidateNumber);
+    if(this.candidate.user.firstName && this.candidate.user.lastName){
+      this.titleService.setTitle(this.candidate.user.firstName + ' '
+        + this.candidate.user.lastName + ' ' + this.candidate.candidateNumber);
+    } else {
+      this.titleService.setTitle(this.candidate.candidateNumber)
+    }
   }
 
   downloadCV() {

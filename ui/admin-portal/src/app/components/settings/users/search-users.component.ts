@@ -11,8 +11,10 @@ import {CreateUserComponent} from "./create/create-user.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {EditUserComponent} from "./edit/edit-user.component";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
+import {AuthService} from '../../../services/auth.service';
 import {ChangePasswordComponent} from "../../account/change-password/change-password.component";
 import {ChangeUsernameComponent} from "../../account/change-username/change-username.component";
+
 
 @Component({
   selector: 'app-search-users',
@@ -27,22 +29,25 @@ export class SearchUsersComponent implements OnInit {
   pageNumber: number;
   pageSize: number;
   results: SearchResults<User>;
+  loggedInUser: User;
 
   constructor(private fb: FormBuilder,
               private userService: UserService,
-              private modalService: NgbModal) { }
+              private modalService: NgbModal,
+              private authService: AuthService) { }
 
   ngOnInit() {
 
   /* SET UP FORM */
     this.searchForm = this.fb.group({
       keyword: [''],
-      role: ['admin'],
+      role: [['intern', 'limited', 'semilimited', 'sourcepartneradmin', 'admin']],
       status: ['active']
     });
     this.pageNumber = 1;
     this.pageSize = 50;
 
+    this.getLoggedInUser();
     this.onChanges();
   }
 
@@ -56,6 +61,12 @@ export class SearchUsersComponent implements OnInit {
       .subscribe(res => {
         this.search();
       });
+    this.search();
+  }
+
+  getLoggedInUser(){
+    /* GET LOGGED IN USER ROLE FROM LOCAL STORAGE */
+    this.loggedInUser = this.authService.getLoggedInUser();
     this.search();
   }
 
@@ -92,7 +103,14 @@ export class SearchUsersComponent implements OnInit {
     editUserModal.componentInstance.userId = user.id;
 
     editUserModal.result
-      .then((user) => this.search())
+      .then((user) => {
+        this.search()
+        // UPDATES VIEW IF LOGGED IN ADMIN USER CHANGES ROLE THEMSELVES
+        if(this.loggedInUser.id === user.id){
+          this.authService.setNewLoggedInUser(user);
+          this.getLoggedInUser();
+        }
+      })
       .catch(() => { /* Isn't possible */ });
   }
 
@@ -122,7 +140,6 @@ export class SearchUsersComponent implements OnInit {
       .catch(() => { /* Isn't possible */ });
 
   }
-
   updatePassword(user: User) {
     const updatePasswordModal = this.modalService.open(ChangePasswordComponent, {
       centered: true,

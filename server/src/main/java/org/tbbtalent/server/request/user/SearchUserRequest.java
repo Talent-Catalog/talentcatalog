@@ -4,10 +4,12 @@ import org.tbbtalent.server.model.Role;
 import org.tbbtalent.server.model.Status;
 import org.tbbtalent.server.request.SearchRequest;
 
+import java.util.List;
+
 public class SearchUserRequest extends SearchRequest {
 
     private String keyword;
-    private Role role;
+    private List<Role> role;
     private Status status;
 
 
@@ -19,11 +21,9 @@ public class SearchUserRequest extends SearchRequest {
         this.keyword = keyword;
     }
 
-    public Role getRole() {
-        return role;
-    }
+    public List<Role> getRole() { return role; }
 
-    public void setRole(Role role) {
+    public void setRole(List<Role> role) {
         this.role = role;
     }
 

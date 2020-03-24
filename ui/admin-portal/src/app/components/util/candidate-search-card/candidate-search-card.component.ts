@@ -1,5 +1,6 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {Candidate} from "../../../model/candidate";
+import {User} from "../../../model/user";
 
 @Component({
   selector: 'app-candidate-search-card',
@@ -9,6 +10,7 @@ import {Candidate} from "../../../model/candidate";
 export class CandidateSearchCardComponent implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
+  @Input() loggedInUser: User;
 
   @Output() onClose = new EventEmitter();
 

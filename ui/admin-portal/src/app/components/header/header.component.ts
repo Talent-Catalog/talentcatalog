@@ -5,6 +5,7 @@ import {CandidateService} from "../../services/candidate.service";
 import {Candidate} from "../../model/candidate";
 import {Observable, of} from "rxjs";
 import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from "rxjs/operators";
+import {User} from "../../model/user";
 
 @Component({
   selector: 'app-header',
@@ -20,6 +21,7 @@ export class HeaderComponent implements OnInit {
   searchFailed: boolean;
   searching: boolean;
   error;
+  loggedInUser: User;
 
 
   constructor(private authService: AuthService,
@@ -87,7 +89,8 @@ export class HeaderComponent implements OnInit {
         ),
         tap(() => this.searching = false)
       );
-
+    this.loggedInUser = this.authService.getLoggedInUser();
+    console.log(this.loggedInUser.role);
   }
 
   renderCandidateRow(candidate: Candidate) {

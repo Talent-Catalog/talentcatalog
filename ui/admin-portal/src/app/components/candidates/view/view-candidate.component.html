@@ -9,7 +9,8 @@
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a [routerLink]="['/candidates']">Candidates</a></li>
-      <li class="breadcrumb-item active" aria-current="page">{{candidate.user.firstName}}</li>
+      <li *ngIf="candidate.user.firstName" class="breadcrumb-item active" aria-current="page">{{candidate.user.firstName}}</li>
+      <li *ngIf="!candidate.user.firstName" class="breadcrumb-item active" aria-current="page">{{candidate.candidateNumber}}</li>
     </ol>
   </nav>
 
@@ -56,7 +57,8 @@
           <ng-template ngbTabContent>
             <app-candidate-general-tab
               [candidate]="candidate"
-              [editable]="true">
+              [editable]="true"
+              [loggedInUser]="loggedInUser">
             </app-candidate-general-tab>
           </ng-template>
         </ngb-tab>
@@ -88,7 +90,8 @@
           <ng-template ngbTabContent>
             <app-candidate-additional-info-tab
               [candidate]="candidate"
-              [editable]="true">
+              [editable]="true"
+              [loggedInUser]="loggedInUser">
               >
             </app-candidate-additional-info-tab>
           </ng-template>

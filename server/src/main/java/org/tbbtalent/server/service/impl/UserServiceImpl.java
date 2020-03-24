@@ -107,7 +107,7 @@ public class UserServiceImpl implements UserService {
                 request.getFirstName(),
                 request.getLastName(),
                 request.getEmail(),
-                Role.admin);
+                request.getRole());
 
         /* Validate the password before account creation */
         String passwordEncrypted = passwordHelper.validateAndEncodePassword(request.getPassword());
@@ -143,6 +143,7 @@ public class UserServiceImpl implements UserService {
         user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
         user.setStatus(request.getStatus());
+        user.setRole(request.getRole());
 
         return userRepository.save(user);
     }
@@ -250,6 +251,11 @@ public class UserServiceImpl implements UserService {
 
         /* Check that the old passwords match */
         User user = userContext.getLoggedInUser();
+        // TODO extend PasswordEncoder to expose BCrypts `checkpw` method (to compare plaintext and hashed passwords)
+//        String oldPasswordEnc = passwordHelper.encodePassword(request.getOldPassword());
+//        if (!passwordHelper.isValidPassword(user.getPasswordEnc(), oldPasswordEnc)) {
+//            throw new InvalidCredentialsException("Invalid credentials for this user");
+//        }
 
         /* Change the password */
         String passwordEnc = passwordHelper.validateAndEncodePassword(request.getPassword());

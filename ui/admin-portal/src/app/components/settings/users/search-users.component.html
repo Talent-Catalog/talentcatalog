@@ -1,8 +1,8 @@
 <div>
   <div class="section">
-    <div>
+    <div class="pull-right">
       <div class="pull-right">
-        <button class="btn btn-primary" (click)="addUser()">Add</button>
+        <button *ngIf="loggedInUser.role === 'admin'" class="btn btn-primary" (click)="addUser()">Add</button>
       </div>
     </div>
     <div class="alert alert-danger" *ngIf="error">
@@ -49,6 +49,7 @@
       <th>First Name</th>
       <th>Last Name</th>
       <th>Email</th>
+      <th>Role</th>
       <th>Status</th>
       <th></th>
     </tr>
@@ -60,9 +61,10 @@
       <td>{{user.firstName}}</td>
       <td>{{user.lastName}}</td>
       <td>{{user.email}}</td>
+      <td>{{user.role}}</td>
       <td>{{user.status}}</td>
       <td>
-        <div ngbDropdown placement="bottom-right" (click)="$event.stopPropagation();" container="body">
+        <div *ngIf="loggedInUser.role === 'admin'" ngbDropdown placement="bottom-right" (click)="$event.stopPropagation();" container="body">
           <button class="btn btn-xs hide-after" ngbDropdownToggle>
             <i class="fas fa-ellipsis-h"></i>
           </button>

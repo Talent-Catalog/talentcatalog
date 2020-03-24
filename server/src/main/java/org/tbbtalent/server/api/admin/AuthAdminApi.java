@@ -6,15 +6,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tbbtalent.server.exception.*;
+import org.tbbtalent.server.exception.InvalidCredentialsException;
+import org.tbbtalent.server.exception.InvalidPasswordFormatException;
+import org.tbbtalent.server.exception.PasswordExpiredException;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.response.JwtAuthenticationResponse;
-import org.tbbtalent.server.service.UserService;
 import org.tbbtalent.server.service.UserService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 import javax.security.auth.login.AccountLockedException;
-import javax.validation.Valid;
 import java.util.Map;
 
 @RestController()
@@ -56,6 +56,7 @@ public class AuthAdminApi {
                 .add("id")
                 .add("username")
                 .add("email")
+                .add("role")
                 ;
     }
 }

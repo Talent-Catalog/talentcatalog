@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -53,10 +54,50 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/portal/language/system/**").permitAll()
                 .antMatchers("/api/portal/language/translations/**").permitAll()
                 .antMatchers("/api/portal/**").hasAnyRole("USER")
-                .antMatchers("/api/admin/auth").permitAll  ()
+                .antMatchers("/api/admin/auth").permitAll()
                 .antMatchers("/api/admin/auth/**").permitAll()
+
+                // ADMIN ONLY RESTRICTIONS
+                    // Migrate database
                 .antMatchers("/api/admin/system/migrate").hasAnyRole("ADMIN")
-                .antMatchers("/api/admin/**").hasAnyRole("ADMIN")
+                    // ALL DELETE end points
+                .antMatchers(HttpMethod.DELETE, "/api/admin/**/*").hasRole("ADMIN")
+                    // UPDATE/EDIT general settings
+                .antMatchers(HttpMethod.PUT,
+                        "/api/admin/user/*",
+                        "/api/admin/country/*",
+                        "/api/admin/nationality/*",
+                        "/api/admin/language/*",
+                        "/api/admin/language-level/*",
+                        "/api/admin/occupation/*",
+                        "/api/admin/education-level/*",
+                        "/api/admin/education-major/*",
+                        "/api/admin/translation/*",
+                        "/api/admin/translation/file/*").hasRole("ADMIN")
+                    // CREATE general settings
+                .antMatchers(HttpMethod.POST,
+                        "/api/admin/user",
+                        "/api/admin/country",
+                        "/api/admin/nationality",
+                        "/api/admin/language",
+                        "/api/admin/language-level",
+                        "/api/admin/occupation",
+                        "/api/admin/education-level",
+                        "/api/admin/education-major").hasRole("ADMIN")
+
+                // ADMIN/SOURCE PARTNER ADMIN ONLY - see candidate file attachments
+                .antMatchers(HttpMethod.POST, "/api/admin/candidate-attachment/search").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN")
+
+                // ALL OTHER END POINTS
+                    // POST
+                .antMatchers(HttpMethod.POST, "/api/admin/**").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED")
+
+                    // PUT
+                .antMatchers(HttpMethod.PUT, "/api/admin/**").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED")
+
+                    // GET
+                .antMatchers(HttpMethod.GET, "/api/admin/**").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED")
+
                 .and()
             .csrf().disable()
             .requiresChannel().requestMatchers( r -> r.getHeader("X-Forwarded-Proto") != null).requiresSecure()

@@ -22,6 +22,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.Candidate;
+import org.tbbtalent.server.model.Role;
+import org.tbbtalent.server.model.User;
+import org.tbbtalent.server.request.candidate.*;
+import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
 import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tbbtalent.server.request.candidate.CandidatePhoneSearchRequest;
@@ -34,15 +38,24 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tbbtalent.server.service.CandidateService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
+import java.rmi.server.ExportException;
+import java.util.Map;
+
 @RestController()
 @RequestMapping("/api/admin/candidate")
 public class CandidateAdminApi {
 
     private final CandidateService candidateService;
+    private final UserContext userContext;
 
     @Autowired
-    public CandidateAdminApi(CandidateService candidateService) {
+    public CandidateAdminApi(CandidateService candidateService,
+                             UserContext userContext) {
         this.candidateService = candidateService;
+        this.userContext = userContext;
     }
 
     @PostMapping("runsavedsearch")
@@ -55,8 +68,17 @@ public class CandidateAdminApi {
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchCandidateRequest request) {
         Page<Candidate> candidates = this.candidateService.searchCandidates(request);
-        Map<String, Object> map = candidateBaseDto().buildPage(candidates);
-        return map;
+        User user = userContext.getLoggedInUser();
+        if (user.getRole() == Role.admin || user.getRole() == Role.sourcepartneradmin) {
+            Map<String, Object> map = candidateBaseDto().buildPage(candidates);
+            return map;
+        } else if (user.getRole() == Role.semilimited){
+            Map<String, Object> map = candidateSemiLimitedDto().buildPage(candidates);
+            return map;
+        } else {
+            Map<String, Object> map = candidateLimitedDto().buildPage(candidates);
+            return map;
+        }
     }
 
     @PostMapping("findbyemail")
@@ -89,7 +111,14 @@ public class CandidateAdminApi {
     @GetMapping("{id}")
     public Map<String, Object> get(@PathVariable("id") long id) {
         Candidate candidate = this.candidateService.getCandidate(id);
-        return candidateDto().build(candidate);
+        User user = userContext.getLoggedInUser();
+        if (user.getRole() == Role.admin || user.getRole() == Role.sourcepartneradmin) {
+            return candidateDto().build(candidate);
+        } else if (user.getRole() == Role.semilimited){
+            return candidateSemiLimitedDto().build(candidate);
+        } else {
+            return candidateLimitedDto().build(candidate);
+        }
     }
     @PostMapping
     public Map<String, Object> create(@RequestBody CreateCandidateRequest request) throws UsernameTakenException {
@@ -187,12 +216,56 @@ public class CandidateAdminApi {
                 ;
     }
 
+    private DtoBuilder candidateSemiLimitedDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("status")
+                .add("candidateNumber")
+                .add("gender")
+                .add("dob")
+                .add("city")
+                .add("address1")
+                .add("yearOfArrival")
+                .add("additionalInfo")
+                .add("candidateMessage")
+                .add("folderlink")
+                .add("sflink")
+                .add("country", countryDto())
+                .add("user",userSemiLimitedDto())
+                .add("nationality", nationalityDto())
+                .add("candidateShortlistItems", shortlistDto())
+                ;
+    }
+
+    private DtoBuilder candidateLimitedDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("status")
+                .add("candidateNumber")
+                .add("gender")
+                .add("dob")
+                .add("yearOfArrival")
+                .add("additionalInfo")
+                .add("candidateMessage")
+                .add("folderlink")
+                .add("sflink")
+                .add("user",userSemiLimitedDto())
+                .add("candidateShortlistItems", shortlistDto())
+                ;
+    }
+
     private DtoBuilder userDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("firstName")
                 .add("lastName")
                 .add("email")
+                ;
+    }
+
+    private DtoBuilder userSemiLimitedDto() {
+        return new DtoBuilder()
+                .add("id")
                 ;
     }
 

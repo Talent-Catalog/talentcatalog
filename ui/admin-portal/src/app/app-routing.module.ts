@@ -9,6 +9,7 @@ import {HomeComponent} from "./components/candidates/home.component";
 import {InfographicComponent} from "./components/infograhics/infographic.component";
 import {DefineSearchComponent} from "./components/search/define-search/define-search.component";
 import {NotFoundComponent} from "./not-found/not-found.component";
+import {RoleGuardService} from "./services/role-guard.service";
 
 /*
 Urls:
@@ -70,6 +71,10 @@ const routes: Routes = [
       },
       {
         path: 'settings',
+        canActivate: [RoleGuardService],
+        data: {
+          expectedRole: 'admin'
+        },
         children: [
           {
             path: '',
