@@ -78,4 +78,17 @@ export class ViewCandidateComponent implements OnInit {
     this.titleService.setTitle(this.candidate.user.firstName + ' '
       + this.candidate.user.lastName + ' ' + this.candidate.candidateNumber);
   }
+
+  downloadCV() {
+      let tab = window.open();
+      this.candidateService.downloadCv(this.candidate.id).subscribe(
+        result => {
+          tab.location.href = URL.createObjectURL(result);
+        },
+        error => {
+          this.error = error;
+        }
+      )
+  }
+
 }

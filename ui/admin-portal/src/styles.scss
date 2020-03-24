@@ -68,7 +68,11 @@ ng-multiselect-dropdown div.multiselect-dropdown {
 }
 
 /* FONT AWESOME */
-label > i.fas,i.fab,i.far {
+label,a > i.fas,i.fab,i.far {
   margin-right: 8px;
+}
+
+.fa-file-download {
+  color: $link-color;
 }
 
