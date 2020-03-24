@@ -51,7 +51,8 @@
           <ng-template ngbTabContent>
             <app-candidate-general-tab
               [candidate]="candidate"
-              [editable]="true">
+              [editable]="true"
+              [loggedInUser]="loggedInUser">
             </app-candidate-general-tab>
           </ng-template>
         </ngb-tab>
@@ -83,7 +84,8 @@
           <ng-template ngbTabContent>
             <app-candidate-additional-info-tab
               [candidate]="candidate"
-              [editable]="true">
+              [editable]="true"
+              [loggedInUser]="loggedInUser">
               >
             </app-candidate-additional-info-tab>
           </ng-template>

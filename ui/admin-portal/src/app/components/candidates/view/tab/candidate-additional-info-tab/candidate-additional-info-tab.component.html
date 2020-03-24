@@ -11,7 +11,9 @@
 
 <hr/>
 
-<app-view-candidate-attachment *ngIf="candidate.user.firstName"
+<app-view-candidate-attachment
   [candidate]="candidate"
-  [editable]="editable">
+  [editable]="editable"
+  [loggedInUser]="loggedInUser"
+  *ngIf="loggedInUser.role === 'admin' || loggedInUser.role === 'sourcepartneradmin'">
 </app-view-candidate-attachment>

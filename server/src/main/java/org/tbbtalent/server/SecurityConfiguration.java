@@ -85,6 +85,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         "/api/admin/education-level",
                         "/api/admin/education-major").hasRole("ADMIN")
 
+                // ADMIN/SOURCE PARTNER ADMIN ONLY - see candidate file attachments
+                .antMatchers(HttpMethod.POST, "/api/admin/candidate-attachment/search").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN")
+
                 // ALL OTHER END POINTS
                     // POST
                 .antMatchers(HttpMethod.POST, "/api/admin/**").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED")

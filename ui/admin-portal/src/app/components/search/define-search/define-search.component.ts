@@ -172,7 +172,6 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     this.pageNumber = 1;
     this.pageSize = 20;
     this.loggedInUser = this.authService.getLoggedInUser();
-    console.log(this.loggedInUser);
 
     forkJoin({
       'nationalities': this.nationalityService.listNationalities(),

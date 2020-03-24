@@ -1,9 +1,4 @@
-import {
-  Component,
-  OnDestroy,
-  OnInit,
-  ViewChild
-} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 
 import {Candidate} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
@@ -14,16 +9,14 @@ import {Subscription} from "rxjs";
 import {CandidateShortlistItem} from "../../../model/candidate-shortlist-item";
 import {ActivatedRoute} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
-import {
-  SavedSearch,
-  SavedSearchRunRequest,
-  SavedSearchType
-} from "../../../model/saved-search";
+import {SavedSearch, SavedSearchRunRequest, SavedSearchType} from "../../../model/saved-search";
 import {
   CachedSearchResults,
   SavedSearchResultsCacheService
 } from "../../../services/saved-search-results-cache.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
+import {User} from "../../../model/user";
+import {AuthService} from "../../../services/auth.service";
 
 @Component({
   selector: 'app-search-candidates',
@@ -51,6 +44,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   shortlistStatus: string[];
 
   selectedCandidate: Candidate;
+  loggedInUser: User;
   private timestamp: number;
 
 
@@ -60,7 +54,8 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
               private savedSearchService: SavedSearchService,
               private modalService: NgbModal,
               private route: ActivatedRoute,
-              private savedSearchResultsCacheService: SavedSearchResultsCacheService
+              private savedSearchResultsCacheService: SavedSearchResultsCacheService,
+              private authService: AuthService
 
   ) {
     this.searchForm = this.fb.group({
@@ -71,6 +66,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.selectedCandidate = null;
+    this.loggedInUser = this.authService.getLoggedInUser();
 
     // start listening to route params after everything is loaded
     this.route.queryParamMap.subscribe(

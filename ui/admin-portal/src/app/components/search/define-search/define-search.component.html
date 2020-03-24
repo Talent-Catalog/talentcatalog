@@ -466,6 +466,7 @@
       <app-candidate-search-card class="profile"
                                  *ngIf="selectedCandidate"
                                  [candidate]="selectedCandidate"
+                                 [loggedInUser]="loggedInUser"
                                  (onClose)="selectedCandidate = null">
       </app-candidate-search-card>
 
