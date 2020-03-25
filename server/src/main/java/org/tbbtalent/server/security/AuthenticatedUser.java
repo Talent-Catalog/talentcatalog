@@ -20,8 +20,6 @@ public class AuthenticatedUser implements UserDetails {
         this.authorities = new ArrayList<>();
         if (user.getRole().equals(Role.admin)){
             this.authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-        } else if (user.getRole().equals(Role.intern)){
-            this.authorities.add(new SimpleGrantedAuthority("ROLE_INTERN"));
         } else if (user.getRole().equals(Role.sourcepartneradmin)){
             this.authorities.add(new SimpleGrantedAuthority("ROLE_SOURCEPARTNERADMIN"));
         } else if (user.getRole().equals(Role.semilimited)){

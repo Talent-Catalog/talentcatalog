@@ -41,7 +41,7 @@ export class SearchUsersComponent implements OnInit {
   /* SET UP FORM */
     this.searchForm = this.fb.group({
       keyword: [''],
-      role: [['intern', 'limited', 'semilimited', 'sourcepartneradmin', 'admin']],
+      role: [['limited', 'semilimited', 'sourcepartneradmin', 'admin']],
       status: ['active']
     });
     this.pageNumber = 1;
