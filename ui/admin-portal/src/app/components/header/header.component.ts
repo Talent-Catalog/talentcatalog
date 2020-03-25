@@ -90,6 +90,11 @@ export class HeaderComponent implements OnInit {
         tap(() => this.searching = false)
       );
     this.loggedInUser = this.authService.getLoggedInUser();
+    if (this.loggedInUser) {
+      if (!this.loggedInUser.role) {
+        this.authService.logout();
+      }
+    }
   }
 
   renderCandidateRow(candidate: Candidate) {
