@@ -90,6 +90,8 @@ export class HeaderComponent implements OnInit {
         tap(() => this.searching = false)
       );
     this.loggedInUser = this.authService.getLoggedInUser();
+    console.log(this.loggedInUser);
+    // Make sure user has role in case of an old cache. Force new login to get user role.
     if (this.loggedInUser) {
       if (!this.loggedInUser.role) {
         this.authService.logout();

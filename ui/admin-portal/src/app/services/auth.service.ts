@@ -18,7 +18,6 @@ export class AuthService {
 
   private user: Candidate;
   private loggedInUser: User;
-  private loggedInUserRole: string;
 
   constructor(private router: Router,
               private http: HttpClient,
@@ -39,21 +38,23 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return this.getLoggedInCandidate() != null;
+    return this.getLoggedInUser() != null;
   }
 
-  getLoggedInCandidate(): Candidate {
-    if (!this.user) {
-      // could be a page reload, check localstorage
-      const user = this.localStorageService.get('user');
-      this.user = <Candidate>user;
-    }
-    return this.user;
-  }
+  // getLoggedInCandidate(): Candidate {
+  //   if (!this.user) {
+  //     // could be a page reload, check localstorage
+  //     const user = this.localStorageService.get('user');
+  //     this.user = <Candidate>user;
+  //   }
+  //   return this.user;
+  // }
 
   getLoggedInUser(): User {
-    const user = this.localStorageService.get('user');
-    this.loggedInUser = <User>user;
+    if(!this.loggedInUser){
+      const user = this.localStorageService.get('user');
+      this.loggedInUser = <User>user;
+    }
     return this.loggedInUser;
   }
 
@@ -71,21 +72,12 @@ export class AuthService {
     this.localStorageService.remove('access-token');
   }
 
-  register(request: any) {
-    return this.http.post<JwtResponse>(`${this.apiUrl}/register`, request).pipe(
-      map((response) => {
-        this.storeCredentials(response);
-      }),
-      catchError((error) => {return throwError(error)})
-    );
-  }
-
   private storeCredentials(response: JwtResponse) {
     this.localStorageService.remove('access-token');
     this.localStorageService.remove('user');
     this.localStorageService.set('access-token', response.accessToken);
     this.localStorageService.set('user', response.user);
-    this.user = response.user;
+    this.loggedInUser = response.user;
   }
 
 }

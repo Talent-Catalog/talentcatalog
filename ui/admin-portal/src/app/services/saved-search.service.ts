@@ -1,13 +1,9 @@
 import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
-import {Observable, of} from "rxjs";
+import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
-import {
-  SavedSearch,
-  SavedSearchRequest,
-  SavedSearchSubtype, SavedSearchType
-} from "../model/saved-search";
+import {SavedSearch, SavedSearchRequest, SavedSearchSubtype, SavedSearchType} from "../model/saved-search";
 import {map} from "rxjs/operators";
 
 export interface SavedSearchTypeInfo {
@@ -101,7 +97,10 @@ export class SavedSearchService {
   }
 
   create(savedSearchRequest: SavedSearchRequest): Observable<SavedSearch>  {
-    return this.http.post<SavedSearch>(`${this.apiUrl}`, savedSearchRequest);
+    return this.http.post<SavedSearch>(`${this.apiUrl}`, savedSearchRequest)
+      .pipe(
+        map(savedSearch => SavedSearchService.convertSavedSearchEnums(savedSearch))
+      );
   }
 
   update(savedSearchRequest: SavedSearchRequest): Observable<SavedSearch>  {
