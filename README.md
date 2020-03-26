@@ -155,7 +155,7 @@ do normal development in Master.
 ### Staging branch ###
 
 The "staging" branch is used for code which is potentially ready to go into
-production. Code it pushed into production by merging staging into master and
+production. Code is pushed into production by merging staging into master and
 then pushing master. See Deployment section below. 
 
 Staging is a shared resource so you should only push changes there when
