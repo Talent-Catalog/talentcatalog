@@ -6,7 +6,6 @@ import {environment} from "../../environments/environment";
 import {Router} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
 import {LocalStorageService} from "angular-2-local-storage";
-import {Candidate} from "../model/candidate";
 import {User} from "../model/user";
 
 @Injectable({
@@ -16,7 +15,6 @@ export class AuthService {
 
   apiUrl = environment.apiUrl + '/auth';
 
-  private user: Candidate;
   private loggedInUser: User;
 
   constructor(private router: Router,
@@ -41,19 +39,9 @@ export class AuthService {
     return this.getLoggedInUser() != null;
   }
 
-  // getLoggedInCandidate(): Candidate {
-  //   if (!this.user) {
-  //     // could be a page reload, check localstorage
-  //     const user = this.localStorageService.get('user');
-  //     this.user = <Candidate>user;
-  //   }
-  //   return this.user;
-  // }
-
   getLoggedInUser(): User {
     if(!this.loggedInUser){
-      const user = this.localStorageService.get('user');
-      this.loggedInUser = <User>user;
+      this.loggedInUser = this.localStorageService.get('user');
     }
     return this.loggedInUser;
   }
