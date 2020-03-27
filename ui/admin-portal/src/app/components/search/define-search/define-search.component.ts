@@ -1,4 +1,10 @@
-import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 
 import {Candidate} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
@@ -37,7 +43,10 @@ import {ActivatedRoute} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
 import {LocalStorageService} from "angular-2-local-storage";
 import {UpdateSearchComponent} from "../update/update-search.component";
-import {SavedSearch} from "../../../model/saved-search";
+import {
+  getSavedSearchBreadcrumb,
+  SavedSearch
+} from "../../../model/saved-search";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {User} from "../../../model/user";
 import {AuthService} from "../../../services/auth.service";
@@ -300,11 +309,9 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     this.savedSearch = null;
   }
 
-  //todo Make this a generic function that takes SavedSearch as parameter
   getBreadcrumb() {
-    let infos = this.savedSearchService.getSavedSearchTypeInfos();
-    return this.savedSearch ? (infos[this.savedSearch.savedSearchType].title +
-      ': ' + this.savedSearch.name) : 'Search'
+    const infos = this.savedSearchService.getSavedSearchTypeInfos();
+    return getSavedSearchBreadcrumb(this.savedSearch, infos)
   }
 
   loadSavedSearch(id) {
