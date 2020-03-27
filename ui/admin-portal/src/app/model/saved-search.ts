@@ -72,7 +72,8 @@ export function getSavedSearchBreadcrumb(savedSearch: SavedSearch, infos: SavedS
     }
   }
 
-  return savedSearch && savedSearch.savedSearchType ? (infos[savedSearch.savedSearchType].title +
+  return savedSearch && savedSearch.savedSearchType != null ?
+    (infos[savedSearch.savedSearchType].title +
     (subtypeTitle ? "/" + subtypeTitle : "") + ': ' + savedSearch.name)
     : 'Search';
 }
