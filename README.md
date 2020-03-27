@@ -141,15 +141,52 @@ We use Bitbucket - [https://bitbucket.org/dashboard/overview]()
 
 Our repository is called tbbtalentv2 - John Cameron is the owner.
 
-The main branch is "master". We only merge into "master" when we are deploying
-to production (deployment to production is automatic, triggered by any push
-to "master" - see Deployment section below).
+### Master branch ###
 
-The "staging" branch is used for versions of the software about to go into
-production. Normally you should only merge and push your finished changes
-to the staging branch. Master should only be accessed directly when staging
-is merged into it, triggering deployment to production. 
+The main branch is "master". We only merge and push into "master" when we are 
+deploying to production (deployment to production is automatic, triggered by any 
+push to "master" - see Deployment section below).
 
+Master should only be accessed directly when staging
+is merged into it, triggering deployment to production. You should not
+do normal development in Master.  
+
+
+### Staging branch ###
+
+The "staging" branch is used for code which is potentially ready to go into
+production. Code is pushed into production by merging staging into master and
+then pushing master. See Deployment section below. 
+
+Staging is a shared resource so you should only push changes there when
+you have finished changes which you are confident will build without error 
+and should not not break other parts of the code.
+
+As a shared resource, staging is the best way to share your code with other
+team members to allow them to merge your code into their own branches and
+also to allow them to review your code and help with testing.
+
+### Personal branches ###
+
+New development should be done in branches. 
+
+Typically you should branch from the staging branch, and merge regularly 
+(eg daily) from staging so that your code does not get too far away from
+what everyone else is doing.
+  
+When you are ready to share your code for others to take a look at and for
+final joint testing and eventual deployment, merge your branch into staging.
+
+On your branch you should commit often - doing separate commits for specific
+functionality, rather than lumping different kinds of functionality into
+a single big commit. That makes commits simpler to review and understand.
+It also makes it easier to revert specific functionality when you have got 
+something wrong and decide to start again, doing it differently.
+
+You should feel comfortable pushing regularly - often doing Commit and Push 
+at the same time. Pushing is effectively saving your work into the "cloud"
+rather having changes just saved on your computer.
+  
 ## Deployment ##
 
 ### Production ###
@@ -161,7 +198,8 @@ and deploys (to AWS). This build process is controlled by
 bitbucket-pipelines.yml.
 
 Deployment can take around 10 minutes during which time the production software
-is unavailable.
+is unavailable. People trying to access the software during deployment
+will see an error on their browser saying something like "520 Bad Gateway".
 
 ### Test ###
 We use Heroku to host deployments to a test system.

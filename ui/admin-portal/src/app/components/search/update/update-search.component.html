@@ -13,8 +13,14 @@
 
   <form [formGroup]="form">
     <div class="form-group" >
-      <label for="name">Name</label>
-      <input type="text" class="form-control" id="name" formControlName="name">
+      <label for="name">Name *</label>
+      <input type="text" class="form-control" id="name" formControlName="name" required>
+      <div *ngIf="name.invalid && (name.dirty || name.touched)"
+           class="alert alert-danger">
+        <div *ngIf="name.errors.required">
+          Name is required.
+        </div>
+      </div>
 
       <div class="operator">
         <input type="checkbox" class="custom-checkbox" id="reviewable"
@@ -25,7 +31,7 @@
       </div>
 
       <div>
-        <label for="savedSearchType">Type</label>
+        <label for="savedSearchType">Type *</label>
         <select class="form-control" id="savedSearchType" formControlName="savedSearchType"
                 (change)="onSavedSearchTypeChange()">
           <option *ngFor="let typeInfo of savedSearchTypeInfos"
@@ -34,7 +40,7 @@
       </div>
 
       <div *ngIf="savedSearchTypeSubInfos">
-        <label for="savedSearchSubtype">Category</label>
+        <label for="savedSearchSubtype">Category *</label>
         <select class="form-control" id="savedSearchSubtype" formControlName="savedSearchSubtype">
           <option *ngFor="let subtypeInfo of savedSearchTypeSubInfos" [value]="subtypeInfo.savedSearchSubtype">{{subtypeInfo.title}}</option>
         </select>
@@ -50,8 +56,9 @@
 </div>
 <div class="modal-footer">
   <span *ngIf="updating"><i class="fas fa-spinner fa-spin"></i> updating...</span>
+  {{'Form invalid ' + form?.invalid + ' updating ' + updating + ' errors ' + form?.errors}}
   <button type="button" class="btn btn-danger"
-          [disabled]="updating"
+          [disabled]="form?.invalid || updating"
           (click)="confirm()">Yes</button>
   <button type="button" class="btn btn-secondary"
           [disabled]="updating"

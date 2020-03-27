@@ -10,10 +10,11 @@ import {CandidateShortlistItem} from "../../../model/candidate-shortlist-item";
 import {ActivatedRoute} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
 import {
-  defaultReviewStatusFilter, ReviewedStatus,
+  defaultReviewStatusFilter,
+  getSavedSearchBreadcrumb,
+  ReviewedStatus,
   SavedSearch,
-  SavedSearchRunRequest,
-  SavedSearchType
+  SavedSearchRunRequest
 } from "../../../model/saved-search";
 import {
   CachedSearchResults,
@@ -282,11 +283,9 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     )
   }
 
-  //todo Duplicated code
   getBreadcrumb() {
     let infos = this.savedSearchService.getSavedSearchTypeInfos();
-    return this.savedSearch ? (infos[SavedSearchType.profession].title +
-      ': ' + this.savedSearch.name) : 'Search'
+    return getSavedSearchBreadcrumb(this.savedSearch, infos)
   }
 
   private onReviewStatusFilterChange() {

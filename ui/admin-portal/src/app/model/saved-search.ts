@@ -1,4 +1,5 @@
 import {SearchCandidateRequest} from "./search-candidate-request";
+import {SavedSearchTypeInfo} from "../services/saved-search.service";
 
 export enum ReviewedStatus {
   pending,
@@ -54,6 +55,22 @@ export interface SavedSearch extends SearchCandidateRequest {
   reviewable: boolean;
   savedSearchType: SavedSearchType;
   savedSearchSubtype: SavedSearchSubtype;
+}
+
+export function getSavedSearchBreadcrumb(savedSearch: SavedSearch, infos: SavedSearchTypeInfo[]): string {
+  let subtypeTitle: string = '';
+  if (savedSearch) {
+    if (savedSearch.savedSearchSubtype != null) {
+      let savedSearchTypeSubInfo = infos[savedSearch.savedSearchType].categories.find(
+        info => info.savedSearchSubtype == savedSearch.savedSearchSubtype);
+      if (savedSearchTypeSubInfo) {
+        subtypeTitle = savedSearchTypeSubInfo.title;
+      }
+    }
+  }
+  return savedSearch ? (infos[savedSearch.savedSearchType].title +
+    (subtypeTitle ? "/" + subtypeTitle : "") + ': ' + savedSearch.name)
+    : 'Search';
 }
 
 export function indexOfSavedSearch(savedSearchID: number, savedSearches: SavedSearch[]): number {

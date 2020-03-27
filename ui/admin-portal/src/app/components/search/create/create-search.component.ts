@@ -1,8 +1,16 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  ValidationErrors,
+  ValidatorFn,
+  Validators
+} from '@angular/forms';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {
-  SavedSearchService, SavedSearchTypeInfo,
+  SavedSearchService,
+  SavedSearchTypeInfo,
   SavedSearchTypeSubInfo
 } from "../../../services/saved-search.service";
 import {
@@ -28,6 +36,10 @@ export class CreateSearchComponent implements OnInit {
   savedSearchTypeSubInfos: SavedSearchTypeSubInfo[];
   update;
 
+  get name() { return this.form.get('name'); }
+  get savedSearchType() { return this.form.get('savedSearchType'); }
+  get savedSearchSubtype() { return this.form.get('savedSearchSubtype'); }
+
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
               private savedSearchService: SavedSearchService) {
@@ -35,18 +47,30 @@ export class CreateSearchComponent implements OnInit {
   }
 
   ngOnInit() {
+
     this.form = this.fb.group({
       name: [null, Validators.required],
       savedSearchType: [null, Validators.required],
-      savedSearchSubtype: [null, Validators.required],
+      savedSearchSubtype: [null, this.subtypeRequiredValidator()],
       reviewable: [true, Validators.required],
     });
+
     if (this.savedSearch) {
       //Copy the form values in so that they can be displayed in any summary
       //(Otherwise we just see the unmodified search values)
       this.savedSearch = Object.assign(this.savedSearch, this.searchCandidateRequest);
     }
   }
+
+  private subtypeRequiredValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      //If there are subtypes associated with the currently selected type,
+      //as indicated by a non null savedSearchTypeSubInfos, the subtype control
+      //is required, ie must have a non empty value.
+      return this.savedSearchTypeSubInfos && (control.value == undefined) ?
+        { 'subtypeRequired': true } : null;
+    };
+  };
 
   save() {
     this.saving = true;
@@ -99,4 +123,5 @@ export class CreateSearchComponent implements OnInit {
       }
     }
   }
+
 }
