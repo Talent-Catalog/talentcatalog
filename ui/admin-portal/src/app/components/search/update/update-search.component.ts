@@ -10,7 +10,14 @@ import {
   SavedSearch
 } from "../../../model/saved-search";
 import {SearchCandidateRequest} from "../../../model/search-candidate-request";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  ValidationErrors,
+  ValidatorFn,
+  Validators
+} from "@angular/forms";
 
 @Component({
   selector: 'app-update-search',
@@ -28,6 +35,10 @@ export class UpdateSearchComponent implements OnInit {
   updating: boolean;
   form: FormGroup;
 
+  get name() { return this.form.get('name'); }
+  get savedSearchType() { return this.form.get('savedSearchType'); }
+  get savedSearchSubtype() { return this.form.get('savedSearchSubtype'); }
+
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
               private savedSearchService: SavedSearchService) {
@@ -37,8 +48,10 @@ export class UpdateSearchComponent implements OnInit {
   ngOnInit() {
     this.form = this.fb.group({
       name: [this.savedSearch.name, Validators.required],
-      savedSearchType: [this.savedSearch.savedSearchType],
-      savedSearchSubtype: [this.savedSearch.savedSearchSubtype],
+      savedSearchType: [this.savedSearch.savedSearchType, Validators.required],
+      savedSearchSubtype: [this.savedSearch.savedSearchSubtype
+        , this.subtypeRequiredValidator()
+      ],
       reviewable: [this.savedSearch.reviewable, Validators.required],
     });
     //Copy the form values in so that they can be displayed in any summary
@@ -47,6 +60,15 @@ export class UpdateSearchComponent implements OnInit {
 
     this.onSavedSearchTypeChange();
   }
+
+  private subtypeRequiredValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      //If there are subtypes associated with the currently selected type,
+      //as indicated by a non null savedSearchTypeSubInfos, the subtype control
+      //is required, ie must have a non empty value.
+      return this.savedSearchTypeSubInfos && (control.value == undefined) ? { 'subtypeRequired': true } : null;
+    };
+  };
 
   cancel() {
     this.activeModal.dismiss();
