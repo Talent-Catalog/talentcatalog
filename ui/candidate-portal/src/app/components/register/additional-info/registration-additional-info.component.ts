@@ -1,9 +1,10 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
 import {RegistrationService} from "../../../services/registration.service";
-
+import {SurveyTypeService} from "../../../services/survey-type.service";
+import {SurveyType} from "../../../model/survey-type";
 
 @Component({
   selector: 'app-registration-additional-info',
@@ -20,14 +21,20 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
 
   form: FormGroup;
   error: any;
+  _loading = {
+    surveyTypes: true,
+  };
   // Component states
   loading: boolean;
   saving: boolean;
 
+  surveyTypes: SurveyType[];
+
   constructor(private fb: FormBuilder,
               private router: Router,
               private candidateService: CandidateService,
-              public registrationService: RegistrationService) {
+              public registrationService: RegistrationService,
+              private surveyTypeService: SurveyTypeService) {
   }
 
   ngOnInit() {
@@ -35,8 +42,12 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
     this.saving = false;
     this.form = this.fb.group({
       additionalInfo: [''],
+      surveyTypeId: ['', Validators.required],
       submit: this.submitApplication
     });
+
+    this.loadDropDownData();
+
     this.candidateService.getCandidateAdditionalInfo().subscribe(
       (response) => {
         this.form.patchValue({
@@ -47,6 +58,22 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
       (error) => {
         this.error = error;
         this.loading = false;
+      }
+    );
+  }
+
+  loadDropDownData() {
+    this._loading.surveyTypes = true;
+
+    /* Load the language levels */
+    this.surveyTypeService.listSurveyTypes().subscribe(
+      (response) => {
+        this.surveyTypes = response;
+        this._loading.surveyTypes = false;
+      },
+      (error) => {
+        this.error = error;
+        this._loading.surveyTypes = false;
       }
     );
   }
