@@ -61,14 +61,18 @@ export function getSavedSearchBreadcrumb(savedSearch: SavedSearch, infos: SavedS
   let subtypeTitle: string = '';
   if (savedSearch) {
     if (savedSearch.savedSearchSubtype != null) {
-      let savedSearchTypeSubInfo = infos[savedSearch.savedSearchType].categories.find(
-        info => info.savedSearchSubtype == savedSearch.savedSearchSubtype);
-      if (savedSearchTypeSubInfo) {
-        subtypeTitle = savedSearchTypeSubInfo.title;
+      let savedSearchTypeSubInfos = infos[savedSearch.savedSearchType].categories;
+      if (savedSearchTypeSubInfos) {
+        let savedSearchTypeSubInfo = savedSearchTypeSubInfos.find(
+          info => info.savedSearchSubtype == savedSearch.savedSearchSubtype);
+        if (savedSearchTypeSubInfo) {
+          subtypeTitle = savedSearchTypeSubInfo.title;
+        }
       }
     }
   }
-  return savedSearch ? (infos[savedSearch.savedSearchType].title +
+
+  return savedSearch && savedSearch.savedSearchType ? (infos[savedSearch.savedSearchType].title +
     (subtypeTitle ? "/" + subtypeTitle : "") + ': ' + savedSearch.name)
     : 'Search';
 }
