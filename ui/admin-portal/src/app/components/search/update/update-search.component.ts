@@ -103,7 +103,7 @@ export class UpdateSearchComponent implements OnInit {
   onSavedSearchTypeChange() {
     const formValues = this.form.value;
     const selectedSavedSearchType = formValues.savedSearchType;
-    if (selectedSavedSearchType === undefined) {
+    if (selectedSavedSearchType == undefined) {
       this.savedSearchTypeSubInfos = null;
     } else {
       this.savedSearchTypeSubInfos =

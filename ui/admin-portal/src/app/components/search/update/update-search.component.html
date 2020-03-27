@@ -56,7 +56,6 @@
 </div>
 <div class="modal-footer">
   <span *ngIf="updating"><i class="fas fa-spinner fa-spin"></i> updating...</span>
-  {{'Form invalid ' + form?.invalid + ' updating ' + updating + ' errors ' + form?.errors}}
   <button type="button" class="btn btn-danger"
           [disabled]="form?.invalid || updating"
           (click)="confirm()">Yes</button>
