@@ -43,6 +43,7 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
     this.form = this.fb.group({
       additionalInfo: [''],
       surveyTypeId: ['', Validators.required],
+      surveyComment: [''],
       submit: this.submitApplication
     });
 

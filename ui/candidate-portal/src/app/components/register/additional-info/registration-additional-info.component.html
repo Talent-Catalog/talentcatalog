@@ -24,7 +24,19 @@
         </select>
       </div>
 
+      <ng-container *ngIf="form.controls.surveyTypeId">
+        <div class="form-group">
+          <label class="font-weight-bold" for="surveyComment">
+            Comment
+          </label>
+          <input type="text" class="form-control" id="surveyComment" placeholder="" appInputFilter
+                 [formControlName]="'surveyComment'">
+        </div>
+      </ng-container>
+
     </form>
+
+    <app-registration-survey></app-registration-survey>
 
     <app-candidate-attachments></app-candidate-attachments>
 

@@ -14,4 +14,5 @@ public interface SurveyTypeRepository extends JpaRepository<SurveyType, Long>, J
     @Query(" select s from SurveyType s "
             + " where s.status = :status order by s.name asc")
     List<SurveyType> findByStatus(@Param("status") Status status);
+
 }

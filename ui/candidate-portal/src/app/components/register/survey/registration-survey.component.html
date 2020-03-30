@@ -1,0 +1,22 @@
+<form [formGroup]="form">
+
+  <div class="form-group">
+    <label for="surveyTypeId">
+      How did you hear about us?
+    </label>
+    <select (change)="save()" class="form-control" name="surveyTypeId" id="surveyTypeId" [formControlName]="'surveyTypeId'">
+      <option value=""></option>
+      <option *ngFor="let s of surveyTypes" [value]="s.id">{{s.name}}</option>
+    </select>
+  </div>
+
+  <ng-container *ngIf="form.controls.surveyTypeId">
+    <div class="form-group">
+      <label class="font-weight-bold" for="surveyComment">
+        Comment
+      </label>
+      <input type="text" class="form-control" id="surveyComment" placeholder="" [formControlName]="'surveyComment'">
+    </div>
+  </ng-container>
+
+</form>
