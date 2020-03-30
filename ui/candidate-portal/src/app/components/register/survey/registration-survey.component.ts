@@ -62,6 +62,7 @@ export class RegistrationSurveyComponent implements OnInit {
     this.surveyTypeService.listSurveyTypes().subscribe(
       (response) => {
         this.surveyTypes = response;
+        console.log(this.surveyTypes);
         this._loading.surveyTypes = false;
       },
       (error) => {
@@ -69,6 +70,10 @@ export class RegistrationSurveyComponent implements OnInit {
         this._loading.surveyTypes = false;
       }
     );
+  }
+
+  test(){
+    console.log(this.form);
   }
 
   save(){
