@@ -10,7 +10,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tbbtalent.server.model.Candidate;
-import org.tbbtalent.server.model.DataRow;
 
 public interface CandidateRepository extends JpaRepository<Candidate, Long>, JpaSpecificationExecutor<Candidate> {
 
@@ -125,11 +124,14 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     @Query(value = "select n.name, count(distinct c) as PeopleCount" +
             " from candidate c left join users u on c.user_id = u.id" +
             " left join nationality n on c.nationality_id = n.id " +
+            " left join country on c.country_id = country.id " +
             " where u.status = 'active' " +
             " and gender like :gender" +
+            " and lower(country.name) like :country" +
             " group by n.name order by PeopleCount desc",
     nativeQuery = true)
-    List<Object[]> countByNationalityOrderByCount(@Param("gender") String gender);
+    List<Object[]> countByNationalityOrderByCount(
+            @Param("gender") String gender, @Param("country") String country);
 
     @Query( value="select case when max_education_level_id is null then 'Unknown' " +
             "else el.name end as EducationLevel, " +
