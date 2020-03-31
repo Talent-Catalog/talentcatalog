@@ -1,9 +1,5 @@
 package org.tbbtalent.server.service;
 
-import java.io.PrintWriter;
-import java.rmi.server.ExportException;
-import java.util.List;
-
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.tbbtalent.server.exception.UsernameTakenException;
@@ -25,6 +21,11 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateLinksRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
+
+import java.io.PrintWriter;
+import java.rmi.server.ExportException;
+import java.util.List;
 
 public interface CandidateService {
 
@@ -59,6 +60,8 @@ public interface CandidateService {
     Candidate updateEducation(UpdateCandidateEducationRequest request);
 
     Candidate updateAdditionalInfo(UpdateCandidateAdditionalInfoRequest request);
+
+    Candidate updateCandidateSurvey(UpdateCandidateSurveyRequest request);
 
     Candidate getLoggedInCandidateLoadCandidateOccupations();
 
@@ -97,4 +100,5 @@ public interface CandidateService {
     List<DataRow> getNationalityStats(Gender gender);
 
     Resource generateCv(Candidate candidate);
+
 }

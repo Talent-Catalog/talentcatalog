@@ -1,12 +1,17 @@
 package org.tbbtalent.server.api.portal;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateEducationRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tbbtalent.server.service.CandidateService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -82,6 +87,18 @@ public class CandidatePortalApi {
     public Map<String, Object> updateCandidateAdditionalInfo(@Valid @RequestBody UpdateCandidateAdditionalInfoRequest request) {
         Candidate candidate = this.candidateService.updateAdditionalInfo(request);
         return candidateAdditionalInfoDto().build(candidate);
+    }
+
+    @GetMapping("survey")
+    public Map<String, Object> getCandidateSurvey() {
+        Candidate candidate = this.candidateService.getLoggedInCandidate();
+        return candidateSurveyDto().build(candidate);
+    }
+
+    @PostMapping("survey")
+    public Map<String, Object> updateCandidateSurvey(@Valid @RequestBody UpdateCandidateSurveyRequest request) {
+        Candidate candidate = this.candidateService.updateCandidateSurvey(request);
+        return candidateSurveyDto().build(candidate);
     }
 
     @GetMapping("job-experiences")
@@ -229,6 +246,20 @@ public class CandidatePortalApi {
                 ;
     }
 
+    private DtoBuilder candidateSurveyDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("surveyType", surveyTypeDto())
+                .add("surveyComment")
+                ;
+    }
+
+    private DtoBuilder surveyTypeDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
+                ;
+    }
 
     private DtoBuilder candidateWithJobExperiencesDto() {
         return new DtoBuilder()
@@ -339,6 +370,8 @@ public class CandidatePortalApi {
                 /* ADDITIONAL INFO / SUBMIT */
                 .add("additionalInfo")
                 .add("candidateMessage")
+                .add("surveyType", surveyTypeDto())
+                .add("surveyComment")
                 ;
     }
 }

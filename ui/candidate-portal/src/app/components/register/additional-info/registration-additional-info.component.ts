@@ -23,9 +23,10 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
   error: any;
   _loading = {
     surveyTypes: true,
+    additionalInfo: true,
+    candidateSurvey: true
   };
   // Component states
-  loading: boolean;
   saving: boolean;
 
   surveyTypes: SurveyType[];
@@ -38,7 +39,6 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loading = true;
     this.saving = false;
     this.form = this.fb.group({
       additionalInfo: [''],
@@ -52,13 +52,27 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
     this.candidateService.getCandidateAdditionalInfo().subscribe(
       (response) => {
         this.form.patchValue({
-          additionalInfo: response.additionalInfo
+          additionalInfo: response.additionalInfo,
         });
-        this.loading = false;
+        this._loading.additionalInfo = false;
       },
       (error) => {
         this.error = error;
-        this.loading = false;
+        this._loading.additionalInfo = false;
+      }
+    );
+
+    this.candidateService.getCandidateSurvey().subscribe(
+      (response) => {
+        this.form.patchValue({
+          surveyTypeId: response.surveyType ? response.surveyType.id : null,
+          surveyComment: response.surveyComment
+        });
+        this._loading.candidateSurvey = false;
+      },
+      (error) => {
+        this.error = error;
+        this._loading.candidateSurvey = false;
       }
     );
   }
@@ -66,7 +80,7 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
   loadDropDownData() {
     this._loading.surveyTypes = true;
 
-    /* Load the language levels */
+    /* Load the survey types levels */
     this.surveyTypeService.listSurveyTypes().subscribe(
       (response) => {
         this.surveyTypes = response;
@@ -86,22 +100,32 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
     if (dir === 'back') {
       this.form.controls.submit.patchValue(false);
     }
-
-    this.candidateService.updateCandidateAdditionalInfo(this.form.value).subscribe(
+    /* Update survey before updating additional info which triggers confirmation email and registration complete*/
+    this.candidateService.updateCandidateSurvey(this.form.value).subscribe(
       (response) => {
-        this.saving = false;
-        if (dir === 'next') {
-          this.onSave.emit();
-          this.registrationService.next();
-        } else {
-          this.registrationService.back();
-        }
+
+        this.candidateService.updateCandidateAdditionalInfo(this.form.value).subscribe(
+          (response) => {
+
+            this.saving = false;
+            if (dir === 'next') {
+              this.onSave.emit();
+              this.registrationService.next();
+            } else {
+              this.registrationService.back();
+            }
+          },
+          (error) => {
+            this.error = error;
+            this.saving = false;
+          }
+        );
       },
       (error) => {
         this.error = error;
-        this.saving = false;
       }
     );
+
   }
 
   cancel() {

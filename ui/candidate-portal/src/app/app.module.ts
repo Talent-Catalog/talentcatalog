@@ -52,7 +52,6 @@ import {FaIconLibrary, FontAwesomeModule} from "@fortawesome/angular-fontawesome
 import {faEdit} from "@fortawesome/free-solid-svg-icons";
 import {Observable} from "rxjs";
 import {environment} from "../environments/environment";
-import {RegistrationSurveyComponent} from './components/register/survey/registration-survey.component';
 
 export function createTranslateLoader(http: HttpClient) {
   return {
@@ -100,8 +99,7 @@ export function createTranslateLoader(http: HttpClient) {
     UserPipe,
     TrimPipe,
     TranslationPipe,
-    MonthPickerComponent,
-    RegistrationSurveyComponent
+    MonthPickerComponent
   ],
   imports: [
     BrowserModule,
