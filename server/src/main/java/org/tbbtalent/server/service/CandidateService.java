@@ -94,7 +94,7 @@ public interface CandidateService {
 
     List<DataRow> getMaxEducationStats(Gender gender);
 
-    List<DataRow> getNationalityStats(Gender gender);
+    List<DataRow> getNationalityStats(Gender gender, String country);
 
     Resource generateCv(Candidate candidate);
 }
