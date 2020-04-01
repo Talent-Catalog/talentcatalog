@@ -24,7 +24,7 @@
         </select>
       </div>
 
-      <ng-container *ngIf="form.controls.surveyTypeId">
+      <ng-container *ngIf="form.controls.surveyTypeId.value !== ''">
         <div class="form-group">
           <label class="font-weight-bold" for="surveyComment">
             Comment

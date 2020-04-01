@@ -75,15 +75,17 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
         this._loading.candidateSurvey = false;
       }
     );
+
   }
 
   loadDropDownData() {
     this._loading.surveyTypes = true;
 
-    /* Load the survey types levels */
+    /* Load the survey types  */
     this.surveyTypeService.listSurveyTypes().subscribe(
       (response) => {
-        this.surveyTypes = response;
+        this.surveyTypes = response
+          .sort((a, b) => a.id > b.id ? 1 : -1) // Order by surveyType id
         this._loading.surveyTypes = false;
       },
       (error) => {
@@ -100,7 +102,7 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
     if (dir === 'back') {
       this.form.controls.submit.patchValue(false);
     }
-    /* Update survey before updating additional info which triggers confirmation email and registration complete*/
+    /* Update survey before updating additional info as that triggers confirmation email and registration complete*/
     this.candidateService.updateCandidateSurvey(this.form.value).subscribe(
       (response) => {
 
@@ -123,9 +125,15 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
       },
       (error) => {
         this.error = error;
+        this.saving = false;
       }
     );
 
+  }
+
+  get loading() {
+    const l = this._loading;
+    return l.surveyTypes || l.additionalInfo || l.candidateSurvey;
   }
 
   cancel() {

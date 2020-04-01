@@ -553,7 +553,6 @@ public class CandidateServiceImpl implements CandidateService {
             emailHelper.sendRegistrationEmail(candidate.getUser());
         }
         candidate.setAuditFields(candidate.getUser());
-        System.out.println(candidate);
         return candidateRepository.save(candidate);
     }
 
