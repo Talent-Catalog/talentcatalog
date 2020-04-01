@@ -7,6 +7,13 @@ export enum ReviewedStatus {
   rejected
 }
 
+export enum SearchBy {
+  type,
+  all,
+  mySearches,
+  sharedWithMe
+}
+
 export const defaultReviewStatusFilter: string[] = [
   ReviewedStatus[ReviewedStatus.pending],
   ReviewedStatus[ReviewedStatus.verified]
