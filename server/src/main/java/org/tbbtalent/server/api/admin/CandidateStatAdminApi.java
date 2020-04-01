@@ -1,5 +1,9 @@
 package org.tbbtalent.server.api.admin;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,9 +12,6 @@ import org.tbbtalent.server.model.Gender;
 import org.tbbtalent.server.model.StatReport;
 import org.tbbtalent.server.service.CandidateService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate/stat")
@@ -48,13 +49,17 @@ public class CandidateStatAdminApi {
 
         title = "Nationalities";
         statReports.add(new StatReport(title,
-                this.candidateService.getNationalityStats(null))); 
+                this.candidateService.getNationalityStats(null, null))); 
         statReports.add(new StatReport(title + " (male)",
-                this.candidateService.getNationalityStats(Gender.male))); 
+                this.candidateService.getNationalityStats(Gender.male, null))); 
         statReports.add(new StatReport(title + " (female)",
-                this.candidateService.getNationalityStats(Gender.female))); 
+                this.candidateService.getNationalityStats(Gender.female, null))); 
         statReports.add(new StatReport(title + " (other)",
-                this.candidateService.getNationalityStats(Gender.other)));
+                this.candidateService.getNationalityStats(Gender.other, null)));
+        statReports.add(new StatReport(title + " (Jordan)",
+                this.candidateService.getNationalityStats(null, "jordan")));
+        statReports.add(new StatReport(title + " (Lebanon)",
+                this.candidateService.getNationalityStats(null, "lebanon")));
 
         title = "Occupations";
         statReports.add(new StatReport(title + "",

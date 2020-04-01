@@ -628,6 +628,10 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
+    private static String countryStr(String country) {
+        return country == null ? "%" : country;
+    }
+
     private static String genderStr(Gender gender) {
         return gender == null ? "%" : gender.toString();
     }
@@ -654,9 +658,10 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<DataRow> getNationalityStats(Gender gender) {
+    public List<DataRow> getNationalityStats(Gender gender, String country) {
         List<DataRow> rows = toRows(candidateRepository.
-                countByNationalityOrderByCount(genderStr(gender))); 
+                countByNationalityOrderByCount(
+                        genderStr(gender), countryStr(country))); 
         return limitRows(rows, 15);
     }
     
