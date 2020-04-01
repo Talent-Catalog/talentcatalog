@@ -41,7 +41,7 @@
 
 </div>
 
-<app-registration-footer [nextDisabled]="loading || saving"
+<app-registration-footer [nextDisabled]="loading || saving || form?.invalid"
                          [type]="edit ? 'update' : 'submit'"
                          (backClicked)="edit ? cancel() : save('back') "
                          (nextClicked)="save('next')">

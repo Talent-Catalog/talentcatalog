@@ -42,7 +42,7 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
     this.saving = false;
     this.form = this.fb.group({
       additionalInfo: [''],
-      surveyTypeId: ['', Validators.required],
+      surveyTypeId: [null, Validators.required],
       surveyComment: [''],
       submit: this.submitApplication
     });
