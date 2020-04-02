@@ -89,10 +89,19 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         "/api/admin/education-level",
                         "/api/admin/education-major").hasRole("ADMIN")
 
-                // ADMIN/SOURCE PARTNER ADMIN ONLY - see candidate file attachments
+                // SEE CANDIDATE FILE ATTACHMENTS. ADMIN/SOURCE PARTNER ADMIN ALLOWED. READ ONLY has access BUT has the data restricted in the DTO based on role.
                 .antMatchers(HttpMethod.POST, "/api/admin/candidate-attachment/search").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN", "READONLY")
 
-                // POST: SEARCH CALLS (INC. READ ONLY)
+                // POST: CREATE SAVED SEARCHES
+                .antMatchers(HttpMethod.POST, "/api/admin/saved-search").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // PUT: UPDATE SAVED SEARCHES
+                .antMatchers(HttpMethod.PUT, "/api/admin/saved-search/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // GET: LOAD SAVE SEARCHES
+                .antMatchers(HttpMethod.GET, "/api/admin/saved-search/*/load").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // POST: ALL SEARCHES
                 .antMatchers(HttpMethod.POST, "/api/admin/*/search").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // ALL OTHER END POINTS
