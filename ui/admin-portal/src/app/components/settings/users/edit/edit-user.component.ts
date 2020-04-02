@@ -34,7 +34,7 @@ export class EditUserComponent implements OnInit {
         lastName: [user.lastName, Validators.required],
         status: [user.status, Validators.required],
         role: [user.role, Validators.required],
-        readOnly: [user.readOnly, Validators.required]
+        readOnly: [user.readOnly]
       });
       this.loading = false;
     });

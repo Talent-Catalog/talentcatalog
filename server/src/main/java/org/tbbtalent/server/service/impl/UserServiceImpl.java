@@ -107,10 +107,7 @@ public class UserServiceImpl implements UserService {
                 request.getEmail(),
                 request.getRole());
 
-        // if creating user from admin
-        if(request.getReadOnly() != null) {
-            user.setReadOnly(request.getReadOnly());
-        }
+        user.setReadOnly(request.getReadOnly());
 
         /* Validate the password before account creation */
         String passwordEncrypted = passwordHelper.validateAndEncodePassword(request.getPassword());
@@ -141,6 +138,8 @@ public class UserServiceImpl implements UserService {
                 throw new UsernameTakenException("email");
             }
         }
+
+        user.setReadOnly(request.getReadOnly());
 
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());

@@ -29,14 +29,14 @@ export class CreateUserComponent implements OnInit {
       firstName: [null, Validators.required],
       lastName: [null, Validators.required],
       role: [null, Validators.required],
-      readOnly: [null, Validators.required]
+      readOnly: [false]
     });
 
   }
 
   onSave() {
     this.saving = true;
-    // console.log(this.userForm.value);
+    console.log(this.userForm.controls.readOnly);
     this.userService.create(this.userForm.value).subscribe(
       (user) => {
         this.closeModal(user)

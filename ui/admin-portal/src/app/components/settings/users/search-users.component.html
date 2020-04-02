@@ -50,6 +50,7 @@
       <th>Last Name</th>
       <th>Email</th>
       <th>Role</th>
+      <th>Read Only?</th>
       <th>Status</th>
       <th></th>
     </tr>
@@ -62,9 +63,10 @@
       <td>{{user.lastName}}</td>
       <td>{{user.email}}</td>
       <td>{{user.role}}</td>
+      <td>{{user.readOnly}}</td>
       <td>{{user.status}}</td>
       <td>
-        <div *ngIf="loggedInUser.role === 'admin'" ngbDropdown placement="bottom-right" (click)="$event.stopPropagation();" container="body">
+        <div *ngIf="(loggedInUser.role === 'admin' && !loggedInUser.readOnly)" ngbDropdown placement="bottom-right" (click)="$event.stopPropagation();" container="body">
           <button class="btn btn-xs hide-after" ngbDropdownToggle>
             <i class="fas fa-ellipsis-h"></i>
           </button>
