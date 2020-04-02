@@ -191,8 +191,10 @@ public class SystemAdminApi {
                     log.info("candidates - saving batch  " + count);
 //                }
 
-                break;
-//                count++;
+                if (count == 3) {
+                    break;
+                }
+                count++;
             }
 //            update.executeBatch();
             log.info("candidates - saving batch " + count);
