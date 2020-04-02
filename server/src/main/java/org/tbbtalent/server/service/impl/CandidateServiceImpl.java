@@ -1,6 +1,17 @@
 package org.tbbtalent.server.service.impl;
 
-import com.opencsv.CSVWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.rmi.server.ExportException;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -72,17 +83,7 @@ import org.tbbtalent.server.service.SavedSearchService;
 import org.tbbtalent.server.service.email.EmailHelper;
 import org.tbbtalent.server.service.pdf.PdfHelper;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.rmi.server.ExportException;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import com.opencsv.CSVWriter;
 
 @Service
 public class CandidateServiceImpl implements CandidateService {
@@ -666,6 +667,13 @@ public class CandidateServiceImpl implements CandidateService {
                 countByNationalityOrderByCount(
                         genderStr(gender), countryStr(country))); 
         return limitRows(rows, 15);
+    }
+
+    @Override
+    public List<DataRow> getSurveyStats(Gender gender, String country) {
+        return toRows(candidateRepository.
+                countBySurveyOrderByCount(
+                        genderStr(gender), countryStr(country))); 
     }
     
     @Override
