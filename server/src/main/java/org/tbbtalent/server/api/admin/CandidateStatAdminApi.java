@@ -101,6 +101,20 @@ public class CandidateStatAdminApi {
         statReports.add(new StatReport(title + " (other)", 
                 this.candidateService.getLanguageStats(Gender.other)));
 
+        title = "Survey";
+        statReports.add(new StatReport(title, 
+                this.candidateService.getSurveyStats(null, null)));
+        statReports.add(new StatReport(title + " (Jordan)",
+                this.candidateService.getSurveyStats(null, "jordan")));
+        statReports.add(new StatReport(title + " (Lebanon)",
+                this.candidateService.getSurveyStats(null, "lebanon")));
+        statReports.add(new StatReport(title + " (male)", 
+                this.candidateService.getSurveyStats(Gender.male, null)));
+        statReports.add(new StatReport(title + " (female)", 
+                this.candidateService.getSurveyStats(Gender.female, null)));
+        statReports.add(new StatReport(title + " (other)", 
+                this.candidateService.getSurveyStats(Gender.other, null)));
+
         
         language = "English";
         title = "Spoken " + language + " Language Level"; 

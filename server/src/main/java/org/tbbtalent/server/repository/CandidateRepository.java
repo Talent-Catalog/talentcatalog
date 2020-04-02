@@ -133,6 +133,18 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     List<Object[]> countByNationalityOrderByCount(
             @Param("gender") String gender, @Param("country") String country);
 
+    @Query(value = "select s.name, count(distinct c) as PeopleCount" +
+            " from candidate c left join users u on c.user_id = u.id" +
+            " left join survey_type s on c.survey_type_id = s.id " +
+            " left join country on c.country_id = country.id " +
+            " where u.status = 'active' " +
+            " and gender like :gender" +
+            " and lower(country.name) like :country" +
+            " group by s.name order by PeopleCount desc",
+    nativeQuery = true)
+    List<Object[]> countBySurveyOrderByCount(
+            @Param("gender") String gender, @Param("country") String country);
+
     @Query( value="select case when max_education_level_id is null then 'Unknown' " +
             "else el.name end as EducationLevel, " +
             "       count(distinct user_id) as PeopleCount " +
