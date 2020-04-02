@@ -6,5 +6,6 @@ public enum Role {
     user,
     sourcepartneradmin,
     semilimited,
-    limited
+    limited,
+    readonly
 }

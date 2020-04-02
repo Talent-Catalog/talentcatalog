@@ -28,8 +28,10 @@ export class CreateUserComponent implements OnInit {
       password: [null, Validators.required],
       firstName: [null, Validators.required],
       lastName: [null, Validators.required],
-      role: [null, Validators.required]
+      role: [null, Validators.required],
+      readOnly: [null, Validators.required]
     });
+
   }
 
   onSave() {

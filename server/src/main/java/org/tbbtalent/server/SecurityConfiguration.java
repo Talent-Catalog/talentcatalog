@@ -16,7 +16,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.tbbtalent.server.security.*;
+import org.tbbtalent.server.security.CandidateUserDetailsService;
+import org.tbbtalent.server.security.JwtAuthenticationEntryPoint;
+import org.tbbtalent.server.security.JwtAuthenticationFilter;
+import org.tbbtalent.server.security.LanguageFilter;
+import org.tbbtalent.server.security.TbbAuthenticationProvider;
 
 @Configuration
 @EnableWebSecurity
@@ -86,17 +90,20 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         "/api/admin/education-major").hasRole("ADMIN")
 
                 // ADMIN/SOURCE PARTNER ADMIN ONLY - see candidate file attachments
-                .antMatchers(HttpMethod.POST, "/api/admin/candidate-attachment/search").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN")
+                .antMatchers(HttpMethod.POST, "/api/admin/candidate-attachment/search").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN", "READONLY")
+
+                // POST: SEARCH CALLS (INC. READ ONLY)
+                .antMatchers(HttpMethod.POST, "/api/admin/*/search").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // ALL OTHER END POINTS
-                    // POST
+                    // POST (EXC. READ ONLY)
                 .antMatchers(HttpMethod.POST, "/api/admin/**").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED")
 
-                    // PUT
+                    // PUT (EXC. READ ONLY)
                 .antMatchers(HttpMethod.PUT, "/api/admin/**").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED")
 
                     // GET
-                .antMatchers(HttpMethod.GET, "/api/admin/**").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED")
+                .antMatchers(HttpMethod.GET, "/api/admin/**").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 .and()
             .csrf().disable()

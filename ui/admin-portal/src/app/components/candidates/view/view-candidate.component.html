@@ -57,7 +57,7 @@
           <ng-template ngbTabContent>
             <app-candidate-general-tab
               [candidate]="candidate"
-              [editable]="true"
+              [editable]="!loggedInUser.readOnly"
               [loggedInUser]="loggedInUser">
             </app-candidate-general-tab>
           </ng-template>
@@ -68,7 +68,7 @@
           <ng-template ngbTabContent>
             <app-candidate-experience-tab
               [candidate]="candidate"
-              [editable]="true">
+              [editable]="!loggedInUser.readOnly">
               >
             </app-candidate-experience-tab>
           </ng-template>
@@ -79,7 +79,7 @@
           <ng-template ngbTabContent>
             <app-candidate-education-tab
               [candidate]="candidate"
-              [editable]="true">
+              [editable]="!loggedInUser.readOnly">
               >
             </app-candidate-education-tab>
           </ng-template>
@@ -90,7 +90,7 @@
           <ng-template ngbTabContent>
             <app-candidate-additional-info-tab
               [candidate]="candidate"
-              [editable]="true"
+              [editable]="!loggedInUser.readOnly"
               [loggedInUser]="loggedInUser">
               >
             </app-candidate-additional-info-tab>
@@ -114,7 +114,7 @@
               <app-candidate-history-tab
                 [candidate]="candidate"
                 [characterLimit]="1000"
-                [editable]="true"
+                [editable]="!loggedInUser.readOnly"
                 (onResize)="resizeSidePanel()">
               </app-candidate-history-tab>
             </ng-template>

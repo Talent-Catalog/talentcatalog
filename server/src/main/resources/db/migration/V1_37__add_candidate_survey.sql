@@ -6,8 +6,8 @@ status                  text not null default 'active'
 );
 
 
-alter table candidate add column survey_type_id bigint references survey_type
-alter table candidate add column survey_comment text
+alter table candidate add column survey_type_id bigint references survey_type;
+alter table candidate add column survey_comment text;
 
 
 insert into survey_type (name) values ('Information Session');
