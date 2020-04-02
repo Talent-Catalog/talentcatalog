@@ -183,20 +183,17 @@ public class SystemAdminApi {
                 update.setString(i++, text);
                 update.setString(i++, candidateNumber);
                 
-                log.info("Update candidate " + candidateNumber + " " + targetID + ": " + text);
+//                log.info("Update candidate " + candidateNumber + " " + targetID + ": " + text);
                 update.addBatch();
 
-//                if (count%100 == 0) {
+                if (count%100 == 0) {
                     update.executeBatch();
                     log.info("candidates - saving batch  " + count);
-//                }
-
-                if (count == 3) {
-                    break;
                 }
+
                 count++;
             }
-//            update.executeBatch();
+            update.executeBatch();
             log.info("candidates - saving batch " + count);
             log.info("Migration survey data for candidates");
 
