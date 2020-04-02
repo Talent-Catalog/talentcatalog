@@ -43,11 +43,26 @@ export class AuthService {
     if(!this.loggedInUser){
       this.loggedInUser = this.localStorageService.get('user');
     }
-    return this.loggedInUser;
+    
+    if(!this.isValidUserInfo(this.loggedInUser)){
+      console.log("invalid user");
+      this.logout();
+      return this.loggedInUser = null;
+    }else {
+      return this.loggedInUser;
+    }
   }
 
   setNewLoggedInUser(new_user) {
     this.localStorageService.set('user', new_user);
+  }
+
+  isValidUserInfo(user: User){
+    if(user.role){
+      return user.readOnly != null;
+    } else {
+      return false;
+    }
   }
 
   getToken(): string {
