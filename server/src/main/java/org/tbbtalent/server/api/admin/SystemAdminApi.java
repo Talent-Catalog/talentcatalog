@@ -136,7 +136,7 @@ public class SystemAdminApi {
                     userId = loggedInUser.getId();
                 }
             }
-
+            
             Connection sourceConn = DriverManager.getConnection("jdbc:mysql://v1.tbbtalent.org/yiitbb?useUnicode=yes&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull", "sayre", "MoroccoBound");
             Statement sourceStmt = sourceConn.createStatement();
 
@@ -144,24 +144,22 @@ public class SystemAdminApi {
 
             log.info("Migration survey data for candidates");
 
-            String updateSql = "update candidate set survey_type_id = (" +
-                    "    select id" +
-                    "    from survey_type where name = ?" +
-                    "    ), survey_comment = ? where candidate_number = ?";
+            String updateSql = "update candidate set survey_type_id = ?, " +
+                    " survey_comment = ? where candidate_number = ?";
             
-            String selectSql = "select u.id as userID, o.name as optionName, " +
+            String selectSql = "select u.id as userID, `option` as optionID, " +
                     "       option_information_session, option_community_center, " +
                     "       option_facebook_page, option_other, option_ngo, option_outreach " +
                     "from user u " +
-                    "    left join user_jobseeker_survey s on s.user_id = u.id" +
-                    "    left join frm_options o on `option` = o.id " +
-                    "where `option` is not null ";
+                    "    left join user_jobseeker_survey s on s.user_id = u.id " +
+                    "where `option` is not null;";
             PreparedStatement update = targetConn.prepareStatement(updateSql);
             ResultSet result = sourceStmt.executeQuery(selectSql);
             int count = 0;
             while (result.next()) {
                 String candidateNumber = result.getString("userID");
-                String optionName = result.getString("optionName");
+                int optionID = result.getInt("optionID");
+                int targetID = optionID == 0 ? 8 : optionID - 8770;
                 
                 String text = "";
                 
@@ -178,13 +176,14 @@ public class SystemAdminApi {
                 text += s == null ? "" : s;
                 s = result.getString("option_outreach");
                 text += s == null ? "" : s;
-                
+
+
                 int i = 1;
-                update.setString(i++, optionName);
+                update.setInt(i++, targetID);
                 update.setString(i++, text);
                 update.setString(i++, candidateNumber);
                 
-                log.info("Update candidate " + candidateNumber + " " + optionName + ": " + text);
+                log.info("Update candidate " + candidateNumber + " " + targetID + ": " + text);
                 update.addBatch();
 
 //                if (count%100 == 0) {
