@@ -1,17 +1,14 @@
 package org.tbbtalent.server.api.admin;
 
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.tbbtalent.server.model.*;
-import org.tbbtalent.server.security.UserContext;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.sql.Types;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,6 +18,23 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.tbbtalent.server.model.AttachmentType;
+import org.tbbtalent.server.model.CandidateStatus;
+import org.tbbtalent.server.model.EducationType;
+import org.tbbtalent.server.model.Gender;
+import org.tbbtalent.server.model.NoteType;
+import org.tbbtalent.server.model.Status;
+import org.tbbtalent.server.model.User;
+import org.tbbtalent.server.security.UserContext;
 
 @RestController
 @RequestMapping("/api/admin/system")
@@ -107,6 +121,84 @@ public class SystemAdminApi {
 
         } catch (Exception e){
             log.error("unable to migrate status data", e);
+        }
+
+        return "done";
+    }
+
+    @GetMapping("migrate/survey")
+    public String migrateSurvey() {
+        try {
+            Long userId = 1L;
+            if (userContext != null) {
+                User loggedInUser = userContext.getLoggedInUser();
+                if (loggedInUser != null){
+                    userId = loggedInUser.getId();
+                }
+            }
+            
+            Connection sourceConn = DriverManager.getConnection("jdbc:mysql://v1.tbbtalent.org/yiitbb?useUnicode=yes&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull", "sayre", "MoroccoBound");
+            Statement sourceStmt = sourceConn.createStatement();
+
+            Connection targetConn = DriverManager.getConnection(targetJdbcUrl, targetUser, targetPwd);
+
+            log.info("Migration survey data for candidates");
+
+            String updateSql = "update candidate set survey_type_id = ?, " +
+                    " survey_comment = ? where candidate_number = ?";
+            
+            String selectSql = "select u.id as userID, `option` as optionID, " +
+                    "       option_information_session, option_community_center, " +
+                    "       option_facebook_page, option_other, option_ngo, option_outreach " +
+                    "from user u " +
+                    "    left join user_jobseeker_survey s on s.user_id = u.id " +
+                    "where `option` is not null;";
+            PreparedStatement update = targetConn.prepareStatement(updateSql);
+            ResultSet result = sourceStmt.executeQuery(selectSql);
+            int count = 0;
+            while (result.next()) {
+                String candidateNumber = result.getString("userID");
+                int optionID = result.getInt("optionID");
+                int targetID = optionID == 0 ? 8 : optionID - 8770;
+                
+                String text = "";
+                
+                String s;
+                s = result.getString("option_information_session");
+                text += s == null ? "" : s;
+                s = result.getString("option_community_center");
+                text += s == null ? "" : s;
+                s = result.getString("option_facebook_page");
+                text += s == null ? "" : s;
+                s = result.getString("option_other");
+                text += s == null ? "" : s;
+                s = result.getString("option_ngo");
+                text += s == null ? "" : s;
+                s = result.getString("option_outreach");
+                text += s == null ? "" : s;
+
+
+                int i = 1;
+                update.setInt(i++, targetID);
+                update.setString(i++, text);
+                update.setString(i++, candidateNumber);
+                
+//                log.info("Update candidate " + candidateNumber + " " + targetID + ": " + text);
+                update.addBatch();
+
+                if (count%100 == 0) {
+                    update.executeBatch();
+                    log.info("candidates - saving batch  " + count);
+                }
+
+                count++;
+            }
+            update.executeBatch();
+            log.info("candidates - saving batch " + count);
+            log.info("Migration survey data for candidates");
+
+        } catch (Exception e){
+            log.error("unable to migrate survey data", e);
         }
 
         return "done";
