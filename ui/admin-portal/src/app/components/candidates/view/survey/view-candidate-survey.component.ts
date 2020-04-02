@@ -13,7 +13,6 @@ export class ViewCandidateSurveyComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    console.log(this.candidate)
   }
 
 }
