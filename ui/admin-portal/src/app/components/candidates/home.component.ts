@@ -1,10 +1,15 @@
 import {Component, OnInit} from '@angular/core';
 import {NgbTabChangeEvent} from "@ng-bootstrap/ng-bootstrap";
-import {SavedSearchSubtype} from "../../model/saved-search";
+import {
+  SavedSearchSubtype,
+  SavedSearchType,
+  SearchBy
+} from "../../model/saved-search";
 import {LocalStorageService} from "angular-2-local-storage";
 import {
   SavedSearchService,
-  SavedSearchTypeInfo, SavedSearchTypeSubInfo
+  SavedSearchTypeInfo,
+  SavedSearchTypeSubInfo
 } from "../../services/saved-search.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
 
@@ -15,7 +20,7 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 })
 export class HomeComponent implements OnInit {
 
-  activeId: string;
+  activeTabId: string;
   categoryForm: FormGroup;
   private lastTabKey: string = 'HomeLastTab';
   private lastCategoryTabKey: string = 'HomeLastCategoryTab';
@@ -41,7 +46,7 @@ export class HomeComponent implements OnInit {
   }
 
   onTabChanged(event: NgbTabChangeEvent) {
-    this.setActiveId(event.nextId);
+    this.setActiveTabId(event.nextId);
   }
 
   onSavedSearchSubtypeChange($event: Event) {
@@ -50,10 +55,10 @@ export class HomeComponent implements OnInit {
   }
 
   private selectDefaultTab() {
-    const defaultActiveID: string = this.localStorageService.get(this.lastTabKey);
-    this.setActiveId(defaultActiveID == null ? "0" : defaultActiveID);
+    const defaultActiveTabID: string = this.localStorageService.get(this.lastTabKey);
+    this.setActiveTabId(defaultActiveTabID == null ? "type:profession" : defaultActiveTabID);
 
-    if (defaultActiveID == null) {
+    if (defaultActiveTabID == null) {
       this.setSelectedSavedSearchSubtype(this.savedSearchTypeSubInfos[0].savedSearchSubtype);
     } else {
       const defaultCategory: string = this.localStorageService.get(this.lastCategoryTabKey);
@@ -61,12 +66,17 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  private setActiveId(activeId: string) {
-    this.activeId = activeId;
+  private setActiveTabId(id: string) {
 
-    this.savedSearchTypeSubInfos = this.savedSearchTypeInfos[+activeId].categories;
+    const parts = id.split(':');
+    if (parts[0] == 'type' && parts.length == 2) {
 
-    this.localStorageService.set(this.lastTabKey, this.activeId);
+      let type: SavedSearchType = SavedSearchType[parts[1]];
+      this.savedSearchTypeSubInfos = this.savedSearchTypeInfos[type].categories;
+
+    }
+
+    this.localStorageService.set(this.lastTabKey, id);
   }
 
   private setSelectedSavedSearchSubtype(selectedSavedSearchSubtype: number) {
@@ -74,5 +84,14 @@ export class HomeComponent implements OnInit {
     this.categoryForm.controls['savedSearchSubtype'].patchValue(selectedSavedSearchSubtype);
 
     this.localStorageService.set(this.lastCategoryTabKey, this.selectedSavedSearchSubtype);
+  }
+
+  //Make some Enum types visible in HTML
+  get SearchBy() {
+    return SearchBy;
+  }
+
+  get SavedSearchType() {
+    return SavedSearchType;
   }
 }

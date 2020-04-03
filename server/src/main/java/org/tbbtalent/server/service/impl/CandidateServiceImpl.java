@@ -46,6 +46,7 @@ import org.tbbtalent.server.model.SavedSearch;
 import org.tbbtalent.server.model.SearchJoin;
 import org.tbbtalent.server.model.SearchType;
 import org.tbbtalent.server.model.Status;
+import org.tbbtalent.server.model.SurveyType;
 import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.repository.CandidateRepository;
 import org.tbbtalent.server.repository.CandidateSpecification;
@@ -53,6 +54,7 @@ import org.tbbtalent.server.repository.CountryRepository;
 import org.tbbtalent.server.repository.EducationLevelRepository;
 import org.tbbtalent.server.repository.NationalityRepository;
 import org.tbbtalent.server.repository.SavedSearchRepository;
+import org.tbbtalent.server.repository.SurveyTypeRepository;
 import org.tbbtalent.server.repository.UserRepository;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.candidate.BaseCandidateContactRequest;
@@ -71,6 +73,7 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateLinksRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tbbtalent.server.request.note.CreateCandidateNoteRequest;
 import org.tbbtalent.server.security.PasswordHelper;
 import org.tbbtalent.server.security.UserContext;
@@ -97,6 +100,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final UserContext userContext;
     private final SavedSearchService savedSearchService;
     private final CandidateNoteService candidateNoteService;
+    private final SurveyTypeRepository surveyTypeRepository;
     private final EmailHelper emailHelper;
     private final PdfHelper pdfHelper;
 
@@ -111,6 +115,7 @@ public class CandidateServiceImpl implements CandidateService {
                                 UserContext userContext,
                                 SavedSearchService savedSearchService,
                                 CandidateNoteService candidateNoteService,
+                                SurveyTypeRepository surveyTypeRepository,
                                 EmailHelper emailHelper, PdfHelper pdfHelper) {
         this.userRepository = userRepository;
         this.savedSearchRepository = savedSearchRepository;
@@ -122,6 +127,7 @@ public class CandidateServiceImpl implements CandidateService {
         this.userContext = userContext;
         this.savedSearchService = savedSearchService;
         this.candidateNoteService = candidateNoteService;
+        this.surveyTypeRepository = surveyTypeRepository;
         this.emailHelper = emailHelper;
         this.pdfHelper = pdfHelper;
     }
@@ -303,6 +309,9 @@ public class CandidateServiceImpl implements CandidateService {
                 request.getLastName(),
                 request.getEmail(),
                 Role.user);
+
+        // set Read Only to default false
+        user.setReadOnly(false);
 
         User existing = userRepository.findByUsernameAndRole(user.getUsername(), Role.user);
         if (existing != null) {
@@ -522,6 +531,23 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    public Candidate updateCandidateSurvey(UpdateCandidateSurveyRequest request) {
+        Candidate candidate = getLoggedInCandidate();
+
+        SurveyType surveyType = null;
+        if (request.getSurveyTypeId() != null) {
+            // Load the education level from the database - throw an exception if not found
+            surveyType = surveyTypeRepository.findById(request.getSurveyTypeId())
+                    .orElseThrow(() -> new NoSuchObjectException(EducationLevel.class, request.getSurveyTypeId()));
+        }
+        candidate.setSurveyType(surveyType);
+        candidate.setSurveyComment(request.getSurveyComment());
+
+        candidate.setAuditFields(candidate.getUser());
+        return candidateRepository.save(candidate);
+    }
+
+    @Override
     public Candidate updateAdditionalInfo(UpdateCandidateAdditionalInfoRequest request) {
         Candidate candidate = getLoggedInCandidate();
         candidate.setAdditionalInfo(request.getAdditionalInfo());
@@ -641,6 +667,13 @@ public class CandidateServiceImpl implements CandidateService {
                 countByNationalityOrderByCount(
                         genderStr(gender), countryStr(country))); 
         return limitRows(rows, 15);
+    }
+
+    @Override
+    public List<DataRow> getSurveyStats(Gender gender, String country) {
+        return toRows(candidateRepository.
+                countBySurveyOrderByCount(
+                        genderStr(gender), countryStr(country))); 
     }
     
     @Override

@@ -2,11 +2,22 @@ package org.tbbtalent.server.api.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.Role;
 import org.tbbtalent.server.model.User;
-import org.tbbtalent.server.request.user.*;
+import org.tbbtalent.server.request.user.CreateUserRequest;
+import org.tbbtalent.server.request.user.SearchUserRequest;
+import org.tbbtalent.server.request.user.UpdateUserPasswordRequest;
+import org.tbbtalent.server.request.user.UpdateUserRequest;
+import org.tbbtalent.server.request.user.UpdateUsernameRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.UserService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
@@ -85,6 +96,7 @@ public class UserAdminApi {
                 .add("lastName")
                 .add("email")
                 .add("role")
+                .add("readOnly")
                 .add("status")
                 .add("createdDate")
                 .add("lastLogin")

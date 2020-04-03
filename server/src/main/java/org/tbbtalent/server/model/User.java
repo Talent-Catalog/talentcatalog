@@ -2,7 +2,14 @@ package org.tbbtalent.server.model;
 
 import org.apache.commons.lang3.StringUtils;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
@@ -18,6 +25,8 @@ public class User extends AbstractAuditableDomainObject<Long> {
     
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    private Boolean readOnly;
     
     private String passwordEnc;
     
@@ -93,6 +102,10 @@ public class User extends AbstractAuditableDomainObject<Long> {
     public void setRole(Role role) {
         this.role = role;
     }
+
+    public Boolean getReadOnly() { return readOnly; }
+
+    public void setReadOnly(Boolean readOnly) { this.readOnly = readOnly; }
 
     public String getPasswordEnc() {
         return passwordEnc;

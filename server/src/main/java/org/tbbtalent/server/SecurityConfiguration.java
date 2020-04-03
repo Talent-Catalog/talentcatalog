@@ -16,7 +16,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.tbbtalent.server.security.*;
+import org.tbbtalent.server.security.CandidateUserDetailsService;
+import org.tbbtalent.server.security.JwtAuthenticationEntryPoint;
+import org.tbbtalent.server.security.JwtAuthenticationFilter;
+import org.tbbtalent.server.security.LanguageFilter;
+import org.tbbtalent.server.security.TbbAuthenticationProvider;
 
 @Configuration
 @EnableWebSecurity
@@ -85,18 +89,30 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         "/api/admin/education-level",
                         "/api/admin/education-major").hasRole("ADMIN")
 
-                // ADMIN/SOURCE PARTNER ADMIN ONLY - see candidate file attachments
-                .antMatchers(HttpMethod.POST, "/api/admin/candidate-attachment/search").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN")
+                // SEE CANDIDATE FILE ATTACHMENTS. ADMIN/SOURCE PARTNER ADMIN ALLOWED. READ ONLY has access BUT has the data restricted in the DTO based on role.
+                .antMatchers(HttpMethod.POST, "/api/admin/candidate-attachment/search").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN", "READONLY")
+
+                // POST: CREATE SAVED SEARCHES
+                .antMatchers(HttpMethod.POST, "/api/admin/saved-search").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // PUT: UPDATE SAVED SEARCHES
+                .antMatchers(HttpMethod.PUT, "/api/admin/saved-search/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // GET: LOAD SAVE SEARCHES
+                .antMatchers(HttpMethod.GET, "/api/admin/saved-search/*/load").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // POST: ALL SEARCHES
+                .antMatchers(HttpMethod.POST, "/api/admin/*/search").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // ALL OTHER END POINTS
-                    // POST
+                    // POST (EXC. READ ONLY)
                 .antMatchers(HttpMethod.POST, "/api/admin/**").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED")
 
-                    // PUT
+                    // PUT (EXC. READ ONLY)
                 .antMatchers(HttpMethod.PUT, "/api/admin/**").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED")
 
                     // GET
-                .antMatchers(HttpMethod.GET, "/api/admin/**").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED")
+                .antMatchers(HttpMethod.GET, "/api/admin/**").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 .and()
             .csrf().disable()

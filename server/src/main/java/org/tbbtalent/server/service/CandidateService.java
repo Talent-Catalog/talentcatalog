@@ -25,6 +25,7 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateLinksRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
 
 public interface CandidateService {
 
@@ -59,6 +60,8 @@ public interface CandidateService {
     Candidate updateEducation(UpdateCandidateEducationRequest request);
 
     Candidate updateAdditionalInfo(UpdateCandidateAdditionalInfoRequest request);
+
+    Candidate updateCandidateSurvey(UpdateCandidateSurveyRequest request);
 
     Candidate getLoggedInCandidateLoadCandidateOccupations();
 
@@ -96,5 +99,8 @@ public interface CandidateService {
 
     List<DataRow> getNationalityStats(Gender gender, String country);
 
+    List<DataRow> getSurveyStats(Gender gender, String country);
+
     Resource generateCv(Candidate candidate);
+
 }

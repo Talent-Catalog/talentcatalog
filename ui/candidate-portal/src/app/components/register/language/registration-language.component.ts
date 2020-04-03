@@ -30,7 +30,7 @@ export class RegistrationLanguageComponent implements OnInit, OnDestroy {
     candidate: true,
     english: true,
     languages: true,
-    lanuageLevels: true
+    languageLevels: true
   };
   saving: boolean;
 
@@ -73,7 +73,7 @@ export class RegistrationLanguageComponent implements OnInit, OnDestroy {
 
   loadDropDownData() {
     this._loading.languages = true;
-    this._loading.lanuageLevels = true;
+    this._loading.languageLevels = true;
     this._loading.english = true;
 
     this.languageService.getLanguage('english').subscribe(result => {
@@ -101,11 +101,11 @@ export class RegistrationLanguageComponent implements OnInit, OnDestroy {
     this.languageLevelService.listLanguageLevels().subscribe(
       (response) => {
         this.languageLevels = response;
-        this._loading.lanuageLevels = false;
+        this._loading.languageLevels = false;
       },
       (error) => {
         this.error = error;
-        this._loading.lanuageLevels = false;
+        this._loading.languageLevels = false;
       }
     );
   }
@@ -202,7 +202,7 @@ export class RegistrationLanguageComponent implements OnInit, OnDestroy {
 
   get loading() {
     const l = this._loading;
-    return l.candidate || l.languages || l.lanuageLevels;
+    return l.candidate || l.languages || l.languageLevels;
   }
 
   get selectedFormLanguage() {

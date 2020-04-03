@@ -57,6 +57,7 @@ public class AuthAdminApi {
                 .add("username")
                 .add("email")
                 .add("role")
+                .add("readOnly")
                 ;
     }
 }

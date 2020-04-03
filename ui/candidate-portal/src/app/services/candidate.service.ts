@@ -50,6 +50,15 @@ export class CandidateService {
     return this.http.post<Candidate>(`${this.apiUrl}/additional-info`, request);
   }
 
+  /* Candidate Survey */
+  getCandidateSurvey(): Observable<Candidate> {
+    return this.http.get<Candidate>(`${this.apiUrl}/survey`);
+  }
+
+  updateCandidateSurvey(request): Observable<Candidate> {
+    return this.http.post<Candidate>(`${this.apiUrl}/survey`, request);
+  }
+
   getCandidateCandidateOccupations(): Observable<Candidate> {
     return this.http.get<Candidate>(`${this.apiUrl}/occupation`);
   }

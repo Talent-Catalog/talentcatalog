@@ -4,7 +4,14 @@ import {AuthService} from "../../services/auth.service";
 import {CandidateService} from "../../services/candidate.service";
 import {Candidate} from "../../model/candidate";
 import {Observable, of} from "rxjs";
-import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from "rxjs/operators";
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  switchMap,
+  tap
+} from "rxjs/operators";
 import {User} from "../../model/user";
 
 @Component({
@@ -91,12 +98,6 @@ export class HeaderComponent implements OnInit {
       );
     this.loggedInUser = this.authService.getLoggedInUser();
     console.log(this.loggedInUser);
-    // Make sure user has role in case of an old cache. Force new login to get user role.
-    if (this.loggedInUser) {
-      if (!this.loggedInUser.role) {
-        this.authService.logout();
-      }
-    }
   }
 
   renderCandidateRow(candidate: Candidate) {

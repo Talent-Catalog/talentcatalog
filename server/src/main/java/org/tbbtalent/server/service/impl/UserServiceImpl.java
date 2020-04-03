@@ -1,10 +1,5 @@
 package org.tbbtalent.server.service.impl;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-import javax.security.auth.login.AccountLockedException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +26,6 @@ import org.tbbtalent.server.exception.PasswordMatchException;
 import org.tbbtalent.server.exception.UserDeactivatedException;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.Candidate;
-import org.tbbtalent.server.model.Role;
 import org.tbbtalent.server.model.Status;
 import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.repository.CandidateRepository;
@@ -52,6 +46,10 @@ import org.tbbtalent.server.security.PasswordHelper;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.UserService;
 import org.tbbtalent.server.service.email.EmailHelper;
+
+import javax.security.auth.login.AccountLockedException;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -109,6 +107,8 @@ public class UserServiceImpl implements UserService {
                 request.getEmail(),
                 request.getRole());
 
+        user.setReadOnly(request.getReadOnly());
+
         /* Validate the password before account creation */
         String passwordEncrypted = passwordHelper.validateAndEncodePassword(request.getPassword());
         user.setPasswordEnc(passwordEncrypted);
@@ -138,6 +138,8 @@ public class UserServiceImpl implements UserService {
                 throw new UsernameTakenException("email");
             }
         }
+
+        user.setReadOnly(request.getReadOnly());
 
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());

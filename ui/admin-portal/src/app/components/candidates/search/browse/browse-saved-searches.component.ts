@@ -10,8 +10,10 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
 import {
   indexOfSavedSearch,
-  SavedSearch, SavedSearchSubtype,
-  SavedSearchType
+  SavedSearch,
+  SavedSearchSubtype,
+  SavedSearchType,
+  SearchBy
 } from '../../../../model/saved-search';
 import {SavedSearchService} from '../../../../services/saved-search.service';
 import {Router} from '@angular/router';
@@ -26,6 +28,7 @@ export class BrowseSavedSearchesComponent implements OnInit, OnChanges {
 
   private savedStateKeyPrefix: string = 'BrowseKey';
 
+  @Input() searchBy: SearchBy;
   @Input() savedSearchType: SavedSearchType;
   @Input() savedSearchSubtype: SavedSearchSubtype;
   searchForm: FormGroup;
@@ -71,37 +74,41 @@ export class BrowseSavedSearchesComponent implements OnInit, OnChanges {
   }
 
   search() {
-    this.loading = true;
-    const request = this.searchForm ? this.searchForm.value : {keyword: ""};
-    request.savedSearchType = this.savedSearchType;
-    request.savedSearchSubtype = this.savedSearchSubtype;
-    request.pageNumber = this.pageNumber - 1;
-    request.pageSize = this.pageSize;
-    request.sortFields = ['name'];
-    request.sortDirection = 'ASC';
-    this.savedSearchService.search(request).subscribe(results => {
-      this.results = results;
+    if (this.savedSearchType == undefined) {
+      this.error = "Haven't implemented search by " + SearchBy[this.searchBy];
+    } else {
+      this.loading = true;
+      const request = this.searchForm ? this.searchForm.value : {keyword: ""};
+      request.savedSearchType = this.savedSearchType;
+      request.savedSearchSubtype = this.savedSearchSubtype;
+      request.pageNumber = this.pageNumber - 1;
+      request.pageSize = this.pageSize;
+      request.sortFields = ['name'];
+      request.sortDirection = 'ASC';
+      this.savedSearchService.search(request).subscribe(results => {
+        this.results = results;
 
-      if (results.content.length > 0) {
-        //Selected previously search if any
-        const savedSearchID: number = this.localStorageService.get(this.savedStateKey());
-        if (savedSearchID) {
-          this.selectedIndex = indexOfSavedSearch(savedSearchID, this.results.content);
-          if (this.selectedIndex >= 0) {
-            this.selectedSavedSearch = this.results.content[this.selectedIndex];
+        if (results.content.length > 0) {
+          //Selected previously search if any
+          const savedSearchID: number = this.localStorageService.get(this.savedStateKey());
+          if (savedSearchID) {
+            this.selectedIndex = indexOfSavedSearch(savedSearchID, this.results.content);
+            if (this.selectedIndex >= 0) {
+              this.selectedSavedSearch = this.results.content[this.selectedIndex];
+            } else {
+              //Select the first search if can't find previous (category of search
+              // may have changed)
+              this.onSelect(this.results.content[0]);
+            }
           } else {
-            //Select the first search if can't find previous (category of search
-            // may have changed)
+            //Select the first search if no previous
             this.onSelect(this.results.content[0]);
           }
-        } else {
-          //Select the first search if no previous
-          this.onSelect(this.results.content[0]);
         }
-      }
 
-      this.loading = false;
-    });
+        this.loading = false;
+      });
+    }
   }
 
   onSelect(savedSearch: SavedSearch) {

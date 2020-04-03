@@ -1,9 +1,5 @@
 package org.tbbtalent.server.model;
 
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.util.List;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -15,6 +11,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "candidate")
@@ -34,6 +33,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private String unRegistrationNumber;
     private String additionalInfo;
     private String candidateMessage;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "survey_type_id")
+    private SurveyType surveyType;
+
+    private String surveyComment;
 
     @Enumerated(EnumType.STRING)
     private CandidateStatus status;
@@ -199,9 +204,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         return additionalInfo;
     }
 
-    public void setAdditionalInfo(String additionalInfo) {
-        this.additionalInfo = additionalInfo;
-    }
+    public void setAdditionalInfo(String additionalInfo) { this.additionalInfo = additionalInfo; }
 
     public String getCandidateMessage() {
         return candidateMessage;
@@ -210,6 +213,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setCandidateMessage(String candidateMessage) {
         this.candidateMessage = candidateMessage;
     }
+
+    public SurveyType getSurveyType() { return surveyType; }
+
+    public void setSurveyType(SurveyType surveyType) { this.surveyType = surveyType; }
+
+    public String getSurveyComment() { return surveyComment; }
+
+    public void setSurveyComment(String surveyComment) { this.surveyComment = surveyComment; }
 
     public CandidateStatus getStatus() {
         return status;

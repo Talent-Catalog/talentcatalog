@@ -5,6 +5,7 @@ export interface User {
   lastName: string;
   email: string;
   role: string;
+  readOnly: boolean;
   status: string;
   createdDate: number;
   lastLogin: number;

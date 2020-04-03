@@ -7,6 +7,7 @@ import {CandidateCertification} from "./candidate-certification";
 import {CandidateLanguage} from "./candidate-language";
 import {EducationLevel} from "./education-level";
 import {User} from "./user";
+import {SurveyType} from "./survey-type";
 
 export interface Candidate {
   id: number;
@@ -30,6 +31,8 @@ export interface Candidate {
   candidateEducations: CandidateEducation[];
   additionalInfo: string;
   candidateMessage: string;
+  surveyType: SurveyType;
+  surveyComment: string;
   status: CandidateStatus;
 }
 

@@ -4,6 +4,7 @@ import {Nationality} from "./nationality";
 import {CandidateShortlistItem} from "./candidate-shortlist-item";
 import {EducationMajor} from "./education-major";
 import {EducationLevel} from "./education-level";
+import {SurveyType} from "./survey-type";
 
 export interface Candidate {
   id: number;
@@ -29,4 +30,6 @@ export interface Candidate {
   videolink: string;
   unRegistered: string;
   unRegistrationNumber: string;
+  surveyType: SurveyType;
+  surveyComment: string;
 }
