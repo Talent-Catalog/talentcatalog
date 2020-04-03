@@ -202,4 +202,11 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             nativeQuery = true)
     List<Object[]> countByMainOccupationOrderByCount(@Param("gender") String gender);
 
+    @Query( value="select DATE(created_date), count(distinct id) as PeopleCount from users " +
+            "where created_date > current_date - :days " +
+            "group by DATE(created_date) " +
+            "order by DATE(created_date) asc;",
+            nativeQuery = true)
+    List<Object[]> countByCreatedDateOrderByCount(@Param("days") Integer days);
+
 }
