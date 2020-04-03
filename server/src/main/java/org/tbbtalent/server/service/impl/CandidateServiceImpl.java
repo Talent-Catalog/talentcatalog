@@ -662,6 +662,11 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    public List<DataRow> getRegistrationStats(int days) {
+        return toRows(candidateRepository.countByCreatedDateOrderByCount(days)); 
+    }
+
+    @Override
     public List<DataRow> getNationalityStats(Gender gender, String country) {
         List<DataRow> rows = toRows(candidateRepository.
                 countByNationalityOrderByCount(

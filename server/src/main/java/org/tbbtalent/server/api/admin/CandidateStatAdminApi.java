@@ -36,6 +36,15 @@ public class CandidateStatAdminApi {
         statReports.add(new StatReport("Gender",
                 this.candidateService.getGenderStats(), chartType)); 
 
+        title = "Registrations";
+        chartType = "bar";
+        statReports.add(new StatReport(title + " (since start)",
+                this.candidateService.getRegistrationStats(999999), chartType)); 
+        statReports.add(new StatReport(title + " (last year)",
+                this.candidateService.getRegistrationStats(366), chartType)); 
+        statReports.add(new StatReport(title + " (last 3 weeks)",
+                this.candidateService.getRegistrationStats(21), chartType)); 
+
         title = "Birth years";
         chartType = "bar";
         statReports.add(new StatReport(title,
@@ -44,8 +53,6 @@ public class CandidateStatAdminApi {
                 this.candidateService.getBirthYearStats(Gender.male), chartType)); 
         statReports.add(new StatReport(title + " (female)",
                 this.candidateService.getBirthYearStats(Gender.female), chartType)); 
-        statReports.add(new StatReport(title + " (other)",
-                this.candidateService.getBirthYearStats(Gender.other), chartType));
 
         title = "Nationalities";
         statReports.add(new StatReport(title,
@@ -54,8 +61,6 @@ public class CandidateStatAdminApi {
                 this.candidateService.getNationalityStats(Gender.male, null))); 
         statReports.add(new StatReport(title + " (female)",
                 this.candidateService.getNationalityStats(Gender.female, null))); 
-        statReports.add(new StatReport(title + " (other)",
-                this.candidateService.getNationalityStats(Gender.other, null)));
         statReports.add(new StatReport(title + " (Jordan)",
                 this.candidateService.getNationalityStats(null, "jordan")));
         statReports.add(new StatReport(title + " (Lebanon)",
@@ -68,8 +73,6 @@ public class CandidateStatAdminApi {
                 this.candidateService.getOccupationStats(Gender.male))); 
         statReports.add(new StatReport(title + " (female)",
                 this.candidateService.getOccupationStats(Gender.female))); 
-        statReports.add(new StatReport(title + " (other)",
-                this.candidateService.getOccupationStats(Gender.other)));
 
         title = "Main Occupations";
         statReports.add(new StatReport(title + "",
@@ -78,8 +81,6 @@ public class CandidateStatAdminApi {
                 this.candidateService.getMainOccupationStats(Gender.male))); 
         statReports.add(new StatReport(title + " (female)",
                 this.candidateService.getMainOccupationStats(Gender.female))); 
-        statReports.add(new StatReport(title + " (other)",
-                this.candidateService.getMainOccupationStats(Gender.other)));
 
         title = "Max Education Level";
         statReports.add(new StatReport(title, 
@@ -88,8 +89,6 @@ public class CandidateStatAdminApi {
                 this.candidateService.getMaxEducationStats(Gender.male)));
         statReports.add(new StatReport(title + " (female)", 
                 this.candidateService.getMaxEducationStats(Gender.female)));
-        statReports.add(new StatReport(title + " (other)", 
-                this.candidateService.getMaxEducationStats(Gender.other)));
 
         title = "Languages";
         statReports.add(new StatReport(title, 
@@ -98,8 +97,6 @@ public class CandidateStatAdminApi {
                 this.candidateService.getLanguageStats(Gender.male)));
         statReports.add(new StatReport(title + " (female)", 
                 this.candidateService.getLanguageStats(Gender.female)));
-        statReports.add(new StatReport(title + " (other)", 
-                this.candidateService.getLanguageStats(Gender.other)));
 
         title = "Survey";
         statReports.add(new StatReport(title, 
@@ -112,8 +109,6 @@ public class CandidateStatAdminApi {
                 this.candidateService.getSurveyStats(Gender.male, null)));
         statReports.add(new StatReport(title + " (female)", 
                 this.candidateService.getSurveyStats(Gender.female, null)));
-        statReports.add(new StatReport(title + " (other)", 
-                this.candidateService.getSurveyStats(Gender.other, null)));
 
         
         language = "English";
@@ -124,8 +119,6 @@ public class CandidateStatAdminApi {
                 this.candidateService.getSpokenLanguageLevelStats(Gender.male, language)));
         statReports.add(new StatReport(title + " (female)", 
                 this.candidateService.getSpokenLanguageLevelStats(Gender.female, language)));
-        statReports.add(new StatReport(title + " (other)", 
-                this.candidateService.getSpokenLanguageLevelStats(Gender.other, language)));
 
         language = "French";
         title = "Spoken " + language + " Language Level"; 
@@ -135,8 +128,6 @@ public class CandidateStatAdminApi {
                 this.candidateService.getSpokenLanguageLevelStats(Gender.male, language)));
         statReports.add(new StatReport(title + " (female)", 
                 this.candidateService.getSpokenLanguageLevelStats(Gender.female, language)));
-        statReports.add(new StatReport(title + " (other)", 
-                this.candidateService.getSpokenLanguageLevelStats(Gender.other, language)));
 
         //Construct the dto - just a list of all individual report dtos
         List<Map<String, Object>> dto = new ArrayList<>();
