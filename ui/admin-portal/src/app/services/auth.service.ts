@@ -43,10 +43,11 @@ export class AuthService {
     if(!this.loggedInUser){
       this.loggedInUser = this.localStorageService.get('user');
     }
-    
+
     if(!this.isValidUserInfo(this.loggedInUser)){
       console.log("invalid user");
       this.logout();
+      this.router.navigate(['login']);
       return this.loggedInUser = null;
     }else {
       return this.loggedInUser;
@@ -58,7 +59,10 @@ export class AuthService {
   }
 
   isValidUserInfo(user: User){
-    if(user.role){
+    if (user == null) {
+      return true;
+    }
+    if (user.role) {
       return user.readOnly != null;
     } else {
       return false;
