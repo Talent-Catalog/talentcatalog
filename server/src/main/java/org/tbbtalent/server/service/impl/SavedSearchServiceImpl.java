@@ -81,7 +81,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     @Override
     public Page<SavedSearch> searchSavedSearches(SearchSavedSearchRequest request) {
         Page<SavedSearch> savedSearches = savedSearchRepository.findAll(
-                SavedSearchSpecification.buildSearchQuery(request), request.getPageRequest());
+                SavedSearchSpecification.buildSearchQuery(request, userContext), request.getPageRequest());
         log.info("Found " + savedSearches.getTotalElements() + " savedSearches in search");
 
         for (SavedSearch savedSearch: savedSearches) {

@@ -74,17 +74,36 @@ export class BrowseSavedSearchesComponent implements OnInit, OnChanges {
   }
 
   search() {
-    if (this.savedSearchType == undefined) {
+    let request = this.searchForm ? this.searchForm.value : {keyword: ""};
+    request.pageNumber = this.pageNumber - 1;
+    request.pageSize = this.pageSize;
+    request.sortFields = ['name'];
+    request.sortDirection = 'ASC';
+    if (this.savedSearchType != undefined) {
+      request.savedSearchType = this.savedSearchType;
+      request.savedSearchSubtype = this.savedSearchSubtype;
+
+      request.fixed = true;
+      request.owned = true;
+      request.shared = true;
+
+    } else {
+      switch (this.searchBy) {
+        case SearchBy.mySearches:
+          request.owned = true;
+          break;
+        case SearchBy.sharedWithMe:
+          request.shared = true;
+          break;
+        default:
+          request = null;
+      }
+    }
+
+    if (request == null) {
       this.error = "Haven't implemented search by " + SearchBy[this.searchBy];
     } else {
       this.loading = true;
-      const request = this.searchForm ? this.searchForm.value : {keyword: ""};
-      request.savedSearchType = this.savedSearchType;
-      request.savedSearchSubtype = this.savedSearchSubtype;
-      request.pageNumber = this.pageNumber - 1;
-      request.pageSize = this.pageSize;
-      request.sortFields = ['name'];
-      request.sortDirection = 'ASC';
       this.savedSearchService.search(request).subscribe(results => {
         this.results = results;
 

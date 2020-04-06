@@ -11,6 +11,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
@@ -77,6 +78,9 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "savedSearch", cascade = CascadeType.MERGE)
     private Set<SearchJoin> searchJoins = new HashSet<>();
+    
+    @ManyToMany(mappedBy = "sharedSearches", fetch = FetchType.EAGER)
+    private List<User> users;     
 
     @Transient private List<String> countryNames;
     @Transient private List<String> nationalityNames;
@@ -462,19 +466,27 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
         this.includeDraftAndDeleted = includeDraftAndDeleted;
     }
 
-  public Boolean getFixed() {
-    return fixed;
-  }
+    public Boolean getFixed() {
+        return fixed;
+      }
+    
+    public void setFixed(Boolean fixed) {
+        this.fixed = fixed;
+      }
+    
+    public Boolean getReviewable() {
+        return reviewable;
+      }
+    
+    public void setReviewable(Boolean reviewable) {
+      this.reviewable = reviewable;
+    }
 
-  public void setFixed(Boolean fixed) {
-    this.fixed = fixed;
-  }
+    public List<User> getUsers() {
+        return users;
+    }
 
-  public Boolean getReviewable() {
-    return reviewable;
-  }
-
-  public void setReviewable(Boolean reviewable) {
-    this.reviewable = reviewable;
-  }
+    public void setUsers(List<User> users) {
+        this.users = users;
+    }
 }

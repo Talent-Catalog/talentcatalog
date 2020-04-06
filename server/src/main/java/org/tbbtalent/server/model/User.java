@@ -1,10 +1,23 @@
 package org.tbbtalent.server.model;
 
-import org.apache.commons.lang3.StringUtils;
-
-import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.apache.commons.lang3.StringUtils;
 
 @Entity
 @Table(name = "users")
@@ -37,6 +50,14 @@ public class User extends AbstractAuditableDomainObject<Long> {
 
     @OneToOne(mappedBy = "user")
     private Candidate candidate;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_saved_search",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "saved_search_id")
+    )
+    private List<SavedSearch> sharedSearches;
 
     @Transient
     private String selectedLanguage = "en";
@@ -157,7 +178,15 @@ public class User extends AbstractAuditableDomainObject<Long> {
     public void setSelectedLanguage(String selectedLanguage) {
         this.selectedLanguage = selectedLanguage;
     }
-    
+
+    public List<SavedSearch> getSharedSearches() {
+        return sharedSearches;
+    }
+
+    public void setSharedSearches(List<SavedSearch> sharedSearches) {
+        this.sharedSearches = sharedSearches;
+    }
+
     @Transient
     public String getDisplayName() {
         String displayName = "";

@@ -8,6 +8,8 @@ public class SearchSavedSearchRequest extends SearchRequest {
 
     private String keyword;
     private Boolean fixed;
+    private Boolean owned;
+    private Boolean shared;
     private SavedSearchType savedSearchType;
     private SavedSearchSubtype savedSearchSubtype;
 
@@ -43,5 +45,20 @@ public class SearchSavedSearchRequest extends SearchRequest {
         this.fixed = fixed;
     }
 
+    public Boolean getOwned() {
+        return owned;
+    }
+
+    public void setOwned(Boolean owned) {
+        this.owned = owned;
+    }
+
+    public Boolean getShared() {
+        return shared;
+    }
+
+    public void setShared(Boolean shared) {
+        this.shared = shared;
+    }
 }
 
