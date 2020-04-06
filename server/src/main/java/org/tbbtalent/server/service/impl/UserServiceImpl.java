@@ -26,6 +26,7 @@ import org.tbbtalent.server.exception.PasswordMatchException;
 import org.tbbtalent.server.exception.UserDeactivatedException;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.Candidate;
+import org.tbbtalent.server.model.Country;
 import org.tbbtalent.server.model.Status;
 import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.repository.CandidateRepository;
@@ -137,6 +138,10 @@ public class UserServiceImpl implements UserService {
             if (existing != null){
                 throw new UsernameTakenException("email");
             }
+        }
+
+        for (Country sourceCountry : request.getSourceCountries()) {
+            user.getSourceCountries().add(sourceCountry);
         }
 
         user.setReadOnly(request.getReadOnly());

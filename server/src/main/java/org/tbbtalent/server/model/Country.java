@@ -1,6 +1,12 @@
 package org.tbbtalent.server.model;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.ManyToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import java.util.Set;
 
 @Entity
 @Table(name = "country")
@@ -9,6 +15,9 @@ public class Country extends AbstractTranslatableDomainObject<Long> {
 
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    @ManyToMany(mappedBy = "sourceCountries")
+    Set<User> users;
 
     public Country() {
     }

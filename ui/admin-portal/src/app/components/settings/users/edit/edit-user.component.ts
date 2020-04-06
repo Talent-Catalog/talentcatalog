@@ -4,6 +4,9 @@ import {User} from "../../../../model/user";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {UserService} from "../../../../services/user.service";
 import {AuthService} from "../../../../services/auth.service";
+import {CountryService} from "../../../../services/country.service";
+import {Country} from "../../../../model/country";
+import {IDropdownSettings} from "ng-multiselect-dropdown";
 
 @Component({
   selector: 'app-edit-user',
@@ -18,10 +21,22 @@ export class EditUserComponent implements OnInit {
   loading: boolean;
   saving: boolean;
 
+  /* MULTI SELECT */
+  dropdownSettings: IDropdownSettings = {
+    idField: 'id',
+    textField: 'name',
+    enableCheckAll: false,
+    singleSelection: false,
+    allowSearchFilter: false
+  };
+
+  countries: Country[];
+
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
               private userService: UserService,
-              private authService: AuthService) {
+              private authService: AuthService,
+              private countryService: CountryService) {
   }
 
   ngOnInit() {
@@ -34,16 +49,26 @@ export class EditUserComponent implements OnInit {
         lastName: [user.lastName, Validators.required],
         status: [user.status, Validators.required],
         role: [user.role, Validators.required],
+        sourceCountries: [],
         readOnly: [user.readOnly]
       });
       this.loading = false;
     });
 
+    this.countryService.listCountries().subscribe(
+      (response) => {
+        this.countries = response;
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      }
+    );
+
   }
 
   onSave() {
     this.saving = true;
-    // console.log(this.userForm.value);
     this.userService.update(this.userId, this.userForm.value).subscribe(
       (user) => {
         this.closeModal(user);
@@ -62,4 +87,25 @@ export class EditUserComponent implements OnInit {
   dismiss() {
     this.activeModal.dismiss(false);
   }
+
+  /* MULTI SELECT METHODS */
+  onItemSelect(item: any) {
+    console.log(this.userForm);
+    // const values = this.userForm.controls.sourceCountryIds.value || [];
+    // const addValue = item.id != null ? item.id : item;
+    // values.push(addValue);
+    // this.userForm.controls.sourceCountryIds.patchValue(values);
+    // console.log(values)
+  }
+
+  onItemDeSelect(item: any) {
+    // const values = this.userForm.controls[formControlName].value || [];
+    // const removeValue = item.id != null ? item.id : item;
+    // const indexToRemove = values.findIndex(val => val === removeValue);
+    // if (indexToRemove >= 0) {
+    //   values.splice(indexToRemove, 1);
+    //   this.userForm.controls[formControlName].patchValue(values);
+    // }
+  }
+
 }

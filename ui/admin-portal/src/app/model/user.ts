@@ -1,3 +1,5 @@
+import {Country} from "./country";
+
 export interface User {
   id: number;
   username: string;
@@ -6,6 +8,7 @@ export interface User {
   email: string;
   role: string;
   readOnly: boolean;
+  sourceCountries: Country[];
   status: string;
   createdDate: number;
   lastLogin: number;

@@ -6,12 +6,17 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -49,6 +54,13 @@ public class User extends AbstractAuditableDomainObject<Long> {
 
     @Transient
     private String selectedLanguage = "en";
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_source_country",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "country_id"))
+    Set<Country> sourceCountries;
     
     public User() {
     }
@@ -170,7 +182,11 @@ public class User extends AbstractAuditableDomainObject<Long> {
     public void setSelectedLanguage(String selectedLanguage) {
         this.selectedLanguage = selectedLanguage;
     }
-    
+
+    public Set<Country> getSourceCountries() { return sourceCountries; }
+
+    public void setSourceCountries(Set<Country> sourceCountries) { this.sourceCountries = sourceCountries; }
+
     @Transient
     public String getDisplayName() {
         String displayName = "";
