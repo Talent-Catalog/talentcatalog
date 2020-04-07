@@ -144,9 +144,12 @@ public class UserServiceImpl implements UserService {
             }
         }
 
+        // Clear old source country joins before adding again
+        user.getSourceCountries().clear();
         for (Country sourceCountry : request.getSourceCountries()) {
             user.getSourceCountries().add(sourceCountry);
         }
+
 
         user.setReadOnly(request.getReadOnly());
 

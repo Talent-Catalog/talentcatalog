@@ -3,6 +3,7 @@ package org.tbbtalent.server.model;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -17,7 +18,7 @@ public class Country extends AbstractTranslatableDomainObject<Long> {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @ManyToMany(mappedBy = "sourceCountries")
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "sourceCountries")
     Set<User> users = new HashSet<User>();
 
     public Country() {
