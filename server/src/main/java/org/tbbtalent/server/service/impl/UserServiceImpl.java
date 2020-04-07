@@ -31,10 +31,11 @@ import org.tbbtalent.server.exception.PasswordMatchException;
 import org.tbbtalent.server.exception.UserDeactivatedException;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.Candidate;
-import org.tbbtalent.server.model.Role;
+import org.tbbtalent.server.model.SavedSearch;
 import org.tbbtalent.server.model.Status;
 import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.repository.CandidateRepository;
+import org.tbbtalent.server.repository.SavedSearchRepository;
 import org.tbbtalent.server.repository.UserRepository;
 import org.tbbtalent.server.repository.UserSpecification;
 import org.tbbtalent.server.request.LoginRequest;
@@ -43,6 +44,7 @@ import org.tbbtalent.server.request.user.CreateUserRequest;
 import org.tbbtalent.server.request.user.ResetPasswordRequest;
 import org.tbbtalent.server.request.user.SearchUserRequest;
 import org.tbbtalent.server.request.user.SendResetPasswordEmailRequest;
+import org.tbbtalent.server.request.user.UpdateSharingRequest;
 import org.tbbtalent.server.request.user.UpdateUserPasswordRequest;
 import org.tbbtalent.server.request.user.UpdateUserRequest;
 import org.tbbtalent.server.request.user.UpdateUsernameRequest;
@@ -65,19 +67,23 @@ public class UserServiceImpl implements UserService {
     private final JwtTokenProvider tokenProvider;
     private final UserContext userContext;
     private final EmailHelper emailHelper;
+    private final SavedSearchRepository savedSearchRepository;
 
     @Value("${web.portal}")
     private String portalUrl;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
-                           CandidateRepository candidateRepository, PasswordHelper passwordHelper,
+                           CandidateRepository candidateRepository,
+                           SavedSearchRepository savedSearchRepository,
+                           PasswordHelper passwordHelper,
                            AuthenticationManager authenticationManager,
                            JwtTokenProvider tokenProvider,
                            UserContext userContext,
                            EmailHelper emailHelper) {
         this.userRepository = userRepository;
         this.candidateRepository = candidateRepository;
+        this.savedSearchRepository = savedSearchRepository;
         this.passwordHelper = passwordHelper;
         this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;
@@ -162,6 +168,36 @@ public class UserServiceImpl implements UserService {
         }
 
         user.setUsername(request.getUsername());
+
+        return userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public User addToSharedWithUser(long id, UpdateSharingRequest request) {
+        User user = this.userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(User.class, id));
+        
+        final Long sharedSearchID = request.getSavedSearchId();
+        SavedSearch savedSearch = savedSearchRepository.findById(sharedSearchID)
+                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, sharedSearchID));
+        
+        user.addSharedSearch(savedSearch);
+
+        return userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public User removeFromSharedWithUser(long id, UpdateSharingRequest request) {
+        User user = this.userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(User.class, id));
+
+        final Long sharedSearchID = request.getSavedSearchId();
+        SavedSearch savedSearch = savedSearchRepository.findById(sharedSearchID)
+                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, sharedSearchID));
+
+        user.removeSharedSearch(savedSearch);
 
         return userRepository.save(user);
     }

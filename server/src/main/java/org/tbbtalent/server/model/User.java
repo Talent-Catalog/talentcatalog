@@ -204,4 +204,14 @@ public class User extends AbstractAuditableDomainObject<Long> {
         }
         return displayName;
     }
+
+    public void addSharedSearch(SavedSearch savedSearch) {
+        sharedSearches.add(savedSearch);
+        savedSearch.getUsers().add(this);
+    }
+
+    public void removeSharedSearch(SavedSearch savedSearch) {
+        sharedSearches.remove(savedSearch);
+        savedSearch.getUsers().remove(this);
+    }
 }

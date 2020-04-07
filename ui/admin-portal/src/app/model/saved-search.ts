@@ -120,6 +120,10 @@ export interface SavedSearchRunRequest {
   sortDirection?: string;
 }
 
+export interface UpdateSharingRequest {
+  savedSearchId: number;
+}
+
 /**
  * Create a SavedSearchRequest from a SavedSearch and a search request.
  * @param savedSearch

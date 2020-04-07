@@ -25,6 +25,7 @@ import {IDropdownSettings} from "ng-multiselect-dropdown";
 import {ListItem} from "ng-multiselect-dropdown/multiselect.model";
 import {User} from "../../../model/user";
 import {AuthService} from "../../../services/auth.service";
+import {UserService} from "../../../services/user.service";
 
 @Component({
   selector: 'app-search-candidates',
@@ -72,6 +73,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   constructor(private http: HttpClient,
               private fb: FormBuilder,
               private candidateService: CandidateService,
+              private userService: UserService,
               private savedSearchService: SavedSearchService,
               private modalService: NgbModal,
               private route: ActivatedRoute,
@@ -313,5 +315,33 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   onDeSelectAll() {
     this.onReviewStatusFilterChange();
+  }
+
+  addToSharedWithMe() {
+    this.userService.addToSharedSearches(
+      this.loggedInUser.id, {savedSearchId: this.savedSearchId}).subscribe(
+      result => {
+        if (!result) {
+          console.log('Did not work!')
+        }
+      },
+      error => {
+        this.error = error;
+      }
+    )
+  }
+
+  removeFromSharedWithMe() {
+    this.userService.removeFromSharedSearches(
+      this.loggedInUser.id, {savedSearchId: this.savedSearchId}).subscribe(
+      result => {
+        if (!result) {
+          console.log('Did not work!')
+        }
+      },
+      error => {
+        this.error = error;
+      }
+    )
   }
 }
