@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -51,7 +52,7 @@ public class User extends AbstractAuditableDomainObject<Long> {
     @OneToOne(mappedBy = "user")
     private Candidate candidate;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinTable(
             name = "user_saved_search",
             joinColumns = @JoinColumn(name = "user_id"),

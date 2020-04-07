@@ -79,7 +79,7 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "savedSearch", cascade = CascadeType.MERGE)
     private Set<SearchJoin> searchJoins = new HashSet<>();
     
-    @ManyToMany(mappedBy = "sharedSearches", fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "sharedSearches", cascade = CascadeType.MERGE)
     private List<User> users;     
 
     @Transient private List<String> countryNames;

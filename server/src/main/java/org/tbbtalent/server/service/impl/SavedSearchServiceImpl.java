@@ -26,7 +26,7 @@ import org.tbbtalent.server.model.LanguageLevel;
 import org.tbbtalent.server.model.SavedSearch;
 import org.tbbtalent.server.model.SearchJoin;
 import org.tbbtalent.server.model.Status;
-import org.tbbtalent.server.repository.CandidateRepository;
+import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.repository.CountryRepository;
 import org.tbbtalent.server.repository.EducationLevelRepository;
 import org.tbbtalent.server.repository.EducationMajorRepository;
@@ -37,6 +37,7 @@ import org.tbbtalent.server.repository.OccupationRepository;
 import org.tbbtalent.server.repository.SavedSearchRepository;
 import org.tbbtalent.server.repository.SavedSearchSpecification;
 import org.tbbtalent.server.repository.SearchJoinRepository;
+import org.tbbtalent.server.repository.UserRepository;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.candidate.SearchJoinRequest;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
@@ -49,7 +50,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     private static final Logger log = LoggerFactory.getLogger(SavedSearchServiceImpl.class);
 
-    private final CandidateRepository candidateRepository;
+    private final UserRepository userRepository;
     private final SavedSearchRepository savedSearchRepository;
     private final SearchJoinRepository searchJoinRepository;
     private final LanguageLevelRepository languageLevelRepository;
@@ -62,10 +63,19 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final UserContext userContext;
 
     @Autowired
-    public SavedSearchServiceImpl(CandidateRepository candidateRepository, SavedSearchRepository savedSearchRepository,
-                                  SearchJoinRepository searchJoinRepository, LanguageLevelRepository languageLevelRepository,
-                                  LanguageRepository languageRepository, CountryRepository countryRepository, NationalityRepository nationalityRepository, OccupationRepository occupationRepository, EducationMajorRepository educationMajorRepository, EducationLevelRepository educationLevelRepository, UserContext userContext) {
-        this.candidateRepository = candidateRepository;
+    public SavedSearchServiceImpl(
+            UserRepository userRepository, 
+            SavedSearchRepository savedSearchRepository,
+            SearchJoinRepository searchJoinRepository, 
+            LanguageLevelRepository languageLevelRepository,
+            LanguageRepository languageRepository, 
+            CountryRepository countryRepository, 
+            NationalityRepository nationalityRepository, 
+            OccupationRepository occupationRepository, 
+            EducationMajorRepository educationMajorRepository, 
+            EducationLevelRepository educationLevelRepository, 
+            UserContext userContext) {
+        this.userRepository = userRepository;
         this.savedSearchRepository = savedSearchRepository;
         this.searchJoinRepository = searchJoinRepository;
         this.languageLevelRepository = languageLevelRepository;
@@ -80,8 +90,13 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     @Override
     public Page<SavedSearch> searchSavedSearches(SearchSavedSearchRequest request) {
+        User userWithSharedSearches = 
+                userRepository.findByIdLoadSharedSearches(
+                        userContext.getLoggedInUser().getId());
+                
         Page<SavedSearch> savedSearches = savedSearchRepository.findAll(
-                SavedSearchSpecification.buildSearchQuery(request, userContext), request.getPageRequest());
+                SavedSearchSpecification.buildSearchQuery(
+                        request, userWithSharedSearches), request.getPageRequest());
         log.info("Found " + savedSearches.getTotalElements() + " savedSearches in search");
 
         for (SavedSearch savedSearch: savedSearches) {

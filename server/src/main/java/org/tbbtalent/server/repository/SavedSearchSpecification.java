@@ -13,14 +13,11 @@ import org.tbbtalent.server.model.SavedSearchType;
 import org.tbbtalent.server.model.Status;
 import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
-import org.tbbtalent.server.security.UserContext;
 
 public class SavedSearchSpecification {
 
     public static Specification<SavedSearch> buildSearchQuery(
-            final SearchSavedSearchRequest request, UserContext userContext) {
-
-        User loggedInUser = userContext.getLoggedInUser();
+            final SearchSavedSearchRequest request, User loggedInUser) {
 
         //Returns an anonymous class implementing the Specification interface.
         //There is only one method that needs to be implemented on that 
