@@ -79,8 +79,11 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "savedSearch", cascade = CascadeType.MERGE)
     private Set<SearchJoin> searchJoins = new HashSet<>();
     
+    //Note use of Set rather than List as strongly recommended for Many to Many
+    //relationships here: 
+    // https://thoughts-on-java.org/best-practices-for-many-to-many-associations-with-hibernate-and-jpa/
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "sharedSearches", cascade = CascadeType.MERGE)
-    private List<User> users;     
+    private Set<User> users = new HashSet<>();     
 
     @Transient private List<String> countryNames;
     @Transient private List<String> nationalityNames;
@@ -482,11 +485,11 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
       this.reviewable = reviewable;
     }
 
-    public List<User> getUsers() {
+    public Set<User> getUsers() {
         return users;
     }
 
-    public void setUsers(List<User> users) {
+    public void setUsers(Set<User> users) {
         this.users = users;
     }
 }

@@ -1,7 +1,7 @@
 package org.tbbtalent.server.repository;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.criteria.Predicate;
 
@@ -88,9 +88,9 @@ public class SavedSearchSpecification {
             //If shared is specified, only supply searches shared with the owner
             if (request.getShared() != null && request.getShared()) {
                 if (loggedInUser != null) {
-                    List<SavedSearch> sharedSearches = loggedInUser.getSharedSearches();
+                    Set<SavedSearch> sharedSearches = loggedInUser.getSharedSearches();
                     if (!sharedSearches.isEmpty()) {
-                        List<Long> sharedIDs = new ArrayList<>();
+                        Set<Long> sharedIDs = new HashSet<>();
                         for (SavedSearch sharedSearch : sharedSearches) {
                             sharedIDs.add(sharedSearch.getId());
                         }

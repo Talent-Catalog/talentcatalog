@@ -2,7 +2,8 @@ package org.tbbtalent.server.model;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -52,13 +53,16 @@ public class User extends AbstractAuditableDomainObject<Long> {
     @OneToOne(mappedBy = "user")
     private Candidate candidate;
 
+    //Note use of Set rather than List as strongly recommended for Many to Many
+    //relationships here: 
+    // https://thoughts-on-java.org/best-practices-for-many-to-many-associations-with-hibernate-and-jpa/
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinTable(
             name = "user_saved_search",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "saved_search_id")
     )
-    private List<SavedSearch> sharedSearches;
+    private Set<SavedSearch> sharedSearches = new HashSet<>();
 
     @Transient
     private String selectedLanguage = "en";
@@ -180,11 +184,11 @@ public class User extends AbstractAuditableDomainObject<Long> {
         this.selectedLanguage = selectedLanguage;
     }
 
-    public List<SavedSearch> getSharedSearches() {
+    public Set<SavedSearch> getSharedSearches() {
         return sharedSearches;
     }
 
-    public void setSharedSearches(List<SavedSearch> sharedSearches) {
+    public void setSharedSearches(Set<SavedSearch> sharedSearches) {
         this.sharedSearches = sharedSearches;
     }
 
