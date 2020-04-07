@@ -6,6 +6,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -17,7 +18,7 @@ public class Country extends AbstractTranslatableDomainObject<Long> {
     private Status status;
 
     @ManyToMany(mappedBy = "sourceCountries")
-    Set<User> users;
+    Set<User> users = new HashSet<User>();
 
     public Country() {
     }
@@ -34,4 +35,5 @@ public class Country extends AbstractTranslatableDomainObject<Long> {
     public void setStatus(Status status) {
         this.status = status;
     }
+
 }

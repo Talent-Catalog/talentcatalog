@@ -96,10 +96,18 @@ public class UserAdminApi {
                 .add("lastName")
                 .add("email")
                 .add("role")
+                .add("sourceCountries", countryDto())
                 .add("readOnly")
                 .add("status")
                 .add("createdDate")
                 .add("lastLogin")
+                ;
+    }
+
+    private DtoBuilder countryDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
                 ;
     }
 

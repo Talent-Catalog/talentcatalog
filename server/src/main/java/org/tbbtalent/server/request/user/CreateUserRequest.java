@@ -1,9 +1,11 @@
 package org.tbbtalent.server.request.user;
 
+import org.tbbtalent.server.model.Country;
 import org.tbbtalent.server.model.Role;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 public class CreateUserRequest {
 
@@ -19,6 +21,8 @@ public class CreateUserRequest {
     private String email;
     @NotNull
     private Role role;
+
+    private List<Country> sourceCountries;
 
     private Boolean readOnly;
 
@@ -58,6 +62,10 @@ public class CreateUserRequest {
     public Role getRole() { return role; }
 
     public void setRole(Role role) { this.role = role; }
+
+    public List<Country> getSourceCountries() { return sourceCountries; }
+
+    public void setSourceCountries(List<Country> sourceCountries) { this.sourceCountries = sourceCountries; }
 
     public Boolean getReadOnly() { return readOnly; }
 

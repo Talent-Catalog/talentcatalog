@@ -110,6 +110,10 @@ public class UserServiceImpl implements UserService {
 
         user.setReadOnly(request.getReadOnly());
 
+        for (Country sourceCountry : request.getSourceCountries()) {
+            user.getSourceCountries().add(sourceCountry);
+        }
+
         /* Validate the password before account creation */
         String passwordEncrypted = passwordHelper.validateAndEncodePassword(request.getPassword());
         user.setPasswordEnc(passwordEncrypted);

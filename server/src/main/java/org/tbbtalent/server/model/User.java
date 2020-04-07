@@ -16,6 +16,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -60,7 +61,7 @@ public class User extends AbstractAuditableDomainObject<Long> {
             name = "user_source_country",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "country_id"))
-    Set<Country> sourceCountries;
+    Set<Country> sourceCountries = new HashSet<Country>();
     
     public User() {
     }
