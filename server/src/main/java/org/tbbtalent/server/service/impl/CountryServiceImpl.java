@@ -14,12 +14,14 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.model.Country;
 import org.tbbtalent.server.model.Status;
+import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.repository.CandidateRepository;
 import org.tbbtalent.server.repository.CountryRepository;
 import org.tbbtalent.server.repository.CountrySpecification;
 import org.tbbtalent.server.request.country.CreateCountryRequest;
 import org.tbbtalent.server.request.country.SearchCountryRequest;
 import org.tbbtalent.server.request.country.UpdateCountryRequest;
+import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.CountryService;
 import org.tbbtalent.server.service.TranslationService;
 
@@ -33,19 +35,31 @@ public class CountryServiceImpl implements CountryService {
     private final CandidateRepository candidateRepository;
     private final CountryRepository countryRepository;
     private final TranslationService translationService;
+    private final UserContext userContext;
 
     @Autowired
     public CountryServiceImpl(CandidateRepository candidateRepository,
                               CountryRepository countryRepository,
-                              TranslationService translationService) {
+                              TranslationService translationService,
+                              UserContext userContext) {
         this.candidateRepository = candidateRepository;
         this.countryRepository = countryRepository;
         this.translationService = translationService;
+        this.userContext = userContext;
     }
 
     @Override
     public List<Country> listCountries() {
-        List<Country> countries = countryRepository.findByStatus(Status.active);
+        User user = userContext.getLoggedInUser();
+        List<Country> countries;
+
+        // Restrict access if there are source countries associated to admin user
+        if(user.getSourceCountries().size() > 0){
+            countries = countryRepository.findByStatusAndSourceCountries(Status.active, user.getSourceCountries());
+        }else {
+            countries = countryRepository.findByStatus(Status.active);
+        }
+
         translationService.translate(countries, "country");
         return countries;
     }

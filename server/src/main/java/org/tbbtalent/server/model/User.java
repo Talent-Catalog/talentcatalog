@@ -56,7 +56,7 @@ public class User extends AbstractAuditableDomainObject<Long> {
     @Transient
     private String selectedLanguage = "en";
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_source_country",
             joinColumns = @JoinColumn(name = "user_id"),

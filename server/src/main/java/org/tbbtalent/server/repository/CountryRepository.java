@@ -8,6 +8,7 @@ import org.tbbtalent.server.model.Country;
 import org.tbbtalent.server.model.Status;
 
 import java.util.List;
+import java.util.Set;
 
 public interface CountryRepository extends JpaRepository<Country, Long>, JpaSpecificationExecutor<Country> {
 
@@ -24,4 +25,10 @@ public interface CountryRepository extends JpaRepository<Country, Long>, JpaSpec
     @Query(" select c.name from Country c "
             + " where id in (:ids) order by c.name asc" )
     List<String> getNamesForIds(@Param("ids") List<Long> ids);
+
+    @Query(" select c from Country c "
+            + " where c.status = :status"
+            + " and c in (:countries)" )
+    List<Country> findByStatusAndSourceCountries(@Param("status") Status status, @Param("countries") Set<Country> countries);
+
 }
