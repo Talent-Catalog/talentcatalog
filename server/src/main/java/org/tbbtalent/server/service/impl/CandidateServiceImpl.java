@@ -1,17 +1,6 @@
 package org.tbbtalent.server.service.impl;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.rmi.server.ExportException;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
+import com.opencsv.CSVWriter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -83,7 +72,17 @@ import org.tbbtalent.server.service.SavedSearchService;
 import org.tbbtalent.server.service.email.EmailHelper;
 import org.tbbtalent.server.service.pdf.PdfHelper;
 
-import com.opencsv.CSVWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.rmi.server.ExportException;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class CandidateServiceImpl implements CandidateService {
@@ -213,6 +212,17 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Page<Candidate> searchCandidates(SearchCandidateRequest request) {
+        User user = userContext.getLoggedInUser();
+
+        //Restrict access to source countries on default search (no countries selected)
+        if(user.getSourceCountries().size() > 0 && CollectionUtils.isEmpty(request.getCountryIds()) ){
+            List<Long> sourceCountryIds = new ArrayList<Long>();
+            for(Country sourceCountry : user.getSourceCountries()){
+                sourceCountryIds.add(sourceCountry.getId());
+            }
+            request.setCountryIds(sourceCountryIds);
+        }
+
         List<Long> searchIds = new ArrayList<>();
         if (request.getSavedSearchId() != null) {
             searchIds.add(request.getSavedSearchId());
