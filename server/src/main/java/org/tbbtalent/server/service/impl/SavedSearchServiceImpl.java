@@ -116,7 +116,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     @Override
     public SavedSearch getSavedSearch(long id) {
-        SavedSearch savedSearch = this.savedSearchRepository.findById(id)
+        SavedSearch savedSearch = this.savedSearchRepository.findByIdLoadUsers(id)
                 .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
 
         savedSearch.parseType();

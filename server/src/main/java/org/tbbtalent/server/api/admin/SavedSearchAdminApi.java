@@ -130,6 +130,7 @@ public class SavedSearchAdminApi {
                 .add("createdDate")
                 .add("updatedBy", userDto())
                 .add("updatedDate")
+                .add("users", userDto())
                 .add("searchJoins", searchJoinDto());
 
     }
@@ -148,7 +149,7 @@ public class SavedSearchAdminApi {
     }
 
     private DtoBuilder userDto() {
-        return new DtoBuilder()
+        return  new DtoBuilder()
                 .add("id")
                 .add("firstName")
                 .add("lastName")

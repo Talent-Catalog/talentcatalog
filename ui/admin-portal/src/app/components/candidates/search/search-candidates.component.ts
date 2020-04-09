@@ -351,7 +351,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   isSharedWithMe(): boolean {
     //savedSearchId in this.loggedInUser.sharedSearches
-    return true; //todo implement
+    return false; //todo implement
 
   }
 }
