@@ -1,14 +1,5 @@
 package org.tbbtalent.server.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +11,14 @@ import org.springframework.util.StringUtils;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.CandidateStatus;
+import org.tbbtalent.server.model.Country;
 import org.tbbtalent.server.model.EducationLevel;
 import org.tbbtalent.server.model.Language;
 import org.tbbtalent.server.model.LanguageLevel;
 import org.tbbtalent.server.model.SavedSearch;
 import org.tbbtalent.server.model.SearchJoin;
 import org.tbbtalent.server.model.Status;
+import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.repository.CandidateRepository;
 import org.tbbtalent.server.repository.CountryRepository;
 import org.tbbtalent.server.repository.EducationLevelRepository;
@@ -43,6 +36,15 @@ import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.SavedSearchService;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class SavedSearchServiceImpl implements SavedSearchService {
@@ -269,6 +271,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
     private SearchCandidateRequest convertToSearchCandidateRequest(SavedSearch request) {
+        User user = userContext.getLoggedInUser();
         SearchCandidateRequest searchCandidateRequest = new SearchCandidateRequest();
         searchCandidateRequest.setSavedSearchId(request.getId());
         searchCandidateRequest.setKeyword(request.getKeyword());
@@ -280,7 +283,19 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setVerifiedOccupationSearchType(request.getVerifiedOccupationSearchType());
         searchCandidateRequest.setNationalityIds(getIdsFromString(request.getNationalityIds()));
         searchCandidateRequest.setNationalitySearchType(request.getNationalitySearchType());
-        searchCandidateRequest.setCountryIds(getIdsFromString(request.getCountryIds()));
+        // CHECK IF REQUEST.GETCOUNTRY IDS MATCH WITH THE USER.GETSOURCECOUNTRIES
+        List<Long> requestCountries = getIdsFromString(request.getCountryIds());
+        if(user.getSourceCountries().size() > 0) {
+            List<Long> sourceCountries = user.getSourceCountries().stream()
+                    .map(Country::getId)
+                    .collect(Collectors.toList());
+            requestCountries.retainAll(sourceCountries);
+            if(requestCountries.size() == 0){
+                searchCandidateRequest.setCountryIds(null);
+            }
+        }
+        searchCandidateRequest.setCountryIds(requestCountries);
+
         searchCandidateRequest.setEnglishMinSpokenLevel(request.getEnglishMinSpokenLevel());
         searchCandidateRequest.setEnglishMinWrittenLevel(request.getEnglishMinWrittenLevel());
         searchCandidateRequest.setOtherLanguageId(request.getOtherLanguage() != null ? request.getOtherLanguage().getId() : null);
