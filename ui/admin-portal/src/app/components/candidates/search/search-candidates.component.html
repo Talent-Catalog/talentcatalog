@@ -25,11 +25,13 @@
                       (pageChange)="doSearch(true)">
       </ngb-pagination>
 
-      <button class="btn btn-outline-secondary" (click)="addToSharedWithMe()">
+      <button *ngIf="isShareable() && !isSharedWithMe()"
+        class="btn btn-outline-secondary" (click)="addToSharedWithMe()">
         <i class="fas fa-file-excel"></i> Keep
       </button>
 
-      <button class="btn btn-outline-secondary" (click)="removeFromSharedWithMe()">
+      <button *ngIf="isShareable() && isSharedWithMe()"
+        class="btn btn-outline-secondary" (click)="removeFromSharedWithMe()">
         <i class="fas fa-file-excel"></i> Remove
       </button>
 

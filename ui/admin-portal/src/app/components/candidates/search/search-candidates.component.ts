@@ -344,4 +344,14 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       }
     )
   }
+
+  isShareable(): boolean {
+    return true; //todo implement
+  }
+
+  isSharedWithMe(): boolean {
+    //savedSearchId in this.loggedInUser.sharedSearches
+    return true; //todo implement
+
+  }
 }
