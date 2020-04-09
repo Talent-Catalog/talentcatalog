@@ -1,14 +1,5 @@
-import {
-  Component,
-  Input,
-  OnChanges, OnDestroy,
-  OnInit,
-  SimpleChanges
-} from '@angular/core';
-import {
-  defaultReviewStatusFilter,
-  SavedSearch
-} from "../../../../model/saved-search";
+import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
+import {defaultReviewStatusFilter, SavedSearch} from "../../../../model/saved-search";
 import {Subscription} from "rxjs";
 import {CandidateService} from "../../../../services/candidate.service";
 import {Candidate} from "../../../../model/candidate";
@@ -101,6 +92,7 @@ constructor(
         },
         error => {
           this.error = error;
+          this.searching = false;
           // this._loading.savedSearch = false;
         });
     }
