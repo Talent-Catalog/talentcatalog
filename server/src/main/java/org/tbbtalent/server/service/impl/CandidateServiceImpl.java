@@ -214,21 +214,21 @@ public class CandidateServiceImpl implements CandidateService {
     public Page<Candidate> searchCandidates(SearchCandidateRequest request) {
         User user = userContext.getLoggedInUser();
 
-        //Restrict access to source countries on default search (no countries selected)
-        if(user.getSourceCountries().size() > 0 && CollectionUtils.isEmpty(request.getCountryIds()) ){
-            List<Long> sourceCountryIds = new ArrayList<Long>();
-            for(Country sourceCountry : user.getSourceCountries()){
-                sourceCountryIds.add(sourceCountry.getId());
-            }
-            request.setCountryIds(sourceCountryIds);
-        }
+//        //Restrict access to source countries on default search (no countries selected)
+//        if(user.getSourceCountries().size() > 0 && CollectionUtils.isEmpty(request.getCountryIds()) ){
+//            List<Long> sourceCountryIds = new ArrayList<Long>();
+//            for(Country sourceCountry : user.getSourceCountries()){
+//                sourceCountryIds.add(sourceCountry.getId());
+//            }
+//            request.setCountryIds(sourceCountryIds);
+//        }
 
         List<Long> searchIds = new ArrayList<>();
         if (request.getSavedSearchId() != null) {
             searchIds.add(request.getSavedSearchId());
         }
 
-        Specification<Candidate> query = CandidateSpecification.buildSearchQuery(request);
+        Specification<Candidate> query = CandidateSpecification.buildSearchQuery(request, user);
         if (CollectionUtils.isNotEmpty(request.getSearchJoinRequests())) {
             for (SearchJoinRequest searchJoinRequest : request.getSearchJoinRequests()) {
                 query = addQuery(query, searchJoinRequest, searchIds);
@@ -284,11 +284,12 @@ public class CandidateServiceImpl implements CandidateService {
         if (savedSearchIds.contains(searchJoinRequest.getSavedSearchId())) {
             throw new CircularReferencedException(searchJoinRequest.getSavedSearchId());
         }
+        User user = userContext.getLoggedInUser();
         //add id to list as do not want circular references
         savedSearchIds.add(searchJoinRequest.getSavedSearchId());
         //load saved search
         SearchCandidateRequest request = savedSearchService.loadSavedSearch(searchJoinRequest.getSavedSearchId());
-        Specification<Candidate> joinQuery = CandidateSpecification.buildSearchQuery(request);
+        Specification<Candidate> joinQuery = CandidateSpecification.buildSearchQuery(request, user);
         if (searchJoinRequest.getSearchType().equals(SearchType.and)) {
             query = Specification.where(query.and(joinQuery));
         } else {

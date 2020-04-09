@@ -26,7 +26,7 @@ export class CreateUserComponent implements OnInit {
     textField: 'name',
     enableCheckAll: false,
     singleSelection: false,
-    allowSearchFilter: false
+    allowSearchFilter: true
   };
 
   countries: Country[];

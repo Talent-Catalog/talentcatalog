@@ -1,24 +1,6 @@
 package org.tbbtalent.server.repository;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.persistence.criteria.Fetch;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
+import io.jsonwebtoken.lang.Collections;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -40,13 +22,30 @@ import org.tbbtalent.server.model.Occupation;
 import org.tbbtalent.server.model.SavedSearch;
 import org.tbbtalent.server.model.SearchType;
 import org.tbbtalent.server.model.ShortlistStatus;
+import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 
-import io.jsonwebtoken.lang.Collections;
+import javax.persistence.criteria.Fetch;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class CandidateSpecification {
 
-    public static Specification<Candidate> buildSearchQuery(final SearchCandidateRequest request) {
+    public static Specification<Candidate> buildSearchQuery(final SearchCandidateRequest request, User loggedInUser) {
         return (candidate, query, builder) -> {
             Predicate conjunction = builder.conjunction();
             Join user = null;
@@ -349,6 +348,10 @@ public class CandidateSpecification {
             if (!Collections.isEmpty(request.getCountryIds())) {
                 conjunction.getExpressions().add(
                         builder.isTrue(candidate.get("country").in(request.getCountryIds()))
+                );
+            } else if (!Collections.isEmpty(loggedInUser.getSourceCountries())) {
+                conjunction.getExpressions().add(
+                        builder.isTrue(candidate.get("country").in(loggedInUser.getSourceCountries()))
                 );
             }
 

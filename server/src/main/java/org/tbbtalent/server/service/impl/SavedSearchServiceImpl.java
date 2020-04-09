@@ -297,7 +297,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             requestCountries.retainAll(sourceCountries);
             if(requestCountries.size() == 0){
                 //if no source countries in the saved search countries throw an error
-                throw new CountryRestrictionException("You don't have access to any of the countries in this Saved Search");
+                throw new CountryRestrictionException("You don't have access to any of the countries in the Saved Search: " + request.getName());
             }
         }
         searchCandidateRequest.setCountryIds(requestCountries);
