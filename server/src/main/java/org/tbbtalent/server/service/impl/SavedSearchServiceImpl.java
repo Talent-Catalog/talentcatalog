@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import org.tbbtalent.server.exception.CountryRestrictionException;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.CandidateStatus;
@@ -283,15 +284,20 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setVerifiedOccupationSearchType(request.getVerifiedOccupationSearchType());
         searchCandidateRequest.setNationalityIds(getIdsFromString(request.getNationalityIds()));
         searchCandidateRequest.setNationalitySearchType(request.getNationalitySearchType());
-        // CHECK IF REQUEST.GETCOUNTRY IDS MATCH WITH THE USER.GETSOURCECOUNTRIES
+
+        // Check if the saved search countries match the source countries of the user
         List<Long> requestCountries = getIdsFromString(request.getCountryIds());
+
+        // if a user has source country restrictions
         if(user.getSourceCountries().size() > 0) {
             List<Long> sourceCountries = user.getSourceCountries().stream()
                     .map(Country::getId)
                     .collect(Collectors.toList());
+            //find the users source countries in the saved search countries
             requestCountries.retainAll(sourceCountries);
             if(requestCountries.size() == 0){
-                searchCandidateRequest.setCountryIds(null);
+                //if no source countries in the saved search countries throw an error
+                throw new CountryRestrictionException("You don't have access to any of the countries in this Saved Search");
             }
         }
         searchCandidateRequest.setCountryIds(requestCountries);
