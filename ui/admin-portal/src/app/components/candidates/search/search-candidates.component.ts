@@ -318,6 +318,10 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   }
 
   addToSharedWithMe() {
+
+    //todo Better to use savedSearcheService equivalent of these, returning
+    //new SavedSearch which updates the current one which should update
+    //the keep/remove buttons.
     this.userService.addToSharedSearches(
       this.loggedInUser.id, {savedSearchId: this.savedSearchId}).subscribe(
       result => {
@@ -351,7 +355,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   isSharedWithMe(): boolean {
     //savedSearchId in this.loggedInUser.sharedSearches
-    return false; //todo implement
+    return this.savedSearch.users.find(u => u.id == this.loggedInUser.id ) != undefined;
 
   }
 }
