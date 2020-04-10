@@ -3,7 +3,12 @@ import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
-import {SavedSearch, SavedSearchRequest, SavedSearchSubtype, SavedSearchType} from "../model/saved-search";
+import {
+  SavedSearch,
+  SavedSearchRequest,
+  SavedSearchSubtype,
+  SavedSearchType
+} from "../model/saved-search";
 import {map} from "rxjs/operators";
 
 export interface SavedSearchTypeInfo {
@@ -121,4 +126,17 @@ export class SavedSearchService {
     return savedSearch;
   }
 
+  addSharedUser(id: number, request: { userId: number }): Observable<SavedSearch> {
+    return this.http.put<SavedSearch>(`${this.apiUrl}/shared-add/${id}`, request)
+      .pipe(
+        map(savedSearch => SavedSearchService.convertSavedSearchEnums(savedSearch))
+      );
+  }
+
+  removeSharedUser(id: number, request: { userId: number }): Observable<SavedSearch> {
+    return this.http.put<SavedSearch>(`${this.apiUrl}/shared-remove/${id}`, request)
+      .pipe(
+        map(savedSearch => SavedSearchService.convertSavedSearchEnums(savedSearch))
+      );
+  }
 }

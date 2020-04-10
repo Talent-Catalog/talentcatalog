@@ -20,6 +20,7 @@ import org.tbbtalent.server.model.SavedSearch;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
+import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.service.SavedSearchService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -67,6 +68,22 @@ public class SavedSearchAdminApi {
     @DeleteMapping("{id}")
     public boolean delete(@PathVariable("id") long id) throws EntityReferencedException {
         return this.savedSearchService.deleteSavedSearch(id);
+    }
+
+    @PutMapping("/shared-add/{id}")
+    public Map<String, Object> addSharedUser(
+            @PathVariable("id") long id,
+            @RequestBody UpdateSharingRequest request) {
+        SavedSearch savedSearch = this.savedSearchService.addSharedUser(id, request);
+        return savedSearchDtoExtended().build(savedSearch);
+    }
+
+    @PutMapping("/shared-remove/{id}")
+    public Map<String, Object> removeSharedUser(
+            @PathVariable("id") long id,
+            @RequestBody UpdateSharingRequest request) {
+        SavedSearch savedSearch = this.savedSearchService.removeSharedUser(id, request);
+        return savedSearchDtoExtended().build(savedSearch);
     }
 
 

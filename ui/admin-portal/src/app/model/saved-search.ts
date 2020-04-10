@@ -61,7 +61,8 @@ export interface SavedSearch extends SearchCandidateRequest {
   name: string;
   fixed: boolean;
   reviewable: boolean;
-  users: User[];
+  users?: User[];
+  createdBy?: User;
   savedSearchType: SavedSearchType;
   savedSearchSubtype: SavedSearchSubtype;
 }

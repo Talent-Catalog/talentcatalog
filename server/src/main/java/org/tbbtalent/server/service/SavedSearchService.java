@@ -4,8 +4,9 @@ import org.springframework.data.domain.Page;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.model.SavedSearch;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
-import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
+import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
+import org.tbbtalent.server.request.search.UpdateSharingRequest;
 
 
 public interface SavedSearchService {
@@ -22,4 +23,7 @@ public interface SavedSearchService {
 
     boolean deleteSavedSearch(long id);
 
+    SavedSearch addSharedUser(long id, UpdateSharingRequest request);
+
+    SavedSearch removeSharedUser(long id, UpdateSharingRequest request);
 }

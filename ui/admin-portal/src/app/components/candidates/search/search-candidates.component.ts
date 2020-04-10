@@ -87,6 +87,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.loading = true;
     this.selectedCandidate = null;
     this.loggedInUser = this.authService.getLoggedInUser();
 
@@ -118,6 +119,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
         //Load saved search to get name and type to display
         this.savedSearchService.get(this.savedSearchId).subscribe(result => {
           this.savedSearch = result;
+          this.loading = false;
         }, err => {
           this.error = err;
         });
@@ -318,14 +320,12 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   }
 
   addToSharedWithMe() {
-
-    //todo Better to use savedSearcheService equivalent of these, returning
-    //new SavedSearch which updates the current one which should update
-    //the keep/remove buttons.
-    this.userService.addToSharedSearches(
-      this.loggedInUser.id, {savedSearchId: this.savedSearchId}).subscribe(
+    this.savedSearchService.addSharedUser(
+      this.savedSearchId, {userId: this.loggedInUser.id}).subscribe(
       result => {
-        if (!result) {
+        if (result) {
+          this.savedSearch = result;
+        } else {
           console.log('Did not work!')
         }
       },
@@ -336,10 +336,12 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   }
 
   removeFromSharedWithMe() {
-    this.userService.removeFromSharedSearches(
-      this.loggedInUser.id, {savedSearchId: this.savedSearchId}).subscribe(
+    this.savedSearchService.removeSharedUser(
+      this.savedSearchId, {userId: this.loggedInUser.id}).subscribe(
       result => {
-        if (!result) {
+        if (result) {
+          this.savedSearch = result;
+        } else {
           console.log('Did not work!')
         }
       },
@@ -350,12 +352,25 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   }
 
   isShareable(): boolean {
-    return true; //todo implement
+    let shareable: boolean = false;
+
+    //Is shareable with me if it is not fixed or created by me.
+    if (this.savedSearch) {
+      if (!this.savedSearch.fixed) {
+        //was it created by me?
+        if (this.savedSearch.createdBy.id != this.loggedInUser.id) {
+          shareable = true;
+        }
+      }
+    }
+    return shareable;
   }
 
   isSharedWithMe(): boolean {
-    //savedSearchId in this.loggedInUser.sharedSearches
-    return this.savedSearch.users.find(u => u.id == this.loggedInUser.id ) != undefined;
+    //Logged in user is in saved search user
+    return this.savedSearch ?
+      this.savedSearch.users.find(u => u.id == this.loggedInUser.id ) != undefined
+      : false;
 
   }
 }

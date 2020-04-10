@@ -42,6 +42,7 @@ import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.candidate.SearchJoinRequest;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
+import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.SavedSearchService;
 
@@ -209,6 +210,40 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    @Transactional
+    public SavedSearch addSharedUser(long id, UpdateSharingRequest request) {
+        SavedSearch savedSearch = savedSearchRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+
+        savedSearch.parseType();
+
+        final Long userID = request.getUserId();
+        User user = userRepository.findById(userID)
+                .orElseThrow(() -> new NoSuchObjectException(User.class, userID));
+
+        savedSearch.addUser(user);
+
+        return savedSearchRepository.save(savedSearch);
+    }
+
+    @Override
+    @Transactional
+    public SavedSearch removeSharedUser(long id, UpdateSharingRequest request) {
+        SavedSearch savedSearch = savedSearchRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+
+        savedSearch.parseType();
+
+        final Long userID = request.getUserId();
+        User user = userRepository.findById(userID)
+                .orElseThrow(() -> new NoSuchObjectException(User.class, userID));
+
+        savedSearch.removeUser(user);
+
+        return savedSearchRepository.save(savedSearch);
     }
 
     private void checkDuplicates(Long id, String name) {
