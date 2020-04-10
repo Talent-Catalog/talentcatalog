@@ -95,6 +95,11 @@ export class BrowseSavedSearchesComponent implements OnInit, OnChanges {
         case SearchBy.sharedWithMe:
           request.shared = true;
           break;
+        case SearchBy.all:
+          request.fixed = true;
+          request.owned = true;
+          request.shared = true;
+          break;
         default:
           request = null;
       }

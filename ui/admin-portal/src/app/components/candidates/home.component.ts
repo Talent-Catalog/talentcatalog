@@ -68,6 +68,8 @@ export class HomeComponent implements OnInit {
 
   private setActiveTabId(id: string) {
 
+    this.activeTabId = id;
+
     const parts = id.split(':');
     if (parts[0] == 'type' && parts.length == 2) {
 

@@ -28,13 +28,6 @@
     </ngb-tab>
   </ng-container>
 
-  <ngb-tab id="All" title="All">
-    <ng-template ngbTabContent>
-      <app-browse-saved-searches [searchBy]="SearchBy.all">
-      </app-browse-saved-searches>
-    </ng-template>
-  </ngb-tab>
-
   <ngb-tab id="MySearches" title="My Searches">
     <ng-template ngbTabContent>
       <app-browse-saved-searches [searchBy]="SearchBy.mySearches">
@@ -48,5 +41,11 @@
         </app-browse-saved-searches>
     </ng-template>
   </ngb-tab>
-</ngb-tabset>
 
+  <ngb-tab id="All" title="All">
+    <ng-template ngbTabContent>
+      <app-browse-saved-searches [searchBy]="SearchBy.all">
+      </app-browse-saved-searches>
+    </ng-template>
+  </ngb-tab>
+</ngb-tabset>
