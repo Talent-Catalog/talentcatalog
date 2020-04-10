@@ -1,8 +1,5 @@
 package org.tbbtalent.server.repository;
 
-import java.util.List;
-import java.util.Optional;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,6 +7,11 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tbbtalent.server.model.Candidate;
+import org.tbbtalent.server.model.Country;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 public interface CandidateRepository extends JpaRepository<Candidate, Long>, JpaSpecificationExecutor<Candidate> {
 
@@ -17,19 +19,52 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
 
     @Query(" select distinct c from Candidate c left join c.user u "
             + " where lower(u.email) like lower(:candidateEmail) ")
-    Page<Candidate> searchCandidateEmail(@Param("candidateEmail") String candidateEmail, Pageable pageable);
+    Page<Candidate> searchCandidateEmail(@Param("candidateEmail") String candidateEmail,
+                                         Pageable pageable);
+
+
+    @Query(" select distinct c from Candidate c left join c.user u "
+            + " where lower(u.email) like lower(:candidateEmail) "
+            + " and c.country in (:userSourceCountries)")
+    Page<Candidate> searchCandidateEmailRestricted(@Param("candidateEmail") String candidateEmail,
+                                         @Param("userSourceCountries") Set<Country> userSourceCountries,
+                                         Pageable pageable);
 
     @Query(" select distinct c from Candidate c "
             + " where lower(c.candidateNumber) like lower(:candidateNumber) ")
-    Page<Candidate> searchCandidateNumber(@Param("candidateNumber") String candidateNumber, Pageable pageable);
+    Page<Candidate> searchCandidateNumber(@Param("candidateNumber") String candidateNumber,
+                                          Pageable pageable);
+
+    @Query(" select distinct c from Candidate c "
+            + " where lower(c.candidateNumber) like lower(:candidateNumber) "
+            + " and c.country in (:userSourceCountries)")
+    Page<Candidate> searchCandidateNumberRestricted(@Param("candidateNumber") String candidateNumber,
+                                          @Param("userSourceCountries") Set<Country> userSourceCountries,
+                                          Pageable pageable);
 
     @Query(" select distinct c from Candidate c "
             + " where lower(c.phone) like lower(:candidatePhone) ")
-    Page<Candidate> searchCandidatePhone(@Param("candidatePhone") String candidatePhone, Pageable pageable);
+    Page<Candidate> searchCandidatePhone(@Param("candidatePhone") String candidatePhone,
+                                         Pageable pageable);
+
+    @Query(" select distinct c from Candidate c "
+            + " where lower(c.phone) like lower(:candidatePhone) "
+            + " and c.country in (:userSourceCountries)")
+    Page<Candidate> searchCandidatePhoneRestricted(@Param("candidatePhone") String candidatePhone,
+                                         @Param("userSourceCountries") Set<Country> userSourceCountries,
+                                         Pageable pageable);
 
     @Query(" select distinct c from Candidate c left join c.user u "
-            + " where lower(concat(u.firstName, ' ', u.lastName)) like lower(:candidateName) ")
-    Page<Candidate> searchCandidateName(@Param("candidateName") String candidateName, Pageable pageable);
+            + " where lower(concat(u.firstName, ' ', u.lastName)) like lower(:candidateName)")
+    Page<Candidate> searchCandidateName(@Param("candidateName") String candidateName,
+                                        Pageable pageable);
+
+    @Query(" select distinct c from Candidate c left join c.user u "
+            + " where lower(concat(u.firstName, ' ', u.lastName)) like lower(:candidateName)"
+            + " and c.country in (:userSourceCountries)")
+    Page<Candidate> searchCandidateNameRestricted(@Param("candidateName") String candidateName,
+                                        @Param("userSourceCountries") Set<Country> userSourceCountries,
+                                        Pageable pageable);
 
     /* Used for candidate registration to check for existing accounts with different username options */
 //    Candidate findByEmailIgnoreCase(String email);

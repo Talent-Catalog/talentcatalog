@@ -243,10 +243,17 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Page<Candidate> searchCandidates(CandidateEmailSearchRequest request) {
         String s = request.getCandidateEmail();
-
+        User loggedInUser = userContext.getLoggedInUser();
         Page<Candidate> candidates;
-        candidates = candidateRepository.searchCandidateEmail(
-                '%' + s +'%', request.getPageRequestWithoutSort());
+
+        if(CollectionUtils.isEmpty(loggedInUser.getSourceCountries())){
+            candidates = candidateRepository.searchCandidateEmail(
+                    '%' + s +'%', request.getPageRequestWithoutSort());
+        } else {
+            candidates = candidateRepository.searchCandidateEmailRestricted(
+                    '%' + s +'%', loggedInUser.getSourceCountries(), request.getPageRequestWithoutSort());
+        }
+
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
         return candidates;
     }
@@ -254,17 +261,30 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Page<Candidate> searchCandidates(CandidateNumberOrNameSearchRequest request) {
         String s = request.getCandidateNumberOrName();
+        User loggedInUser = userContext.getLoggedInUser();
         boolean searchForNumber = s.length() > 0 && Character.isDigit(s.charAt(0));
-
         Page<Candidate> candidates;
+
         if (searchForNumber) {
-            candidates = candidateRepository.searchCandidateNumber(
-                    s +'%', request.getPageRequestWithoutSort());
+            // Check if user has country restrictions
+            if(CollectionUtils.isEmpty(loggedInUser.getSourceCountries())){
+                candidates = candidateRepository.searchCandidateNumber(
+                        s +'%', request.getPageRequestWithoutSort());
+            } else {
+                candidates = candidateRepository.searchCandidateNumberRestricted(
+                        s +'%', loggedInUser.getSourceCountries(), request.getPageRequestWithoutSort());
+            }
         } else {
-            candidates = candidateRepository.searchCandidateName(
-                    '%' + s +'%', request.getPageRequestWithoutSort());
-            
+            // Check if user has country restrictions
+            if(CollectionUtils.isEmpty(loggedInUser.getSourceCountries())){
+                candidates = candidateRepository.searchCandidateName(
+                        '%' + s +'%', request.getPageRequestWithoutSort());
+            } else {
+                candidates = candidateRepository.searchCandidateNameRestricted(
+                        '%' + s +'%', loggedInUser.getSourceCountries(), request.getPageRequestWithoutSort());
+            }
         }
+
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
         return candidates;
     }
@@ -272,10 +292,17 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Page<Candidate> searchCandidates(CandidatePhoneSearchRequest request) {
         String s = request.getCandidatePhone();
+        User loggedInUser = userContext.getLoggedInUser();
 
         Page<Candidate> candidates;
+        if(CollectionUtils.isEmpty(loggedInUser.getSourceCountries())){
             candidates = candidateRepository.searchCandidatePhone(
                     '%' + s +'%', request.getPageRequestWithoutSort());
+        } else {
+            candidates = candidateRepository.searchCandidatePhoneRestricted(
+                    '%' + s +'%', loggedInUser.getSourceCountries(), request.getPageRequestWithoutSort());
+        }
+
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
         return candidates;
     }
