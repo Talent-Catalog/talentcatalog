@@ -668,7 +668,8 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public List<DataRow> getRegistrationOccupationStats(int days) {
-        return toRows(candidateRepository.countByOccupationOrderByCount(days)); 
+        final List<DataRow> rows = toRows(candidateRepository.countByOccupationOrderByCount(days));
+        return limitRows(rows, 15);
     }
 
     @Override
