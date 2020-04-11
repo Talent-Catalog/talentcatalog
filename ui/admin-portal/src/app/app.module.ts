@@ -114,6 +114,7 @@ import {ViewCandidateSpecialLinksComponent} from './components/candidates/view/s
 import {EditCandidateSpecialLinksComponent} from './components/candidates/view/special-links/edit/edit-candidate-special-links.component';
 import {RoleGuardService} from "./services/role-guard.service";
 import {NgxWigModule} from 'ngx-wig';
+import {ViewCandidateSurveyComponent} from './components/candidates/view/survey/view-candidate-survey.component';
 
 @NgModule({
   declarations: [
@@ -219,7 +220,8 @@ import {NgxWigModule} from 'ngx-wig';
     MonthPickerComponent,
     NotFoundComponent,
     ViewCandidateSpecialLinksComponent,
-    EditCandidateSpecialLinksComponent
+    EditCandidateSpecialLinksComponent,
+    ViewCandidateSurveyComponent
   ],
   imports: [
     BrowserModule,

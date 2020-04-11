@@ -33,6 +33,8 @@ public class User extends AbstractAuditableDomainObject<Long> {
     
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    private Boolean readOnly;
     
     private String passwordEnc;
     
@@ -119,6 +121,10 @@ public class User extends AbstractAuditableDomainObject<Long> {
     public void setRole(Role role) {
         this.role = role;
     }
+
+    public Boolean getReadOnly() { return readOnly; }
+
+    public void setReadOnly(Boolean readOnly) { this.readOnly = readOnly; }
 
     public String getPasswordEnc() {
         return passwordEnc;

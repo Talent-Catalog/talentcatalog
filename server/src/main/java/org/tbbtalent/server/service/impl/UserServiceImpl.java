@@ -55,6 +55,10 @@ import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.UserService;
 import org.tbbtalent.server.service.email.EmailHelper;
 
+import javax.security.auth.login.AccountLockedException;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -115,6 +119,8 @@ public class UserServiceImpl implements UserService {
                 request.getEmail(),
                 request.getRole());
 
+        user.setReadOnly(request.getReadOnly());
+
         /* Validate the password before account creation */
         String passwordEncrypted = passwordHelper.validateAndEncodePassword(request.getPassword());
         user.setPasswordEnc(passwordEncrypted);
@@ -144,6 +150,8 @@ public class UserServiceImpl implements UserService {
                 throw new UsernameTakenException("email");
             }
         }
+
+        user.setReadOnly(request.getReadOnly());
 
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());

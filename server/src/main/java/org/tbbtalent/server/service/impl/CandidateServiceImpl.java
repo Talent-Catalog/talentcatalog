@@ -310,6 +310,9 @@ public class CandidateServiceImpl implements CandidateService {
                 request.getEmail(),
                 Role.user);
 
+        // set Read Only to default false
+        user.setReadOnly(false);
+
         User existing = userRepository.findByUsernameAndRole(user.getUsername(), Role.user);
         if (existing != null) {
             throw new UsernameTakenException("A user already exists with username: " + existing.getUsername());

@@ -20,6 +20,8 @@ public class CreateUserRequest {
     @NotNull
     private Role role;
 
+    private Boolean readOnly;
+
 
     public String getFirstName() {
         return firstName;
@@ -56,4 +58,8 @@ public class CreateUserRequest {
     public Role getRole() { return role; }
 
     public void setRole(Role role) { this.role = role; }
+
+    public Boolean getReadOnly() { return readOnly; }
+
+    public void setReadOnly(Boolean readOnly) { this.readOnly = readOnly; }
 }

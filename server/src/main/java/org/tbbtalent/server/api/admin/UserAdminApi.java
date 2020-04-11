@@ -27,6 +27,9 @@ import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.UserService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
+import javax.validation.Valid;
+import java.util.Map;
+
 @RestController()
 @RequestMapping("/api/admin/user")
 public class UserAdminApi {
@@ -114,6 +117,7 @@ public class UserAdminApi {
                 .add("lastName")
                 .add("email")
                 .add("role")
+                .add("readOnly")
                 .add("status")
                 .add("createdDate")
                 .add("lastLogin")
