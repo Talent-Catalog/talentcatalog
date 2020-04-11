@@ -1,5 +1,9 @@
 package org.tbbtalent.server.api.admin;
 
+import java.util.Map;
+
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +19,7 @@ import org.tbbtalent.server.model.Role;
 import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.request.user.CreateUserRequest;
 import org.tbbtalent.server.request.user.SearchUserRequest;
+import org.tbbtalent.server.request.user.UpdateSharingRequest;
 import org.tbbtalent.server.request.user.UpdateUserPasswordRequest;
 import org.tbbtalent.server.request.user.UpdateUserRequest;
 import org.tbbtalent.server.request.user.UpdateUsernameRequest;
@@ -73,6 +78,22 @@ public class UserAdminApi {
     public Map<String, Object> updateUsername(@PathVariable("id") long id,
                                       @RequestBody UpdateUsernameRequest request) {
         User user = this.userService.updateUsername(id, request);
+        return userDto().build(user);
+    }
+
+    @PutMapping("/shared-add/{id}")
+    public Map<String, Object> addToSharedWithMe(
+            @PathVariable("id") long id,
+        @RequestBody UpdateSharingRequest request) {
+        User user = this.userService.addToSharedWithUser(id, request);
+        return userDto().build(user);
+    }
+
+    @PutMapping("/shared-remove/{id}")
+    public Map<String, Object> removeFromSharedWithMe(
+            @PathVariable("id") long id,
+        @RequestBody UpdateSharingRequest request) {
+        User user = this.userService.removeFromSharedWithUser(id, request);
         return userDto().build(user);
     }
 

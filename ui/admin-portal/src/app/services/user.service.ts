@@ -4,6 +4,7 @@ import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
 import {User} from "../model/user";
+import {UpdateSharingRequest} from "../model/saved-search";
 
 @Injectable({providedIn: 'root'})
 export class UserService {
@@ -38,5 +39,16 @@ export class UserService {
 
   delete(id: number): Observable<boolean>  {
     return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
+  }
+
+  //todo Implement similar across to saved search service, returning the updated saved search
+  //Keep these because they could be useful if going down through list of a users
+  //shared searches. Then can return user with updated ids which can be used to update display.
+  addToSharedSearches(id: number, request: UpdateSharingRequest): Observable<User> {
+    return this.http.put<User>(`${this.apiUrl}/shared-add/${id}`, request);
+  }
+
+  removeFromSharedSearches(id: number, request: UpdateSharingRequest): Observable<User> {
+    return this.http.put<User>(`${this.apiUrl}/shared-remove/${id}`, request);
   }
 }

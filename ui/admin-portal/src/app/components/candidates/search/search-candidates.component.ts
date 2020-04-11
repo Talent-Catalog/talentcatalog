@@ -25,6 +25,7 @@ import {IDropdownSettings} from "ng-multiselect-dropdown";
 import {ListItem} from "ng-multiselect-dropdown/multiselect.model";
 import {User} from "../../../model/user";
 import {AuthService} from "../../../services/auth.service";
+import {UserService} from "../../../services/user.service";
 
 @Component({
   selector: 'app-search-candidates',
@@ -72,6 +73,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   constructor(private http: HttpClient,
               private fb: FormBuilder,
               private candidateService: CandidateService,
+              private userService: UserService,
               private savedSearchService: SavedSearchService,
               private modalService: NgbModal,
               private route: ActivatedRoute,
@@ -85,6 +87,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.loading = true;
     this.selectedCandidate = null;
     this.loggedInUser = this.authService.getLoggedInUser();
 
@@ -116,6 +119,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
         //Load saved search to get name and type to display
         this.savedSearchService.get(this.savedSearchId).subscribe(result => {
           this.savedSearch = result;
+          this.loading = false;
         }, err => {
           this.error = err;
         });
@@ -313,5 +317,60 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   onDeSelectAll() {
     this.onReviewStatusFilterChange();
+  }
+
+  addToSharedWithMe() {
+    this.savedSearchService.addSharedUser(
+      this.savedSearchId, {userId: this.loggedInUser.id}).subscribe(
+      result => {
+        if (result) {
+          this.savedSearch = result;
+        } else {
+          console.log('Did not work!')
+        }
+      },
+      error => {
+        this.error = error;
+      }
+    )
+  }
+
+  removeFromSharedWithMe() {
+    this.savedSearchService.removeSharedUser(
+      this.savedSearchId, {userId: this.loggedInUser.id}).subscribe(
+      result => {
+        if (result) {
+          this.savedSearch = result;
+        } else {
+          console.log('Did not work!')
+        }
+      },
+      error => {
+        this.error = error;
+      }
+    )
+  }
+
+  isShareable(): boolean {
+    let shareable: boolean = false;
+
+    //Is shareable with me if it is not fixed or created by me.
+    if (this.savedSearch) {
+      if (!this.savedSearch.fixed) {
+        //was it created by me?
+        if (this.savedSearch.createdBy.id != this.loggedInUser.id) {
+          shareable = true;
+        }
+      }
+    }
+    return shareable;
+  }
+
+  isSharedWithMe(): boolean {
+    //Logged in user is in saved search user
+    return this.savedSearch ?
+      this.savedSearch.users.find(u => u.id == this.loggedInUser.id ) != undefined
+      : false;
+
   }
 }

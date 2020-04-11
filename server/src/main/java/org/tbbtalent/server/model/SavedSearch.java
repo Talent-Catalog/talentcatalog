@@ -11,18 +11,22 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 @Entity
 @Table(name = "saved_search")
 @SequenceGenerator(name = "seq_gen", sequenceName = "saved_search_id_seq", allocationSize = 1)
 public class SavedSearch extends AbstractAuditableDomainObject<Long> {
+    private static final Logger log = LoggerFactory.getLogger(SavedSearch.class);
 
     private String name;
 
@@ -77,6 +81,12 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "savedSearch", cascade = CascadeType.MERGE)
     private Set<SearchJoin> searchJoins = new HashSet<>();
+    
+    //Note use of Set rather than List as strongly recommended for Many to Many
+    //relationships here: 
+    // https://thoughts-on-java.org/best-practices-for-many-to-many-associations-with-hibernate-and-jpa/
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "sharedSearches", cascade = CascadeType.MERGE)
+    private Set<User> users = new HashSet<>();     
 
     @Transient private List<String> countryNames;
     @Transient private List<String> nationalityNames;
@@ -442,14 +452,17 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
     public void parseType() {
         if (!StringUtils.isEmpty(type)) {
             String[] parts = type.split("/");
-            //todo What about valueOf exceptions
-            SavedSearchType savedSearchType = SavedSearchType.valueOf(parts[0]);
-            setSavedSearchType(savedSearchType);
+            try {
+                SavedSearchType savedSearchType = SavedSearchType.valueOf(parts[0]);
+                setSavedSearchType(savedSearchType);
 
-            //Check for subtype
-            if (parts.length > 1) {
-                SavedSearchSubtype savedSearchSubtype = SavedSearchSubtype.valueOf(parts[1]);
-                setSavedSearchSubtype(savedSearchSubtype);
+                //Check for subtype
+                if (parts.length > 1) {
+                    SavedSearchSubtype savedSearchSubtype = SavedSearchSubtype.valueOf(parts[1]);
+                    setSavedSearchSubtype(savedSearchSubtype);
+                }
+            } catch (IllegalArgumentException ex) {
+                log.error("Bad type '" + type + "' of saved search " + getId(), ex);
             }
         }
     }
@@ -462,19 +475,37 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
         this.includeDraftAndDeleted = includeDraftAndDeleted;
     }
 
-  public Boolean getFixed() {
-    return fixed;
-  }
+    public Boolean getFixed() {
+        return fixed;
+      }
+    
+    public void setFixed(Boolean fixed) {
+        this.fixed = fixed;
+      }
+    
+    public Boolean getReviewable() {
+        return reviewable;
+      }
+    
+    public void setReviewable(Boolean reviewable) {
+      this.reviewable = reviewable;
+    }
 
-  public void setFixed(Boolean fixed) {
-    this.fixed = fixed;
-  }
+    public Set<User> getUsers() {
+        return users;
+    }
 
-  public Boolean getReviewable() {
-    return reviewable;
-  }
+    public void setUsers(Set<User> users) {
+        this.users = users;
+    }
 
-  public void setReviewable(Boolean reviewable) {
-    this.reviewable = reviewable;
-  }
+    public void addUser(User user) {
+        users.add(user);
+        user.getSharedSearches().add(this);
+    }
+
+    public void removeUser(User user) {
+        users.remove(user);
+        user.getSharedSearches().remove(this);
+    }
 }

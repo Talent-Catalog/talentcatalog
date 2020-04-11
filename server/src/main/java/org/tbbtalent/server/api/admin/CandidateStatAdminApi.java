@@ -44,6 +44,8 @@ public class CandidateStatAdminApi {
                 this.candidateService.getRegistrationStats(366), chartType)); 
         statReports.add(new StatReport(title + " (last 3 weeks)",
                 this.candidateService.getRegistrationStats(21), chartType)); 
+        statReports.add(new StatReport(title + " (occupations last 3 weeks)",
+                this.candidateService.getRegistrationOccupationStats(21))); 
 
         title = "Birth years";
         chartType = "bar";
@@ -74,13 +76,13 @@ public class CandidateStatAdminApi {
         statReports.add(new StatReport(title + " (female)",
                 this.candidateService.getOccupationStats(Gender.female))); 
 
-        title = "Main Occupations";
+        title = "Most Common Occupations";
         statReports.add(new StatReport(title + "",
-                this.candidateService.getMainOccupationStats(null))); 
+                this.candidateService.getMostCommonOccupationStats(null))); 
         statReports.add(new StatReport(title + " (male)",
-                this.candidateService.getMainOccupationStats(Gender.male))); 
+                this.candidateService.getMostCommonOccupationStats(Gender.male))); 
         statReports.add(new StatReport(title + " (female)",
-                this.candidateService.getMainOccupationStats(Gender.female))); 
+                this.candidateService.getMostCommonOccupationStats(Gender.female))); 
 
         title = "Max Education Level";
         statReports.add(new StatReport(title, 

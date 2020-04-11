@@ -1,5 +1,6 @@
 import {SearchCandidateRequest} from "./search-candidate-request";
 import {SavedSearchTypeInfo} from "../services/saved-search.service";
+import {User} from "./user";
 
 export enum ReviewedStatus {
   pending,
@@ -60,6 +61,8 @@ export interface SavedSearch extends SearchCandidateRequest {
   name: string;
   fixed: boolean;
   reviewable: boolean;
+  users?: User[];
+  createdBy?: User;
   savedSearchType: SavedSearchType;
   savedSearchSubtype: SavedSearchSubtype;
 }
@@ -118,6 +121,10 @@ export interface SavedSearchRunRequest {
   pageSize?: number;
   sortFields?: string[];
   sortDirection?: string;
+}
+
+export interface UpdateSharingRequest {
+  savedSearchId: number;
 }
 
 /**

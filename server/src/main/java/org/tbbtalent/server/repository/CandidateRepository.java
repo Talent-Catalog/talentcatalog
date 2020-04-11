@@ -190,6 +190,12 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             nativeQuery = true)
     List<Object[]> countByOccupationOrderByCount(@Param("gender") String gender);
 
+    /**
+     * This is the same as countByOccupationOrderByCount except that it excludes
+     * undefined or unknown occupations (which unfortunately are common)
+     * @param gender Gender filter or % if all genders
+     * @return List of occupation name and count
+     */
     @Query( value="select o.name, " +
             "       count(distinct c) as PeopleCount " +
             "from candidate c left join users u on c.user_id = u.id " +
@@ -200,7 +206,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             "group by o.name " +
             "order by PeopleCount desc;",
             nativeQuery = true)
-    List<Object[]> countByMainOccupationOrderByCount(@Param("gender") String gender);
+    List<Object[]> countByMostCommonOccupationOrderByCount(@Param("gender") String gender);
 
     @Query( value="select DATE(created_date), count(distinct id) as PeopleCount from users " +
             "where created_date > current_date - :days " +
@@ -208,5 +214,17 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             "order by DATE(created_date) asc;",
             nativeQuery = true)
     List<Object[]> countByCreatedDateOrderByCount(@Param("days") Integer days);
+
+    @Query( value="select o.name, " +
+            "       count(distinct c) as PeopleCount " +
+            "from candidate c left join users u on c.user_id = u.id " +
+            "left join candidate_occupation co on c.id = co.candidate_id " +
+            "left join occupation o on co.occupation_id = o.id " +
+            "where u.status = 'active' " +
+            "and u.created_date > current_date - :days " +
+            "group by o.name " +
+            "order by PeopleCount desc;",
+            nativeQuery = true)
+    List<Object[]> countByOccupationOrderByCount(@Param("days") Integer days);
 
 }

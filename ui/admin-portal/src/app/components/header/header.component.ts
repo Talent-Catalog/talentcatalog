@@ -98,6 +98,9 @@ export class HeaderComponent implements OnInit {
       );
     this.loggedInUser = this.authService.getLoggedInUser();
     console.log(this.loggedInUser);
+    if (this.loggedInUser == null) {
+      this.logout();
+    }
   }
 
   renderCandidateRow(candidate: Candidate) {
