@@ -88,12 +88,14 @@ public interface CandidateService {
     List<DataRow> getBirthYearStats(Gender gender);
 
     List<DataRow> getRegistrationStats(int days);
+    
+    List<DataRow> getRegistrationOccupationStats(int days);
 
     List<DataRow> getLanguageStats(Gender gender);
 
     List<DataRow> getOccupationStats(Gender gender);
 
-    List<DataRow> getMainOccupationStats(Gender gender);
+    List<DataRow> getMostCommonOccupationStats(Gender gender);
 
     List<DataRow> getSpokenLanguageLevelStats(Gender gender, String language);
 

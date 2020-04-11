@@ -664,6 +664,11 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    public List<DataRow> getRegistrationOccupationStats(int days) {
+        return toRows(candidateRepository.countByOccupationOrderByCount(days)); 
+    }
+
+    @Override
     public List<DataRow> getNationalityStats(Gender gender, String country) {
         List<DataRow> rows = toRows(candidateRepository.
                 countByNationalityOrderByCount(
@@ -698,9 +703,9 @@ public class CandidateServiceImpl implements CandidateService {
     }
     
     @Override
-    public List<DataRow> getMainOccupationStats(Gender gender) {
+    public List<DataRow> getMostCommonOccupationStats(Gender gender) {
         List<DataRow> rows = toRows(candidateRepository.
-                countByMainOccupationOrderByCount(genderStr(gender)));
+                countByMostCommonOccupationOrderByCount(genderStr(gender)));
         return limitRows(rows, 15);
     }
     
