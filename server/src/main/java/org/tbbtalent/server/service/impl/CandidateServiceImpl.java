@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.rmi.server.ExportException;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
@@ -849,6 +850,10 @@ public class CandidateServiceImpl implements CandidateService {
         for (SavedSearch savedSearch: searches) {
             SearchCandidateRequest searchCandidateRequest =
                     convertToSearchCandidateRequest(savedSearch);
+            
+            //todo Change this to minus 1 day
+            LocalDate date = LocalDate.now().minusDays(2000);
+            searchCandidateRequest.setFromDate(date);
             Page<Candidate> candidates =
                     searchCandidates(searchCandidateRequest);
             
