@@ -41,9 +41,6 @@ export class UserService {
     return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
   }
 
-  //todo Implement similar across to saved search service, returning the updated saved search
-  //Keep these because they could be useful if going down through list of a users
-  //shared searches. Then can return user with updated ids which can be used to update display.
   addToSharedSearches(id: number, request: UpdateSharingRequest): Observable<User> {
     return this.http.put<User>(`${this.apiUrl}/shared-add/${id}`, request);
   }

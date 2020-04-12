@@ -9,6 +9,11 @@
           <button class="btn" *ngIf="showOpen" (click)="doOpenSearch()"><i class="fas fa-expand" title="Expand saved search"></i></button>
           <button class="btn" *ngIf="showEdit" (click)="doEditSearch()"><i class="fas fa-edit" title="Rename saved search"></i></button>
           <button class="btn" *ngIf="showDelete" (click)="doDeleteSearch()"><i class="fas fa-trash" title="Delete saved search"></i></button>
+          <button class="btn" *ngIf="showWatch" (click)="doToggleWatch()">
+<!--todo change colour to yellow when watching-->
+            <i *ngIf="isWatching()" class="fas fa-eye" title="Unwatch saved search"></i>
+            <i *ngIf="!isWatching()" class="far fa-eye" title="Watch saved search"></i>
+          </button>
         </div>
       </div>
     </div>

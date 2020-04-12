@@ -21,6 +21,7 @@ import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
+import org.tbbtalent.server.request.search.UpdateWatchingRequest;
 import org.tbbtalent.server.service.SavedSearchService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -86,6 +87,28 @@ public class SavedSearchAdminApi {
         return savedSearchDtoExtended().build(savedSearch);
     }
 
+    @PutMapping("/watcher-add/{id}")
+    public Map<String, Object> addWatcher(
+            @PathVariable("id") long id,
+            @RequestBody UpdateWatchingRequest request) {
+        SavedSearch savedSearch = this.savedSearchService.addWatcher(id, request);
+        return savedSearchDtoExtended().build(savedSearch);
+    }
+
+    @PutMapping("/watcher-remove/{id}")
+    public Map<String, Object> removeWatcher(
+            @PathVariable("id") long id,
+            @RequestBody UpdateWatchingRequest request) {
+        SavedSearch savedSearch = this.savedSearchService.removeWatcher(id, request);
+        return savedSearchDtoExtended().build(savedSearch);
+    }
+
+
+    private DtoBuilder savedSearchNameDto() {
+        return new DtoBuilder()
+                .add("name")
+                ;
+    }
 
     private DtoBuilder savedSearchDto() {
         return new DtoBuilder()
@@ -120,6 +143,7 @@ public class SavedSearchAdminApi {
                 .add("unRegistered")
                 .add("fixed")
                 .add("reviewable")
+                .add("watcherUserIds")
                 ;
     }
 
@@ -156,12 +180,6 @@ public class SavedSearchAdminApi {
         return new DtoBuilder()
                 .add("childSavedSearch", savedSearchNameDto())
                 .add("searchType")
-                ;
-    }
-
-    private DtoBuilder savedSearchNameDto() {
-        return new DtoBuilder()
-                .add("name")
                 ;
     }
 

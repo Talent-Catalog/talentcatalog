@@ -18,6 +18,8 @@ import {
 import {SavedSearchService} from '../../../../services/saved-search.service';
 import {Router} from '@angular/router';
 import {LocalStorageService} from "angular-2-local-storage";
+import {AuthService} from "../../../../services/auth.service";
+import {User} from "../../../../model/user";
 
 @Component({
   selector: 'app-browse-saved-searches',
@@ -39,14 +41,18 @@ export class BrowseSavedSearchesComponent implements OnInit, OnChanges {
   results: SearchResults<SavedSearch>;
   selectedSavedSearch: SavedSearch;
   selectedIndex = 0;
+  private loggedInUser: User;
 
   constructor(private fb: FormBuilder,
               private localStorageService: LocalStorageService,
               private router: Router,
+              private authService: AuthService,
               private savedSearchService: SavedSearchService) {
   }
 
   ngOnInit() {
+
+    this.loggedInUser = this.authService.getLoggedInUser();
 
     this.searchForm = this.fb.group({
       keyword: ['']
@@ -165,6 +171,46 @@ export class BrowseSavedSearchesComponent implements OnInit, OnChanges {
     }
     if (this.selectedIndex != oldSelectedIndex) {
       this.onSelect(this.results.content[this.selectedIndex])
+    }
+  }
+
+  onToggleWatch(savedSearch: SavedSearch) {
+    this.loading = true;
+    if (this.isWatching(savedSearch)) {
+      this.savedSearchService
+        .removeWatcher(savedSearch.id, {userId: this.loggedInUser.id})
+        .subscribe(result => {
+          //Update local copy
+          this.updateLocalSavedSearchCopy(result);
+          this.loading = false;
+        }, err => {
+          this.loading = false;
+          this.error = err;
+        })
+    } else {
+      this.savedSearchService
+        .addWatcher(savedSearch.id, {userId: this.loggedInUser.id})
+        .subscribe(result => {
+          this.updateLocalSavedSearchCopy(result);
+          this.loading = false;
+        }, err => {
+          this.loading = false;
+          this.error = err;
+        })
+    }
+  }
+
+  private isWatching(savedSearch: SavedSearch): boolean {
+    return savedSearch.watcherUserIds.indexOf(this.loggedInUser.id) >= 0;
+  }
+
+  private updateLocalSavedSearchCopy(savedSearch: SavedSearch) {
+    let index: number = indexOfSavedSearch(savedSearch.id, this.results.content);
+    if (index >= 0) {
+      this.results.content[index] = savedSearch;
+    }
+    if (this.selectedIndex == index) {
+      this.selectedSavedSearch = savedSearch;
     }
   }
 }

@@ -43,6 +43,7 @@ import org.tbbtalent.server.request.candidate.SearchJoinRequest;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
+import org.tbbtalent.server.request.search.UpdateWatchingRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.SavedSearchService;
 
@@ -242,6 +243,30 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 .orElseThrow(() -> new NoSuchObjectException(User.class, userID));
 
         savedSearch.removeUser(user);
+
+        return savedSearchRepository.save(savedSearch);
+    }
+
+    @Override
+    public SavedSearch addWatcher(long id, UpdateWatchingRequest request) {
+        SavedSearch savedSearch = savedSearchRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+
+        savedSearch.parseType();
+
+        savedSearch.addWatcher(request.getUserId());
+
+        return savedSearchRepository.save(savedSearch);
+    }
+
+    @Override
+    public SavedSearch removeWatcher(long id, UpdateWatchingRequest request) {
+        SavedSearch savedSearch = savedSearchRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+
+        savedSearch.parseType();
+
+        savedSearch.removeWatcher(request.getUserId());
 
         return savedSearchRepository.save(savedSearch);
     }

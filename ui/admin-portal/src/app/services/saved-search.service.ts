@@ -139,4 +139,18 @@ export class SavedSearchService {
         map(savedSearch => SavedSearchService.convertSavedSearchEnums(savedSearch))
       );
   }
+
+  addWatcher(id: number, request: { userId: number }): Observable<SavedSearch> {
+    return this.http.put<SavedSearch>(`${this.apiUrl}/watcher-add/${id}`, request)
+      .pipe(
+        map(savedSearch => SavedSearchService.convertSavedSearchEnums(savedSearch))
+      );
+  }
+
+  removeWatcher(id: number, request: { userId: number }): Observable<SavedSearch> {
+    return this.http.put<SavedSearch>(`${this.apiUrl}/watcher-remove/${id}`, request)
+      .pipe(
+        map(savedSearch => SavedSearchService.convertSavedSearchEnums(savedSearch))
+      );
+  }
 }
