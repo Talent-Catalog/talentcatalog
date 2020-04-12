@@ -11,8 +11,8 @@
           <button class="btn" *ngIf="showDelete" (click)="doDeleteSearch()"><i class="fas fa-trash" title="Delete saved search"></i></button>
           <button class="btn" *ngIf="showWatch" (click)="doToggleWatch()">
 <!--todo change colour to yellow when watching-->
-            <i *ngIf="isWatching()" class="fas fa-eye" title="Unwatch saved search"></i>
-            <i *ngIf="!isWatching()" class="far fa-eye" title="Watch saved search"></i>
+            <i *ngIf="isWatching()" class="fas fa-eye watched" title="Unwatch saved search"></i>
+            <i *ngIf="!isWatching()" class="far fa-eye notwatched" title="Watch saved search"></i>
           </button>
         </div>
       </div>
