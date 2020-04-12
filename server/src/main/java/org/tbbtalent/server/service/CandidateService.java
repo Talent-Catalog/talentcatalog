@@ -107,4 +107,6 @@ public interface CandidateService {
 
     Resource generateCv(Candidate candidate);
 
+    void notifyWatchers();
+
 }

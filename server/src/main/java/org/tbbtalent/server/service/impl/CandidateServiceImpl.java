@@ -8,7 +8,9 @@ import java.rmi.server.ExportException;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -23,6 +25,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.CircularReferencedException;
@@ -150,36 +153,36 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     //todo this is horrible cloned code duplicated from SavedSearchServiceImpl - factor it out.
-    private SearchCandidateRequest convertToSearchCandidateRequest(SavedSearch request) {
+    private SearchCandidateRequest convertToSearchCandidateRequest(SavedSearch savedSearch) {
         SearchCandidateRequest searchCandidateRequest = new SearchCandidateRequest();
-        searchCandidateRequest.setSavedSearchId(request.getId());
-        searchCandidateRequest.setKeyword(request.getKeyword());
-        searchCandidateRequest.setStatuses(getStatusListFromString(request.getStatuses()));
-        searchCandidateRequest.setGender(request.getGender());
-        searchCandidateRequest.setOccupationIds(getIdsFromString(request.getOccupationIds()));
-        searchCandidateRequest.setOrProfileKeyword(request.getOrProfileKeyword());
-        searchCandidateRequest.setVerifiedOccupationIds(getIdsFromString(request.getVerifiedOccupationIds()));
-        searchCandidateRequest.setVerifiedOccupationSearchType(request.getVerifiedOccupationSearchType());
-        searchCandidateRequest.setNationalityIds(getIdsFromString(request.getNationalityIds()));
-        searchCandidateRequest.setNationalitySearchType(request.getNationalitySearchType());
-        searchCandidateRequest.setCountryIds(getIdsFromString(request.getCountryIds()));
-        searchCandidateRequest.setEnglishMinSpokenLevel(request.getEnglishMinSpokenLevel());
-        searchCandidateRequest.setEnglishMinWrittenLevel(request.getEnglishMinWrittenLevel());
-        searchCandidateRequest.setOtherLanguageId(request.getOtherLanguage() != null ? request.getOtherLanguage().getId() : null);
-        searchCandidateRequest.setOtherMinSpokenLevel(request.getOtherMinSpokenLevel());
-        searchCandidateRequest.setOtherMinWrittenLevel(request.getOtherMinWrittenLevel());
-        searchCandidateRequest.setUnRegistered(request.getUnRegistered());
-        searchCandidateRequest.setLastModifiedFrom(request.getLastModifiedFrom());
-        searchCandidateRequest.setLastModifiedTo(request.getLastModifiedTo());
+        searchCandidateRequest.setSavedSearchId(savedSearch.getId());
+        searchCandidateRequest.setKeyword(savedSearch.getKeyword());
+        searchCandidateRequest.setStatuses(getStatusListFromString(savedSearch.getStatuses()));
+        searchCandidateRequest.setGender(savedSearch.getGender());
+        searchCandidateRequest.setOccupationIds(getIdsFromString(savedSearch.getOccupationIds()));
+        searchCandidateRequest.setOrProfileKeyword(savedSearch.getOrProfileKeyword());
+        searchCandidateRequest.setVerifiedOccupationIds(getIdsFromString(savedSearch.getVerifiedOccupationIds()));
+        searchCandidateRequest.setVerifiedOccupationSearchType(savedSearch.getVerifiedOccupationSearchType());
+        searchCandidateRequest.setNationalityIds(getIdsFromString(savedSearch.getNationalityIds()));
+        searchCandidateRequest.setNationalitySearchType(savedSearch.getNationalitySearchType());
+        searchCandidateRequest.setCountryIds(getIdsFromString(savedSearch.getCountryIds()));
+        searchCandidateRequest.setEnglishMinSpokenLevel(savedSearch.getEnglishMinSpokenLevel());
+        searchCandidateRequest.setEnglishMinWrittenLevel(savedSearch.getEnglishMinWrittenLevel());
+        searchCandidateRequest.setOtherLanguageId(savedSearch.getOtherLanguage() != null ? savedSearch.getOtherLanguage().getId() : null);
+        searchCandidateRequest.setOtherMinSpokenLevel(savedSearch.getOtherMinSpokenLevel());
+        searchCandidateRequest.setOtherMinWrittenLevel(savedSearch.getOtherMinWrittenLevel());
+        searchCandidateRequest.setUnRegistered(savedSearch.getUnRegistered());
+        searchCandidateRequest.setLastModifiedFrom(savedSearch.getLastModifiedFrom());
+        searchCandidateRequest.setLastModifiedTo(savedSearch.getLastModifiedTo());
 //        searchCandidateRequest.setRegisteredFrom(request.getCreatedFrom());
 //        searchCandidateRequest.setRegisteredTo(request.getCreatedTo());
-        searchCandidateRequest.setMinAge(request.getMinAge());
-        searchCandidateRequest.setMaxAge(request.getMaxAge());
-        searchCandidateRequest.setMinEducationLevel(request.getMinEducationLevel());
-        searchCandidateRequest.setEducationMajorIds(getIdsFromString(request.getEducationMajorIds()));
+        searchCandidateRequest.setMinAge(savedSearch.getMinAge());
+        searchCandidateRequest.setMaxAge(savedSearch.getMaxAge());
+        searchCandidateRequest.setMinEducationLevel(savedSearch.getMinEducationLevel());
+        searchCandidateRequest.setEducationMajorIds(getIdsFromString(savedSearch.getEducationMajorIds()));
 
         List<SearchJoinRequest> searchJoinRequests = new ArrayList<>();
-        for (SearchJoin searchJoin : request.getSearchJoins()) {
+        for (SearchJoin searchJoin : savedSearch.getSearchJoins()) {
             searchJoinRequests.add(new SearchJoinRequest(searchJoin.getChildSavedSearch().getId(), searchJoin.getChildSavedSearch().getName(), searchJoin.getSearchType()));
         }
         searchCandidateRequest.setSearchJoinRequests(searchJoinRequests);
@@ -837,7 +840,35 @@ public class CandidateServiceImpl implements CandidateService {
             return rawData;
         }
     }
+    
+    @Override
+    @Scheduled(cron = "0 * * * * ?")
+    public void notifyWatchers() {
+        List<SavedSearch> searches = savedSearchRepository.findByWatcherIdsIsNotNullLoadSearchJoins();
+        Map<Long, List<SavedSearch>> userNotifications = new HashMap<>();
+        for (SavedSearch savedSearch: searches) {
+            SearchCandidateRequest searchCandidateRequest =
+                    convertToSearchCandidateRequest(savedSearch);
+            Page<Candidate> candidates =
+                    searchCandidates(searchCandidateRequest);
+            
+            if (candidates.getNumberOfElements() > 0) {
+                //Query has results. Need to let watchers know
+                List<Long> watcherUserIds = savedSearch.getWatcherUserIds();
+                for (Long watcherUserId : watcherUserIds) {
+                    List<SavedSearch> userWatches = userNotifications
+                            .computeIfAbsent(watcherUserId, k -> new ArrayList<>());
+                    userWatches.add(savedSearch);
+                }
+            }
+        }
 
-
-
+        for (Long userId : userNotifications.keySet()) {
+            String s = userNotifications.get(userId).stream()
+                    .map(SavedSearch::getName)
+                    .collect(Collectors.joining("/"));
+            log.info("Tell user " + userId + " about searches " + s);
+            //todo Construct and send emails
+        }
+    }
 }

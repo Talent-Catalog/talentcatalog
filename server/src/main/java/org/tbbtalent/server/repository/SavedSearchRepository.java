@@ -1,5 +1,6 @@
 package org.tbbtalent.server.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,13 +16,17 @@ public interface SavedSearchRepository extends JpaRepository<SavedSearch, Long>,
     SavedSearch findByNameIgnoreCase(@Param("name") String name);
 
     @Query(" select distinct s from SavedSearch s "
-            + " left join s.searchJoins"
+            + " left join fetch s.searchJoins"
             + " where s.id = :id" )
     Optional<SavedSearch> findByIdLoadSearchJoins(@Param("id") long id);
 
     @Query(" select distinct s from SavedSearch s "
-            + " left join s.users"
+            + " left join fetch s.users"
             + " where s.id = :id" )
     Optional<SavedSearch> findByIdLoadUsers(@Param("id") long id);
 
+    @Query(" select distinct s from SavedSearch s "
+            + " left join fetch s.searchJoins"
+            + " where s.watcherIds is not null " )
+    List<SavedSearch> findByWatcherIdsIsNotNullLoadSearchJoins();
 }
