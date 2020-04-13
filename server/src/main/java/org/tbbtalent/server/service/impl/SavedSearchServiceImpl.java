@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.tbbtalent.server.exception.EntityExistsException;
+import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.CandidateStatus;
 import org.tbbtalent.server.model.EducationLevel;
@@ -253,6 +254,12 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
 
         savedSearch.parseType();
+
+        List<SavedSearch> searches = savedSearchRepository.findUserWatchedSearches(request.getUserId());
+        if (searches.size() >= 10) {
+            String s = searches.stream().map(SavedSearch::getName).sorted().collect(Collectors.joining(","));
+            throw new InvalidRequestException("More than 10 watches. Currently watching " + s);
+        }
 
         savedSearch.addWatcher(request.getUserId());
 

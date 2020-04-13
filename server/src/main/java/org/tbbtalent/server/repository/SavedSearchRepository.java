@@ -29,4 +29,9 @@ public interface SavedSearchRepository extends JpaRepository<SavedSearch, Long>,
             + " left join fetch s.searchJoins"
             + " where s.watcherIds is not null " )
     List<SavedSearch> findByWatcherIdsIsNotNullLoadSearchJoins();
+
+    @Query(value=" select * from saved_search s "
+            + " where cast(:userId as text) in (select * from regexp_split_to_table(s.watcher_ids, ','))  ", 
+            nativeQuery = true )
+    List<SavedSearch> findUserWatchedSearches(@Param("userId") long userId);
 }
