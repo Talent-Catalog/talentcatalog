@@ -842,6 +842,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
     
+    //todo Change cron to a sensible time.
     @Override
     @Scheduled(cron = "0 * * * * ?")
     public void notifyWatchers() {
@@ -868,12 +869,19 @@ public class CandidateServiceImpl implements CandidateService {
             }
         }
 
+        //Construct and send emails 
         for (Long userId : userNotifications.keySet()) {
-            String s = userNotifications.get(userId).stream()
+            final List<SavedSearch> savedSearches = userNotifications.get(userId);
+            String s = savedSearches.stream()
                     .map(SavedSearch::getName)
                     .collect(Collectors.joining("/"));
             log.info("Tell user " + userId + " about searches " + s);
-            //todo Construct and send emails
+            User user = this.userRepository.findById(userId).orElse(null);
+            if (user == null) {
+                log.error("Unknown user watcher id " + userId + " watching searches " + s);
+            } else {
+                emailHelper.sendWatcherEmail(user, savedSearches);
+            }
         }
     }
 }
