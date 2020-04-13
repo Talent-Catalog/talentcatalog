@@ -842,9 +842,9 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
     
-    //todo Change cron to a sensible time.
+    //Midnight GMT
     @Override
-    @Scheduled(cron = "0 * * * * ?")
+    @Scheduled(cron = "0 0 0 * * ?", zone = "GMT")
     public void notifyWatchers() {
         List<SavedSearch> searches = savedSearchRepository.findByWatcherIdsIsNotNullLoadSearchJoins();
         Map<Long, List<SavedSearch>> userNotifications = new HashMap<>();
@@ -852,8 +852,7 @@ public class CandidateServiceImpl implements CandidateService {
             SearchCandidateRequest searchCandidateRequest =
                     convertToSearchCandidateRequest(savedSearch);
             
-            //todo Change this to minus 1 day
-            LocalDate date = LocalDate.now().minusDays(2000);
+            LocalDate date = LocalDate.now().minusDays(1);
             searchCandidateRequest.setFromDate(date);
             Page<Candidate> candidates =
                     searchCandidates(searchCandidateRequest);
