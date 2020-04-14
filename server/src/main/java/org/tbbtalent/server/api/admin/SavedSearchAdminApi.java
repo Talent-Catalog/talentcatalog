@@ -20,6 +20,8 @@ import org.tbbtalent.server.model.SavedSearch;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
+import org.tbbtalent.server.request.search.UpdateSharingRequest;
+import org.tbbtalent.server.request.search.UpdateWatchingRequest;
 import org.tbbtalent.server.service.SavedSearchService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -69,6 +71,44 @@ public class SavedSearchAdminApi {
         return this.savedSearchService.deleteSavedSearch(id);
     }
 
+    @PutMapping("/shared-add/{id}")
+    public Map<String, Object> addSharedUser(
+            @PathVariable("id") long id,
+            @RequestBody UpdateSharingRequest request) {
+        SavedSearch savedSearch = this.savedSearchService.addSharedUser(id, request);
+        return savedSearchDtoExtended().build(savedSearch);
+    }
+
+    @PutMapping("/shared-remove/{id}")
+    public Map<String, Object> removeSharedUser(
+            @PathVariable("id") long id,
+            @RequestBody UpdateSharingRequest request) {
+        SavedSearch savedSearch = this.savedSearchService.removeSharedUser(id, request);
+        return savedSearchDtoExtended().build(savedSearch);
+    }
+
+    @PutMapping("/watcher-add/{id}")
+    public Map<String, Object> addWatcher(
+            @PathVariable("id") long id,
+            @RequestBody UpdateWatchingRequest request) {
+        SavedSearch savedSearch = this.savedSearchService.addWatcher(id, request);
+        return savedSearchDtoExtended().build(savedSearch);
+    }
+
+    @PutMapping("/watcher-remove/{id}")
+    public Map<String, Object> removeWatcher(
+            @PathVariable("id") long id,
+            @RequestBody UpdateWatchingRequest request) {
+        SavedSearch savedSearch = this.savedSearchService.removeWatcher(id, request);
+        return savedSearchDtoExtended().build(savedSearch);
+    }
+
+
+    private DtoBuilder savedSearchNameDto() {
+        return new DtoBuilder()
+                .add("name")
+                ;
+    }
 
     private DtoBuilder savedSearchDto() {
         return new DtoBuilder()
@@ -103,6 +143,7 @@ public class SavedSearchAdminApi {
                 .add("unRegistered")
                 .add("fixed")
                 .add("reviewable")
+                .add("watcherUserIds")
                 ;
     }
 
@@ -130,6 +171,7 @@ public class SavedSearchAdminApi {
                 .add("createdDate")
                 .add("updatedBy", userDto())
                 .add("updatedDate")
+                .add("users", userDto())
                 .add("searchJoins", searchJoinDto());
 
     }
@@ -141,14 +183,8 @@ public class SavedSearchAdminApi {
                 ;
     }
 
-    private DtoBuilder savedSearchNameDto() {
-        return new DtoBuilder()
-                .add("name")
-                ;
-    }
-
     private DtoBuilder userDto() {
-        return new DtoBuilder()
+        return  new DtoBuilder()
                 .add("id")
                 .add("firstName")
                 .add("lastName")

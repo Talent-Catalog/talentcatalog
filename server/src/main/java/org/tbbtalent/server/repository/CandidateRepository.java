@@ -136,12 +136,15 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             + " where c.user.id = :id ")
     Candidate findByUserIdLoadProfile(@Param("id") Long userId);
 
+    
+    String countingStandardFilter = "u.status = 'active' and c.status != 'draft'";
+    
     //Note that I have been forced to go to native queries for these more 
     //complex queries. The non native queries seem a bit buggy.
     //Anyway - I couldn't get them working. Simpler to use normal SQL. JC.
     @Query(value = "select gender, count(distinct c) as PeopleCount" +
             " from candidate c left join users u on c.user_id = u.id" +
-            " where u.status = 'active' " +
+            " where " + countingStandardFilter +
             " group by gender order by PeopleCount desc",
     nativeQuery = true)
     List<Object[]> countByGenderOrderByCount();
@@ -149,7 +152,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     @Query(value = "select cast(extract(year from dob) as bigint) as year, " +
             " count(distinct c) as PeopleCount" +
             " from candidate c left join users u on c.user_id = u.id" +
-            " where u.status = 'active'" +
+            " where " + countingStandardFilter +
             " and gender like :gender" +
             " and dob is not null and extract(year from dob) > 1940 " +
             " group by year order by year asc",
@@ -160,7 +163,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             " from candidate c left join users u on c.user_id = u.id" +
             " left join nationality n on c.nationality_id = n.id " +
             " left join country on c.country_id = country.id " +
-            " where u.status = 'active' " +
+            " where " + countingStandardFilter +
             " and gender like :gender" +
             " and lower(country.name) like :country" +
             " group by n.name order by PeopleCount desc",
@@ -172,7 +175,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             " from candidate c left join users u on c.user_id = u.id" +
             " left join survey_type s on c.survey_type_id = s.id " +
             " left join country on c.country_id = country.id " +
-            " where u.status = 'active' " +
+            " where " + countingStandardFilter +
             " and gender like :gender" +
             " and lower(country.name) like :country" +
             " group by s.name order by PeopleCount desc",
@@ -185,7 +188,8 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             "       count(distinct user_id) as PeopleCount " +
             "from candidate c left join users u on c.user_id = u.id " +
             "left join education_level el on c.max_education_level_id = el.id " +
-            "where u.status = 'active' and gender like :gender " +
+            " where " + countingStandardFilter +
+            " and gender like :gender " +
             "group by EducationLevel " +
             "order by PeopleCount desc;",
     nativeQuery = true)
@@ -195,7 +199,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             " from candidate c left join users u on c.user_id = u.id" +
             " left join candidate_language cl on c.id = cl.candidate_id" +
             " left join language l on cl.language_id = l.id" +
-            " where u.status = 'active' " +
+            " where " + countingStandardFilter +
             " and gender like :gender" +
             " group by l.name order by PeopleCount desc",
             nativeQuery = true)
@@ -206,7 +210,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             " left join candidate_language cl on c.id = cl.candidate_id" +
             " left join language l on cl.language_id = l.id" +
             " left join language_level ll on cl.spoken_level_id = ll.id" +
-            " where u.status = 'active' " +
+            " where " + countingStandardFilter +
             " and gender like :gender" +
             " and lower(l.name) = lower(:language)" +
             " group by ll.name order by PeopleCount desc",
@@ -219,23 +223,31 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             "from candidate c left join users u on c.user_id = u.id " +
             "left join candidate_occupation co on c.id = co.candidate_id " +
             "left join occupation o on co.occupation_id = o.id " +
-            "where u.status = 'active' and gender like :gender " +
+            " where " + countingStandardFilter +
+            " and gender like :gender " +
             "group by o.name " +
             "order by PeopleCount desc;",
             nativeQuery = true)
     List<Object[]> countByOccupationOrderByCount(@Param("gender") String gender);
 
+    /**
+     * This is the same as countByOccupationOrderByCount except that it excludes
+     * undefined or unknown occupations (which unfortunately are common)
+     * @param gender Gender filter or % if all genders
+     * @return List of occupation name and count
+     */
     @Query( value="select o.name, " +
             "       count(distinct c) as PeopleCount " +
             "from candidate c left join users u on c.user_id = u.id " +
             "left join candidate_occupation co on c.id = co.candidate_id " +
             "left join occupation o on co.occupation_id = o.id " +
-            "where u.status = 'active' and gender like :gender " +
+            " where " + countingStandardFilter +
+            " and gender like :gender " +
             "and not lower(o.name) in ('undefined', 'unknown')" +
             "group by o.name " +
             "order by PeopleCount desc;",
             nativeQuery = true)
-    List<Object[]> countByMainOccupationOrderByCount(@Param("gender") String gender);
+    List<Object[]> countByMostCommonOccupationOrderByCount(@Param("gender") String gender);
 
     @Query( value="select DATE(created_date), count(distinct id) as PeopleCount from users " +
             "where created_date > current_date - :days " +
@@ -243,5 +255,17 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             "order by DATE(created_date) asc;",
             nativeQuery = true)
     List<Object[]> countByCreatedDateOrderByCount(@Param("days") Integer days);
+
+    @Query( value="select o.name, " +
+            "       count(distinct c) as PeopleCount " +
+            "from candidate c left join users u on c.user_id = u.id " +
+            "left join candidate_occupation co on c.id = co.candidate_id " +
+            "left join occupation o on co.occupation_id = o.id " +
+            " where " + countingStandardFilter +
+            "and u.created_date > current_date - :days " +
+            "group by o.name " +
+            "order by PeopleCount desc;",
+            nativeQuery = true)
+    List<Object[]> countByOccupationOrderByCount(@Param("days") Integer days);
 
 }

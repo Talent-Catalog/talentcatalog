@@ -30,5 +30,10 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     @Query("select u from User u where u.resetToken = :token and u.status != 'deleted'")
     User findByResetToken(@Param("token") String token);
 
+    @Query(" select distinct u from User u "
+            + " left join fetch u.sharedSearches "
+            + " where u.id = :id ")
+    User findByIdLoadSharedSearches(@Param("id") Long id);
+
 
 }

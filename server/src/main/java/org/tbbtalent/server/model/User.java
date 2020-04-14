@@ -1,7 +1,11 @@
 package org.tbbtalent.server.model;
 
-import org.apache.commons.lang3.StringUtils;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -18,6 +22,8 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
 
 @Entity
 @Table(name = "users")
@@ -53,6 +59,17 @@ public class User extends AbstractAuditableDomainObject<Long> {
     @OneToOne(mappedBy = "user")
     private Candidate candidate;
 
+    //Note use of Set rather than List as strongly recommended for Many to Many
+    //relationships here:
+    // https://thoughts-on-java.org/best-practices-for-many-to-many-associations-with-hibernate-and-jpa/
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinTable(
+            name = "user_saved_search",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "saved_search_id")
+    )
+    private Set<SavedSearch> sharedSearches = new HashSet<>();
+
     @Transient
     private String selectedLanguage = "en";
 
@@ -62,7 +79,7 @@ public class User extends AbstractAuditableDomainObject<Long> {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "country_id"))
     Set<Country> sourceCountries = new HashSet<Country>();
-    
+
     public User() {
     }
 
@@ -184,6 +201,15 @@ public class User extends AbstractAuditableDomainObject<Long> {
         this.selectedLanguage = selectedLanguage;
     }
 
+    public Set<SavedSearch> getSharedSearches() {
+        return sharedSearches;
+    }
+
+    public void setSharedSearches(Set<SavedSearch> sharedSearches) {
+        this.sharedSearches = sharedSearches;
+    }
+
+
     public Set<Country> getSourceCountries() { return sourceCountries; }
 
     public void setSourceCountries(Set<Country> sourceCountries) { this.sourceCountries = sourceCountries; }
@@ -199,5 +225,15 @@ public class User extends AbstractAuditableDomainObject<Long> {
             displayName = lastName;
         }
         return displayName;
+    }
+
+    public void addSharedSearch(SavedSearch savedSearch) {
+        sharedSearches.add(savedSearch);
+        savedSearch.getUsers().add(this);
+    }
+
+    public void removeSharedSearch(SavedSearch savedSearch) {
+        sharedSearches.remove(savedSearch);
+        savedSearch.getUsers().remove(this);
     }
 }

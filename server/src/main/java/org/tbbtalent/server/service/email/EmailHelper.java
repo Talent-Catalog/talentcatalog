@@ -1,16 +1,18 @@
 package org.tbbtalent.server.service.email;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.EmailSendFailedException;
+import org.tbbtalent.server.model.SavedSearch;
 import org.tbbtalent.server.model.User;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-
-import java.time.LocalDate;
 
 @Service
 public class EmailHelper {
@@ -108,6 +110,30 @@ public class EmailHelper {
             emailSender.sendAsync(email, subject, bodyText, bodyHtml);
         } catch (Exception e) {
             log.error("error sending confirm registration email", e);
+            throw new EmailSendFailedException(e);
+        }
+    }
+
+    public void sendWatcherEmail(User user, List<SavedSearch> savedSearches) {
+
+        String email = user.getEmail();
+        String displayName = user.getDisplayName();
+
+        String subject = null;
+        String bodyText = null;
+        String bodyHtml = null;
+        try {
+            final Context ctx = new Context();
+            ctx.setVariable("displayName", displayName);
+            ctx.setVariable("searches", savedSearches);
+
+            subject = "TBB - New candidates matching your watched searches";
+            bodyText = textTemplateEngine.process("watcher-notification", ctx);
+            bodyHtml = htmlTemplateEngine.process("watcher-notification", ctx);
+
+            emailSender.sendAsync(email, subject, bodyText, bodyHtml);
+        } catch (Exception e) {
+            log.error("error sending watcher email", e);
             throw new EmailSendFailedException(e);
         }
     }

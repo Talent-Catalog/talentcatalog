@@ -18,6 +18,8 @@ import {
 import {SavedSearchService} from '../../../../services/saved-search.service';
 import {Router} from '@angular/router';
 import {LocalStorageService} from "angular-2-local-storage";
+import {AuthService} from "../../../../services/auth.service";
+import {User} from "../../../../model/user";
 
 @Component({
   selector: 'app-browse-saved-searches',
@@ -39,14 +41,18 @@ export class BrowseSavedSearchesComponent implements OnInit, OnChanges {
   results: SearchResults<SavedSearch>;
   selectedSavedSearch: SavedSearch;
   selectedIndex = 0;
+  private loggedInUser: User;
 
   constructor(private fb: FormBuilder,
               private localStorageService: LocalStorageService,
               private router: Router,
+              private authService: AuthService,
               private savedSearchService: SavedSearchService) {
   }
 
   ngOnInit() {
+
+    this.loggedInUser = this.authService.getLoggedInUser();
 
     this.searchForm = this.fb.group({
       keyword: ['']
@@ -74,17 +80,41 @@ export class BrowseSavedSearchesComponent implements OnInit, OnChanges {
   }
 
   search() {
-    if (this.savedSearchType == undefined) {
+    let request = this.searchForm ? this.searchForm.value : {keyword: ""};
+    request.pageNumber = this.pageNumber - 1;
+    request.pageSize = this.pageSize;
+    request.sortFields = ['name'];
+    request.sortDirection = 'ASC';
+    if (this.savedSearchType != undefined) {
+      request.savedSearchType = this.savedSearchType;
+      request.savedSearchSubtype = this.savedSearchSubtype;
+
+      request.fixed = true;
+      request.owned = true;
+      request.shared = true;
+
+    } else {
+      switch (this.searchBy) {
+        case SearchBy.mySearches:
+          request.owned = true;
+          break;
+        case SearchBy.sharedWithMe:
+          request.shared = true;
+          break;
+        case SearchBy.all:
+          request.fixed = true;
+          request.owned = true;
+          request.shared = true;
+          break;
+        default:
+          request = null;
+      }
+    }
+
+    if (request == null) {
       this.error = "Haven't implemented search by " + SearchBy[this.searchBy];
     } else {
       this.loading = true;
-      const request = this.searchForm ? this.searchForm.value : {keyword: ""};
-      request.savedSearchType = this.savedSearchType;
-      request.savedSearchSubtype = this.savedSearchSubtype;
-      request.pageNumber = this.pageNumber - 1;
-      request.pageSize = this.pageSize;
-      request.sortFields = ['name'];
-      request.sortDirection = 'ASC';
       this.savedSearchService.search(request).subscribe(results => {
         this.results = results;
 
@@ -141,6 +171,46 @@ export class BrowseSavedSearchesComponent implements OnInit, OnChanges {
     }
     if (this.selectedIndex != oldSelectedIndex) {
       this.onSelect(this.results.content[this.selectedIndex])
+    }
+  }
+
+  onToggleWatch(savedSearch: SavedSearch) {
+    this.loading = true;
+    if (this.isWatching(savedSearch)) {
+      this.savedSearchService
+        .removeWatcher(savedSearch.id, {userId: this.loggedInUser.id})
+        .subscribe(result => {
+          //Update local copy
+          this.updateLocalSavedSearchCopy(result);
+          this.loading = false;
+        }, err => {
+          this.loading = false;
+          this.error = err;
+        })
+    } else {
+      this.savedSearchService
+        .addWatcher(savedSearch.id, {userId: this.loggedInUser.id})
+        .subscribe(result => {
+          this.updateLocalSavedSearchCopy(result);
+          this.loading = false;
+        }, err => {
+          this.loading = false;
+          this.error = err;
+        })
+    }
+  }
+
+  private isWatching(savedSearch: SavedSearch): boolean {
+    return savedSearch.watcherUserIds.indexOf(this.loggedInUser.id) >= 0;
+  }
+
+  private updateLocalSavedSearchCopy(savedSearch: SavedSearch) {
+    let index: number = indexOfSavedSearch(savedSearch.id, this.results.content);
+    if (index >= 0) {
+      this.results.content[index] = savedSearch;
+    }
+    if (this.selectedIndex == index) {
+      this.selectedSavedSearch = savedSearch;
     }
   }
 }

@@ -1,6 +1,12 @@
 package org.tbbtalent.server.request.candidate;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDate;
+import java.util.List;
+
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.validation.constraints.NotNull;
+
 import org.springframework.data.domain.Sort;
 import org.tbbtalent.server.model.CandidateStatus;
 import org.tbbtalent.server.model.Gender;
@@ -8,11 +14,7 @@ import org.tbbtalent.server.model.SearchType;
 import org.tbbtalent.server.model.ShortlistStatus;
 import org.tbbtalent.server.request.SearchRequest;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class SearchCandidateRequest extends SearchRequest {
 
@@ -51,6 +53,7 @@ public class SearchCandidateRequest extends SearchRequest {
     private List<ShortlistStatus> shortlistStatus;
     private boolean includeNew;
     private Boolean includeDraftAndDeleted;
+    private LocalDate fromDate;
 
     public SearchCandidateRequest() {
         super(Sort.Direction.DESC, new String[]{"id"});
@@ -296,6 +299,14 @@ public class SearchCandidateRequest extends SearchRequest {
 
     public void setIncludeDraftAndDeleted(Boolean includeDraftAndDeleted) {
         this.includeDraftAndDeleted = includeDraftAndDeleted;
+    }
+
+    public LocalDate getFromDate() {
+        return fromDate;
+    }
+
+    public void setFromDate(LocalDate fromDate) {
+        this.fromDate = fromDate;
     }
 }
 

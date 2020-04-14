@@ -1,3 +1,17 @@
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
+import {
+  defaultReviewStatusFilter,
+  SavedSearch
+} from "../../../../model/saved-search";
 import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 import {defaultReviewStatusFilter, SavedSearch} from "../../../../model/saved-search";
 import {Subscription} from "rxjs";
@@ -22,6 +36,7 @@ export class SavedSearchResultsComponent implements OnInit, OnChanges, OnDestroy
   private pageSize: number;
   results: SearchResults<Candidate>;
   @Input() savedSearch: SavedSearch;
+  @Output() toggleWatch = new EventEmitter<SavedSearch>();
   searching: boolean;
   private sortField: string;
   private sortDirection: string;
@@ -162,4 +177,10 @@ constructor(
     this.search(true);
   }
 
+  //Pass toggle watch up to BrowseSavedSearchesComponent for it to
+  //do the update and refresh its copy of the savedSearch details
+  // (which is passed through to all contained components)
+  onToggleWatch(savedSearch: SavedSearch) {
+    this.toggleWatch.emit(savedSearch);
+  }
 }

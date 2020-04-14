@@ -1,9 +1,12 @@
 package org.tbbtalent.server.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -11,18 +14,24 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 @Entity
 @Table(name = "saved_search")
 @SequenceGenerator(name = "seq_gen", sequenceName = "saved_search_id_seq", allocationSize = 1)
 public class SavedSearch extends AbstractAuditableDomainObject<Long> {
+    private static final Logger log = LoggerFactory.getLogger(SavedSearch.class);
 
     private String name;
 
@@ -74,9 +83,16 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
     private Boolean includeDraftAndDeleted;
     private Boolean fixed;
     private Boolean reviewable;
+    private String watcherIds;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "savedSearch", cascade = CascadeType.MERGE)
     private Set<SearchJoin> searchJoins = new HashSet<>();
+    
+    //Note use of Set rather than List as strongly recommended for Many to Many
+    //relationships here: 
+    // https://thoughts-on-java.org/best-practices-for-many-to-many-associations-with-hibernate-and-jpa/
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "sharedSearches", cascade = CascadeType.MERGE)
+    private Set<User> users = new HashSet<>();     
 
     @Transient private List<String> countryNames;
     @Transient private List<String> nationalityNames;
@@ -90,7 +106,6 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
     @Transient private String minEducationLevelName;
     @Transient private SavedSearchType savedSearchType;
     @Transient private SavedSearchSubtype savedSearchSubtype;
-
 
     public SavedSearch() {
         this.status = Status.active;
@@ -235,7 +250,7 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
         this.otherMinSpokenLevel = otherMinSpokenLevel;
     }
 
-  public Boolean getUnRegistered() {
+    public Boolean getUnRegistered() {
     return unRegistered;
   }
 
@@ -442,14 +457,17 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
     public void parseType() {
         if (!StringUtils.isEmpty(type)) {
             String[] parts = type.split("/");
-            //todo What about valueOf exceptions
-            SavedSearchType savedSearchType = SavedSearchType.valueOf(parts[0]);
-            setSavedSearchType(savedSearchType);
+            try {
+                SavedSearchType savedSearchType = SavedSearchType.valueOf(parts[0]);
+                setSavedSearchType(savedSearchType);
 
-            //Check for subtype
-            if (parts.length > 1) {
-                SavedSearchSubtype savedSearchSubtype = SavedSearchSubtype.valueOf(parts[1]);
-                setSavedSearchSubtype(savedSearchSubtype);
+                //Check for subtype
+                if (parts.length > 1) {
+                    SavedSearchSubtype savedSearchSubtype = SavedSearchSubtype.valueOf(parts[1]);
+                    setSavedSearchSubtype(savedSearchSubtype);
+                }
+            } catch (IllegalArgumentException ex) {
+                log.error("Bad type '" + type + "' of saved search " + getId(), ex);
             }
         }
     }
@@ -462,19 +480,73 @@ public class SavedSearch extends AbstractAuditableDomainObject<Long> {
         this.includeDraftAndDeleted = includeDraftAndDeleted;
     }
 
-  public Boolean getFixed() {
-    return fixed;
-  }
+    public Boolean getFixed() {
+        return fixed;
+      }
+    
+    public void setFixed(Boolean fixed) {
+        this.fixed = fixed;
+      }
+    
+    public Boolean getReviewable() {
+        return reviewable;
+      }
+    
+    public void setReviewable(Boolean reviewable) {
+      this.reviewable = reviewable;
+    }
 
-  public void setFixed(Boolean fixed) {
-    this.fixed = fixed;
-  }
+    public String getWatcherIds() {
+        return watcherIds;
+    }
 
-  public Boolean getReviewable() {
-    return reviewable;
-  }
+    public void setWatcherIds(String watcherIds) {
+        this.watcherIds = watcherIds;
+    }
 
-  public void setReviewable(Boolean reviewable) {
-    this.reviewable = reviewable;
-  }
+    @NotNull
+    public List<Long> getWatcherUserIds() {
+        return watcherIds == null ? new ArrayList<>() : 
+                Stream.of(watcherIds.split(","))
+                .map(Long::parseLong)
+                .collect(Collectors.toList());
+    }
+
+    public void setWatcherUserIds(List<Long> watcherUserIds) {
+        final String s = CollectionUtils.isEmpty(watcherUserIds) ? null :
+                watcherUserIds.stream()
+                        .map(String::valueOf)
+                        .collect(Collectors.joining(","));
+        setWatcherIds(s);
+    }
+
+    public void addWatcher(Long userId) {
+        List<Long> ids = getWatcherUserIds();
+        ids.add(userId);
+        setWatcherUserIds(ids);
+    }
+
+    public void removeWatcher(Long userId) {
+        List<Long> ids = getWatcherUserIds();
+        ids.remove(userId);
+        setWatcherUserIds(ids);
+    }
+
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
+    }
+
+    public void addUser(User user) {
+        users.add(user);
+        user.getSharedSearches().add(this);
+    }
+
+    public void removeUser(User user) {
+        users.remove(user);
+        user.getSharedSearches().remove(this);
+    }
 }

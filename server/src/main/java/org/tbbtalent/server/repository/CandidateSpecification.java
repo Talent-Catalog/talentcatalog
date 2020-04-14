@@ -56,7 +56,16 @@ public class CandidateSpecification {
             Join<CandidateOccupation, Occupation> occupation = null;
             Join<Candidate, CandidateJobExperience> candidateJobExperiences = null;
             Join<Candidate, CandidateSkill> candidateSkills = null;
-
+            
+            //CreatedBy date > from date is only set in the watcher notification code.
+            if (request.getFromDate() != null) {
+                conjunction.getExpressions().add(builder.greaterThanOrEqualTo(
+                        candidate.get("createdDate"), 
+                        getOffsetDateTime(
+                                request.getFromDate(),LocalTime.MIN, request.getTimezone()))
+                );
+            }
+            
             if (BooleanUtils.isNotTrue(request.getIncludeDraftAndDeleted())) {
                 List<CandidateStatus> statuses = new ArrayList(Arrays.asList(CandidateStatus.draft, CandidateStatus.deleted) );
                 conjunction.getExpressions().add(

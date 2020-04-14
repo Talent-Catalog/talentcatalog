@@ -1,5 +1,14 @@
 package org.tbbtalent.server.service.impl;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +19,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.tbbtalent.server.exception.CountryRestrictionException;
 import org.tbbtalent.server.exception.EntityExistsException;
+import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.CandidateStatus;
 import org.tbbtalent.server.model.Country;
@@ -19,6 +29,7 @@ import org.tbbtalent.server.model.LanguageLevel;
 import org.tbbtalent.server.model.SavedSearch;
 import org.tbbtalent.server.model.SearchJoin;
 import org.tbbtalent.server.model.Status;
+import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.repository.CandidateRepository;
 import org.tbbtalent.server.repository.CountryRepository;
@@ -31,28 +42,22 @@ import org.tbbtalent.server.repository.OccupationRepository;
 import org.tbbtalent.server.repository.SavedSearchRepository;
 import org.tbbtalent.server.repository.SavedSearchSpecification;
 import org.tbbtalent.server.repository.SearchJoinRepository;
+import org.tbbtalent.server.repository.UserRepository;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.candidate.SearchJoinRequest;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
+import org.tbbtalent.server.request.search.UpdateSharingRequest;
+import org.tbbtalent.server.request.search.UpdateWatchingRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.SavedSearchService;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class SavedSearchServiceImpl implements SavedSearchService {
 
     private static final Logger log = LoggerFactory.getLogger(SavedSearchServiceImpl.class);
 
-    private final CandidateRepository candidateRepository;
+    private final UserRepository userRepository;
     private final SavedSearchRepository savedSearchRepository;
     private final SearchJoinRepository searchJoinRepository;
     private final LanguageLevelRepository languageLevelRepository;
@@ -65,10 +70,19 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final UserContext userContext;
 
     @Autowired
-    public SavedSearchServiceImpl(CandidateRepository candidateRepository, SavedSearchRepository savedSearchRepository,
-                                  SearchJoinRepository searchJoinRepository, LanguageLevelRepository languageLevelRepository,
-                                  LanguageRepository languageRepository, CountryRepository countryRepository, NationalityRepository nationalityRepository, OccupationRepository occupationRepository, EducationMajorRepository educationMajorRepository, EducationLevelRepository educationLevelRepository, UserContext userContext) {
-        this.candidateRepository = candidateRepository;
+    public SavedSearchServiceImpl(
+            UserRepository userRepository,
+            SavedSearchRepository savedSearchRepository,
+            SearchJoinRepository searchJoinRepository,
+            LanguageLevelRepository languageLevelRepository,
+            LanguageRepository languageRepository,
+            CountryRepository countryRepository,
+            NationalityRepository nationalityRepository,
+            OccupationRepository occupationRepository,
+            EducationMajorRepository educationMajorRepository,
+            EducationLevelRepository educationLevelRepository,
+            UserContext userContext) {
+        this.userRepository = userRepository;
         this.savedSearchRepository = savedSearchRepository;
         this.searchJoinRepository = searchJoinRepository;
         this.languageLevelRepository = languageLevelRepository;
@@ -83,8 +97,13 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     @Override
     public Page<SavedSearch> searchSavedSearches(SearchSavedSearchRequest request) {
+        User userWithSharedSearches =
+                userRepository.findByIdLoadSharedSearches(
+                        userContext.getLoggedInUser().getId());
+
         Page<SavedSearch> savedSearches = savedSearchRepository.findAll(
-                SavedSearchSpecification.buildSearchQuery(request), request.getPageRequest());
+                SavedSearchSpecification.buildSearchQuery(
+                        request, userWithSharedSearches), request.getPageRequest());
         log.info("Found " + savedSearches.getTotalElements() + " savedSearches in search");
 
         for (SavedSearch savedSearch: savedSearches) {
@@ -104,7 +123,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     @Override
     public SavedSearch getSavedSearch(long id) {
-        SavedSearch savedSearch = this.savedSearchRepository.findById(id)
+        SavedSearch savedSearch = this.savedSearchRepository.findByIdLoadUsers(id)
                 .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
 
         savedSearch.parseType();
@@ -197,6 +216,70 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    @Transactional
+    public SavedSearch addSharedUser(long id, UpdateSharingRequest request) {
+        SavedSearch savedSearch = savedSearchRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+
+        savedSearch.parseType();
+
+        final Long userID = request.getUserId();
+        User user = userRepository.findById(userID)
+                .orElseThrow(() -> new NoSuchObjectException(User.class, userID));
+
+        savedSearch.addUser(user);
+
+        return savedSearchRepository.save(savedSearch);
+    }
+
+    @Override
+    @Transactional
+    public SavedSearch removeSharedUser(long id, UpdateSharingRequest request) {
+        SavedSearch savedSearch = savedSearchRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+
+        savedSearch.parseType();
+
+        final Long userID = request.getUserId();
+        User user = userRepository.findById(userID)
+                .orElseThrow(() -> new NoSuchObjectException(User.class, userID));
+
+        savedSearch.removeUser(user);
+
+        return savedSearchRepository.save(savedSearch);
+    }
+
+    @Override
+    public SavedSearch addWatcher(long id, UpdateWatchingRequest request) {
+        SavedSearch savedSearch = savedSearchRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+
+        savedSearch.parseType();
+
+        List<SavedSearch> searches = savedSearchRepository.findUserWatchedSearches(request.getUserId());
+        if (searches.size() >= 10) {
+            String s = searches.stream().map(SavedSearch::getName).sorted().collect(Collectors.joining(","));
+            throw new InvalidRequestException("More than 10 watches. Currently watching " + s);
+        }
+
+        savedSearch.addWatcher(request.getUserId());
+
+        return savedSearchRepository.save(savedSearch);
+    }
+
+    @Override
+    public SavedSearch removeWatcher(long id, UpdateWatchingRequest request) {
+        SavedSearch savedSearch = savedSearchRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+
+        savedSearch.parseType();
+
+        savedSearch.removeWatcher(request.getUserId());
+
+        return savedSearchRepository.save(savedSearch);
     }
 
     private void checkDuplicates(Long id, String name) {

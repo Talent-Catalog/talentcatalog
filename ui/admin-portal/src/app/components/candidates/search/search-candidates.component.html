@@ -25,6 +25,16 @@
                       (pageChange)="doSearch(true)">
       </ngb-pagination>
 
+      <button *ngIf="isShareable() && !isSharedWithMe()"
+        class="btn btn-outline-secondary" (click)="addToSharedWithMe()">
+        <i class="far fa-handshake"></i> Add to searches shared with me
+      </button>
+
+      <button *ngIf="isShareable() && isSharedWithMe()"
+        class="btn btn-outline-secondary" (click)="removeFromSharedWithMe()">
+        <i class="fas fa-handshake-slash"></i> Remove from searches shared with me
+      </button>
+
       <button class="btn btn-outline-secondary" (click)="exportCandidates()">
         <i class="fas fa-spinner fa-spin" *ngIf=exporting></i>
         <i class="fas fa-file-excel"></i> Export

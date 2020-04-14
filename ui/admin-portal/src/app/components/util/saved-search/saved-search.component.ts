@@ -1,6 +1,8 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {SavedSearch} from "../../../model/saved-search";
 import {SavedSearchService} from "../../../services/saved-search.service";
+import {AuthService} from "../../../services/auth.service";
+import {User} from "../../../model/user";
 
 @Component({
   selector: 'app-saved-search',
@@ -13,21 +15,26 @@ export class SavedSearchComponent implements OnInit {
   @Input() showAll: boolean;
   @Input() showMore: boolean = true;
   @Input() showOpen: boolean = true;
+  @Input() showWatch: boolean = true;
   @Input() showEdit: boolean = false;
   @Input() showDelete: boolean = false;
   @Output() openSearch = new EventEmitter<SavedSearch>();
   @Output() editSearch = new EventEmitter<SavedSearch>();
   @Output() deleteSearch = new EventEmitter<SavedSearch>();
+  @Output() toggleWatch = new EventEmitter<SavedSearch>();
 
   loading;
   error;
+  private loggedInUser: User;
 
-  constructor(private savedSearchService: SavedSearchService) {
+  constructor(
+    private savedSearchService: SavedSearchService,
+    private authService: AuthService
+  ) {
   }
 
   ngOnInit() {
-
-
+    this.loggedInUser = this.authService.getLoggedInUser();
   }
 
   loadSavedSearch(){
@@ -59,4 +66,11 @@ export class SavedSearchComponent implements OnInit {
     this.deleteSearch.emit(this.savedSearch);
   }
 
+  doToggleWatch() {
+    this.toggleWatch.emit(this.savedSearch);
+  }
+
+  isWatching(): boolean {
+    return this.savedSearch.watcherUserIds.indexOf(this.loggedInUser.id) >= 0;
+  }
 }

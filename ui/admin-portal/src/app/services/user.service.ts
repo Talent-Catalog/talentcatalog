@@ -4,6 +4,7 @@ import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
 import {User} from "../model/user";
+import {UpdateSharingRequest} from "../model/saved-search";
 
 @Injectable({providedIn: 'root'})
 export class UserService {
@@ -38,5 +39,13 @@ export class UserService {
 
   delete(id: number): Observable<boolean>  {
     return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
+  }
+
+  addToSharedSearches(id: number, request: UpdateSharingRequest): Observable<User> {
+    return this.http.put<User>(`${this.apiUrl}/shared-add/${id}`, request);
+  }
+
+  removeFromSharedSearches(id: number, request: UpdateSharingRequest): Observable<User> {
+    return this.http.put<User>(`${this.apiUrl}/shared-remove/${id}`, request);
   }
 }
