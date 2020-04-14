@@ -17,10 +17,14 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
 
     Candidate findByCandidateNumber(String number);
 
-    @Query(" select distinct c from Candidate c left join c.user u "
-            + " where lower(u.email) like lower(:candidateEmail) ")
-    Page<Candidate> searchCandidateEmail(@Param("candidateEmail") String candidateEmail,
-                                         Pageable pageable);
+//    @Query(value=" select distinct c from Candidate c left join c.user u "
+//            + " where lower(u.email) like lower(:candidateEmail) "
+//            + " and c.country.id in "
+//            + " ( select country from userSourceCountry sc where sc.user_id = 6)" )
+//    Page<Candidate> searchCandidateEmail(@Param("candidateEmail") String candidateEmail,
+//                                         Pageable pageable);
+
+    //select * from userSourceCountry where loggedInUserId = :loggedInUserId
 
 
     @Query(" select distinct c from Candidate c left join c.user u "

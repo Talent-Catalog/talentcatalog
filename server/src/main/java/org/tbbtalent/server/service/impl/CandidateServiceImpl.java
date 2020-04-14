@@ -1,20 +1,5 @@
 package org.tbbtalent.server.service.impl;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.rmi.server.ExportException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.opencsv.CSVWriter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -88,7 +73,22 @@ import org.tbbtalent.server.service.SavedSearchService;
 import org.tbbtalent.server.service.email.EmailHelper;
 import org.tbbtalent.server.service.pdf.PdfHelper;
 
-import com.opencsv.CSVWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.rmi.server.ExportException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class CandidateServiceImpl implements CandidateService {
@@ -243,13 +243,14 @@ public class CandidateServiceImpl implements CandidateService {
         User loggedInUser = userContext.getLoggedInUser();
         Page<Candidate> candidates;
 
+        // if logged in user has no source restrictions, set source countries to ALL countries
         if(CollectionUtils.isEmpty(loggedInUser.getSourceCountries())){
-            candidates = candidateRepository.searchCandidateEmail(
-                    '%' + s +'%', request.getPageRequestWithoutSort());
-        } else {
-            candidates = candidateRepository.searchCandidateEmailRestricted(
-                    '%' + s +'%', loggedInUser.getSourceCountries(), request.getPageRequestWithoutSort());
+            Set<Country> countries = new HashSet<>(countryRepository.findAll());
+            loggedInUser.setSourceCountries(countries);
         }
+
+        candidates = candidateRepository.searchCandidateEmailRestricted(
+                    '%' + s +'%', loggedInUser.getSourceCountries(), request.getPageRequestWithoutSort());
 
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
         return candidates;
@@ -673,6 +674,14 @@ public class CandidateServiceImpl implements CandidateService {
 
     private static String genderStr(Gender gender) {
         return gender == null ? "%" : gender.toString();
+    }
+
+    private static String setSourceCountryRestrictions(Set<Country> sourceCountries, Long loggedInUserId) {
+        if (CollectionUtils.isEmpty(sourceCountries)) {
+            return "select * from countries";
+        } else {
+            return "select * from userSourceCountry where userId = " + loggedInUserId;
+        }
     }
 
     private static List<DataRow> toRows(List<Object[]> objects) {
