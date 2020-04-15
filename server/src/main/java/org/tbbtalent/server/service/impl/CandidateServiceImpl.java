@@ -241,13 +241,11 @@ public class CandidateServiceImpl implements CandidateService {
     public Page<Candidate> searchCandidates(CandidateEmailSearchRequest request) {
         String s = request.getCandidateEmail();
         User loggedInUser = userContext.getLoggedInUser();
+        Set<Country> sourceCountries = setDefaultSourceCountries(loggedInUser);
         Page<Candidate> candidates;
 
-        // if logged in user has no source restrictions, assign all countries as source countries
-        setSourceCountries(loggedInUser);
-
         candidates = candidateRepository.searchCandidateEmailRestricted(
-                    '%' + s +'%', loggedInUser.getSourceCountries(), request.getPageRequestWithoutSort());
+                    '%' + s +'%', sourceCountries, request.getPageRequestWithoutSort());
 
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
         return candidates;
@@ -258,17 +256,15 @@ public class CandidateServiceImpl implements CandidateService {
         String s = request.getCandidateNumberOrName();
         User loggedInUser = userContext.getLoggedInUser();
         boolean searchForNumber = s.length() > 0 && Character.isDigit(s.charAt(0));
+        Set<Country> sourceCountries = setDefaultSourceCountries(loggedInUser);
         Page<Candidate> candidates;
-
-        // if logged in user has no source restrictions, assign all countries as source countries
-        setSourceCountries(loggedInUser);
 
         if (searchForNumber) {
             candidates = candidateRepository.searchCandidateNumberRestricted(
-                        s +'%', loggedInUser.getSourceCountries(), request.getPageRequestWithoutSort());
+                        s +'%', sourceCountries, request.getPageRequestWithoutSort());
         } else {
             candidates = candidateRepository.searchCandidateNameRestricted(
-                        '%' + s +'%', loggedInUser.getSourceCountries(), request.getPageRequestWithoutSort());
+                        '%' + s +'%', sourceCountries, request.getPageRequestWithoutSort());
         }
 
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
@@ -279,14 +275,11 @@ public class CandidateServiceImpl implements CandidateService {
     public Page<Candidate> searchCandidates(CandidatePhoneSearchRequest request) {
         String s = request.getCandidatePhone();
         User loggedInUser = userContext.getLoggedInUser();
-
-        // if logged in user has no source restrictions, assign all countries as source countries
-        setSourceCountries(loggedInUser);
-
+        Set<Country> sourceCountries = setDefaultSourceCountries(loggedInUser);
         Page<Candidate> candidates;
 
         candidates = candidateRepository.searchCandidatePhoneRestricted(
-                    '%' + s +'%', loggedInUser.getSourceCountries(), request.getPageRequestWithoutSort());
+                    '%' + s +'%', sourceCountries, request.getPageRequestWithoutSort());
 
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
         return candidates;
@@ -903,11 +896,16 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-    public void setSourceCountries(User loggedInUser){
-        // if logged in user has no source restrictions, set source countries to ALL countries
-        if(CollectionUtils.isEmpty(loggedInUser.getSourceCountries())){
-            Set<Country> countries = new HashSet<>(countryRepository.findAll());
-            loggedInUser.setSourceCountries(countries);
+    /**
+     * If logged in user has no source restrictions, set source countries to ALL countries
+     */
+    public Set<Country> setDefaultSourceCountries(User user){
+        Set<Country> countries;
+        if(CollectionUtils.isEmpty(user.getSourceCountries())){
+            countries = new HashSet<>(countryRepository.findAll());
+        } else {
+            countries = user.getSourceCountries();
         }
+        return countries;
     }
 }
