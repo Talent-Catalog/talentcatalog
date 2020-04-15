@@ -243,11 +243,8 @@ public class CandidateServiceImpl implements CandidateService {
         User loggedInUser = userContext.getLoggedInUser();
         Page<Candidate> candidates;
 
-        // if logged in user has no source restrictions, set source countries to ALL countries
-        if(CollectionUtils.isEmpty(loggedInUser.getSourceCountries())){
-            Set<Country> countries = new HashSet<>(countryRepository.findAll());
-            loggedInUser.setSourceCountries(countries);
-        }
+        // if logged in user has no source restrictions, assign all countries as source countries
+        setSourceCountries(loggedInUser);
 
         candidates = candidateRepository.searchCandidateEmailRestricted(
                     '%' + s +'%', loggedInUser.getSourceCountries(), request.getPageRequestWithoutSort());
@@ -263,24 +260,15 @@ public class CandidateServiceImpl implements CandidateService {
         boolean searchForNumber = s.length() > 0 && Character.isDigit(s.charAt(0));
         Page<Candidate> candidates;
 
+        // if logged in user has no source restrictions, assign all countries as source countries
+        setSourceCountries(loggedInUser);
+
         if (searchForNumber) {
-            // Check if user has country restrictions
-            if(CollectionUtils.isEmpty(loggedInUser.getSourceCountries())){
-                candidates = candidateRepository.searchCandidateNumber(
-                        s +'%', request.getPageRequestWithoutSort());
-            } else {
-                candidates = candidateRepository.searchCandidateNumberRestricted(
+            candidates = candidateRepository.searchCandidateNumberRestricted(
                         s +'%', loggedInUser.getSourceCountries(), request.getPageRequestWithoutSort());
-            }
         } else {
-            // Check if user has country restrictions
-            if(CollectionUtils.isEmpty(loggedInUser.getSourceCountries())){
-                candidates = candidateRepository.searchCandidateName(
-                        '%' + s +'%', request.getPageRequestWithoutSort());
-            } else {
-                candidates = candidateRepository.searchCandidateNameRestricted(
+            candidates = candidateRepository.searchCandidateNameRestricted(
                         '%' + s +'%', loggedInUser.getSourceCountries(), request.getPageRequestWithoutSort());
-            }
         }
 
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
@@ -292,14 +280,13 @@ public class CandidateServiceImpl implements CandidateService {
         String s = request.getCandidatePhone();
         User loggedInUser = userContext.getLoggedInUser();
 
+        // if logged in user has no source restrictions, assign all countries as source countries
+        setSourceCountries(loggedInUser);
+
         Page<Candidate> candidates;
-        if(CollectionUtils.isEmpty(loggedInUser.getSourceCountries())){
-            candidates = candidateRepository.searchCandidatePhone(
-                    '%' + s +'%', request.getPageRequestWithoutSort());
-        } else {
-            candidates = candidateRepository.searchCandidatePhoneRestricted(
+
+        candidates = candidateRepository.searchCandidatePhoneRestricted(
                     '%' + s +'%', loggedInUser.getSourceCountries(), request.getPageRequestWithoutSort());
-        }
 
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
         return candidates;
@@ -676,14 +663,6 @@ public class CandidateServiceImpl implements CandidateService {
         return gender == null ? "%" : gender.toString();
     }
 
-    private static String setSourceCountryRestrictions(Set<Country> sourceCountries, Long loggedInUserId) {
-        if (CollectionUtils.isEmpty(sourceCountries)) {
-            return "select * from countries";
-        } else {
-            return "select * from userSourceCountry where userId = " + loggedInUserId;
-        }
-    }
-
     private static List<DataRow> toRows(List<Object[]> objects) {
         List<DataRow> dataRows = new ArrayList<>(objects.size());
         for (Object[] row: objects) {
@@ -921,6 +900,14 @@ public class CandidateServiceImpl implements CandidateService {
             } else {
                 emailHelper.sendWatcherEmail(user, savedSearches);
             }
+        }
+    }
+
+    public void setSourceCountries(User loggedInUser){
+        // if logged in user has no source restrictions, set source countries to ALL countries
+        if(CollectionUtils.isEmpty(loggedInUser.getSourceCountries())){
+            Set<Country> countries = new HashSet<>(countryRepository.findAll());
+            loggedInUser.setSourceCountries(countries);
         }
     }
 }
