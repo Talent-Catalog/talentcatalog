@@ -241,7 +241,7 @@ public class CandidateServiceImpl implements CandidateService {
     public Page<Candidate> searchCandidates(CandidateEmailSearchRequest request) {
         String s = request.getCandidateEmail();
         User loggedInUser = userContext.getLoggedInUser();
-        Set<Country> sourceCountries = setDefaultSourceCountries(loggedInUser);
+        Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
         Page<Candidate> candidates;
 
         candidates = candidateRepository.searchCandidateEmailRestricted(
@@ -256,7 +256,7 @@ public class CandidateServiceImpl implements CandidateService {
         String s = request.getCandidateNumberOrName();
         User loggedInUser = userContext.getLoggedInUser();
         boolean searchForNumber = s.length() > 0 && Character.isDigit(s.charAt(0));
-        Set<Country> sourceCountries = setDefaultSourceCountries(loggedInUser);
+        Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
         Page<Candidate> candidates;
 
         if (searchForNumber) {
@@ -275,7 +275,7 @@ public class CandidateServiceImpl implements CandidateService {
     public Page<Candidate> searchCandidates(CandidatePhoneSearchRequest request) {
         String s = request.getCandidatePhone();
         User loggedInUser = userContext.getLoggedInUser();
-        Set<Country> sourceCountries = setDefaultSourceCountries(loggedInUser);
+        Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
         Page<Candidate> candidates;
 
         candidates = candidateRepository.searchCandidatePhoneRestricted(
@@ -899,7 +899,7 @@ public class CandidateServiceImpl implements CandidateService {
     /**
      * If logged in user has no source restrictions, set source countries to ALL countries
      */
-    public Set<Country> setDefaultSourceCountries(User user){
+    public Set<Country> getDefaultSourceCountries(User user){
         Set<Country> countries;
         if(CollectionUtils.isEmpty(user.getSourceCountries())){
             countries = new HashSet<>(countryRepository.findAll());
