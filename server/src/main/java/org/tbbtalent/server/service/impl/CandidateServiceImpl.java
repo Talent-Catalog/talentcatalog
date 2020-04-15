@@ -897,7 +897,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     /**
-     * If logged in user has no source restrictions, set source countries to ALL countries
+     * Get a user’s source countries, defaulting to all countries if empty
      */
     public Set<Country> getDefaultSourceCountries(User user){
         Set<Country> countries;

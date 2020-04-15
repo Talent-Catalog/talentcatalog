@@ -1,18 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
-import {
-  defaultReviewStatusFilter,
-  SavedSearch
-} from "../../../../model/saved-search";
-import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
 import {defaultReviewStatusFilter, SavedSearch} from "../../../../model/saved-search";
 import {Subscription} from "rxjs";
 import {CandidateService} from "../../../../services/candidate.service";
