@@ -15,33 +15,37 @@ import java.util.Set;
 
 public interface CandidateRepository extends JpaRepository<Candidate, Long>, JpaSpecificationExecutor<Candidate> {
 
-    Candidate findByCandidateNumber(String number);
+    @Query(" select distinct c from Candidate c "
+            + " where lower(c.candidateNumber) like lower(:number)"
+            + " and c.country in (:userSourceCountries)")
+    Optional<Candidate> findByCandidateNumberRestricted(@Param("number") String number,
+                                              @Param("userSourceCountries") Set<Country> userSourceCountries);
 
     @Query(" select distinct c from Candidate c left join c.user u "
             + " where lower(u.email) like lower(:candidateEmail) "
             + " and c.country in (:userSourceCountries)")
-    Page<Candidate> searchCandidateEmailRestricted(@Param("candidateEmail") String candidateEmail,
+    Page<Candidate> searchCandidateEmail(@Param("candidateEmail") String candidateEmail,
                                          @Param("userSourceCountries") Set<Country> userSourceCountries,
                                          Pageable pageable);
 
     @Query(" select distinct c from Candidate c "
             + " where lower(c.candidateNumber) like lower(:candidateNumber) "
             + " and c.country in (:userSourceCountries)")
-    Page<Candidate> searchCandidateNumberRestricted(@Param("candidateNumber") String candidateNumber,
+    Page<Candidate> searchCandidateNumber(@Param("candidateNumber") String candidateNumber,
                                           @Param("userSourceCountries") Set<Country> userSourceCountries,
                                           Pageable pageable);
 
     @Query(" select distinct c from Candidate c "
             + " where lower(c.phone) like lower(:candidatePhone) "
             + " and c.country in (:userSourceCountries)")
-    Page<Candidate> searchCandidatePhoneRestricted(@Param("candidatePhone") String candidatePhone,
+    Page<Candidate> searchCandidatePhone(@Param("candidatePhone") String candidatePhone,
                                          @Param("userSourceCountries") Set<Country> userSourceCountries,
                                          Pageable pageable);
 
     @Query(" select distinct c from Candidate c left join c.user u "
             + " where lower(concat(u.firstName, ' ', u.lastName)) like lower(:candidateName)"
             + " and c.country in (:userSourceCountries)")
-    Page<Candidate> searchCandidateNameRestricted(@Param("candidateName") String candidateName,
+    Page<Candidate> searchCandidateName(@Param("candidateName") String candidateName,
                                         @Param("userSourceCountries") Set<Country> userSourceCountries,
                                         Pageable pageable);
 

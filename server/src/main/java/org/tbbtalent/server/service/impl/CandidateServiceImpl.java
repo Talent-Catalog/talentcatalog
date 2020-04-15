@@ -16,6 +16,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.CircularReferencedException;
+import org.tbbtalent.server.exception.CountryRestrictionException;
 import org.tbbtalent.server.exception.ExportFailedException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
@@ -244,7 +245,7 @@ public class CandidateServiceImpl implements CandidateService {
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
         Page<Candidate> candidates;
 
-        candidates = candidateRepository.searchCandidateEmailRestricted(
+        candidates = candidateRepository.searchCandidateEmail(
                     '%' + s +'%', sourceCountries, request.getPageRequestWithoutSort());
 
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
@@ -260,10 +261,10 @@ public class CandidateServiceImpl implements CandidateService {
         Page<Candidate> candidates;
 
         if (searchForNumber) {
-            candidates = candidateRepository.searchCandidateNumberRestricted(
+            candidates = candidateRepository.searchCandidateNumber(
                         s +'%', sourceCountries, request.getPageRequestWithoutSort());
         } else {
-            candidates = candidateRepository.searchCandidateNameRestricted(
+            candidates = candidateRepository.searchCandidateName(
                         '%' + s +'%', sourceCountries, request.getPageRequestWithoutSort());
         }
 
@@ -278,7 +279,7 @@ public class CandidateServiceImpl implements CandidateService {
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
         Page<Candidate> candidates;
 
-        candidates = candidateRepository.searchCandidatePhoneRestricted(
+        candidates = candidateRepository.searchCandidatePhone(
                     '%' + s +'%', sourceCountries, request.getPageRequestWithoutSort());
 
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
@@ -625,7 +626,10 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate findByCandidateNumber(String candidateNumber) {
-        return candidateRepository.findByCandidateNumber(candidateNumber);
+        User loggedInUser = userContext.getLoggedInUser();
+        Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
+        return candidateRepository.findByCandidateNumberRestricted(candidateNumber, sourceCountries)
+                .orElseThrow(() -> new CountryRestrictionException("You don't have access to this candidate."));
     }
 
     @Transactional(readOnly = true)
