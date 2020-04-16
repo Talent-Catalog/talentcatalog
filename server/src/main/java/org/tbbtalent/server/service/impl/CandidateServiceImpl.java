@@ -358,7 +358,9 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     @Transactional
     public Candidate updateCandidateStatus(long id, UpdateCandidateStatusRequest request) {
-        Candidate candidate = this.candidateRepository.findByIdLoadUser(id)
+        User loggedInUser = userContext.getLoggedInUser();
+        Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
+        Candidate candidate = this.candidateRepository.findByIdLoadUser(id, sourceCountries)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
         CandidateStatus originalStatus = candidate.getStatus();
         candidate.setStatus(request.getStatus());
@@ -380,7 +382,9 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateCandidateLinks(long id, UpdateCandidateLinksRequest request) {
-        Candidate candidate = this.candidateRepository.findByIdLoadUser(id)
+        User loggedInUser = userContext.getLoggedInUser();
+        Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
+        Candidate candidate = this.candidateRepository.findByIdLoadUser(id, sourceCountries)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
         candidate.setSflink(request.getSflink());
         candidate.setFolderlink(request.getFolderlink());
@@ -391,7 +395,9 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateCandidate(long id, UpdateCandidateRequest request) {
-        Candidate candidate = this.candidateRepository.findByIdLoadUser(id)
+        User loggedInUser = userContext.getLoggedInUser();
+        Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
+        Candidate candidate = this.candidateRepository.findByIdLoadUser(id, sourceCountries)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
         // Check update request for a duplicate email or phone number
         request.setId(id);

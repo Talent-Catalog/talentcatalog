@@ -15,42 +15,13 @@ import java.util.Set;
 
 public interface CandidateRepository extends JpaRepository<Candidate, Long>, JpaSpecificationExecutor<Candidate> {
 
-    @Query(" select distinct c from Candidate c "
-            + " where lower(c.candidateNumber) like lower(:number)"
-            + " and c.country in (:userSourceCountries)")
-    Optional<Candidate> findByCandidateNumberRestricted(@Param("number") String number,
-                                              @Param("userSourceCountries") Set<Country> userSourceCountries);
-
-    @Query(" select distinct c from Candidate c left join c.user u "
-            + " where lower(u.email) like lower(:candidateEmail) "
-            + " and c.country in (:userSourceCountries)")
-    Page<Candidate> searchCandidateEmail(@Param("candidateEmail") String candidateEmail,
-                                         @Param("userSourceCountries") Set<Country> userSourceCountries,
-                                         Pageable pageable);
-
-    @Query(" select distinct c from Candidate c "
-            + " where lower(c.candidateNumber) like lower(:candidateNumber) "
-            + " and c.country in (:userSourceCountries)")
-    Page<Candidate> searchCandidateNumber(@Param("candidateNumber") String candidateNumber,
-                                          @Param("userSourceCountries") Set<Country> userSourceCountries,
-                                          Pageable pageable);
-
-    @Query(" select distinct c from Candidate c "
-            + " where lower(c.phone) like lower(:candidatePhone) "
-            + " and c.country in (:userSourceCountries)")
-    Page<Candidate> searchCandidatePhone(@Param("candidatePhone") String candidatePhone,
-                                         @Param("userSourceCountries") Set<Country> userSourceCountries,
-                                         Pageable pageable);
-
-    @Query(" select distinct c from Candidate c left join c.user u "
-            + " where lower(concat(u.firstName, ' ', u.lastName)) like lower(:candidateName)"
-            + " and c.country in (:userSourceCountries)")
-    Page<Candidate> searchCandidateName(@Param("candidateName") String candidateName,
-                                        @Param("userSourceCountries") Set<Country> userSourceCountries,
-                                        Pageable pageable);
+    /**
+     * CANDIDATE PORTAL METHODS: Used to display candidate in registration/profile.
+     */
 
     /* Used for candidate registration to check for existing accounts with different username options */
 //    Candidate findByEmailIgnoreCase(String email);
+
     @Query("select distinct c from Candidate c "
             + " where (lower(c.phone) = lower(:phone) )"
             + " and c.status <> 'deleted'")
@@ -93,19 +64,6 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             + " where c.user.id = :id ")
     Candidate findByUserId(@Param("id") Long userId);
 
-    @Query(" select c from Candidate c "
-            + " join c.user u "
-            + " where c.id = :id ")
-    Optional<Candidate> findByIdLoadUser(@Param("id") Long id);
-
-    @Query(" select c from Candidate c "
-            + " where c.nationality.id = :nationalityId ")
-    List<Candidate> findByNationalityId(@Param("nationalityId") Long nationalityId);
-
-    @Query(" select c from Candidate c "
-            + " where c.country.id = :countryId ")
-    List<Candidate> findByCountryId(@Param("countryId") Long countryId);
-
     @Query(" select distinct c from Candidate c "
             + " left join c.candidateOccupations occ "
             + " left join c.candidateJobExperiences exp "
@@ -119,6 +77,69 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             + " where c.user.id = :id ")
     Candidate findByUserIdLoadProfile(@Param("id") Long userId);
 
+    /**
+     * ADMIN PORTAL DISPLAY CANDIDATE METHODS: includes source country restrictions.
+     */
+    String sourceCountryRestriction = " and c.country in (:userSourceCountries)";
+
+    @Query(" select distinct c from Candidate c "
+            + " where lower(c.candidateNumber) like lower(:number)"
+            + sourceCountryRestriction)
+    Optional<Candidate> findByCandidateNumberRestricted(@Param("number") String number,
+                                              @Param("userSourceCountries") Set<Country> userSourceCountries);
+
+    @Query(" select distinct c from Candidate c left join c.user u "
+            + " where lower(u.email) like lower(:candidateEmail) "
+            + sourceCountryRestriction)
+    Page<Candidate> searchCandidateEmail(@Param("candidateEmail") String candidateEmail,
+                                         @Param("userSourceCountries") Set<Country> userSourceCountries,
+                                         Pageable pageable);
+
+    @Query(" select distinct c from Candidate c "
+            + " where lower(c.candidateNumber) like lower(:candidateNumber) "
+            + sourceCountryRestriction)
+    Page<Candidate> searchCandidateNumber(@Param("candidateNumber") String candidateNumber,
+                                          @Param("userSourceCountries") Set<Country> userSourceCountries,
+                                          Pageable pageable);
+
+    @Query(" select distinct c from Candidate c "
+            + " where lower(c.phone) like lower(:candidatePhone) "
+            + sourceCountryRestriction)
+    Page<Candidate> searchCandidatePhone(@Param("candidatePhone") String candidatePhone,
+                                         @Param("userSourceCountries") Set<Country> userSourceCountries,
+                                         Pageable pageable);
+
+    @Query(" select distinct c from Candidate c left join c.user u "
+            + " where lower(concat(u.firstName, ' ', u.lastName)) like lower(:candidateName)"
+            + sourceCountryRestriction)
+    Page<Candidate> searchCandidateName(@Param("candidateName") String candidateName,
+                                        @Param("userSourceCountries") Set<Country> userSourceCountries,
+                                        Pageable pageable);
+
+    @Query(" select c from Candidate c "
+            + " join c.user u "
+            + " where c.id = :id "
+            + sourceCountryRestriction)
+    Optional<Candidate> findByIdLoadUser(@Param("id") Long id,
+                                         @Param("userSourceCountries") Set<Country> userSourceCountries);
+
+
+    /**
+     * ADMIN PORTAL SETTINGS METHODS: no source country restrictions.
+     */
+
+    @Query(" select c from Candidate c "
+            + " where c.nationality.id = :nationalityId ")
+    List<Candidate> findByNationalityId(@Param("nationalityId") Long nationalityId);
+
+    @Query(" select c from Candidate c "
+            + " where c.country.id = :countryId ")
+    List<Candidate> findByCountryId(@Param("countryId") Long countryId);
+
+
+    /**
+     * ADMIN PORTAL INFOGRAPHICS METHODS: includes source country restrictions.
+     */
     
     String countingStandardFilter = "u.status = 'active' and c.status != 'draft'";
     
