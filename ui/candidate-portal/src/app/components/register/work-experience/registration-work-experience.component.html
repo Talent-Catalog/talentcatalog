@@ -12,10 +12,13 @@
 
           <button class="btn btn-outline-primary d-none d-md-block"
                   (click)="addExperience(occupation)">
-            {{ 'REGISTRATION.EXPERIENCE.BUTTON.ADD' | translate }}
+            {{ 'REGISTRATION.EXPERIENCE.BUTTON.ADD' | translate }} *
           </button>
         </div>
 
+        <div class="card alert alert-danger" *ngIf="experiencesByCandidateOccupation[occupation.id]?.length===0">
+          {{ 'ERROR.MISSING_WORK_EXPERIENCE' | translate }}
+        </div>
         <ng-container *ngFor="let experience of experiencesByCandidateOccupation[occupation.id]; let i = index;">
           <div class="card">
             <app-candidate-job-experience-card [experience]="experience"
@@ -30,7 +33,7 @@
         <div class="text-center my-4 d-md-none">
           <button class="btn btn-outline-primary"
                   (click)="addExperience(occupation)">
-            {{ 'REGISTRATION.EXPERIENCE.BUTTON.ADD' | translate }}
+            {{ 'REGISTRATION.EXPERIENCE.BUTTON.ADD' | translate }} *
           </button>
         </div>
 
@@ -54,7 +57,7 @@
 
 </div>
 
-<app-registration-footer [nextDisabled]="loading || saving"
+<app-registration-footer [nextDisabled]="loading || saving || !completedJobExperiences()"
                          [type]="edit ? 'update' : 'step'"
                          (backClicked)="edit ? closeEdit() : back() "
                          (nextClicked)="edit? closeEdit() : next()">

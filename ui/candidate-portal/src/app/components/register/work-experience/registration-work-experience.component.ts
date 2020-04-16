@@ -1,4 +1,11 @@
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output
+} from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
@@ -187,6 +194,19 @@ export class RegistrationWorkExperienceComponent implements OnInit, OnDestroy {
         .filter(exp => exp.candidateOccupation.id === occ.id)
         .sort((a, b) => a.id > b.id ? -1 : 1);
     }
+  }
+
+  completedJobExperiences(): boolean {
+    let completed = true;
+
+    for (const occupation of this.occupations) {
+      if (this.experiencesByCandidateOccupation[occupation.id].length === 0) {
+        completed = false;
+        break;
+      }
+    }
+
+    return completed;
   }
 
   ngOnDestroy() {
