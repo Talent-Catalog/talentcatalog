@@ -678,71 +678,93 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public List<DataRow> getGenderStats() {
-        return toRows(candidateRepository.countByGenderOrderByCount()); 
+        User loggedInUser = userContext.getLoggedInUser();
+        List<Long> sourceCountryIds = getSourceCountryIds(loggedInUser);
+        return toRows(candidateRepository.countByGenderOrderByCount(sourceCountryIds));
     }
 
     @Override
     public List<DataRow> getBirthYearStats(Gender gender) {
+        User loggedInUser = userContext.getLoggedInUser();
+        List<Long> sourceCountryIds = getSourceCountryIds(loggedInUser);
         return toRows(candidateRepository.
-                countByBirthYearOrderByYear(genderStr(gender))); 
+                countByBirthYearOrderByYear(genderStr(gender), sourceCountryIds));
     }
 
     @Override
     public List<DataRow> getRegistrationStats(int days) {
-        return toRows(candidateRepository.countByCreatedDateOrderByCount(days)); 
+        User loggedInUser = userContext.getLoggedInUser();
+        List<Long> sourceCountryIds = getSourceCountryIds(loggedInUser);
+        return toRows(candidateRepository.countByCreatedDateOrderByCount(days, sourceCountryIds));
     }
 
     @Override
     public List<DataRow> getRegistrationOccupationStats(int days) {
-        final List<DataRow> rows = toRows(candidateRepository.countByOccupationOrderByCount(days));
+        User loggedInUser = userContext.getLoggedInUser();
+        List<Long> sourceCountryIds = getSourceCountryIds(loggedInUser);
+        final List<DataRow> rows = toRows(candidateRepository.countByOccupationOrderByCount(days, sourceCountryIds));
         return limitRows(rows, 15);
     }
 
     @Override
     public List<DataRow> getNationalityStats(Gender gender, String country) {
+        User loggedInUser = userContext.getLoggedInUser();
+        List<Long> sourceCountryIds = getSourceCountryIds(loggedInUser);
         List<DataRow> rows = toRows(candidateRepository.
                 countByNationalityOrderByCount(
-                        genderStr(gender), countryStr(country))); 
+                        genderStr(gender), countryStr(country), sourceCountryIds));
         return limitRows(rows, 15);
     }
 
     @Override
     public List<DataRow> getSurveyStats(Gender gender, String country) {
+        User loggedInUser = userContext.getLoggedInUser();
+        List<Long> sourceCountryIds = getSourceCountryIds(loggedInUser);
         return toRows(candidateRepository.
                 countBySurveyOrderByCount(
-                        genderStr(gender), countryStr(country))); 
+                        genderStr(gender), countryStr(country), sourceCountryIds));
     }
-    
+
     @Override
     public List<DataRow> getMaxEducationStats(Gender gender) {
+        User loggedInUser = userContext.getLoggedInUser();
+        List<Long> sourceCountryIds = getSourceCountryIds(loggedInUser);
         return toRows(candidateRepository.
-                countByMaxEducationLevelOrderByCount(genderStr(gender)));
+                countByMaxEducationLevelOrderByCount(genderStr(gender), sourceCountryIds));
     }
-    
+
     @Override
     public List<DataRow> getLanguageStats(Gender gender) {
+        User loggedInUser = userContext.getLoggedInUser();
+        List<Long> sourceCountryIds = getSourceCountryIds(loggedInUser);
         List<DataRow> rows = toRows(candidateRepository.
-                countByLanguageOrderByCount(genderStr(gender)));
+                countByLanguageOrderByCount(genderStr(gender), sourceCountryIds));
         return limitRows(rows, 15);
     }
-    
+
     @Override
     public List<DataRow> getOccupationStats(Gender gender) {
+        User loggedInUser = userContext.getLoggedInUser();
+        List<Long> sourceCountryIds = getSourceCountryIds(loggedInUser);
         return toRows(candidateRepository.
-                countByOccupationOrderByCount(genderStr(gender)));
+                countByOccupationOrderByCount(genderStr(gender), sourceCountryIds));
     }
-    
+
     @Override
     public List<DataRow> getMostCommonOccupationStats(Gender gender) {
+        User loggedInUser = userContext.getLoggedInUser();
+        List<Long> sourceCountryIds = getSourceCountryIds(loggedInUser);
         List<DataRow> rows = toRows(candidateRepository.
-                countByMostCommonOccupationOrderByCount(genderStr(gender)));
+                countByMostCommonOccupationOrderByCount(genderStr(gender), sourceCountryIds));
         return limitRows(rows, 15);
     }
-    
+
     @Override
     public List<DataRow> getSpokenLanguageLevelStats(Gender gender, String language) {
+        User loggedInUser = userContext.getLoggedInUser();
+        List<Long> sourceCountryIds = getSourceCountryIds(loggedInUser);
         return toRows(candidateRepository.
-                countBySpokenLanguageLevelByCount(genderStr(gender), language));
+                countBySpokenLanguageLevelByCount(genderStr(gender), language, sourceCountryIds));
     }
 
     @Override
@@ -918,4 +940,21 @@ public class CandidateServiceImpl implements CandidateService {
         }
         return countries;
     }
+
+    public List<Long> getSourceCountryIds(User user){
+        List<Long> listOfCountryIds;
+
+        if(CollectionUtils.isEmpty(user.getSourceCountries())){
+            listOfCountryIds = countryRepository.findAll().stream()
+                    .map(Country::getId)
+                    .collect(Collectors.toList());
+        } else {
+            listOfCountryIds = user.getSourceCountries().stream()
+                    .map(Country::getId)
+                    .collect(Collectors.toList());
+        }
+
+        return listOfCountryIds;
+    }
+    
 }
