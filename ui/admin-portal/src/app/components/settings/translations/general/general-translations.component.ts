@@ -78,8 +78,7 @@ export class GeneralTranslationsComponent implements OnInit {
   }
 }
 
-const ALL_FIELDS =
-  {
+const ALL_FIELDS = {
     "HEADER": {
       "NAV": {
         "ACCOUNT": null,
@@ -433,6 +432,7 @@ const ALL_FIELDS =
       "INVALID_PASSWORD_MATCH": null,
       "PASSWORD_EXPIRED": null,
       "MISSING_OBJECT": null,
+      "MISSING_WORK_EXPERIENCE": null,
       "INVALID_PASSWORD_TOKEN": null,
       "INVALID_PASSWORD_FORMAT": null,
       "FILE_DOWNLOAD_FAILED": null,
