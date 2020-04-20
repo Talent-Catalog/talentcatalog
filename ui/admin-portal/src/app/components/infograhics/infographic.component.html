@@ -3,10 +3,40 @@
 </ng-container>
 
 <ng-container *ngIf="!loading">
+  <form [formGroup]="dateFilter">
+    <div class="row">
 
-  <button class="btn btn-outline-secondary" (click)="exportStats()">
-    <i class="fas fa-file-excel"></i> Export
-  </button>
+    <div class="col-sm-12 col-md-4">
+      <button class="btn btn-outline-secondary" (click)="exportStats()">
+        <i class="fas fa-file-excel"></i> Export
+      </button>
+    </div>
+
+
+      <div class="form-group col-sm-12 col-md-4">
+        <!-- DATE FROM -->
+          <label for="dateFrom">Date From:</label>
+          <input type="date" id="dateFrom" class="form-control" [formControlName]="'dateFrom'" datepicker-popup
+                 is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions"
+                 date-disabled="disabled(date, mode)" ng-required="true" close-text="Close"/>
+      </div>
+      <div class="form-group col-sm-12 col-md-4">
+        <!-- DATE TO -->
+          <label for="dateTo">Date To:</label>
+          <input type="date" id="dateTo" class="form-control" [formControlName]="'dateTo'" datepicker-popup
+                 is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions"
+                 date-disabled="disabled(date, mode)" ng-required="true" close-text="Close"/>
+      </div>
+    </div>
+
+    <div class="col-sm-12 col-md-4">
+      <button class="btn btn-outline-secondary" (click)="submitDate()">
+        <i class="fas fa-file-excel"></i> Date Filter
+      </button>
+    </div>
+  </form>
+
+
 
   <!--Loop through reports data, displaying each report-->
   <ng-container *ngFor="let statReport of statReports">

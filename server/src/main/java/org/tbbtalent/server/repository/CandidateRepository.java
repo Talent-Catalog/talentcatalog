@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.model.Country;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -142,6 +143,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
      */
     
     String countingStandardFilter = "u.status = 'active' and c.status != 'draft'";
+    String dateFilter = "c.created_date >= (:dateFrom) and c.created_date <= (:dateTo)";
     String sourceCountryRestrictionNative = " (select country_id from user_source_country where user_id = (:loggedInUserId))";
     
     //Note that I have been forced to go to native queries for these more 
@@ -151,9 +153,12 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             " from candidate c left join users u on c.user_id = u.id" +
             " where c.country_id in (:sourceCountryIds)" +
             " and " + countingStandardFilter +
+            " and " + dateFilter +
             " group by gender order by PeopleCount desc",
             nativeQuery = true)
-    List<Object[]> countByGenderOrderByCount(@Param("sourceCountryIds") List<Long> sourceCountryIds);
+    List<Object[]> countByGenderOrderByCount(@Param("sourceCountryIds") List<Long> sourceCountryIds,
+                                             @Param("dateFrom") LocalDate dateFrom,
+                                             @Param("dateTo") LocalDate dateTo);
 
     @Query(value = "select cast(extract(year from dob) as bigint) as year, " +
             " count(distinct c) as PeopleCount" +

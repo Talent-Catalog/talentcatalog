@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {CandidateStatService} from "../../services/candidate-stat.service";
 import {StatReport} from "../../model/stat-report";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 
 @Component({
   selector: 'app-infographic',
@@ -12,14 +13,33 @@ export class InfographicComponent implements OnInit {
   loading: boolean = false;
   error: any;
   statReports: StatReport[];
+  dateFilter: FormGroup;
 
-  constructor(private statService: CandidateStatService) {
+  constructor(private statService: CandidateStatService,
+              private fb: FormBuilder,) {
   }
 
   ngOnInit() {
     this.loading = true;
 
-    this.statService.getAllStats().subscribe(result => {
+    this.dateFilter = this.fb.group({
+      dateFrom: ['', [Validators.required]],
+      dateTo: ['', [Validators.required]]
+    });
+
+    this.statService.getAllStats(this.dateFilter.value).subscribe(result => {
+        this.loading = false;
+        this.statReports = result;
+      },
+      error => {
+        this.error = error;
+        this.loading = false;
+      }
+    )
+  }
+
+  submitDate(){
+    this.statService.getAllStats(this.dateFilter.value).subscribe(result => {
         this.loading = false;
         this.statReports = result;
       },

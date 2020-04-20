@@ -1,17 +1,19 @@
 package org.tbbtalent.server.api.admin;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.model.Gender;
 import org.tbbtalent.server.model.StatReport;
+import org.tbbtalent.server.request.candidate.stat.CandidateStatDateRequest;
 import org.tbbtalent.server.service.CandidateService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate/stat")
@@ -24,8 +26,8 @@ public class CandidateStatAdminApi {
         this.candidateService = candidateService;
     }
 
-    @GetMapping("all")
-    public List<Map<String, Object>> getAllStats() {
+    @PostMapping("all")
+    public List<Map<String, Object>> getAllStats(@RequestBody CandidateStatDateRequest request) {
         String language;
         String title;
         String chartType;
@@ -34,7 +36,7 @@ public class CandidateStatAdminApi {
 
         chartType = "bar";
         statReports.add(new StatReport("Gender",
-                this.candidateService.getGenderStats(), chartType)); 
+                this.candidateService.getGenderStats(request), chartType));
 
         title = "Registrations";
         chartType = "bar";

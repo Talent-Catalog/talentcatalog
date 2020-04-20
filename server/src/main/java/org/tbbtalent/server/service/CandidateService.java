@@ -22,6 +22,7 @@ import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
+import org.tbbtalent.server.request.candidate.stat.CandidateStatDateRequest;
 
 import java.io.PrintWriter;
 import java.rmi.server.ExportException;
@@ -83,7 +84,7 @@ public interface CandidateService {
 
     void exportToCsv(SearchCandidateRequest request, PrintWriter writer) throws ExportException;
 
-    List<DataRow> getGenderStats();
+    List<DataRow> getGenderStats(CandidateStatDateRequest request);
 
     List<DataRow> getBirthYearStats(Gender gender);
 

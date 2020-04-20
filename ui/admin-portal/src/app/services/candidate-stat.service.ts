@@ -11,8 +11,8 @@ export class CandidateStatService {
 
   constructor(private http:HttpClient) {}
 
-  getAllStats(): Observable<StatReport[]> {
-    return this.http.get<StatReport[]>(`${this.apiUrl}/all`);
+  getAllStats(details): Observable<StatReport[]> {
+    return this.http.post<StatReport[]>(`${this.apiUrl}/all`, details);
   }
 
 }

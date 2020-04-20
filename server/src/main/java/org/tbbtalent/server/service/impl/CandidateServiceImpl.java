@@ -65,6 +65,7 @@ import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
+import org.tbbtalent.server.request.candidate.stat.CandidateStatDateRequest;
 import org.tbbtalent.server.request.note.CreateCandidateNoteRequest;
 import org.tbbtalent.server.security.PasswordHelper;
 import org.tbbtalent.server.security.UserContext;
@@ -677,10 +678,11 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<DataRow> getGenderStats() {
+    public List<DataRow> getGenderStats(CandidateStatDateRequest request) {
         User loggedInUser = userContext.getLoggedInUser();
         List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
-        return toRows(candidateRepository.countByGenderOrderByCount(sourceCountryIds));
+        setDateRange(request);
+        return toRows(candidateRepository.countByGenderOrderByCount(sourceCountryIds, request.getDateFrom(), request.getDateTo()));
     }
 
     @Override
@@ -958,6 +960,19 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         return listOfCountryIds;
+    }
+
+    /**
+     * Set date default to show all dates if no date selected.
+     */
+    public void setDateRange(CandidateStatDateRequest request){
+        if (request.getDateFrom() == null) {
+            request.setDateFrom(LocalDate.parse("2000-01-01"));
+        }
+
+        if(request.getDateTo() == null) {
+            request.setDateTo(LocalDate.now());
+        }
     }
     
 }
