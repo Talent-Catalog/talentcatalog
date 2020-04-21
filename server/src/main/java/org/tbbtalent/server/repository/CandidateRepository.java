@@ -143,7 +143,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
      */
     
     String countingStandardFilter = "u.status = 'active' and c.status != 'draft'";
-    String dateFilter = "c.created_date >= (:dateFrom) and c.created_date <= (:dateTo)";
+    String dateFilter = "u.created_date >= (:dateFrom) and u.created_date <= (:dateTo)";
     
     //Note that I have been forced to go to native queries for these more 
     //complex queries. The non native queries seem a bit buggy.
@@ -301,7 +301,6 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     @Query( value="select DATE(u.created_date), count(distinct u.id) as PeopleCount from users u " +
             "left join candidate c on u.id = c.user_id " +
             "where c.country_id in (:sourceCountryIds) " +
-            " and " + countingStandardFilter +
             "and " + dateFilter +
             "group by DATE(u.created_date) " +
             "order by DATE(u.created_date) asc;",
