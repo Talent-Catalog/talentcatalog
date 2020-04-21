@@ -1,50 +1,48 @@
+<div class="row align-items-center">
+  <div class="col-sm-12 col-md-6">
+    <button class="btn btn-outline-secondary" (click)="exportStats()">
+      <i class="fas fa-file-excel"></i> Export
+    </button>
+  </div>
+
+  <div class="col-sm-12 col-md-6">
+    <form [formGroup]="dateFilter">
+      <div class="form-row d-flex align-items-end">
+        <!-- DATE FROM -->
+        <div class="form-group form-inline justify-content-end col-sm-12 col-md-5">
+          <label for="dateFrom">Date From:</label>
+          <input type="date" id="dateFrom" class="form-control" [formControlName]="'dateFrom'" datepicker-popup
+                 is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions"
+                 date-disabled="disabled(date, mode)" ng-required="true" close-text="Close"/>
+        </div>
+        <!-- DATE TO -->
+        <div class="form-group form-inline justify-content-end col-sm-12 col-md-5">
+          <label for="dateTo">Date To:</label>
+          <input type="date" id="dateTo" class="form-control" [formControlName]="'dateTo'" datepicker-popup
+                 is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions"
+                 date-disabled="disabled(date, mode)" ng-required="true" close-text="Close"/>
+        </div>
+        <div class="form-group form-inline justify-content-end col-sm-12 col-md-2">
+          <button class="btn btn-outline-secondary" (click)="submitDate()">
+            <i class="fas fa-calendar-alt"></i> Filter
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+</div>
+<div class="row">
+  <div class="col-12 text-right text-muted small">
+    <p>Note: Default filters go from start of registrations to today's date.</p>
+  </div>
+</div>
+
 <ng-container *ngIf="loading">
   <i class="fas fa-spinner fa-spin"></i>
 </ng-container>
 
 <ng-container *ngIf="!loading">
-  <div class="row">
-    <div class="col-sm-12 col-md-6">
-      <button class="btn btn-outline-secondary" (click)="exportStats()">
-        <i class="fas fa-file-excel"></i> Export
-      </button>
-    </div>
-
-    <div class="col-sm-12 col-md-6">
-      <form [formGroup]="dateFilter">
-        <div class="form-row d-flex align-items-end">
-          <!-- DATE FROM -->
-          <div class="form-group form-inline justify-content-end col-sm-12 col-md-5">
-            <label for="dateFrom">Date From:</label>
-            <input type="date" id="dateFrom" class="form-control" [formControlName]="'dateFrom'" datepicker-popup
-                   is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions"
-                   date-disabled="disabled(date, mode)" ng-required="true" close-text="Close"/>
-          </div>
-          <!-- DATE TO -->
-          <div class="form-group form-inline justify-content-end col-sm-12 col-md-5">
-            <label for="dateTo">Date To:</label>
-            <input type="date" id="dateTo" class="form-control" [formControlName]="'dateTo'" datepicker-popup
-                   is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions"
-                   date-disabled="disabled(date, mode)" ng-required="true" close-text="Close"/>
-          </div>
-          <div class="form-group form-inline justify-content-end col-sm-12 col-md-2">
-            <button class="btn btn-outline-secondary" (click)="submitDate()">
-              <i class="fas fa-calendar-alt"></i> Filter
-            </button>
-          </div>
-        </div>
-      </form>
-    </div>
-
-  </div>
-  <div class="row">
-    <div class="col-12 text-right text-muted text-">
-      <p>Note: Default filters go from 1st Jan 2000 to today's date.</p>
-    </div>
-  </div>
-
-
-
   <!--Loop through reports data, displaying each report-->
   <ng-container *ngFor="let statReport of statReports">
     <div class="row ">

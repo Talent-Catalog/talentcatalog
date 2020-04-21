@@ -144,7 +144,6 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     
     String countingStandardFilter = "u.status = 'active' and c.status != 'draft'";
     String dateFilter = "c.created_date >= (:dateFrom) and c.created_date <= (:dateTo)";
-    String sourceCountryRestrictionNative = " (select country_id from user_source_country where user_id = (:loggedInUserId))";
     
     //Note that I have been forced to go to native queries for these more 
     //complex queries. The non native queries seem a bit buggy.
@@ -275,7 +274,6 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
                                                  @Param("sourceCountryIds") List<Long> sourceCountryIds,
                                                  @Param("dateFrom") LocalDate dateFrom,
                                                  @Param("dateTo") LocalDate dateTo);
-
     /**
      * This is the same as countByOccupationOrderByCount except that it excludes
      * undefined or unknown occupations (which unfortunately are common)
@@ -300,19 +298,17 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
                                                            @Param("dateFrom") LocalDate dateFrom,
                                                            @Param("dateTo") LocalDate dateTo);
 
-    /**
-     * No Local Date params due to this query having a Days param already.
-     */
-
     @Query( value="select DATE(u.created_date), count(distinct u.id) as PeopleCount from users u " +
             "left join candidate c on u.id = c.user_id " +
-            "where u.created_date > current_date - :days " +
-            "and c.country_id in (:sourceCountryIds) " +
+            "where c.country_id in (:sourceCountryIds) " +
+            " and " + countingStandardFilter +
+            "and " + dateFilter +
             "group by DATE(u.created_date) " +
             "order by DATE(u.created_date) asc;",
             nativeQuery = true)
-    List<Object[]> countByCreatedDateOrderByCount(@Param("days") Integer days,
-                                                  @Param("sourceCountryIds") List<Long> sourceCountryIds);
+    List<Object[]> countByCreatedDateOrderByCount(@Param("sourceCountryIds") List<Long> sourceCountryIds,
+                                                  @Param("dateFrom") LocalDate dateFrom,
+                                                  @Param("dateTo") LocalDate dateTo);
 
     @Query( value="select o.name, " +
             "       count(distinct c) as PeopleCount " +
@@ -321,11 +317,12 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             "left join occupation o on co.occupation_id = o.id " +
             " where c.country_id in (:sourceCountryIds)" +
             " and " + countingStandardFilter +
-            "and u.created_date > current_date - :days " +
-            "group by o.name " +
+            " and " + dateFilter +
+            " group by o.name " +
             "order by PeopleCount desc;",
             nativeQuery = true)
-    List<Object[]> countByOccupationOrderByCount(@Param("days") Integer days,
-                                                 @Param("sourceCountryIds") List<Long> sourceCountryIds);
+    List<Object[]> countByOccupationOrderByCount(@Param("sourceCountryIds") List<Long> sourceCountryIds,
+                                                 @Param("dateFrom") LocalDate dateFrom,
+                                                 @Param("dateTo") LocalDate dateTo);
 
 }

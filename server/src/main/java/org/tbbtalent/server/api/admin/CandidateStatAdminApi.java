@@ -40,14 +40,10 @@ public class CandidateStatAdminApi {
 
         title = "Registrations";
         chartType = "bar";
-        statReports.add(new StatReport(title + " (since start)",
-                this.candidateService.getRegistrationStats(999999), chartType)); 
-        statReports.add(new StatReport(title + " (last year)",
-                this.candidateService.getRegistrationStats(366), chartType)); 
-        statReports.add(new StatReport(title + " (last 3 weeks)",
-                this.candidateService.getRegistrationStats(21), chartType)); 
-        statReports.add(new StatReport(title + " (occupations last 3 weeks)",
-                this.candidateService.getRegistrationOccupationStats(21))); 
+        statReports.add(new StatReport(title,
+                this.candidateService.getRegistrationStats(request), chartType));
+        statReports.add(new StatReport(title + " (by occupations)",
+                this.candidateService.getRegistrationOccupationStats(request)));
 
         title = "Birth years";
         chartType = "bar";

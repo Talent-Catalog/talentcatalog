@@ -88,9 +88,9 @@ public interface CandidateService {
 
     List<DataRow> getBirthYearStats(Gender gender, CandidateStatDateRequest request);
 
-    List<DataRow> getRegistrationStats(int days);
+    List<DataRow> getRegistrationStats(CandidateStatDateRequest request);
 
-    List<DataRow> getRegistrationOccupationStats(int days);
+    List<DataRow> getRegistrationOccupationStats(CandidateStatDateRequest request);
 
     List<DataRow> getLanguageStats(Gender gender, CandidateStatDateRequest request);
 

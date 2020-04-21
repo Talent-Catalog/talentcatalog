@@ -20,25 +20,17 @@ export class InfographicComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loading = true;
 
     this.dateFilter = this.fb.group({
       dateFrom: ['', [Validators.required]],
       dateTo: ['', [Validators.required]]
     });
 
-    this.statService.getAllStats(this.dateFilter.value).subscribe(result => {
-        this.loading = false;
-        this.statReports = result;
-      },
-      error => {
-        this.error = error;
-        this.loading = false;
-      }
-    )
   }
 
   submitDate(){
+    this.loading = true;
+
     this.statService.getAllStats(this.dateFilter.value).subscribe(result => {
         this.loading = false;
         this.statReports = result;

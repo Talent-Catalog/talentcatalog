@@ -681,31 +681,46 @@ public class CandidateServiceImpl implements CandidateService {
     public List<DataRow> getGenderStats(CandidateStatDateRequest request) {
         User loggedInUser = userContext.getLoggedInUser();
         List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
-        setDateRange(request);
-        return toRows(candidateRepository.countByGenderOrderByCount(sourceCountryIds, request.getDateFrom(), request.getDateTo()));
+        CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
+        return toRows(candidateRepository.countByGenderOrderByCount(
+                sourceCountryIds,
+                requestWithDefaults.getDateFrom(),
+                requestWithDefaults.getDateTo()));
     }
 
     @Override
     public List<DataRow> getBirthYearStats(Gender gender, CandidateStatDateRequest request) {
         User loggedInUser = userContext.getLoggedInUser();
         List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
-        setDateRange(request);
+        CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
         return toRows(candidateRepository.
-                countByBirthYearOrderByYear(genderStr(gender), sourceCountryIds, request.getDateFrom(), request.getDateTo()));
+                countByBirthYearOrderByYear(
+                        genderStr(gender),
+                        sourceCountryIds,
+                        requestWithDefaults.getDateFrom(),
+                        requestWithDefaults.getDateTo()));
     }
 
     @Override
-    public List<DataRow> getRegistrationStats(int days) {
+    public List<DataRow> getRegistrationStats(CandidateStatDateRequest request) {
         User loggedInUser = userContext.getLoggedInUser();
         List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
-        return toRows(candidateRepository.countByCreatedDateOrderByCount(days, sourceCountryIds));
+        CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
+        return toRows(candidateRepository.countByCreatedDateOrderByCount(
+                sourceCountryIds,
+                requestWithDefaults.getDateFrom(),
+                requestWithDefaults.getDateTo()));
     }
 
     @Override
-    public List<DataRow> getRegistrationOccupationStats(int days) {
+    public List<DataRow> getRegistrationOccupationStats(CandidateStatDateRequest request) {
         User loggedInUser = userContext.getLoggedInUser();
         List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
-        final List<DataRow> rows = toRows(candidateRepository.countByOccupationOrderByCount(days, sourceCountryIds));
+        CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
+        final List<DataRow> rows = toRows(candidateRepository.countByOccupationOrderByCount(
+                sourceCountryIds,
+                requestWithDefaults.getDateFrom(),
+                requestWithDefaults.getDateTo()));
         return limitRows(rows, 15);
     }
 
@@ -713,14 +728,14 @@ public class CandidateServiceImpl implements CandidateService {
     public List<DataRow> getNationalityStats(Gender gender, String country, CandidateStatDateRequest request) {
         User loggedInUser = userContext.getLoggedInUser();
         List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
-        setDateRange(request);
+        CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
         List<DataRow> rows = toRows(candidateRepository.
                 countByNationalityOrderByCount(
                         genderStr(gender),
                         countryStr(country),
                         sourceCountryIds,
-                        request.getDateFrom(),
-                        request.getDateTo()));
+                        requestWithDefaults.getDateFrom(),
+                        requestWithDefaults.getDateTo()));
         return limitRows(rows, 15);
     }
 
@@ -728,40 +743,40 @@ public class CandidateServiceImpl implements CandidateService {
     public List<DataRow> getSurveyStats(Gender gender, String country, CandidateStatDateRequest request) {
         User loggedInUser = userContext.getLoggedInUser();
         List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
-        setDateRange(request);
+        CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
         return toRows(candidateRepository.
                 countBySurveyOrderByCount(
                         genderStr(gender),
                         countryStr(country),
                         sourceCountryIds,
-                        request.getDateFrom(),
-                        request.getDateTo()));
+                        requestWithDefaults.getDateFrom(),
+                        requestWithDefaults.getDateTo()));
     }
 
     @Override
     public List<DataRow> getMaxEducationStats(Gender gender, CandidateStatDateRequest request) {
         User loggedInUser = userContext.getLoggedInUser();
         List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
-        setDateRange(request);
+        CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
         return toRows(candidateRepository.
                 countByMaxEducationLevelOrderByCount(
                         genderStr(gender),
                         sourceCountryIds,
-                        request.getDateFrom(),
-                        request.getDateTo()));
+                        requestWithDefaults.getDateFrom(),
+                        requestWithDefaults.getDateTo()));
     }
 
     @Override
     public List<DataRow> getLanguageStats(Gender gender, CandidateStatDateRequest request) {
         User loggedInUser = userContext.getLoggedInUser();
         List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
-        setDateRange(request);
+        CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
         List<DataRow> rows = toRows(candidateRepository.
                 countByLanguageOrderByCount(
                         genderStr(gender),
                         sourceCountryIds,
-                        request.getDateFrom(),
-                        request.getDateTo()));
+                        requestWithDefaults.getDateFrom(),
+                        requestWithDefaults.getDateTo()));
         return limitRows(rows, 15);
     }
 
@@ -769,26 +784,26 @@ public class CandidateServiceImpl implements CandidateService {
     public List<DataRow> getOccupationStats(Gender gender, CandidateStatDateRequest request) {
         User loggedInUser = userContext.getLoggedInUser();
         List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
-        setDateRange(request);
+        CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
         return toRows(candidateRepository.
                 countByOccupationOrderByCount(
                         genderStr(gender),
                         sourceCountryIds,
-                        request.getDateFrom(),
-                        request.getDateTo()));
+                        requestWithDefaults.getDateFrom(),
+                        requestWithDefaults.getDateTo()));
     }
 
     @Override
     public List<DataRow> getMostCommonOccupationStats(Gender gender, CandidateStatDateRequest request) {
         User loggedInUser = userContext.getLoggedInUser();
         List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
-        setDateRange(request);
+        CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
         List<DataRow> rows = toRows(candidateRepository.
                 countByMostCommonOccupationOrderByCount(
                         genderStr(gender),
                         sourceCountryIds,
-                        request.getDateFrom(),
-                        request.getDateTo()));
+                        requestWithDefaults.getDateFrom(),
+                        requestWithDefaults.getDateTo()));
         return limitRows(rows, 15);
     }
 
@@ -796,14 +811,14 @@ public class CandidateServiceImpl implements CandidateService {
     public List<DataRow> getSpokenLanguageLevelStats(Gender gender, String language, CandidateStatDateRequest request) {
         User loggedInUser = userContext.getLoggedInUser();
         List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
-        setDateRange(request);
+        CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
         return toRows(candidateRepository.
                 countBySpokenLanguageLevelByCount(
                         genderStr(gender),
                         language,
                         sourceCountryIds,
-                        request.getDateFrom(),
-                        request.getDateTo()));
+                        requestWithDefaults.getDateFrom(),
+                        requestWithDefaults.getDateTo()));
     }
 
     @Override
@@ -1000,9 +1015,9 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     /**
-     * Set date default to show all dates if no date selected.
+     * Convert null string to date default.
      */
-    public void setDateRange(CandidateStatDateRequest request){
+    public CandidateStatDateRequest convertDateRangeDefaults(CandidateStatDateRequest request){
         if (request.getDateFrom() == null) {
             request.setDateFrom(LocalDate.parse("2000-01-01"));
         }
@@ -1010,6 +1025,7 @@ public class CandidateServiceImpl implements CandidateService {
         if(request.getDateTo() == null) {
             request.setDateTo(LocalDate.now());
         }
+        return request;
     }
     
 }
