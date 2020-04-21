@@ -686,11 +686,12 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<DataRow> getBirthYearStats(Gender gender) {
+    public List<DataRow> getBirthYearStats(Gender gender, CandidateStatDateRequest request) {
         User loggedInUser = userContext.getLoggedInUser();
         List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
+        setDateRange(request);
         return toRows(candidateRepository.
-                countByBirthYearOrderByYear(genderStr(gender), sourceCountryIds));
+                countByBirthYearOrderByYear(genderStr(gender), sourceCountryIds, request.getDateFrom(), request.getDateTo()));
     }
 
     @Override
@@ -709,64 +710,100 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<DataRow> getNationalityStats(Gender gender, String country) {
+    public List<DataRow> getNationalityStats(Gender gender, String country, CandidateStatDateRequest request) {
         User loggedInUser = userContext.getLoggedInUser();
         List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
+        setDateRange(request);
         List<DataRow> rows = toRows(candidateRepository.
                 countByNationalityOrderByCount(
-                        genderStr(gender), countryStr(country), sourceCountryIds));
+                        genderStr(gender),
+                        countryStr(country),
+                        sourceCountryIds,
+                        request.getDateFrom(),
+                        request.getDateTo()));
         return limitRows(rows, 15);
     }
 
     @Override
-    public List<DataRow> getSurveyStats(Gender gender, String country) {
+    public List<DataRow> getSurveyStats(Gender gender, String country, CandidateStatDateRequest request) {
         User loggedInUser = userContext.getLoggedInUser();
         List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
+        setDateRange(request);
         return toRows(candidateRepository.
                 countBySurveyOrderByCount(
-                        genderStr(gender), countryStr(country), sourceCountryIds));
+                        genderStr(gender),
+                        countryStr(country),
+                        sourceCountryIds,
+                        request.getDateFrom(),
+                        request.getDateTo()));
     }
 
     @Override
-    public List<DataRow> getMaxEducationStats(Gender gender) {
+    public List<DataRow> getMaxEducationStats(Gender gender, CandidateStatDateRequest request) {
         User loggedInUser = userContext.getLoggedInUser();
         List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
+        setDateRange(request);
         return toRows(candidateRepository.
-                countByMaxEducationLevelOrderByCount(genderStr(gender), sourceCountryIds));
+                countByMaxEducationLevelOrderByCount(
+                        genderStr(gender),
+                        sourceCountryIds,
+                        request.getDateFrom(),
+                        request.getDateTo()));
     }
 
     @Override
-    public List<DataRow> getLanguageStats(Gender gender) {
+    public List<DataRow> getLanguageStats(Gender gender, CandidateStatDateRequest request) {
         User loggedInUser = userContext.getLoggedInUser();
         List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
+        setDateRange(request);
         List<DataRow> rows = toRows(candidateRepository.
-                countByLanguageOrderByCount(genderStr(gender), sourceCountryIds));
+                countByLanguageOrderByCount(
+                        genderStr(gender),
+                        sourceCountryIds,
+                        request.getDateFrom(),
+                        request.getDateTo()));
         return limitRows(rows, 15);
     }
 
     @Override
-    public List<DataRow> getOccupationStats(Gender gender) {
+    public List<DataRow> getOccupationStats(Gender gender, CandidateStatDateRequest request) {
         User loggedInUser = userContext.getLoggedInUser();
         List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
+        setDateRange(request);
         return toRows(candidateRepository.
-                countByOccupationOrderByCount(genderStr(gender), sourceCountryIds));
+                countByOccupationOrderByCount(
+                        genderStr(gender),
+                        sourceCountryIds,
+                        request.getDateFrom(),
+                        request.getDateTo()));
     }
 
     @Override
-    public List<DataRow> getMostCommonOccupationStats(Gender gender) {
+    public List<DataRow> getMostCommonOccupationStats(Gender gender, CandidateStatDateRequest request) {
         User loggedInUser = userContext.getLoggedInUser();
         List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
+        setDateRange(request);
         List<DataRow> rows = toRows(candidateRepository.
-                countByMostCommonOccupationOrderByCount(genderStr(gender), sourceCountryIds));
+                countByMostCommonOccupationOrderByCount(
+                        genderStr(gender),
+                        sourceCountryIds,
+                        request.getDateFrom(),
+                        request.getDateTo()));
         return limitRows(rows, 15);
     }
 
     @Override
-    public List<DataRow> getSpokenLanguageLevelStats(Gender gender, String language) {
+    public List<DataRow> getSpokenLanguageLevelStats(Gender gender, String language, CandidateStatDateRequest request) {
         User loggedInUser = userContext.getLoggedInUser();
         List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
+        setDateRange(request);
         return toRows(candidateRepository.
-                countBySpokenLanguageLevelByCount(genderStr(gender), language, sourceCountryIds));
+                countBySpokenLanguageLevelByCount(
+                        genderStr(gender),
+                        language,
+                        sourceCountryIds,
+                        request.getDateFrom(),
+                        request.getDateTo()));
     }
 
     @Override

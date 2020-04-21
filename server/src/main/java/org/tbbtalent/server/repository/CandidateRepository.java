@@ -165,12 +165,15 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             " from candidate c left join users u on c.user_id = u.id" +
             " where c.country_id in (:sourceCountryIds)" +
             " and " + countingStandardFilter +
+            " and " + dateFilter +
             " and gender like :gender" +
             " and dob is not null and extract(year from dob) > 1940 " +
             " group by year order by year asc",
     nativeQuery = true)
     List<Object[]> countByBirthYearOrderByYear(@Param("gender") String gender,
-                                               @Param("sourceCountryIds") List<Long> sourceCountryIds);
+                                               @Param("sourceCountryIds") List<Long> sourceCountryIds,
+                                               @Param("dateFrom") LocalDate dateFrom,
+                                               @Param("dateTo") LocalDate dateTo);
 
     @Query(value = "select n.name, count(distinct c) as PeopleCount" +
             " from candidate c left join users u on c.user_id = u.id" +
@@ -178,13 +181,16 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             " left join country on c.country_id = country.id " +
             " where c.country_id in (:sourceCountryIds) " +
             " and " + countingStandardFilter +
+            " and " + dateFilter +
             " and gender like :gender" +
             " and lower(country.name) like :country" +
             " group by n.name order by PeopleCount desc",
     nativeQuery = true)
     List<Object[]> countByNationalityOrderByCount(@Param("gender") String gender,
                                                   @Param("country") String country,
-                                                  @Param("sourceCountryIds") List<Long> sourceCountryIds);
+                                                  @Param("sourceCountryIds") List<Long> sourceCountryIds,
+                                                  @Param("dateFrom") LocalDate dateFrom,
+                                                  @Param("dateTo") LocalDate dateTo);
 
     @Query(value = "select s.name, count(distinct c) as PeopleCount" +
             " from candidate c left join users u on c.user_id = u.id" +
@@ -192,13 +198,16 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             " left join country on c.country_id = country.id " +
             " where c.country_id in (:sourceCountryIds)" +
             " and " + countingStandardFilter +
+            " and " + dateFilter +
             " and gender like :gender" +
             " and lower(country.name) like :country" +
             " group by s.name order by PeopleCount desc",
     nativeQuery = true)
     List<Object[]> countBySurveyOrderByCount(@Param("gender") String gender,
                                              @Param("country") String country,
-                                             @Param("sourceCountryIds") List<Long> sourceCountryIds);
+                                             @Param("sourceCountryIds") List<Long> sourceCountryIds,
+                                             @Param("dateFrom") LocalDate dateFrom,
+                                             @Param("dateTo") LocalDate dateTo);
 
     @Query( value="select case when max_education_level_id is null then 'Unknown' " +
             "else el.name end as EducationLevel, " +
@@ -207,12 +216,15 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             "left join education_level el on c.max_education_level_id = el.id " +
             " where c.country_id in (:sourceCountryIds)" +
             " and " + countingStandardFilter +
+            " and " + dateFilter +
             " and gender like :gender " +
             "group by EducationLevel " +
             "order by PeopleCount desc;",
     nativeQuery = true)
     List<Object[]> countByMaxEducationLevelOrderByCount(@Param("gender") String gender,
-                                                        @Param("sourceCountryIds") List<Long> sourceCountryIds);
+                                                        @Param("sourceCountryIds") List<Long> sourceCountryIds,
+                                                        @Param("dateFrom") LocalDate dateFrom,
+                                                        @Param("dateTo") LocalDate dateTo);
 
     @Query(value = "select l.name, count(distinct c) as PeopleCount" +
             " from candidate c left join users u on c.user_id = u.id" +
@@ -220,11 +232,14 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             " left join language l on cl.language_id = l.id" +
             " where c.country_id in (:sourceCountryIds)" +
             " and " + countingStandardFilter +
+            " and " + dateFilter +
             " and gender like :gender" +
             " group by l.name order by PeopleCount desc",
             nativeQuery = true)
     List<Object[]> countByLanguageOrderByCount(@Param("gender") String gender,
-                                               @Param("sourceCountryIds") List<Long> sourceCountryIds);
+                                               @Param("sourceCountryIds") List<Long> sourceCountryIds,
+                                               @Param("dateFrom") LocalDate dateFrom,
+                                               @Param("dateTo") LocalDate dateTo);
 
     @Query(value = "select ll.name, count(distinct c) as PeopleCount" +
             " from candidate c left join users u on c.user_id = u.id" +
@@ -233,13 +248,16 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             " left join language_level ll on cl.spoken_level_id = ll.id" +
             " where c.country_id in (:sourceCountryIds)" +
             " and " + countingStandardFilter +
+            " and " + dateFilter +
             " and gender like :gender" +
             " and lower(l.name) = lower(:language)" +
             " group by ll.name order by PeopleCount desc",
             nativeQuery = true)
     List<Object[]> countBySpokenLanguageLevelByCount(@Param("gender") String gender,
                                                      @Param("language") String language,
-                                                     @Param("sourceCountryIds") List<Long> sourceCountryIds);
+                                                     @Param("sourceCountryIds") List<Long> sourceCountryIds,
+                                                     @Param("dateFrom") LocalDate dateFrom,
+                                                     @Param("dateTo") LocalDate dateTo);
 
     @Query( value="select o.name, " +
             "       count(distinct c) as PeopleCount " +
@@ -248,12 +266,15 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             "left join occupation o on co.occupation_id = o.id " +
             " where c.country_id in (:sourceCountryIds)" +
             " and " + countingStandardFilter +
+            " and " + dateFilter +
             " and gender like :gender " +
             "group by o.name " +
             "order by PeopleCount desc;",
             nativeQuery = true)
     List<Object[]> countByOccupationOrderByCount(@Param("gender") String gender,
-                                                 @Param("sourceCountryIds") List<Long> sourceCountryIds);
+                                                 @Param("sourceCountryIds") List<Long> sourceCountryIds,
+                                                 @Param("dateFrom") LocalDate dateFrom,
+                                                 @Param("dateTo") LocalDate dateTo);
 
     /**
      * This is the same as countByOccupationOrderByCount except that it excludes
@@ -268,13 +289,20 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             "left join occupation o on co.occupation_id = o.id " +
             " where c.country_id in (:sourceCountryIds)" +
             " and " + countingStandardFilter +
+            " and " + dateFilter +
             " and gender like :gender " +
             "and not lower(o.name) in ('undefined', 'unknown')" +
             "group by o.name " +
             "order by PeopleCount desc;",
             nativeQuery = true)
     List<Object[]> countByMostCommonOccupationOrderByCount(@Param("gender") String gender,
-                                                           @Param("sourceCountryIds") List<Long> sourceCountryIds);
+                                                           @Param("sourceCountryIds") List<Long> sourceCountryIds,
+                                                           @Param("dateFrom") LocalDate dateFrom,
+                                                           @Param("dateTo") LocalDate dateTo);
+
+    /**
+     * No Local Date params due to this query having a Days param already.
+     */
 
     @Query( value="select DATE(u.created_date), count(distinct u.id) as PeopleCount from users u " +
             "left join candidate c on u.id = c.user_id " +

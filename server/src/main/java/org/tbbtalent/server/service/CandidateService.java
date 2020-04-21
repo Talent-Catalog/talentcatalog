@@ -86,25 +86,25 @@ public interface CandidateService {
 
     List<DataRow> getGenderStats(CandidateStatDateRequest request);
 
-    List<DataRow> getBirthYearStats(Gender gender);
+    List<DataRow> getBirthYearStats(Gender gender, CandidateStatDateRequest request);
 
     List<DataRow> getRegistrationStats(int days);
 
     List<DataRow> getRegistrationOccupationStats(int days);
 
-    List<DataRow> getLanguageStats(Gender gender);
+    List<DataRow> getLanguageStats(Gender gender, CandidateStatDateRequest request);
 
-    List<DataRow> getOccupationStats(Gender gender);
+    List<DataRow> getOccupationStats(Gender gender, CandidateStatDateRequest request);
 
-    List<DataRow> getMostCommonOccupationStats(Gender gender);
+    List<DataRow> getMostCommonOccupationStats(Gender gender, CandidateStatDateRequest request);
 
-    List<DataRow> getSpokenLanguageLevelStats(Gender gender, String language);
+    List<DataRow> getSpokenLanguageLevelStats(Gender gender, String language, CandidateStatDateRequest request);
 
-    List<DataRow> getMaxEducationStats(Gender gender);
+    List<DataRow> getMaxEducationStats(Gender gender, CandidateStatDateRequest request);
 
-    List<DataRow> getNationalityStats(Gender gender, String country);
+    List<DataRow> getNationalityStats(Gender gender, String country, CandidateStatDateRequest request);
 
-    List<DataRow> getSurveyStats(Gender gender, String country);
+    List<DataRow> getSurveyStats(Gender gender, String country, CandidateStatDateRequest request);
 
     Resource generateCv(Candidate candidate);
 

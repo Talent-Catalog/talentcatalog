@@ -52,86 +52,86 @@ public class CandidateStatAdminApi {
         title = "Birth years";
         chartType = "bar";
         statReports.add(new StatReport(title,
-                this.candidateService.getBirthYearStats(null), chartType)); 
+                this.candidateService.getBirthYearStats(null, request), chartType));
         statReports.add(new StatReport(title + " (male)",
-                this.candidateService.getBirthYearStats(Gender.male), chartType)); 
+                this.candidateService.getBirthYearStats(Gender.male, request), chartType));
         statReports.add(new StatReport(title + " (female)",
-                this.candidateService.getBirthYearStats(Gender.female), chartType)); 
+                this.candidateService.getBirthYearStats(Gender.female, request), chartType));
 
         title = "Nationalities";
         statReports.add(new StatReport(title,
-                this.candidateService.getNationalityStats(null, null))); 
+                this.candidateService.getNationalityStats(null, null, request)));
         statReports.add(new StatReport(title + " (male)",
-                this.candidateService.getNationalityStats(Gender.male, null))); 
+                this.candidateService.getNationalityStats(Gender.male, null, request)));
         statReports.add(new StatReport(title + " (female)",
-                this.candidateService.getNationalityStats(Gender.female, null))); 
+                this.candidateService.getNationalityStats(Gender.female, null, request)));
         statReports.add(new StatReport(title + " (Jordan)",
-                this.candidateService.getNationalityStats(null, "jordan")));
+                this.candidateService.getNationalityStats(null, "jordan", request)));
         statReports.add(new StatReport(title + " (Lebanon)",
-                this.candidateService.getNationalityStats(null, "lebanon")));
+                this.candidateService.getNationalityStats(null, "lebanon", request)));
 
         title = "Occupations";
         statReports.add(new StatReport(title + "",
-                this.candidateService.getOccupationStats(null))); 
+                this.candidateService.getOccupationStats(null, request)));
         statReports.add(new StatReport(title + " (male)",
-                this.candidateService.getOccupationStats(Gender.male))); 
+                this.candidateService.getOccupationStats(Gender.male, request)));
         statReports.add(new StatReport(title + " (female)",
-                this.candidateService.getOccupationStats(Gender.female))); 
+                this.candidateService.getOccupationStats(Gender.female, request)));
 
         title = "Most Common Occupations";
         statReports.add(new StatReport(title + "",
-                this.candidateService.getMostCommonOccupationStats(null))); 
+                this.candidateService.getMostCommonOccupationStats(null, request)));
         statReports.add(new StatReport(title + " (male)",
-                this.candidateService.getMostCommonOccupationStats(Gender.male))); 
+                this.candidateService.getMostCommonOccupationStats(Gender.male, request)));
         statReports.add(new StatReport(title + " (female)",
-                this.candidateService.getMostCommonOccupationStats(Gender.female))); 
+                this.candidateService.getMostCommonOccupationStats(Gender.female, request)));
 
         title = "Max Education Level";
         statReports.add(new StatReport(title, 
-                this.candidateService.getMaxEducationStats(null)));
+                this.candidateService.getMaxEducationStats(null, request)));
         statReports.add(new StatReport(title + " (male)", 
-                this.candidateService.getMaxEducationStats(Gender.male)));
+                this.candidateService.getMaxEducationStats(Gender.male, request)));
         statReports.add(new StatReport(title + " (female)", 
-                this.candidateService.getMaxEducationStats(Gender.female)));
+                this.candidateService.getMaxEducationStats(Gender.female, request)));
 
         title = "Languages";
         statReports.add(new StatReport(title, 
-                this.candidateService.getLanguageStats(null)));
+                this.candidateService.getLanguageStats(null, request)));
         statReports.add(new StatReport(title + " (male)", 
-                this.candidateService.getLanguageStats(Gender.male)));
+                this.candidateService.getLanguageStats(Gender.male, request)));
         statReports.add(new StatReport(title + " (female)", 
-                this.candidateService.getLanguageStats(Gender.female)));
+                this.candidateService.getLanguageStats(Gender.female, request)));
 
         title = "Survey";
         statReports.add(new StatReport(title, 
-                this.candidateService.getSurveyStats(null, null)));
+                this.candidateService.getSurveyStats(null, null, request)));
         statReports.add(new StatReport(title + " (Jordan)",
-                this.candidateService.getSurveyStats(null, "jordan")));
+                this.candidateService.getSurveyStats(null, "jordan", request)));
         statReports.add(new StatReport(title + " (Lebanon)",
-                this.candidateService.getSurveyStats(null, "lebanon")));
+                this.candidateService.getSurveyStats(null, "lebanon", request)));
         statReports.add(new StatReport(title + " (male)", 
-                this.candidateService.getSurveyStats(Gender.male, null)));
+                this.candidateService.getSurveyStats(Gender.male, null, request)));
         statReports.add(new StatReport(title + " (female)", 
-                this.candidateService.getSurveyStats(Gender.female, null)));
+                this.candidateService.getSurveyStats(Gender.female, null, request)));
 
         
         language = "English";
         title = "Spoken " + language + " Language Level"; 
         statReports.add(new StatReport(title, 
-                this.candidateService.getSpokenLanguageLevelStats(null, language)));
+                this.candidateService.getSpokenLanguageLevelStats(null, language, request)));
         statReports.add(new StatReport(title + " (male)", 
-                this.candidateService.getSpokenLanguageLevelStats(Gender.male, language)));
+                this.candidateService.getSpokenLanguageLevelStats(Gender.male, language, request)));
         statReports.add(new StatReport(title + " (female)", 
-                this.candidateService.getSpokenLanguageLevelStats(Gender.female, language)));
+                this.candidateService.getSpokenLanguageLevelStats(Gender.female, language, request)));
 
         language = "French";
         title = "Spoken " + language + " Language Level"; 
         statReports.add(new StatReport(title, 
-                this.candidateService.getSpokenLanguageLevelStats(null, language)));
+                this.candidateService.getSpokenLanguageLevelStats(null, language, request)));
         statReports.add(new StatReport(title + " (male)", 
-                this.candidateService.getSpokenLanguageLevelStats(Gender.male, language)));
+                this.candidateService.getSpokenLanguageLevelStats(Gender.male, language, request)));
         statReports.add(new StatReport(title + " (female)", 
-                this.candidateService.getSpokenLanguageLevelStats(Gender.female, language)));
+                this.candidateService.getSpokenLanguageLevelStats(Gender.female, language, request)));
 
         //Construct the dto - just a list of all individual report dtos
         List<Map<String, Object>> dto = new ArrayList<>();
