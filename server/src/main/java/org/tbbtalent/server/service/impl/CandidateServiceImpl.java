@@ -445,6 +445,24 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    public Candidate updateCandidateSurvey(long id, UpdateCandidateSurveyRequest request) {
+        User loggedInUser = userContext.getLoggedInUser();
+        Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
+        Candidate candidate = this.candidateRepository.findByIdLoadUser(id, sourceCountries)
+                .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
+
+        SurveyType surveyType = null;
+        if (request.getSurveyTypeId() != null) {
+            // Load the education level from the database - throw an exception if not found
+            surveyType = surveyTypeRepository.findById(request.getSurveyTypeId())
+                    .orElseThrow(() -> new NoSuchObjectException(EducationLevel.class, request.getSurveyTypeId()));
+        }
+        candidate.setSurveyType(surveyType);
+        candidate.setSurveyComment(request.getSurveyComment());
+        return candidateRepository.save(candidate);
+    }
+
+    @Override
     @Transactional
     public boolean deleteCandidate(long id) {
         Candidate candidate = candidateRepository.findById(id).orElse(null);

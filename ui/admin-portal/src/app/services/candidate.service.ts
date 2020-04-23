@@ -58,6 +58,10 @@ export class CandidateService {
     return this.http.put<Candidate>(`${this.apiUrl}/${id}/info`, details);
   }
 
+  updateSurvey(id: number, details): Observable<Candidate>  {
+    return this.http.put<Candidate>(`${this.apiUrl}/${id}/survey`, details);
+  }
+
   update(id: number, details): Observable<Candidate>  {
     return this.http.put<Candidate>(`${this.apiUrl}/${id}`, details);
   }

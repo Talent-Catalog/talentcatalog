@@ -46,6 +46,8 @@ public interface CandidateService {
 
     Candidate updateCandidateAdditionalInfo(long id, UpdateCandidateAdditionalInfoRequest request);
 
+    Candidate updateCandidateSurvey(long id, UpdateCandidateSurveyRequest request);
+
     Candidate updateCandidateStatus(long id, UpdateCandidateStatusRequest request);
 
     Candidate updateCandidateLinks(long id, UpdateCandidateLinksRequest request);

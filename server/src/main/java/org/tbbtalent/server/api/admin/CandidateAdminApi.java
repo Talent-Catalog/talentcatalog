@@ -27,6 +27,7 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoReque
 import org.tbbtalent.server.request.candidate.UpdateCandidateLinksRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.CandidateService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
@@ -151,6 +152,13 @@ public class CandidateAdminApi {
     public Map<String, Object> updateAdditionalInfo(@PathVariable("id") long id,
                                                     @RequestBody UpdateCandidateAdditionalInfoRequest request) {
         Candidate candidate = this.candidateService.updateCandidateAdditionalInfo(id, request);
+        return candidateDto().build(candidate);
+    }
+
+    @PutMapping("{id}/survey")
+    public Map<String, Object> updateSurvey(@PathVariable("id") long id,
+                                                    @RequestBody UpdateCandidateSurveyRequest request) {
+        Candidate candidate = this.candidateService.updateCandidateSurvey(id, request);
         return candidateDto().build(candidate);
     }
 
