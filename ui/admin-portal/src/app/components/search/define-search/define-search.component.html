@@ -47,11 +47,7 @@
           [placeholder]="''"
           [data]="statuses"
           formControlName="statusesDisplay"
-          [settings]="dropdownSettings"
-          (onSelect)="onItemSelect($event, 'statuses')"
-          (onDeSelect)="onItemDeSelect($event, 'statuses')"
-          (onSelectAll)="onSelectAll($event, 'statuses')"
-          (onDeSelectAll)="onDeSelectAll('statuses')">
+          [settings]="dropdownSettings">
         </ng-multiselect-dropdown>
         <div class="operator">
           <input type="checkbox" class="custom-checkbox"  id="includeDraftAndDeleted" [value]="true" [formControlName]="'includeDraftAndDeleted'">
@@ -106,11 +102,7 @@
               [placeholder]="''"
               [data]="candidateOccupations"
               formControlName="occupations"
-              [settings]="dropdownSettings"
-              (onSelect)="onItemSelect($event, 'occupationIds')"
-              (onDeSelect)="onItemDeSelect($event, 'occupationIds')"
-              (onSelectAll)="onSelectAll($event, 'occupationIds')"
-              (onDeSelectAll)="onDeSelectAll('occupationIds')">
+              [settings]="dropdownSettings">
             </ng-multiselect-dropdown>
           </div>
 
@@ -166,11 +158,7 @@
               id="country"
               [data]="countries"
               formControlName="countries"
-              [settings]="dropdownSettings"
-              (onSelect)="onItemSelect($event, 'countryIds')"
-              (onDeSelect)="onItemDeSelect($event, 'countryIds')"
-              (onSelectAll)="onSelectAll($event, 'countryIds')"
-              (onDeSelectAll)="onDeSelectAll('countryIds')">
+              [settings]="dropdownSettings">
             </ng-multiselect-dropdown>
           </div>
 
@@ -193,11 +181,7 @@
               id="educationMajorIds"
               [data]="educationMajors"
               formControlName="educationMajors"
-              [settings]="dropdownSettings"
-              (onSelect)="onItemSelect($event, 'educationMajorIds')"
-              (onDeSelect)="onItemDeSelect($event, 'educationMajorIds')"
-              (onSelectAll)="onSelectAll($event, 'educationMajorIds')"
-              (onDeSelectAll)="onDeSelectAll('educationMajorIds')">
+              [settings]="dropdownSettings">
             </ng-multiselect-dropdown>
           </div>
 
@@ -236,11 +220,7 @@
           [placeholder]="'Select Nationalities'"
           [data]="nationalities"
           formControlName="nationalities"
-          [settings]="dropdownSettings"
-          (onSelect)="onItemSelect($event, 'nationalityIds')"
-          (onDeSelect)="onItemDeSelect($event, 'nationalityIds')"
-          (onSelectAll)="onSelectAll($event, 'nationalityIds')"
-          (onDeSelectAll)="onDeSelectAll('nationalityIds')">
+          [settings]="dropdownSettings">
         </ng-multiselect-dropdown>
       </div>
 
