@@ -1,6 +1,12 @@
 <div class="card">
 
-  <div class="card-header">Anything else we should know?</div>
+  <div class="card-header">
+    Anything else we should know?
+    <div class="pull-right" *ngIf="editable">
+      <button class="btn btn-sm btn-outline-secondary" (click)="editAdditionalInfo()">
+        <i class="fas fa-edit"></i></button>
+    </div>
+  </div>
 
   <div class="card-body">
     {{candidate?.additionalInfo}}

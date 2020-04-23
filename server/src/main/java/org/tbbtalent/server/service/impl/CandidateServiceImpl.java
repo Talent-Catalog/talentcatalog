@@ -434,6 +434,17 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    public Candidate updateCandidateAdditionalInfo(long id, UpdateCandidateAdditionalInfoRequest request) {
+        User loggedInUser = userContext.getLoggedInUser();
+        Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
+        Candidate candidate = this.candidateRepository.findByIdLoadUser(id, sourceCountries)
+                .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
+
+        candidate.setAdditionalInfo(request.getAdditionalInfo());
+        return candidateRepository.save(candidate);
+    }
+
+    @Override
     @Transactional
     public boolean deleteCandidate(long id) {
         Candidate candidate = candidateRepository.findById(id).orElse(null);

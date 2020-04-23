@@ -115,6 +115,7 @@ import {EditCandidateSpecialLinksComponent} from './components/candidates/view/s
 import {RoleGuardService} from "./services/role-guard.service";
 import {NgxWigModule} from 'ngx-wig';
 import {ViewCandidateSurveyComponent} from './components/candidates/view/survey/view-candidate-survey.component';
+import {EditCandidateAdditionalInfoComponent} from './components/candidates/view/additional-info/edit/edit-candidate-additional-info.component';
 
 @NgModule({
   declarations: [
@@ -221,7 +222,8 @@ import {ViewCandidateSurveyComponent} from './components/candidates/view/survey/
     NotFoundComponent,
     ViewCandidateSpecialLinksComponent,
     EditCandidateSpecialLinksComponent,
-    ViewCandidateSurveyComponent
+    ViewCandidateSurveyComponent,
+    EditCandidateAdditionalInfoComponent
   ],
   imports: [
     BrowserModule,
@@ -292,7 +294,8 @@ import {ViewCandidateSurveyComponent} from './components/candidates/view/survey/
     CreateCandidateAttachmentComponent,
     SearchSavedSearchesComponent,
     EditCandidateSpecialLinksComponent,
-    EditCandidateStatusComponent
+    EditCandidateStatusComponent,
+    EditCandidateAdditionalInfoComponent
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},

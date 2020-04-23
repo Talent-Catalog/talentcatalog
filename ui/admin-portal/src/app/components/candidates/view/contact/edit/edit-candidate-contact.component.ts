@@ -8,7 +8,7 @@ import {CountryService} from "../../../../../services/country.service";
 import {generateYearArray} from "../../../../../util/year-helper";
 
 @Component({
-  selector: 'app-edit-country',
+  selector: 'app-edit-candidate-contact',
   templateUrl: './edit-candidate-contact.component.html',
   styleUrls: ['./edit-candidate-contact.component.scss']
 })

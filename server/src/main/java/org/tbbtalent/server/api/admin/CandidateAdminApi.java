@@ -23,6 +23,7 @@ import org.tbbtalent.server.request.candidate.CandidatePhoneSearchRequest;
 import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
 import org.tbbtalent.server.request.candidate.SavedSearchRunRequest;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateLinksRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
@@ -143,6 +144,13 @@ public class CandidateAdminApi {
     public Map<String, Object> updateContactDetails(@PathVariable("id") long id,
                                       @RequestBody UpdateCandidateRequest request) {
         Candidate candidate = this.candidateService.updateCandidate(id, request);
+        return candidateDto().build(candidate);
+    }
+
+    @PutMapping("{id}/info")
+    public Map<String, Object> updateAdditionalInfo(@PathVariable("id") long id,
+                                                    @RequestBody UpdateCandidateAdditionalInfoRequest request) {
+        Candidate candidate = this.candidateService.updateCandidateAdditionalInfo(id, request);
         return candidateDto().build(candidate);
     }
 
