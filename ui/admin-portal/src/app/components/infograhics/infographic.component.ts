@@ -49,7 +49,7 @@ export class InfographicComponent implements OnInit {
       let csv: string[] = [];
 
       // Add date filter to export csv
-      csv.push('"' + 'Exported Date' + '","' + new Date().toDateString() + '"\n');
+      csv.push('"' + 'Exported Date' + '","' + new Date().toString() + '"\n');
       csv.push('"' + 'Date From' + '","' + this.dateFilter.value.dateFrom + '"\n')
       csv.push('"' + 'Date To' + '","' + this.dateFilter.value.dateTo + '"\n')
       csv.push('\n');
