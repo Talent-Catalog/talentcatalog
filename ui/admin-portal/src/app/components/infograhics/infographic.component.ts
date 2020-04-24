@@ -47,6 +47,14 @@ export class InfographicComponent implements OnInit {
       let filename = 'stats.csv';
 
       let csv: string[] = [];
+
+      // Add date filter to export csv
+      csv.push('Date Filter' + '\n');
+      csv.push('"' + 'Date From' + '","' + this.dateFilter.value.dateFrom + '"\n')
+      csv.push('"' + 'Date To' + '","' + this.dateFilter.value.dateTo + '"\n')
+      csv.push('\n');
+      
+      // Add data to export csv
       for (let statReport of this.statReports) {
         csv.push(statReport.name + '\n');
         for (let row of statReport.rows) {
