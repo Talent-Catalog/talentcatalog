@@ -229,35 +229,6 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     }
   }
 
-  // /* MULTI SELECT METHODS */
-  // onItemSelect(item: any, formControlName: string) {
-  //   const values = this.searchForm.controls[formControlName].value || [];
-  //   const addValue = item.id != null ? item.id : item;
-  //   values.push(addValue);
-  //   this.searchForm.controls[formControlName].patchValue(values);
-  // }
-  //
-  // onSelectAll(items: any[], formControlName: string) {
-  //   const values = this.searchForm.controls[formControlName].value || [];
-  //   items = items.map(i =>  i.id != null ? i.id : i);
-  //   values.push(...items);
-  //   this.searchForm.controls[formControlName].patchValue(values);
-  // }
-  //
-  // onItemDeSelect(item: any, formControlName: string) {
-  //   const values = this.searchForm.controls[formControlName].value || [];
-  //   const removeValue = item.id != null ? item.id : item;
-  //   const indexToRemove = values.findIndex(val => val === removeValue);
-  //   if (indexToRemove >= 0) {
-  //     values.splice(indexToRemove, 1);
-  //     this.searchForm.controls[formControlName].patchValue(values);
-  //   }
-  // }
-  //
-  // onDeSelectAll(formControlName: string) {
-  //   this.searchForm.controls[formControlName].patchValue([]);
-  // }
-
   search() {
     this.pageNumber = 1;
     this.doSearch();
@@ -269,8 +240,9 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     this.results = null;
     this.error = null;
 
-    this.getIdsMultiSelect();
-    const request = this.searchForm.value;
+    let request = this.searchForm.value;
+
+    request = this.getIdsMultiSelect(request);
 
     request.shortlistStatus = null;
     request.pageNumber = this.pageNumber - 1;
@@ -290,21 +262,18 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
       });
   }
 
-  getIdsMultiSelect(){
-    this.searchForm.controls['countryIds'].patchValue(
-      this.searchForm.value.countries.map(c => c.id));
+  getIdsMultiSelect(request): any {
+    request.countryIds = request.countries.map(c => c.id);
 
-    this.searchForm.controls['nationalityIds'].patchValue(
-      this.searchForm.value.nationalities.map(n => n.id));
+    request.nationalityIds = request.nationalities.map(n => n.id);
 
-    this.searchForm.controls['occupationIds'].patchValue(
-      this.searchForm.value.occupations.map(o => o.id));
+    request.occupationIds = request.occupations.map(o => o.id);
 
-    this.searchForm.controls['educationMajorIds'].patchValue(
-      this.searchForm.value.educationMajors.map(o => o.id));
+    request.educationMajorIds = request.educationMajors.map(o => o.id);
 
-    this.searchForm.controls['statuses'].patchValue(
-      this.searchForm.value.statusesDisplay.map(s => s.id));
+    request.statuses = request.statusesDisplay.map(s => s.id);
+
+    return request;
   }
 
   clearForm() {

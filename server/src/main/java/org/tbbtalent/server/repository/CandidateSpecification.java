@@ -381,15 +381,6 @@ public class CandidateSpecification {
                 conjunction.getExpressions().add(builder.lessThanOrEqualTo(candidate.get("updatedDate"), getOffsetDateTime(request.getLastModifiedTo(), LocalTime.MAX, request.getTimezone())));
             }
 
-            //Registered From - change to registered
-//            if (request.getRegisteredFrom() != null) {
-//                conjunction.getExpressions().add(builder.greaterThanOrEqualTo(candidate.get("registeredDate"), getOffsetDateTime(request.getRegisteredFrom(), LocalTime.MIN, request.getTimezone())));
-//            }
-//
-//            if (request.getRegisteredTo() != null) {
-//                conjunction.getExpressions().add(builder.lessThanOrEqualTo(candidate.get("registeredDate"), getOffsetDateTime(request.getRegisteredTo(), LocalTime.MAX, request.getTimezone())));
-//            }
-
             //Min / Max Age
             if (request.getMinAge() != null) {
                 LocalDate minDob = LocalDate.now().minusYears(request.getMinAge() + 1);

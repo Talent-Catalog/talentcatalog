@@ -12,7 +12,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.util.List;
 
 @Entity
@@ -58,12 +57,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-
-    private OffsetDateTime registeredDate;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "registered_by")
-    private User registered_by;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     private List<CandidateOccupation> candidateOccupations;
@@ -252,23 +245,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-
-    public OffsetDateTime getRegisteredDate() {
-        return registeredDate;
-    }
-
-    public void setRegisteredDate(OffsetDateTime registeredDate) {
-        this.registeredDate = registeredDate;
-    }
-
-    public User getRegistered_by() {
-        return registered_by;
-    }
-
-    public void setRegistered_by(User registered_by) {
-        this.registered_by = registered_by;
     }
 
     public List<CandidateOccupation> getCandidateOccupations() {
