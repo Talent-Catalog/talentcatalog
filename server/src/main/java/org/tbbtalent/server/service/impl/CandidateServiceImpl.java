@@ -877,7 +877,7 @@ public class CandidateServiceImpl implements CandidateService {
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-mm-yyyy");
             csvWriter.writeNext(new String[] {
                     "Candidate Number", "Candidate First Name", "Candidate Last Name","Gender", "Country Residing", "Nationality",
-                    "Dob","Max Education Level", "Education Major", "English Spoken Level", "Occupation"
+                    "Dob","Email", "Max Education Level", "Education Major", "English Spoken Level", "Occupation"
             });
 
             request.setPageNumber(0);
@@ -895,6 +895,7 @@ public class CandidateServiceImpl implements CandidateService {
                             candidate.getCountry() != null ? candidate.getCountry().getName() : candidate.getMigrationCountry(),
                             candidate.getNationality() != null ? candidate.getNationality().getName() : null,
                             candidate.getDob() != null ? candidate.getDob().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) : null,
+                            candidate.getUser().getEmail(),
                             candidate.getMaxEducationLevel() != null ? candidate.getMaxEducationLevel().getName() : null,
                             formatCandidateMajor(candidate.getCandidateEducations()),
                             getEnglishSpokenProficiency(candidate.getCandidateLanguages()),
