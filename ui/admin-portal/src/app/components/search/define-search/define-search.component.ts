@@ -1,4 +1,10 @@
-import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 
 import {Candidate} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
@@ -37,7 +43,10 @@ import {ActivatedRoute} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
 import {LocalStorageService} from "angular-2-local-storage";
 import {UpdateSearchComponent} from "../update/update-search.component";
-import {getSavedSearchBreadcrumb, SavedSearch} from "../../../model/saved-search";
+import {
+  getSavedSearchBreadcrumb,
+  SavedSearch
+} from "../../../model/saved-search";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {User} from "../../../model/user";
 import {AuthService} from "../../../services/auth.service";
@@ -263,15 +272,30 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
   }
 
   getIdsMultiSelect(request): any {
-    request.countryIds = request.countries.map(c => c.id);
+    if (request.countries != null) {
+      request.countryIds = request.countries.map(c => c.id);
+      request.countries = null;
+    }
 
-    request.nationalityIds = request.nationalities.map(n => n.id);
+    if (request.nationalities != null) {
+      request.nationalityIds = request.nationalities.map(n => n.id);
+      request.nationalities = null;
+    }
 
-    request.occupationIds = request.occupations.map(o => o.id);
+    if (request.occupations != null) {
+      request.occupationIds = request.occupations.map(o => o.id);
+      request.occupations = null;
+    }
 
-    request.educationMajorIds = request.educationMajors.map(o => o.id);
+    if (request.educationMajors != null) {
+      request.educationMajorIds = request.educationMajors.map(o => o.id);
+      request.educationMajors = null;
+    }
 
-    request.statuses = request.statusesDisplay.map(s => s.id);
+    if (request.statusesDisplay != null) {
+      request.statuses = request.statusesDisplay.map(s => s.id);
+      request.statusesDisplay = null;
+    }
 
     return request;
   }
