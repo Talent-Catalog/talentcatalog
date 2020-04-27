@@ -171,6 +171,7 @@ public class CandidateAdminApi {
     public void export(@RequestBody SearchCandidateRequest request,
                        HttpServletResponse response) throws IOException, ExportException {
         response.setHeader("Content-Disposition", "attachment; filename=\"" + "candidates.csv\"");
+        response.setContentType("text/csv; charset=utf-8");
         candidateService.exportToCsv(request, response.getWriter());
     }
 
@@ -178,6 +179,7 @@ public class CandidateAdminApi {
     public void export(@RequestBody SavedSearchRunRequest request,
                        HttpServletResponse response) throws IOException, ExportException {
         response.setHeader("Content-Disposition", "attachment; filename=\"" + "candidates.csv\"");
+        response.setContentType("text/csv; charset=utf-8");
         candidateService.exportToCsv(request, response.getWriter());
     }
 
