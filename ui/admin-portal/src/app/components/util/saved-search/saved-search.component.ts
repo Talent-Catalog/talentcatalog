@@ -71,6 +71,7 @@ export class SavedSearchComponent implements OnInit {
   }
 
   isWatching(): boolean {
-    return this.savedSearch.watcherUserIds.indexOf(this.loggedInUser.id) >= 0;
+    return this.savedSearch.watcherUserIds === undefined ? false :
+      this.savedSearch.watcherUserIds.indexOf(this.loggedInUser.id) >= 0;
   }
 }
