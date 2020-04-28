@@ -44,7 +44,8 @@
     <tr *ngFor="let savedSearch of results?.content">
       <td><app-saved-search [savedSearch]="savedSearch"
                             [showAll]="false" [showWatch]="false"
-                            [showOpen]="false">
+                            (openSearch)="openSearch($event)"
+                            >
 
       </app-saved-search></td>
     </tr>
@@ -67,12 +68,6 @@
 
   </table>
 
-</div>
-<div class="modal-footer">
-  <button type="button" class="btn btn-primary" (click)="closeModal()"
-          [disabled]="!selectedSearch">
-    Load
-  </button>
 </div>
 
 
