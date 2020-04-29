@@ -29,9 +29,6 @@ public class SavedSearch extends AbstractCandidateSource {
     private static final Logger log = LoggerFactory.getLogger(SavedSearch.class);
 
     private String type;
-    
-    @Enumerated(EnumType.STRING)
-    private Status status;
     private String keyword;
     private String statuses;
     private Gender gender;
@@ -99,15 +96,6 @@ public class SavedSearch extends AbstractCandidateSource {
     @Transient private SavedSearchSubtype savedSearchSubtype;
 
     public SavedSearch() {
-        this.status = Status.active;
-   }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
     }
 
     public String getKeyword() {

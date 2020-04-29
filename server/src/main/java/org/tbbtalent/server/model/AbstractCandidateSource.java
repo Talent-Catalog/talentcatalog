@@ -6,6 +6,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
 
@@ -18,6 +20,7 @@ import org.springframework.util.CollectionUtils;
  * Common base class functionality includes:
  * <ul>
  *     <li>Names</li>
+ *     <li>Status - active, inactive, deleted</li>
  *     <li>Fixed attribute - not modifiable except by owner</li>
  *     <li>WatcherIds - Other users can be notified about changes </li>
  *     <li>Supporting sharing with other users</li>
@@ -33,6 +36,9 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
      */
     private String name;
 
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
     /**
      * If true, only the owner can modify the details of the candidate source
      */
@@ -42,6 +48,10 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
      * Stored as comma separated list of watching user ids 
      */
     private String watcherIds;
+
+    protected AbstractCandidateSource() {
+        setStatus(Status.active);
+    }
 
     public String getName() {
         return name;
@@ -59,7 +69,15 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
         this.fixed = fixed;
     }
 
-  
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+
     //Support for watchers
     
     public String getWatcherIds() {
