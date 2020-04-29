@@ -350,7 +350,12 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     const showSaveModal = this.modalService.open(CreateSearchComponent);
 
     showSaveModal.componentInstance.savedSearch = this.savedSearch;
-    showSaveModal.componentInstance.searchCandidateRequest = this.searchForm.value;
+
+    // Convert ids as we do for searches
+    const request = this.searchForm.value;
+    showSaveModal.componentInstance.searchCandidateRequest =
+      this.getIdsMultiSelect(request);
+
 
     showSaveModal.result
       .then((savedSearch) => {
@@ -405,8 +410,14 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
       this.searchForm.controls[name].patchValue(request[name]);
     });
 
+    // For the multiselects we have to set the corresponding id/name object
+
     /* STATUSES */
-    this.searchForm.controls['statusesDisplay'].patchValue(request.statuses || []);
+    let statuses = [];
+    if (request.statuses && this.statuses) {
+      statuses = this.statuses.filter(s => request.statuses.indexOf(s.id) !== -1);
+    }
+    this.searchForm.controls['statusesDisplay'].patchValue(statuses);
 
     /* VERIFIED OCCUPATIONS */
     let verifiedOccupations = [];
