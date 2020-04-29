@@ -28,8 +28,14 @@ import org.springframework.util.CollectionUtils;
 @MappedSuperclass
 public abstract class AbstractCandidateSource extends AbstractAuditableDomainObject<Long> {
 
+    /**
+     * The name given to the candidate source
+     */
     private String name;
 
+    /**
+     * If true, only the owner can modify the details of the candidate source
+     */
     private Boolean fixed;
 
     /**
@@ -53,6 +59,9 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
         this.fixed = fixed;
     }
 
+  
+    //Support for watchers
+    
     public String getWatcherIds() {
         return watcherIds;
     }
@@ -106,9 +115,12 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
         setWatcherUserIds(ids);
     }
 
+    
+    //Support for sharing
+    
     /**
      * This is the collection of users who share this candidate source.
-     * It will return a field on the entity corresponding to a many to many
+     * It will return the field on the entity corresponding to a many to many
      * mapping in the database of user ids to the ids of these candidate sources. 
      * @return Set of users
      */
@@ -116,29 +128,30 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
 
     /**
      * This is the collection of users who share this candidate source.
-     * It will return a field on the entity corresponding to a many to many
+     * It will return the field on the entity corresponding to a many to many
      * mapping in the database of user ids to the ids of these candidate sources.
      * @param users Set of users who share this candidate source.
      */
     public abstract void setUsers(Set<User> users);
 
     /**
-     * Add this instance to the collection on the given user entity which 
-     * stores shared instances of this class of candidate source.
+     * Return the given user's collection of shared instances of this class of 
+     * candidate source.
      * <p/>
      * This is the user side of the many to many sharing relationship.
-     * @param user A user who can share this class of candidate source
-     */
-    public abstract void addMeToUsersCollection(User user);
-
-    /**
-     * Removes this instance from the collection on the given user entity which 
-     * stores shared instances of this class of candidate source.
      * <p/>
-     * This is the user side of the many to many sharing relationship.
-     * @param user A user who can share this class of candidate source
+     * Typically the implementing code will be a single line like:
+     * <code>
+     *     user.[getSharesCollection()];
+     * </code>
+     * where [getSharesCollection] is the User method which returns the
+     * collection of candidate source instances the user is sharing.
+     * 
+     * @param user User who can share this class of candidate source 
+     * @param <T> A subclass of this class - eg a Saved Search
+     * @return Given user's collection of shared instances
      */
-    public abstract void removeMeFromUsersCollection(User user);
+    public abstract <T extends AbstractCandidateSource> Set<T> getUsersCollection(User user);
 
     /**
      * Share this instance with given user
@@ -149,7 +162,7 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
         getUsers().add(user);
         //Also update other side of many to many relationship, adding this 
         //instance to the user's collection of shared instances.
-        addMeToUsersCollection(user);
+        getUsersCollection(user).add(this);
     }
 
     /**
@@ -161,7 +174,7 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
         getUsers().remove(user);
         //Also update other side of many to many relationship, removing this 
         //instance from the user's collection of shared instances.
-        removeMeFromUsersCollection(user);
+        getUsersCollection(user).remove(this);
     }
     
 }

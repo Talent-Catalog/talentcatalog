@@ -465,7 +465,7 @@ public class SavedSearch extends AbstractCandidateSource {
       }
     
     public void setReviewable(Boolean reviewable) {
-      this.reviewable = reviewable;
+        this.reviewable = reviewable;
     }
 
     public Set<User> getUsers() {
@@ -477,12 +477,7 @@ public class SavedSearch extends AbstractCandidateSource {
     }
 
     @Override
-    public void addMeToUsersCollection(User user) {
-        user.getSharedSearches().add(this);
-    }
-
-    @Override
-    public void removeMeFromUsersCollection(User user) {
-        user.getSharedSearches().remove(this);
+    public Set<SavedSearch> getUsersCollection(User user) {
+        return user.getSharedSearches();
     }
 }
