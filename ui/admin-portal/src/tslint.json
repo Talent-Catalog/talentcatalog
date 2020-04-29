@@ -16,6 +16,10 @@
         "quotemark": [
           false,
           "single"
-        ]
+        ],
+      "comment-format": [
+        false,
+        "check-space"
+      ]
     }
 }
