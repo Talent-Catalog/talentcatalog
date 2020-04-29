@@ -210,7 +210,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
             this.loadSavedSearch(this.savedSearchId);
           }, err => {
             this.error = err;
-          })
+          });
         } else {
           let localStorageSearchRequest = JSON.parse(localStorage.getItem(this.searchKey));
           if (localStorageSearchRequest){
@@ -233,7 +233,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
 
 
   ngOnDestroy(): void {
-    if (this.subscription){
+    if (this.subscription) {
       this.subscription.unsubscribe();
     }
   }
@@ -315,7 +315,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
 
   getBreadcrumb() {
     const infos = this.savedSearchService.getSavedSearchTypeInfos();
-    return getSavedSearchBreadcrumb(this.savedSearch, infos)
+    return getSavedSearchBreadcrumb(this.savedSearch, infos);
   }
 
   loadSavedSearch(id) {
@@ -340,7 +340,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     showSavedSearchesModal.result
       .then((savedSearch) => {
         this.savedSearch = savedSearch;
-        this.loadSavedSearch(savedSearch.id)
+        this.loadSavedSearch(savedSearch.id);
       })
       .catch(() => { /* Isn't possible */
       });
@@ -372,7 +372,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     });
 
     deleteSavedSearchModal.componentInstance.message =
-      'Are you sure you want to delete "'+ this.savedSearch.name + '"';
+      'Are you sure you want to delete "' + this.savedSearch.name + '"';
 
     deleteSavedSearchModal.result
       .then((result) => {
@@ -454,7 +454,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     /* COUNTRIES */
     let countries = [];
     if (request.countryIds && this.countries) {
-      countries = this.countries.filter(c => request.countryIds.indexOf(c.id) != -1);
+      countries = this.countries.filter(c => request.countryIds.indexOf(c.id) !== -1);
     }
     this.searchForm.controls['countries'].patchValue(countries);
 
@@ -475,7 +475,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     /* NATIONALITIES */
     let nationalities = [];
     if (request.nationalityIds && this.nationalities) {
-      nationalities = this.nationalities.filter(c => request.nationalityIds.indexOf(c.id) != -1);
+      nationalities = this.nationalities.filter(c => request.nationalityIds.indexOf(c.id) !== -1);
     }
     this.searchForm.controls['nationalities'].patchValue(nationalities);
 
@@ -485,7 +485,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     }
     if (request['searchJoinRequests']) {
       request['searchJoinRequests'].forEach((join) => {
-        this.searchJoinArray.push(this.fb.group(join)) // If present, repopulate the array from the request
+        this.searchJoinArray.push(this.fb.group(join)); // If present, repopulate the array from the request
       });
     }
 
@@ -550,8 +550,8 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
   }
 
   toggleSort(column) {
-    if (this.sortField == column) {
-      this.sortDirection = this.sortDirection == 'ASC' ? 'DESC' : 'ASC';
+    if (this.sortField === column) {
+      this.sortDirection = this.sortDirection === 'ASC' ? 'DESC' : 'ASC';
     } else {
       this.sortField = column;
       this.sortDirection = 'ASC';
