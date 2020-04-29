@@ -204,14 +204,22 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     @Override
     @Transactional
     public boolean deleteSavedSearch(long id)  {
-        SavedSearch savedSearch = savedSearchRepository.findById(id).orElse(null);
+        SavedSearch savedSearch = savedSearchRepository.findByIdLoadAudit(id).orElse(null);
 
         if (savedSearch != null) {
-            savedSearch.setStatus(Status.deleted);
-            //Change name so that that name can be reused
-            savedSearch.setName("__deleted__" + savedSearch.getName());
-            savedSearchRepository.save(savedSearch);
-            return true;
+
+            // Check if saved search was created by the user deleting.
+            if(savedSearch.getCreatedBy().getId() == userContext.getLoggedInUser().getId()) {
+                savedSearch.setStatus(Status.deleted);
+                
+                //Change name so that that name can be reused
+                savedSearch.setName("__deleted__" + savedSearch.getName());
+                savedSearchRepository.save(savedSearch);
+                return true;
+            } else {
+                throw new InvalidRequestException("You can't delete other user's saved searches.");
+            }
+
         }
         return false;
     }
