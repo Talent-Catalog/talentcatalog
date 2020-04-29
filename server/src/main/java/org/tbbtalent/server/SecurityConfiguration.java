@@ -61,11 +61,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/admin/auth").permitAll()
                 .antMatchers("/api/admin/auth/**").permitAll()
 
+                // DELETE: DELETE SAVE SEARCHES
+                .antMatchers(HttpMethod.DELETE, "/api/admin/saved-search/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
                 // ADMIN ONLY RESTRICTIONS
+                    // All OTHER DELETE end points
+                .antMatchers(HttpMethod.DELETE, "/api/admin/**/*").hasRole("ADMIN")
                     // Migrate database
                 .antMatchers("/api/admin/system/migrate").hasAnyRole("ADMIN")
-                    // ALL DELETE end points
-                .antMatchers(HttpMethod.DELETE, "/api/admin/**/*").hasRole("ADMIN")
+
                     // UPDATE/EDIT general settings
                 .antMatchers(HttpMethod.PUT,
                         "/api/admin/user/*",
