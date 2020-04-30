@@ -1,18 +1,23 @@
 package org.tbbtalent.server.model;
 
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import java.time.LocalDate;
-import java.util.List;
 
 @Entity
 @Table(name = "candidate")
@@ -41,6 +46,17 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Enumerated(EnumType.STRING)
     private CandidateStatus status;
+
+    //Note use of Set rather than List as strongly recommended for Many to Many
+    //relationships here:
+    // https://thoughts-on-java.org/best-practices-for-many-to-many-associations-with-hibernate-and-jpa/
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinTable(
+            name = "candidate_saved_list",
+            joinColumns = @JoinColumn(name = "candidate_id"),
+            inverseJoinColumns = @JoinColumn(name = "saved_list_id")
+    )
+    private Set<SavedList> savedLists = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "max_education_level_id")
@@ -350,5 +366,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setVideolink(String videolink) {
         this.videolink = videolink;
+    }
+
+    public Set<SavedList> getSavedLists() {
+        return savedLists;
+    }
+
+    public void setSavedLists(Set<SavedList> savedLists) {
+        this.savedLists = savedLists;
     }
 }

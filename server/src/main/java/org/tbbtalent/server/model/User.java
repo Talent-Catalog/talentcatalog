@@ -18,10 +18,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -69,6 +65,17 @@ public class User extends AbstractAuditableDomainObject<Long> {
             inverseJoinColumns = @JoinColumn(name = "saved_search_id")
     )
     private Set<SavedSearch> sharedSearches = new HashSet<>();
+
+    //Note use of Set rather than List as strongly recommended for Many to Many
+    //relationships here:
+    // https://thoughts-on-java.org/best-practices-for-many-to-many-associations-with-hibernate-and-jpa/
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinTable(
+            name = "user_saved_list",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "saved_list_id")
+    )
+    private Set<SavedList> sharedLists = new HashSet<>();
 
     @Transient
     private String selectedLanguage = "en";
@@ -199,6 +206,14 @@ public class User extends AbstractAuditableDomainObject<Long> {
 
     public void setSelectedLanguage(String selectedLanguage) {
         this.selectedLanguage = selectedLanguage;
+    }
+
+    public Set<SavedList> getSharedLists() {
+        return sharedLists;
+    }
+
+    public void setSharedLists(Set<SavedList> sharedLists) {
+        this.sharedLists = sharedLists;
     }
 
     public Set<SavedSearch> getSharedSearches() {
