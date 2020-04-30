@@ -1,9 +1,6 @@
 package org.tbbtalent.server.model;
 
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -22,8 +19,6 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
 
 @Entity
 @Table(name = "users")
@@ -45,7 +40,7 @@ public class User extends AbstractAuditableDomainObject<Long> {
     @Enumerated(EnumType.STRING)
     private Status status;
     
-    private LocalDateTime lastLogin;
+    private OffsetDateTime lastLogin;
 
     @Column
     private String resetToken;
@@ -153,11 +148,11 @@ public class User extends AbstractAuditableDomainObject<Long> {
         this.status = status;
     }
 
-    public LocalDateTime getLastLogin() {
+    public OffsetDateTime getLastLogin() {
         return lastLogin;
     }
 
-    public void setLastLogin(LocalDateTime lastLogin) {
+    public void setLastLogin(OffsetDateTime lastLogin) {
         this.lastLogin = lastLogin;
     }
 
