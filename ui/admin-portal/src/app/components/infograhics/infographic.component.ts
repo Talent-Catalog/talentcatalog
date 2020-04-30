@@ -36,6 +36,7 @@ export class InfographicComponent implements OnInit {
     this.statService.getAllStats(this.dateFilter.value).subscribe(result => {
         this.loading = false;
         this.statReports = result;
+        this.dataLoaded = true;
       },
       error => {
         this.error = error;
@@ -43,7 +44,6 @@ export class InfographicComponent implements OnInit {
       }
     )
 
-    this.dataLoaded = true;
   }
 
   exportStats() {

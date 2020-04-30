@@ -40,7 +40,7 @@ public class User extends AbstractAuditableDomainObject<Long> {
     @Enumerated(EnumType.STRING)
     private Status status;
     
-    private OffsetDateTime lastLogin;
+    private LocalDateTime lastLogin;
 
     @Column
     private String resetToken;
@@ -148,11 +148,11 @@ public class User extends AbstractAuditableDomainObject<Long> {
         this.status = status;
     }
 
-    public OffsetDateTime getLastLogin() {
+    public LocalDateTime getLastLogin() {
         return lastLogin;
     }
 
-    public void setLastLogin(OffsetDateTime lastLogin) {
+    public void setLastLogin(LocalDateTime lastLogin) {
         this.lastLogin = lastLogin;
     }
 
