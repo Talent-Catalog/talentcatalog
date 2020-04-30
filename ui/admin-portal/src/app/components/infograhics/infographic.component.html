@@ -1,6 +1,6 @@
 <div class="row align-items-center">
   <div class="col-sm-12 col-md-6">
-    <button class="btn btn-outline-secondary" (click)="exportStats()">
+    <button class="btn btn-outline-secondary" [disabled]="!dataLoaded" (click)="exportStats()">
       <i class="fas fa-file-excel"></i> Export
     </button>
   </div>

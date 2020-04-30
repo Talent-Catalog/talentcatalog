@@ -11,6 +11,7 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 export class InfographicComponent implements OnInit {
 
   loading: boolean = false;
+  dataLoaded: boolean = false;
   error: any;
   statReports: StatReport[];
   dateFilter: FormGroup;
@@ -20,6 +21,7 @@ export class InfographicComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.dataLoaded = false;
 
     this.dateFilter = this.fb.group({
       dateFrom: ['', [Validators.required]],
@@ -40,6 +42,8 @@ export class InfographicComponent implements OnInit {
         this.loading = false;
       }
     )
+
+    this.dataLoaded = true;
   }
 
   exportStats() {
