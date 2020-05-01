@@ -16,9 +16,11 @@ export class SavedSearchComponent implements OnInit {
   @Input() showMore: boolean = true;
   @Input() showOpen: boolean = true;
   @Input() showWatch: boolean = true;
+  @Input() showSearch: boolean = false;
   @Input() showEdit: boolean = false;
   @Input() showDelete: boolean = false;
   @Output() openSearch = new EventEmitter<SavedSearch>();
+  @Output() selectSearch = new EventEmitter<SavedSearch>();
   @Output() editSearch = new EventEmitter<SavedSearch>();
   @Output() deleteSearch = new EventEmitter<SavedSearch>();
   @Output() toggleWatch = new EventEmitter<SavedSearch>();
@@ -56,6 +58,10 @@ export class SavedSearchComponent implements OnInit {
 
   doOpenSearch(){
     this.openSearch.emit(this.savedSearch);
+  }
+
+  doSelectSearch(){
+    this.selectSearch.emit(this.savedSearch);
   }
 
   doEditSearch(){

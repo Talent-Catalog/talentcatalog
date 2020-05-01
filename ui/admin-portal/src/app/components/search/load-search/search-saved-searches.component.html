@@ -44,7 +44,8 @@
     <tr *ngFor="let savedSearch of results?.content">
       <td><app-saved-search [savedSearch]="savedSearch"
                             [showAll]="false" [showWatch]="false"
-                            (openSearch)="openSearch($event)"
+                            [showOpen]="false" [showSearch]="true"
+                            (selectSearch)="selectSearch($event)"
                             >
 
       </app-saved-search></td>
