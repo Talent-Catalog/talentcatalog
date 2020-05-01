@@ -1,5 +1,6 @@
 package org.tbbtalent.server.service.impl;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,7 @@ import org.tbbtalent.server.model.SavedSearch;
 import org.tbbtalent.server.model.Status;
 import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.repository.CandidateRepository;
+import org.tbbtalent.server.repository.CountryRepository;
 import org.tbbtalent.server.repository.SavedSearchRepository;
 import org.tbbtalent.server.repository.UserRepository;
 import org.tbbtalent.server.repository.UserSpecification;
@@ -62,6 +64,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final CandidateRepository candidateRepository;
+    private final CountryRepository countryRepository;
     private final PasswordHelper passwordHelper;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider tokenProvider;
@@ -75,6 +78,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
                            CandidateRepository candidateRepository,
+                           CountryRepository countryRepository,
                            SavedSearchRepository savedSearchRepository,
                            PasswordHelper passwordHelper,
                            AuthenticationManager authenticationManager,
@@ -83,6 +87,7 @@ public class UserServiceImpl implements UserService {
                            EmailHelper emailHelper) {
         this.userRepository = userRepository;
         this.candidateRepository = candidateRepository;
+        this.countryRepository = countryRepository;
         this.savedSearchRepository = savedSearchRepository;
         this.passwordHelper = passwordHelper;
         this.authenticationManager = authenticationManager;
@@ -117,8 +122,10 @@ public class UserServiceImpl implements UserService {
 
         user.setReadOnly(request.getReadOnly());
 
-        for (Country sourceCountry : request.getSourceCountries()) {
-            user.getSourceCountries().add(sourceCountry);
+        if(CollectionUtils.isNotEmpty(request.getSourceCountries())) {
+            for (Country sourceCountry : request.getSourceCountries()) {
+                user.getSourceCountries().add(sourceCountry);
+            }
         }
 
         /* Validate the password before account creation */
