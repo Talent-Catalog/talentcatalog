@@ -15,7 +15,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -40,16 +39,16 @@ public class User extends AbstractAuditableDomainObject<Long> {
     @Enumerated(EnumType.STRING)
     private Status status;
     
-    private LocalDateTime lastLogin;
+    private OffsetDateTime lastLogin;
 
     @Column
     private String resetToken;
 
     @Column(name = "reset_token_issued_date")
-    private LocalDateTime resetTokenIssuedDate;
+    private OffsetDateTime resetTokenIssuedDate;
     
     @Column(name = "password_updated_date")
-    private LocalDateTime passwordUpdatedDate;
+    private OffsetDateTime passwordUpdatedDate;
 
     @OneToOne(mappedBy = "user")
     private Candidate candidate;
@@ -148,11 +147,11 @@ public class User extends AbstractAuditableDomainObject<Long> {
         this.status = status;
     }
 
-    public LocalDateTime getLastLogin() {
+    public OffsetDateTime getLastLogin() {
         return lastLogin;
     }
 
-    public void setLastLogin(LocalDateTime lastLogin) {
+    public void setLastLogin(OffsetDateTime lastLogin) {
         this.lastLogin = lastLogin;
     }
 
@@ -172,19 +171,19 @@ public class User extends AbstractAuditableDomainObject<Long> {
         this.resetToken = resetToken;
     }
 
-    public LocalDateTime getResetTokenIssuedDate() {
+    public OffsetDateTime getResetTokenIssuedDate() {
         return resetTokenIssuedDate;
     }
 
-    public void setResetTokenIssuedDate(LocalDateTime resetTokenIssuedDate) {
+    public void setResetTokenIssuedDate(OffsetDateTime resetTokenIssuedDate) {
         this.resetTokenIssuedDate = resetTokenIssuedDate;
     }
 
-    public LocalDateTime getPasswordUpdatedDate() {
+    public OffsetDateTime getPasswordUpdatedDate() {
         return passwordUpdatedDate;
     }
 
-    public void setPasswordUpdatedDate(LocalDateTime passwordUpdatedDate) {
+    public void setPasswordUpdatedDate(OffsetDateTime passwordUpdatedDate) {
         this.passwordUpdatedDate = passwordUpdatedDate;
     }
 

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
@@ -75,7 +75,7 @@ public class SystemUploadApi {
     }
 
     private String getExpirationTimestamp() {
-        LocalDateTime in60min = LocalDateTime.now(ZoneId.of("UTC")).plusMinutes(60);
+        OffsetDateTime in60min = OffsetDateTime.now(ZoneId.of("UTC")).plusMinutes(60);
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
         return in60min.format(formatter);
     }
