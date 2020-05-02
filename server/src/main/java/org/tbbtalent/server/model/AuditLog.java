@@ -4,8 +4,13 @@ package org.tbbtalent.server.model;
 import org.tbbtalent.server.service.audit.AuditAction;
 import org.tbbtalent.server.service.audit.AuditType;
 
-import javax.persistence.*;
-import java.time.LocalDateTime;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "audit_log")
@@ -15,7 +20,7 @@ public class AuditLog extends AbstractDomainObject<Long> {
     private static final long serialVersionUID = 4733031439317778347L;
 
     @Column(name = "event_date")
-    private LocalDateTime eventDate;
+    private OffsetDateTime eventDate;
 
     @Column(name = "user_id")
     private Long userId;
@@ -39,7 +44,7 @@ public class AuditLog extends AbstractDomainObject<Long> {
 
 
 
-    public AuditLog(LocalDateTime eventDate, Long userId, AuditType type, AuditAction action, String objectRef,
+    public AuditLog(OffsetDateTime eventDate, Long userId, AuditType type, AuditAction action, String objectRef,
                     String description) {
         this.eventDate = eventDate;
         this.userId = userId;
@@ -49,11 +54,11 @@ public class AuditLog extends AbstractDomainObject<Long> {
         this.description = description;
     }
 
-    public LocalDateTime getEventDate() {
+    public OffsetDateTime getEventDate() {
         return eventDate;
     }
 
-    public void setEventDate(LocalDateTime eventDate) {
+    public void setEventDate(OffsetDateTime eventDate) {
         this.eventDate = eventDate;
     }
 

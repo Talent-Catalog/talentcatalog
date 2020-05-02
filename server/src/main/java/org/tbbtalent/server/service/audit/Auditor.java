@@ -15,7 +15,7 @@ import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.repository.AuditLogRepository;
 import org.tbbtalent.server.security.UserContext;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -122,7 +122,7 @@ public class Auditor {
                 }
             }
             String logDescription = sb.toString();
-            AuditLog auditLog = new AuditLog(LocalDateTime.now(), userId, auditType, auditAction, objectRef, logDescription);
+            AuditLog auditLog = new AuditLog(OffsetDateTime.now(), userId, auditType, auditAction, objectRef, logDescription);
             auditLogRepository.save(auditLog);
 
 

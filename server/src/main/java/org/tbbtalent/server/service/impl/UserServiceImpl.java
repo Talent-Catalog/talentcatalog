@@ -1,10 +1,6 @@
 package org.tbbtalent.server.service.impl;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-import javax.security.auth.login.AccountLockedException;
-
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,11 +27,12 @@ import org.tbbtalent.server.exception.PasswordMatchException;
 import org.tbbtalent.server.exception.UserDeactivatedException;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.Candidate;
-import org.tbbtalent.server.model.SavedSearch;
 import org.tbbtalent.server.model.Country;
+import org.tbbtalent.server.model.SavedSearch;
 import org.tbbtalent.server.model.Status;
 import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.repository.CandidateRepository;
+import org.tbbtalent.server.repository.CountryRepository;
 import org.tbbtalent.server.repository.SavedSearchRepository;
 import org.tbbtalent.server.repository.UserRepository;
 import org.tbbtalent.server.repository.UserSpecification;
@@ -57,7 +54,7 @@ import org.tbbtalent.server.service.UserService;
 import org.tbbtalent.server.service.email.EmailHelper;
 
 import javax.security.auth.login.AccountLockedException;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Service
@@ -67,6 +64,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final CandidateRepository candidateRepository;
+    private final CountryRepository countryRepository;
     private final PasswordHelper passwordHelper;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider tokenProvider;
@@ -80,6 +78,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
                            CandidateRepository candidateRepository,
+                           CountryRepository countryRepository,
                            SavedSearchRepository savedSearchRepository,
                            PasswordHelper passwordHelper,
                            AuthenticationManager authenticationManager,
@@ -88,6 +87,7 @@ public class UserServiceImpl implements UserService {
                            EmailHelper emailHelper) {
         this.userRepository = userRepository;
         this.candidateRepository = candidateRepository;
+        this.countryRepository = countryRepository;
         this.savedSearchRepository = savedSearchRepository;
         this.passwordHelper = passwordHelper;
         this.authenticationManager = authenticationManager;
@@ -122,8 +122,10 @@ public class UserServiceImpl implements UserService {
 
         user.setReadOnly(request.getReadOnly());
 
-        for (Country sourceCountry : request.getSourceCountries()) {
-            user.getSourceCountries().add(sourceCountry);
+        if(CollectionUtils.isNotEmpty(request.getSourceCountries())) {
+            for (Country sourceCountry : request.getSourceCountries()) {
+                user.getSourceCountries().add(sourceCountry);
+            }
         }
 
         /* Validate the password before account creation */
@@ -260,7 +262,7 @@ public class UserServiceImpl implements UserService {
                 throw new InvalidCredentialsException("Sorry, it looks like that account is no longer active.");
             }
 
-            user.setLastLogin(LocalDateTime.now());
+            user.setLastLogin(OffsetDateTime.now());
             user = userRepository.save(user);
 
             SecurityContextHolder.getContext().setAuthentication(auth);
@@ -343,7 +345,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmailIgnoreCase(request.getEmail());
         if (user != null) {
             user.setResetToken(UUID.randomUUID().toString());
-            user.setResetTokenIssuedDate(LocalDateTime.now());
+            user.setResetTokenIssuedDate(OffsetDateTime.now());
             this.userRepository.save(user);
 
             try {
@@ -366,7 +368,7 @@ public class UserServiceImpl implements UserService {
 
         if (user == null) {
             throw new InvalidPasswordTokenException();
-        } else if (LocalDateTime.now().isAfter(user.getResetTokenIssuedDate().plusHours(2))) {
+        } else if (OffsetDateTime.now().isAfter(user.getResetTokenIssuedDate().plusHours(2))) {
             throw new ExpiredTokenException();
         }
     }
@@ -385,7 +387,7 @@ public class UserServiceImpl implements UserService {
 
             log.info("Saving new password for user with id {}", user.getId());
             user.setPasswordEnc(passwordEnc);
-            user.setPasswordUpdatedDate(LocalDateTime.now());
+            user.setPasswordUpdatedDate(OffsetDateTime.now());
             user.setResetTokenIssuedDate(null);
             user.setResetToken(null);
             userRepository.save(user);

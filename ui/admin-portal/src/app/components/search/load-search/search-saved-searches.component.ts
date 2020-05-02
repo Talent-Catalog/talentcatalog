@@ -69,7 +69,7 @@ export class SearchSavedSearchesComponent implements OnInit {
     });
   }
 
-  openSearch(savedSearch){
+  selectSearch(savedSearch){
      this.selectedSearch = savedSearch;
      this.closeModal();
   }
