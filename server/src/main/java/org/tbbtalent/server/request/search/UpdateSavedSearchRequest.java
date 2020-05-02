@@ -1,30 +1,18 @@
 package org.tbbtalent.server.request.search;
 
-import javax.validation.constraints.NotBlank;
-
 import org.tbbtalent.server.model.SavedSearchSubtype;
 import org.tbbtalent.server.model.SavedSearchType;
+import org.tbbtalent.server.request.candidate.AbstractUpdateCandidateSourceRequest;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 
-public class UpdateSavedSearchRequest {
+public class UpdateSavedSearchRequest extends AbstractUpdateCandidateSourceRequest {
 
-    @NotBlank
-    private String name;
-    private Boolean fixed;
     private Boolean reviewable;
 
     private SavedSearchType savedSearchType;
     private SavedSearchSubtype savedSearchSubtype;
 
     private SearchCandidateRequest searchCandidateRequest;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public SavedSearchType getSavedSearchType() {
         return savedSearchType;
@@ -48,14 +36,6 @@ public class UpdateSavedSearchRequest {
 
     public void setSearchCandidateRequest(SearchCandidateRequest searchCandidateRequest) {
         this.searchCandidateRequest = searchCandidateRequest;
-    }
-
-    public Boolean getFixed() {
-        return fixed;
-    }
-
-    public void setFixed(Boolean fixed) {
-        this.fixed = fixed;
     }
 
     public Boolean getReviewable() {
