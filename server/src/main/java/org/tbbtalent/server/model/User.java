@@ -1,9 +1,6 @@
 package org.tbbtalent.server.model;
 
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -18,8 +15,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import org.apache.commons.lang3.StringUtils;
 
 @Entity
 @Table(name = "users")

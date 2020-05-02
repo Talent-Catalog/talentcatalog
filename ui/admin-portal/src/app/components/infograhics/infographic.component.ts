@@ -11,6 +11,7 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 export class InfographicComponent implements OnInit {
 
   loading: boolean = false;
+  dataLoaded: boolean = false;
   error: any;
   statReports: StatReport[];
   dateFilter: FormGroup;
@@ -20,6 +21,7 @@ export class InfographicComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.dataLoaded = false;
 
     this.dateFilter = this.fb.group({
       dateFrom: ['', [Validators.required]],
@@ -34,12 +36,14 @@ export class InfographicComponent implements OnInit {
     this.statService.getAllStats(this.dateFilter.value).subscribe(result => {
         this.loading = false;
         this.statReports = result;
+        this.dataLoaded = true;
       },
       error => {
         this.error = error;
         this.loading = false;
       }
     )
+
   }
 
   exportStats() {
@@ -49,7 +53,7 @@ export class InfographicComponent implements OnInit {
       let csv: string[] = [];
 
       // Add date filter to export csv
-      csv.push('"' + 'Exported Date' + '","' + new Date().toString() + '"\n');
+      csv.push('"' + 'Exported Date' + '","' + new Date().toUTCString() + '"\n');
       csv.push('"' + 'Date From' + '","' + this.dateFilter.value.dateFrom + '"\n')
       csv.push('"' + 'Date To' + '","' + this.dateFilter.value.dateTo + '"\n')
       csv.push('\n');

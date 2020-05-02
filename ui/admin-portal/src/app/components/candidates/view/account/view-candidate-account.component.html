@@ -20,13 +20,13 @@
       <div class="form-group col-sm-12 col-md-6">
         <label class="col-form-label">Account Created:</label>
         <div >
-          <span class="form-control-plaintext">{{user.createdDate | date: 'medium' }}</span>
+          <span class="form-control-plaintext">{{user.createdDate | date: 'medium': 'GMT' }}</span>
         </div>
       </div>
       <div class="form-group col-sm-12 col-md-6">
         <label class="col-form-label">Last Logged In:</label>
         <div >
-          <span class="form-control-plaintext">{{user.lastLogin | date: 'medium' }}</span>
+          <span class="form-control-plaintext">{{user.lastLogin | date: 'medium': 'GMT' }}</span>
         </div>
       </div>
     </div>
