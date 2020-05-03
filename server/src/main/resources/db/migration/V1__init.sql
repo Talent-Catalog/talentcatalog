@@ -76,17 +76,17 @@ create table users
   role                    text not null,
   status                  text not null,
   password_enc            text,
-  last_login              timestamptz,
+  last_login              timestamp with time zone,
   created_by              bigint references users,
-  created_date            timestamptz,
+  created_date            timestamp with time zone,
   updated_by              bigint references users,
-  updated_date            timestamptz
+  updated_date            timestamp with time zone
 );
 
 create table candidate
 (
   id                      bigserial not null primary key,
-  candidate_number        text not null,
+  candidate_number        varchar(16) not null,
   user_id                 bigint references users,
   gender                  text,
   dob                     date,
@@ -103,9 +103,9 @@ create table candidate
   additional_info         text,
   max_education_level_id     bigint references education_level,
   created_by              bigint not null references users,
-  created_date            timestamptz not null,
+  created_date            timestamp with time zone not null,
   updated_by              bigint references users,
-  updated_date            timestamptz
+  updated_date            timestamp with time zone
 );
 
 
@@ -149,8 +149,8 @@ candidate_occupation_id bigint not null references candidate_occupation,
 company_name            text,
 country_id              bigint references country,
 role                    text,
-start_date              text,
-end_date                text,
+start_date              date,
+end_date                date,
 full_time               boolean,
 paid                    boolean,
 description             text
@@ -165,7 +165,7 @@ institution             text,
 date_completed          text
 );
 
-create table candidate_file
+create table candidate_attachment
 (
 id                      bigserial not null primary key,
 candidate_id            bigint not null references candidate,
@@ -174,7 +174,7 @@ name                    text,
 url                     text,
 file_name               text,
 created_by              bigint references users,
-created_date            timestamptz
+created_date            timestamp with time zone
 );
 
 create table admin_note
@@ -183,7 +183,7 @@ id                      bigserial not null primary key,
 candidate_id            bigint not null references candidate,
 comment                 text,
 created_by              bigint references users,
-created_date            timestamptz
+created_date            timestamp with time zone
 );
 
 

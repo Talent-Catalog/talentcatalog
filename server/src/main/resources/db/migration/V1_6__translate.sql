@@ -5,9 +5,9 @@ create table system_language
 	label                   text not null,
     status                  text not null default 'active',
 	created_by              bigint references users,
-	created_date            timestamptz,
+	created_date            timestamp with time zone,
 	updated_by              bigint references users,
-	updated_date            timestamptz
+	updated_date            timestamp with time zone
 );
 
 create table translation
@@ -18,9 +18,9 @@ create table translation
 	language                text not null,
 	value                   text not null,
 	created_by              bigint references users,
-	created_date            timestamptz,
+	created_date            timestamp with time zone,
 	updated_by              bigint references users,
-	updated_date            timestamptz
+	updated_date            timestamp with time zone
 );
 
 insert into system_language (language, label, created_date, created_by, status) values ('en', 'English', now(), 1, 'active');

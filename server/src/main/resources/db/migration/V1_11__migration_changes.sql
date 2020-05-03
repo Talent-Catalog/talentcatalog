@@ -14,9 +14,6 @@ alter table candidate_occupation add constraint uq_candidate_occupation unique (
 alter table candidate_occupation add column migration_occupation text;
 alter table candidate_occupation alter column occupation_id drop not null;
 
-alter table candidate_job_experience alter column start_date type date USING start_date::date;
-alter table candidate_job_experience alter column end_date type date USING end_date::date;
-
 -- add unmapped values
 insert into country (id, name, status) values (0, 'Unknown', 'inactive');
 insert into nationality (id, name, status) values (0, 'Unknown', 'inactive');

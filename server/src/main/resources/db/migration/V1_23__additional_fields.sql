@@ -1,7 +1,7 @@
 alter table candidate_occupation add column updated_by bigint references users;
-alter table candidate_occupation add column updated_date timestamptz;
+alter table candidate_occupation add column updated_date timestamp with time zone;
 alter table candidate_occupation add column created_by bigint references users;
-alter table candidate_occupation add column created_date timestamptz;
+alter table candidate_occupation add column created_date timestamp with time zone;
 
 create table audit_log
 (
