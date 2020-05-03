@@ -8,9 +8,9 @@ note_type               text not null,
 title                   text not null,
 comment                 text,
 created_by              bigint references users,
-created_date            timestamp with time zone,
+created_date            timestamptz,
 updated_by              bigint references users,
-updated_date            timestamp with time zone
+updated_date            timestamptz
 );
 
 

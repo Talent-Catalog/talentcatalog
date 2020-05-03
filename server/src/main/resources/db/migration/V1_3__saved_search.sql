@@ -28,9 +28,9 @@ create table saved_search
   min_education_level_id        bigint references education_level,
   education_major_ids           text,
   created_by              bigint not null references users,
-  created_date            timestamp with time zone not null,
+  created_date            timestamptz not null,
   updated_by              bigint references users,
-  updated_date            timestamp with time zone
+  updated_date            timestamptz
 );
 
 create table search_join(
