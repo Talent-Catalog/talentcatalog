@@ -35,5 +35,10 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
             + " where u.id = :id ")
     User findByIdLoadSharedSearches(@Param("id") Long id);
 
+    @Query(" select distinct u from User u "
+            + " left join fetch u.sharedLists "
+            + " where u.id = :id ")
+    User findByIdLoadSharedLists(@Param("id") Long id);
+
 
 }

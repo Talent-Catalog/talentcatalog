@@ -55,7 +55,7 @@ public class SavedListServiceImpl implements SavedListService {
         SavedList existing = savedListRepository.findByNameIgnoreCase(name);
         if (existing != null && existing.getStatus() != Status.deleted) {
             if (!existing.getId().equals(id)) {
-                throw new EntityExistsException(name + " id = " + existing.getId());
+                throw new EntityExistsException("SavedList " + existing.getId());
             }
         }
     }
