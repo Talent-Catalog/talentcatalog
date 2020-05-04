@@ -1,6 +1,8 @@
 package org.tbbtalent.server.model;
 
-import org.apache.commons.lang3.StringUtils;
+import java.time.OffsetDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -15,9 +17,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.time.OffsetDateTime;
-import java.util.HashSet;
-import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
 
 @Entity
 @Table(name = "users")
@@ -211,7 +212,20 @@ public class User extends AbstractAuditableDomainObject<Long> {
     }
 
     public void setSharedLists(Set<SavedList> sharedLists) {
-        this.sharedLists = sharedLists;
+        this.sharedLists.clear();
+        for (SavedList sharedList : sharedLists) {
+            addSharedList(sharedList);
+        }
+    }
+    
+    public void addSharedList(SavedList savedList) {
+        this.sharedLists.add(savedList);
+        savedList.getUsers().add(this);
+    }
+    
+    public void removeSharedList(SavedList savedList) {
+        this.sharedLists.remove(savedList);
+        savedList.getUsers().remove(this);
     }
 
     public Set<SavedSearch> getSharedSearches() {
@@ -219,7 +233,20 @@ public class User extends AbstractAuditableDomainObject<Long> {
     }
 
     public void setSharedSearches(Set<SavedSearch> sharedSearches) {
-        this.sharedSearches = sharedSearches;
+        this.sharedSearches.clear();
+        for (SavedSearch sharedSearch : sharedSearches) {
+            addSharedSearch(sharedSearch);
+        }
+    }
+
+    public void addSharedSearch(SavedSearch savedSearch) {
+        sharedSearches.add(savedSearch);
+        savedSearch.getUsers().add(this);
+    }
+
+    public void removeSharedSearch(SavedSearch savedSearch) {
+        sharedSearches.remove(savedSearch);
+        savedSearch.getUsers().remove(this);
     }
 
 
@@ -238,15 +265,5 @@ public class User extends AbstractAuditableDomainObject<Long> {
             displayName = lastName;
         }
         return displayName;
-    }
-
-    public void addSharedSearch(SavedSearch savedSearch) {
-        sharedSearches.add(savedSearch);
-        savedSearch.getUsers().add(this);
-    }
-
-    public void removeSharedSearch(SavedSearch savedSearch) {
-        sharedSearches.remove(savedSearch);
-        savedSearch.getUsers().remove(this);
     }
 }

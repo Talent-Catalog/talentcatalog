@@ -40,17 +40,39 @@ public class SavedList extends AbstractCandidateSource {
     }
 
     public void setCandidates(Set<Candidate> candidates) {
-        this.candidates = candidates;
+        this.candidates.clear();
+        for (Candidate candidate : candidates) {
+            addCandidate(candidate);
+        }
+    }
+
+    /**
+     * Add the given candidate to this list
+     * @param candidate Candidate to add
+     */
+    public void addCandidate(Candidate candidate) {
+        //Add candidate to the collection of candidates in this list
+        getCandidates().add(candidate);
+        //Also update other side of many to many relationship, adding this 
+        //list to the candidate's collection of lists that they belong to.
+        candidate.getSavedLists().add(this);
+    }
+
+    /**
+     * Remove the given candidate from this list
+     * @param candidate Candidate to remove
+     */
+    public void removeCandidate(Candidate candidate) {
+        //Add candidate to the collection of candidates in this list
+        getCandidates().remove(candidate);
+        //Also update other side of many to many relationship, adding this 
+        //list to the candidate's collection of lists that they belong to.
+        candidate.getSavedLists().remove(this);
     }
 
     @Override
     public Set<User> getUsers() {
         return users;
-    }
-
-    @Override
-    public void setUsers(Set<User> users) {
-        this.users = users;
     }
 
     @Override

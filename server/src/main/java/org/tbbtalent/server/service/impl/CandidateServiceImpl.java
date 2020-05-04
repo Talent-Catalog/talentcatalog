@@ -1,6 +1,22 @@
 package org.tbbtalent.server.service.impl;
 
-import com.opencsv.CSVWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.rmi.server.ExportException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -75,22 +91,7 @@ import org.tbbtalent.server.service.SavedSearchService;
 import org.tbbtalent.server.service.email.EmailHelper;
 import org.tbbtalent.server.service.pdf.PdfHelper;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.rmi.server.ExportException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import com.opencsv.CSVWriter;
 
 @Service
 public class CandidateServiceImpl implements CandidateService {
@@ -974,8 +975,8 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     @Scheduled(cron = "0 0 0 * * ?", zone = "GMT")
     public void notifyWatchers() {
-        List<SavedSearch> searches = savedSearchRepository.findByWatcherIdsIsNotNullLoadSearchJoins();
-        Map<Long, List<SavedSearch>> userNotifications = new HashMap<>();
+        Set<SavedSearch> searches = savedSearchRepository.findByWatcherIdsIsNotNullLoadSearchJoins();
+        Map<Long, Set<SavedSearch>> userNotifications = new HashMap<>();
         for (SavedSearch savedSearch: searches) {
             SearchCandidateRequest searchCandidateRequest =
                     convertToSearchCandidateRequest(savedSearch);
@@ -987,10 +988,10 @@ public class CandidateServiceImpl implements CandidateService {
 
             if (candidates.getNumberOfElements() > 0) {
                 //Query has results. Need to let watchers know
-                List<Long> watcherUserIds = savedSearch.getWatcherUserIds();
+                Set<Long> watcherUserIds = savedSearch.getWatcherUserIds();
                 for (Long watcherUserId : watcherUserIds) {
-                    List<SavedSearch> userWatches = userNotifications
-                            .computeIfAbsent(watcherUserId, k -> new ArrayList<>());
+                    Set<SavedSearch> userWatches = userNotifications
+                            .computeIfAbsent(watcherUserId, k -> new HashSet<>());
                     userWatches.add(savedSearch);
                 }
             }
@@ -998,7 +999,7 @@ public class CandidateServiceImpl implements CandidateService {
 
         //Construct and send emails
         for (Long userId : userNotifications.keySet()) {
-            final List<SavedSearch> savedSearches = userNotifications.get(userId);
+            final Set<SavedSearch> savedSearches = userNotifications.get(userId);
             String s = savedSearches.stream()
                     .map(SavedSearch::getName)
                     .collect(Collectors.joining("/"));

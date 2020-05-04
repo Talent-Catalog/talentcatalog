@@ -8,31 +8,17 @@ import javax.validation.constraints.NotBlank;
 
 import org.tbbtalent.server.model.AbstractCandidateSource;
 
+import lombok.Data;
+
 /**
  * TODO JC Doc
  *
  * @author John Cameron
  */
-public abstract class AbstractUpdateCandidateSourceRequest {
+public abstract @Data class AbstractUpdateCandidateSourceRequest {
     @NotBlank
     private String name;
     private Boolean fixed;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Boolean getFixed() {
-        return fixed;
-    }
-
-    public void setFixed(Boolean fixed) {
-        this.fixed = fixed;
-    }
 
     protected void populateFromRequest(AbstractCandidateSource candidateSource) {
         candidateSource.setName(name);

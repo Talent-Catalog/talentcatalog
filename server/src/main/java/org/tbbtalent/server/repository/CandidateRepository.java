@@ -1,5 +1,10 @@
 package org.tbbtalent.server.repository;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,11 +13,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.model.Country;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 public interface CandidateRepository extends JpaRepository<Candidate, Long>, JpaSpecificationExecutor<Candidate> {
 
@@ -60,6 +60,11 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             + " left join c.candidateLanguages lang "
             + " where c.id = :id ")
     Candidate findByIdLoadCandidateLanguages(@Param("id") Long id);
+
+    @Query(" select distinct c from Candidate c "
+            + " left join c.savedLists "
+            + " where c.id = :id ")
+    Candidate findByIdLoadSavedLists(@Param("id") Long id);
 
     @Query(" select c from Candidate c "
             + " where c.user.id = :id ")

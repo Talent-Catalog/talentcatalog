@@ -460,10 +460,6 @@ public class SavedSearch extends AbstractCandidateSource {
         return users;
     }
 
-    public void setUsers(Set<User> users) {
-        this.users = users;
-    }
-
     @Override
     public Set<SavedSearch> getUsersCollection(User user) {
         return user.getSharedSearches();

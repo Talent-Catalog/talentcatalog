@@ -1,5 +1,14 @@
 package org.tbbtalent.server.service.impl;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,15 +49,6 @@ import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.request.search.UpdateWatchingRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.SavedSearchService;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class SavedSearchServiceImpl implements SavedSearchService {
@@ -265,7 +265,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         savedSearch.parseType();
 
-        List<SavedSearch> searches = savedSearchRepository.findUserWatchedSearches(request.getUserId());
+        Set<SavedSearch> searches = savedSearchRepository.findUserWatchedSearches(request.getUserId());
         if (searches.size() >= 10) {
             String s = searches.stream().map(SavedSearch::getName).sorted().collect(Collectors.joining(","));
             throw new InvalidRequestException("More than 10 watches. Currently watching " + s);

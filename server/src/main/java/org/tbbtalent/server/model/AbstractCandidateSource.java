@@ -1,7 +1,6 @@
 package org.tbbtalent.server.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -93,11 +92,11 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
      * @return List of user ids. Empty List if no watchers.
      */
     @NotNull
-    public List<Long> getWatcherUserIds() {
-        return watcherIds == null ? new ArrayList<>() :
+    public Set<Long> getWatcherUserIds() {
+        return watcherIds == null ? new HashSet<>() :
                 Stream.of(watcherIds.split(","))
                         .map(Long::parseLong)
-                        .collect(Collectors.toList());
+                        .collect(Collectors.toSet());
     }
 
     /**
@@ -105,7 +104,7 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
      * and sets the watcherIds field to that.
      * @param watcherUserIds List of watching user ids
      */
-    public void setWatcherUserIds(List<Long> watcherUserIds) {
+    public void setWatcherUserIds(Set<Long> watcherUserIds) {
         final String s = CollectionUtils.isEmpty(watcherUserIds) ? null :
                 watcherUserIds.stream()
                         .map(String::valueOf)
@@ -118,7 +117,7 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
      * @param userId User id of new watcher
      */
     public void addWatcher(Long userId) {
-        List<Long> ids = getWatcherUserIds();
+        Set<Long> ids = getWatcherUserIds();
         ids.add(userId);
         setWatcherUserIds(ids);
     }
@@ -128,7 +127,7 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
      * @param userId User id of watcher to be removed
      */
     public void removeWatcher(Long userId) {
-        List<Long> ids = getWatcherUserIds();
+        Set<Long> ids = getWatcherUserIds();
         ids.remove(userId);
         setWatcherUserIds(ids);
     }
@@ -150,7 +149,13 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
      * mapping in the database of user ids to the ids of these candidate sources.
      * @param users Set of users who share this candidate source.
      */
-    public abstract void setUsers(Set<User> users);
+    public void setUsers(Set<User> users) {
+        //Clear existing collection of users and add new ones.
+        getUsers().clear();
+        for (User user : users) {
+            addUser(user);
+        }
+    }
 
     /**
      * Return the given user's collection of shared instances of this class of 

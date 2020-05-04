@@ -17,5 +17,9 @@ public interface SavedListRepository extends JpaRepository<SavedList, Long>, Jpa
     @Query(" select distinct s from SavedList s left join fetch s.users"
             + " where s.id = :id" )
     SavedList findByIdLoadUsers(@Param("id") long id);
+
+    @Query(" select distinct s from SavedList s left join fetch s.candidates"
+            + " where s.id = :id" )
+    SavedList findByIdLoadCandidates(@Param("id") long id);
     
 }

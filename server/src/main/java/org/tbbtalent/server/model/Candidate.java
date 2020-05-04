@@ -113,6 +113,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public Candidate() {
     }
 
+    //TODO JC This whole "caller" thing deosn't make any sense. Let's fix this
+    //Only one user is associated with a candidate.
     public Candidate(User user, String phone, String whatsapp, User caller) {
         super(caller);
         this.user = user;
@@ -373,6 +375,19 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     }
 
     public void setSavedLists(Set<SavedList> savedLists) {
-        this.savedLists = savedLists;
+        this.savedLists.clear();
+        for (SavedList savedList : savedLists) {
+            addSavedList(savedList);
+        }
+    }
+    
+    public void addSavedList(SavedList savedList) {
+        savedLists.add(savedList);
+        savedList.getCandidates().add(this);
+    }
+    
+    public void removeSavedList(SavedList savedList) {
+        savedLists.remove(savedList);
+        savedList.getCandidates().remove(this);
     }
 }

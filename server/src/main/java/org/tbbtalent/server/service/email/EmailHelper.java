@@ -1,7 +1,7 @@
 package org.tbbtalent.server.service.email;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,7 +114,7 @@ public class EmailHelper {
         }
     }
 
-    public void sendWatcherEmail(User user, List<SavedSearch> savedSearches) {
+    public void sendWatcherEmail(User user, Set<SavedSearch> savedSearches) {
 
         String email = user.getEmail();
         String displayName = user.getDisplayName();

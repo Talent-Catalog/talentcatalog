@@ -32,6 +32,10 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    
     if (!isDev) {
         implementation(project(':ui:admin-portal'))
         implementation(project(':ui:candidate-portal'))
