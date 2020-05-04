@@ -61,14 +61,6 @@ class SavedListRepositoryTest {
 
         savedListRepository.save(savedList);
         assertNotNull(savedList);
-
-        //Create test candidates
-        savedList = new SavedList();
-        savedList.setName("TestList");
-        savedList.setAuditFields(owningUser);
-
-        savedListRepository.save(savedList);
-        assertNotNull(savedList);
     }
 
     private Candidate createTestCandidate(String username, String firstName, String lastName, String email) {
