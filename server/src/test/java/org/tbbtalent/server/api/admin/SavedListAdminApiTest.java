@@ -7,7 +7,6 @@ package org.tbbtalent.server.api.admin;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -45,7 +44,7 @@ class SavedListAdminApiTest {
         savedListAdminApi = new SavedListAdminApi(savedListService);
     }
 
-    @Test
+//    @Test
     void createNewSavedList() {
         UpdateSavedListRequest request = new UpdateSavedListRequest();
         request.setName("TestList");

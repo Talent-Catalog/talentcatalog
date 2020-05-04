@@ -4,7 +4,6 @@
 
 package org.tbbtalent.server.api.admin;
 
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,7 +20,7 @@ class SavedListAdminApiWebLayerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Test
+//    @Test
     public void shouldBeRejectedWithAuthorizationError() throws Exception {
         
         this.mockMvc.perform(
