@@ -23,13 +23,18 @@ candidate details. This is written in Angular and connects to the REST API endpo
 
 Download and install the latest of the following tools: 
 
-- Git [https://git-scm.com/downloads]()
 - Java JDK8 [https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html]()
+     -     $ brew install java
 - Gradle [https://gradle.org/install/]()
-- PostgreSQL [https://www.postgresql.org/download/]()
+     -     $ brew install gradle
 - NodeJS [https://nodejs.org/en/]()
+     -     $ brew install node
 - Angular CLI [https://angular.io/cli]()
+     -     $ npm install -g @angular/cli
 - Flyway [https://flywaydb.org/]()
+     -     $ brew install flyway
+- Git [https://git-scm.com/downloads]()
+- PostgreSQL [https://www.postgresql.org/download/]()
 - IntelliJ IDEA (or the IDE of your choice) [https://www.jetbrains.com/idea/download/]()
 
 (On a Mac, installing with Homebrew works well. eg "brew install xxx". 
