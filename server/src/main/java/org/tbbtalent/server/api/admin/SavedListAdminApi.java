@@ -5,11 +5,15 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.EntityExistsException;
+import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.model.SavedList;
 import org.tbbtalent.server.request.list.UpdateSavedListRequest;
 import org.tbbtalent.server.service.SavedListService;
@@ -32,6 +36,25 @@ public class SavedListAdminApi {
         return savedListDto().build(savedList);
     }
 
+    @DeleteMapping("{id}")
+    public boolean delete(@PathVariable("id") long id) throws EntityReferencedException {
+        return this.savedListService.deleteSavedList(id);
+    }
+
+    @PutMapping("{id}")
+    public Map<String, Object> replace(@PathVariable("id") long id,
+                                          @Valid @RequestBody UpdateSavedListRequest request) throws EntityExistsException {
+        SavedList savedList = this.savedListService.replaceSavedList(id, request);  //TODO JC 
+        return savedListDto().build(savedList);
+    }
+
+    @PutMapping("{id}/merge")
+    public Map<String, Object> merge(@PathVariable("id") long id,
+                                          @Valid @RequestBody UpdateSavedListRequest request) throws EntityExistsException {
+        SavedList savedList = this.savedListService.mergeSavedList(id, request);  //TODO JC 
+        return savedListDto().build(savedList);
+    }
+
     private DtoBuilder savedListDto() {
         return new DtoBuilder()
                 .add("id")
@@ -42,6 +65,7 @@ public class SavedListAdminApi {
                 .add("createdDate")
                 .add("updatedBy", userDto())
                 .add("updatedDate")
+                //TODO JC List contents - just ids?
                 ;
     }
 

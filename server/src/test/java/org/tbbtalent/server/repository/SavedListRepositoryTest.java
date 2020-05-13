@@ -20,6 +20,7 @@ import org.tbbtalent.server.model.User;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
@@ -64,16 +65,77 @@ class SavedListRepositoryTest {
     }
 
     private Candidate createTestCandidate(String username, String firstName, String lastName, String email) {
-        User candidateUser = new User(
-                username, firstName, lastName,
-                email, Role.user);
-        candidateUser.setPasswordEnc("xxxx");
-        userRepository.save(candidateUser);
+        User candidateUser = createTestUser(username, firstName, lastName, email);
         Candidate candidate = new Candidate();
         candidate.setUser(candidateUser);
         return candidateRepository.save(candidate);
     }
-    
+
+    private User createTestUser(String username, String firstName, String lastName, String email) {
+        User user = new User(
+                username, firstName, lastName,
+                email, Role.user);
+        user.setPasswordEnc("xxxx");
+        userRepository.save(user);
+        return user;
+    }
+
+    @Test
+    void testDelete() {
+      
+        Long id = savedList.getId();
+
+        //Retrieve list from database
+        SavedList listFromId = savedListRepository.findById(id)
+                .orElse(null);
+        assertNotNull(listFromId);
+        
+        //Delete list
+        savedListRepository.delete(savedList);
+        
+        //Shouldn't be able to fetch it.
+        //Retrieve list from database
+        listFromId = savedListRepository.findById(id)
+                .orElse(null);
+        assertNull(listFromId);
+        
+    }
+
+    @Test
+    void testSharedUsers() {
+        //Set up a couple of users
+        User user1 = createTestUser(
+                "c1username", "c1first", "c1last",
+                "c1email@test.com");
+        User user2 = createTestUser(
+                "c2username", "c2first", "c2last",
+                "c2email@test.com");
+        User user3 = createTestUser(
+                "c3username", "c3first", "c3last",
+                "c3email@test.com");
+        
+        savedList.addUser(user1);
+        savedList.addUser(user2);
+        
+        assertTrue(savedList.getUsers().contains(user1));
+        assertTrue(user1.getSharedLists().contains(savedList));
+        assertTrue(savedList.getUsers().contains(user2));
+        assertTrue(user2.getSharedLists().contains(savedList));
+        
+        savedList.removeUser(user1);
+        assertFalse(savedList.getUsers().contains(user1));
+        assertFalse(user1.getSharedLists().contains(savedList));
+        assertTrue(savedList.getUsers().contains(user2));
+        assertTrue(user2.getSharedLists().contains(savedList));
+
+        savedList.setUsers(null);
+        assertFalse(savedList.getUsers().contains(user1));
+        assertFalse(user1.getSharedLists().contains(savedList));
+        assertFalse(savedList.getUsers().contains(user2));
+        assertFalse(user2.getSharedLists().contains(savedList));
+        
+    }
+
     @Test
     void testCandidateAdditionRemoval() {
         //Set up a couple of candidates
@@ -89,7 +151,8 @@ class SavedListRepositoryTest {
         Set<Candidate> candidates;
 
         //Retrieve list from database
-        SavedList listFromId = savedListRepository.findByIdLoadCandidates(savedList.getId());
+        SavedList listFromId = savedListRepository.findByIdLoadCandidates(savedList.getId())
+                .orElse(null);
         assertNotNull(listFromId);
         assertNotNull(listFromId.getCandidates());
 
@@ -102,13 +165,22 @@ class SavedListRepositoryTest {
         candidates.add(candidate2);
         savedList.addCandidates(candidates);
         //Retrieve list from database
-        listFromId = savedListRepository.findByIdLoadCandidates(savedList.getId());
+        listFromId = savedListRepository.findByIdLoadCandidates(savedList.getId())
+                .orElse(null);
+                
         assertNotNull(listFromId);
         assertNotNull(listFromId.getCandidates());
         //Check both candidates are in there.
         assertEquals(2, listFromId.getCandidates().size());
+        
         assertTrue(listFromId.getCandidates().contains(candidate1));
+        assertTrue(candidate1.getSavedLists().contains(listFromId));
+        
         assertTrue(listFromId.getCandidates().contains(candidate2));
+        assertTrue(candidate2.getSavedLists().contains(listFromId));
+        
+        assertFalse(listFromId.getCandidates().contains(candidate3));
+        assertFalse(candidate3.getSavedLists().contains(listFromId));
         
         //Set candidates in the list - replacing any existing content
         candidates = new HashSet<>();
@@ -117,15 +189,24 @@ class SavedListRepositoryTest {
         savedList.setCandidates(candidates);
 
         //Retrieve list from database
-        listFromId = savedListRepository.findByIdLoadCandidates(savedList.getId());
+        listFromId = savedListRepository.findByIdLoadCandidates(savedList.getId())
+                .orElse(null);
+                
         assertNotNull(listFromId);
         assertNotNull(listFromId.getCandidates());
         //Check only 2 candidates are in there. Previous contents replaced.
         assertEquals(2, listFromId.getCandidates().size());
-        assertTrue(listFromId.getCandidates().contains(candidate2));
-        assertTrue(listFromId.getCandidates().contains(candidate3));
         
-        //Check that candidate entity has list in its savedLists
+        assertFalse(listFromId.getCandidates().contains(candidate1));
+        assertFalse(candidate1.getSavedLists().contains(listFromId));
+        
+        assertTrue(listFromId.getCandidates().contains(candidate2));
+        assertTrue(candidate2.getSavedLists().contains(listFromId));
+        
+        assertTrue(listFromId.getCandidates().contains(candidate3));
+        assertTrue(candidate3.getSavedLists().contains(listFromId));
+        
+        //Check that candidate entities have list (or not) in its savedLists
         //Retrieve candidates from database
         Candidate candidate1FromID = candidateRepository.findByIdLoadSavedLists(candidate1.getId());
         assertNotNull(candidate1FromID);
@@ -133,14 +214,20 @@ class SavedListRepositoryTest {
         Candidate candidate2FromID = candidateRepository.findByIdLoadSavedLists(candidate2.getId());
         assertNotNull(candidate2FromID);
         assertNotNull(candidate2FromID.getSavedLists());
+        Candidate candidate3FromID = candidateRepository.findByIdLoadSavedLists(candidate3.getId());
+        assertNotNull(candidate3FromID);
+        assertNotNull(candidate3FromID.getSavedLists());
 
         //Check that candidates have list recorded
-        assertTrue(candidate1FromID.getSavedLists().contains(savedList));
+        assertFalse(candidate1FromID.getSavedLists().contains(savedList));
         assertTrue(candidate2FromID.getSavedLists().contains(savedList));
+        assertTrue(candidate3FromID.getSavedLists().contains(savedList));
 
         //Add candidate again - shouldn't make any difference.
         savedList.addCandidate(candidate2);
-        listFromId = savedListRepository.findByIdLoadCandidates(savedList.getId());
+        listFromId = savedListRepository.findByIdLoadCandidates(savedList.getId())
+                .orElse(null);
+                
         assertNotNull(listFromId);
         assertNotNull(listFromId.getCandidates());
         //Check both candidates are in there.
@@ -149,7 +236,8 @@ class SavedListRepositoryTest {
         
         //Remove a candidate from the list
         savedList.removeCandidate(candidate3);
-        listFromId = savedListRepository.findByIdLoadCandidates(savedList.getId());
+        listFromId = savedListRepository.findByIdLoadCandidates(savedList.getId())
+                .orElse(null);
         assertNotNull(listFromId);
         assertNotNull(listFromId.getCandidates());
         //Check candidate2 is the only one there.
@@ -157,8 +245,11 @@ class SavedListRepositoryTest {
         assertFalse(listFromId.getCandidates().contains(candidate3));
         assertTrue(listFromId.getCandidates().contains(candidate2));
 
-        //Remove last candidate from the list
-        savedList.removeCandidate(candidate2);
+        //List has just candidate2 in there.
+        //Test clearing the list by passing null into setCandidates
+        savedList.setCandidates(null);
+        assertTrue(savedList.getCandidates().isEmpty());
+        assertFalse(candidate2.getSavedLists().contains(savedList));
         
         
         //Check adding and removing through candidate methods
@@ -234,15 +325,19 @@ class SavedListRepositoryTest {
         assertNotNull(sharedUser);
         
         //Retrieve the list by its name        
-        SavedList listFromName = savedListRepository.findByNameIgnoreCase("testlist");
+        SavedList listFromName = savedListRepository.findByNameIgnoreCase("testlist")
+                .orElse(null);
+                
         assertNotNull(listFromName);
         //So far it is not shared with anyone
         assertNotNull(listFromName.getUsers());
         assertTrue(listFromName.getUsers().isEmpty());
 
         //Look up the list by its id - should look the same
-        SavedList listFromId = savedListRepository.findByIdLoadUsers(
-                listFromName.getId());
+        SavedList listFromId = 
+                savedListRepository.findByIdLoadUsers(listFromName.getId())
+                .orElse(null);
+                
         assertNotNull(listFromId);
         assertNotNull(listFromId.getUsers());
         assertEquals(0, listFromName.getUsers().size());
@@ -252,8 +347,9 @@ class SavedListRepositoryTest {
         
         //Look up list again from id
         listFromId = savedListRepository.findByIdLoadUsers(
-                listFromName.getId());
+                listFromName.getId()).orElse(null);
         //Now the list should record that it is shared with the sharedUser
+        assertNotNull(listFromId);
         assertNotNull(listFromId.getUsers());
         assertEquals(1, listFromName.getUsers().size());
         assertTrue(listFromName.getUsers().contains(sharedUser));
