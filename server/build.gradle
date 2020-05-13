@@ -22,6 +22,10 @@ repositories {
     mavenCentral()
 }
 
+dependencies {
+    compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.1'
+}
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
