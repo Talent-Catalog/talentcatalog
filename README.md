@@ -23,13 +23,20 @@ candidate details. This is written in Angular and connects to the REST API endpo
 
 Download and install the latest of the following tools: 
 
-- Git [https://git-scm.com/downloads]()
 - Java JDK8 [https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html]()
+     -     $ brew cask install java
 - Gradle [https://gradle.org/install/]()
-- PostgreSQL [https://www.postgresql.org/download/]()
+     -     $ brew install gradle
 - NodeJS [https://nodejs.org/en/]()
+     -     $ brew install node
 - Angular CLI [https://angular.io/cli]()
+     -     $ npm install -g @angular/cli
 - Flyway [https://flywaydb.org/]()
+     -     $ brew install flyway
+- cURL (for database migrations, can also use Postman) 
+    -      $ brew install curl
+- Git [https://git-scm.com/downloads]()
+- PostgreSQL [https://www.postgresql.org/download/]()
 - IntelliJ IDEA (or the IDE of your choice) [https://www.jetbrains.com/idea/download/]()
 
 (On a Mac, installing with Homebrew works well. eg "brew install xxx". 
@@ -47,9 +54,14 @@ full privileges
 - The database details are defined in bundle/all/resources/application.yml
 - The database is populated/updated using Flyway at start up - see TbbTalentApplication
 - Run data migration script to add additional data - using tool like postman or curl 
-  - call login http://localhost:8080/api/admin/auth/login
- and save token 
-   - call curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" http://localhost:8080/api/admin/system/migrate
+    - call login http://localhost:8080/api/admin/auth/login and save token 
+        ```
+        $ curl -X POST -H ‘Content-Type: application/json’ -d ‘{“username”:”${USERNAME}”,”password”:"${PASSWORD}"}’ http://localhost:8080/api/admin/auth/login
+        ```
+    - call API http://localhost:8080/api/admin/system/migrate with token
+        ```
+      $ curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" http://localhost:8080/api/admin/system/migrate
+        ```
 ### Download and edit the code ###
 
 - Clone [the repository](https://bitbucket.org/johncameron/tbbtalentv2/src/master/) to your local system
