@@ -83,6 +83,10 @@ class SavedListRepositoryTest {
         Candidate candidate2 = createTestCandidate(
                 "c2username", "c2first", "c2last",
                 "c2email@test.com");
+        Candidate candidate3 = createTestCandidate(
+                "c3username", "c3first", "c3last",
+                "c3email@test.com");
+        Set<Candidate> candidates;
 
         //Retrieve list from database
         SavedList listFromId = savedListRepository.findByIdLoadCandidates(savedList.getId());
@@ -92,12 +96,11 @@ class SavedListRepositoryTest {
         //Check that list of candidates is currently empty.
         assertEquals(0, listFromId.getCandidates().size());
 
-        //Add candidates to the list
-        Set<Candidate> candidates = new HashSet<>();
+        //Add some candidates to the list
+        candidates = new HashSet<>();
         candidates.add(candidate1);
         candidates.add(candidate2);
-        savedList.setCandidates(candidates);
-
+        savedList.addCandidates(candidates);
         //Retrieve list from database
         listFromId = savedListRepository.findByIdLoadCandidates(savedList.getId());
         assertNotNull(listFromId);
@@ -106,6 +109,21 @@ class SavedListRepositoryTest {
         assertEquals(2, listFromId.getCandidates().size());
         assertTrue(listFromId.getCandidates().contains(candidate1));
         assertTrue(listFromId.getCandidates().contains(candidate2));
+        
+        //Set candidates in the list - replacing any existing content
+        candidates = new HashSet<>();
+        candidates.add(candidate2);
+        candidates.add(candidate3);
+        savedList.setCandidates(candidates);
+
+        //Retrieve list from database
+        listFromId = savedListRepository.findByIdLoadCandidates(savedList.getId());
+        assertNotNull(listFromId);
+        assertNotNull(listFromId.getCandidates());
+        //Check only 2 candidates are in there. Previous contents replaced.
+        assertEquals(2, listFromId.getCandidates().size());
+        assertTrue(listFromId.getCandidates().contains(candidate2));
+        assertTrue(listFromId.getCandidates().contains(candidate3));
         
         //Check that candidate entity has list in its savedLists
         //Retrieve candidates from database
@@ -121,7 +139,7 @@ class SavedListRepositoryTest {
         assertTrue(candidate2FromID.getSavedLists().contains(savedList));
 
         //Add candidate again - shouldn't make any difference.
-        savedList.addCandidate(candidate1);
+        savedList.addCandidate(candidate2);
         listFromId = savedListRepository.findByIdLoadCandidates(savedList.getId());
         assertNotNull(listFromId);
         assertNotNull(listFromId.getCandidates());
@@ -130,13 +148,13 @@ class SavedListRepositoryTest {
         
         
         //Remove a candidate from the list
-        savedList.removeCandidate(candidate1);
+        savedList.removeCandidate(candidate3);
         listFromId = savedListRepository.findByIdLoadCandidates(savedList.getId());
         assertNotNull(listFromId);
         assertNotNull(listFromId.getCandidates());
         //Check candidate2 is the only one there.
         assertEquals(1, listFromId.getCandidates().size());
-        assertFalse(listFromId.getCandidates().contains(candidate1));
+        assertFalse(listFromId.getCandidates().contains(candidate3));
         assertTrue(listFromId.getCandidates().contains(candidate2));
 
         //Remove last candidate from the list

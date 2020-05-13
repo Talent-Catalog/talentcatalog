@@ -39,13 +39,31 @@ public class SavedList extends AbstractCandidateSource {
         return candidates;
     }
 
+    /**
+     * Replaces any existing candidates with the given set of candidates
+     * <p/>
+     * See also {@link #addCandidates}
+     * @param candidates New set of candidates belonging to this SavedList. 
+     */
     public void setCandidates(Set<Candidate> candidates) {
         this.candidates.clear();
+        addCandidates(candidates);
+    }
+
+    /**
+     * Add the given candidates to this SavedList - merging them in with any
+     * existing candidates in the list (no duplicates - if a candidate is
+     * already present it will still only appear once).
+     * <p/>
+     * See also {@link #setCandidates}
+     * @param candidates Candidates to add to this SavedList.
+     */
+    public void addCandidates(Set<Candidate> candidates) {
         for (Candidate candidate : candidates) {
             addCandidate(candidate);
         }
     }
-
+    
     /**
      * Add the given candidate to this list
      * @param candidate Candidate to add
