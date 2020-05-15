@@ -65,7 +65,6 @@ public class SavedListAdminApi {
                 .add("createdDate")
                 .add("updatedBy", userDto())
                 .add("updatedDate")
-                //TODO JC List contents - just ids?
                 ;
     }
 
@@ -76,10 +75,4 @@ public class SavedListAdminApi {
                 .add("lastName")
                 ;
     }
-
-
-
-
-
-
 }

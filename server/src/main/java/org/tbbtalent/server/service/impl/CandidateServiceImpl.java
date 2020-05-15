@@ -55,11 +55,13 @@ import org.tbbtalent.server.model.SearchType;
 import org.tbbtalent.server.model.Status;
 import org.tbbtalent.server.model.SurveyType;
 import org.tbbtalent.server.model.User;
+import org.tbbtalent.server.repository.CandidateListSpecification;
 import org.tbbtalent.server.repository.CandidateRepository;
 import org.tbbtalent.server.repository.CandidateSpecification;
 import org.tbbtalent.server.repository.CountryRepository;
 import org.tbbtalent.server.repository.EducationLevelRepository;
 import org.tbbtalent.server.repository.NationalityRepository;
+import org.tbbtalent.server.repository.SavedListRepository;
 import org.tbbtalent.server.repository.SavedSearchRepository;
 import org.tbbtalent.server.repository.SurveyTypeRepository;
 import org.tbbtalent.server.repository.UserRepository;
@@ -70,6 +72,7 @@ import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest
 import org.tbbtalent.server.request.candidate.CandidatePhoneSearchRequest;
 import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
 import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
+import org.tbbtalent.server.request.candidate.SavedListGetRequest;
 import org.tbbtalent.server.request.candidate.SavedSearchRunRequest;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.candidate.SearchJoinRequest;
@@ -99,6 +102,7 @@ public class CandidateServiceImpl implements CandidateService {
     private static final Logger log = LoggerFactory.getLogger(CandidateServiceImpl.class);
 
     private final UserRepository userRepository;
+    private final SavedListRepository savedListRepository;
     private final SavedSearchRepository savedSearchRepository;
     private final CandidateRepository candidateRepository;
     private final CountryRepository countryRepository;
@@ -114,6 +118,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Autowired
     public CandidateServiceImpl(UserRepository userRepository,
+                                SavedListRepository savedListRepository,
                                 SavedSearchRepository savedSearchRepository,
                                 CandidateRepository candidateRepository,
                                 CountryRepository countryRepository,
@@ -126,6 +131,7 @@ public class CandidateServiceImpl implements CandidateService {
                                 SurveyTypeRepository surveyTypeRepository,
                                 EmailHelper emailHelper, PdfHelper pdfHelper) {
         this.userRepository = userRepository;
+        this.savedListRepository = savedListRepository;
         this.savedSearchRepository = savedSearchRepository;
         this.candidateRepository = candidateRepository;
         this.countryRepository = countryRepository;
@@ -155,6 +161,14 @@ public class CandidateServiceImpl implements CandidateService {
         searchCandidateRequest.setShortlistStatus(request.getShortlistStatus());
         
         return searchCandidates(searchCandidateRequest);
+    }
+
+    @Override
+    public Page<Candidate> getSavedListCandidates(SavedListGetRequest request) {
+        Page<Candidate> candidatesPage = candidateRepository.findAll(
+                CandidateListSpecification.buildSearchQuery(request), request.getPageRequestWithoutSort());
+        log.info("Found " + candidatesPage.getTotalElements() + " candidates in list");
+        return candidatesPage;
     }
 
     //todo this is horrible cloned code duplicated from SavedSearchServiceImpl - factor it out.

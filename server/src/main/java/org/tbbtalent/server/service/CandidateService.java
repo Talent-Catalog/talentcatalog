@@ -1,5 +1,9 @@
 package org.tbbtalent.server.service;
 
+import java.io.PrintWriter;
+import java.rmi.server.ExportException;
+import java.util.List;
+
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.tbbtalent.server.exception.UsernameTakenException;
@@ -12,6 +16,7 @@ import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest
 import org.tbbtalent.server.request.candidate.CandidatePhoneSearchRequest;
 import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
 import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
+import org.tbbtalent.server.request.candidate.SavedListGetRequest;
 import org.tbbtalent.server.request.candidate.SavedSearchRunRequest;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
@@ -24,10 +29,6 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tbbtalent.server.request.candidate.stat.CandidateStatDateRequest;
 
-import java.io.PrintWriter;
-import java.rmi.server.ExportException;
-import java.util.List;
-
 public interface CandidateService {
 
     Page<Candidate> searchCandidates(SearchCandidateRequest request);
@@ -39,6 +40,8 @@ public interface CandidateService {
     Page<Candidate> searchCandidates(CandidateNumberOrNameSearchRequest request);
 
     Page<Candidate> searchCandidates(CandidatePhoneSearchRequest request);
+
+    Page<Candidate> getSavedListCandidates(SavedListGetRequest request);
 
     Candidate getCandidate(long id);
 
@@ -113,5 +116,4 @@ public interface CandidateService {
     Resource generateCv(Candidate candidate);
 
     void notifyWatchers();
-
 }
