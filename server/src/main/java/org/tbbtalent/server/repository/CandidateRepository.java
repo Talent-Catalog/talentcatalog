@@ -83,14 +83,6 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             + " where c.user.id = :id ")
     Candidate findByUserIdLoadProfile(@Param("id") Long userId);
 
-    //TODO JC Get rid of this if we go back to old model
-    @Query(" select distinct c from Candidate c "
-            + " left join c.user u "
-            + " left join c.country co "
-            + " left join c.nationality nat "
-            + " where c in :candidates ")
-    Set<Candidate> fetchExtraCandidateInfo(@Param("candidates") Set<Candidate> candidates);
-
     /**
      * ADMIN PORTAL DISPLAY CANDIDATE METHODS: includes source country restrictions.
      */

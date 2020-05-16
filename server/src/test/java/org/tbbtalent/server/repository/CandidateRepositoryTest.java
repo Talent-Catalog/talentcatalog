@@ -13,8 +13,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.model.Candidate;
+import org.tbbtalent.server.model.Nationality;
 import org.tbbtalent.server.model.Role;
 import org.tbbtalent.server.model.SavedList;
 import org.tbbtalent.server.model.User;
@@ -32,6 +36,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class CandidateRepositoryTest {
     
     @Autowired
+    private NationalityRepository nationalityRepository;
+    
+    @Autowired
     private CandidateRepository candidateRepository;
     
     @Autowired
@@ -42,11 +49,17 @@ class CandidateRepositoryTest {
 
     private User owningUser;
     private SavedList savedList;
-
+    private Nationality nationality1;
+    
     @BeforeEach
     void setUpListAndOwningUser() {
         assertNotNull(savedListRepository);
         assertNotNull(userRepository);
+        
+        //Set up a nationality.
+        nationality1 = new Nationality();
+        nationality1.setName("Syrian");
+        nationalityRepository.save(nationality1);
 
         //Set up owning user
         owningUser = new User(
@@ -65,10 +78,16 @@ class CandidateRepositoryTest {
         assertNotNull(savedList);
     }
 
+    private static boolean flip = true;
+
     private Candidate createTestCandidate(String username, String firstName, String lastName, String email) {
         User candidateUser = createTestUser(username, firstName, lastName, email);
         Candidate candidate = new Candidate();
         candidate.setUser(candidateUser);
+        if (flip) {
+            candidate.setNationality(nationality1);
+        }
+        flip = !flip;
         return candidateRepository.save(candidate);
     }
 
@@ -98,6 +117,7 @@ class CandidateRepositoryTest {
         return user;
     }
 
+    @Transactional
     @Test
     void getCandidateList() {
 
@@ -108,6 +128,9 @@ class CandidateRepositoryTest {
 
         SavedListGetRequest request;
         request = new SavedListGetRequest();
+        request.setSortFields(new String[] {"nationality.name"});
+        request.setSortDirection(Sort.Direction.DESC);
+        
         request.setSavedListId(savedList.getId());
         request.setPageSize(4);
         
@@ -116,11 +139,12 @@ class CandidateRepositoryTest {
         for (int pageNumber = 0; pageNumber < expectedNPages; pageNumber++) {
             request.setPageNumber(pageNumber);
 
+            PageRequest pageRequest = request.getPageRequestWithoutSort();
             Page<Candidate> candidatesPage = candidateRepository.findAll(
-                    CandidateListSpecification.buildSearchQuery(request), request.getPageRequestWithoutSort());
+                    CandidateListSpecification.buildSearchQuery(request), pageRequest);
 
             assertNotNull(candidatesPage);
-            assertEquals(candidatesPage.getTotalElements(), totalCandidates);
+            assertEquals(totalCandidates, candidatesPage.getTotalElements());
 
             List<Candidate> pageOfCandidates = candidatesPage.getContent();
             for (Candidate candidate : pageOfCandidates) {

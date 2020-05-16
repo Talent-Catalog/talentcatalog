@@ -1,10 +1,26 @@
 package org.tbbtalent.server.repository;
 
-import io.jsonwebtoken.lang.Collections;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.persistence.criteria.Fetch;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.model.CandidateEducation;
@@ -25,32 +41,21 @@ import org.tbbtalent.server.model.ShortlistStatus;
 import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 
-import javax.persistence.criteria.Fetch;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import io.jsonwebtoken.lang.Collections;
+import static org.tbbtalent.server.repository.CandidateSpecificationUtil.getOrderByOrders;
 
 public class CandidateSpecification {
 
     public static Specification<Candidate> buildSearchQuery(final SearchCandidateRequest request, User loggedInUser) {
         return (candidate, query, builder) -> {
+            
+            //To better understand this code, look at the simpler but similar
+            //CandidateListSpecification. JC - The Programmer's Friend. 
+            
             Predicate conjunction = builder.conjunction();
-            Join user = null;
-            Join nationality = null;
-            Join country = null;
+            Join<Object, Object> user = null;
+            Join<Object, Object> nationality = null;
+            Join<Object, Object> country = null;
             Join<Candidate, CandidateEducation> candidateEducations = null;
             Join<Candidate, CandidateOccupation> candidateOccupations = null;
             Join<CandidateOccupation, Occupation> occupation = null;
@@ -74,7 +79,25 @@ public class CandidateSpecification {
             }
 
             query.distinct(true);
-            if (query.getResultType().equals(Candidate.class)) {
+
+            /*
+              My theory on the reason for this - JC
+              
+              The main purpose is do the fetches which means that the returned
+              results contain the user, nationality and country entities.
+              
+              Those fetches are performed by a join, which can also be reused 
+              to do the sorting and other filters.
+
+              This is much more efficient than making those attributes fetched 
+              EAGERLY. Not 100% sure why, but it is.
+              
+              See https://thorben-janssen.com/hibernate-tip-left-join-fetch-join-criteriaquery/
+              which uses this kind of code.   
+             */
+            boolean isCountQuery = query.getResultType().equals(Long.class); 
+            if (!isCountQuery) {
+                //Manage sorting
                 Fetch<Object, Object> userFetch = candidate.fetch("user", JoinType.INNER);
                 user = (Join<Object, Object>) userFetch;
 
@@ -84,44 +107,18 @@ public class CandidateSpecification {
                 Fetch<Object, Object> countryFetch = candidate.fetch("country");
                 country = (Join<Object, Object>) countryFetch;
 
-                String[] sort = request.getSortFields();
-                List<Order> orders = new ArrayList<>();
-
-                for (String property : sort) {
-
-                    Join<Object, Object> join = null;
-                    String subProperty = null;
-                    if (property.startsWith("user.")) {
-                        join = user;
-                        subProperty = property.replaceAll("user.", "");
-                    } else if (property.startsWith("nationality.")) {
-                        join = nationality;
-                        subProperty = property.replaceAll("nationality.", "");
-                    } else if (property.startsWith("country.")) {
-                        join = country;
-                        subProperty = property.replaceAll("country.", "");
-                    } else {
-                        subProperty = property;
-                    }
-
-                    Path<Object> path = null;
-                    if (join != null) {
-                        path = join.get(subProperty);
-                    } else {
-                        path = candidate.get(subProperty);
-                    }
-                    orders.add(request.getSortDirection().equals(Sort.Direction.ASC) ? builder.asc(path) : builder.desc(path));
-                }
+                List<Order> orders = getOrderByOrders(request, candidate, builder, 
+                        user, nationality, country);
 
                 query.orderBy(orders);
-                
-                
 
             } else {
+                //Count query - sort doesn't matter
                 user = candidate.join("user");
                 nationality = candidate.join("nationality");
                 country = candidate.join("country");
             }
+            
             //Review status
             //Only saved searches support review status - ie has this candidate 
             //been reviewed as belonging in this saved search.
