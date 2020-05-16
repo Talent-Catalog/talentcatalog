@@ -51,4 +51,8 @@ public abstract class AbstractTranslatableDomainObject<IdType extends Serializab
         this.translatedName = translatedName;
     }
 
+    @Override
+    public String toString() {
+        return name + ": " + super.toString();
+    }
 }
