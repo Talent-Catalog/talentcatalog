@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.model.Candidate;
+import org.tbbtalent.server.model.Role;
 import org.tbbtalent.server.model.SavedList;
 import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.request.candidate.SavedListGetRequest;
@@ -51,8 +52,18 @@ class CandidateRepositoryEndToEndTest {
         assertNotNull(savedListRepository);
         assertNotNull(userRepository);
 
-        User owningUser = userRepository.findByUsernameIgnoreCase("camerojo");
-        //TODO JC Create test user if it doesn't alreday exist
+        User owningUser = userRepository.findByUsernameIgnoreCase("camerojox");
+        if (owningUser == null) {
+            //Create test user if it doesn't already exist.
+            //Usually it won't because transactional tests are automatically
+            //rolled back.
+            owningUser = new User(
+                    "camerojox", "TestFirst", "TestLast",
+                    "Test@x.com", Role.user);
+            owningUser.setPasswordEnc("xxxx");
+            owningUser.setReadOnly(false);
+            userRepository.save(owningUser);
+        }
 
         //Create a test list if it is not already there
         String listName = "TestList";
@@ -92,9 +103,9 @@ class CandidateRepositoryEndToEndTest {
         request.setPageSize(10);
         request.setPageNumber(0);
 
-        PageRequest pageRequest = request.getPageRequest();
+        PageRequest pageRequest = request.getPageRequestWithoutSort();
         Page<Candidate> candidatesPage = candidateRepository.findAll(
-                CandidateListSpecification.buildSearchQuery(request), pageRequest);
+                new CandidateListGetQuery(request), pageRequest);
 
         assertNotNull(candidatesPage);
         assertEquals(totalCandidates, candidatesPage.getTotalElements());
