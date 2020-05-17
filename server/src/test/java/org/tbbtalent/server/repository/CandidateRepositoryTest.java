@@ -141,7 +141,7 @@ class CandidateRepositoryTest {
 
             PageRequest pageRequest = request.getPageRequestWithoutSort();
             Page<Candidate> candidatesPage = candidateRepository.findAll(
-                    CandidateListSpecification.buildSearchQuery(request), pageRequest);
+                    new CandidateListGetQuery(request), pageRequest);
 
             assertNotNull(candidatesPage);
             assertEquals(totalCandidates, candidatesPage.getTotalElements());

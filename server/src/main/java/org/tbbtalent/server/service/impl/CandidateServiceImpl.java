@@ -55,7 +55,7 @@ import org.tbbtalent.server.model.SearchType;
 import org.tbbtalent.server.model.Status;
 import org.tbbtalent.server.model.SurveyType;
 import org.tbbtalent.server.model.User;
-import org.tbbtalent.server.repository.CandidateListSpecification;
+import org.tbbtalent.server.repository.CandidateListGetQuery;
 import org.tbbtalent.server.repository.CandidateRepository;
 import org.tbbtalent.server.repository.CandidateSpecification;
 import org.tbbtalent.server.repository.CountryRepository;
@@ -166,7 +166,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Page<Candidate> getSavedListCandidates(SavedListGetRequest request) {
         Page<Candidate> candidatesPage = candidateRepository.findAll(
-                CandidateListSpecification.buildSearchQuery(request), request.getPageRequestWithoutSort());
+                new CandidateListGetQuery(request), request.getPageRequestWithoutSort());
         log.info("Found " + candidatesPage.getTotalElements() + " candidates in list");
         return candidatesPage;
     }
