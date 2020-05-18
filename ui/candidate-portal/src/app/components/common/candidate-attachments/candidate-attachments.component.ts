@@ -63,7 +63,8 @@ export class CandidateAttachmentsComponent implements OnInit {
       type: 'file',
       name: attachment.file.name,
       fileType: this.getFileType(attachment.file.name),
-      folder: attachment.s3Params.objectKey
+      folder: attachment.s3Params.objectKey,
+      //file: attachment.file
     };
     this.candidateAttachmentService.createAttachment(request).subscribe(
       (response) => this.attachments.push(response),
