@@ -5,11 +5,15 @@
 package org.tbbtalent.server.service.impl;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.EntityExistsException;
@@ -18,8 +22,12 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.model.SavedList;
 import org.tbbtalent.server.model.Status;
+import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.repository.CandidateRepository;
+import org.tbbtalent.server.repository.SavedListGetQuery;
 import org.tbbtalent.server.repository.SavedListRepository;
+import org.tbbtalent.server.repository.UserRepository;
+import org.tbbtalent.server.request.list.SearchSavedListRequest;
 import org.tbbtalent.server.request.list.UpdateSavedListRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.SavedListService;
@@ -34,16 +42,19 @@ public class SavedListServiceImpl implements SavedListService {
 
     private final CandidateRepository candidateRepository;
     private final SavedListRepository savedListRepository;
+    private final UserRepository userRepository;
     private final UserContext userContext;
 
     @Autowired
     public SavedListServiceImpl(
             CandidateRepository candidateRepository,
             SavedListRepository savedListRepository,
+            UserRepository userRepository,
             UserContext userContext
     ) {
         this.candidateRepository = candidateRepository;
         this.savedListRepository = savedListRepository;
+        this.userRepository = userRepository;
         this.userContext = userContext;
     }
     
@@ -117,6 +128,39 @@ public class SavedListServiceImpl implements SavedListService {
         savedList.addCandidates(candidates);
 
         return saveIt(savedList);
+    }
+
+    @Override
+    public List<SavedList> listSavedLists(SearchSavedListRequest request) {
+        User userWithSharedSearches =
+                userRepository.findByIdLoadSharedSearches(
+                        userContext.getLoggedInUser().getId());
+        SavedListGetQuery savedListGetQuery = 
+                new SavedListGetQuery(request, userWithSharedSearches);
+        
+        //The request is not required to provide paging or sorting info and
+        //we ignore any such info if present.
+        //But set standard sort to ascending by name.
+        Sort sort = Sort.by(Sort.Direction.ASC, "name");
+        return savedListRepository.findAll(savedListGetQuery, sort);
+    }
+
+    @Override
+    public Page<SavedList> searchSavedLists(SearchSavedListRequest request) {
+        User userWithSharedSearches =
+                userRepository.findByIdLoadSharedSearches(
+                        userContext.getLoggedInUser().getId());
+        SavedListGetQuery savedListGetQuery = 
+                new SavedListGetQuery(request, userWithSharedSearches);
+        
+        //The incoming request will have paging info but no sorting (and if
+        //it does we will ignore it).
+        //So set standard ascending sort by name.
+        request.setSortDirection(Sort.Direction.ASC);
+        request.setSortFields(new String[] {"name"});
+        
+        PageRequest pageRequest = request.getPageRequest();
+        return savedListRepository.findAll(savedListGetQuery, pageRequest);
     }
 
     // TODO: 1/5/20 This could be common code - or at least the checking 

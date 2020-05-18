@@ -5,17 +5,22 @@
 package org.tbbtalent.server.repository;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.TestPropertySource;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.model.Role;
 import org.tbbtalent.server.model.SavedList;
 import org.tbbtalent.server.model.User;
+import org.tbbtalent.server.request.list.SearchSavedListRequest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -133,6 +138,92 @@ class SavedListRepositoryTest {
         assertFalse(user1.getSharedLists().contains(savedList));
         assertFalse(savedList.getUsers().contains(user2));
         assertFalse(user2.getSharedLists().contains(savedList));
+        
+    }
+
+    @Test
+    void testListSavedLists() {
+
+        SearchSavedListRequest request = new SearchSavedListRequest();
+        request.setOwned(true);
+        request.setShared(true);
+        request.setFixed(true);
+        
+        SavedListGetQuery savedListGetQuery;
+        Sort sort;
+        List<SavedList> lists;
+        
+        savedListGetQuery = new SavedListGetQuery(request, owningUser);
+        sort = Sort.by(Sort.Direction.ASC, "name");
+        lists = savedListRepository.findAll(savedListGetQuery, sort);
+
+        assertNotNull(lists);
+        assertEquals(1, lists.size());
+
+        //Create a sharing user
+        User sharingUser = createTestUser(
+                "c1username", "c1first", "c1last",
+                "c1email@test.com");
+
+        savedListGetQuery = new SavedListGetQuery(request, sharingUser);
+        sort = Sort.by(Sort.Direction.ASC, "name");
+        lists = savedListRepository.findAll(savedListGetQuery, sort);
+        assertNotNull(lists);
+        assertEquals(0, lists.size());
+        
+        savedList.addUser(sharingUser);
+        savedListRepository.save(savedList);
+        
+        savedListGetQuery = new SavedListGetQuery(request, sharingUser);
+        sort = Sort.by(Sort.Direction.ASC, "name");
+        lists = savedListRepository.findAll(savedListGetQuery, sort);
+        assertNotNull(lists);
+        assertEquals(1, lists.size());
+        
+    }
+
+    @Test
+    void testSearchSavedLists() {
+
+        SearchSavedListRequest request = new SearchSavedListRequest();
+        request.setOwned(true);
+        request.setShared(true);
+        request.setFixed(true);
+        request.setPageNumber(0);
+        request.setPageSize(4);
+        request.setSortDirection(Sort.Direction.ASC);
+        request.setSortFields(new String[] {"name"});
+        
+        SavedListGetQuery savedListGetQuery;
+        PageRequest pageRequest;
+        Page<SavedList> lists;
+
+        pageRequest = request.getPageRequest();
+        savedListGetQuery = new SavedListGetQuery(request, owningUser);
+        lists = savedListRepository.findAll(savedListGetQuery, pageRequest);
+
+        assertNotNull(lists);
+        assertEquals(1, lists.getContent().size());
+
+        //Create a sharing user
+        User sharingUser = createTestUser(
+                "c1username", "c1first", "c1last",
+                "c1email@test.com");
+
+        pageRequest = request.getPageRequest();
+        savedListGetQuery = new SavedListGetQuery(request, sharingUser);
+        lists = savedListRepository.findAll(savedListGetQuery, pageRequest);
+        assertNotNull(lists);
+        assertEquals(0, lists.getContent().size());
+        
+        savedList.addUser(sharingUser);
+        savedListRepository.save(savedList);
+
+        pageRequest = request.getPageRequest();
+        savedListGetQuery = new SavedListGetQuery(request, sharingUser);
+        lists = savedListRepository.findAll(savedListGetQuery, pageRequest);
+        assertNotNull(lists);
+        assertEquals(1, lists.getContent().size());
         
     }
 
