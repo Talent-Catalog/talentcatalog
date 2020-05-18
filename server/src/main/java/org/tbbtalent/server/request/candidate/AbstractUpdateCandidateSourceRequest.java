@@ -8,14 +8,20 @@ import javax.validation.constraints.NotBlank;
 
 import org.tbbtalent.server.model.AbstractCandidateSource;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
- * TODO JC Doc
+ * Base class for any Update/Create requests on candidate sources 
+ * (sublasses of {@link AbstractCandidateSource}).
  *
  * @author John Cameron
  */
-public abstract @Data class AbstractUpdateCandidateSourceRequest {
+@Getter
+@Setter
+@ToString
+public abstract class AbstractUpdateCandidateSourceRequest {
     @NotBlank
     private String name;
     private Boolean fixed;

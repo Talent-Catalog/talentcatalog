@@ -10,6 +10,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
 
+import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -83,7 +84,7 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
         return watcherIds;
     }
 
-    public void setWatcherIds(String watcherIds) {
+    public void setWatcherIds(@Nullable String watcherIds) {
         this.watcherIds = watcherIds;
     }
 
@@ -104,7 +105,7 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
      * and sets the watcherIds field to that.
      * @param watcherUserIds List of watching user ids
      */
-    public void setWatcherUserIds(Set<Long> watcherUserIds) {
+    public void setWatcherUserIds(@Nullable Set<Long> watcherUserIds) {
         final String s = CollectionUtils.isEmpty(watcherUserIds) ? null :
                 watcherUserIds.stream()
                         .map(String::valueOf)
@@ -134,6 +135,21 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
 
     
     //Support for sharing
+
+    /**
+     * Clears all users
+     */
+    private void clearUsers() {
+        Set<User> users = getUsers();
+        
+        //First update each user object to no longer refer to this candidate source
+        for (User user : users) {
+            getUsersCollection(user).remove(this);
+        }
+
+        //Finally clear the collection of users
+        users.clear();
+    }
     
     /**
      * This is the collection of users who share this candidate source.
@@ -144,16 +160,17 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
     public abstract Set<User> getUsers();
 
     /**
-     * This is the collection of users who share this candidate source.
-     * It will return the field on the entity corresponding to a many to many
-     * mapping in the database of user ids to the ids of these candidate sources.
+     * Set the collection of users who share this candidate source.
+     * It removes any previous users in the collection.
      * @param users Set of users who share this candidate source.
      */
-    public void setUsers(Set<User> users) {
+    public void setUsers(@Nullable Set<User> users) {
         //Clear existing collection of users and add new ones.
-        getUsers().clear();
-        for (User user : users) {
-            addUser(user);
+        clearUsers();
+        if (users != null) {
+            for (User user : users) {
+                addUser(user);
+            }
         }
     }
 

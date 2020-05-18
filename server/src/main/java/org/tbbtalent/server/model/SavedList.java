@@ -16,6 +16,7 @@ import javax.persistence.Table;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
 
 @Entity
 @Table(name = "saved_list")
@@ -35,17 +36,50 @@ public class SavedList extends AbstractCandidateSource {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "sharedLists", cascade = CascadeType.MERGE)
     private Set<User> users = new HashSet<>();
 
+    /**
+     * Clears all candidates from SavedList
+     */
+    private void clear() {
+        //Remove this list from all candidate entities
+        for (Candidate candidate : this.candidates) {
+            candidate.getSavedLists().remove(this);
+        }
+        //Clear set of candidates
+        this.candidates.clear();
+    }
+
     public Set<Candidate> getCandidates() {
         return candidates;
     }
 
-    public void setCandidates(Set<Candidate> candidates) {
-        this.candidates.clear();
+    /**
+     * Replaces any existing candidates with the given set of candidates
+     * or sets contents of list to empty if set is empty or null.
+     * <p/>
+     * See also {@link #addCandidates}
+     * @param candidates New set of candidates belonging to this SavedList. 
+     */
+    public void setCandidates(@Nullable Set<Candidate> candidates) {
+        clear();
+        if (candidates != null) {
+            addCandidates(candidates);
+        }
+    }
+
+    /**
+     * Add the given candidates to this SavedList - merging them in with any
+     * existing candidates in the list (no duplicates - if a candidate is
+     * already present it will still only appear once).
+     * <p/>
+     * See also {@link #setCandidates}
+     * @param candidates Candidates to add to this SavedList.
+     */
+    public void addCandidates(Set<Candidate> candidates) {
         for (Candidate candidate : candidates) {
             addCandidate(candidate);
         }
     }
-
+    
     /**
      * Add the given candidate to this list
      * @param candidate Candidate to add

@@ -1,5 +1,13 @@
 package org.tbbtalent.server.api.admin;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.rmi.server.ExportException;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotNull;
+
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -21,6 +29,7 @@ import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
 import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tbbtalent.server.request.candidate.CandidatePhoneSearchRequest;
 import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
+import org.tbbtalent.server.request.candidate.SavedListGetRequest;
 import org.tbbtalent.server.request.candidate.SavedSearchRunRequest;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
@@ -31,12 +40,6 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.CandidateService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
-
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.InputStream;
-import java.rmi.server.ExportException;
-import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate")
@@ -55,29 +58,28 @@ public class CandidateAdminApi {
     @PostMapping("runsavedsearch")
     public Map<String, Object> runSavedSearch(@RequestBody SavedSearchRunRequest request) {
         Page<Candidate> candidates = this.candidateService.searchCandidates(request);
-        Map<String, Object> map = candidateBaseDto().buildPage(candidates);
-        return map;
+        DtoBuilder builder = selectBuilder();
+        return builder.buildPage(candidates);
     }
 
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchCandidateRequest request) {
         Page<Candidate> candidates = this.candidateService.searchCandidates(request);
-        User user = userContext.getLoggedInUser();
-        if (user.getRole() == Role.admin || user.getRole() == Role.sourcepartneradmin) {
-            Map<String, Object> map = candidateBaseDto().buildPage(candidates);
-            return map;
-        } else if (user.getRole() == Role.semilimited){
-            Map<String, Object> map = candidateSemiLimitedDto().buildPage(candidates);
-            return map;
-        } else {
-            Map<String, Object> map = candidateLimitedDto().buildPage(candidates);
-            return map;
-        }
+        DtoBuilder builder = selectBuilder();
+        return builder.buildPage(candidates);
     }
 
+    @GetMapping("saved-list")
+    public Map<String, Object> getSavedList(@RequestBody SavedListGetRequest request) {
+        Page<Candidate> candidates = this.candidateService.getSavedListCandidates(request);
+        DtoBuilder builder = selectBuilder();
+        return builder.buildPage(candidates);
+    }
+    
     @PostMapping("findbyemail")
     public Map<String, Object> findByCandidateEmail(@RequestBody CandidateEmailSearchRequest request) {
         Page<Candidate> candidates = this.candidateService.searchCandidates(request);
+        //TODO JC Should all these dto's use selectBuilder
         Map<String, Object> map = candidateBaseDto().buildPage(candidates);
         return map;
     }
@@ -99,28 +101,17 @@ public class CandidateAdminApi {
     @GetMapping("number/{number}")
     public Map<String, Object> get(@PathVariable("number") String number) {
         Candidate candidate = this.candidateService.findByCandidateNumber(number);
-        User user = userContext.getLoggedInUser();
-        if (user.getRole() == Role.admin || user.getRole() == Role.sourcepartneradmin) {
-            return candidateDto().build(candidate);
-        } else if (user.getRole() == Role.semilimited){
-            return candidateSemiLimitedDto().build(candidate);
-        } else {
-            return candidateLimitedDto().build(candidate);
-        }
+        DtoBuilder builder = selectBuilder();
+        return builder.build(candidate);
     }
 
     @GetMapping("{id}")
     public Map<String, Object> get(@PathVariable("id") long id) {
         Candidate candidate = this.candidateService.getCandidate(id);
-        User user = userContext.getLoggedInUser();
-        if (user.getRole() == Role.admin || user.getRole() == Role.sourcepartneradmin) {
-            return candidateDto().build(candidate);
-        } else if (user.getRole() == Role.semilimited){
-            return candidateSemiLimitedDto().build(candidate);
-        } else {
-            return candidateLimitedDto().build(candidate);
-        }
+        DtoBuilder builder = selectBuilder();
+        return builder.build(candidate);
     }
+    
     @PostMapping
     public Map<String, Object> create(@RequestBody CreateCandidateRequest request) throws UsernameTakenException {
         Candidate candidate = this.candidateService.createCandidate(request);
@@ -197,6 +188,19 @@ public class CandidateAdminApi {
             IOUtils.copy(reportStream, response.getOutputStream());
             response.flushBuffer();
         }
+    }
+
+    private @NotNull DtoBuilder selectBuilder() {
+        DtoBuilder builder;
+        User user = userContext.getLoggedInUser();
+        if (user.getRole() == Role.admin || user.getRole() == Role.sourcepartneradmin) {
+            builder = candidateBaseDto();
+        } else if (user.getRole() == Role.semilimited){
+            builder = candidateSemiLimitedDto();
+        } else {
+            builder = candidateLimitedDto();
+        }
+        return builder;
     }
 
     private DtoBuilder candidateBaseDto() {

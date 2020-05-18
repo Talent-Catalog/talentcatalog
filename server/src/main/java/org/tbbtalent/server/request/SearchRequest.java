@@ -3,6 +3,11 @@ package org.tbbtalent.server.request;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter @Setter @ToString
 public class SearchRequest {
     private Integer pageSize;
     private Integer pageNumber;
@@ -14,38 +19,6 @@ public class SearchRequest {
 
     public SearchRequest(Sort.Direction sortDirection, String[] sortFields) {
         this.sortDirection = sortDirection;
-        this.sortFields = sortFields;
-    }
-
-    public Integer getPageSize() {
-        return pageSize;
-    }
-
-    public void setPageSize(Integer pageSize) {
-        this.pageSize = pageSize;
-    }
-
-    public Integer getPageNumber() {
-        return pageNumber;
-    }
-
-    public void setPageNumber(Integer pageNumber) {
-        this.pageNumber = pageNumber;
-    }
-
-    public Sort.Direction getSortDirection() {
-        return sortDirection;
-    }
-
-    public void setSortDirection(Sort.Direction sortDirection) {
-        this.sortDirection = sortDirection;
-    }
-
-    public String[] getSortFields() {
-        return sortFields;
-    }
-
-    public void setSortFields(String[] sortFields) {
         this.sortFields = sortFields;
     }
 
@@ -66,6 +39,5 @@ public class SearchRequest {
                 pageSize != null ? pageSize : 25);
 
     }
-
 
 }

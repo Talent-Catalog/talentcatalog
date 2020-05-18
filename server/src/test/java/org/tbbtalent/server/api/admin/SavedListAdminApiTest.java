@@ -11,6 +11,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.tbbtalent.server.model.User;
+import org.tbbtalent.server.repository.CandidateRepository;
 import org.tbbtalent.server.repository.SavedListRepository;
 import org.tbbtalent.server.repository.UserRepository;
 import org.tbbtalent.server.request.list.UpdateSavedListRequest;
@@ -24,6 +25,9 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class SavedListAdminApiTest {
+
+    @Autowired
+    CandidateRepository candidateRepository;
     
     @Autowired
     SavedListRepository savedListRepository;
@@ -40,7 +44,9 @@ class SavedListAdminApiTest {
         UserContext userContext = Mockito.mock(UserContext.class);
         when(userContext.getLoggedInUser()).thenReturn(testUser);
         
-        SavedListService savedListService = new SavedListServiceImpl(savedListRepository, userContext);
+        SavedListService savedListService = new SavedListServiceImpl(
+                candidateRepository, savedListRepository, userRepository, 
+                userContext);
         savedListAdminApi = new SavedListAdminApi(savedListService);
     }
 

@@ -52,17 +52,17 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     Candidate findByIdLoadJobExperiences(@Param("id") Long id);
 
     @Query(" select distinct c from Candidate c "
-            + " left join c.candidateCertifications cert "
+            + " left join fetch c.candidateCertifications cert "
             + " where c.id = :id ")
     Candidate findByIdLoadCertifications(@Param("id") Long id);
 
     @Query(" select distinct c from Candidate c "
-            + " left join c.candidateLanguages lang "
+            + " left join fetch c.candidateLanguages lang "
             + " where c.id = :id ")
     Candidate findByIdLoadCandidateLanguages(@Param("id") Long id);
 
     @Query(" select distinct c from Candidate c "
-            + " left join c.savedLists "
+            + " left join fetch c.savedLists "
             + " where c.id = :id ")
     Candidate findByIdLoadSavedLists(@Param("id") Long id);
 

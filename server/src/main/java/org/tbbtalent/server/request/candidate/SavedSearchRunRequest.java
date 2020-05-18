@@ -5,26 +5,15 @@ import java.util.List;
 import org.tbbtalent.server.model.ShortlistStatus;
 import org.tbbtalent.server.request.SearchRequest;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter @Setter @ToString
 public class SavedSearchRunRequest extends SearchRequest {
     private Long savedSearchId;
     private List<ShortlistStatus> shortlistStatus;
 
     public SavedSearchRunRequest() {
-    }
-
-    public Long getSavedSearchId() {
-        return savedSearchId;
-    }
-
-    public void setSavedSearchId(Long savedSearchId) {
-        this.savedSearchId = savedSearchId;
-    }
-
-    public List<ShortlistStatus> getShortlistStatus() {
-        return shortlistStatus;
-    }
-
-    public void setShortlistStatus(List<ShortlistStatus> shortlistStatus) {
-        this.shortlistStatus = shortlistStatus;
     }
 }
