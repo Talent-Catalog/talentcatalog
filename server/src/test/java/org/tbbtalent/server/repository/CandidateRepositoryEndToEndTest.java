@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,7 +84,7 @@ class CandidateRepositoryEndToEndTest {
     }
 
     @Transactional
-//    @Test
+    @Test
     void testCandidateListSort() {
         Set<Candidate> candidates = fetchTestCandidates(20);
         assertThat(candidates).isNotNull();
