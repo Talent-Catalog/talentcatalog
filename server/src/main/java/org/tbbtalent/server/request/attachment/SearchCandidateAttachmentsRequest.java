@@ -1,10 +1,10 @@
 package org.tbbtalent.server.request.attachment;
 
-import org.tbbtalent.server.request.SearchRequest;
-
 import javax.validation.constraints.NotNull;
 
-public class SearchCandidateAttachmentsRequest extends SearchRequest {
+import org.tbbtalent.server.request.PagedSearchRequest;
+
+public class SearchCandidateAttachmentsRequest extends PagedSearchRequest {
 
     @NotNull
     private Long candidateId;

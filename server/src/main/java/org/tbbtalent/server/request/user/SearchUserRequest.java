@@ -1,12 +1,12 @@
 package org.tbbtalent.server.request.user;
 
-import org.tbbtalent.server.model.Role;
-import org.tbbtalent.server.model.Status;
-import org.tbbtalent.server.request.SearchRequest;
-
 import java.util.List;
 
-public class SearchUserRequest extends SearchRequest {
+import org.tbbtalent.server.model.Role;
+import org.tbbtalent.server.model.Status;
+import org.tbbtalent.server.request.PagedSearchRequest;
+
+public class SearchUserRequest extends PagedSearchRequest {
 
     private String keyword;
     private List<Role> role;

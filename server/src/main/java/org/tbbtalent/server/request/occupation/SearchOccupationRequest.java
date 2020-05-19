@@ -1,9 +1,9 @@
 package org.tbbtalent.server.request.occupation;
 
 import org.tbbtalent.server.model.Status;
-import org.tbbtalent.server.request.SearchRequest;
+import org.tbbtalent.server.request.PagedSearchRequest;
 
-public class SearchOccupationRequest extends SearchRequest {
+public class SearchOccupationRequest extends PagedSearchRequest {
 
     private String keyword;
 

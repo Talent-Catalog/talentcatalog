@@ -1,10 +1,10 @@
 package org.tbbtalent.server.request.work.experience;
 
-import org.tbbtalent.server.request.SearchRequest;
-
 import javax.validation.constraints.NotNull;
 
-public class SearchJobExperienceRequest extends SearchRequest {
+import org.tbbtalent.server.request.PagedSearchRequest;
+
+public class SearchJobExperienceRequest extends PagedSearchRequest {
 
     @NotNull
     private Long candidateOccupationId;
