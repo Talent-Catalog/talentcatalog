@@ -16,16 +16,22 @@ import com.itextpdf.kernel.pdf.canvas.parser.listener.FilteredEventListener;
 import com.itextpdf.kernel.pdf.canvas.parser.listener.LocationTextExtractionStrategy;
 
 import com.itextpdf.kernel.pdf.canvas.parser.listener.SimpleTextExtractionStrategy;
+import org.apache.commons.compress.compressors.FileNameUtil;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.junit.jupiter.api.Test;
+
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.*;
 
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.*;
+import java.nio.file.Files;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -97,6 +103,46 @@ public class PDFBoxTest {
         }
 
         pdfDoc.close();
+    }
+
+    @Test
+    void testFileExtensionExtraction(){
+        // Test the File extension methods
+        //String type = Files.probeContentType(cv.toPath());
+        File cv = new File("src/test/resources/WordCV.docx");
+        String type = getFileExtension(cv);
+        assertEquals("docx", type);
+
+        File cvPdf = new File("src/test/resources/CV.pdf");
+        String typePdf = getFileExtension(cvPdf);
+        assertEquals("pdf", typePdf);
+
+        File test = new File(".test");
+        String typeTest = getFileExtension(test);
+        assertEquals("", typeTest);
+
+        File test2 = new File("..test");
+        String typeTest2 = getFileExtension(test2);
+        assertEquals("test", typeTest2);
+    }
+
+    private static String getFileExtension(File file) {
+        String fileName = file.getName();
+        // Checks that a . exists and that it isn't at the start of the filename (indication there is no file name just a file type e.g. ".pdf"
+        if(fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
+            return fileName.substring(fileName.lastIndexOf(".")+1);
+        else return "";
+    }
+
+    @Test
+    void testApachePoiMethods() throws IOException {
+        File cv = new File("src/test/resources/WordCV.docx");
+        FileInputStream fis = new FileInputStream(cv);
+        XWPFDocument doc = new XWPFDocument(fis);
+        XWPFWordExtractor xwe = new XWPFWordExtractor(doc);
+        String theText = xwe.getText();
+        assertNotEquals("", theText);
+        xwe.close();
     }
 }
 
