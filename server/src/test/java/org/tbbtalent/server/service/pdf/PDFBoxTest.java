@@ -32,6 +32,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -103,6 +104,13 @@ public class PDFBoxTest {
         }
 
         pdfDoc.close();
+    }
+
+    @Test
+    void testTxtFileExtraction() throws IOException {
+        String data = new String(Files.readAllBytes(Paths.get("src/test/pdf2.txt")));
+        System.out.println(data);
+        assertNotEquals("",data);
     }
 
     @Test

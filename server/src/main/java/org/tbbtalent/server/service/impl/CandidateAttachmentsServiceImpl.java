@@ -5,6 +5,8 @@ import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor;
 import com.itextpdf.kernel.pdf.canvas.parser.listener.LocationTextExtractionStrategy;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
+import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.*;
 import org.tbbtalent.server.repository.CandidateAttachmentRepository;
@@ -26,6 +29,8 @@ import org.tbbtalent.server.service.CandidateAttachmentService;
 import org.tbbtalent.server.service.aws.S3ResourceHelper;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
@@ -74,7 +79,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     public CandidateAttachment createCandidateAttachment(CreateCandidateAttachmentRequest request, Boolean adminOnly) {
         User user = userContext.getLoggedInUser();
         Candidate candidate;
-        String textExtract = "";
+        String textExtract;
 
         // Handle requests coming from the admin portal
         if (request.getCandidateId() != null) {
@@ -108,11 +113,11 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
             // Extract text from the file
             try {
-                textExtract = getTextFromPDFFile(srcFile);
+                textExtract = getTextFromFile(request.getFileType(), srcFile);
                 attachment.setTextExtract(textExtract);
             } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println(e);
+                log.error(e.getMessage());
+                throw new InvalidRequestException("Please check valid file type is uploaded.");
             }
 
             // The location is set to the filename because we can derive it's location from the candidate number
@@ -120,7 +125,6 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             attachment.setName(uniqueFilename);
             attachment.setType(AttachmentType.file);
             attachment.setFileType(request.getFileType());
-
         }
 
         attachment.setCandidate(candidate);
@@ -205,6 +209,52 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         pdfDoc.close();
 
         return String.valueOf(txt);
+    }
+
+    public String getTextFromWordFile(File srcFile) throws IOException {
+        FileInputStream fis = new FileInputStream(srcFile);
+        XWPFDocument doc = new XWPFDocument(fis);
+        XWPFWordExtractor xwe = new XWPFWordExtractor(doc);
+        String txt = xwe.getText();
+        xwe.close();
+        return txt;
+    }
+
+    public String getTextFromTxtFile(File srcFile) throws IOException {
+        String txt = new String(Files.readAllBytes(Paths.get(srcFile.getPath())));
+        System.out.println(txt);
+        return txt;
+    }
+
+    public String getTextFromFile(String fileType, File srcFile) throws IOException {
+        String textExtract = "";
+        if(fileType.equals("pdf")){
+            PdfDocument pdfDoc = new PdfDocument(new PdfReader(srcFile.getAbsolutePath()));
+            String str;
+            StringBuffer txt = new StringBuffer();
+            for (int i=1; i<= pdfDoc.getNumberOfPages(); i++){
+                str = PdfTextExtractor.getTextFromPage(pdfDoc.getPage(i), new LocationTextExtractionStrategy());
+                txt.append(str);
+            }
+            textExtract = String.valueOf(txt);
+            pdfDoc.close();
+        }else if (fileType.equals("doc") || fileType.equals("docx")){
+            FileInputStream fis = new FileInputStream(srcFile);
+            XWPFDocument doc = new XWPFDocument(fis);
+            XWPFWordExtractor xwe = new XWPFWordExtractor(doc);
+            textExtract = xwe.getText();
+            xwe.close();
+        }else if (fileType.equals("txt")){
+            textExtract = new String(Files.readAllBytes(Paths.get(srcFile.getPath())));
+        }
+        return textExtract;
+    }
+
+    private static String getFileExtension(String fileName) {
+        // Checks that a . exists and that it isn't at the start of the filename (indication there is no file name just a file type e.g. ".pdf"
+        if(fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
+            return fileName.substring(fileName.lastIndexOf(".")+1);
+        else return "";
     }
 
 }
