@@ -1,10 +1,10 @@
 package org.tbbtalent.server.request.translation;
 
-import org.tbbtalent.server.request.SearchRequest;
-
 import javax.validation.constraints.NotNull;
 
-public class SearchTranslationRequest extends SearchRequest {
+import org.tbbtalent.server.request.PagedSearchRequest;
+
+public class SearchTranslationRequest extends PagedSearchRequest {
 
     @NotNull
     private String language;

@@ -2,9 +2,9 @@ package org.tbbtalent.server.request.education.major;
 
 import org.springframework.data.domain.Sort;
 import org.tbbtalent.server.model.Status;
-import org.tbbtalent.server.request.SearchRequest;
+import org.tbbtalent.server.request.PagedSearchRequest;
 
-public class SearchEducationMajorRequest extends SearchRequest {
+public class SearchEducationMajorRequest extends PagedSearchRequest {
 
     private String keyword;
 

@@ -15,7 +15,7 @@ import javax.persistence.criteria.Root;
 
 import org.springframework.data.domain.Sort;
 import org.tbbtalent.server.model.Candidate;
-import org.tbbtalent.server.request.SearchRequest;
+import org.tbbtalent.server.request.PagedSearchRequest;
 
 /**
  * Extract some common utility methods
@@ -24,7 +24,7 @@ import org.tbbtalent.server.request.SearchRequest;
  */
 public class CandidateSpecificationUtil {
 
-    public static List<Order> getOrderByOrders(SearchRequest request,
+    public static List<Order> getOrderByOrders(PagedSearchRequest request,
                                                Root<Candidate> candidate,
                                                CriteriaBuilder builder,
                                                Join<Object, Object> user,

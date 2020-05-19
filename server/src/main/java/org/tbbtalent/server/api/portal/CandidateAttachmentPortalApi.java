@@ -1,17 +1,23 @@
 package org.tbbtalent.server.api.portal;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.model.CandidateAttachment;
-import org.tbbtalent.server.request.SearchRequest;
+import org.tbbtalent.server.request.PagedSearchRequest;
 import org.tbbtalent.server.request.attachment.CreateCandidateAttachmentRequest;
 import org.tbbtalent.server.service.CandidateAttachmentService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
-
-import java.util.List;
-import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/portal/candidate-attachment")
@@ -31,7 +37,7 @@ public class CandidateAttachmentPortalApi {
     }
 
     @PostMapping("search")
-    public Map<String, Object> search(@RequestBody SearchRequest request) {
+    public Map<String, Object> search(@RequestBody PagedSearchRequest request) {
         Page<CandidateAttachment> candidateAttachments = this.candidateAttachmentService.searchCandidateAttachmentsForLoggedInCandidate(request);
         return candidateAttachmentDto().buildPage(candidateAttachments);
     }
@@ -43,7 +49,7 @@ public class CandidateAttachmentPortalApi {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity deleteCandidateAttachment(@PathVariable("id") Long id) {
+    public ResponseEntity<Object> deleteCandidateAttachment(@PathVariable("id") Long id) {
         candidateAttachmentService.deleteCandidateAttachment(id);
         return ResponseEntity.ok().build();
     }
