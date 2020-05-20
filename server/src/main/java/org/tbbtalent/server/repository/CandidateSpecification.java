@@ -22,23 +22,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
-import org.tbbtalent.server.model.Candidate;
-import org.tbbtalent.server.model.CandidateEducation;
-import org.tbbtalent.server.model.CandidateJobExperience;
-import org.tbbtalent.server.model.CandidateLanguage;
-import org.tbbtalent.server.model.CandidateOccupation;
-import org.tbbtalent.server.model.CandidateShortlistItem;
-import org.tbbtalent.server.model.CandidateSkill;
-import org.tbbtalent.server.model.CandidateStatus;
-import org.tbbtalent.server.model.EducationLevel;
-import org.tbbtalent.server.model.EducationMajor;
-import org.tbbtalent.server.model.Language;
-import org.tbbtalent.server.model.LanguageLevel;
-import org.tbbtalent.server.model.Occupation;
-import org.tbbtalent.server.model.SavedSearch;
-import org.tbbtalent.server.model.SearchType;
-import org.tbbtalent.server.model.ShortlistStatus;
-import org.tbbtalent.server.model.User;
+import org.tbbtalent.server.model.*;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 
 import io.jsonwebtoken.lang.Collections;
@@ -61,6 +45,7 @@ public class CandidateSpecification {
             Join<CandidateOccupation, Occupation> occupation = null;
             Join<Candidate, CandidateJobExperience> candidateJobExperiences = null;
             Join<Candidate, CandidateSkill> candidateSkills = null;
+            Join<Candidate, CandidateAttachment> candidateAttachments = null;
             
             //CreatedBy date > from date is only set in the watcher notification code.
             if (request.getFromDate() != null) {
@@ -174,6 +159,7 @@ public class CandidateSpecification {
                 List<Predicate> predicates = new ArrayList<>();
                 candidateJobExperiences = candidateJobExperiences != null ? candidateJobExperiences : candidate.join("candidateJobExperiences", JoinType.LEFT);
                 candidateSkills = candidateSkills != null ? candidateSkills : candidate.join("candidateSkills", JoinType.LEFT);
+                candidateAttachments = candidateAttachments != null ? candidateAttachments : candidate.join("candidateAttachments", JoinType.LEFT);
                 candidateEducations = candidateEducations == null ? candidate.join("candidateEducations", JoinType.LEFT) : candidateEducations;
                 candidateOccupations = candidate.join("candidateOccupations", JoinType.LEFT);
                 occupation = candidateOccupations.join("occupation", JoinType.LEFT);
@@ -194,7 +180,12 @@ public class CandidateSpecification {
                             builder.like(builder.lower(candidateOccupations.get("migrationOccupation")), likeMatchTerm),
                             builder.like(builder.lower(candidateSkills.get("skill")), likeMatchTerm),
                             builder.like(builder.lower(occupation.get("name")), likeMatchTerm)
+                            //builder.like(builder.lower(candidateAttachments.get("textExtract")), likeMatchTerm)
                     ));
+                    if(BooleanUtils.isTrue(request.getIncludeUploadedFiles())) {
+                        predicates.get(0).getExpressions().add(builder.like(builder.lower(candidateAttachments.get("textExtract")), likeMatchTerm)
+                        );
+                    }
                 }
                 if (predicates.size() > 1) {
                     conjunction.getExpressions().add(builder.and(builder.and(predicates.toArray(new Predicate[0]))));

@@ -167,7 +167,8 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
       educationMajors: [[]],
       nationalities: [[]],
       statusesDisplay: [[]],
-      includeDraftAndDeleted: false
+      includeDraftAndDeleted: [false],
+      includeUploadedFiles: [true]
     });
   }
 

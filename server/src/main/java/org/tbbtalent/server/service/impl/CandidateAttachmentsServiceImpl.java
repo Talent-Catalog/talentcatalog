@@ -111,13 +111,25 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
             log.info("[S3] Transferred candidate attachment from source [" + source + "] to destination [" + destination + "]");
 
+
             // Extract text from the file
             try {
-                textExtract = getTextFromFile(request.getFileType(), srcFile);
+                // TODO: 20/5/20 add flyway for text extract
+
+                // todo write text extract migration
+
+                if(request.getFileType().equals("pdf")){
+                    textExtract = getTextFromPDFFile(srcFile);
+                } else if (request.getFileType().equals("doc") || request.getFileType().equals("docx")) {
+                    textExtract = getTextFromWordFile(srcFile);
+                } else if (request.getFileType().equals("txt")) {
+                    textExtract = getTextFromTxtFile(srcFile);
+                } else {
+                    textExtract = null;
+                }
                 attachment.setTextExtract(textExtract);
             } catch (Exception e) {
                 log.error(e.getMessage());
-                throw new InvalidRequestException("Please check valid file type is uploaded.");
             }
 
             // The location is set to the filename because we can derive it's location from the candidate number
@@ -195,60 +207,54 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     }
 
     public String getTextFromPDFFile(File srcFile) throws IOException {
-        String source = srcFile.getAbsolutePath();
-        PdfDocument pdfDoc = new PdfDocument(new PdfReader(source));
-
-        String str;
-        StringBuffer txt = new StringBuffer();
-
+        PdfDocument pdfDoc = new PdfDocument(new PdfReader(srcFile.getAbsolutePath()));
+        String pageTxt;
+        StringBuffer pdfTxt = new StringBuffer();
         for (int i=1; i<= pdfDoc.getNumberOfPages(); i++){
-            str = PdfTextExtractor.getTextFromPage(pdfDoc.getPage(i), new LocationTextExtractionStrategy());
-            txt.append(str);
+            pageTxt = PdfTextExtractor.getTextFromPage(pdfDoc.getPage(i), new LocationTextExtractionStrategy());
+            pdfTxt.append(pageTxt);
         }
-
         pdfDoc.close();
-
-        return String.valueOf(txt);
+        return String.valueOf(pdfTxt);
     }
 
     public String getTextFromWordFile(File srcFile) throws IOException {
         FileInputStream fis = new FileInputStream(srcFile);
         XWPFDocument doc = new XWPFDocument(fis);
         XWPFWordExtractor xwe = new XWPFWordExtractor(doc);
-        String txt = xwe.getText();
+        String wordTxt = xwe.getText();
         xwe.close();
-        return txt;
+        return wordTxt;
     }
 
     public String getTextFromTxtFile(File srcFile) throws IOException {
         String txt = new String(Files.readAllBytes(Paths.get(srcFile.getPath())));
-        System.out.println(txt);
         return txt;
     }
 
-    public String getTextFromFile(String fileType, File srcFile) throws IOException {
-        String textExtract = "";
-        if(fileType.equals("pdf")){
-            PdfDocument pdfDoc = new PdfDocument(new PdfReader(srcFile.getAbsolutePath()));
-            String str;
-            StringBuffer txt = new StringBuffer();
-            for (int i=1; i<= pdfDoc.getNumberOfPages(); i++){
-                str = PdfTextExtractor.getTextFromPage(pdfDoc.getPage(i), new LocationTextExtractionStrategy());
-                txt.append(str);
-            }
-            textExtract = String.valueOf(txt);
-            pdfDoc.close();
-        }else if (fileType.equals("doc") || fileType.equals("docx")){
-            FileInputStream fis = new FileInputStream(srcFile);
-            XWPFDocument doc = new XWPFDocument(fis);
-            XWPFWordExtractor xwe = new XWPFWordExtractor(doc);
-            textExtract = xwe.getText();
-            xwe.close();
-        }else if (fileType.equals("txt")){
-            textExtract = new String(Files.readAllBytes(Paths.get(srcFile.getPath())));
-        }
-        return textExtract;
-    }
+//    public String getTextFromFile(String fileType, File srcFile) throws IOException {
+//        String textExtract = "";
+//        if(fileType.equals("pdf")){
+//            PdfDocument pdfDoc = new PdfDocument(new PdfReader(srcFile.getAbsolutePath()));
+//            String str;
+//            StringBuffer txt = new StringBuffer();
+//            for (int i=1; i<= pdfDoc.getNumberOfPages(); i++){
+//                str = PdfTextExtractor.getTextFromPage(pdfDoc.getPage(i), new LocationTextExtractionStrategy());
+//                txt.append(str);
+//            }
+//            textExtract = String.valueOf(txt);
+//            pdfDoc.close();
+//        }else if (fileType.equals("doc") || fileType.equals("docx")){
+//            FileInputStream fis = new FileInputStream(srcFile);
+//            XWPFDocument doc = new XWPFDocument(fis);
+//            XWPFWordExtractor xwe = new XWPFWordExtractor(doc);
+//            textExtract = xwe.getText();
+//            xwe.close();
+//        }else if (fileType.equals("txt")){
+//            textExtract = new String(Files.readAllBytes(Paths.get(srcFile.getPath())));
+//        }
+//        return textExtract;
+//    }
 
     private static String getFileExtension(String fileName) {
         // Checks that a . exists and that it isn't at the start of the filename (indication there is no file name just a file type e.g. ".pdf"

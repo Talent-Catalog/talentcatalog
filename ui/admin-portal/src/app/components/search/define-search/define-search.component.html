@@ -37,6 +37,12 @@
         <label for="keyword">Keyword</label>
         <input id="keyword" type="text" class="form-control" placeholder="Search..." aria-label="Search"
                formControlName="keyword">
+        <div class="operator">
+          <input type="checkbox" class="custom-checkbox"  id="includeUploadedFiles" [value]="'includeUploadedFiles'" [formControlName]="'includeUploadedFiles'">
+          <label for="includeUploadedFiles" class="custom-checkbox">
+            Include Uploaded Files
+          </label>
+        </div>
       </div>
 
       <!-- STATUS -->
@@ -50,7 +56,7 @@
           [settings]="dropdownSettings">
         </ng-multiselect-dropdown>
         <div class="operator">
-          <input type="checkbox" class="custom-checkbox"  id="includeDraftAndDeleted" [value]="true" [formControlName]="'includeDraftAndDeleted'">
+          <input type="checkbox" class="custom-checkbox"  id="includeDraftAndDeleted" [value]="'includeDraftAndDeleted'" [formControlName]="'includeDraftAndDeleted'">
           <label for="includeDraftAndDeleted" class="custom-checkbox">
             Include Draft and Deleted
           </label>
