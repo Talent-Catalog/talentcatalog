@@ -6,6 +6,10 @@ import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor;
 import com.itextpdf.kernel.pdf.canvas.parser.listener.LocationTextExtractionStrategy;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.apache.poi.hwpf.extractor.WordExtractor;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.hwpf.HWPFDocument;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -48,10 +52,9 @@ public class MigrateTextExtractTest {
 
     @Transactional
     @Test
-    void extractTextFromMigratedFiles() throws IOException {
+    void extractTextFromMigratedPdf() throws IOException {
         List<CandidateAttachment> candidatePdfs = candidateAttachmentRepository.findByFileType("pdf");
         assertNotNull(candidatePdfs);
-        assertEquals(2341, candidatePdfs.size());
 
         Set<CandidateAttachment> candidateAttachmentSet = new HashSet<>();
         for (int i = 0; i < 10; i++) {
@@ -70,7 +73,7 @@ public class MigrateTextExtractTest {
             PDFTextStripper tStripper = new PDFTextStripper();
             tStripper.setSortByPosition(true);
             PDDocument document = PDDocument.load(srcFile);
-            String pdfFileInText = "";
+            String pdfFileInText;
             if (!document.isEncrypted()) {
                 pdfFileInText = tStripper.getText(document);
                 System.out.println(1);
@@ -78,8 +81,65 @@ public class MigrateTextExtractTest {
             }
             assertNotNull(pdf.getTextExtract());
         }
-//        assertEquals("942", candidatePdfs());
-//        candidate.setWhatsapp("00000000000");
-//        assertEquals("00000000000", candidate.getWhatsapp());
+    }
+
+    @Transactional
+    @Test
+    void extractTextFromMigratedDocx() throws IOException {
+        List<CandidateAttachment> candidateDocs = candidateAttachmentRepository.findByFileType("docx");
+        assertNotNull(candidateDocs);
+
+        Set<CandidateAttachment> candidateAttachmentSet = new HashSet<>();
+        for (int i = 0; i < 10; i++) {
+            CandidateAttachment candidateAttachment;
+            candidateAttachment = candidateDocs.get(i);
+            candidateAttachmentSet.add(candidateAttachment);
+        }
+
+        for(CandidateAttachment doc : candidateAttachmentSet) {
+            String uniqueFilename = doc.getLocation();
+            String destination = "candidate/migrated/" + uniqueFilename;
+            File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
+
+            FileInputStream fis = new FileInputStream(srcFile);
+            XWPFDocument document = new XWPFDocument(fis);
+            XWPFWordExtractor xwe = new XWPFWordExtractor(document);
+            String theText = xwe.getText();
+            doc.setTextExtract(theText);
+            xwe.close();
+        }
+
+    }
+
+    @Transactional
+    @Test
+    void extractTextFromMigratedDoc() {
+        List<CandidateAttachment> candidateDocs = candidateAttachmentRepository.findByFileType("doc");
+        assertNotNull(candidateDocs);
+
+        Set<CandidateAttachment> candidateAttachmentSet = new HashSet<>();
+        for (int i = 0; i < 10; i++) {
+            CandidateAttachment candidateAttachment;
+            candidateAttachment = candidateDocs.get(i);
+            candidateAttachmentSet.add(candidateAttachment);
+        }
+
+        for(CandidateAttachment doc : candidateAttachmentSet) {
+            String uniqueFilename = doc.getLocation();
+            String destination = "candidate/migrated/" + uniqueFilename;
+            File srcFile;
+            try{
+                srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
+                FileInputStream fis = new FileInputStream(srcFile);
+                HWPFDocument document = new HWPFDocument(fis);
+                WordExtractor we = new WordExtractor(document);
+                String theText = we.getText();
+                doc.setTextExtract(theText);
+                we.close();
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
     }
 }
