@@ -28,7 +28,10 @@ import org.junit.jupiter.api.Test;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.*;
 
+import org.mockito.InjectMocks;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.tbbtalent.server.service.aws.S3ResourceHelper;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -38,6 +41,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class PDFBoxTest {
+
+    @Autowired
+    private S3ResourceHelper s3ResourceHelper;
 
     @Test
     void testPDFBoxMethods() throws IOException {
@@ -68,7 +74,6 @@ public class PDFBoxTest {
         assertNotNull(pw);
 
         //SECOND WAY USING PDFBOX
-
         PDFTextStripper tStripper = new PDFTextStripper();
         tStripper.setSortByPosition(true);
         PDDocument document = PDDocument.load(new File("src/test/resources/CV.pdf"));
@@ -103,6 +108,30 @@ public class PDFBoxTest {
             writer.write(String.valueOf(txt));
         }
 
+        pdfDoc.close();
+    }
+
+    @Test
+    void testITextMethodArabic() throws IOException {
+        String src = "src/test/resources/ArabicPdf.pdf";
+        PdfDocument pdfDoc = new PdfDocument(new PdfReader(src));
+
+        assertNotNull(pdfDoc);
+
+        String str;
+        StringBuffer txt = new StringBuffer();
+
+        for (int i=1; i<= pdfDoc.getNumberOfPages(); i++){
+            str = PdfTextExtractor.getTextFromPage(pdfDoc.getPage(i), new LocationTextExtractionStrategy());
+            txt.append(str);
+        }
+
+        assertNotEquals("", txt);
+
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("src/test/pdf2.txt")))) {
+            writer.write(String.valueOf(txt));
+        }
+        System.out.println(txt);
         pdfDoc.close();
     }
 
@@ -151,6 +180,50 @@ public class PDFBoxTest {
         String theText = xwe.getText();
         assertNotEquals("", theText);
         xwe.close();
+    }
+
+    @Test
+    void testApachePoiMethodsArabic() throws IOException {
+        File cv = new File("src/test/resources/arabic-ar.docx");
+        FileInputStream fis = new FileInputStream(cv);
+        XWPFDocument doc = new XWPFDocument(fis);
+        XWPFWordExtractor xwe = new XWPFWordExtractor(doc);
+        String theText = xwe.getText();
+        assertNotEquals("", theText);
+        System.out.println(theText);
+        xwe.close();
+    }
+
+    @Test
+    void testExtractionOnExistingFiles() throws IOException {
+        //String candidateNumber;
+        String uniqueFilename = "Nazem Alsadek_CV-1c4db65369f7fe8bc5f8095dc6ef60a1.pdf";
+        String destination = "candidate/migrated/" + uniqueFilename;
+
+        File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
+
+        assertNotNull(srcFile);
+
+        PdfDocument pdfDoc = new PdfDocument(new PdfReader(srcFile.getAbsolutePath()));
+
+        assertNotNull(pdfDoc);
+
+        String str;
+        StringBuffer txt = new StringBuffer();
+
+        for (int i=1; i<= pdfDoc.getNumberOfPages(); i++){
+            str = PdfTextExtractor.getTextFromPage(pdfDoc.getPage(i), new LocationTextExtractionStrategy());
+            txt.append(str);
+        }
+
+        assertNotEquals("", txt);
+
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("src/test/pdf2.txt")))) {
+            writer.write(String.valueOf(txt));
+        }
+        System.out.println(txt);
+        pdfDoc.close();
+
     }
 }
 

@@ -5,6 +5,8 @@ import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor;
 import com.itextpdf.kernel.pdf.canvas.parser.listener.LocationTextExtractionStrategy;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.slf4j.Logger;
@@ -111,11 +113,8 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
             log.info("[S3] Transferred candidate attachment from source [" + source + "] to destination [" + destination + "]");
 
-
             // Extract text from the file
             try {
-                // TODO: 20/5/20 add flyway for text extract
-
                 // todo write text extract migration
 
                 if(request.getFileType().equals("pdf")){
@@ -207,15 +206,14 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     }
 
     public String getTextFromPDFFile(File srcFile) throws IOException {
-        PdfDocument pdfDoc = new PdfDocument(new PdfReader(srcFile.getAbsolutePath()));
-        String pageTxt;
-        StringBuffer pdfTxt = new StringBuffer();
-        for (int i=1; i<= pdfDoc.getNumberOfPages(); i++){
-            pageTxt = PdfTextExtractor.getTextFromPage(pdfDoc.getPage(i), new LocationTextExtractionStrategy());
-            pdfTxt.append(pageTxt);
+        PDFTextStripper tStripper = new PDFTextStripper();
+        tStripper.setSortByPosition(true);
+        PDDocument document = PDDocument.load(srcFile);
+        String pdfFileInText = "";
+        if (!document.isEncrypted()) {
+            pdfFileInText = tStripper.getText(document);
         }
-        pdfDoc.close();
-        return String.valueOf(pdfTxt);
+        return pdfFileInText.trim();
     }
 
     public String getTextFromWordFile(File srcFile) throws IOException {
@@ -231,30 +229,6 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         String txt = new String(Files.readAllBytes(Paths.get(srcFile.getPath())));
         return txt;
     }
-
-//    public String getTextFromFile(String fileType, File srcFile) throws IOException {
-//        String textExtract = "";
-//        if(fileType.equals("pdf")){
-//            PdfDocument pdfDoc = new PdfDocument(new PdfReader(srcFile.getAbsolutePath()));
-//            String str;
-//            StringBuffer txt = new StringBuffer();
-//            for (int i=1; i<= pdfDoc.getNumberOfPages(); i++){
-//                str = PdfTextExtractor.getTextFromPage(pdfDoc.getPage(i), new LocationTextExtractionStrategy());
-//                txt.append(str);
-//            }
-//            textExtract = String.valueOf(txt);
-//            pdfDoc.close();
-//        }else if (fileType.equals("doc") || fileType.equals("docx")){
-//            FileInputStream fis = new FileInputStream(srcFile);
-//            XWPFDocument doc = new XWPFDocument(fis);
-//            XWPFWordExtractor xwe = new XWPFWordExtractor(doc);
-//            textExtract = xwe.getText();
-//            xwe.close();
-//        }else if (fileType.equals("txt")){
-//            textExtract = new String(Files.readAllBytes(Paths.get(srcFile.getPath())));
-//        }
-//        return textExtract;
-//    }
 
     private static String getFileExtension(String fileName) {
         // Checks that a . exists and that it isn't at the start of the filename (indication there is no file name just a file type e.g. ".pdf"
