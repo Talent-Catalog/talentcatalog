@@ -32,8 +32,8 @@ public class ErrorHandler {
     @ExceptionHandler(NoHandlerFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
-    public ErrorDTO requestHandlingNoHandlerFound(NoHandlerFoundException ex) {
-        return new ErrorDTO("handler_not_found", ex.toString());
+    public ErrorDTO processNoHandlerFoundException(NoHandlerFoundException ex) {
+        return new ErrorDTO("handler_not_found", ex.getMessage());
     }    
 
     //-------------------------------------------------------------------------
