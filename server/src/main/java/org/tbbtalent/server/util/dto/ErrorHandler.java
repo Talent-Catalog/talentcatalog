@@ -33,7 +33,17 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
     public ErrorDTO processNoHandlerFoundException(NoHandlerFoundException ex) {
+        log.error("Processing NoHandlerFoundException: " + ex);
         return new ErrorDTO("handler_not_found", ex.getMessage());
+    }    
+    
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorDTO processOtherException(Exception ex) {
+        final String code = "unexpected_exception";
+        log.error(code, ex);
+        return new ErrorDTO(code, ex.toString());
     }    
 
     //-------------------------------------------------------------------------
