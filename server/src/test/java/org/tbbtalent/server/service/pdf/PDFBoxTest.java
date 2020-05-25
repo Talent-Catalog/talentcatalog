@@ -2,21 +2,9 @@ package org.tbbtalent.server.service.pdf;
 
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfReader;
-import com.itextpdf.kernel.font.PdfFont;
-import com.itextpdf.kernel.geom.Rectangle;
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfReader;
-import com.itextpdf.kernel.pdf.canvas.parser.EventType;
-import com.itextpdf.kernel.pdf.canvas.parser.PdfCanvasProcessor;
 import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor;
-import com.itextpdf.kernel.pdf.canvas.parser.data.IEventData;
-import com.itextpdf.kernel.pdf.canvas.parser.data.TextRenderInfo;
-import com.itextpdf.kernel.pdf.canvas.parser.filter.TextRegionEventFilter;
-import com.itextpdf.kernel.pdf.canvas.parser.listener.FilteredEventListener;
 import com.itextpdf.kernel.pdf.canvas.parser.listener.LocationTextExtractionStrategy;
 
-import com.itextpdf.kernel.pdf.canvas.parser.listener.SimpleTextExtractionStrategy;
-import org.apache.commons.compress.compressors.FileNameUtil;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdfparser.PDFParser;
@@ -26,9 +14,7 @@ import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.junit.jupiter.api.Test;
 
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.*;
 
-import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.tbbtalent.server.service.aws.S3ResourceHelper;
@@ -47,7 +33,7 @@ public class PDFBoxTest {
 
     @Test
     void testPDFBoxMethods() throws IOException {
-        File file = new File("src/test/resources/CV.pdf");
+        File file = new File("src/test/resources/ahmadTest.pdf");
 
         assertTrue(file.exists());
 
@@ -76,7 +62,7 @@ public class PDFBoxTest {
         //SECOND WAY USING PDFBOX
         PDFTextStripper tStripper = new PDFTextStripper();
         tStripper.setSortByPosition(true);
-        PDDocument document = PDDocument.load(new File("src/test/resources/CV.pdf"));
+        PDDocument document = PDDocument.load(new File("src/test/resources/ahmadTest.pdf"));
         String pdfFileInText = "";
         if (!document.isEncrypted()) {
             pdfFileInText = tStripper.getText(document);
@@ -89,7 +75,7 @@ public class PDFBoxTest {
 
     @Test
     void testITextMethods() throws IOException {
-        String src = "src/test/resources/CV.pdf";
+        String src = "src/test/resources/ahmadTest.pdf";
         PdfDocument pdfDoc = new PdfDocument(new PdfReader(src));
 
         assertNotNull(pdfDoc);
@@ -104,6 +90,8 @@ public class PDFBoxTest {
 
         assertNotEquals("", txt);
 
+        System.out.println(txt);
+
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("src/test/pdf2.txt")))) {
             writer.write(String.valueOf(txt));
         }
@@ -113,7 +101,7 @@ public class PDFBoxTest {
 
     @Test
     void testITextMethodArabic() throws IOException {
-        String src = "src/test/resources/ArabicPdf.pdf";
+        String src = "src/test/resources/ahmadTest.pdf";
         PdfDocument pdfDoc = new PdfDocument(new PdfReader(src));
 
         assertNotNull(pdfDoc);

@@ -7,6 +7,8 @@ import com.itextpdf.kernel.pdf.canvas.parser.listener.LocationTextExtractionStra
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.apache.poi.hwpf.HWPFDocument;
+import org.apache.poi.hwpf.extractor.WordExtractor;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.slf4j.Logger;
@@ -119,8 +121,10 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
                 if(request.getFileType().equals("pdf")){
                     textExtract = getTextFromPDFFile(srcFile);
-                } else if (request.getFileType().equals("doc") || request.getFileType().equals("docx")) {
-                    textExtract = getTextFromWordFile(srcFile);
+                } else if (request.getFileType().equals("docx")) {
+                    textExtract = getTextFromDocxFile(srcFile);
+                } else if (request.getFileType().equals("doc")) {
+                    textExtract = getTextFromDocFile(srcFile);
                 } else if (request.getFileType().equals("txt")) {
                     textExtract = getTextFromTxtFile(srcFile);
                 } else {
@@ -216,13 +220,22 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         return pdfFileInText.trim();
     }
 
-    public String getTextFromWordFile(File srcFile) throws IOException {
+    public String getTextFromDocxFile(File srcFile) throws IOException {
         FileInputStream fis = new FileInputStream(srcFile);
         XWPFDocument doc = new XWPFDocument(fis);
         XWPFWordExtractor xwe = new XWPFWordExtractor(doc);
-        String wordTxt = xwe.getText();
+        String docxTxt = xwe.getText();
         xwe.close();
-        return wordTxt;
+        return docxTxt;
+    }
+
+    public String getTextFromDocFile(File srcFile) throws IOException {
+        FileInputStream fis = new FileInputStream(srcFile);
+        HWPFDocument document = new HWPFDocument(fis);
+        WordExtractor we = new WordExtractor(document);
+        String docTxt = we.getText();
+        we.close();
+        return docTxt;
     }
 
     public String getTextFromTxtFile(File srcFile) throws IOException {

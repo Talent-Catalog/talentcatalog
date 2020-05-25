@@ -1,6 +1,12 @@
 package org.tbbtalent.server.api.admin;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
+import org.apache.poi.hwpf.HWPFDocument;
+import org.apache.poi.hwpf.extractor.WordExtractor;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,15 +14,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tbbtalent.server.model.AttachmentType;
-import org.tbbtalent.server.model.CandidateStatus;
-import org.tbbtalent.server.model.EducationType;
-import org.tbbtalent.server.model.Gender;
-import org.tbbtalent.server.model.NoteType;
-import org.tbbtalent.server.model.Status;
-import org.tbbtalent.server.model.User;
+import org.tbbtalent.server.model.*;
+import org.tbbtalent.server.repository.CandidateAttachmentRepository;
 import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.service.aws.S3ResourceHelper;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -31,10 +36,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/admin/system")
@@ -44,6 +46,9 @@ public class SystemAdminApi {
 
     private final UserContext userContext;
     final static String DATE_FORMAT = "dd-MM-yyyy";
+
+    private CandidateAttachmentRepository candidateAttachmentRepository;
+    private S3ResourceHelper s3ResourceHelper;
 
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -59,13 +64,15 @@ public class SystemAdminApi {
     private String targetPwd;
     
     @Autowired
-    public SystemAdminApi(UserContext userContext) {
+    public SystemAdminApi(UserContext userContext, CandidateAttachmentRepository candidateAttachmentRepository, S3ResourceHelper s3ResourceHelper) {
         this.userContext = userContext;
+        this.candidateAttachmentRepository = candidateAttachmentRepository;
+        this.s3ResourceHelper = s3ResourceHelper;
         countryForGeneralCountry = getExtraCountryMappings();
     }
 
     public static void main(String[] args) {
-        SystemAdminApi api = new SystemAdminApi(null);
+        SystemAdminApi api = new SystemAdminApi(null, null, null);
         api.setTargetJdbcUrl("jdbc:postgresql://localhost:5432/tbbtalent");
         api.setTargetUser("tbbtalent");
         api.setTargetPwd("tbbtalent");
@@ -122,6 +129,97 @@ public class SystemAdminApi {
         }
 
         return "done";
+    }
+
+    @GetMapping("migrate/extract")
+    public String migrateExtract() {
+        Long userId = 1L;
+        if (userContext != null) {
+            User loggedInUser = userContext.getLoggedInUser();
+            if (loggedInUser != null){
+                userId = loggedInUser.getId();
+            }
+        }
+
+        extractTextFromMigratedPdf();
+        extractTextFromMigratedDocx();
+        extractTextFromMigratedDoc();
+
+        return "done";
+    }
+
+    void extractTextFromMigratedPdf() {
+        List<CandidateAttachment> candidatePdfs = candidateAttachmentRepository.findByFileType("pdf");
+
+        for(CandidateAttachment pdf : candidatePdfs){
+            try {
+                String uniqueFilename = pdf.getLocation();
+                String destination = "candidate/migrated/" + uniqueFilename;
+                File srcFile = null;
+
+                srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
+                //SECOND WAY USING PDFBOX
+                PDFTextStripper tStripper = new PDFTextStripper();
+                tStripper.setSortByPosition(true);
+                PDDocument document = PDDocument.load(srcFile);
+                String pdfFileInText;
+                if (!document.isEncrypted()) {
+                    pdfFileInText = tStripper.getText(document);
+                    pdf.setTextExtract(pdfFileInText.trim());
+                    candidateAttachmentRepository.save(pdf);
+                }
+                document.close();
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+    void extractTextFromMigratedDocx() {
+        List<CandidateAttachment> candidateDocs = candidateAttachmentRepository.findByFileType("docx");
+
+        for(CandidateAttachment doc : candidateDocs) {
+            String uniqueFilename = doc.getLocation();
+            String destination = "candidate/migrated/" + uniqueFilename;
+            try {
+                File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
+                FileInputStream fis = new FileInputStream(srcFile);
+                XWPFDocument document = new XWPFDocument(fis);
+                XWPFWordExtractor xwe = new XWPFWordExtractor(document);
+                String theText = xwe.getText();
+                doc.setTextExtract(theText);
+                candidateAttachmentRepository.save(doc);
+                xwe.close();
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+
+        }
+
+    }
+
+    void extractTextFromMigratedDoc() {
+        List<CandidateAttachment> candidateDocs = candidateAttachmentRepository.findByFileType("doc");
+
+        for(CandidateAttachment doc : candidateDocs) {
+            String uniqueFilename = doc.getLocation();
+            String destination = "candidate/migrated/" + uniqueFilename;
+            try {
+                File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
+
+                FileInputStream fis = new FileInputStream(srcFile);
+                HWPFDocument document = new HWPFDocument(fis);
+                WordExtractor we = new WordExtractor(document);
+                String theText = we.getText();
+                doc.setTextExtract(theText);
+                candidateAttachmentRepository.save(doc);
+                we.close();
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+
+        }
+
     }
 
     @GetMapping("migrate/survey")
