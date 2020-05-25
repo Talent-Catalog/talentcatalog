@@ -22,6 +22,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.model.CandidateEducation;
 import org.tbbtalent.server.model.CandidateJobExperience;
@@ -46,11 +47,12 @@ import static org.tbbtalent.server.repository.CandidateSpecificationUtil.getOrde
 
 public class CandidateSpecification {
 
-    public static Specification<Candidate> buildSearchQuery(final SearchCandidateRequest request, User loggedInUser) {
+    public static Specification<Candidate> buildSearchQuery(
+            final SearchCandidateRequest request, @Nullable User loggedInUser) {
         return (candidate, query, builder) -> {
             
             //To better understand this code, look at the simpler but similar
-            //CandidateListSpecification. JC - The Programmer's Friend. 
+            //SavedListGetQuery. JC - The Programmer's Friend. 
             
             Predicate conjunction = builder.conjunction();
             Join<Object, Object> user = null;
@@ -355,7 +357,8 @@ public class CandidateSpecification {
                 conjunction.getExpressions().add(
                         builder.isTrue(candidate.get("country").in(request.getCountryIds()))
                 );
-            } else if (!Collections.isEmpty(loggedInUser.getSourceCountries())) {
+            } else if (loggedInUser != null && 
+                    !Collections.isEmpty(loggedInUser.getSourceCountries())) {
                 conjunction.getExpressions().add(
                         builder.isTrue(candidate.get("country").in(loggedInUser.getSourceCountries()))
                 );
