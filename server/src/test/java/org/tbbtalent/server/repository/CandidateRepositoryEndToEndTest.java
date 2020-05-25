@@ -83,8 +83,8 @@ class CandidateRepositoryEndToEndTest {
         assertNotNull(savedList);
     }
 
-    @Transactional
-    @Test
+    //@Transactional
+    //@Test
     void testCandidateListSort() {
         Set<Candidate> candidates = fetchTestCandidates(20);
         assertThat(candidates).isNotNull();
