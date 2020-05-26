@@ -155,17 +155,19 @@ public class SystemAdminApi {
             try {
                 String uniqueFilename = pdf.getLocation();
                 String destination = "candidate/migrated/" + uniqueFilename;
-                File srcFile = null;
+                File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
 
-                srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
-                //SECOND WAY USING PDFBOX
                 PDFTextStripper tStripper = new PDFTextStripper();
                 tStripper.setSortByPosition(true);
                 PDDocument document = PDDocument.load(srcFile);
                 String pdfFileInText;
                 if (!document.isEncrypted()) {
-                    pdfFileInText = tStripper.getText(document);
-                    pdf.setTextExtract(pdfFileInText.trim());
+                    pdfFileInText = tStripper.getText(document).trim();
+                    if(!pdfFileInText.equals("")) {
+                        pdf.setTextExtract(pdfFileInText);
+                    } else {
+                        pdf.setTextExtract(null);
+                    }
                     candidateAttachmentRepository.save(pdf);
                 }
                 document.close();
@@ -179,10 +181,11 @@ public class SystemAdminApi {
         List<CandidateAttachment> candidateDocs = candidateAttachmentRepository.findByFileType("docx");
 
         for(CandidateAttachment doc : candidateDocs) {
-            String uniqueFilename = doc.getLocation();
-            String destination = "candidate/migrated/" + uniqueFilename;
             try {
+                String uniqueFilename = doc.getLocation();
+                String destination = "candidate/migrated/" + uniqueFilename;
                 File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
+
                 FileInputStream fis = new FileInputStream(srcFile);
                 XWPFDocument document = new XWPFDocument(fis);
                 XWPFWordExtractor xwe = new XWPFWordExtractor(document);
@@ -193,18 +196,16 @@ public class SystemAdminApi {
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
-
         }
-
     }
 
     void extractTextFromMigratedDoc() {
         List<CandidateAttachment> candidateDocs = candidateAttachmentRepository.findByFileType("doc");
 
         for(CandidateAttachment doc : candidateDocs) {
-            String uniqueFilename = doc.getLocation();
-            String destination = "candidate/migrated/" + uniqueFilename;
             try {
+                String uniqueFilename = doc.getLocation();
+                String destination = "candidate/migrated/" + uniqueFilename;
                 File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
 
                 FileInputStream fis = new FileInputStream(srcFile);

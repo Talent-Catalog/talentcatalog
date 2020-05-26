@@ -33,49 +33,51 @@ public class PDFBoxTest {
 
     @Test
     void testPDFBoxMethods() throws IOException {
-        File file = new File("src/test/resources/ahmadTest.pdf");
-
-        assertTrue(file.exists());
-
-        //FIRST WAY USING PDFBOX
-
-        //LOAD FILE
-        String parsedText;
-        PDFParser parser = new PDFParser(new RandomAccessFile(file, "r"));
-        parser.parse();
-
-        //EXTRACT TEXT
-        COSDocument cosDoc = parser.getDocument();
-        PDFTextStripper pdfStripper = new PDFTextStripper();
-        pdfStripper.setSortByPosition(true);
-        PDDocument pdDoc = new PDDocument(cosDoc);
-        parsedText = pdfStripper.getText(pdDoc);
-
-        assertNotEquals("", parsedText);
-
-        PrintWriter pw = new PrintWriter("src/test/pdf.txt");
-        pw.print(parsedText);
-        pw.close();
-
-        assertNotNull(pw);
+//        File file = new File("src/test/resources/migrationTestFileNoText.pdf");
+//
+//        assertTrue(file.exists());
+//
+//        //FIRST WAY USING PDFBOX
+//
+//        //LOAD FILE
+//        String parsedText;
+//        PDFParser parser = new PDFParser(new RandomAccessFile(file, "r"));
+//        parser.parse();
+//
+//        //EXTRACT TEXT
+//        COSDocument cosDoc = parser.getDocument();
+//        PDFTextStripper pdfStripper = new PDFTextStripper();
+//        pdfStripper.setSortByPosition(true);
+//        PDDocument pdDoc = new PDDocument(cosDoc);
+//        parsedText = pdfStripper.getText(pdDoc);
+//
+//        assertNotEquals("", parsedText);
+//
+//        PrintWriter pw = new PrintWriter("src/test/pdf.txt");
+//        pw.print(parsedText);
+//        pw.close();
+//
+//        assertNotNull(pw);
 
         //SECOND WAY USING PDFBOX
         PDFTextStripper tStripper = new PDFTextStripper();
         tStripper.setSortByPosition(true);
-        PDDocument document = PDDocument.load(new File("src/test/resources/ahmadTest.pdf"));
+        PDDocument document = PDDocument.load(new File("src/test/resources/migrationTestFileNoText.pdf"));
         String pdfFileInText = "";
         if (!document.isEncrypted()) {
-            pdfFileInText = tStripper.getText(document);
+            pdfFileInText = tStripper.getText(document).trim();
         }
-        System.out.println(pdfFileInText.trim());
+        if(pdfFileInText.length()==0){
+            pdfFileInText=null;
+        }
 
-        assertNotEquals("", pdfFileInText);
+        assertEquals("", pdfFileInText);
 
     }
 
     @Test
     void testITextMethods() throws IOException {
-        String src = "src/test/resources/ahmadTest.pdf";
+        String src = "src/test/resources/migrationTestFileNoText.pdf";
         PdfDocument pdfDoc = new PdfDocument(new PdfReader(src));
 
         assertNotNull(pdfDoc);
@@ -101,7 +103,7 @@ public class PDFBoxTest {
 
     @Test
     void testITextMethodArabic() throws IOException {
-        String src = "src/test/resources/ahmadTest.pdf";
+        String src = "src/test/resources/migrationTestFileNoText.pdf";
         PdfDocument pdfDoc = new PdfDocument(new PdfReader(src));
 
         assertNotNull(pdfDoc);
