@@ -7,6 +7,7 @@ import org.apache.poi.hwpf.extractor.WordExtractor;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.tbbtalent.server.repository.CandidateAttachmentRepository;
 import org.tbbtalent.server.service.aws.S3ResourceHelper;
 
@@ -62,19 +63,20 @@ public class TextExtractHelper {
             return txt;
         }
 
-        public String getTextExtractFromFile(File srcFile, String fileType) throws IOException {
-            if(fileType == "pdf") {
+        public @Nullable String getTextExtractFromFile(File srcFile, @Nullable String fileType) throws IOException {
+            if(fileType == null) {
+                return null;
+            } else if(fileType.equals("pdf")) {
                 return getTextFromPDFFile(srcFile);
-            } else if (fileType == "docx") {
+            } else if (fileType.equals("docx")) {
                 return getTextFromDocxFile(srcFile);
-            } else if (fileType == "doc") {
+            } else if (fileType.equals("doc")) {
                 return getTextFromDocFile(srcFile);
-            } else if (fileType == "txt") {
+            } else if (fileType.equals("txt")) {
                 return getTextFromTxtFile(srcFile);
             } else {
                 return null;
             }
-
         }
 
         private static String getFileExtension(String fileName) {

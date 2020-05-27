@@ -18,10 +18,10 @@ import org.tbbtalent.server.model.*;
 import org.tbbtalent.server.repository.CandidateAttachmentRepository;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.aws.S3ResourceHelper;
+import org.tbbtalent.server.util.textExtract.TextExtractHelper;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -133,6 +133,7 @@ public class SystemAdminApi {
 
     @GetMapping("migrate/extract")
     public String migrateExtract() {
+        TextExtractHelper textExtractHelper = new TextExtractHelper(candidateAttachmentRepository, s3ResourceHelper);
         Long userId = 1L;
         if (userContext != null) {
             User loggedInUser = userContext.getLoggedInUser();
@@ -141,10 +142,25 @@ public class SystemAdminApi {
             }
         }
 
-        extractTextFromMigratedPdf();
-        extractTextFromMigratedDocx();
-        extractTextFromMigratedDoc();
+        List<String> types = Arrays.asList("pdf", "docx", "doc", "txt");
+        List<CandidateAttachment> files = candidateAttachmentRepository.findByFileTypes(types);
 
+        for(CandidateAttachment file : files) {
+            try {
+                String uniqueFilename = file.getLocation();
+                String destination = "candidate/migrated/" + uniqueFilename;
+                File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
+                String extractedText = textExtractHelper.getTextExtractFromFile(srcFile, file.getFileType());
+                if(StringUtils.isNotBlank(extractedText)) {
+                    file.setTextExtract(extractedText);
+                }
+            } catch (Exception e) {
+                log.error("Unable to extract text from file " + file.getLocation(), e.getMessage());
+            }
+        }
+//        extractTextFromMigratedPdf();
+//        extractTextFromMigratedDocx();
+//        extractTextFromMigratedDoc();
         return "done";
     }
 
@@ -163,7 +179,7 @@ public class SystemAdminApi {
                 String pdfFileInText;
                 if (!document.isEncrypted()) {
                     pdfFileInText = tStripper.getText(document).trim();
-                    if(!pdfFileInText.equals("")) {
+                    if(StringUtils.isNotBlank(pdfFileInText)) {
                         pdf.setTextExtract(pdfFileInText);
                     } else {
                         pdf.setTextExtract(null);

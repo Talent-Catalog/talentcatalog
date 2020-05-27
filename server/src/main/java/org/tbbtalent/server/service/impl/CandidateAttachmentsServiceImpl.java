@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +31,6 @@ import org.tbbtalent.server.service.aws.S3ResourceHelper;
 import org.tbbtalent.server.util.textExtract.TextExtractHelper;
 
 import java.io.*;
-import java.util.List;
-import java.util.UUID;
 
 @Service
 public class CandidateAttachmentsServiceImpl implements CandidateAttachmentService {
@@ -109,13 +108,14 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), source);
             // Copy the file from temp folder in s3 into the candidate's folder on S3
             this.s3ResourceHelper.copyObject(source, destination);
-
             log.info("[S3] Transferred candidate attachment from source [" + source + "] to destination [" + destination + "]");
 
             // Extract text from the file
             try {
                 textExtract = textExtractHelper.getTextExtractFromFile(srcFile, request.getFileType());
-                attachment.setTextExtract(textExtract);
+                if(StringUtils.isNotBlank(textExtract)) {
+                    attachment.setTextExtract(textExtract);
+                }
             } catch (Exception e) {
                 log.error("Could not extract text from uploaded file", e);
             }

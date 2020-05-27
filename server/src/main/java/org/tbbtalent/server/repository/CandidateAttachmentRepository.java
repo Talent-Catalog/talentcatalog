@@ -27,4 +27,8 @@ public interface CandidateAttachmentRepository extends JpaRepository<CandidateAt
     Optional<CandidateAttachment> findByIdLoadCandidate(@Param("id") Long id);
 
     List<CandidateAttachment> findByFileType(String fileType);
+
+    @Query(" select distinct a from CandidateAttachment a "
+            + "where a.fileType in (:files) ")
+    List<CandidateAttachment> findByFileTypes(@Param("files") List<String> files);
 }
