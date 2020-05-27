@@ -1,16 +1,6 @@
 package org.tbbtalent.server.service.impl;
 
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfReader;
-import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor;
-import com.itextpdf.kernel.pdf.canvas.parser.listener.LocationTextExtractionStrategy;
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.text.PDFTextStripper;
-import org.apache.poi.hwpf.HWPFDocument;
-import org.apache.poi.hwpf.extractor.WordExtractor;
-import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
-import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.*;
 import org.tbbtalent.server.repository.CandidateAttachmentRepository;
@@ -31,10 +20,9 @@ import org.tbbtalent.server.request.attachment.UpdateCandidateAttachmentRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.CandidateAttachmentService;
 import org.tbbtalent.server.service.aws.S3ResourceHelper;
+import org.tbbtalent.server.util.textExtract.TextExtractHelper;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
@@ -47,6 +35,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     private final CandidateAttachmentRepository candidateAttachmentRepository;
     private final UserContext userContext;
     private final S3ResourceHelper s3ResourceHelper;
+    private final TextExtractHelper textExtractHelper;
 
     @Value("{aws.s3.bucketName}")
     String s3Bucket;
@@ -60,6 +49,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         this.candidateAttachmentRepository = candidateAttachmentRepository;
         this.s3ResourceHelper = s3ResourceHelper;
         this.userContext = userContext;
+        this.textExtractHelper = new TextExtractHelper(candidateAttachmentRepository, s3ResourceHelper);
     }
 
     @Override
@@ -117,22 +107,10 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
             // Extract text from the file
             try {
-                // todo write text extract migration
-
-                if(request.getFileType().equals("pdf")){
-                    textExtract = getTextFromPDFFile(srcFile);
-                } else if (request.getFileType().equals("docx")) {
-                    textExtract = getTextFromDocxFile(srcFile);
-                } else if (request.getFileType().equals("doc")) {
-                    textExtract = getTextFromDocFile(srcFile);
-                } else if (request.getFileType().equals("txt")) {
-                    textExtract = getTextFromTxtFile(srcFile);
-                } else {
-                    textExtract = null;
-                }
+                textExtract = textExtractHelper.getTextExtractFromFile(srcFile, request.getFileType());
                 attachment.setTextExtract(textExtract);
             } catch (Exception e) {
-                log.error(e.getMessage());
+                log.error("Could not extract text from uploaded file", e);
             }
 
             // The location is set to the filename because we can derive it's location from the candidate number
@@ -209,45 +187,6 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         return candidateAttachmentRepository.save(candidateAttachment);
     }
 
-    public String getTextFromPDFFile(File srcFile) throws IOException {
-        PDFTextStripper tStripper = new PDFTextStripper();
-        tStripper.setSortByPosition(true);
-        PDDocument document = PDDocument.load(srcFile);
-        String pdfFileInText = "";
-        if (!document.isEncrypted()) {
-            pdfFileInText = tStripper.getText(document);
-        }
-        return pdfFileInText.trim();
-    }
 
-    public String getTextFromDocxFile(File srcFile) throws IOException {
-        FileInputStream fis = new FileInputStream(srcFile);
-        XWPFDocument doc = new XWPFDocument(fis);
-        XWPFWordExtractor xwe = new XWPFWordExtractor(doc);
-        String docxTxt = xwe.getText();
-        xwe.close();
-        return docxTxt;
-    }
-
-    public String getTextFromDocFile(File srcFile) throws IOException {
-        FileInputStream fis = new FileInputStream(srcFile);
-        HWPFDocument document = new HWPFDocument(fis);
-        WordExtractor we = new WordExtractor(document);
-        String docTxt = we.getText();
-        we.close();
-        return docTxt;
-    }
-
-    public String getTextFromTxtFile(File srcFile) throws IOException {
-        String txt = new String(Files.readAllBytes(Paths.get(srcFile.getPath())));
-        return txt;
-    }
-
-    private static String getFileExtension(String fileName) {
-        // Checks that a . exists and that it isn't at the start of the filename (indication there is no file name just a file type e.g. ".pdf"
-        if(fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
-            return fileName.substring(fileName.lastIndexOf(".")+1);
-        else return "";
-    }
 
 }

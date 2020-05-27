@@ -148,7 +148,7 @@ public class SystemAdminApi {
         return "done";
     }
 
-    void extractTextFromMigratedPdf() {
+    private void extractTextFromMigratedPdf() {
         List<CandidateAttachment> candidatePdfs = candidateAttachmentRepository.findByFileType("pdf");
 
         for(CandidateAttachment pdf : candidatePdfs){
@@ -172,17 +172,17 @@ public class SystemAdminApi {
                 }
                 document.close();
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                log.error("unable to extract text from pdf " + pdf.getName(), e);
             }
         }
     }
 
-    void extractTextFromMigratedDocx() {
+    private void extractTextFromMigratedDocx() {
         List<CandidateAttachment> candidateDocs = candidateAttachmentRepository.findByFileType("docx");
 
-        for(CandidateAttachment doc : candidateDocs) {
+        for(CandidateAttachment docx : candidateDocs) {
             try {
-                String uniqueFilename = doc.getLocation();
+                String uniqueFilename = docx.getLocation();
                 String destination = "candidate/migrated/" + uniqueFilename;
                 File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
 
@@ -190,16 +190,16 @@ public class SystemAdminApi {
                 XWPFDocument document = new XWPFDocument(fis);
                 XWPFWordExtractor xwe = new XWPFWordExtractor(document);
                 String theText = xwe.getText();
-                doc.setTextExtract(theText);
-                candidateAttachmentRepository.save(doc);
+                docx.setTextExtract(theText);
+                candidateAttachmentRepository.save(docx);
                 xwe.close();
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                log.error("unable to extract text from docx " + docx.getName(), e);
             }
         }
     }
 
-    void extractTextFromMigratedDoc() {
+    private void extractTextFromMigratedDoc() {
         List<CandidateAttachment> candidateDocs = candidateAttachmentRepository.findByFileType("doc");
 
         for(CandidateAttachment doc : candidateDocs) {
@@ -216,7 +216,7 @@ public class SystemAdminApi {
                 candidateAttachmentRepository.save(doc);
                 we.close();
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                log.error("unable to extract text from doc " + doc.getName(), e);
             }
 
         }
