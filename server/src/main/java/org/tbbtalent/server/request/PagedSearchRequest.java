@@ -7,17 +7,20 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * Request that includes paging and sorting fields.
+ */
 @Getter @Setter @ToString
-public class SearchRequest {
+public class PagedSearchRequest {
     private Integer pageSize;
     private Integer pageNumber;
     private Sort.Direction sortDirection;
     private String[] sortFields;
 
-    public SearchRequest() {
+    public PagedSearchRequest() {
     }
 
-    public SearchRequest(Sort.Direction sortDirection, String[] sortFields) {
+    public PagedSearchRequest(Sort.Direction sortDirection, String[] sortFields) {
         this.sortDirection = sortDirection;
         this.sortFields = sortFields;
     }

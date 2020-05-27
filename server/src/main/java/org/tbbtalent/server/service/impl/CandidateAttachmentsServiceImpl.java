@@ -1,5 +1,8 @@
 package org.tbbtalent.server.service.impl;
 
+import java.util.List;
+import java.util.UUID;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,10 +13,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.*;
+import org.tbbtalent.server.model.AttachmentType;
+import org.tbbtalent.server.model.Candidate;
+import org.tbbtalent.server.model.CandidateAttachment;
+import org.tbbtalent.server.model.Role;
+import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.repository.CandidateAttachmentRepository;
 import org.tbbtalent.server.repository.CandidateRepository;
-import org.tbbtalent.server.request.SearchRequest;
+import org.tbbtalent.server.request.PagedSearchRequest;
 import org.tbbtalent.server.request.attachment.CreateCandidateAttachmentRequest;
 import org.tbbtalent.server.request.attachment.SearchCandidateAttachmentsRequest;
 import org.tbbtalent.server.request.attachment.UpdateCandidateAttachmentRequest;
@@ -58,7 +65,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     }
 
     @Override
-    public Page<CandidateAttachment> searchCandidateAttachmentsForLoggedInCandidate(SearchRequest request) {
+    public Page<CandidateAttachment> searchCandidateAttachmentsForLoggedInCandidate(PagedSearchRequest request) {
         Candidate candidate = userContext.getLoggedInCandidate();
         return candidateAttachmentRepository.findByCandidateId(candidate.getId(), request.getPageRequest());
     }
@@ -186,7 +193,5 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
         return candidateAttachmentRepository.save(candidateAttachment);
     }
-
-
 
 }

@@ -12,11 +12,11 @@ import org.tbbtalent.server.model.CandidateStatus;
 import org.tbbtalent.server.model.Gender;
 import org.tbbtalent.server.model.SearchType;
 import org.tbbtalent.server.model.ShortlistStatus;
-import org.tbbtalent.server.request.SearchRequest;
+import org.tbbtalent.server.request.PagedSearchRequest;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-public class SearchCandidateRequest extends SearchRequest {
+public class SearchCandidateRequest extends PagedSearchRequest {
 
     private Long savedSearchId;
     private String keyword;

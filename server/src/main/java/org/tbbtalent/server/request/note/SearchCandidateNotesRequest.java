@@ -1,10 +1,10 @@
 package org.tbbtalent.server.request.note;
 
-import org.tbbtalent.server.request.SearchRequest;
-
 import javax.validation.constraints.NotNull;
 
-public class SearchCandidateNotesRequest extends SearchRequest {
+import org.tbbtalent.server.request.PagedSearchRequest;
+
+public class SearchCandidateNotesRequest extends PagedSearchRequest {
 
     @NotNull
     private Long candidateId;

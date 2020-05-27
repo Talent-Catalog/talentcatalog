@@ -1,8 +1,8 @@
 package org.tbbtalent.server.request.candidate;
 
-import org.tbbtalent.server.request.SearchRequest;
+import org.tbbtalent.server.request.PagedSearchRequest;
 
-public class CandidateEmailSearchRequest extends SearchRequest {
+public class CandidateEmailSearchRequest extends PagedSearchRequest {
 
     private String candidateEmail;
 
