@@ -147,7 +147,6 @@ class SavedListRepositoryTest {
         SearchSavedListRequest request = new SearchSavedListRequest();
         request.setOwned(true);
         request.setShared(true);
-        request.setFixed(true);
         
         GetSavedListsQuery getSavedListsQuery;
         Sort sort;
@@ -188,7 +187,7 @@ class SavedListRepositoryTest {
         SearchSavedListRequest request = new SearchSavedListRequest();
         request.setOwned(true);
         request.setShared(true);
-        request.setFixed(true);
+        request.setFixed(false);
         request.setPageNumber(0);
         request.setPageSize(4);
         request.setSortDirection(Sort.Direction.ASC);
