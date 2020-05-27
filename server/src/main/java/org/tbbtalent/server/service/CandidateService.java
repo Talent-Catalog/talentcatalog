@@ -41,7 +41,7 @@ public interface CandidateService {
 
     Page<Candidate> searchCandidates(CandidatePhoneSearchRequest request);
 
-    Page<Candidate> getSavedListCandidates(SavedListGetRequest request);
+    Page<Candidate> getSavedListCandidates(long id, SavedListGetRequest request);
 
     Candidate getCandidate(long id);
 

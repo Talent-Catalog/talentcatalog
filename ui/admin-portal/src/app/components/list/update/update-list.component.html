@@ -1,0 +1,48 @@
+<!--
+  ~ Copyright (c) 2020 Talent Beyond Boundaries. All rights reserved.
+  -->
+
+<div class="modal-header">
+
+  <h4 class="modal-title">Make New Saved List</h4>
+
+  <button type="button" class="close" aria-label="Close" (click)="dismiss()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+
+</div>
+
+<div class="modal-body">
+
+  <div class="alert alert-danger" *ngIf="error">
+    {{error}}
+  </div>
+
+  <form [formGroup]="form">
+    <div class="form-group" >
+      <label for="name">Name *</label>
+      <input type="text" class="form-control" id="name" formControlName="name" required>
+      <div *ngIf="name.invalid && (name.dirty || name.touched)"
+           class="alert alert-danger">
+        <div *ngIf="name.errors.required">
+          Name is required.
+        </div>
+      </div>
+    </div>
+    <hr/>
+    <div *ngIf="savedList">
+      <!--todo-->
+      <!--      <app-saved-list [savedList]="savedList" [showAll]="true" [showMore]="false" [showOpen]="false"></app-saved-list>-->
+    </div>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary" (click)="save()"
+          [disabled]="form?.invalid || saving">
+    <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
+    Save
+  </button>
+</div>
+
+

@@ -8,6 +8,17 @@ import {EditCandidateStatusComponent} from "./status/edit-candidate-status.compo
 import {Title} from "@angular/platform-browser";
 import {AuthService} from "../../../services/auth.service";
 import {User} from "../../../model/user";
+import {IDropdownSettings} from "ng-multiselect-dropdown";
+import {ListItem} from "ng-multiselect-dropdown/multiselect.model";
+import {CreateListComponent} from "../../list/create/create-list.component";
+import {
+  SavedList,
+  SearchSavedListRequest,
+  UpdateSavedListContentsRequest
+} from "../../../model/saved-list";
+import {SavedListService} from "../../../services/saved-list.service";
+import {CandidateSavedListService} from "../../../services/candidate-saved-list.service";
+import {SavedListCandidateService} from "../../../services/saved-list-candidate.service";
 
 @Component({
   selector: 'app-view-candidate',
@@ -17,14 +28,28 @@ import {User} from "../../../model/user";
 export class ViewCandidateComponent implements OnInit {
 
   loading: boolean;
-  loadingError : boolean;
+  loadingError: boolean;
   error;
   candidate: Candidate;
-  mainColWidth=8;
-  sidePanelColWidth=4;
+  mainColWidth = 8;
+  sidePanelColWidth = 4;
   loggedInUser: User;
 
+  selectedLists: SavedList[];
+  lists: SavedList[] = [];
+  /* MULTI SELECT */
+  dropdownSettings: IDropdownSettings = {
+    idField: 'id',
+    textField: 'name',
+    enableCheckAll: false,
+    singleSelection: false,
+    allowSearchFilter: true
+  };
+
   constructor(private candidateService: CandidateService,
+              private savedListService: SavedListService,
+              private candidateSavedListService: CandidateSavedListService,
+              private savedListCandidateService: SavedListCandidateService,
               private route: ActivatedRoute,
               private router: Router,
               private modalService: NgbModal,
@@ -34,7 +59,7 @@ export class ViewCandidateComponent implements OnInit {
   ngOnInit() {
     this.loadingError = false;
     this.route.paramMap.subscribe(params => {
-      let candidateNumber = params.get('candidateNumber');
+      const candidateNumber = params.get('candidateNumber');
       this.loading = true;
       this.error = null;
       this.loadingError = false;
@@ -42,22 +67,59 @@ export class ViewCandidateComponent implements OnInit {
         if (candidate == null) {
           this.loadingError = true;
           this.error = 'There is no candidate with number: ' + params.get('candidateNumber');
+          this.loading = false;
         } else {
           this.setCandidate(candidate);
+          this.loadLists();
         }
-        this.loading = false;
-      },error => {
+      }, error => {
         this.loadingError = true;
         this.error = error;
         this.loading = false;
       });
     });
+
     this.loggedInUser = this.authService.getLoggedInUser();
+
     console.log(this.loggedInUser);
   }
 
+  private loadLists() {
+    /*load all our non fixed lists */
+    this.loading = true;
+    const request: SearchSavedListRequest = {
+      owned: true,
+      shared: true,
+      fixed: false
+    };
+
+    //todo ForkJoin these two
+    this.savedListService.listSavedLists(request).subscribe(
+      (response) => {
+        this.lists = response;
+        this.loading = false;
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      }
+    );
+
+    //Get the non fixed lists known to owner that this candidate currently belongs to.
+    this.candidateSavedListService.search(this.candidate.id, request).subscribe(
+      (response) => {
+        this.selectedLists = response;
+        this.loading = false;
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      }
+    );
+  }
+
   deleteCandidate() {
-    let modal = this.modalService.open(DeleteCandidateComponent);
+    const modal = this.modalService.open(DeleteCandidateComponent);
     modal.componentInstance.candidate = this.candidate;
     modal.result.then(result => {
       this.router.navigate(['/candidates']);
@@ -65,31 +127,31 @@ export class ViewCandidateComponent implements OnInit {
   }
 
   editCandidate() {
-    let modal = this.modalService.open(EditCandidateStatusComponent);
+    const modal = this.modalService.open(EditCandidateStatusComponent);
     modal.componentInstance.candidateId = this.candidate.id;
     modal.result
-      .then(result => {this.setCandidate(result);})
+      .then(result => {this.setCandidate(result); } )
       .catch(() => { /* Isn't possible */ });
   }
 
-  resizeSidePanel(){
-    this.mainColWidth = this.mainColWidth == 8 ? this.mainColWidth - 4 : this.mainColWidth + 4;
-    this.sidePanelColWidth = this.mainColWidth == 4 ? this.sidePanelColWidth + 4 : this.sidePanelColWidth - 4;
+  resizeSidePanel() {
+    this.mainColWidth = this.mainColWidth === 8 ? this.mainColWidth - 4 : this.mainColWidth + 4;
+    this.sidePanelColWidth = this.mainColWidth === 4 ? this.sidePanelColWidth + 4 : this.sidePanelColWidth - 4;
   }
 
 
   setCandidate(value: Candidate) {
     this.candidate = value;
-    if(this.candidate.user.firstName && this.candidate.user.lastName){
+    if (this.candidate.user.firstName && this.candidate.user.lastName) {
       this.titleService.setTitle(this.candidate.user.firstName + ' '
         + this.candidate.user.lastName + ' ' + this.candidate.candidateNumber);
     } else {
-      this.titleService.setTitle(this.candidate.candidateNumber)
+      this.titleService.setTitle(this.candidate.candidateNumber);
     }
   }
 
   downloadCV() {
-      let tab = window.open();
+      const tab = window.open();
       this.candidateService.downloadCv(this.candidate.id).subscribe(
         result => {
           tab.location.href = URL.createObjectURL(result);
@@ -97,7 +159,57 @@ export class ViewCandidateComponent implements OnInit {
         error => {
           this.error = error;
         }
-      )
+      );
   }
 
+  onItemSelect($event: ListItem) {
+    const savedListId: number = +$event.id;
+    this.addCandidateToList(savedListId);
+  }
+
+  onItemDeSelect($event: ListItem) {
+    const savedListId: number = +$event.id;
+    this.removeCandidateFromList(savedListId);
+  }
+
+  onNewList() {
+    const modal = this.modalService.open(CreateListComponent);
+    modal.result
+      .then((savedList) => {
+        this.addCandidateToList(savedList.id);
+        //todo Currently this does not update the selected items
+      })
+      .catch(() => { /* Isn't possible */
+      });
+  }
+
+  private addCandidateToList(savedListId: number) {
+    const request: UpdateSavedListContentsRequest = {
+      candidateIds: [this.candidate.id]
+    };
+    this.savedListCandidateService.merge(savedListId, request).subscribe(
+          (ok) => {
+            const x: boolean = ok;
+          },
+          (error) => {
+            this.error = error;
+          }
+
+    );
+  }
+
+  private removeCandidateFromList(savedListId: number) {
+    const request: UpdateSavedListContentsRequest = {
+      candidateIds: [this.candidate.id]
+    };
+    this.savedListCandidateService.remove(savedListId, request).subscribe(
+          (ok) => {
+            const x: boolean = ok;
+          },
+          (error) => {
+            this.error = error;
+          }
+
+    );
+  }
 }

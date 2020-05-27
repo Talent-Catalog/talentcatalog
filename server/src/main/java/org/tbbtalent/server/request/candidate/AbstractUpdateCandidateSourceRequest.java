@@ -26,7 +26,7 @@ public abstract class AbstractUpdateCandidateSourceRequest {
     private String name;
     private Boolean fixed;
 
-    protected void populateFromRequest(AbstractCandidateSource candidateSource) {
+    public void populateFromRequest(AbstractCandidateSource candidateSource) {
         candidateSource.setName(name);
         candidateSource.setFixed(fixed);
     }

@@ -21,12 +21,12 @@ import org.tbbtalent.server.request.list.SearchSavedListRequest;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Specification which defines a SavedListGetQuery
+ * Specification which defines a GetSavedListsQuery
  *
  * @author John Cameron
  */
 @RequiredArgsConstructor
-public class SavedListGetQuery implements Specification<SavedList> {
+public class GetSavedListsQuery implements Specification<SavedList> {
     final private SearchSavedListRequest request;
     final private User loggedInUser;
     
@@ -44,15 +44,15 @@ public class SavedListGetQuery implements Specification<SavedList> {
                      cb.like(cb.lower(savedList.get("name")), likeMatchTerm));
         }
 
-        // AND (fixed OR shared OR owned) - if any are true
-        Predicate ors = cb.disjunction();
-
         //If fixed is specified, only supply matching saved searches
         if (request.getFixed() != null && request.getFixed()) {
-            ors.getExpressions().add(
+            conjunction.getExpressions().add(
                     cb.equal(savedList.get("fixed"), request.getFixed())
             );
         }
+
+        // (shared OR owned)
+        Predicate ors = cb.disjunction();
 
         //If shared is specified, only supply searches shared with the owner
         if (request.getShared() != null && request.getShared()) {
@@ -79,7 +79,9 @@ public class SavedListGetQuery implements Specification<SavedList> {
             }
         }
 
-        conjunction.getExpressions().add(ors);
+        if (ors.getExpressions().size() != 0) {
+            conjunction.getExpressions().add(ors);
+        }
 
         return conjunction;
     }

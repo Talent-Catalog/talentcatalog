@@ -44,7 +44,24 @@
           </a>
       </span>
     </h1>
+    <div>
+      <label>Lists</label>
+      <div>
+        <button class="btn btn-link" type="button"
+                (click)="onNewList()">New List
+        </button>
+      </div>
 
+      <ng-multiselect-dropdown
+        id="savedLists"
+        [data]="lists"
+        [settings]="dropdownSettings"
+        [(ngModel)]="selectedLists"
+        (onSelect)="onItemSelect($event)"
+        (onDeSelect)="onItemDeSelect($event)">
+      </ng-multiselect-dropdown>
+
+    </div>
   </div>
 
   <div class="row">

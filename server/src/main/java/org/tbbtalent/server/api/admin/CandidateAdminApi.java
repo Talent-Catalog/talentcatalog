@@ -6,7 +6,6 @@ import java.rmi.server.ExportException;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.NotNull;
 
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +22,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.Candidate;
-import org.tbbtalent.server.model.Role;
-import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
 import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tbbtalent.server.request.candidate.CandidatePhoneSearchRequest;
 import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
-import org.tbbtalent.server.request.candidate.SavedListGetRequest;
 import org.tbbtalent.server.request.candidate.SavedSearchRunRequest;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
@@ -46,111 +42,109 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
 public class CandidateAdminApi {
 
     private final CandidateService candidateService;
-    private final UserContext userContext;
+    private final CandidateBuilderSelector builderSelector;
 
     @Autowired
     public CandidateAdminApi(CandidateService candidateService,
                              UserContext userContext) {
         this.candidateService = candidateService;
-        this.userContext = userContext;
+        builderSelector = new CandidateBuilderSelector(userContext);
     }
 
     @PostMapping("runsavedsearch")
     public Map<String, Object> runSavedSearch(@RequestBody SavedSearchRunRequest request) {
         Page<Candidate> candidates = this.candidateService.searchCandidates(request);
-        DtoBuilder builder = selectBuilder();
+        DtoBuilder builder = builderSelector.selectBuilder();
         return builder.buildPage(candidates);
     }
 
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchCandidateRequest request) {
         Page<Candidate> candidates = this.candidateService.searchCandidates(request);
-        DtoBuilder builder = selectBuilder();
-        return builder.buildPage(candidates);
-    }
-
-    @GetMapping("saved-list")
-    public Map<String, Object> getSavedList(@RequestBody SavedListGetRequest request) {
-        Page<Candidate> candidates = this.candidateService.getSavedListCandidates(request);
-        DtoBuilder builder = selectBuilder();
+        DtoBuilder builder = builderSelector.selectBuilder();
         return builder.buildPage(candidates);
     }
     
     @PostMapping("findbyemail")
     public Map<String, Object> findByCandidateEmail(@RequestBody CandidateEmailSearchRequest request) {
         Page<Candidate> candidates = this.candidateService.searchCandidates(request);
-        //TODO JC Should all these dto's use selectBuilder
-        Map<String, Object> map = candidateBaseDto().buildPage(candidates);
-        return map;
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.buildPage(candidates);
     }
 
     @PostMapping("findbynumberorname")
     public Map<String, Object> findByCandidateNumberOrName(@RequestBody CandidateNumberOrNameSearchRequest request) {
         Page<Candidate> candidates = this.candidateService.searchCandidates(request);
-        Map<String, Object> map = candidateBaseDto().buildPage(candidates);
-        return map;
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.buildPage(candidates);
     }
 
     @PostMapping("findbyphone")
     public Map<String, Object> findByCandidatePhone(@RequestBody CandidatePhoneSearchRequest request) {
         Page<Candidate> candidates = this.candidateService.searchCandidates(request);
-        Map<String, Object> map = candidateBaseDto().buildPage(candidates);
-        return map;
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.buildPage(candidates);
     }
 
     @GetMapping("number/{number}")
     public Map<String, Object> get(@PathVariable("number") String number) {
         Candidate candidate = this.candidateService.findByCandidateNumber(number);
-        DtoBuilder builder = selectBuilder();
+        DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
     }
 
     @GetMapping("{id}")
     public Map<String, Object> get(@PathVariable("id") long id) {
         Candidate candidate = this.candidateService.getCandidate(id);
-        DtoBuilder builder = selectBuilder();
+        DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
     }
     
     @PostMapping
     public Map<String, Object> create(@RequestBody CreateCandidateRequest request) throws UsernameTakenException {
         Candidate candidate = this.candidateService.createCandidate(request);
-        return candidateDto().build(candidate);
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.build(candidate);
     }
 
     @PutMapping("{id}/links")
     public Map<String, Object> updateLinks(@PathVariable("id") long id,
                             @RequestBody UpdateCandidateLinksRequest request) {
         Candidate candidate = this.candidateService.updateCandidateLinks(id, request);
-        return candidateDto().build(candidate);
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.build(candidate);
     }
 
     @PutMapping("{id}/status")
     public Map<String, Object> update(@PathVariable("id") long id,
                             @RequestBody UpdateCandidateStatusRequest request) {
         Candidate candidate = this.candidateService.updateCandidateStatus(id, request);
-        return candidateDto().build(candidate);
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.build(candidate);
     }
 
     @PutMapping("{id}")
     public Map<String, Object> updateContactDetails(@PathVariable("id") long id,
                                       @RequestBody UpdateCandidateRequest request) {
         Candidate candidate = this.candidateService.updateCandidate(id, request);
-        return candidateDto().build(candidate);
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.build(candidate);
     }
 
     @PutMapping("{id}/info")
     public Map<String, Object> updateAdditionalInfo(@PathVariable("id") long id,
                                                     @RequestBody UpdateCandidateAdditionalInfoRequest request) {
         Candidate candidate = this.candidateService.updateCandidateAdditionalInfo(id, request);
-        return candidateDto().build(candidate);
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.build(candidate);
     }
 
     @PutMapping("{id}/survey")
     public Map<String, Object> updateSurvey(@PathVariable("id") long id,
                                                     @RequestBody UpdateCandidateSurveyRequest request) {
         Candidate candidate = this.candidateService.updateCandidateSurvey(id, request);
-        return candidateDto().build(candidate);
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.build(candidate);
     }
 
     @DeleteMapping("{id}")
@@ -188,157 +182,6 @@ public class CandidateAdminApi {
             IOUtils.copy(reportStream, response.getOutputStream());
             response.flushBuffer();
         }
-    }
-
-    private @NotNull DtoBuilder selectBuilder() {
-        DtoBuilder builder;
-        User user = userContext.getLoggedInUser();
-        if (user.getRole() == Role.admin || user.getRole() == Role.sourcepartneradmin) {
-            builder = candidateBaseDto();
-        } else if (user.getRole() == Role.semilimited){
-            builder = candidateSemiLimitedDto();
-        } else {
-            builder = candidateLimitedDto();
-        }
-        return builder;
-    }
-
-    private DtoBuilder candidateBaseDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("status")
-                .add("candidateNumber")
-                .add("gender")
-                .add("dob")
-                .add("phone")
-                .add("whatsapp")
-                .add("city")
-                .add("address1")
-                .add("yearOfArrival")
-                .add("additionalInfo")
-                .add("candidateMessage")
-                .add("folderlink")
-                .add("sflink")
-                .add("videolink")
-                .add("unRegistered")
-                .add("unRegistrationNumber")
-                .add("surveyComment")
-                .add("surveyType", surveyTypeDto())
-                .add("country", countryDto())
-                .add("nationality", nationalityDto())
-                .add("user", userDto())
-                .add("candidateShortlistItems", shortlistDto())
-                ;
-    }
-
-    private DtoBuilder candidateDto() {
-        return candidateBaseDto()
-                .add("maxEducationLevel", educationLevelDto())
-                .add("user", userDto())
-                .add("candidateShortlistItems", shortlistDto())
-                ;
-    }
-
-    private DtoBuilder candidateSemiLimitedDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("status")
-                .add("candidateNumber")
-                .add("gender")
-                .add("dob")
-                .add("city")
-                .add("address1")
-                .add("yearOfArrival")
-                .add("additionalInfo")
-                .add("candidateMessage")
-                .add("folderlink")
-                .add("sflink")
-                .add("country", countryDto())
-                .add("user",userSemiLimitedDto())
-                .add("nationality", nationalityDto())
-                .add("candidateShortlistItems", shortlistDto())
-                ;
-    }
-
-    private DtoBuilder candidateLimitedDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("status")
-                .add("candidateNumber")
-                .add("gender")
-                .add("dob")
-                .add("yearOfArrival")
-                .add("additionalInfo")
-                .add("candidateMessage")
-                .add("folderlink")
-                .add("sflink")
-                .add("user",userSemiLimitedDto())
-                .add("candidateShortlistItems", shortlistDto())
-                ;
-    }
-
-    private DtoBuilder userDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("firstName")
-                .add("lastName")
-                .add("email")
-                ;
-    }
-
-    private DtoBuilder userSemiLimitedDto() {
-        return new DtoBuilder()
-                .add("id")
-                ;
-    }
-
-    private DtoBuilder countryDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
-                ;
-    }
-
-    private DtoBuilder nationalityDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
-                ;
-    }
-
-    private DtoBuilder shortlistDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("shortlistStatus")
-                .add("savedSearch", savedSearchDto())
-                ;
-    }
-
-    private DtoBuilder surveyTypeDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
-                ;
-    }
-
-    private DtoBuilder savedSearchDto() {
-        return new DtoBuilder()
-                .add("id")
-                ;
-    }
-
-    private DtoBuilder educationMajor() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
-                ;
-    }
-
-    private DtoBuilder educationLevelDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
-                ;
     }
 
 }

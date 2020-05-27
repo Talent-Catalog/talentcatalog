@@ -91,6 +91,12 @@ public class SavedList extends AbstractCandidateSource {
         //list to the candidate's collection of lists that they belong to.
         candidate.getSavedLists().add(this);
     }
+    
+    public void removeCandidates(Set<Candidate> candidates) {
+        for (Candidate candidate : candidates) {
+            removeCandidate(candidate);
+        }
+    }
 
     /**
      * Remove the given candidate from this list
