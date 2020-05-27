@@ -37,6 +37,7 @@ public class TextExtractHelper {
             if (!document.isEncrypted()) {
                 pdfFileInText = tStripper.getText(document);
             }
+            document.close();
             return pdfFileInText.trim();
         }
 
