@@ -12,13 +12,14 @@ import {IDropdownSettings} from "ng-multiselect-dropdown";
 import {ListItem} from "ng-multiselect-dropdown/multiselect.model";
 import {CreateListComponent} from "../../list/create/create-list.component";
 import {
+  IHasSetOfCandidates,
   SavedList,
-  SearchSavedListRequest,
-  UpdateSavedListContentsRequest
+  SearchSavedListRequest
 } from "../../../model/saved-list";
 import {SavedListService} from "../../../services/saved-list.service";
 import {CandidateSavedListService} from "../../../services/candidate-saved-list.service";
 import {SavedListCandidateService} from "../../../services/saved-list-candidate.service";
+import {forkJoin} from "rxjs";
 
 @Component({
   selector: 'app-view-candidate',
@@ -35,13 +36,13 @@ export class ViewCandidateComponent implements OnInit {
   sidePanelColWidth = 4;
   loggedInUser: User;
 
-  selectedLists: SavedList[];
+  selectedLists: SavedList[] = [];
   lists: SavedList[] = [];
   /* MULTI SELECT */
   dropdownSettings: IDropdownSettings = {
     idField: 'id',
     textField: 'name',
-    enableCheckAll: false,
+    enableCheckAll: true,
     singleSelection: false,
     allowSearchFilter: true
   };
@@ -93,23 +94,14 @@ export class ViewCandidateComponent implements OnInit {
       fixed: false
     };
 
-    //todo ForkJoin these two
-    this.savedListService.listSavedLists(request).subscribe(
-      (response) => {
-        this.lists = response;
+    forkJoin( {
+      'lists': this.savedListService.listSavedLists(request),
+      'selectedLists': this.candidateSavedListService.search(this.candidate.id, request)
+    }).subscribe(
+      results => {
         this.loading = false;
-      },
-      (error) => {
-        this.error = error;
-        this.loading = false;
-      }
-    );
-
-    //Get the non fixed lists known to owner that this candidate currently belongs to.
-    this.candidateSavedListService.search(this.candidate.id, request).subscribe(
-      (response) => {
-        this.selectedLists = response;
-        this.loading = false;
+        this.lists = results['lists'];
+        this.selectedLists = results['selectedLists'];
       },
       (error) => {
         this.error = error;
@@ -164,7 +156,7 @@ export class ViewCandidateComponent implements OnInit {
 
   onItemSelect($event: ListItem) {
     const savedListId: number = +$event.id;
-    this.addCandidateToList(savedListId);
+    this.addCandidateToList(savedListId, false);
   }
 
   onItemDeSelect($event: ListItem) {
@@ -172,24 +164,34 @@ export class ViewCandidateComponent implements OnInit {
     this.removeCandidateFromList(savedListId);
   }
 
+  onSelectAll($event: Array<ListItem>) {
+    this.setCandidateLists(this.lists);
+  }
+
+  onDeSelectAll($event: Array<ListItem>) {
+    this.setCandidateLists(null);
+  }
+
   onNewList() {
     const modal = this.modalService.open(CreateListComponent);
     modal.result
-      .then((savedList) => {
-        this.addCandidateToList(savedList.id);
-        //todo Currently this does not update the selected items
+      .then((savedList: SavedList) => {
+        this.addCandidateToList(savedList.id, true);
       })
       .catch(() => { /* Isn't possible */
       });
   }
 
-  private addCandidateToList(savedListId: number) {
-    const request: UpdateSavedListContentsRequest = {
+  private addCandidateToList(savedListId: number, reload: boolean) {
+    const request: IHasSetOfCandidates = {
       candidateIds: [this.candidate.id]
     };
     this.savedListCandidateService.merge(savedListId, request).subscribe(
           (ok) => {
             const x: boolean = ok;
+            if (reload) {
+              this.loadLists();
+            }
           },
           (error) => {
             this.error = error;
@@ -198,8 +200,27 @@ export class ViewCandidateComponent implements OnInit {
     );
   }
 
+  private setCandidateLists(lists: SavedList[]) {
+    const ids: number[] = [];
+    if (lists !== null && lists.length > 0) {
+      for (const savedList of lists) {
+        ids.push(savedList.id);
+      }
+    }
+    this.candidateSavedListService.replace(this.candidate.id,
+      {savedListIds: ids})
+      .subscribe(
+        (ok) => {
+          const x: boolean = ok;
+        },
+        (error) => {
+          this.error = error;
+        }
+      );
+  }
+
   private removeCandidateFromList(savedListId: number) {
-    const request: UpdateSavedListContentsRequest = {
+    const request: IHasSetOfCandidates = {
       candidateIds: [this.candidate.id]
     };
     this.savedListCandidateService.remove(savedListId, request).subscribe(
@@ -209,7 +230,6 @@ export class ViewCandidateComponent implements OnInit {
           (error) => {
             this.error = error;
           }
-
     );
   }
 }

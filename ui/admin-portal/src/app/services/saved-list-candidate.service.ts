@@ -6,7 +6,7 @@ import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {UpdateSavedListContentsRequest} from "../model/saved-list";
+import {IHasSetOfCandidates} from "../model/saved-list";
 
 @Injectable({
   providedIn: 'root'
@@ -18,15 +18,15 @@ export class SavedListCandidateService {
   constructor(private http: HttpClient) {
   }
 
-  merge(id: number, request: UpdateSavedListContentsRequest): Observable<boolean> {
+  merge(id: number, request: IHasSetOfCandidates): Observable<boolean> {
     return this.http.put<boolean>(`${this.apiUrl}/${id}/merge`, request);
   }
 
-  remove(id: number, request: UpdateSavedListContentsRequest): Observable<boolean> {
+  remove(id: number, request: IHasSetOfCandidates): Observable<boolean> {
     return this.http.put<boolean>(`${this.apiUrl}/${id}/remove`, request);
   }
 
-  replace(id: number, request: UpdateSavedListContentsRequest): Observable<boolean> {
+  replace(id: number, request: IHasSetOfCandidates): Observable<boolean> {
     return this.http.put<boolean>(`${this.apiUrl}/${id}/replace`, request);
   }
 }

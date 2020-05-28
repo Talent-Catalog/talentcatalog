@@ -55,8 +55,10 @@
       <ng-multiselect-dropdown
         id="savedLists"
         [data]="lists"
-        [settings]="dropdownSettings"
         [(ngModel)]="selectedLists"
+        [settings]="dropdownSettings"
+        (onSelectAll)="onSelectAll($event)"
+        (onDeSelectAll)="onDeSelectAll($event)"
         (onSelect)="onItemSelect($event)"
         (onDeSelect)="onItemDeSelect($event)">
       </ng-multiselect-dropdown>

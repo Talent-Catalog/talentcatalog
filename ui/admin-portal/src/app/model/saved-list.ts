@@ -35,7 +35,11 @@ export interface CreateSavedListRequest {
   candidateIds?: number[];
 }
 
-export interface UpdateSavedListContentsRequest {
+export interface IHasSetOfSavedLists {
+  savedListIds: number[];
+}
+
+export interface IHasSetOfCandidates {
   candidateIds: number[];
 }
 
