@@ -13,8 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.model.SavedList;
-import org.tbbtalent.server.request.candidate.IHasSetOfSavedLists;
+import org.tbbtalent.server.request.candidate.HasSetOfSavedListsImpl;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
+import org.tbbtalent.server.service.CandidateService;
 import org.tbbtalent.server.service.SavedListService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -39,21 +40,29 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
  */
 @RestController()
 @RequestMapping("/api/admin/candidate-saved-list")
-public class CandidateSavedListAdminApi implements IManyToManyApi<SearchSavedListRequest, IHasSetOfSavedLists> {
+public class CandidateSavedListAdminApi implements IManyToManyApi<SearchSavedListRequest, HasSetOfSavedListsImpl> {
 
+    private final CandidateService candidateService;
     private final SavedListService savedListService;
     private final SavedListBuilderSelector builderSelector = new SavedListBuilderSelector();
 
     @Autowired
     public CandidateSavedListAdminApi(
+            CandidateService candidateService,
             SavedListService savedListService) {
+        this.candidateService = candidateService;
         this.savedListService = savedListService;
     }
 
     @Override
+    public boolean replace(long candidateId, @Valid HasSetOfSavedListsImpl request) {
+        return candidateService.replaceCandidateSavedLists(candidateId, request);
+    }
+
+    @Override
     public List<Map<String, Object>> search(
-            long masterId, @Valid SearchSavedListRequest request) {
-        List<SavedList> savedLists = savedListService.search(masterId, request);
+            long candidateId, @Valid SearchSavedListRequest request) {
+        List<SavedList> savedLists = savedListService.search(candidateId, request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.buildList(savedLists);
     }

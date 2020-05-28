@@ -376,6 +376,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setSavedLists(Set<SavedList> savedLists) {
         this.savedLists.clear();
+        addSavedLists(savedLists);
+    }
+
+    public void addSavedLists(Set<SavedList> savedLists) {
         for (SavedList savedList : savedLists) {
             addSavedList(savedList);
         }
@@ -385,7 +389,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         savedLists.add(savedList);
         savedList.getCandidates().add(this);
     }
-    
+
+    public void removeSavedLists(Set<SavedList> savedLists) {
+        for (SavedList savedList : savedLists) {
+            removeSavedList(savedList);
+        }
+    }
+
     public void removeSavedList(SavedList savedList) {
         savedLists.remove(savedList);
         savedList.getCandidates().remove(this);

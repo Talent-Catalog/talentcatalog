@@ -17,6 +17,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -49,6 +51,7 @@ import org.tbbtalent.server.model.EducationLevel;
 import org.tbbtalent.server.model.Gender;
 import org.tbbtalent.server.model.Nationality;
 import org.tbbtalent.server.model.Role;
+import org.tbbtalent.server.model.SavedList;
 import org.tbbtalent.server.model.SavedSearch;
 import org.tbbtalent.server.model.SearchJoin;
 import org.tbbtalent.server.model.SearchType;
@@ -71,6 +74,7 @@ import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
 import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tbbtalent.server.request.candidate.CandidatePhoneSearchRequest;
 import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
+import org.tbbtalent.server.request.candidate.IHasSetOfSavedLists;
 import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
 import org.tbbtalent.server.request.candidate.SavedListGetRequest;
 import org.tbbtalent.server.request.candidate.SavedSearchRunRequest;
@@ -169,6 +173,83 @@ public class CandidateServiceImpl implements CandidateService {
                 new GetSavedListCandidatesQuery(id, request), request.getPageRequestWithoutSort());
         log.info("Found " + candidatesPage.getTotalElements() + " candidates in list");
         return candidatesPage;
+    }
+
+    @Override
+    public boolean mergeCandidateSavedLists(long candidateId, IHasSetOfSavedLists request) {
+        Candidate candidate = candidateRepository.findByIdLoadSavedLists(candidateId);
+        
+        boolean done = true;
+        if (candidate == null) {
+            done = false;
+        } else {
+            Set<SavedList> savedLists = fetchSavedLists(request);
+            candidate.addSavedLists(savedLists);
+
+            saveIt(candidate);
+        }
+        return done;
+    }
+
+    @Override
+    public boolean removeFromCandidateSavedLists(long candidateId, IHasSetOfSavedLists request) {
+        Candidate candidate = candidateRepository.findByIdLoadSavedLists(candidateId);
+
+        boolean done = true;
+        if (candidate == null) {
+            done = false;
+        } else {
+            Set<SavedList> savedLists = fetchSavedLists(request);
+            candidate.removeSavedLists(savedLists);
+
+            saveIt(candidate);
+        }
+        return done;
+    }
+
+    @Override
+    public boolean replaceCandidateSavedLists(long candidateId, IHasSetOfSavedLists request) {
+        Candidate candidate = candidateRepository.findByIdLoadSavedLists(candidateId);
+
+        boolean done = true;
+        if (candidate == null) {
+            done = false;
+        } else {
+            Set<SavedList> savedLists = fetchSavedLists(request);
+            candidate.setSavedLists(savedLists);
+
+            saveIt(candidate);
+        }
+        return done;
+    }
+
+    private @NotNull Set<SavedList> fetchSavedLists(IHasSetOfSavedLists request) 
+            throws NoSuchObjectException {
+
+        Set<SavedList> savedLists = new HashSet<>();
+
+        Set<Long> savedListIds = request.getSavedListIds();
+        if (savedListIds != null) {
+            for (Long savedListId : savedListIds) {
+                SavedList savedList = savedListRepository.findById(savedListId)
+                        .orElse(null);
+                if (savedList == null) {
+                    throw new NoSuchObjectException(SavedList.class, savedListId);
+                }
+                savedLists.add(savedList);
+            }
+        }
+
+        return savedLists;
+    }
+
+    /**
+     * Update audit fields and use repository to save the Candidate
+     * @param candidate Entity to save
+     */
+    private void saveIt(Candidate candidate) {
+        candidate.setAuditFields(userContext.getLoggedInUser());
+        candidateRepository.save(candidate);
     }
 
     //todo this is horrible cloned code duplicated from SavedSearchServiceImpl - factor it out.

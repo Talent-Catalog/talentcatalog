@@ -15,7 +15,7 @@ import lombok.ToString;
  */
 @Getter
 @Setter
-@ToString(callSuper = true)
+@ToString
 public class HasSetOfCandidatesImpl implements IHasSetOfCandidates {
     private Set<Long> candidateIds;
 }

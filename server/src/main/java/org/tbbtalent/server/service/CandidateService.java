@@ -15,6 +15,7 @@ import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
 import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tbbtalent.server.request.candidate.CandidatePhoneSearchRequest;
 import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
+import org.tbbtalent.server.request.candidate.IHasSetOfSavedLists;
 import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
 import org.tbbtalent.server.request.candidate.SavedListGetRequest;
 import org.tbbtalent.server.request.candidate.SavedSearchRunRequest;
@@ -42,6 +43,34 @@ public interface CandidateService {
     Page<Candidate> searchCandidates(CandidatePhoneSearchRequest request);
 
     Page<Candidate> getSavedListCandidates(long id, SavedListGetRequest request);
+
+    /**
+     * Merge the saved lists indicated in the request into the given candidate's
+     * existing lists.
+     * @param candidateId ID of candidate to be updated
+     * @param request Request containing the saved lists to be merged into the 
+     *                candidate's existing lists
+     * @return False if no candidate with that id was found, otherwise true.
+     */
+    boolean mergeCandidateSavedLists(long candidateId, IHasSetOfSavedLists request);
+
+    /**
+     * Merge the saved lists indicated in the request into the given candidate's
+     * existing lists.
+     * @param candidateId ID of candidate to be updated
+     * @param request Request containing the new saved lists
+     * @return False if no candidate with that id was found, otherwise true.
+     */
+    boolean removeFromCandidateSavedLists(long candidateId, IHasSetOfSavedLists request);
+
+    /**
+     * Replace given candidate's existing lists with the saved lists indicated 
+     * in the request.
+     * @param candidateId ID of candidate to be updated
+     * @param request Request containing the new saved lists
+     * @return False if no candidate with that id was found, otherwise true.
+     */
+    boolean replaceCandidateSavedLists(long candidateId, IHasSetOfSavedLists request);
 
     Candidate getCandidate(long id);
 
