@@ -1,6 +1,7 @@
 package org.tbbtalent.server.service.impl;
 
-import io.jsonwebtoken.lang.Collections;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,14 +19,13 @@ import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.repository.CandidateRepository;
 import org.tbbtalent.server.repository.CountryRepository;
 import org.tbbtalent.server.repository.CountrySpecification;
-import org.tbbtalent.server.request.country.CreateCountryRequest;
 import org.tbbtalent.server.request.country.SearchCountryRequest;
 import org.tbbtalent.server.request.country.UpdateCountryRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.CountryService;
 import org.tbbtalent.server.service.TranslationService;
 
-import java.util.List;
+import io.jsonwebtoken.lang.Collections;
 
 @Service
 public class CountryServiceImpl implements CountryService {
@@ -54,7 +54,7 @@ public class CountryServiceImpl implements CountryService {
         List<Country> countries;
 
         // Restrict access if there are source countries associated to admin user
-        if(user.getSourceCountries().size() > 0){
+        if(user != null && user.getSourceCountries().size() > 0){
             countries = countryRepository.findByStatusAndSourceCountries(Status.active, user.getSourceCountries());
         }else {
             countries = countryRepository.findByStatus(Status.active);
@@ -92,7 +92,7 @@ public class CountryServiceImpl implements CountryService {
 
     @Override
     @Transactional
-    public Country createCountry(CreateCountryRequest request) throws EntityExistsException {
+    public Country createCountry(UpdateCountryRequest request) throws EntityExistsException {
         Country country = new Country(
                 request.getName(), request.getStatus());
         checkDuplicates(null, request.getName());

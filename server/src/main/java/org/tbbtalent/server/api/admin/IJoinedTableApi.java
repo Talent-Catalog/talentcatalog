@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.tbbtalent.server.exception.EntityExistsException;
+import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.NotImplementedException;
@@ -56,11 +57,13 @@ public interface IJoinedTableApi<SEARCH, CREATE, UPDATE> extends ITalentCatalogW
      * Delete the record with the given id.  
      * @param id ID of record to be deleted
      * @return True if record was deleted, false if it was not found.
+     * @throws EntityReferencedException if the object cannot be deleted because 
+     * it is referenced by another object.
      * @throws InvalidRequestException if not authorized to delete this list.
      */
     @DeleteMapping("{id}")
     default boolean delete(@PathVariable("id") long id)
-            throws InvalidRequestException {
+            throws EntityReferencedException, InvalidRequestException {
         throw new NotImplementedException(this.getClass(), "delete");
     }
 

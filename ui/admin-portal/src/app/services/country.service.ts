@@ -18,8 +18,8 @@ export class CountryService {
     return this.http.get<Country[]>(`${this.apiUrl}`);
   }
 
-  search(request): Observable<SearchResults<Country>> {
-    return this.http.post<SearchResults<Country>>(`${this.apiUrl}/search`, request);
+  searchPaged(request): Observable<SearchResults<Country>> {
+    return this.http.post<SearchResults<Country>>(`${this.apiUrl}/search-paged`, request);
   }
 
   get(id: number): Observable<Country> {
