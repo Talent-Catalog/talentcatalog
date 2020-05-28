@@ -32,7 +32,7 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
  * <p/>
  * @author John Cameron
  */
-public interface ITableApi<SEARCH, UPDATE> extends ITalentCatalogWebApi {
+public interface ITableApi<SEARCH, CREATE, UPDATE> extends ITalentCatalogWebApi {
 
     /**
      * Creates a new record from the data in the given request. 
@@ -42,7 +42,7 @@ public interface ITableApi<SEARCH, UPDATE> extends ITalentCatalogWebApi {
      * name) already exists 
      */
     @PostMapping
-    default @NotNull Map<String, Object> create(@Valid @RequestBody UPDATE request) 
+    default @NotNull Map<String, Object> create(@Valid @RequestBody CREATE request) 
             throws EntityExistsException {
         throw new NotImplementedException(this.getClass(), "create");
     }

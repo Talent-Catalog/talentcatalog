@@ -4,15 +4,10 @@ import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.EntityExistsException;
@@ -27,10 +22,9 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()
 @RequestMapping("/api/admin/saved-list")
-public class SavedListAdminApi {
+public class SavedListAdminApi implements 
+        ITableApi<SearchSavedListRequest, CreateSavedListRequest, UpdateSavedListInfoRequest> {
 
-    //TODO JC This should implement the new API
-    
     private final SavedListService savedListService;
     private final SavedListBuilderSelector builderSelector = new SavedListBuilderSelector();
 
@@ -50,9 +44,9 @@ public class SavedListAdminApi {
      * @return The details about the list - but not the contents.  
      * @throws EntityExistsException if a list with this name already exists.
      */
-    @PostMapping
-    public Map<String, Object> create(@Valid @RequestBody CreateSavedListRequest request) 
-            throws EntityExistsException {
+    @Override
+    public @NotNull Map<String, Object> create(
+            @Valid CreateSavedListRequest request) throws EntityExistsException {
         SavedList savedList = savedListService.createSavedList(request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(savedList);
@@ -64,9 +58,8 @@ public class SavedListAdminApi {
      * @return True if list was deleted, false if it was not found.
      * @throws InvalidRequestException if not authorized to delete this list.
      */
-    @DeleteMapping("{id}")
-    public boolean delete(@PathVariable("id") long id) 
-            throws InvalidRequestException {
+    @Override
+    public boolean delete(long id) throws InvalidRequestException {
         return savedListService.deleteSavedList(id);
     }
 
@@ -76,9 +69,8 @@ public class SavedListAdminApi {
      * @return The details about the list - but not the contents.
      * @throws NoSuchObjectException if there is no saved list with this id. 
      */
-    @GetMapping("{id}")
-    public Map<String, Object> get(@PathVariable("id") long id) 
-            throws NoSuchObjectException {
+    @Override
+    public @NotNull Map<String, Object> get(long id) throws NoSuchObjectException {
         SavedList savedList = savedListService.get(id);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(savedList);
@@ -86,17 +78,15 @@ public class SavedListAdminApi {
 
     /**
      * Returns all saved lists matching the request. 
-     * On this API any paging or sorting info in the request is ignored.
-     * The sort is hard coded to ascending by name.
      * <p/>
-     * See also {@link #search(SearchSavedListRequest)} .
+     * See also {@link #searchPaged} .
      * @param request Defines which lists should be returned. Any paging or
      *                sorting fields in the request are ignored.
      * @return All matching SavedLists
      */
-    @PostMapping("list")
-    public List<Map<String, Object>> listSavedLists(
-            @Valid @RequestBody SearchSavedListRequest request) {
+    @Override
+    public @NotNull List<Map<String, Object>> search(
+            @Valid SearchSavedListRequest request) {
         List<SavedList> savedLists = savedListService.listSavedLists(request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.buildList(savedLists);
@@ -104,26 +94,24 @@ public class SavedListAdminApi {
 
     /**
      * Returns the requested page of saved lists matching the request. 
-     * On this API any sorting info in the request is ignored.
-     * The sort is hard coded to ascending by name.
      * <p/>
-     * See also {@link #listSavedLists(SearchSavedListRequest)} 
+     * See also {@link #search} 
      * @param request Defines which lists should be returned. Any sorting fields 
      *                in the request are ignored.
      * @return Requested page of matching SavedLists
      */
-    @PostMapping("search")
-    public Map<String, Object> search(
-            @Valid @RequestBody SearchSavedListRequest request) {
+    @Override
+    public @NotNull Map<String, Object> searchPaged(
+            @Valid SearchSavedListRequest request) {
         Page<SavedList> savedLists = savedListService.searchSavedLists(request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.buildPage(savedLists);
     }
 
-    @PutMapping("{id}")
-    public Map<String, Object> update(@PathVariable("id") long id,
-                        @Valid @RequestBody UpdateSavedListInfoRequest request)
-            throws NoSuchObjectException, EntityExistsException {
+    @Override
+    public @NotNull Map<String, Object> update(
+            long id, @Valid UpdateSavedListInfoRequest request) 
+            throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
         SavedList savedList = savedListService.updateSavedList(id, request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(savedList);

@@ -37,12 +37,12 @@ export class SavedListService {
     return this.http.get<SavedSearch>(`${this.apiUrl}/${id}`);
   }
 
-  listSavedLists(request: SearchSavedListRequest): Observable<SavedList[]> {
-    return this.http.post<SavedList[]>(`${this.apiUrl}/list`, request);
+  search(request: SearchSavedListRequest): Observable<SavedList[]> {
+    return this.http.post<SavedList[]>(`${this.apiUrl}/search`, request);
   }
 
-  search(request: SearchSavedListRequest): Observable<SearchResults<SavedList>> {
-    return this.http.post<SearchResults<SavedList>>(`${this.apiUrl}/search`, request);
+  searchPaged(request: SearchSavedListRequest): Observable<SearchResults<SavedList>> {
+    return this.http.post<SearchResults<SavedList>>(`${this.apiUrl}/search-paged`, request);
   }
 
   update(id: number, request: UpdateSavedListInfoRequest): Observable<SavedList>  {

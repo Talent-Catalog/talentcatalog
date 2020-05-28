@@ -95,7 +95,7 @@ export class ViewCandidateComponent implements OnInit {
     };
 
     forkJoin( {
-      'lists': this.savedListService.listSavedLists(request),
+      'lists': this.savedListService.search(request),
       'selectedLists': this.candidateSavedListService.search(this.candidate.id, request)
     }).subscribe(
       results => {
