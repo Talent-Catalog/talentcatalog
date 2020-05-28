@@ -143,8 +143,13 @@ public class SystemAdminApi {
         }
 
         List<String> types = Arrays.asList("pdf", "docx", "doc", "txt");
-        List<CandidateAttachment> files = candidateAttachmentRepository.findByFileTypes(types);
+        extractTextFromMigratedFiles(textExtractHelper, types);
+        extractTextFromNewFiles(textExtractHelper, types);
+        return "done";
+    }
 
+    private void extractTextFromMigratedFiles(TextExtractHelper textExtractHelper, List<String> types) {
+        List<CandidateAttachment> files = candidateAttachmentRepository.findByFileTypesAndMigrated(types, true);
         for(CandidateAttachment file : files) {
             try {
                 String uniqueFilename = file.getLocation();
@@ -153,90 +158,30 @@ public class SystemAdminApi {
                 String extractedText = textExtractHelper.getTextExtractFromFile(srcFile, file.getFileType());
                 if(StringUtils.isNotBlank(extractedText)) {
                     file.setTextExtract(extractedText);
+                    candidateAttachmentRepository.save(file);
                 }
             } catch (Exception e) {
                 log.error("Unable to extract text from file " + file.getLocation(), e.getMessage());
             }
         }
-//        extractTextFromMigratedPdf();
-//        extractTextFromMigratedDocx();
-//        extractTextFromMigratedDoc();
-        return "done";
     }
 
-    private void extractTextFromMigratedPdf() {
-        List<CandidateAttachment> candidatePdfs = candidateAttachmentRepository.findByFileType("pdf");
-
-        for(CandidateAttachment pdf : candidatePdfs){
+    private void extractTextFromNewFiles(TextExtractHelper textExtractHelper, List<String> types) {
+        List<CandidateAttachment> files = candidateAttachmentRepository.findByFileTypesAndMigrated(types, false);
+        for(CandidateAttachment file : files) {
             try {
-                String uniqueFilename = pdf.getLocation();
-                String destination = "candidate/migrated/" + uniqueFilename;
+                String uniqueFilename = file.getLocation();
+                String destination = "candidate/" + file.getCandidate().getCandidateNumber() + "/" + uniqueFilename;
                 File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
-
-                PDFTextStripper tStripper = new PDFTextStripper();
-                tStripper.setSortByPosition(true);
-                PDDocument document = PDDocument.load(srcFile);
-                String pdfFileInText;
-                if (!document.isEncrypted()) {
-                    pdfFileInText = tStripper.getText(document).trim();
-                    if(StringUtils.isNotBlank(pdfFileInText)) {
-                        pdf.setTextExtract(pdfFileInText);
-                    } else {
-                        pdf.setTextExtract(null);
-                    }
-                    candidateAttachmentRepository.save(pdf);
+                String extractedText = textExtractHelper.getTextExtractFromFile(srcFile, file.getFileType());
+                if (StringUtils.isNotBlank(extractedText)) {
+                    file.setTextExtract(extractedText);
+                    candidateAttachmentRepository.save(file);
                 }
-                document.close();
             } catch (Exception e) {
-                log.error("unable to extract text from pdf " + pdf.getName(), e);
+                log.error("Unable to extract text from new file " + file.getLocation(), e.getMessage());
             }
         }
-    }
-
-    private void extractTextFromMigratedDocx() {
-        List<CandidateAttachment> candidateDocs = candidateAttachmentRepository.findByFileType("docx");
-
-        for(CandidateAttachment docx : candidateDocs) {
-            try {
-                String uniqueFilename = docx.getLocation();
-                String destination = "candidate/migrated/" + uniqueFilename;
-                File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
-
-                FileInputStream fis = new FileInputStream(srcFile);
-                XWPFDocument document = new XWPFDocument(fis);
-                XWPFWordExtractor xwe = new XWPFWordExtractor(document);
-                String theText = xwe.getText();
-                docx.setTextExtract(theText);
-                candidateAttachmentRepository.save(docx);
-                xwe.close();
-            } catch (Exception e) {
-                log.error("unable to extract text from docx " + docx.getName(), e);
-            }
-        }
-    }
-
-    private void extractTextFromMigratedDoc() {
-        List<CandidateAttachment> candidateDocs = candidateAttachmentRepository.findByFileType("doc");
-
-        for(CandidateAttachment doc : candidateDocs) {
-            try {
-                String uniqueFilename = doc.getLocation();
-                String destination = "candidate/migrated/" + uniqueFilename;
-                File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
-
-                FileInputStream fis = new FileInputStream(srcFile);
-                HWPFDocument document = new HWPFDocument(fis);
-                WordExtractor we = new WordExtractor(document);
-                String theText = we.getText();
-                doc.setTextExtract(theText);
-                candidateAttachmentRepository.save(doc);
-                we.close();
-            } catch (Exception e) {
-                log.error("unable to extract text from doc " + doc.getName(), e);
-            }
-
-        }
-
     }
 
     @GetMapping("migrate/survey")

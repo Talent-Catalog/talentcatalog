@@ -92,7 +92,7 @@ import org.tbbtalent.server.service.CandidateNoteService;
 import org.tbbtalent.server.service.CandidateService;
 import org.tbbtalent.server.service.SavedSearchService;
 import org.tbbtalent.server.service.email.EmailHelper;
-import org.tbbtalent.server.service.pdf.PdfHelper;
+import org.tbbtalent.server.service.util.PdfHelper;
 
 import com.opencsv.CSVWriter;
 
