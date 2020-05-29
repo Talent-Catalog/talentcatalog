@@ -1,71 +1,72 @@
 package org.tbbtalent.server.api.admin;
 
+import java.util.List;
+import java.util.Map;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
+import org.tbbtalent.server.exception.InvalidRequestException;
+import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.Country;
-import org.tbbtalent.server.request.country.CreateCountryRequest;
 import org.tbbtalent.server.request.country.SearchCountryRequest;
 import org.tbbtalent.server.request.country.UpdateCountryRequest;
 import org.tbbtalent.server.service.CountryService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
-import javax.validation.Valid;
-import java.util.List;
-import java.util.Map;
-
 @RestController()
 @RequestMapping("/api/admin/country")
-public class CountryAdminApi {
+public class CountryAdminApi implements 
+        ITableApi<SearchCountryRequest, UpdateCountryRequest, UpdateCountryRequest> {
 
     private final CountryService countryService;
 
     @Autowired
     public CountryAdminApi(CountryService countryService) { this.countryService = countryService; }
 
-    @GetMapping()
-    public List<Map<String, Object>> listAllCountries() {
+    @Override
+    public @NotNull List<Map<String, Object>> list() {
         List<Country> countries = countryService.listCountries();
         return countryDto().buildList(countries);
     }
 
-    @PostMapping("search")
-    public Map<String, Object> search(@RequestBody SearchCountryRequest request) {
+    @Override
+    public @NotNull Map<String, Object> searchPaged(
+            @Valid SearchCountryRequest request) {
         Page<Country> countries = this.countryService.searchCountries(request);
         return countryDto().buildPage(countries);
     }
 
-    @GetMapping("{id}")
-    public Map<String, Object> get(@PathVariable("id") long id) {
+    @Override
+    public @NotNull Map<String, Object> get(long id) throws NoSuchObjectException {
         Country country = this.countryService.getCountry(id);
         return countryDto().build(country);
     }
 
-    @PostMapping
-    public Map<String, Object> create(@Valid @RequestBody CreateCountryRequest request) throws EntityExistsException {
+    @Override
+    public @NotNull Map<String, Object> create(@Valid UpdateCountryRequest request) 
+            throws EntityExistsException {
         Country country = this.countryService.createCountry(request);
         return countryDto().build(country);
     }
 
-    @PutMapping("{id}")
-    public Map<String, Object> update(@PathVariable("id") long id,
-                                      @Valid @RequestBody UpdateCountryRequest request) throws EntityExistsException  {
-
+    @Override
+    public @NotNull Map<String, Object> update(
+            long id, @Valid UpdateCountryRequest request) 
+            throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
         Country country = this.countryService.updateCountry(id, request);
         return countryDto().build(country);
     }
 
-    @DeleteMapping("{id}")
-    public boolean delete(@PathVariable("id") long id) throws EntityReferencedException {
+    @Override
+    public boolean delete(long id) 
+            throws EntityReferencedException, InvalidRequestException {
         return this.countryService.deleteCountry(id);
     }
 

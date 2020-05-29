@@ -20,6 +20,7 @@
       "comment-format": [
         false,
         "check-space"
-      ]
+      ],
+      "no-trailing-whitespace": false
     }
 }

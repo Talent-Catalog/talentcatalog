@@ -117,6 +117,8 @@ import {NgxWigModule} from 'ngx-wig';
 import {ViewCandidateSurveyComponent} from './components/candidates/view/survey/view-candidate-survey.component';
 import {EditCandidateAdditionalInfoComponent} from './components/candidates/view/additional-info/edit/edit-candidate-additional-info.component';
 import {EditCandidateSurveyComponent} from './components/candidates/view/survey/edit/edit-candidate-survey.component';
+import {CreateListComponent} from './components/list/create/create-list.component';
+import {UpdateListComponent} from './components/list/update/update-list.component';
 
 @NgModule({
   declarations: [
@@ -225,7 +227,9 @@ import {EditCandidateSurveyComponent} from './components/candidates/view/survey/
     EditCandidateSpecialLinksComponent,
     ViewCandidateSurveyComponent,
     EditCandidateAdditionalInfoComponent,
-    EditCandidateSurveyComponent
+    EditCandidateSurveyComponent,
+    CreateListComponent,
+    UpdateListComponent
   ],
   imports: [
     BrowserModule,
@@ -298,7 +302,9 @@ import {EditCandidateSurveyComponent} from './components/candidates/view/survey/
     EditCandidateSpecialLinksComponent,
     EditCandidateStatusComponent,
     EditCandidateAdditionalInfoComponent,
-    EditCandidateSurveyComponent
+    EditCandidateSurveyComponent,
+    CreateListComponent,
+    UpdateListComponent
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},

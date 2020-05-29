@@ -99,13 +99,12 @@ class CandidateRepositoryEndToEndTest {
         request.setSortFields(new String[] {"nationality.name"});
         request.setSortDirection(Sort.Direction.ASC);
         
-        request.setSavedListId(savedList.getId());
         request.setPageSize(10);
         request.setPageNumber(0);
 
         PageRequest pageRequest = request.getPageRequestWithoutSort();
         Page<Candidate> candidatesPage = candidateRepository.findAll(
-                new CandidateListGetQuery(request), pageRequest);
+                new GetSavedListCandidatesQuery(savedList.getId(), request), pageRequest);
 
         assertNotNull(candidatesPage);
         assertEquals(totalCandidates, candidatesPage.getTotalElements());

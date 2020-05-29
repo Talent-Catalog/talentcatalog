@@ -147,15 +147,14 @@ class SavedListRepositoryTest {
         SearchSavedListRequest request = new SearchSavedListRequest();
         request.setOwned(true);
         request.setShared(true);
-        request.setFixed(true);
         
-        SavedListGetQuery savedListGetQuery;
+        GetSavedListsQuery getSavedListsQuery;
         Sort sort;
         List<SavedList> lists;
         
-        savedListGetQuery = new SavedListGetQuery(request, owningUser);
+        getSavedListsQuery = new GetSavedListsQuery(request, owningUser);
         sort = Sort.by(Sort.Direction.ASC, "name");
-        lists = savedListRepository.findAll(savedListGetQuery, sort);
+        lists = savedListRepository.findAll(getSavedListsQuery, sort);
 
         assertNotNull(lists);
         assertEquals(1, lists.size());
@@ -165,18 +164,18 @@ class SavedListRepositoryTest {
                 "c1username", "c1first", "c1last",
                 "c1email@test.com");
 
-        savedListGetQuery = new SavedListGetQuery(request, sharingUser);
+        getSavedListsQuery = new GetSavedListsQuery(request, sharingUser);
         sort = Sort.by(Sort.Direction.ASC, "name");
-        lists = savedListRepository.findAll(savedListGetQuery, sort);
+        lists = savedListRepository.findAll(getSavedListsQuery, sort);
         assertNotNull(lists);
         assertEquals(0, lists.size());
         
         savedList.addUser(sharingUser);
         savedListRepository.save(savedList);
         
-        savedListGetQuery = new SavedListGetQuery(request, sharingUser);
+        getSavedListsQuery = new GetSavedListsQuery(request, sharingUser);
         sort = Sort.by(Sort.Direction.ASC, "name");
-        lists = savedListRepository.findAll(savedListGetQuery, sort);
+        lists = savedListRepository.findAll(getSavedListsQuery, sort);
         assertNotNull(lists);
         assertEquals(1, lists.size());
         
@@ -188,19 +187,19 @@ class SavedListRepositoryTest {
         SearchSavedListRequest request = new SearchSavedListRequest();
         request.setOwned(true);
         request.setShared(true);
-        request.setFixed(true);
+        request.setFixed(false);
         request.setPageNumber(0);
         request.setPageSize(4);
         request.setSortDirection(Sort.Direction.ASC);
         request.setSortFields(new String[] {"name"});
         
-        SavedListGetQuery savedListGetQuery;
+        GetSavedListsQuery getSavedListsQuery;
         PageRequest pageRequest;
         Page<SavedList> lists;
 
         pageRequest = request.getPageRequest();
-        savedListGetQuery = new SavedListGetQuery(request, owningUser);
-        lists = savedListRepository.findAll(savedListGetQuery, pageRequest);
+        getSavedListsQuery = new GetSavedListsQuery(request, owningUser);
+        lists = savedListRepository.findAll(getSavedListsQuery, pageRequest);
 
         assertNotNull(lists);
         assertEquals(1, lists.getContent().size());
@@ -211,8 +210,8 @@ class SavedListRepositoryTest {
                 "c1email@test.com");
 
         pageRequest = request.getPageRequest();
-        savedListGetQuery = new SavedListGetQuery(request, sharingUser);
-        lists = savedListRepository.findAll(savedListGetQuery, pageRequest);
+        getSavedListsQuery = new GetSavedListsQuery(request, sharingUser);
+        lists = savedListRepository.findAll(getSavedListsQuery, pageRequest);
         assertNotNull(lists);
         assertEquals(0, lists.getContent().size());
         
@@ -220,8 +219,8 @@ class SavedListRepositoryTest {
         savedListRepository.save(savedList);
 
         pageRequest = request.getPageRequest();
-        savedListGetQuery = new SavedListGetQuery(request, sharingUser);
-        lists = savedListRepository.findAll(savedListGetQuery, pageRequest);
+        getSavedListsQuery = new GetSavedListsQuery(request, sharingUser);
+        lists = savedListRepository.findAll(getSavedListsQuery, pageRequest);
         assertNotNull(lists);
         assertEquals(1, lists.getContent().size());
         

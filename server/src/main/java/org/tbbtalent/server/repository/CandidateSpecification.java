@@ -22,6 +22,24 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.lang.Nullable;
+import org.tbbtalent.server.model.Candidate;
+import org.tbbtalent.server.model.CandidateEducation;
+import org.tbbtalent.server.model.CandidateJobExperience;
+import org.tbbtalent.server.model.CandidateLanguage;
+import org.tbbtalent.server.model.CandidateOccupation;
+import org.tbbtalent.server.model.CandidateShortlistItem;
+import org.tbbtalent.server.model.CandidateSkill;
+import org.tbbtalent.server.model.CandidateStatus;
+import org.tbbtalent.server.model.EducationLevel;
+import org.tbbtalent.server.model.EducationMajor;
+import org.tbbtalent.server.model.Language;
+import org.tbbtalent.server.model.LanguageLevel;
+import org.tbbtalent.server.model.Occupation;
+import org.tbbtalent.server.model.SavedSearch;
+import org.tbbtalent.server.model.SearchType;
+import org.tbbtalent.server.model.ShortlistStatus;
+import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.model.*;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 
@@ -30,11 +48,12 @@ import static org.tbbtalent.server.repository.CandidateSpecificationUtil.getOrde
 
 public class CandidateSpecification {
 
-    public static Specification<Candidate> buildSearchQuery(final SearchCandidateRequest request, User loggedInUser) {
+    public static Specification<Candidate> buildSearchQuery(
+            final SearchCandidateRequest request, @Nullable User loggedInUser) {
         return (candidate, query, builder) -> {
             
             //To better understand this code, look at the simpler but similar
-            //CandidateListSpecification. JC - The Programmer's Friend. 
+            //SavedListGetQuery. JC - The Programmer's Friend.
             
             Predicate conjunction = builder.conjunction();
             Join<Object, Object> user = null;
@@ -46,7 +65,7 @@ public class CandidateSpecification {
             Join<Candidate, CandidateJobExperience> candidateJobExperiences = null;
             Join<Candidate, CandidateSkill> candidateSkills = null;
             Join<Candidate, CandidateAttachment> candidateAttachments = null;
-            
+
             //CreatedBy date > from date is only set in the watcher notification code.
             if (request.getFromDate() != null) {
                 conjunction.getExpressions().add(builder.greaterThanOrEqualTo(
@@ -347,7 +366,8 @@ public class CandidateSpecification {
                 conjunction.getExpressions().add(
                         builder.isTrue(candidate.get("country").in(request.getCountryIds()))
                 );
-            } else if (!Collections.isEmpty(loggedInUser.getSourceCountries())) {
+            } else if (loggedInUser != null &&
+                    !Collections.isEmpty(loggedInUser.getSourceCountries())) {
                 conjunction.getExpressions().add(
                         builder.isTrue(candidate.get("country").in(loggedInUser.getSourceCountries()))
                 );

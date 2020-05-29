@@ -131,7 +131,6 @@ class CandidateRepositoryTest {
         request.setSortFields(new String[] {"nationality.name"});
         request.setSortDirection(Sort.Direction.DESC);
         
-        request.setSavedListId(savedList.getId());
         request.setPageSize(4);
         
         int expectedNPages = 3; 
@@ -141,7 +140,7 @@ class CandidateRepositoryTest {
 
             PageRequest pageRequest = request.getPageRequestWithoutSort();
             Page<Candidate> candidatesPage = candidateRepository.findAll(
-                    new CandidateListGetQuery(request), pageRequest);
+                    new GetSavedListCandidatesQuery(savedList.getId(), request), pageRequest);
 
             assertNotNull(candidatesPage);
             assertEquals(totalCandidates, candidatesPage.getTotalElements());

@@ -5,16 +5,12 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.NoHandlerFoundException;
 import org.tbbtalent.server.exception.ServiceException;
 
 
@@ -33,6 +29,22 @@ public class ErrorHandler {
         return errorDTO;
     }
     
+    @ExceptionHandler(NoHandlerFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public ErrorDTO processNoHandlerFoundException(NoHandlerFoundException ex) {
+        log.error("Processing NoHandlerFoundException: " + ex);
+        return new ErrorDTO("handler_not_found", ex.getMessage());
+    }    
+    
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorDTO processOtherException(Exception ex) {
+        final String code = "unexpected_exception";
+        log.error(code, ex);
+        return new ErrorDTO(code, ex.toString());
+    }    
 
     //-------------------------------------------------------------------------
 

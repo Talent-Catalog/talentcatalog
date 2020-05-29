@@ -46,17 +46,17 @@ import static org.tbbtalent.server.repository.CandidateSpecificationUtil.getOrde
  *     <code>
  *     PageRequest pageRequest = request.getPageRequestWithoutSort();
  *     Page<Candidate> candidatesPage = candidateRepository.findAll(
- *                 new CandidateListGetQuery(request), pageRequest);         
+ *                 new GetSavedListCandidatesQuery(request), pageRequest);         
  *     </code>
  */
 @RequiredArgsConstructor
-public class CandidateListGetQuery implements Specification<Candidate> {
+public class GetSavedListCandidatesQuery implements Specification<Candidate> {
+    private final long savedListId;
     private final SavedListGetRequest request;
 
     @Override
     public Predicate toPredicate(Root<Candidate> candidate, 
                                  CriteriaQuery<?> query, CriteriaBuilder cb) {
-        Long savedListId = request.getSavedListId();
 
         //Start by adding fetches and Order by
         boolean isCountQuery = query.getResultType().equals(Long.class);
