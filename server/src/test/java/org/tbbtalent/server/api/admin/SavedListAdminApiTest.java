@@ -59,7 +59,7 @@ class SavedListAdminApiTest {
     void createNewSavedList() {
         SearchSavedListRequest searchReq = new SearchSavedListRequest();
         searchReq.setKeyword("testlist");
-        List<Map<String, Object>> lists = savedListAdminApi.listSavedLists(searchReq);
+        List<Map<String, Object>> lists = savedListAdminApi.search(searchReq);
         if (lists.size() > 0) {
             Long id = (Long) lists.get(0).get("id");
             savedListAdminApi.delete(id);
