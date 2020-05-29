@@ -150,6 +150,8 @@ public class SystemAdminApi {
 
     private void extractTextFromMigratedFiles(TextExtractHelper textExtractHelper, List<String> types) {
         List<CandidateAttachment> files = candidateAttachmentRepository.findByFileTypesAndMigrated(types, true);
+        int count = 0;
+        int success = 0;
         for(CandidateAttachment file : files) {
             try {
                 String uniqueFilename = file.getLocation();
@@ -159,15 +161,22 @@ public class SystemAdminApi {
                 if(StringUtils.isNotBlank(extractedText)) {
                     file.setTextExtract(extractedText);
                     candidateAttachmentRepository.save(file);
+                    success++;
                 }
             } catch (Exception e) {
                 log.error("Unable to extract text from file " + file.getLocation(), e.getMessage());
             }
+            if (count%100 == 0) {
+                log.info(count + " new files processed, with " + success + " successfully extracted text.");
+            }
+            count++;
         }
     }
 
     private void extractTextFromNewFiles(TextExtractHelper textExtractHelper, List<String> types) {
         List<CandidateAttachment> files = candidateAttachmentRepository.findByFileTypesAndMigrated(types, false);
+        int count = 0;
+        int success = 0;
         for(CandidateAttachment file : files) {
             try {
                 String uniqueFilename = file.getLocation();
@@ -177,10 +186,15 @@ public class SystemAdminApi {
                 if (StringUtils.isNotBlank(extractedText)) {
                     file.setTextExtract(extractedText);
                     candidateAttachmentRepository.save(file);
+                    success++;
                 }
             } catch (Exception e) {
                 log.error("Unable to extract text from new file " + file.getLocation(), e.getMessage());
             }
+            if (count%100 == 0) {
+                log.info(count + " new files processed, with " + success + " successfully extracted text.");
+            }
+            count++;
         }
     }
 
