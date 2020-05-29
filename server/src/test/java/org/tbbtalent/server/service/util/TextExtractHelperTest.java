@@ -138,7 +138,7 @@ public class TextExtractHelperTest {
      * @throws IOException
      */
     @Transactional
-    @Test
+    //@Test
     void testTextExtractMigrateNewFiles() throws IOException {
         List<String> types = Arrays.asList("pdf", "docx", "doc", "txt");
         List<CandidateAttachment> files = candidateAttachmentRepository.findByFileTypesAndMigrated(types, false);
