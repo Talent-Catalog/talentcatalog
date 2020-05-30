@@ -1,7 +1,15 @@
 package org.tbbtalent.server.service.util;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.transaction.Transactional;
+
 import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +19,9 @@ import org.tbbtalent.server.repository.CandidateAttachmentRepository;
 import org.tbbtalent.server.service.aws.S3ResourceHelper;
 import org.tbbtalent.server.util.textExtract.TextExtractHelper;
 
-import javax.transaction.Transactional;
-import java.io.*;
-import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 public class TextExtractHelperTest {
@@ -34,7 +40,7 @@ public class TextExtractHelperTest {
      * @throws IOException from PDFBox extraction methods
      */
     @Transactional
-    @Test
+//    @Test
     void testDifferentFilesTextExtractHelper() throws IOException {
         assertNotNull(textExtractHelper);
 
@@ -89,7 +95,7 @@ public class TextExtractHelperTest {
      * Test findByFileTypeAndMigrated query to get the file types that were left when the migration was done (newly added files that weren't in the migration S3 Bucket)
      */
     @Transactional
-    @Test
+//    @Test
     void testRepoFindByTextExtractAndMigrated() {
         List<String> types = Arrays.asList("pdf", "docx", "doc", "txt");
         List<CandidateAttachment> migratedFiles = candidateAttachmentRepository.findByFileTypesAndMigrated(types, true);
@@ -103,7 +109,7 @@ public class TextExtractHelperTest {
      * @throws IOException
      */
     @Transactional
-    @Test
+//    @Test
     void testTextExtractMigratedFiles() {
         List<String> types = Arrays.asList("pdf", "docx", "doc", "txt");
         List<CandidateAttachment> files = candidateAttachmentRepository.findByFileTypesAndMigrated(types, true);
@@ -173,7 +179,7 @@ public class TextExtractHelperTest {
      * @throws IOException
      */
     @Transactional
-    @Test
+//    @Test
     void extractTextFromMigratedPdf() throws IOException {
         // Get all Pdf files
         List<CandidateAttachment> candidatePdfs = candidateAttachmentRepository.findByFileType("pdf");
@@ -207,7 +213,7 @@ public class TextExtractHelperTest {
      * @throws IOException
      */
     @Transactional
-    @Test
+//    @Test
     void extractTextFromMigratedDocx() throws IOException {
         // Get all docx files
         List<CandidateAttachment> candidateDocs = candidateAttachmentRepository.findByFileType("docx");
@@ -240,7 +246,7 @@ public class TextExtractHelperTest {
      * @throws IOException
      */
     @Transactional
-    @Test
+//    @Test
     void extractTextFromMigratedDoc() {
         // Get all doc files
         List<CandidateAttachment> candidateDocs = candidateAttachmentRepository.findByFileType("doc");

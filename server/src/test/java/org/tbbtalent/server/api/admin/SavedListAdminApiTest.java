@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -55,7 +54,7 @@ class SavedListAdminApiTest {
     }
 
     @Transactional
-    @Test
+//    @Test
     void createNewSavedList() {
         SearchSavedListRequest searchReq = new SearchSavedListRequest();
         searchReq.setKeyword("testlist");
