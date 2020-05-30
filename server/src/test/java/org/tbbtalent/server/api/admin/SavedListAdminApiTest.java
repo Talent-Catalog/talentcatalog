@@ -4,17 +4,21 @@
 
 package org.tbbtalent.server.api.admin;
 
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.repository.CandidateRepository;
 import org.tbbtalent.server.repository.SavedListRepository;
 import org.tbbtalent.server.repository.UserRepository;
-import org.tbbtalent.server.request.list.UpdateSavedListRequest;
+import org.tbbtalent.server.request.list.CreateSavedListRequest;
+import org.tbbtalent.server.request.list.SearchSavedListRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.SavedListService;
 import org.tbbtalent.server.service.impl.SavedListServiceImpl;
@@ -50,9 +54,18 @@ class SavedListAdminApiTest {
         savedListAdminApi = new SavedListAdminApi(savedListService);
     }
 
-//    @Test
+    @Transactional
+    @Test
     void createNewSavedList() {
-        UpdateSavedListRequest request = new UpdateSavedListRequest();
+        SearchSavedListRequest searchReq = new SearchSavedListRequest();
+        searchReq.setKeyword("testlist");
+        List<Map<String, Object>> lists = savedListAdminApi.search(searchReq);
+        if (lists.size() > 0) {
+            Long id = (Long) lists.get(0).get("id");
+            savedListAdminApi.delete(id);
+        }
+        
+        CreateSavedListRequest request = new CreateSavedListRequest();
         request.setName("TestList");
         request.setFixed(false);
 

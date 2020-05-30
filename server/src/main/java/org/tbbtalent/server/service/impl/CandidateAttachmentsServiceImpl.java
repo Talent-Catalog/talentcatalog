@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,9 @@ import org.tbbtalent.server.request.attachment.UpdateCandidateAttachmentRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.CandidateAttachmentService;
 import org.tbbtalent.server.service.aws.S3ResourceHelper;
+import org.tbbtalent.server.util.textExtract.TextExtractHelper;
+
+import java.io.*;
 
 @Service
 public class CandidateAttachmentsServiceImpl implements CandidateAttachmentService {
@@ -37,6 +41,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     private final CandidateAttachmentRepository candidateAttachmentRepository;
     private final UserContext userContext;
     private final S3ResourceHelper s3ResourceHelper;
+    private final TextExtractHelper textExtractHelper;
 
     @Value("{aws.s3.bucketName}")
     String s3Bucket;
@@ -50,6 +55,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         this.candidateAttachmentRepository = candidateAttachmentRepository;
         this.s3ResourceHelper = s3ResourceHelper;
         this.userContext = userContext;
+        this.textExtractHelper = new TextExtractHelper(candidateAttachmentRepository, s3ResourceHelper);
     }
 
     @Override
@@ -73,6 +79,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     public CandidateAttachment createCandidateAttachment(CreateCandidateAttachmentRequest request, Boolean adminOnly) {
         User user = userContext.getLoggedInUser();
         Candidate candidate;
+        String textExtract;
 
         // Handle requests coming from the admin portal
         if (request.getCandidateId() != null) {
@@ -92,16 +99,26 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             attachment.setName(request.getName());
 
         } else if (request.getType().equals(AttachmentType.file)) {
-            // Upload the file to AWS S3
-
             // Prepend the filename with a UUID to ensure an existing file doesn't get overwritten on S3
             String uniqueFilename = UUID.randomUUID() + "_" + request.getName();
-            // Copy the file into the candidate's folder on S3
+            // Source is temporary folder where the file got uploaded, destination is the candidates unique folder
             String source = "temp/" + request.getFolder() + "/" + request.getName();
             String destination = "candidate/" + candidate.getCandidateNumber() + "/" + uniqueFilename;
+            // Download the file from the S3 temporary file before it is copying over
+            File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), source);
+            // Copy the file from temp folder in s3 into the candidate's folder on S3
             this.s3ResourceHelper.copyObject(source, destination);
-
             log.info("[S3] Transferred candidate attachment from source [" + source + "] to destination [" + destination + "]");
+
+            // Extract text from the file
+            try {
+                textExtract = textExtractHelper.getTextExtractFromFile(srcFile, request.getFileType());
+                if(StringUtils.isNotBlank(textExtract)) {
+                    attachment.setTextExtract(textExtract);
+                }
+            } catch (Exception e) {
+                log.error("Could not extract text from uploaded file", e);
+            }
 
             // The location is set to the filename because we can derive it's location from the candidate number
             attachment.setLocation(uniqueFilename);

@@ -53,6 +53,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     private List<ShortlistStatus> shortlistStatus;
     private boolean includeNew;
     private Boolean includeDraftAndDeleted;
+    private Boolean includeUploadedFiles;
     private LocalDate fromDate;
 
     public SearchCandidateRequest() {
@@ -300,6 +301,10 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     public void setIncludeDraftAndDeleted(Boolean includeDraftAndDeleted) {
         this.includeDraftAndDeleted = includeDraftAndDeleted;
     }
+
+    public Boolean getIncludeUploadedFiles() { return includeUploadedFiles; }
+
+    public void setIncludeUploadedFiles(Boolean includeUploadedFiles) { this.includeUploadedFiles = includeUploadedFiles; }
 
     public LocalDate getFromDate() {
         return fromDate;

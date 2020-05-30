@@ -22,6 +22,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.model.CandidateEducation;
 import org.tbbtalent.server.model.CandidateJobExperience;
@@ -39,6 +40,7 @@ import org.tbbtalent.server.model.SavedSearch;
 import org.tbbtalent.server.model.SearchType;
 import org.tbbtalent.server.model.ShortlistStatus;
 import org.tbbtalent.server.model.User;
+import org.tbbtalent.server.model.*;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 
 import io.jsonwebtoken.lang.Collections;
@@ -46,11 +48,12 @@ import static org.tbbtalent.server.repository.CandidateSpecificationUtil.getOrde
 
 public class CandidateSpecification {
 
-    public static Specification<Candidate> buildSearchQuery(final SearchCandidateRequest request, User loggedInUser) {
+    public static Specification<Candidate> buildSearchQuery(
+            final SearchCandidateRequest request, @Nullable User loggedInUser) {
         return (candidate, query, builder) -> {
             
             //To better understand this code, look at the simpler but similar
-            //CandidateListSpecification. JC - The Programmer's Friend. 
+            //SavedListGetQuery. JC - The Programmer's Friend.
             
             Predicate conjunction = builder.conjunction();
             Join<Object, Object> user = null;
@@ -61,7 +64,8 @@ public class CandidateSpecification {
             Join<CandidateOccupation, Occupation> occupation = null;
             Join<Candidate, CandidateJobExperience> candidateJobExperiences = null;
             Join<Candidate, CandidateSkill> candidateSkills = null;
-            
+            Join<Candidate, CandidateAttachment> candidateAttachments = null;
+
             //CreatedBy date > from date is only set in the watcher notification code.
             if (request.getFromDate() != null) {
                 conjunction.getExpressions().add(builder.greaterThanOrEqualTo(
@@ -174,6 +178,7 @@ public class CandidateSpecification {
                 List<Predicate> predicates = new ArrayList<>();
                 candidateJobExperiences = candidateJobExperiences != null ? candidateJobExperiences : candidate.join("candidateJobExperiences", JoinType.LEFT);
                 candidateSkills = candidateSkills != null ? candidateSkills : candidate.join("candidateSkills", JoinType.LEFT);
+                candidateAttachments = candidateAttachments != null ? candidateAttachments : candidate.join("candidateAttachments", JoinType.LEFT);
                 candidateEducations = candidateEducations == null ? candidate.join("candidateEducations", JoinType.LEFT) : candidateEducations;
                 candidateOccupations = candidate.join("candidateOccupations", JoinType.LEFT);
                 occupation = candidateOccupations.join("occupation", JoinType.LEFT);
@@ -195,6 +200,12 @@ public class CandidateSpecification {
                             builder.like(builder.lower(candidateSkills.get("skill")), likeMatchTerm),
                             builder.like(builder.lower(occupation.get("name")), likeMatchTerm)
                     ));
+
+                    // This is adding an OR statement IF the keyword search includes uploaded files. May be a better way to do this, but it works searching textExtracts based on IF statement
+                    if(BooleanUtils.isTrue(request.getIncludeUploadedFiles())) {
+                        predicates.get(0).getExpressions().add(builder.like(builder.lower(candidateAttachments.get("textExtract")), likeMatchTerm)
+                        );
+                    }
                 }
                 if (predicates.size() > 1) {
                     conjunction.getExpressions().add(builder.and(builder.and(predicates.toArray(new Predicate[0]))));
@@ -355,7 +366,8 @@ public class CandidateSpecification {
                 conjunction.getExpressions().add(
                         builder.isTrue(candidate.get("country").in(request.getCountryIds()))
                 );
-            } else if (!Collections.isEmpty(loggedInUser.getSourceCountries())) {
+            } else if (loggedInUser != null &&
+                    !Collections.isEmpty(loggedInUser.getSourceCountries())) {
                 conjunction.getExpressions().add(
                         builder.isTrue(candidate.get("country").in(loggedInUser.getSourceCountries()))
                 );

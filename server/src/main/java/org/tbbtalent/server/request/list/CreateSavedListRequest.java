@@ -14,14 +14,15 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * Request for create or modifying SavedList's
+ * Request for creating and optionally initializing the contents of 
+ * a SavedList
  *
- * @author John Cameron
  */
 @Getter
 @Setter
 @ToString(callSuper = true)
-public class UpdateSavedListRequest extends AbstractUpdateCandidateSourceRequest {
+public class CreateSavedListRequest extends AbstractUpdateCandidateSourceRequest 
+        implements IHasSetOfCandidates {
     
     private Set<Long> candidateIds;
 

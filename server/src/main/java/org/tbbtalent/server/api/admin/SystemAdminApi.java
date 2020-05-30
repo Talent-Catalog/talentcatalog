@@ -1,6 +1,12 @@
 package org.tbbtalent.server.api.admin;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
+import org.apache.poi.hwpf.HWPFDocument;
+import org.apache.poi.hwpf.extractor.WordExtractor;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,15 +14,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tbbtalent.server.model.AttachmentType;
-import org.tbbtalent.server.model.CandidateStatus;
-import org.tbbtalent.server.model.EducationType;
-import org.tbbtalent.server.model.Gender;
-import org.tbbtalent.server.model.NoteType;
-import org.tbbtalent.server.model.Status;
-import org.tbbtalent.server.model.User;
+import org.tbbtalent.server.model.*;
+import org.tbbtalent.server.repository.CandidateAttachmentRepository;
 import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.service.aws.S3ResourceHelper;
+import org.tbbtalent.server.util.textExtract.TextExtractHelper;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -31,10 +36,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/admin/system")
@@ -44,6 +46,9 @@ public class SystemAdminApi {
 
     private final UserContext userContext;
     final static String DATE_FORMAT = "dd-MM-yyyy";
+
+    private CandidateAttachmentRepository candidateAttachmentRepository;
+    private S3ResourceHelper s3ResourceHelper;
 
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -59,13 +64,15 @@ public class SystemAdminApi {
     private String targetPwd;
     
     @Autowired
-    public SystemAdminApi(UserContext userContext) {
+    public SystemAdminApi(UserContext userContext, CandidateAttachmentRepository candidateAttachmentRepository, S3ResourceHelper s3ResourceHelper) {
         this.userContext = userContext;
+        this.candidateAttachmentRepository = candidateAttachmentRepository;
+        this.s3ResourceHelper = s3ResourceHelper;
         countryForGeneralCountry = getExtraCountryMappings();
     }
 
     public static void main(String[] args) {
-        SystemAdminApi api = new SystemAdminApi(null);
+        SystemAdminApi api = new SystemAdminApi(null, null, null);
         api.setTargetJdbcUrl("jdbc:postgresql://localhost:5432/tbbtalent");
         api.setTargetUser("tbbtalent");
         api.setTargetPwd("tbbtalent");
@@ -122,6 +129,73 @@ public class SystemAdminApi {
         }
 
         return "done";
+    }
+
+    @GetMapping("migrate/extract")
+    public String migrateExtract() {
+        TextExtractHelper textExtractHelper = new TextExtractHelper(candidateAttachmentRepository, s3ResourceHelper);
+        Long userId = 1L;
+        if (userContext != null) {
+            User loggedInUser = userContext.getLoggedInUser();
+            if (loggedInUser != null){
+                userId = loggedInUser.getId();
+            }
+        }
+
+        List<String> types = Arrays.asList("pdf", "docx", "doc", "txt");
+        extractTextFromMigratedFiles(textExtractHelper, types);
+        extractTextFromNewFiles(textExtractHelper, types);
+        return "done";
+    }
+
+    private void extractTextFromMigratedFiles(TextExtractHelper textExtractHelper, List<String> types) {
+        List<CandidateAttachment> files = candidateAttachmentRepository.findByFileTypesAndMigrated(types, true);
+        int count = 0;
+        int success = 0;
+        for(CandidateAttachment file : files) {
+            try {
+                String uniqueFilename = file.getLocation();
+                String destination = "candidate/migrated/" + uniqueFilename;
+                File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
+                String extractedText = textExtractHelper.getTextExtractFromFile(srcFile, file.getFileType());
+                if(StringUtils.isNotBlank(extractedText)) {
+                    file.setTextExtract(extractedText);
+                    candidateAttachmentRepository.save(file);
+                    success++;
+                }
+            } catch (Exception e) {
+                log.error("Unable to extract text from file " + file.getLocation(), e.getMessage());
+            }
+            if (count%100 == 0) {
+                log.info(count + " new files processed, with " + success + " successfully extracted text.");
+            }
+            count++;
+        }
+    }
+
+    private void extractTextFromNewFiles(TextExtractHelper textExtractHelper, List<String> types) {
+        List<CandidateAttachment> files = candidateAttachmentRepository.findByFileTypesAndMigrated(types, false);
+        int count = 0;
+        int success = 0;
+        for(CandidateAttachment file : files) {
+            try {
+                String uniqueFilename = file.getLocation();
+                String destination = "candidate/" + file.getCandidate().getCandidateNumber() + "/" + uniqueFilename;
+                File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
+                String extractedText = textExtractHelper.getTextExtractFromFile(srcFile, file.getFileType());
+                if (StringUtils.isNotBlank(extractedText)) {
+                    file.setTextExtract(extractedText);
+                    candidateAttachmentRepository.save(file);
+                    success++;
+                }
+            } catch (Exception e) {
+                log.error("Unable to extract text from new file " + file.getLocation(), e.getMessage());
+            }
+            if (count%100 == 0) {
+                log.info(count + " new files processed, with " + success + " successfully extracted text.");
+            }
+            count++;
+        }
     }
 
     @GetMapping("migrate/survey")

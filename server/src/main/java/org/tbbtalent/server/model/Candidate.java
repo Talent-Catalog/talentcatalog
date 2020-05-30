@@ -95,6 +95,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     private List<CandidateSkill> candidateSkills;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    private List<CandidateAttachment> candidateAttachments;
+
     //old data only links to candidate needs to be searchable
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "migration_education_major_id")
@@ -330,6 +333,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.candidateSkills = candidateSkills;
     }
 
+    public List<CandidateAttachment> getCandidateAttachments() { return candidateAttachments; }
+
+    public void setCandidateAttachments(List<CandidateAttachment> candidateAttachments) { this.candidateAttachments = candidateAttachments; }
+
     public String getMigrationCountry() {
         return migrationNationality;
     }
@@ -376,6 +383,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setSavedLists(Set<SavedList> savedLists) {
         this.savedLists.clear();
+        addSavedLists(savedLists);
+    }
+
+    public void addSavedLists(Set<SavedList> savedLists) {
         for (SavedList savedList : savedLists) {
             addSavedList(savedList);
         }
@@ -385,7 +396,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         savedLists.add(savedList);
         savedList.getCandidates().add(this);
     }
-    
+
+    public void removeSavedLists(Set<SavedList> savedLists) {
+        for (SavedList savedList : savedLists) {
+            removeSavedList(savedList);
+        }
+    }
+
     public void removeSavedList(SavedList savedList) {
         savedLists.remove(savedList);
         savedList.getCandidates().remove(this);

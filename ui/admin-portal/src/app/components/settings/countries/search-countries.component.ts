@@ -64,7 +64,7 @@ export class SearchCountriesComponent implements OnInit {
     let request = this.searchForm.value;
     request.pageNumber = this.pageNumber - 1;
     request.pageSize = this.pageSize;
-    this.countryService.search(request).subscribe(results => {
+    this.countryService.searchPaged(request).subscribe(results => {
       this.results = results;
       this.loading = false;
     });

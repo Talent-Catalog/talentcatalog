@@ -73,17 +73,16 @@ public class SavedSearchSpecification {
                         builder.equal(savedSearch.get("type"), type)
                 );
             }
-
-
-            // AND (fixed OR shared OR owned) - if any are true
-            Predicate ors = builder.disjunction();
             
             //If fixed is specified, only supply matching saved searches
             if (request.getFixed() != null && request.getFixed()) {
-                ors.getExpressions().add(
+                conjunction.getExpressions().add(
                         builder.equal(savedSearch.get("fixed"), request.getFixed())
                 );
             }
+
+            // (shared OR owned)
+            Predicate ors = builder.disjunction();
 
             //If shared is specified, only supply searches shared with the owner
             if (request.getShared() != null && request.getShared()) {

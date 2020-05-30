@@ -1,0 +1,3 @@
+THIS IS A TEST TXT FILE.
+
+Checking that text extraction works.

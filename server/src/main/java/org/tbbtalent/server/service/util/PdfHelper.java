@@ -1,4 +1,4 @@
-package org.tbbtalent.server.service.pdf;
+package org.tbbtalent.server.service.util;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
