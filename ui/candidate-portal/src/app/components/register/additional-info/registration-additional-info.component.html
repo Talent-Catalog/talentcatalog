@@ -35,7 +35,23 @@
 
     </form>
 
-    <app-candidate-attachments></app-candidate-attachments>
+    <div>
+      <hr>
+      <h5 class="mb-3">{{ 'REGISTRATION.ATTACHMENTS.TITLE' | translate }}</h5>
+      <strong>CV/Resume</strong>
+      <p>If possible please upload original CV/Resume file (not scanned) in pdf, docx or doc format.</p>
+      <app-candidate-attachments
+        [cv]="true">
+      </app-candidate-attachments>
+      <br>
+      <strong>Other</strong>
+      <p>Please upload other relevant files here.</p>
+      <app-candidate-attachments
+        [cv]="false">
+      </app-candidate-attachments>
+    </div>
+
+
 
   </ng-container>
 

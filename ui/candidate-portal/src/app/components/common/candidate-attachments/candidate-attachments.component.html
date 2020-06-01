@@ -1,6 +1,4 @@
-<h5 class="mb-3">{{ 'REGISTRATION.ATTACHMENTS.TITLE' | translate }}</h5>
-
-<p *ngIf="!loading && !attachments.length">
+<p class="text-muted" *ngIf="!loading && !attachments.length">
   {{ 'REGISTRATION.ATTACHMENTS.EMPTYSTATE' | translate }}
 </p>
 
@@ -53,3 +51,6 @@
 <app-error [error]="error"></app-error>
 
 <app-file-upload *ngIf="!preview && !loading" (fileUploaded)="handleAttachmentUploaded($event)"></app-file-upload>
+
+
+
