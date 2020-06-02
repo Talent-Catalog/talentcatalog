@@ -45,8 +45,11 @@ export class CandidateAttachmentsComponent implements OnInit {
       });
     this.candidateAttachmentService.listCandidateAttachments().subscribe(
       (response) => {
-        // response.filter(attachment => attachment === this.cv);
-        this.attachments = response;
+        if(!this.preview){
+          this.attachments = response.filter(att => att.cv == this.cv);
+        } else {
+          this.attachments = response;
+        }
         this._loading.attachments = false;
       },
       (error) => {
@@ -69,9 +72,12 @@ export class CandidateAttachmentsComponent implements OnInit {
       cv: this.cv
     };
     this.candidateAttachmentService.createAttachment(request).subscribe(
-      (response) => this.attachments.push(response),
-      (error) => this.error = error
-    );
+      (response) => {
+        this.attachments.push(response)
+      },
+      (error) => {
+        this.error = error
+      });
   }
 
   getFileType(name: string) {

@@ -111,13 +111,16 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             log.info("[S3] Transferred candidate attachment from source [" + source + "] to destination [" + destination + "]");
 
             // Extract text from the file
-            try {
-                textExtract = textExtractHelper.getTextExtractFromFile(srcFile, request.getFileType());
-                if(StringUtils.isNotBlank(textExtract)) {
-                    attachment.setTextExtract(textExtract);
+            if(request.getCv()) {
+                try {
+                    textExtract = textExtractHelper.getTextExtractFromFile(srcFile, request.getFileType());
+                    if(StringUtils.isNotBlank(textExtract)) {
+                        attachment.setTextExtract(textExtract);
+                    }
+                } catch (Exception e) {
+                    log.error("Could not extract text from uploaded cv file", e);
                 }
-            } catch (Exception e) {
-                log.error("Could not extract text from uploaded file", e);
+                attachment.setCv(request.getCv());
             }
 
             // The location is set to the filename because we can derive it's location from the candidate number
