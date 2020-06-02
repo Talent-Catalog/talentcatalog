@@ -15,9 +15,10 @@ export class CreateCandidateAttachmentComponent implements OnInit {
   error: any;
   saving: boolean;
 
-  // Set in the parent component, by referencing the comoponent instance
+  // Set in the parent component, by referencing the component instance
   candidateId: number;
   type: string;
+  cv: boolean;
 
   form: FormGroup;
   attachments: CandidateAttachment[];
@@ -33,7 +34,8 @@ export class CreateCandidateAttachmentComponent implements OnInit {
       candidateId: [this.candidateId],
       type: [this.type],
       location: [''],
-      name: ['']
+      name: [''],
+      cv: [this.cv],
     });
   }
 
@@ -51,7 +53,8 @@ export class CreateCandidateAttachmentComponent implements OnInit {
       type: 'file',
       name: attachment.file.name,
       fileType: this.getFileType(attachment.file.name),
-      folder: attachment.s3Params.objectKey
+      folder: attachment.s3Params.objectKey,
+      cv: this.cv,
     };
     this.candidateAttachmentService.createAttachment(request).subscribe(
       (response) => this.attachments.push(response),

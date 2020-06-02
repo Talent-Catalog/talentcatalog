@@ -29,6 +29,16 @@
       <input class="form-control" id="location" [formControlName]="'location'" type="text" placeholder="https://www.dropbox.com/path/to/file.ext">
     </div>
 
+    <div class="form-group" *ngIf="attachment?.type === 'file'">
+      <div class="form-inline">
+        <label for="cv">Is this file a CV?</label>
+        <input class="form-control" id="cv" [formControlName]="'cv'" type="checkbox" [checked]="attachment?.cv">
+      </div>
+      <div>
+        <small class="text-muted">If it is a CV it will have the text extracted to assist keyword search (if include CV files is checked).</small>
+      </div>
+    </div>
+
   </form>
 
 </div>

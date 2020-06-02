@@ -52,6 +52,15 @@
     <app-file-upload (uploadStarted)="saving = true"
                      (uploadFinished)="saving = false"
                      (fileUploaded)="handleAttachmentUploaded($event)"></app-file-upload>
+    <div class="form-group">
+      <div class="form-inline">
+        <label for="cv">Is this file a CV?</label>
+        <input class="form-control" id="cv" [formControlName]="'cv'" type="checkbox">
+      </div>
+      <div>
+        <small class="text-muted">If it is a CV it will have the text extracted to assist keyword search (if include CV files is checked).</small>
+      </div>
+    </div>
 
   </ng-container>
 

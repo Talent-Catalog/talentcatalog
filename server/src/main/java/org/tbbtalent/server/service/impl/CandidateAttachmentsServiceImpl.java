@@ -184,9 +184,18 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                 .orElseThrow(() -> new NoSuchObjectException(CandidateAttachment.class, request.getId()));
 
         candidateAttachment.setName(request.getName());
+
+        // TODO: 2/6/20 run text extraction if a file is changed from not cv to cv. If other way around set text extract to null? Or just change to cv false?
+        // Run text extraction if attachment changed from not CV to a CV
+        if(request.getCv() && !candidateAttachment.isCv()) {
+
+        }
         if (candidateAttachment.getType().equals(AttachmentType.link)) {
             candidateAttachment.setLocation(request.getLocation());
             candidateAttachment.setAuditFields(user);
+        } else if (candidateAttachment.getType().equals(AttachmentType.file)){
+            candidateAttachment.setCv(request.getCv());
+
         }
 
         // Update the candidate audit fields

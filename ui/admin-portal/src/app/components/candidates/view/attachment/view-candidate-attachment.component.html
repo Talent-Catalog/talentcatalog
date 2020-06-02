@@ -47,21 +47,50 @@
         </button>
       </div>
 
-      <!-- NAME -->
-      <div class="col-12" [class.edit-padding]="editable">
+<!--      <div>-->
+<!--        <table>-->
+<!--          <tr>-->
+<!--            <td class="pr-2 small">Type:</td>-->
+<!--            <td class="small">{{attachment.type}}</td>-->
+<!--          </tr>-->
+<!--          <tr *ngIf="attachment.type === 'file'">-->
+<!--            <td class="pr-2 small">CV?</td>-->
+<!--            <td *ngIf="attachment.cv"><i class="fas fa-check text-secondary"></i></td>-->
+<!--            <td *ngIf="!attachment.cv"><i class="fas fa-times text-secondary"></i></td>-->
+<!--          </tr>-->
+<!--        </table>-->
+<!--      </div>-->
 
-        <a target="_blank" [href]="getAttachmentUrl(attachment)">
-          {{attachment.name}}
-        </a>
+<!--      <div>-->
+<!--        <span class="small">Type: </span>-->
+<!--        <span class="small">{{attachment.type}}</span>-->
+<!--        <div *ngIf="attachment.type === 'file'">-->
+<!--          <span class="small text-center">CV? </span>-->
+<!--          <span>-->
+<!--            <i *ngIf="attachment.cv" class="fas fa-check text-secondary small"></i>-->
+<!--            <i *ngIf="!attachment.cv" class="fas fa-times text-secondary small"></i>-->
+<!--          </span>-->
+<!--        </div>-->
+<!--      </div>-->
 
-      </div>
+      <div>
+        <!-- NAME -->
+        <div class="col-12" [class.edit-padding]="editable">
+          <a target="_blank" [href]="getAttachmentUrl(attachment)">
+            {{attachment.name}}
+          </a>
+          <span class="small text-dark"> - {{attachment.type}}</span>
+          <span *ngIf="attachment.cv" class="small text-danger"> - CV</span>
+        </div>
 
-      <!-- AUDIT DATA -->
-      <div class="col-12" *ngIf="attachment">
-        <app-updated-by [object]="attachment"></app-updated-by>
+        <!-- AUDIT DATA -->
+        <div class="col-12" *ngIf="attachment">
+          <app-updated-by [object]="attachment"></app-updated-by>
+        </div>
       </div>
 
     </div>
+
 
     <!-- LOAD MORE -->
     <div class="text-center" *ngIf="hasMore">
