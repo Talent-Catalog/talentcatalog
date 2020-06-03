@@ -183,19 +183,32 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         CandidateAttachment candidateAttachment = candidateAttachmentRepository.findByIdLoadCandidate(request.getId())
                 .orElseThrow(() -> new NoSuchObjectException(CandidateAttachment.class, request.getId()));
 
+        // Update the name
         candidateAttachment.setName(request.getName());
 
-        // TODO: 2/6/20 run text extraction if a file is changed from not cv to cv. If other way around set text extract to null? Or just change to cv false?
         // Run text extraction if attachment changed from not CV to a CV
         if(request.getCv() && !candidateAttachment.isCv()) {
-
+            try {
+                String uniqueFilename = candidateAttachment.getLocation();
+                String destination = "candidate/" + candidateAttachment.getCandidate().getCandidateNumber() + "/" + uniqueFilename;
+                File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
+                String extractedText = textExtractHelper.getTextExtractFromFile(srcFile, candidateAttachment.getFileType());
+                if (StringUtils.isNotBlank(extractedText)) {
+                    candidateAttachment.setTextExtract(extractedText);
+                    candidateAttachmentRepository.save(candidateAttachment);
+                }
+            } catch (Exception e) {
+                log.error("Unable to extract text from file " + candidateAttachment.getLocation(), e.getMessage());
+            }
         }
+
+        // Update the fields related to the file type
         if (candidateAttachment.getType().equals(AttachmentType.link)) {
             candidateAttachment.setLocation(request.getLocation());
             candidateAttachment.setAuditFields(user);
         } else if (candidateAttachment.getType().equals(AttachmentType.file)){
             candidateAttachment.setCv(request.getCv());
-
+            candidateAttachment.setAuditFields(user);
         }
 
         // Update the candidate audit fields

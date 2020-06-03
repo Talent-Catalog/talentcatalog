@@ -16,7 +16,6 @@ export class EditCandidateAttachmentComponent implements OnInit {
 
   // Set in the parent component, by referencing the comoponent instance
   attachment: CandidateAttachment;
-  cv: boolean;
   form: FormGroup;
 
   constructor(private fb: FormBuilder,
@@ -27,7 +26,7 @@ export class EditCandidateAttachmentComponent implements OnInit {
     this.form = this.fb.group({
       id: [this.attachment.id],
       name: [this.attachment.name, Validators.required],
-      cv: [this.cv]
+      cv: [this.attachment.cv]
     });
     if (this.attachment.type === 'link') {
       this.form.addControl('location', new FormControl(this.attachment.location, [Validators.required]));
