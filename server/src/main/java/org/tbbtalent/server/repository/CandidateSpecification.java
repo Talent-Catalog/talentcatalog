@@ -262,6 +262,9 @@ public class CandidateSpecification {
                         candidateEducations = candidateEducations == null ? 
                                 candidate.join("candidateEducations", JoinType.LEFT) : 
                                 candidateEducations;
+                        candidateAttachments = candidateAttachments != null ?
+                                candidateAttachments :
+                                candidate.join("candidateAttachments", JoinType.LEFT);
 
                         String lowerCaseMatchTerm = request.getOrProfileKeyword().toLowerCase();
                         String[] orText = lowerCaseMatchTerm.split("\\s*,\\s*");
@@ -291,6 +294,8 @@ public class CandidateSpecification {
                             fieldAndPredicates.add(occupationNameAnds);
                             ArrayList<Predicate> skillAnds = new ArrayList<>();
                             fieldAndPredicates.add(skillAnds);
+                            ArrayList<Predicate> textExtractAnds = new ArrayList<>();
+                            fieldAndPredicates.add(textExtractAnds);
                             
                             for (String word : words) {
                                 //Create each field LIKE word for all words.
@@ -316,6 +321,10 @@ public class CandidateSpecification {
                                 skillAnds.add(
                                         builder.like(builder.lower(
                                                 candidateSkills.get("skill")), likeMatchTerm));
+
+                                if(BooleanUtils.isTrue(request.getIncludeUploadedFiles())) {
+                                    textExtractAnds.add(builder.like(builder.lower(candidateAttachments.get("textExtract")), likeMatchTerm));
+                                }
                             }
                             
                             //For each field create a predicate that "AND"s 
