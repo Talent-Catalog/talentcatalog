@@ -116,16 +116,18 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                     textExtract = textExtractHelper.getTextExtractFromFile(srcFile, request.getFileType());
                     if(StringUtils.isNotBlank(textExtract)) {
                         attachment.setTextExtract(textExtract);
+                        candidateAttachmentRepository.save(attachment);
                     }
                 } catch (Exception e) {
                     log.error("Could not extract text from uploaded cv file", e);
+                    attachment.setTextExtract(null);
                 }
                 attachment.setCv(request.getCv());
             }
 
             // The location is set to the filename because we can derive it's location from the candidate number
             attachment.setLocation(uniqueFilename);
-            attachment.setName(uniqueFilename);
+            attachment.setName(request.getName());
             attachment.setType(AttachmentType.file);
             attachment.setFileType(request.getFileType());
         }
@@ -176,7 +178,6 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     }
 
     @Override
-    @Transactional
     public CandidateAttachment updateCandidateAttachment(UpdateCandidateAttachmentRequest request) {
         User user = userContext.getLoggedInUser();
 
@@ -186,7 +187,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         // Update the name
         candidateAttachment.setName(request.getName());
 
-        // Run text extraction if attachment changed from not CV to a CV
+        // Run text extraction if attachment changed from not CV to a CV or remove if changed from CV to not CV.
         if(request.getCv() && !candidateAttachment.isCv()) {
             try {
                 String uniqueFilename = candidateAttachment.getLocation();
@@ -199,7 +200,11 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                 }
             } catch (Exception e) {
                 log.error("Unable to extract text from file " + candidateAttachment.getLocation(), e.getMessage());
+                candidateAttachment.setTextExtract(null);
             }
+        } else if (!request.getCv() && candidateAttachment.isCv()){
+            candidateAttachment.setTextExtract(null);
+            candidateAttachmentRepository.save(candidateAttachment);
         }
 
         // Update the fields related to the file type

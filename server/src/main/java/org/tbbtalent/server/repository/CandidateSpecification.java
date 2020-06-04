@@ -201,10 +201,13 @@ public class CandidateSpecification {
                             builder.like(builder.lower(occupation.get("name")), likeMatchTerm)
                     ));
 
-                    // This is adding an OR statement IF the keyword search includes uploaded files. May be a better way to do this, but it works searching textExtracts based on IF statement
+                    // This is adding an OR statement IF the keyword search includes uploaded files AND cv is true.
+                    // May be a better way to do this, but it works.
                     if(BooleanUtils.isTrue(request.getIncludeUploadedFiles())) {
-                        predicates.get(0).getExpressions().add(builder.like(builder.lower(candidateAttachments.get("textExtract")), likeMatchTerm)
-                        );
+                        predicates.get(0).getExpressions().add(builder.and(
+                                builder.isTrue(candidateAttachments.get("cv")),
+                                builder.like(builder.lower(candidateAttachments.get("textExtract")), likeMatchTerm)));
+
                     }
                 }
                 if (predicates.size() > 1) {
