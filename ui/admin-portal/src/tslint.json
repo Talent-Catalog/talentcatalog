@@ -21,6 +21,10 @@
         false,
         "check-space"
       ],
-      "no-trailing-whitespace": false
+      "no-trailing-whitespace": false,
+      "no-inferrable-types": [
+        false,
+        "ignore-params"
+      ]
     }
 }
