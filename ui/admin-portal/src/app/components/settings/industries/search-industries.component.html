@@ -58,7 +58,7 @@
       <td>{{industry.status}}</td>
       <td></td>
       <td>
-        <div class="btn-group">
+        <div class="btn-group" *ngIf="(loggedInUser.role === 'admin' && !loggedInUser.readOnly)">
           <button type="button" class="btn btn-default" (click)="editIndustry(industry)"><i
             class="fas fa-edit"></i></button>
           <button type="button" class="btn btn-default" (click)="deleteIndustry(industry)"><i

@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 
 import {SearchResults} from '../../../model/search-results';
@@ -11,6 +11,7 @@ import {CreateCountryComponent} from "./create/create-country.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {EditCountryComponent} from "./edit/edit-country.component";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
+import {User} from "../../../model/user";
 
 @Component({
   selector: 'app-search-countries',
@@ -18,6 +19,8 @@ import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
   styleUrls: ['./search-countries.component.scss']
 })
 export class SearchCountriesComponent implements OnInit {
+
+  @Input() loggedInUser: User;
 
   searchForm: FormGroup;
   loading: boolean;

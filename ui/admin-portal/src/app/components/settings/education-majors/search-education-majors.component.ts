@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 
 import {SearchResults} from '../../../model/search-results';
@@ -11,6 +11,7 @@ import {CreateEducationMajorComponent} from "./create/create-education-major.com
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {EditEducationMajorComponent} from "./edit/edit-education-major.component";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
+import {User} from "../../../model/user";
 
 @Component({
   selector: 'app-search-education-majors',
@@ -18,6 +19,8 @@ import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
   styleUrls: ['./search-education-majors.component.scss']
 })
 export class SearchEducationMajorsComponent implements OnInit {
+
+  @Input() loggedInUser: User;
 
   searchForm: FormGroup;
   loading: boolean;

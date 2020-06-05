@@ -58,7 +58,7 @@
       <td>{{country.status}}</td>
       <td></td>
       <td>
-        <div class="btn-group">
+        <div class="btn-group" *ngIf="(loggedInUser.role === 'admin' && !loggedInUser.readOnly)">
           <button type="button" class="btn btn-default" (click)="editCountry(country)"><i
             class="fas fa-edit"></i></button>
           <button type="button" class="btn btn-default" (click)="deleteCountry(country)"><i

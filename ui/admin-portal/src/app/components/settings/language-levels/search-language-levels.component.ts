@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 
 import {SearchResults} from '../../../model/search-results';
@@ -11,6 +11,7 @@ import {CreateLanguageLevelComponent} from "./create/create-language-level.compo
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {EditLanguageLevelComponent} from "./edit/edit-language-level.component";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
+import {User} from "../../../model/user";
 
 @Component({
   selector: 'app-search-language-levels',
@@ -18,6 +19,8 @@ import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
   styleUrls: ['./search-language-levels.component.scss']
 })
 export class SearchLanguageLevelsComponent implements OnInit {
+
+  @Input() loggedInUser: User;
 
   searchForm: FormGroup;
   loading: boolean;

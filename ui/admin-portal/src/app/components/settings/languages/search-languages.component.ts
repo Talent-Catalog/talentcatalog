@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 
 import {SearchResults} from '../../../model/search-results';
@@ -11,6 +11,7 @@ import {CreateLanguageComponent} from "./create/create-language.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {EditLanguageComponent} from "./edit/edit-language.component";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
+import {User} from "../../../model/user";
 
 @Component({
   selector: 'app-search-languages',
@@ -18,6 +19,8 @@ import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
   styleUrls: ['./search-languages.component.scss']
 })
 export class SearchLanguagesComponent implements OnInit {
+
+  @Input() loggedInUser: User;
 
   searchForm: FormGroup;
   loading: boolean;

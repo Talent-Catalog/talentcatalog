@@ -72,7 +72,12 @@
               <td>{{translation.name}}</td>
               <td>{{translation.status}}</td>
               <td>
-                <input type="text" formControlName="translatedName" (blur)="updateTranslation(index)"/>
+                <div *ngIf="!loggedInUser.readOnly">
+                  <input type="text" formControlName="translatedName" (blur)="updateTranslation(index)"/>
+                </div>
+                <div *ngIf="loggedInUser.readOnly">
+                  <input type="text" formControlName="translatedName" [readOnly]="loggedInUser.readOnly"/>
+                </div>
               </td>
           </tr>
 

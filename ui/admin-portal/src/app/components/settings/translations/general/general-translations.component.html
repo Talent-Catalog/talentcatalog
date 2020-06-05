@@ -40,7 +40,7 @@
             {{field.path}}
           </td>
           <td>
-            <textarea rows="3" class="form-control form-control-sm" [(ngModel)]="field.value"></textarea>
+            <textarea rows="3" class="form-control form-control-sm" [(ngModel)]="field.value" [disabled]="loggedInUser.readOnly"></textarea>
           </td>
         </tr>
       </ng-container>

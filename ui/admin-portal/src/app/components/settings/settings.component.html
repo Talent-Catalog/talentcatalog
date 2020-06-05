@@ -12,7 +12,7 @@
   <!-- Admin Users -->
   <ngb-tab [title]="'Admin Users'">
     <ng-template ngbTabContent>
-      <app-search-users>
+      <app-search-users [loggedInUser]="loggedInUser">
       </app-search-users>
     </ng-template>
   </ngb-tab>
@@ -20,7 +20,7 @@
   <!-- Countries -->
   <ngb-tab [title]="'Countries'">
     <ng-template ngbTabContent>
-      <app-search-countries>
+      <app-search-countries [loggedInUser]="loggedInUser">
       </app-search-countries>
     </ng-template>
   </ngb-tab>
@@ -28,7 +28,7 @@
   <!-- Nationalities -->
   <ngb-tab [title]="'Nationalities'">
     <ng-template ngbTabContent>
-      <app-search-nationalities>
+      <app-search-nationalities [loggedInUser]="loggedInUser">
       </app-search-nationalities>
     </ng-template>
   </ngb-tab>
@@ -36,7 +36,7 @@
   <!-- Languages -->
   <ngb-tab [title]="'Languages'">
     <ng-template ngbTabContent>
-      <app-search-languages>
+      <app-search-languages [loggedInUser]="loggedInUser">
       </app-search-languages>
     </ng-template>
   </ngb-tab>
@@ -44,7 +44,7 @@
   <!-- Language Levels -->
   <ngb-tab [title]="'Language Levels'">
     <ng-template ngbTabContent>
-      <app-search-language-levels>
+      <app-search-language-levels [loggedInUser]="loggedInUser">
       </app-search-language-levels>
     </ng-template>
   </ngb-tab>
@@ -52,7 +52,7 @@
   <!-- Occupations -->
   <ngb-tab [title]="'Occupations'">
     <ng-template ngbTabContent>
-      <app-search-occupations>
+      <app-search-occupations [loggedInUser]="loggedInUser">
       </app-search-occupations>
     </ng-template>
   </ngb-tab>
@@ -60,7 +60,7 @@
   <!-- Education -->
   <ngb-tab [title]="'Education Levels'">
     <ng-template ngbTabContent>
-      <app-search-education-levels>
+      <app-search-education-levels [loggedInUser]="loggedInUser">
       </app-search-education-levels>
     </ng-template>
   </ngb-tab>
@@ -68,7 +68,7 @@
   <!-- Education Majors -->
   <ngb-tab [title]="'Education Majors'">
     <ng-template ngbTabContent>
-      <app-search-education-majors>
+      <app-search-education-majors [loggedInUser]="loggedInUser">
       </app-search-education-majors>
     </ng-template>
   </ngb-tab>
@@ -76,7 +76,7 @@
   <!-- Translations -->
   <ngb-tab [title]="'Translations (general)'">
     <ng-template ngbTabContent>
-      <app-general-translations>
+      <app-general-translations [loggedInUser]="loggedInUser">
       </app-general-translations>
     </ng-template>
   </ngb-tab>
@@ -84,7 +84,7 @@
   <!-- Translations -->
   <ngb-tab [title]="'Translations (dropdowns)'">
     <ng-template ngbTabContent>
-      <app-dropdown-translations>
+      <app-dropdown-translations [loggedInUser]="loggedInUser">
       </app-dropdown-translations>
     </ng-template>
   </ngb-tab>

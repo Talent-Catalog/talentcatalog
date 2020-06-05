@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {SearchResults} from '../../../../model/search-results';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
@@ -8,6 +8,7 @@ import {CountryService} from "../../../../services/country.service";
 import {TranslationService} from "../../../../services/translation.service";
 import {TranslationItem} from '../../../../model/translation-item';
 import {SystemLanguage} from '../../../../model/language';
+import {User} from "../../../../model/user";
 
 @Component({
   selector: 'app-dropdown-translations',
@@ -15,6 +16,8 @@ import {SystemLanguage} from '../../../../model/language';
   styleUrls: ['./dropdown-translations.component.scss']
 })
 export class DropdownTranslationsComponent implements OnInit {
+
+  @Input() loggedInUser: User;
 
   searchForm: FormGroup;
   loading: boolean;
