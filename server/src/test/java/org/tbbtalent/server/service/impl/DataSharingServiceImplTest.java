@@ -4,15 +4,12 @@
 
 package org.tbbtalent.server.service.impl;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.fail;
 
 class DataSharingServiceImplTest {
     private DataSharingServiceImpl service;
 
-    @BeforeEach
+//    @BeforeEach
     void setUp() {
         service = new DataSharingServiceImpl();
         service.setMasterJdbcUrl("jdbc:postgresql://prod-tbb.cskpt7osayvj.us-east-1.rds.amazonaws.com:5432/tbbtalent");
@@ -20,7 +17,7 @@ class DataSharingServiceImplTest {
         service.setMasterPwd("T884T@lent!N0W");
     }
 
-    @Test
+//    @Test
     void dbCopy() {
         try {
             service.dbCopy();
