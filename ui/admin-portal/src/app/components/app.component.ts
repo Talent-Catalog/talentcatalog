@@ -15,7 +15,7 @@ import {filter, map} from "rxjs/operators";
 })
 export class AppComponent implements OnInit {
 
-  showHeader: boolean = true;
+  showHeader: boolean;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -25,7 +25,7 @@ export class AppComponent implements OnInit {
 
     router.events.forEach((event) => {
       if (event instanceof NavigationStart) {
-        if (event['url'] == '/login' || event['url'].indexOf('/reset-password') != -1) {
+        if (event['url'] === '/login' || event['url'].indexOf('/reset-password') !== -1) {
           this.showHeader = false;
         } else {
           this.showHeader = true;
@@ -66,6 +66,6 @@ export class AppComponent implements OnInit {
       (title: string) => {
         this.titleService.setTitle(title);
       }
-    )
+    );
   }
 }
