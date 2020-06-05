@@ -1,27 +1,6 @@
 package org.tbbtalent.server.api.admin;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.text.PDFTextStripper;
-import org.apache.poi.hwpf.HWPFDocument;
-import org.apache.poi.hwpf.extractor.WordExtractor;
-import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.tbbtalent.server.model.*;
-import org.tbbtalent.server.repository.CandidateAttachmentRepository;
-import org.tbbtalent.server.security.UserContext;
-import org.tbbtalent.server.service.aws.S3ResourceHelper;
-import org.tbbtalent.server.util.textExtract.TextExtractHelper;
-
 import java.io.File;
-import java.io.FileInputStream;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -36,7 +15,34 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.tbbtalent.server.model.AttachmentType;
+import org.tbbtalent.server.model.CandidateAttachment;
+import org.tbbtalent.server.model.CandidateStatus;
+import org.tbbtalent.server.model.EducationType;
+import org.tbbtalent.server.model.Gender;
+import org.tbbtalent.server.model.NoteType;
+import org.tbbtalent.server.model.Status;
+import org.tbbtalent.server.model.User;
+import org.tbbtalent.server.repository.CandidateAttachmentRepository;
+import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.service.DataSharingService;
+import org.tbbtalent.server.service.aws.S3ResourceHelper;
+import org.tbbtalent.server.util.textExtract.TextExtractHelper;
 
 @RestController
 @RequestMapping("/api/admin/system")
@@ -46,13 +52,15 @@ public class SystemAdminApi {
 
     private final UserContext userContext;
     final static String DATE_FORMAT = "dd-MM-yyyy";
+    
+    private final DataSharingService dataSharingService;
 
-    private CandidateAttachmentRepository candidateAttachmentRepository;
-    private S3ResourceHelper s3ResourceHelper;
+    private final CandidateAttachmentRepository candidateAttachmentRepository;
+    private final S3ResourceHelper s3ResourceHelper;
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-    private Map<Integer, Integer> countryForGeneralCountry;
+    private final Map<Integer, Integer> countryForGeneralCountry;
     
     @Value("${spring.datasource.url}")
     private String targetJdbcUrl;
@@ -64,7 +72,12 @@ public class SystemAdminApi {
     private String targetPwd;
     
     @Autowired
-    public SystemAdminApi(UserContext userContext, CandidateAttachmentRepository candidateAttachmentRepository, S3ResourceHelper s3ResourceHelper) {
+    public SystemAdminApi(
+            DataSharingService dataSharingService,
+            UserContext userContext, 
+            CandidateAttachmentRepository candidateAttachmentRepository, 
+            S3ResourceHelper s3ResourceHelper) {
+        this.dataSharingService = dataSharingService;
         this.userContext = userContext;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
         this.s3ResourceHelper = s3ResourceHelper;
@@ -72,14 +85,20 @@ public class SystemAdminApi {
     }
 
     public static void main(String[] args) {
-        SystemAdminApi api = new SystemAdminApi(null, null, null);
+        SystemAdminApi api = new SystemAdminApi(null, null, null, null);
         api.setTargetJdbcUrl("jdbc:postgresql://localhost:5432/tbbtalent");
         api.setTargetUser("tbbtalent");
         api.setTargetPwd("tbbtalent");
         api.migrate();
     }
 
-    @GetMapping("migrate/status")
+    @GetMapping("dbcopy")
+    public String doDBCopy() throws Exception {
+        dataSharingService.dbCopy();
+        return "done";
+    }
+    
+//    @GetMapping("migrate/status")
     public String migrateStatus() {
         try {
             Long userId = 1L;
@@ -198,7 +217,7 @@ public class SystemAdminApi {
         }
     }
 
-    @GetMapping("migrate/survey")
+//    @GetMapping("migrate/survey")
     public String migrateSurvey() {
         try {
             Long userId = 1L;
