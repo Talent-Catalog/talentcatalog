@@ -34,7 +34,7 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public ErrorDTO processInvalidCredentialsException(InvalidCredentialsException ex) {
-        log.info("Processing : InvalidCredentialsException" + ex);
+        log.info("Processing : InvalidCredentialsException: " + ex);
         return new ErrorDTO("invalid_credentials", ex.getMessage());
     }
 
