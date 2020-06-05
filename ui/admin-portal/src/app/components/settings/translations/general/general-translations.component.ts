@@ -263,7 +263,9 @@ const ALL_FIELDS = {
       },
       "SUBMIT": {
         "LABEL": {
-          "ADDITIONALINFO": null
+          "ADDITIONALINFO": null,
+          "SURVEY": null,
+          "COMMENT": null
         }
       },
       "COMPLETE": {
@@ -281,6 +283,14 @@ const ALL_FIELDS = {
           "NAME": null,
           "CREATEDBY": null,
           "CREATEDDATE": null
+        },
+        "CV": {
+          "NAME": null,
+          "EXPLANATION": null
+        },
+        "OTHER": {
+          "NAME": null,
+          "EXPLANATION": null
         }
       }
     },
@@ -438,5 +448,5 @@ const ALL_FIELDS = {
       "FILE_DOWNLOAD_FAILED": null,
       "EXPIRED_PASSWORD_TOKEN": null,
       "ENTITY_REFERENCED": null
-    }
+    },
   };

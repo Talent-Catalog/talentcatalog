@@ -16,7 +16,7 @@
 
       <div class="form-group">
         <label for="surveyTypeId">
-          How did you hear about us?
+          {{ 'REGISTRATION.SUBMIT.LABEL.SURVEY' | translate }}
         </label>
         <select class="form-control" name="surveyTypeId" id="surveyTypeId" [formControlName]="'surveyTypeId'">
           <option value=""></option>
@@ -27,7 +27,7 @@
       <ng-container *ngIf="form.controls.surveyTypeId.value !== ''">
         <div class="form-group">
           <label class="font-weight-bold" for="surveyComment">
-            Comment
+            {{ 'REGISTRATION.SUBMIT.LABEL.COMMENT' | translate }}
           </label>
           <input type="text" class="form-control" id="surveyComment" placeholder="" [formControlName]="'surveyComment'">
         </div>
@@ -38,14 +38,14 @@
     <div>
       <hr>
       <h5 class="mb-3">{{ 'REGISTRATION.ATTACHMENTS.TITLE' | translate }}</h5>
-      <strong>CV/Resume</strong>
-      <p>If possible please upload original CV/Resume file (not scanned) in pdf, docx or doc format.</p>
+      <strong>{{ 'REGISTRATION.ATTACHMENTS.CV.NAME' | translate }}</strong>
+      <p>{{ 'REGISTRATION.ATTACHMENTS.CV.EXPLANATION' | translate }}</p>
       <app-candidate-attachments
         [cv]="true">
       </app-candidate-attachments>
       <br>
-      <strong>Other</strong>
-      <p>Please upload other relevant files here.</p>
+      <strong>{{ 'REGISTRATION.ATTACHMENTS.OTHER.NAME' | translate }}</strong>
+      <p>{{ 'REGISTRATION.ATTACHMENTS.OTHER.EXPLANATION' | translate }}</p>
       <app-candidate-attachments
         [cv]="false">
       </app-candidate-attachments>
