@@ -73,8 +73,8 @@ email:
   type: SMTP # STUB or SMTP
   host: ${EMAIL_HOST:smtp.gmail.com}
   port: 587
-  user: ${EMAIL_USER:devtestingdp@gmail.com}
-  password: ${EMAIL_PASSWORD:H@6J9bpcIDHa}
+  user: ${EMAIL_USER:tbbtalent@talentbeyondboundaries.org}
+  password: ${EMAIL_PASSWORD:TBB4Talent!now}
   authenticated: true
-  defaultEmail: ${EMAIL_DEFAULTEMAIL:jo@digitalpurpose.com.au}
-  testOverrideEmail: ${EMAIL_TESTOVERRIDEEMAIL:jo+tbb@digitalpurpose.com.au}
+  defaultEmail: ${EMAIL_DEFAULTEMAIL:tbbtalent@talentbeyondboundaries.org}
+  testOverrideEmail: ${EMAIL_TESTOVERRIDEEMAIL:tbbtalent@talentbeyondboundaries.org}

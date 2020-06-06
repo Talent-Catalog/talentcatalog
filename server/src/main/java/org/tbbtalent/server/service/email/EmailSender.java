@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +34,9 @@ import org.springframework.stereotype.Service;
 public class EmailSender {
 
     private static final Logger log = LoggerFactory.getLogger(EmailSender.class);
+
+    private final String alertEmail = "alert@talentbeyondboundaries.org";
+    private final String alertSubject = "Talent Catalog Alert";
 
     public enum EmailType {
         STUB, SMTP, MANDRILL
@@ -72,6 +76,18 @@ public class EmailSender {
         this.session = emailSession();
         this.transport = emailTransport();
     }
+
+    public void sendAlert(String alertMessage) {
+        sendAlert(alertMessage, null);
+    }
+
+    public void sendAlert(String alertMessage, @Nullable Exception ex) {
+        String s = alertMessage;
+        if (ex != null) {
+            s += ": " + ex;
+        }
+        sendAsync(alertEmail, alertSubject, s, s);
+    }
         
     public boolean send(String emailTo,
                         String bccTo,
@@ -82,11 +98,11 @@ public class EmailSender {
     }
 
     @Async
-    public boolean sendAsync(String emailTo,
+    public void sendAsync(String emailTo,
                              String subject,
                              String contentText,
                              String contentHtml) {
-        return doSend(emailTo, subject, contentText, contentHtml);
+        doSend(emailTo, subject, contentText, contentHtml);
     }
     
     private boolean doSend(String emailTo,

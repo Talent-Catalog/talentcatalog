@@ -23,10 +23,13 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.service.DataSharingService;
+import org.tbbtalent.server.service.email.EmailSender;
 import org.tbbtalent.server.service.util.PartnerDatabaseDefinition;
 import org.tbbtalent.server.service.util.PartnerTableDefinition;
 
@@ -58,10 +61,21 @@ public class DataSharingServiceImpl implements DataSharingService {
     private Connection tbbMaster;
     private Connection tbbLocalCopy;
     
-    
+    private final EmailSender emailSender;
+
+    @Autowired
+    public DataSharingServiceImpl(EmailSender emailSender) {
+        this.emailSender = emailSender;
+    }
+
+    public DataSharingServiceImpl() {
+        this(null);
+    }
+
     @Override
     @Scheduled(cron = "0 30 23 * * ?", zone = "GMT")
     public void dbCopy() throws Exception {
+        reportError("dbCopy has been started. Pull this out once emails are working", null);
         performCopies();
     }
 
@@ -97,11 +111,11 @@ public class DataSharingServiceImpl implements DataSharingService {
                     }
                 } catch (Exception ex) {
                     ok = false;
-                    log.error("Failed to copy to destination: " + destination.getCountry(), ex);
+                    reportError("Failed to copy to destination: " + destination.getCountry(), ex);
                 }
             }
         } catch (Exception ex) {
-            log.error("Exception performing data sharing", ex);
+            reportError("Exception performing data sharing", ex);
         } 
         
         disconnect();
@@ -126,7 +140,7 @@ public class DataSharingServiceImpl implements DataSharingService {
                 tbbMaster = null;
             }
         } catch (Exception ex) {
-            log.error("Could not close master DB connection", ex);
+            reportError("Could not close master DB connection", ex);
         }
 
         try {
@@ -137,7 +151,7 @@ public class DataSharingServiceImpl implements DataSharingService {
                 tbbLocalCopy = null;
             }
         } catch (Exception ex) {
-            log.error("Could not close local temporary DB connection", ex);
+            reportError("Could not close local temporary DB connection", ex);
         }
     }
 
@@ -174,7 +188,7 @@ public class DataSharingServiceImpl implements DataSharingService {
                             final Object masterDataObject = masterData.getObject(i);
                             insertStatement.setObject(i, masterDataObject);
                         } catch (Exception ex) {
-                            log.error(masterData.getString(i), ex);
+                            reportError(masterData.getString(i), ex);
                         }
                     }
 
@@ -188,7 +202,7 @@ public class DataSharingServiceImpl implements DataSharingService {
                 System.out.println();
             } 
         } catch (Exception ex) {
-            log.error("Exception copying " + def.getTableName(), ex);
+            reportError("Exception copying " + def.getTableName(), ex);
         }
     }
 
@@ -231,7 +245,7 @@ public class DataSharingServiceImpl implements DataSharingService {
                         " LINES TERMINATED BY '\n' IGNORE 1 LINES");
             }
         } catch (Exception ex) {
-            log.error("Exception exporting " + tableName, ex);
+            reportError("Exception exporting " + tableName, ex);
         }
     }
 
@@ -314,6 +328,13 @@ public class DataSharingServiceImpl implements DataSharingService {
 
     private void postProcess() {
 
+    }
+
+    private void reportError(String s, @Nullable Exception ex) {
+        log.error(s, ex);
+        if (emailSender != null) {
+            emailSender.sendAlert( s, ex);
+        }
     }
 
     void setMasterJdbcUrl(String masterJdbcUrl) {
