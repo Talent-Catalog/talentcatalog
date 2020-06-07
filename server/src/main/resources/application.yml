@@ -3,6 +3,12 @@ tbb:
     urls: ${TBB_CORS_URLS:http://localhost:4200,http://localhost:4201,https://tbbtalent-staging.herokuapp.com}
 
 spring:
+  application:
+    name: TalentCatalog
+  security:
+    user:
+      name: client
+      password: client
   datasource:
     driverClassName: org.postgresql.Driver
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/tbbtalent}
@@ -11,6 +17,17 @@ spring:
     hikari:
       maximum-pool-size: ${SPRING_DBPOOL_MAX:10}
       minimum-idle:  ${SPRING_DBPOOL_MIN:10}
+  boot:
+    admin:
+      client:
+        url: ${SPRING_BOOT_ADMIN_CLIENT_URL:http://localhost:8081}
+        username: admin
+        password: admin
+        instance:
+          metadata:
+            user:
+              name: ${spring.security.user.name}
+              password: ${spring.security.user.password}
 
 
 #  To catch resource not found errors (404)
@@ -31,6 +48,16 @@ spring:
           use_jdbc_metadata_defaults: false
 
 
+management:
+   endpoints:
+     web:
+       exposure:
+         include: ${MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE:*}
+
+#Is this needed - not in Baeldung
+   endpoint:
+     loggers:
+       enabled: true
 
 jwt:
   secret: JWTSuperSecretKey
