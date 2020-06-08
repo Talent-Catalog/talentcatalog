@@ -75,6 +75,9 @@
               <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
               Candidate #
             </th>
+            <th>
+              <i class="far fa-hand-pointer"></i>
+            </th>
             <th *ngIf="loggedInUser && (loggedInUser.role !== 'semilimited' && loggedInUser.role !== 'limited')" (click)="toggleSort('user.firstName')">
               <app-sorted-by [column]="'user.firstName'" [sortColumn]="sortField"
                              [sortDirection]="sortDirection"></app-sorted-by>
@@ -126,6 +129,12 @@
               </a>
 
             </td>
+            <td>
+              <input type="checkbox" class="custom-checkbox" id="selected"
+                     (ngModelChange)="onSelectionChange(candidate, $event)" [ngModel]="candidate.selected" >
+            </td>
+<!--            todo These repeated complex logical expressions should be replace
+                by simple method calls - eg isCandidateNameViewable() etc-->
             <td *ngIf="loggedInUser && (loggedInUser.role !== 'semilimited' && loggedInUser.role !== 'limited')">{{candidate.user.firstName}}</td>
             <td *ngIf="loggedInUser && (loggedInUser.role !== 'semilimited' && loggedInUser.role !== 'limited')">{{candidate.user.lastName}}</td>
             <app-candidate-shortlist-item *ngIf="savedSearch?.reviewable"

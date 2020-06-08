@@ -128,6 +128,11 @@ export interface UpdateSharingRequest {
   savedSearchId: number;
 }
 
+export interface SelectCandidateInSearchRequest {
+  userId: number;
+  candidateId: number;
+}
+
 /**
  * Create a SavedSearchRequest from a SavedSearch and a search request.
  * @param savedSearch

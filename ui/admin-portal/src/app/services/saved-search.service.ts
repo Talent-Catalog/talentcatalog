@@ -7,7 +7,8 @@ import {
   SavedSearch,
   SavedSearchRequest,
   SavedSearchSubtype,
-  SavedSearchType
+  SavedSearchType,
+  SelectCandidateInSearchRequest
 } from "../model/saved-search";
 import {map} from "rxjs/operators";
 
@@ -124,6 +125,11 @@ export class SavedSearchService {
       savedSearch.savedSearchSubtype = SavedSearchSubtype[savedSearch.savedSearchSubtype];
     }
     return savedSearch;
+  }
+
+  selectCandidate(id: number, request: SelectCandidateInSearchRequest):
+    Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/select-candidate/${id}`, request);
   }
 
   addSharedUser(id: number, request: { userId: number }): Observable<SavedSearch> {

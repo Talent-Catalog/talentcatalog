@@ -17,9 +17,11 @@ import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.exception.NotImplementedException;
 import org.tbbtalent.server.model.SavedSearch;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
+import org.tbbtalent.server.request.search.SelectCandidateInSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.request.search.UpdateWatchingRequest;
@@ -74,6 +76,25 @@ public class SavedSearchAdminApi implements
     /*
         End standard ITableApi methods
      */
+
+
+    /**
+     * Update the record with the given id from the data in the given request.
+     * @param id ID of saved search
+     * @param request Request contains the user making the selection and the
+     *                candidate being selected.
+     * @throws InvalidRequestException if not authorized to update this record.
+     * @throws NoSuchObjectException if there is no such saved search, user
+     * or candidate with the given ids
+     */
+    @PutMapping("/select-candidate/{id}")
+    void selectCandidate(@PathVariable("id") long id, 
+                         @Valid @RequestBody SelectCandidateInSearchRequest request)
+            throws InvalidRequestException, NoSuchObjectException {
+        //TODO JC selectCandidate not implemented in SavedSearchAdminApi
+        
+        throw new NotImplementedException( "SavedSearchAdminApi", "selectCandidate" );        
+    }
 
     @GetMapping("{id}/load")
     public SearchCandidateRequest load(@PathVariable("id") long id) {

@@ -14,7 +14,8 @@ import {
   getSavedSearchBreadcrumb,
   ReviewedStatus,
   SavedSearch,
-  SavedSearchRunRequest
+  SavedSearchRunRequest,
+  SelectCandidateInSearchRequest
 } from "../../../model/saved-search";
 import {
   CachedSearchResults,
@@ -92,7 +93,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     this.loggedInUser = this.authService.getLoggedInUser();
 
     this.statuses = [];
-    for (let key in ReviewedStatus) {
+    for (const key in ReviewedStatus) {
       if (isNaN(Number(key))) {
         this.statuses.push(key);
       }
@@ -131,7 +132,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.subscription){
+    if (this.subscription) {
       this.subscription.unsubscribe();
     }
   }
@@ -139,7 +140,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   private constructRunRequest(): SavedSearchRunRequest {
     return {
       savedSearchId: this.savedSearchId,
-      pageNumber: this.pageNumber-1,
+      pageNumber: this.pageNumber - 1,
       pageSize: this.pageSize,
       sortFields: [this.sortField],
       sortDirection: this.sortDirection,
@@ -162,7 +163,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
         //If we have to use the page number, the pageNumber and size must match
         //what is in the cache or we can't use it.
         done = !usePageNumber ||
-          (cached.pageNumber == this.pageNumber && cached.pageSize == this.pageSize);
+          (cached.pageNumber === this.pageNumber && cached.pageSize === this.pageSize);
         if (done) {
           this.results = cached.results;
           this.sortField = cached.sortFields[0];
@@ -215,8 +216,8 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   }
 
   toggleSort(column) {
-    if (this.sortField == column) {
-      this.sortDirection = this.sortDirection == 'ASC' ? 'DESC' : 'ASC';
+    if (this.sortField === column) {
+      this.sortDirection = this.sortDirection === 'ASC' ? 'DESC' : 'ASC';
     } else {
       this.sortField = column;
       this.sortDirection = 'ASC';
@@ -226,17 +227,17 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   exportCandidates() {
     this.exporting = true;
-    let request = this.constructRunRequest();
+    const request = this.constructRunRequest();
     this.candidateService.exportFromSavedSearch(request, 10000).subscribe(
       result => {
-        let options = {type: 'text/csv;charset=utf-8;'};
-        let filename = 'candidates.csv';
+        const options = {type: 'text/csv;charset=utf-8;'};
+        const filename = 'candidates.csv';
         this.createAndDownloadBlobFile(result, options, filename);
         this.exporting = false;
       },
       err => {
         const reader = new FileReader();
-        let _this = this;
+        const _this = this;
         reader.addEventListener('loadend', function () {
           if (typeof reader.result === 'string') {
             _this.error = JSON.parse(reader.result);
@@ -255,15 +256,15 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   }
 
   createAndDownloadBlobFile(body, options, filename) {
-    let blob = new Blob([body], options);
+    const blob = new Blob([body], options);
     if (navigator.msSaveBlob) {
       // IE 10+
       navigator.msSaveBlob(blob, filename);
     } else {
-      let link = document.createElement('a');
+      const link = document.createElement('a');
       // Browsers that support HTML5 download attribute
       if (link.download !== undefined) {
-        let url = URL.createObjectURL(blob);
+        const url = URL.createObjectURL(blob);
         link.setAttribute('href', url);
         link.setAttribute('download', filename);
         link.style.visibility = 'hidden';
@@ -274,8 +275,8 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     }
   }
 
-  downloadCv(candidate){
-    let tab = window.open();
+  downloadCv(candidate) {
+    const tab = window.open();
     this.candidateService.downloadCv(candidate.id).subscribe(
       result => {
         const fileUrl = URL.createObjectURL(result);
@@ -288,7 +289,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   }
 
   getBreadcrumb() {
-    let infos = this.savedSearchService.getSavedSearchTypeInfos();
+    const infos = this.savedSearchService.getSavedSearchTypeInfos();
     return getSavedSearchBreadcrumb(this.savedSearch, infos)
   }
 
@@ -332,7 +333,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       error => {
         this.error = error;
       }
-    )
+    );
   }
 
   removeFromSharedWithMe() {
@@ -348,7 +349,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
       error => {
         this.error = error;
       }
-    )
+    );
   }
 
   isShareable(): boolean {
@@ -358,7 +359,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     if (this.savedSearch) {
       if (!this.savedSearch.fixed) {
         //was it created by me?
-        if (this.savedSearch.createdBy.id != this.loggedInUser.id) {
+        if (this.savedSearch.createdBy.id !== this.loggedInUser.id) {
           shareable = true;
         }
       }
@@ -369,8 +370,22 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   isSharedWithMe(): boolean {
     //Logged in user is in saved search user
     return this.savedSearch ?
-      this.savedSearch.users.find(u => u.id == this.loggedInUser.id ) != undefined
+      this.savedSearch.users.find(u => u.id === this.loggedInUser.id ) !== undefined
       : false;
 
+  }
+
+  onSelectionChange(candidate: Candidate, selected: boolean) {
+    //Candidate is added/removed from this users selection list for this saved search
+    const request: SelectCandidateInSearchRequest = {
+        userId: this.loggedInUser.id,
+        candidateId: candidate.id
+      };
+    this.savedSearchService.selectCandidate(this.savedSearchId, request).subscribe(
+      result => {},
+      err => {
+        this.error = err;
+      }
+    );
   }
 }
