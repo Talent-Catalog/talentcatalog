@@ -19,6 +19,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.springframework.data.annotation.Transient;
+import org.tbbtalent.server.api.admin.SavedSearchAdminApi;
+
 @Entity
 @Table(name = "candidate")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_id_seq", allocationSize = 1)
@@ -110,6 +113,15 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private String sflink;
 
     private String videolink;
+
+    /**
+     * This can be set based on a user's selection associated with a saved
+     * search, as recorded in the associated selection list for that user
+     * and saved search.
+     * @see SavedSearchAdminApi#selectCandidate   
+     */
+    @Transient
+    private boolean selected = false;
 
 
 
@@ -359,6 +371,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setFolderlink(String folderlink) {
         this.folderlink = folderlink;
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 
     public String getSflink() {

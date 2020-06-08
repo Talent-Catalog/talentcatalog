@@ -63,6 +63,7 @@ public class CandidateBuilderSelector {
                 .add("unRegistered")
                 .add("unRegistrationNumber")
                 .add("surveyComment")
+                .add("selected")
                 .add("surveyType", surveyTypeDto())
                 .add("country", countryDto())
                 .add("nationality", nationalityDto())
@@ -93,6 +94,7 @@ public class CandidateBuilderSelector {
                 .add("candidateMessage")
                 .add("folderlink")
                 .add("sflink")
+                .add("selected")
                 .add("country", countryDto())
                 .add("user",userSemiLimitedDto())
                 .add("nationality", nationalityDto())
@@ -112,6 +114,7 @@ public class CandidateBuilderSelector {
                 .add("candidateMessage")
                 .add("folderlink")
                 .add("sflink")
+                .add("selected")
                 .add("user",userSemiLimitedDto())
                 .add("candidateShortlistItems", shortlistDto())
                 ;
