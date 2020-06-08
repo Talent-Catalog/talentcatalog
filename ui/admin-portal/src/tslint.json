@@ -25,6 +25,10 @@
       "no-inferrable-types": [
         false,
         "ignore-params"
+      ],
+      "semicolon": [
+        false,
+        "always"
       ]
     }
 }
