@@ -76,8 +76,8 @@ export class SavedSearchService {
     return this.savedSearchTypeInfos;
   }
 
-  search(request): Observable<SearchResults<SavedSearch>> {
-    return this.http.post<SearchResults<SavedSearch>>(`${this.apiUrl}/search`, request)
+  searchPaged(request): Observable<SearchResults<SavedSearch>> {
+    return this.http.post<SearchResults<SavedSearch>>(`${this.apiUrl}/search-paged`, request)
       .pipe(
         map(results => this.processPostResults(results))
       );

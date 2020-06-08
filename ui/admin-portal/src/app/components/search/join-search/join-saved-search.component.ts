@@ -2,7 +2,14 @@ import {Component, OnInit} from '@angular/core';
 import {SearchResults} from '../../../model/search-results';
 
 import {FormBuilder, FormGroup} from "@angular/forms";
-import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from "rxjs/operators";
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  switchMap,
+  tap
+} from "rxjs/operators";
 import {SavedSearch} from "../../../model/saved-search";
 import {SavedSearchService} from "../../../services/saved-search.service";
 import {Router} from "@angular/router";
@@ -49,7 +56,7 @@ export class JoinSavedSearchComponent implements OnInit {
           this.error = null
         }),
         switchMap(term =>
-          this.savedSearchService.search({keyword: term}).pipe(
+          this.savedSearchService.searchPaged({keyword: term}).pipe(
             tap(() => this.searchFailed = false),
             map(result => result.content),
             catchError(() => {

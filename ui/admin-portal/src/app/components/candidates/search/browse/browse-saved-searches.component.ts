@@ -115,7 +115,7 @@ export class BrowseSavedSearchesComponent implements OnInit, OnChanges {
       this.error = "Haven't implemented search by " + SearchBy[this.searchBy];
     } else {
       this.loading = true;
-      this.savedSearchService.search(request).subscribe(results => {
+      this.savedSearchService.searchPaged(request).subscribe(results => {
         this.results = results;
 
         if (results.content.length > 0) {
