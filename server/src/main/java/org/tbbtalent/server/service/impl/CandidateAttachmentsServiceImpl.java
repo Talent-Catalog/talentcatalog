@@ -92,6 +92,11 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         // Create a record of the attachment
         CandidateAttachment attachment = new CandidateAttachment();
 
+        attachment.setCandidate(candidate);
+        attachment.setMigrated(false);
+        attachment.setAdminOnly(adminOnly);
+        attachment.setAuditFields(user);
+
         if (request.getType().equals(AttachmentType.link)) {
 
             attachment.setType(AttachmentType.link);
@@ -110,13 +115,18 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             this.s3ResourceHelper.copyObject(source, destination);
             log.info("[S3] Transferred candidate attachment from source [" + source + "] to destination [" + destination + "]");
 
+            // The location is set to the filename because we can derive it's location from the candidate number
+            attachment.setLocation(uniqueFilename);
+            attachment.setName(request.getName());
+            attachment.setType(AttachmentType.file);
+            attachment.setFileType(request.getFileType());
+
             // Extract text from the file
             if(request.getCv()) {
                 try {
                     textExtract = textExtractHelper.getTextExtractFromFile(srcFile, request.getFileType());
                     if(StringUtils.isNotBlank(textExtract)) {
                         attachment.setTextExtract(textExtract);
-                        candidateAttachmentRepository.save(attachment);
                     }
                 } catch (Exception e) {
                     log.error("Could not extract text from uploaded cv file", e);
@@ -125,17 +135,8 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                 attachment.setCv(request.getCv());
             }
 
-            // The location is set to the filename because we can derive it's location from the candidate number
-            attachment.setLocation(uniqueFilename);
-            attachment.setName(request.getName());
-            attachment.setType(AttachmentType.file);
-            attachment.setFileType(request.getFileType());
         }
 
-        attachment.setCandidate(candidate);
-        attachment.setMigrated(false);
-        attachment.setAdminOnly(adminOnly);
-        attachment.setAuditFields(user);
 
         // Update candidate audit fields
         candidate.setAuditFields(user);
@@ -191,7 +192,12 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         if(request.getCv() && !candidateAttachment.isCv()) {
             try {
                 String uniqueFilename = candidateAttachment.getLocation();
-                String destination = "candidate/" + candidateAttachment.getCandidate().getCandidateNumber() + "/" + uniqueFilename;
+                String destination;
+                if(candidateAttachment.isMigrated()){
+                    destination = "candidate/migrated/" + uniqueFilename;
+                } else {
+                    destination = "candidate/" + candidateAttachment.getCandidate().getCandidateNumber() + "/" + uniqueFilename;
+                }
                 File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
                 String extractedText = textExtractHelper.getTextExtractFromFile(srcFile, candidateAttachment.getFileType());
                 if (StringUtils.isNotBlank(extractedText)) {

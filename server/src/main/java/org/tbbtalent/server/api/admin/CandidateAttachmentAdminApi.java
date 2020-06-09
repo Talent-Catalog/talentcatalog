@@ -43,11 +43,7 @@ public class CandidateAttachmentAdminApi {
     public Map<String, Object> search(@RequestBody SearchCandidateAttachmentsRequest request) {
         Page<CandidateAttachment> candidateAttachments = this.candidateAttachmentService.searchCandidateAttachments(request);
         User user = userContext.getLoggedInUser();
-        if (user.getRole() == Role.admin || user.getRole() == Role.sourcepartneradmin) {
-            return candidateAttachmentDto().buildPage(candidateAttachments);
-        } else {
-            return candidateAttachmentReadOnlyDto().buildPage(candidateAttachments);
-        }
+        return candidateAttachmentDto().buildPage(candidateAttachments);
     }
 
     @PostMapping()
@@ -86,20 +82,6 @@ public class CandidateAttachmentAdminApi {
                 ;
     }
 
-    private DtoBuilder candidateAttachmentReadOnlyDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("type")
-                .add("fileType")
-                .add("adminOnly")
-                .add("migrated")
-                .add("cv")
-                .add("createdBy", userDto())
-                .add("createdDate")
-                .add("updatedBy", userDto())
-                .add("updatedDate")
-                ;
-    }
 
     private DtoBuilder userDto() {
         return new DtoBuilder()
