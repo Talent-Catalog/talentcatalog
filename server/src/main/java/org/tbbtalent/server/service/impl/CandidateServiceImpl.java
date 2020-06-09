@@ -153,7 +153,16 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Page<Candidate> searchCandidates(SavedSearchRunRequest request) {
         
-        Long savedSearchId = request.getSavedSearchId(); 
+        Long savedSearchId = request.getSavedSearchId();
+
+        //Check for selection list to set the selected attribute on returned 
+        // candidates.
+        SavedList selectionList = null;
+        User user = userContext.getLoggedInUser();
+        if (user != null) {
+            selectionList = savedSearchService.getSelectionList(savedSearchId, user.getId());
+        }
+        
         SavedSearch savedSearch = this.savedSearchRepository.findByIdLoadSearchJoins(savedSearchId)
                 .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, savedSearchId));
         SearchCandidateRequest searchCandidateRequest = convertToSearchCandidateRequest(savedSearch);
@@ -163,8 +172,20 @@ public class CandidateServiceImpl implements CandidateService {
         searchCandidateRequest.setSortDirection(request.getSortDirection());
         searchCandidateRequest.setSortFields(request.getSortFields());
         searchCandidateRequest.setShortlistStatus(request.getShortlistStatus());
+
+        final Page<Candidate> candidates = searchCandidates(searchCandidateRequest);
+        if (selectionList != null) {
+            Set<Candidate> selectedCandidates = selectionList.getCandidates();
+            if (selectedCandidates.size() > 0) {
+                for (Candidate candidate : candidates) {
+                    if (selectedCandidates.contains(candidate)) {
+                        candidate.setSelected(true);
+                    }
+                }
+            }
+        }
         
-        return searchCandidates(searchCandidateRequest);
+        return candidates;
     }
 
     @Override
