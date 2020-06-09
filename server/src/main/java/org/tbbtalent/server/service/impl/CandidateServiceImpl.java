@@ -409,7 +409,7 @@ public class CandidateServiceImpl implements CandidateService {
 
 
     @Override
-    public Candidate getCandidate(long id) {
+    public Candidate getCandidate(long id) throws NoSuchObjectException {
         return this.candidateRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
     }

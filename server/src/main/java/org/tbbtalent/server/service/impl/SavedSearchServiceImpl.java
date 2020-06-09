@@ -1,5 +1,6 @@
 package org.tbbtalent.server.service.impl;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -8,6 +9,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +29,7 @@ import org.tbbtalent.server.model.Country;
 import org.tbbtalent.server.model.EducationLevel;
 import org.tbbtalent.server.model.Language;
 import org.tbbtalent.server.model.LanguageLevel;
+import org.tbbtalent.server.model.SavedList;
 import org.tbbtalent.server.model.SavedSearch;
 import org.tbbtalent.server.model.SearchJoin;
 import org.tbbtalent.server.model.Status;
@@ -37,6 +41,7 @@ import org.tbbtalent.server.repository.LanguageLevelRepository;
 import org.tbbtalent.server.repository.LanguageRepository;
 import org.tbbtalent.server.repository.NationalityRepository;
 import org.tbbtalent.server.repository.OccupationRepository;
+import org.tbbtalent.server.repository.SavedListRepository;
 import org.tbbtalent.server.repository.SavedSearchRepository;
 import org.tbbtalent.server.repository.SavedSearchSpecification;
 import org.tbbtalent.server.repository.SearchJoinRepository;
@@ -56,6 +61,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private static final Logger log = LoggerFactory.getLogger(SavedSearchServiceImpl.class);
 
     private final UserRepository userRepository;
+    private final SavedListRepository savedListRepository;
     private final SavedSearchRepository savedSearchRepository;
     private final SearchJoinRepository searchJoinRepository;
     private final LanguageLevelRepository languageLevelRepository;
@@ -70,6 +76,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     @Autowired
     public SavedSearchServiceImpl(
             UserRepository userRepository,
+            SavedListRepository savedListRepository,
             SavedSearchRepository savedSearchRepository,
             SearchJoinRepository searchJoinRepository,
             LanguageLevelRepository languageLevelRepository,
@@ -81,6 +88,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             EducationLevelRepository educationLevelRepository,
             UserContext userContext) {
         this.userRepository = userRepository;
+        this.savedListRepository = savedListRepository;
         this.savedSearchRepository = savedSearchRepository;
         this.searchJoinRepository = searchJoinRepository;
         this.languageLevelRepository = languageLevelRepository;
@@ -286,6 +294,36 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         savedSearch.removeWatcher(request.getUserId());
 
         return savedSearchRepository.save(savedSearch);
+    }
+
+    @Override
+    public @NotNull SavedList getSelectionList(long id, Long userId) 
+            throws NoSuchObjectException {
+        //Check that saved search and user are valid.
+        SavedSearch savedSearch = savedSearchRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchObjectException(User.class, userId));
+        
+        SavedList savedList = savedListRepository.findSelectionList(id, userId)
+                        .orElse(null);
+        if (savedList == null) {
+            savedList = new SavedList();
+            savedList.setSavedSearch(savedSearch);
+            savedList.setCreatedBy(user);
+            savedList.setCreatedDate(OffsetDateTime.now());
+            savedList.setName(constructSelectionListName(user, savedSearch));
+            savedList = savedListRepository.save(savedList);
+        }
+        
+        return savedList;
+    }
+
+    private static String constructSelectionListName(
+            User user, SavedSearch savedSearch) {
+        return "_SelectionListUser" + user.getId() + 
+                "Search" + savedSearch.getId(); 
     }
 
     private void checkDuplicates(Long id, String name) {

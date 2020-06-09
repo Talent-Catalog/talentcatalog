@@ -379,7 +379,8 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
     //Candidate is added/removed from this users selection list for this saved search
     const request: SelectCandidateInSearchRequest = {
         userId: this.loggedInUser.id,
-        candidateId: candidate.id
+        candidateId: candidate.id,
+        selected: selected
       };
     this.savedSearchService.selectCandidate(this.savedSearchId, request).subscribe(
       result => {},

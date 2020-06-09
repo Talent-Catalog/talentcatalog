@@ -18,8 +18,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
-import org.springframework.data.annotation.Transient;
 import org.tbbtalent.server.api.admin.SavedSearchAdminApi;
 
 @Entity

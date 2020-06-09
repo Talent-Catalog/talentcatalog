@@ -10,7 +10,9 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -24,6 +26,11 @@ import org.springframework.lang.Nullable;
 public class SavedList extends AbstractCandidateSource {
     private static final Logger log = LoggerFactory.getLogger(SavedList.class);
 
+    @Nullable
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "saved_search_id")
+    private SavedSearch savedSearch;
+    
     //Note use of Set rather than List as strongly recommended for Many to Many
     //relationships here: 
     // https://thoughts-on-java.org/best-practices-for-many-to-many-associations-with-hibernate-and-jpa/
@@ -46,6 +53,15 @@ public class SavedList extends AbstractCandidateSource {
         }
         //Clear set of candidates
         this.candidates.clear();
+    }
+
+    @Nullable
+    public SavedSearch getSavedSearch() {
+        return savedSearch;
+    }
+
+    public void setSavedSearch(@Nullable SavedSearch savedSearch) {
+        this.savedSearch = savedSearch;
     }
 
     public Set<Candidate> getCandidates() {

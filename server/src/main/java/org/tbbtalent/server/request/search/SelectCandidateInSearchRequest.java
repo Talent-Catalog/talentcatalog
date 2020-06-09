@@ -19,4 +19,6 @@ public class SelectCandidateInSearchRequest {
 
     @NotNull
     private Long candidateId;
+    
+    private boolean selected;
 }

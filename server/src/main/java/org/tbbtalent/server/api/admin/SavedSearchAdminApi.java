@@ -17,14 +17,17 @@ import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.exception.NotImplementedException;
+import org.tbbtalent.server.model.SavedList;
 import org.tbbtalent.server.model.SavedSearch;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
+import org.tbbtalent.server.request.list.HasSetOfCandidatesImpl;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
 import org.tbbtalent.server.request.search.SelectCandidateInSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.request.search.UpdateWatchingRequest;
+import org.tbbtalent.server.service.CandidateService;
+import org.tbbtalent.server.service.SavedListService;
 import org.tbbtalent.server.service.SavedSearchService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -34,13 +37,19 @@ public class SavedSearchAdminApi implements
         ITableApi<SearchSavedSearchRequest, 
                 UpdateSavedSearchRequest, UpdateSavedSearchRequest> {
 
+    private final CandidateService candidateService;
+    private final SavedListService savedListService;
     private final SavedSearchService savedSearchService;
 
     /*
         Standard ITableApi methods
      */
     @Autowired
-    public SavedSearchAdminApi(SavedSearchService savedSearchService) {
+    public SavedSearchAdminApi(SavedSearchService savedSearchService,
+                               SavedListService savedListService,
+                               CandidateService candidateService) {
+        this.candidateService = candidateService;
+        this.savedListService = savedListService;
         this.savedSearchService = savedSearchService;
     }
 
@@ -88,12 +97,24 @@ public class SavedSearchAdminApi implements
      * or candidate with the given ids
      */
     @PutMapping("/select-candidate/{id}")
-    void selectCandidate(@PathVariable("id") long id, 
+    public void selectCandidate(@PathVariable("id") long id, 
                          @Valid @RequestBody SelectCandidateInSearchRequest request)
             throws InvalidRequestException, NoSuchObjectException {
-        //TODO JC selectCandidate not implemented in SavedSearchAdminApi
+
+        //Get the selection list for this user and saved search.
+        SavedList selectionList =
+                savedSearchService.getSelectionList(id, request.getUserId());
         
-        throw new NotImplementedException( "SavedSearchAdminApi", "selectCandidate" );        
+        //Create a list request containing our candidate id.
+        HasSetOfCandidatesImpl listRequest = new HasSetOfCandidatesImpl();
+        listRequest.addCandidateId(request.getCandidateId());
+        
+        //Add or remove candidate depending on selection.
+        if (request.isSelected()) {
+            savedListService.mergeSavedList(selectionList.getId(), listRequest);
+        } else {
+            savedListService.removeFromSavedList(selectionList.getId(), listRequest);
+        }
     }
 
     @GetMapping("{id}/load")

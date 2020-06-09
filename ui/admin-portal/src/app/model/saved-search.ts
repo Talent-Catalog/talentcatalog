@@ -131,6 +131,7 @@ export interface UpdateSharingRequest {
 export interface SelectCandidateInSearchRequest {
   userId: number;
   candidateId: number;
+  selected: boolean;
 }
 
 /**
