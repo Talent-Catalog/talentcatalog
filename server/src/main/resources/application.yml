@@ -20,7 +20,7 @@ spring:
   boot:
     admin:
       client:
-        url: ${SPRING_BOOT_ADMIN_CLIENT_URL:http://localhost:8081}
+#        url: ${SPRING_BOOT_ADMIN_CLIENT_URL:http://localhost:8081}
         username: admin
         password: admin
         instance:
