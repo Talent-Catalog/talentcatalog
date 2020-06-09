@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
+import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.model.DataRow;
@@ -72,7 +73,7 @@ public interface CandidateService {
      */
     boolean replaceCandidateSavedLists(long candidateId, IHasSetOfSavedLists request);
 
-    Candidate getCandidate(long id);
+    Candidate getCandidate(long id) throws NoSuchObjectException;
 
     Candidate createCandidate(CreateCandidateRequest request) throws UsernameTakenException;
 
