@@ -52,6 +52,7 @@ public class ErrorHandler {
     public ErrorDTO processOtherException(Exception ex) {
         final String code = "unexpected_exception";
         log.error(code, ex);
+        log.info(ex.toString());
         return new ErrorDTO(code, ex.toString());
     }    
 
