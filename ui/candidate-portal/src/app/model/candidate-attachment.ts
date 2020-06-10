@@ -13,6 +13,7 @@ export interface CandidateAttachment {
   fileType: string;
   type: AttachmentType;
   migrated: boolean;
+  cv: boolean;
   adminOnly: boolean;
   candidate?: Candidate;
   createdBy: User;

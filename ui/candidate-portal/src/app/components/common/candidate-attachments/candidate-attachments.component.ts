@@ -14,6 +14,7 @@ import {CandidateService} from "../../../services/candidate.service";
 export class CandidateAttachmentsComponent implements OnInit {
 
   @Input() preview: boolean = false;
+  @Input() cv: boolean;
 
   error: any;
   _loading = {
@@ -44,7 +45,11 @@ export class CandidateAttachmentsComponent implements OnInit {
       });
     this.candidateAttachmentService.listCandidateAttachments().subscribe(
       (response) => {
-        this.attachments = response;
+        if(!this.preview){
+          this.attachments = response.filter(att => att.cv == this.cv);
+        } else {
+          this.attachments = response;
+        }
         this._loading.attachments = false;
       },
       (error) => {
@@ -63,12 +68,16 @@ export class CandidateAttachmentsComponent implements OnInit {
       type: 'file',
       name: attachment.file.name,
       fileType: this.getFileType(attachment.file.name),
-      folder: attachment.s3Params.objectKey
+      folder: attachment.s3Params.objectKey,
+      cv: this.cv
     };
     this.candidateAttachmentService.createAttachment(request).subscribe(
-      (response) => this.attachments.push(response),
-      (error) => this.error = error
-    );
+      (response) => {
+        this.attachments.push(response)
+      },
+      (error) => {
+        this.error = error
+      });
   }
 
   getFileType(name: string) {

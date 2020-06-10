@@ -63,6 +63,7 @@ public class CandidateAttachmentPortalApi {
                 .add("fileType")
                 .add("adminOnly")
                 .add("migrated")
+                .add("cv")
                 .add("createdBy", userDto())
                 .add("createdDate")
                 ;

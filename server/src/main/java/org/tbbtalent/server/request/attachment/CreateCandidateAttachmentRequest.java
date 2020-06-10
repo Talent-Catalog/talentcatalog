@@ -15,6 +15,7 @@ public class CreateCandidateAttachmentRequest {
     private String folder;
     private String location; // Used for creating link attachments on admin
     private String textExtract;
+    private Boolean cv;
 
     public Long getCandidateId() {
         return candidateId;
@@ -67,5 +68,9 @@ public class CreateCandidateAttachmentRequest {
     public String getTextExtract() { return textExtract; }
 
     public void setTextExtract(String textExtract) { this.textExtract = textExtract; }
+
+    public Boolean getCv() { return cv; }
+
+    public void setCv(Boolean cv) { this.cv = cv; }
 }
 

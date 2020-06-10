@@ -26,6 +26,7 @@ export class EditCandidateAttachmentComponent implements OnInit {
     this.form = this.fb.group({
       id: [this.attachment.id],
       name: [this.attachment.name, Validators.required],
+      cv: [this.attachment.cv]
     });
     if (this.attachment.type === 'link') {
       this.form.addControl('location', new FormControl(this.attachment.location, [Validators.required]));

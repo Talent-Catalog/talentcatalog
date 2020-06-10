@@ -41,20 +41,29 @@
 
     </ng-container>
 
+    <ng-container *ngIf="type === 'file'">
+
+      <div class="alert alert-success" *ngIf="attachments?.length">
+        Successfully uploaded {{attachments.length}} attachments
+      </div>
+
+      <div class="form-group">
+        <div class="form-inline">
+          <label for="cv">Is this file a CV?</label>
+          <input class="form-control" id="cv" [formControlName]="'cv'" [value]="'cv'" type="checkbox">
+        </div>
+        <div>
+          <small class="text-muted">If it is a CV it will have the text extracted to assist keyword search (if include CV files is checked).</small>
+        </div>
+      </div>
+
+      <app-file-upload (uploadStarted)="saving = true"
+                       (uploadFinished)="saving = false"
+                       (fileUploaded)="handleAttachmentUploaded($event)"></app-file-upload>
+
+
+    </ng-container>
   </form>
-
-  <ng-container *ngIf="type === 'file'">
-
-    <div class="alert alert-success" *ngIf="attachments?.length">
-      Successfully uploaded {{attachments.length}} attachments
-    </div>
-
-    <app-file-upload (uploadStarted)="saving = true"
-                     (uploadFinished)="saving = false"
-                     (fileUploaded)="handleAttachmentUploaded($event)"></app-file-upload>
-
-  </ng-container>
-
 </div>
 
 <div class="modal-footer">

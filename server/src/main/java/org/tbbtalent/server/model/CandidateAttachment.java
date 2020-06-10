@@ -21,6 +21,7 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long>  {
     private boolean adminOnly;
     private String fileType;
     private boolean migrated;
+    private boolean cv;
     private String textExtract;
 
     public CandidateAttachment() {
@@ -81,6 +82,10 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long>  {
     public void setMigrated(boolean migrated) {
         this.migrated = migrated;
     }
+
+    public boolean isCv() { return cv; }
+
+    public void setCv(boolean cv) { this.cv = cv; }
 
     public String getTextExtract() { return textExtract; }
 

@@ -92,6 +92,11 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         // Create a record of the attachment
         CandidateAttachment attachment = new CandidateAttachment();
 
+        attachment.setCandidate(candidate);
+        attachment.setMigrated(false);
+        attachment.setAdminOnly(adminOnly);
+        attachment.setAuditFields(user);
+
         if (request.getType().equals(AttachmentType.link)) {
 
             attachment.setType(AttachmentType.link);
@@ -110,27 +115,28 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             this.s3ResourceHelper.copyObject(source, destination);
             log.info("[S3] Transferred candidate attachment from source [" + source + "] to destination [" + destination + "]");
 
-            // Extract text from the file
-            try {
-                textExtract = textExtractHelper.getTextExtractFromFile(srcFile, request.getFileType());
-                if(StringUtils.isNotBlank(textExtract)) {
-                    attachment.setTextExtract(textExtract);
-                }
-            } catch (Exception e) {
-                log.error("Could not extract text from uploaded file", e);
-            }
-
             // The location is set to the filename because we can derive it's location from the candidate number
             attachment.setLocation(uniqueFilename);
-            attachment.setName(uniqueFilename);
+            attachment.setName(request.getName());
             attachment.setType(AttachmentType.file);
             attachment.setFileType(request.getFileType());
+
+            // Extract text from the file
+            if(request.getCv()) {
+                try {
+                    textExtract = textExtractHelper.getTextExtractFromFile(srcFile, request.getFileType());
+                    if(StringUtils.isNotBlank(textExtract)) {
+                        attachment.setTextExtract(textExtract);
+                    }
+                } catch (Exception e) {
+                    log.error("Could not extract text from uploaded cv file", e);
+                    attachment.setTextExtract(null);
+                }
+                attachment.setCv(request.getCv());
+            }
+
         }
 
-        attachment.setCandidate(candidate);
-        attachment.setMigrated(false);
-        attachment.setAdminOnly(adminOnly);
-        attachment.setAuditFields(user);
 
         // Update candidate audit fields
         candidate.setAuditFields(user);
@@ -173,16 +179,46 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     }
 
     @Override
-    @Transactional
     public CandidateAttachment updateCandidateAttachment(UpdateCandidateAttachmentRequest request) {
         User user = userContext.getLoggedInUser();
 
         CandidateAttachment candidateAttachment = candidateAttachmentRepository.findByIdLoadCandidate(request.getId())
                 .orElseThrow(() -> new NoSuchObjectException(CandidateAttachment.class, request.getId()));
 
+        // Update the name
         candidateAttachment.setName(request.getName());
+
+        // Run text extraction if attachment changed from not CV to a CV or remove if changed from CV to not CV.
+        if(request.getCv() && !candidateAttachment.isCv()) {
+            try {
+                String uniqueFilename = candidateAttachment.getLocation();
+                String destination;
+                if(candidateAttachment.isMigrated()){
+                    destination = "candidate/migrated/" + uniqueFilename;
+                } else {
+                    destination = "candidate/" + candidateAttachment.getCandidate().getCandidateNumber() + "/" + uniqueFilename;
+                }
+                File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
+                String extractedText = textExtractHelper.getTextExtractFromFile(srcFile, candidateAttachment.getFileType());
+                if (StringUtils.isNotBlank(extractedText)) {
+                    candidateAttachment.setTextExtract(extractedText);
+                    candidateAttachmentRepository.save(candidateAttachment);
+                }
+            } catch (Exception e) {
+                log.error("Unable to extract text from file " + candidateAttachment.getLocation(), e.getMessage());
+                candidateAttachment.setTextExtract(null);
+            }
+        } else if (!request.getCv() && candidateAttachment.isCv()){
+            candidateAttachment.setTextExtract(null);
+            candidateAttachmentRepository.save(candidateAttachment);
+        }
+
+        // Update the fields related to the file type
         if (candidateAttachment.getType().equals(AttachmentType.link)) {
             candidateAttachment.setLocation(request.getLocation());
+            candidateAttachment.setAuditFields(user);
+        } else if (candidateAttachment.getType().equals(AttachmentType.file)){
+            candidateAttachment.setCv(request.getCv());
             candidateAttachment.setAuditFields(user);
         }
 
