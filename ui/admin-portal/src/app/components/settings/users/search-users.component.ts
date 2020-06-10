@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 
 import {SearchResults} from '../../../model/search-results';
@@ -23,13 +23,14 @@ import {ChangeUsernameComponent} from "../../account/change-username/change-user
 })
 export class SearchUsersComponent implements OnInit {
 
+  @Input() loggedInUser: User;
+
   searchForm: FormGroup;
   loading: boolean;
   error: any;
   pageNumber: number;
   pageSize: number;
   results: SearchResults<User>;
-  loggedInUser: User;
 
   constructor(private fb: FormBuilder,
               private userService: UserService,
@@ -47,7 +48,6 @@ export class SearchUsersComponent implements OnInit {
     this.pageNumber = 1;
     this.pageSize = 50;
 
-    this.getLoggedInUser();
     this.onChanges();
   }
 

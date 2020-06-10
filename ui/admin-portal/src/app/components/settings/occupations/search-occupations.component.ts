@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 
 import {SearchResults} from '../../../model/search-results';
@@ -11,6 +11,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CreateOccupationComponent} from "./create/create-occupation.component";
 import {EditOccupationComponent} from "./edit/edit-occupation.component";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
+import {User} from "../../../model/user";
 
 @Component({
   selector: 'app-search-occupations',
@@ -18,6 +19,8 @@ import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
   styleUrls: ['./search-occupations.component.scss']
 })
 export class SearchOccupationsComponent implements OnInit {
+
+  @Input() loggedInUser: User;
 
   searchForm: FormGroup;
   loading: boolean;

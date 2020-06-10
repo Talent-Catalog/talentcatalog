@@ -1,10 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {
-  ActivatedRoute,
-  NavigationEnd,
-  NavigationStart,
-  Router
-} from "@angular/router";
+import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import {Title} from "@angular/platform-browser";
 import {filter, map} from "rxjs/operators";
 
@@ -15,26 +10,26 @@ import {filter, map} from "rxjs/operators";
 })
 export class AppComponent implements OnInit {
 
-  showHeader: boolean = true;
+  showHeader: boolean;
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private titleService: Title
   ) {
+  }
 
-    router.events.forEach((event) => {
-      if (event instanceof NavigationStart) {
-        if (event['url'] == '/login' || event['url'].indexOf('/reset-password') != -1) {
+  ngOnInit(): void {
+
+    this.router.events.forEach((event) => {
+      if (event instanceof NavigationEnd) {
+        if (event['url'] === '/login' || event['url'].indexOf('/reset-password') !== -1) {
           this.showHeader = false;
         } else {
           this.showHeader = true;
         }
       }
     });
-  }
-
-  ngOnInit(): void {
 
     //Hook into router events in order to keep browser title updated based
     //on titles associated with various routes defined in app-routing.module.ts.
@@ -66,6 +61,6 @@ export class AppComponent implements OnInit {
       (title: string) => {
         this.titleService.setTitle(title);
       }
-    )
+    );
   }
 }

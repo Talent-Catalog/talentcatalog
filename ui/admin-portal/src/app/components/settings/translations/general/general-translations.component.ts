@@ -1,5 +1,6 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {TranslationService} from "../../../../services/translation.service";
+import {User} from "../../../../model/user";
 
 @Component({
   selector: 'app-general-translations',
@@ -7,6 +8,8 @@ import {TranslationService} from "../../../../services/translation.service";
   styleUrls: ['./general-translations.component.scss']
 })
 export class GeneralTranslationsComponent implements OnInit {
+
+  @Input() loggedInUser: User;
 
   loading: boolean;
   languages = ['en', 'ar'];

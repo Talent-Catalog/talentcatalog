@@ -1,27 +1,42 @@
 package org.tbbtalent.server.service.email;
 
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
-import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import javax.annotation.PostConstruct;
+import javax.mail.Address;
+import javax.mail.Authenticator;
+import javax.mail.BodyPart;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Provider;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.URLName;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.Nullable;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+
 @Service
 public class EmailSender {
 
     private static final Logger log = LoggerFactory.getLogger(EmailSender.class);
+
+    private final String alertEmail = "alert@talentbeyondboundaries.org";
+    private final String alertSubject = "Talent Catalog Alert";
 
     public enum EmailType {
         STUB, SMTP, MANDRILL
@@ -61,6 +76,18 @@ public class EmailSender {
         this.session = emailSession();
         this.transport = emailTransport();
     }
+
+    public void sendAlert(String alertMessage) {
+        sendAlert(alertMessage, null);
+    }
+
+    public void sendAlert(String alertMessage, @Nullable Exception ex) {
+        String s = alertMessage;
+        if (ex != null) {
+            s += ": " + ex;
+        }
+        sendAsync(alertEmail, alertSubject, s, s);
+    }
         
     public boolean send(String emailTo,
                         String bccTo,
@@ -71,11 +98,11 @@ public class EmailSender {
     }
 
     @Async
-    public boolean sendAsync(String emailTo,
+    public void sendAsync(String emailTo,
                              String subject,
                              String contentText,
                              String contentHtml) {
-        return doSend(emailTo, subject, contentText, contentHtml);
+        doSend(emailTo, subject, contentText, contentHtml);
     }
     
     private boolean doSend(String emailTo,
@@ -154,7 +181,7 @@ public class EmailSender {
             properties.put("mail.smtp.port", port);
             properties.put("mail.smtp.host", host);
             properties.put("mail.smtp.username", user);
-            properties.put("mail.debug", "true");  
+            properties.put("mail.debug", "false");  
             properties.put("mail.smtp.auth", authenticate != null ? authenticate.toString() : "false");
             properties.put("mail.smtp.starttls.enable", authenticate != null ? authenticate : false);
             if (authenticate != null && authenticate) {

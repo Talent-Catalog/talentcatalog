@@ -66,7 +66,7 @@
       <td>{{user.readOnly}}</td>
       <td>{{user.status}}</td>
       <td>
-        <div *ngIf="(loggedInUser.role === 'admin' && !loggedInUser.readOnly)" ngbDropdown placement="bottom-right" (click)="$event.stopPropagation();" container="body">
+        <div *ngIf="(!loggedInUser.readOnly)" ngbDropdown placement="bottom-right" (click)="$event.stopPropagation();" container="body">
           <button class="btn btn-xs hide-after" ngbDropdownToggle>
             <i class="fas fa-ellipsis-h"></i>
           </button>

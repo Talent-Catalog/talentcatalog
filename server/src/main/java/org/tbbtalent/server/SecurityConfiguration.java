@@ -109,7 +109,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/api/admin/saved-search/*/load").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // POST: ALL SEARCHES
-                .antMatchers(HttpMethod.POST, "/api/admin/*/search").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .antMatchers(HttpMethod.POST, "/api/admin/**/search").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // POST: ALL PAGED SEARCHES
+                .antMatchers(HttpMethod.POST, "/api/admin/**/search-paged").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // POST: VIEW TRANSLATIONS
+                .antMatchers(HttpMethod.POST, "/api/admin/translation/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // ALL OTHER END POINTS
                     // POST (EXC. READ ONLY)

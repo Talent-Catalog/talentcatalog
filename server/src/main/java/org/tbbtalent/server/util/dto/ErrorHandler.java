@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.ServiceException;
 
 
@@ -28,7 +29,15 @@ public class ErrorHandler {
         ErrorDTO errorDTO = new ErrorDTO(ex.getErrorCode(), ex.getMessage());
         return errorDTO;
     }
-    
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorDTO processInvalidCredentialsException(InvalidCredentialsException ex) {
+        log.info("Processing : InvalidCredentialsException: " + ex);
+        return new ErrorDTO("invalid_credentials", ex.getMessage());
+    }
+
     @ExceptionHandler(NoHandlerFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
