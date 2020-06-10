@@ -181,22 +181,9 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
       this.subscription = this.candidateService.runSavedSearch(this.constructRunRequest()).subscribe(
         results => {
-          this.timestamp = Date.now();
-          this.results = results;
 
-          //We only cache results with the default review status filter.
-          if (this.reviewStatusFilter.toString() === defaultReviewStatusFilter.toString()) {
-            this.savedSearchResultsCacheService.cache({
-              searchID: this.savedSearchId,
-              pageNumber: this.pageNumber,
-              pageSize: this.pageSize,
-              sortFields: [this.sortField],
-              sortDirection: this.sortDirection,
-              reviewStatusFilter: this.reviewStatusFilter,
-              results: this.results,
-              timestamp: this.timestamp
-            });
-          }
+          this.results = results;
+          this.cacheResults();
 
           this.searching = false;
         },
@@ -204,6 +191,24 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
           this.error = error;
           this.searching = false;
         });
+    }
+  }
+
+  private cacheResults() {
+    this.timestamp = Date.now();
+
+    //We only cache results with the default review status filter.
+    if (this.reviewStatusFilter.toString() === defaultReviewStatusFilter.toString()) {
+      this.savedSearchResultsCacheService.cache({
+        searchID: this.savedSearchId,
+        pageNumber: this.pageNumber,
+        pageSize: this.pageSize,
+        sortFields: [this.sortField],
+        sortDirection: this.sortDirection,
+        reviewStatusFilter: this.reviewStatusFilter,
+        results: this.results,
+        timestamp: this.timestamp
+      });
     }
   }
 
@@ -376,6 +381,13 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   }
 
   onSelectionChange(candidate: Candidate, selected: boolean) {
+
+    //Record change
+    candidate.selected = selected;
+    //Update cache
+    this.cacheResults();
+
+    //Record change on server
     //Candidate is added/removed from this users selection list for this saved search
     const request: SelectCandidateInSearchRequest = {
         userId: this.loggedInUser.id,
