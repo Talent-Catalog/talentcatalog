@@ -297,8 +297,11 @@ public class CandidateSpecification {
                             fieldAndPredicates.add(occupationNameAnds);
                             ArrayList<Predicate> skillAnds = new ArrayList<>();
                             fieldAndPredicates.add(skillAnds);
+
                             ArrayList<Predicate> textExtractAnds = new ArrayList<>();
-                            fieldAndPredicates.add(textExtractAnds);
+                            if(BooleanUtils.isTrue(request.getIncludeUploadedFiles())) {
+                                fieldAndPredicates.add(textExtractAnds);
+                            }
                             
                             for (String word : words) {
                                 //Create each field LIKE word for all words.

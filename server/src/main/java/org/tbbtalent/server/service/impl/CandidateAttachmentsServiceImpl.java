@@ -127,6 +127,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                     textExtract = textExtractHelper.getTextExtractFromFile(srcFile, request.getFileType());
                     if(StringUtils.isNotBlank(textExtract)) {
                         attachment.setTextExtract(textExtract);
+                        candidateAttachmentRepository.save(attachment);
                     }
                 } catch (Exception e) {
                     log.error("Could not extract text from uploaded cv file", e);
