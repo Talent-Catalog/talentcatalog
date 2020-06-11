@@ -23,10 +23,11 @@ export class ErrorInterceptor implements HttpInterceptor {
         this.authService.logout();
         this.router.navigateByUrl('login');
       }
+      console.log(err);
       let error: string;
-      if (err.error !== undefined) {
+      if (err.error !== null) {
         error = err.error.message;
-      } else if (err.message !== undefined) {
+      } else if (err.message !== null) {
         error = err.message;
       } else {
         error = err.status + " " + err.statusText;
