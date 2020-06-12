@@ -155,10 +155,10 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
             /* Check if the candidate occupation has been removed */
             if (!updatedOccupationIds.contains(existingCandidateOccupationId)){
                 /* Check if the candidate has job experience linked to the occupation */
-                int count = candidateJobExperienceRepository.countByCandidateOccupationId(existingCandidateOccupationId);
-                if (count > 0){
-                    throw new EntityReferencedException("occupation");
-                }
+//                int count = candidateJobExperienceRepository.countByCandidateOccupationId(existingCandidateOccupationId);
+//                if (count > 0){
+//                    throw new EntityReferencedException("occupation" + existingCandidateOccupationId);
+//                }
                 candidateOccupationRepository.deleteById(existingCandidateOccupationId);
             }
         }

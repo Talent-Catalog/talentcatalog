@@ -8,6 +8,9 @@ import {Occupation} from "../../../model/occupation";
 import {OccupationService} from "../../../services/occupation.service";
 import {RegistrationService} from "../../../services/registration.service";
 import {LangChangeEvent, TranslateService} from "@ngx-translate/core";
+import {DeleteOccupationComponent} from "./delete/delete-occupation.component";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {CandidateJobExperience} from "../../../model/candidate-job-experience";
 
 @Component({
   selector: 'app-registration-candidate-occupation',
@@ -32,6 +35,8 @@ export class RegistrationCandidateOccupationComponent implements OnInit, OnDestr
   occupations: Occupation[];
   showForm;
   subscription;
+  candidateOccupation: CandidateOccupation;
+  candidateJobExperiences: CandidateJobExperience[];
 
   constructor(private fb: FormBuilder,
               private router: Router,
@@ -39,7 +44,8 @@ export class RegistrationCandidateOccupationComponent implements OnInit, OnDestr
               private occupationService: OccupationService,
               private candidateOccupationService: CandidateOccupationService,
               public registrationService: RegistrationService,
-              public translateService: TranslateService) {
+              public translateService: TranslateService,
+              private modalService: NgbModal) {
   }
 
   ngOnInit() {
@@ -105,8 +111,35 @@ export class RegistrationCandidateOccupationComponent implements OnInit, OnDestr
 
   }
 
-  deleteOccupation(index: number) {
-    this.candidateOccupations.splice(index, 1);
+  deleteOccupation(index: number, occupationId: number) {
+    this.candidateService.getCandidateJobExperiences().subscribe(
+      results => {
+        // check if the occupation has job experiences associated
+        this.candidateJobExperiences = results.candidateJobExperiences.filter(experience =>
+          experience.candidateOccupation.occupation.id == occupationId)
+        // if associated job experience, display modal to confirm deletion
+        if(this.candidateJobExperiences.length > 0) {
+          this.deleteModal(index);
+        } else {
+          this.candidateOccupations.splice(index, 1);
+        }
+    })
+  }
+
+  deleteModal(index: number) {
+    const deleteOccupationModal = this.modalService.open(DeleteOccupationComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    deleteOccupationModal.result
+      .then((result) => {
+        // remove occupation from occupations if confirmed modal
+        if (result === true) {
+          this.candidateOccupations.splice(index, 1);
+        }
+      })
+      .catch(() => { /* Isn't possible */ });
   }
 
   save(dir: string) {
@@ -128,6 +161,14 @@ export class RegistrationCandidateOccupationComponent implements OnInit, OnDestr
       (error) => {
         this.error = error;
       });
+  }
+
+  deleteOccupationModal(index: number) {
+    const modal = this.modalService.open(DeleteOccupationComponent);
+    modal.componentInstance.candidateOccupationId = index;
+    // modal.result.then(result => {
+    //   this.router.navigate(['/candidates']);
+    // });
   }
 
   cancel() {

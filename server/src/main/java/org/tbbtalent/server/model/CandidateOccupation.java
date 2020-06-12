@@ -1,6 +1,7 @@
 package org.tbbtalent.server.model;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "candidate_occupation")
@@ -23,6 +24,9 @@ public class CandidateOccupation extends AbstractAuditableDomainObject<Long> {
     private Boolean topCandidate;
 
     private String migrationOccupation;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidateOccupation", cascade = CascadeType.ALL)
+    private List<CandidateJobExperience> candidateJobExperiences;
 
     public CandidateOccupation() {
     }
@@ -80,4 +84,8 @@ public class CandidateOccupation extends AbstractAuditableDomainObject<Long> {
     public void setMigrationOccupation(String migrationOccupation) {
         this.migrationOccupation = migrationOccupation;
     }
+
+    public List<CandidateJobExperience> getCandidateJobExperiences() { return candidateJobExperiences; }
+
+    public void setCandidateJobExperiences(List<CandidateJobExperience> candidateJobExperiences) { this.candidateJobExperiences = candidateJobExperiences; }
 }
