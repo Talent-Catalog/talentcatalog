@@ -10,7 +10,7 @@
       <app-candidate-occupation-card [(candidateOccupation)]="occupation"
                                      [occupations]="occupations"
                                      [disabled]="saving || loading"
-                                     (onDelete)="deleteOccupation(i, occupation)">
+                                     (onDelete)="deleteOccupation(i, occupation.occupationId)">
       </app-candidate-occupation-card>
 
     </div>
