@@ -1,6 +1,15 @@
 package org.tbbtalent.server.model;
 
-import javax.persistence.*;
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "candidate_occupation")
@@ -23,6 +32,10 @@ public class CandidateOccupation extends AbstractAuditableDomainObject<Long> {
     private Boolean topCandidate;
 
     private String migrationOccupation;
+
+    //Todo Figure out why Cascade = MERGE doesn't work. Why do we need ALL. What does this mean?
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidateOccupation", cascade = CascadeType.ALL)
+    private List<CandidateJobExperience> candidateJobExperiences;
 
     public CandidateOccupation() {
     }
@@ -80,4 +93,8 @@ public class CandidateOccupation extends AbstractAuditableDomainObject<Long> {
     public void setMigrationOccupation(String migrationOccupation) {
         this.migrationOccupation = migrationOccupation;
     }
+
+    public List<CandidateJobExperience> getCandidateJobExperiences() { return candidateJobExperiences; }
+
+    public void setCandidateJobExperiences(List<CandidateJobExperience> candidateJobExperiences) { this.candidateJobExperiences = candidateJobExperiences; }
 }
