@@ -1,6 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import {CandidateOccupation} from "../../../../model/candidate-occupation";
-import {CandidateOccupationService} from "../../../../services/candidate-occupation.service";
+import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
@@ -13,8 +11,7 @@ export class DeleteOccupationComponent implements OnInit {
   candidateOccupationId: number;
   deleting: boolean;
 
-  constructor(private activeModal: NgbActiveModal,
-              private candidateOccupationService: CandidateOccupationService) { }
+  constructor(private activeModal: NgbActiveModal) { }
 
   ngOnInit() {
   }
@@ -26,10 +23,6 @@ export class DeleteOccupationComponent implements OnInit {
   confirm() {
     this.deleting = true;
     this.activeModal.close(true);
-    // this.candidateOccupationService.deleteCandidateOccupation(this.candidateOccupationId).subscribe(result => {
-    //   this.deleting = false;
-    //   this.activeModal.close();
-    // });
   }
 
 }

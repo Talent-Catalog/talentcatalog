@@ -1,4 +1,11 @@
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output
+} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
@@ -161,14 +168,6 @@ export class RegistrationCandidateOccupationComponent implements OnInit, OnDestr
       (error) => {
         this.error = error;
       });
-  }
-
-  deleteOccupationModal(index: number) {
-    const modal = this.modalService.open(DeleteOccupationComponent);
-    modal.componentInstance.candidateOccupationId = index;
-    // modal.result.then(result => {
-    //   this.router.navigate(['/candidates']);
-    // });
   }
 
   cancel() {
