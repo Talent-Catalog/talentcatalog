@@ -36,6 +36,11 @@ public class GetSavedListsQuery implements Specification<SavedList> {
         Predicate conjunction = cb.conjunction();
         query.distinct(true);
 
+        //Only return lists which are not Selection lists - 
+        //ie lists with no associated saved search.
+        conjunction.getExpressions().add(
+                cb.isNull(savedList.get("savedSearch")));
+        
         // KEYWORD SEARCH
         if (!StringUtils.isBlank(request.getKeyword())){
             String lowerCaseMatchTerm = request.getKeyword().toLowerCase();

@@ -46,27 +46,27 @@
     </h1>
 
 <!--    <todo>Comment the below back in when Lists are ready for viewing</todo>-->
-<!--    <div>-->
-<!--      <label>Lists</label>-->
-<!--      <div>-->
-<!--        <button class="btn btn-link" type="button"-->
-<!--                (click)="onNewList()">New List-->
-<!--        </button>-->
-<!--      </div>-->
+    <div>
+      <label>Lists</label>
+      <div>
+        <button class="btn btn-link" type="button"
+                (click)="onNewList()">New List
+        </button>
+      </div>
 
-<!--      <ng-multiselect-dropdown-->
-<!--        id="savedLists"-->
-<!--        [data]="lists"-->
-<!--        [(ngModel)]="selectedLists"-->
-<!--        [settings]="dropdownSettings"-->
-<!--        (onSelectAll)="onSelectAll($event)"-->
-<!--        (onDeSelectAll)="onDeSelectAll($event)"-->
-<!--        (onSelect)="onItemSelect($event)"-->
-<!--        (onDeSelect)="onItemDeSelect($event)">-->
-<!--      </ng-multiselect-dropdown>-->
+      <ng-multiselect-dropdown
+        id="savedLists"
+        [data]="lists"
+        [(ngModel)]="selectedLists"
+        [settings]="dropdownSettings"
+        (onSelectAll)="onSelectAll($event)"
+        (onDeSelectAll)="onDeSelectAll($event)"
+        (onSelect)="onItemSelect($event)"
+        (onDeSelect)="onItemDeSelect($event)">
+      </ng-multiselect-dropdown>
 
-<!--    </div>-->
-<!--  </div>-->
+    </div>
+  </div>
 
   <div class="row">
     <div class="col-sm-{{mainColWidth}}">
