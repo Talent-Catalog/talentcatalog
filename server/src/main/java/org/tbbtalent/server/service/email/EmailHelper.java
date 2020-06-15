@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.EmailSendFailedException;
 import org.tbbtalent.server.model.SavedSearch;
@@ -33,6 +34,14 @@ public class EmailHelper {
         this.emailSender = emailSender;
         this.textTemplateEngine = textTemplateEngine;
         this.htmlTemplateEngine = htmlTemplateEngine;
+    }
+
+    public void sendAlert(String alertMessage) {
+        emailSender.sendAlert(alertMessage);
+    }
+
+    public void sendAlert(String alertMessage, @Nullable Exception ex) {
+        emailSender.sendAlert(alertMessage, ex);
     }
 
     public void sendRegistrationEmail(User user) throws EmailSendFailedException {
