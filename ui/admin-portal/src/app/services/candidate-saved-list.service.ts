@@ -3,7 +3,7 @@
  */
 
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/index';
+import {Observable} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {
@@ -19,8 +19,8 @@ export class CandidateSavedListService {
 
   constructor(private http: HttpClient) {}
 
-  replace(id: number, request: IHasSetOfSavedLists): Observable<boolean> {
-    return this.http.put<boolean>(`${this.apiUrl}/${id}/replace`, request);
+  replace(id: number, request: IHasSetOfSavedLists): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}/replace`, request);
   }
 
   search(id: number, request: SearchSavedListRequest): Observable<SavedList[]> {

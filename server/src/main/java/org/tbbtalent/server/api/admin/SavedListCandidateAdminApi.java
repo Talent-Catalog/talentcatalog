@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.request.candidate.SavedListGetRequest;
 import org.tbbtalent.server.request.list.HasSetOfCandidatesImpl;
@@ -58,23 +59,27 @@ public class SavedListCandidateAdminApi implements IManyToManyApi<SavedListGetRe
     }
 
     @Override
-    public boolean merge(long savedListId, @Valid HasSetOfCandidatesImpl request) {
-        return savedListService.mergeSavedList(savedListId, request);
+    public void merge(long savedListId, @Valid HasSetOfCandidatesImpl request) 
+            throws NoSuchObjectException {
+        savedListService.mergeSavedList(savedListId, request);
     }
 
     @Override
-    public boolean remove(long savedListId, @Valid HasSetOfCandidatesImpl request) {
-        return savedListService.removeFromSavedList(savedListId, request);
+    public void remove(long savedListId, @Valid HasSetOfCandidatesImpl request) 
+            throws NoSuchObjectException {
+        savedListService.removeFromSavedList(savedListId, request);
     }
 
     @Override
-    public boolean replace(long savedListId, @Valid HasSetOfCandidatesImpl request) {
-        return savedListService.replaceSavedList(savedListId, request);
+    public void replace(long savedListId, @Valid HasSetOfCandidatesImpl request) 
+            throws NoSuchObjectException {
+        savedListService.replaceSavedList(savedListId, request);
     }
 
     @Override
     public @NotNull Map<String, Object> searchPaged(
-            long savedListId, @Valid SavedListGetRequest request) {
+            long savedListId, @Valid SavedListGetRequest request) 
+            throws NoSuchObjectException {
         Page<Candidate> candidates = this.candidateService
                 .getSavedListCandidates(savedListId, request);
         DtoBuilder builder = builderSelector.selectBuilder();

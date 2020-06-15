@@ -8,10 +8,12 @@ import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.SavedList;
 import org.tbbtalent.server.request.candidate.HasSetOfSavedListsImpl;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
@@ -55,13 +57,15 @@ public class CandidateSavedListAdminApi implements IManyToManyApi<SearchSavedLis
     }
 
     @Override
-    public boolean replace(long candidateId, @Valid HasSetOfSavedListsImpl request) {
-        return candidateService.replaceCandidateSavedLists(candidateId, request);
+    public void replace(long candidateId, @Valid HasSetOfSavedListsImpl request) 
+            throws NoSuchObjectException {
+        candidateService.replaceCandidateSavedLists(candidateId, request);
     }
 
     @Override
-    public List<Map<String, Object>> search(
-            long candidateId, @Valid SearchSavedListRequest request) {
+    public @NotNull List<Map<String, Object>> search(
+            long candidateId, @Valid SearchSavedListRequest request) 
+            throws NoSuchObjectException {
         List<SavedList> savedLists = savedListService.search(candidateId, request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.buildList(savedLists);
