@@ -1,9 +1,14 @@
 package org.tbbtalent.server.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.EntityExistsException;
-import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.Candidate;
@@ -24,12 +29,6 @@ import org.tbbtalent.server.service.CandidateOccupationService;
 import org.tbbtalent.server.service.audit.Audit;
 import org.tbbtalent.server.service.audit.AuditAction;
 import org.tbbtalent.server.service.audit.AuditType;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 public class CandidateOccupationServiceImpl implements CandidateOccupationService {
@@ -154,11 +153,8 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         for (Long existingCandidateOccupationId : map.keySet()) {
             /* Check if the candidate occupation has been removed */
             if (!updatedOccupationIds.contains(existingCandidateOccupationId)){
-                /* Check if the candidate has job experience linked to the occupation */
-                int count = candidateJobExperienceRepository.countByCandidateOccupationId(existingCandidateOccupationId);
-                if (count > 0){
-                    throw new EntityReferencedException("occupation");
-                }
+                //The user will have confirmed that they are OK to lose any 
+                // associated experiences
                 candidateOccupationRepository.deleteById(existingCandidateOccupationId);
             }
         }

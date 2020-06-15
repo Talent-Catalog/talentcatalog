@@ -52,6 +52,7 @@ import {FaIconLibrary, FontAwesomeModule} from "@fortawesome/angular-fontawesome
 import {faEdit} from "@fortawesome/free-solid-svg-icons";
 import {Observable} from "rxjs";
 import {environment} from "../environments/environment";
+import { DeleteOccupationComponent } from './components/register/candidate-occupation/delete/delete-occupation.component';
 
 export function createTranslateLoader(http: HttpClient) {
   return {
@@ -99,7 +100,8 @@ export function createTranslateLoader(http: HttpClient) {
     UserPipe,
     TrimPipe,
     TranslationPipe,
-    MonthPickerComponent
+    MonthPickerComponent,
+    DeleteOccupationComponent
   ],
   imports: [
     BrowserModule,
@@ -120,7 +122,9 @@ export function createTranslateLoader(http: HttpClient) {
       }
     }),
     FontAwesomeModule
-
+  ],
+  entryComponents: [
+    DeleteOccupationComponent
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
