@@ -1091,41 +1091,49 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     @Scheduled(cron = "0 0 0 * * ?", zone = "GMT")
     public void notifyWatchers() {
-        Set<SavedSearch> searches = savedSearchRepository.findByWatcherIdsIsNotNullLoadSearchJoins();
-        Map<Long, Set<SavedSearch>> userNotifications = new HashMap<>();
-        for (SavedSearch savedSearch: searches) {
-            SearchCandidateRequest searchCandidateRequest =
-                    convertToSearchCandidateRequest(savedSearch);
+        try {
+            Set<SavedSearch> searches = savedSearchRepository.findByWatcherIdsIsNotNullLoadSearchJoins();
+            Map<Long, Set<SavedSearch>> userNotifications = new HashMap<>();
+            for (SavedSearch savedSearch : searches) {
+                SearchCandidateRequest searchCandidateRequest =
+                        convertToSearchCandidateRequest(savedSearch);
 
-            LocalDate date = LocalDate.now().minusDays(1);
-            searchCandidateRequest.setFromDate(date);
-            Page<Candidate> candidates =
-                    searchCandidates(searchCandidateRequest);
+                LocalDate date = LocalDate.now().minusDays(1);
+                searchCandidateRequest.setFromDate(date);
+                Page<Candidate> candidates =
+                        searchCandidates(searchCandidateRequest);
 
-            if (candidates.getNumberOfElements() > 0) {
-                //Query has results. Need to let watchers know
-                Set<Long> watcherUserIds = savedSearch.getWatcherUserIds();
-                for (Long watcherUserId : watcherUserIds) {
-                    Set<SavedSearch> userWatches = userNotifications
-                            .computeIfAbsent(watcherUserId, k -> new HashSet<>());
-                    userWatches.add(savedSearch);
+                if (candidates.getNumberOfElements() > 0) {
+                    //Query has results. Need to let watchers know
+                    Set<Long> watcherUserIds = savedSearch.getWatcherUserIds();
+                    for (Long watcherUserId : watcherUserIds) {
+                        Set<SavedSearch> userWatches = userNotifications
+                                .computeIfAbsent(watcherUserId, k -> new HashSet<>());
+                        userWatches.add(savedSearch);
+                    }
                 }
             }
-        }
 
-        //Construct and send emails
-        for (Long userId : userNotifications.keySet()) {
-            final Set<SavedSearch> savedSearches = userNotifications.get(userId);
-            String s = savedSearches.stream()
-                    .map(SavedSearch::getName)
-                    .collect(Collectors.joining("/"));
-            log.info("Tell user " + userId + " about searches " + s);
-            User user = this.userRepository.findById(userId).orElse(null);
-            if (user == null) {
-                log.error("Unknown user watcher id " + userId + " watching searches " + s);
-            } else {
-                emailHelper.sendWatcherEmail(user, savedSearches);
+            //Construct and send emails
+            for (Long userId : userNotifications.keySet()) {
+                final Set<SavedSearch> savedSearches = userNotifications.get(userId);
+                String s = savedSearches.stream()
+                        .map(SavedSearch::getName)
+                        .collect(Collectors.joining("/"));
+                log.info("Tell user " + userId + " about searches " + s);
+                User user = this.userRepository.findById(userId).orElse(null);
+                if (user == null) {
+                    final String mess = "Unknown user watcher id " + userId + " watching searches " + s;
+                    log.warn(mess);
+                    emailHelper.sendAlert(mess);
+                } else {
+                    emailHelper.sendWatcherEmail(user, savedSearches);
+                }
             }
+        } catch (Exception ex) {
+            String mess = "Watcher notification failure";
+            log.error(mess, ex);
+            emailHelper.sendAlert(mess, ex);
         }
     }
 

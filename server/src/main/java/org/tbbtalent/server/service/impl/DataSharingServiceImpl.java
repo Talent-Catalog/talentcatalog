@@ -75,7 +75,7 @@ public class DataSharingServiceImpl implements DataSharingService {
     @Override
     @Scheduled(cron = "0 30 23 * * ?", zone = "GMT")
     public void dbCopy() throws Exception {
-        reportError("dbCopy has been started. Pull this out once emails are working", null);
+//        reportError("dbCopy has been started. Pull this out once emails are working", null);
         performCopies();
     }
 
