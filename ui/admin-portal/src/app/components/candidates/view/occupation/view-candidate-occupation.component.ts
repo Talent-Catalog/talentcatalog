@@ -8,6 +8,7 @@ import {CandidateOccupationService} from "../../../../services/candidate-occupat
 import {CandidateJobExperience} from "../../../../model/candidate-job-experience";
 import {CandidateJobExperienceService} from "../../../../services/candidate-job-experience.service";
 import {EditCandidateJobExperienceComponent} from "./experience/edit/edit-candidate-job-experience.component";
+import {CreateCandidateOccupationComponent} from "./create/create-candidate-occupation.component";
 
 @Component({
   selector: 'app-view-candidate-occupation',
@@ -126,6 +127,21 @@ export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
       error => {
         this.error = error;
         this._loading.experience = false;
+      });
+  }
+
+  createCandidateOccupation() {
+    console.log("click");
+    const createCandidateOccupationModal = this.modalService.open(CreateCandidateOccupationComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    createCandidateOccupationModal.componentInstance.candidateId = this.candidate.id;
+
+    createCandidateOccupationModal.result
+      .then(() => this.doSearch())
+      .catch(() => { /* Isn't possible */
       });
   }
 }

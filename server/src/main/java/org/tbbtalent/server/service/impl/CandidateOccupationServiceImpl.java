@@ -57,14 +57,28 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
 
     @Override
     public CandidateOccupation createCandidateOccupation(CreateCandidateOccupationRequest request) {
-        Candidate candidate = userContext.getLoggedInCandidate();
-
         // Load the industry from the database - throw an exception if not found
         Occupation occupation = occupationRepository.findById(request.getOccupationId())
                 .orElseThrow(() -> new NoSuchObjectException(Occupation.class, request.getOccupationId()));
 
         // Create a new candidateOccupation object to insert into the database
         CandidateOccupation candidateOccupation = new CandidateOccupation();
+
+        Candidate candidate;
+        /* Check if the candidate ID is explicitly set - this means the request is coming from admin */
+        if (request.getCandidateId() != null) {
+            candidate = candidateRepository.findById(request.getCandidateId())
+                    .orElseThrow(() -> new NoSuchObjectException(Candidate.class, request.getCandidateId()));
+            // Set verified if request coming from admin
+            candidateOccupation.setVerified(request.isVerified());
+
+            candidateOccupation.setAuditFields(userContext.getLoggedInUser());
+            candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(request.getCandidateId(),
+                    occupation.getName() +" verification status set to "+request.isVerified(), request.getComment()));
+        } else {
+            candidate = userContext.getLoggedInCandidate();
+        }
+
         candidateOccupation.setCandidate(candidate);
         candidateOccupation.setOccupation(occupation);
         candidateOccupation.setYearsExperience(request.getYearsExperience());
