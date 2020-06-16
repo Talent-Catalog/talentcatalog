@@ -119,6 +119,7 @@ import {EditCandidateAdditionalInfoComponent} from './components/candidates/view
 import {EditCandidateSurveyComponent} from './components/candidates/view/survey/edit/edit-candidate-survey.component';
 import {CreateListComponent} from './components/list/create/create-list.component';
 import {UpdateListComponent} from './components/list/update/update-list.component';
+import {SelectListComponent} from './components/list/select/select-list.component';
 
 @NgModule({
   declarations: [
@@ -229,7 +230,8 @@ import {UpdateListComponent} from './components/list/update/update-list.componen
     EditCandidateAdditionalInfoComponent,
     EditCandidateSurveyComponent,
     CreateListComponent,
-    UpdateListComponent
+    UpdateListComponent,
+    SelectListComponent
   ],
   imports: [
     BrowserModule,
@@ -304,6 +306,7 @@ import {UpdateListComponent} from './components/list/update/update-list.componen
     EditCandidateAdditionalInfoComponent,
     EditCandidateSurveyComponent,
     CreateListComponent,
+    SelectListComponent,
     UpdateListComponent
   ],
   providers: [

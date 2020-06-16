@@ -8,6 +8,7 @@ import {
   SavedSearchRequest,
   SavedSearchSubtype,
   SavedSearchType,
+  SaveSelectionRequest,
   SelectCandidateInSearchRequest
 } from "../model/saved-search";
 import {map} from "rxjs/operators";
@@ -158,5 +159,9 @@ export class SavedSearchService {
       .pipe(
         map(savedSearch => SavedSearchService.convertSavedSearchEnums(savedSearch))
       );
+  }
+
+  saveSelection(id: number, request: SaveSelectionRequest): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/save-selection/${id}`, request);
   }
 }

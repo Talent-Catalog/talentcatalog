@@ -124,6 +124,18 @@ export interface SavedSearchRunRequest {
   sortDirection?: string;
 }
 
+export interface SaveSelectionRequest {
+  //List to save to - 0 if new list
+  savedListId: number;
+
+  //Name of new list to be created (if any - only used if savedListId = 0
+  newListName: string;
+
+  //If true any existing contents of list are replace, otherwise contents are
+  //added (merged).
+  replace: boolean;
+}
+
 export interface UpdateSharingRequest {
   savedSearchId: number;
 }

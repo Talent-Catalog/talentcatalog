@@ -35,6 +35,11 @@
         <i class="fas fa-handshake-slash"></i> Remove from searches shared with me
       </button>
 
+      <button class="btn btn-outline-secondary" (click)="saveSelection()">
+        <i class="fas fa-spinner fa-spin" *ngIf=savingSelection></i>
+        Save Selection
+      </button>
+
       <button class="btn btn-outline-secondary" (click)="exportCandidates()">
         <i class="fas fa-spinner fa-spin" *ngIf=exporting></i>
         <i class="fas fa-file-excel"></i> Export

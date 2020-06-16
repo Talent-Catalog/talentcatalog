@@ -15,6 +15,7 @@ import {
   ReviewedStatus,
   SavedSearch,
   SavedSearchRunRequest,
+  SaveSelectionRequest,
   SelectCandidateInSearchRequest
 } from "../../../model/saved-search";
 import {
@@ -27,6 +28,7 @@ import {ListItem} from "ng-multiselect-dropdown/multiselect.model";
 import {User} from "../../../model/user";
 import {AuthService} from "../../../services/auth.service";
 import {UserService} from "../../../services/user.service";
+import {SelectListComponent} from "../../list/select/select-list.component";
 
 @Component({
   selector: 'app-search-candidates',
@@ -41,6 +43,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
   loading: boolean;
   searching: boolean;
   exporting: boolean;
+  savingSelection: boolean;
   searchForm: FormGroup;
 
   results: SearchResults<Candidate>;
@@ -400,5 +403,28 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
         this.error = err;
       }
     );
+  }
+
+  saveSelection() {
+    //Show modal allowing for list selection
+    const modal = this.modalService.open(SelectListComponent);
+
+    modal.result
+      .then((request: SaveSelectionRequest) => {
+        //Save selection as specified in request
+        this.savingSelection = true;
+        this.savedSearchService.saveSelection(this.savedSearchId, request).subscribe(
+          result => {
+            this.savingSelection = false;
+          },
+          err => {
+            this.error = err;
+            this.savingSelection = false;
+          }
+        );
+      })
+      .catch(() => { /* Isn't possible */
+      });
+
   }
 }
