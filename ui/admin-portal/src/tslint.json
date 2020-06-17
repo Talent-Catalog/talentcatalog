@@ -32,6 +32,7 @@
           ]
         }
       ],
+      "no-empty-interface": false,
       "no-trailing-whitespace": false,
       "no-inferrable-types": [
         false,
