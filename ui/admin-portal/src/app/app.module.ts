@@ -120,7 +120,6 @@ import {EditCandidateSurveyComponent} from './components/candidates/view/survey/
 import {CreateListComponent} from './components/list/create/create-list.component';
 import {UpdateListComponent} from './components/list/update/update-list.component';
 import {CreateCandidateOccupationComponent} from './components/candidates/view/occupation/create/create-candidate-occupation.component';
-import { DeleteCandidateOccupationComponent } from './components/candidates/view/occupation/delete/delete-candidate-occupation.component';
 
 @NgModule({
   declarations: [
@@ -232,8 +231,7 @@ import { DeleteCandidateOccupationComponent } from './components/candidates/view
     EditCandidateSurveyComponent,
     CreateListComponent,
     UpdateListComponent,
-    CreateCandidateOccupationComponent,
-    DeleteCandidateOccupationComponent
+    CreateCandidateOccupationComponent
   ],
   imports: [
     BrowserModule,
@@ -309,8 +307,7 @@ import { DeleteCandidateOccupationComponent } from './components/candidates/view
     EditCandidateSurveyComponent,
     CreateListComponent,
     UpdateListComponent,
-    CreateCandidateOccupationComponent,
-    DeleteCandidateOccupationComponent
+    CreateCandidateOccupationComponent
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},

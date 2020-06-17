@@ -52,7 +52,7 @@ public class CandidateOccupationAdminApi {
     }
 
     @PostMapping("{id}")
-    public Map<String, Object> createCandidateOccupation(@Valid @PathVariable("id") Long candidateId,
+    public Map<String, Object> create(@Valid @PathVariable("id") Long candidateId,
                                                          @Valid @RequestBody CreateCandidateOccupationRequest request) {
         request.setCandidateId(candidateId);
         CandidateOccupation candidateOccupation = candidateOccupationService.createCandidateOccupation(request);
@@ -60,7 +60,7 @@ public class CandidateOccupationAdminApi {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity deleteCandidateOccupation(@PathVariable("id") Long id) {
+    public ResponseEntity delete(@PathVariable("id") Long id) {
         candidateOccupationService.deleteCandidateOccupation(id);
         return ResponseEntity.ok().build();
     }

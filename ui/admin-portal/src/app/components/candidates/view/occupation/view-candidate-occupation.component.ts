@@ -131,7 +131,6 @@ export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
   }
 
   createCandidateOccupation() {
-    console.log("click");
     const createCandidateOccupationModal = this.modalService.open(CreateCandidateOccupationComponent, {
       centered: true,
       backdrop: 'static'
@@ -148,8 +147,11 @@ export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
 
   deleteCandidateOccupation(candidateOccupation: CandidateOccupation) {
     this.candidateOccupationService.delete(candidateOccupation.id).subscribe(
-      results => {
+      (results) => {
         this.doSearch();
+      },
+      (error) => {
+        this.error = error;
       })
   }
 }
