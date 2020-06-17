@@ -85,7 +85,7 @@ export class BrowseSavedSearchesComponent implements OnInit, OnChanges {
     request.pageSize = this.pageSize;
     request.sortFields = ['name'];
     request.sortDirection = 'ASC';
-    if (this.savedSearchType != undefined) {
+    if (this.savedSearchType !== undefined) {
       request.savedSearchType = this.savedSearchType;
       request.savedSearchSubtype = this.savedSearchSubtype;
 
@@ -144,7 +144,7 @@ export class BrowseSavedSearchesComponent implements OnInit, OnChanges {
   onSelect(savedSearch: SavedSearch) {
     this.selectedSavedSearch = savedSearch;
 
-    let savedSearchID: number = savedSearch.id;
+    const savedSearchID: number = savedSearch.id;
     this.localStorageService.set(this.savedStateKey(), savedSearchID);
 
     this.selectedIndex = indexOfSavedSearch(savedSearchID, this.results.content);
@@ -169,7 +169,7 @@ export class BrowseSavedSearchesComponent implements OnInit, OnChanges {
         }
         break;
     }
-    if (this.selectedIndex != oldSelectedIndex) {
+    if (this.selectedIndex !== oldSelectedIndex) {
       this.onSelect(this.results.content[this.selectedIndex])
     }
   }
@@ -205,11 +205,11 @@ export class BrowseSavedSearchesComponent implements OnInit, OnChanges {
   }
 
   private updateLocalSavedSearchCopy(savedSearch: SavedSearch) {
-    let index: number = indexOfSavedSearch(savedSearch.id, this.results.content);
+    const index: number = indexOfSavedSearch(savedSearch.id, this.results.content);
     if (index >= 0) {
       this.results.content[index] = savedSearch;
     }
-    if (this.selectedIndex == index) {
+    if (this.selectedIndex === index) {
       this.selectedSavedSearch = savedSearch;
     }
   }
