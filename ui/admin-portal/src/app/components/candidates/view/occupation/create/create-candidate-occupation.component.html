@@ -1,0 +1,102 @@
+<div class="modal-header">
+
+  <h4 class="modal-title">Add Candidate Occupation</h4>
+
+  <button type="button" class="close" aria-label="Close" (click)="dismiss()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+
+</div>
+
+<div class="modal-body">
+
+  <div *ngIf="loading">
+    <i class="fas fa-spinner fa-spin"></i>
+  </div>
+
+  <div *ngIf="!loading">
+    <div class="alert alert-danger" *ngIf="error">
+      {{error}}
+    </div>
+
+    <form [formGroup]="form">
+
+      <div class="row">
+
+        <div class="col-12">
+          <div class="form-group">
+            <label for="occupationId">Occupation</label>
+            <select class="form-control" name="occupationId" id="occupationId" [formControlName]="'occupationId'">
+              <option value=""></option>
+              <option *ngFor="let occupation of occupations" [value]="occupation.id">{{occupation.name}}</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="row">
+
+        <div class="col-12">
+          <div class="form-group">
+            <label for="yearsExperience">Years Experience</label>
+            <input type="number" min="0" class="form-control" name="yearsExperience" id="yearsExperience" [formControlName]="'yearsExperience'">
+          </div>
+        </div>
+
+      </div>
+
+      <div class="row mb-2">
+
+        <div class="col-12">
+          <!-- Verified -->
+          <div class="form-group">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" id="verified" [value]="true" [formControlName]="'verified'">
+              <label class="form-check-label" for="verified">
+                TBB Verified
+              </label>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="row mb-2">
+
+        <div class="col-12">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" id="candidateSpecified" [value]="false"
+                   [formControlName]="'verified'">
+            <label class="form-check-label" for="candidateSpecified">
+              Candidate specified only
+            </label>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="row">
+
+        <div class="col-12">
+          <!-- COMMENT -->
+          <div class="form-group">
+            <label for="comment">Comment</label>
+            <textarea type="text" class="md-textarea-auto form-control" rows="8" id="comment" placeholder=""
+                      [formControlName]="'comment'"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="onSave()"
+                [disabled]="form.invalid || saving">
+          <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
+          Save
+        </button>
+      </div>
+    </form>
+
+
+  </div>
+</div>
