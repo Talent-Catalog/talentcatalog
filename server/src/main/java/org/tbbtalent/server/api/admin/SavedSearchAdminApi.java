@@ -1,6 +1,8 @@
 package org.tbbtalent.server.api.admin;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -17,10 +19,13 @@ import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.model.SavedList;
 import org.tbbtalent.server.model.SavedSearch;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
+import org.tbbtalent.server.request.list.CreateSavedListRequest;
 import org.tbbtalent.server.request.list.HasSetOfCandidatesImpl;
+import org.tbbtalent.server.request.search.SaveSelectionRequest;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
 import org.tbbtalent.server.request.search.SelectCandidateInSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
@@ -86,6 +91,62 @@ public class SavedSearchAdminApi implements
         End standard ITableApi methods
      */
 
+    /**
+     * Saves the given user's selections for the given saved search to either
+     * the specified existing list, or to a newly created list.
+     * The selections can be added to an existing list, or replace any existing
+     * contents of the list.
+     * @param id ID of saved search
+     * @param request Request containing details of the list to be saved to,
+     *                the associated user and whether or not the save should
+     *                add ot or replace existing contents.
+     * @throws EntityExistsException If a new list needs to be created but the
+     * list name already exists.
+     * @throws InvalidRequestException if not authorized.
+     * @throws NoSuchObjectException if there is no such saved search or user
+     * with the given ids
+     */
+    @PutMapping("/save-selection/{id}")
+    public void saveSelection(@PathVariable("id") long id,
+                              @Valid @RequestBody SaveSelectionRequest request)
+            throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
+
+        //Get the selection list for this user and saved search.
+        SavedList selectionList =
+                savedSearchService.getSelectionList(id, request.getUserId());
+
+        //Create a list request containing our candidate id.
+        HasSetOfCandidatesImpl listRequest = new HasSetOfCandidatesImpl();
+
+        //Populate request from select list
+        final Set<Candidate> candidates = selectionList.getCandidates();
+        Set<Long> candidateIds = new HashSet<>();
+        for (Candidate candidate : candidates) {
+            candidateIds.add(candidate.getId());
+        }
+        listRequest.setCandidateIds(candidateIds);
+
+        long targetListId = request.getSavedListId(); 
+        if (targetListId == 0) {
+            //Create list
+            CreateSavedListRequest createRequest = new CreateSavedListRequest();
+            createRequest.setName(request.getNewListName());
+            createRequest.setFixed(false);
+            SavedList targetList = savedListService.createSavedList(createRequest);
+            targetListId = targetList.getId();
+        }
+
+        boolean done;
+        //Add or remove candidate depending on selection.
+        if (request.isReplace()) {
+            done = savedListService.replaceSavedList(targetListId, listRequest);
+        } else {
+            done = savedListService.mergeSavedList(targetListId, listRequest);
+        }
+        if (!done) {
+            throw new NoSuchObjectException(SavedList.class, targetListId);
+        }
+    }
 
     /**
      * Update the record with the given id from the data in the given request.

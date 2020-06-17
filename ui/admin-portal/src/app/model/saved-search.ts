@@ -72,10 +72,10 @@ export function getSavedSearchBreadcrumb(savedSearch: SavedSearch, infos: SavedS
   let subtypeTitle: string = '';
   if (savedSearch) {
     if (savedSearch.savedSearchSubtype != null) {
-      let savedSearchTypeSubInfos = infos[savedSearch.savedSearchType].categories;
+      const savedSearchTypeSubInfos = infos[savedSearch.savedSearchType].categories;
       if (savedSearchTypeSubInfos) {
-        let savedSearchTypeSubInfo = savedSearchTypeSubInfos.find(
-          info => info.savedSearchSubtype == savedSearch.savedSearchSubtype);
+        const savedSearchTypeSubInfo = savedSearchTypeSubInfos.find(
+          info => info.savedSearchSubtype === savedSearch.savedSearchSubtype);
         if (savedSearchTypeSubInfo) {
           subtypeTitle = savedSearchTypeSubInfo.title;
         }
@@ -91,7 +91,7 @@ export function getSavedSearchBreadcrumb(savedSearch: SavedSearch, infos: SavedS
 
 export function indexOfSavedSearch(savedSearchID: number, savedSearches: SavedSearch[]): number {
   for (let i = 0; i < savedSearches.length; i++) {
-    if (savedSearches[i].id == savedSearchID) {
+    if (savedSearches[i].id === savedSearchID) {
       return i;
     }
   }
@@ -125,6 +125,9 @@ export interface SavedSearchRunRequest {
 }
 
 export interface SaveSelectionRequest {
+  //User making the selections
+  userId: number;
+
   //List to save to - 0 if new list
   savedListId: number;
 
@@ -148,8 +151,8 @@ export interface SelectCandidateInSearchRequest {
 
 /**
  * Create a SavedSearchRequest from a SavedSearch and a search request.
- * @param savedSearch
- * @param searchCandidateRequest
+ * @param savedSearch Saved search
+ * @param searchCandidateRequest Search request
  */
 export function convertToSavedSearchRequest
 (savedSearch: SavedSearch, searchCandidateRequest: SearchCandidateRequest):

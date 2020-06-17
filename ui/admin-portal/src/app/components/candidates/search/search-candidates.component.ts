@@ -70,7 +70,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
   selectedCandidate: Candidate;
   loggedInUser: User;
-  private timestamp: number;
+  timestamp: number;
   private reviewStatusFilter: string[] = defaultReviewStatusFilter;
 
 
@@ -411,17 +411,19 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
     modal.result
       .then((request: SaveSelectionRequest) => {
+
+        request.userId = this.loggedInUser.id;
+
         //Save selection as specified in request
         this.savingSelection = true;
         this.savedSearchService.saveSelection(this.savedSearchId, request).subscribe(
-          result => {
-            this.savingSelection = false;
-          },
-          err => {
-            this.error = err;
-            this.savingSelection = false;
-          }
-        );
+        result => {
+          this.savingSelection = false;
+        },
+        err => {
+          this.error = err;
+          this.savingSelection = false;
+        });
       })
       .catch(() => { /* Isn't possible */
       });

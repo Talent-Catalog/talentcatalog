@@ -76,6 +76,7 @@ export class SelectListComponent implements OnInit {
 
   select() {
     const request: SaveSelectionRequest = {
+      userId: 0, //Will be filled in later before sending
       savedListId: this.savedList === null ? 0 : this.savedList[0].id,
       newListName: this.newList ? this.newListName : null,
       replace: this.replace
