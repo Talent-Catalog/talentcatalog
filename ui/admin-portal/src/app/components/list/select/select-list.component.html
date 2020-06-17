@@ -4,7 +4,7 @@
 
 <div class="modal-header">
 
-  <h4 class="modal-title">Make New Saved List</h4>
+  <h4 class="modal-title">Save Selection to List</h4>
 
   <button type="button" class="close" aria-label="Close" (click)="dismiss()">
     <span aria-hidden="true">&times;</span>
@@ -21,8 +21,8 @@
   <form [formGroup]="form">
     <div class="form-group" >
       <div class="form-inline"  *ngIf="!newList">
-        <label>Select list</label>
-        <ng-multiselect-dropdown class="form-control" formControlName="savedList"
+        <label>Save to existing list</label>
+        <ng-multiselect-dropdown formControlName="savedList"
           id="savedLists"
           [data]="lists"
           [settings]="dropdownSettings">
