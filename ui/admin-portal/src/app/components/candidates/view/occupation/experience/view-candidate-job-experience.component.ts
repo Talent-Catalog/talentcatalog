@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from '../../../../../model/candidate';
 import {CandidateOccupation} from '../../../../../model/candidate-occupation';
@@ -9,6 +9,8 @@ import {CreateCandidateJobExperienceComponent} from './create/create-candidate-j
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {SearchResults} from '../../../../../model/search-results';
 import {EditCandidateOccupationComponent} from '../edit/edit-candidate-occupation.component';
+import {SavedSearch} from "../../../../../model/saved-search";
+import {DeleteCandidateOccupationComponent} from "../delete/delete-candidate-occupation.component";
 
 @Component({
   selector: 'app-view-candidate-job-experience',
@@ -20,6 +22,7 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
   @Input() candidate: Candidate;
   @Input() editable: boolean;
   @Input() candidateOccupation: CandidateOccupation;
+  @Output() deleteOccupation = new EventEmitter<CandidateOccupation>();
 
   candidateJobExperienceForm: FormGroup;
   loading: boolean;
@@ -122,6 +125,33 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
 
     editCandidateJobExperienceModal.result
       .then((candidateJobExperience) => this.doSearch())
+      .catch(() => { /* Isn't possible */
+      });
+
+  }
+
+  doDeleteCandidateOccupation() {
+    // get occupation
+    this.candidateOccupation.occupation.id
+    // check occupation doesn't have work experience
+    if(this.experiences.length == 0) {
+        this.deleteOccupation.emit(this.candidateOccupation);
+    } else {
+      this.deleteModal()
+    }
+    // throw modal
+
+    // delete occupation
+  }
+
+  deleteModal() {
+    const deleteCandidateOccupationModal = this.modalService.open(DeleteCandidateOccupationComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    deleteCandidateOccupationModal.result
+      .then(() => this.deleteOccupation.emit(this.candidateOccupation))
       .catch(() => { /* Isn't possible */
       });
 

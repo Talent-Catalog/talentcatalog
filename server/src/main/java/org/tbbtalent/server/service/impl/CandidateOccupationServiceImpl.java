@@ -11,9 +11,7 @@ import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.Candidate;
-import org.tbbtalent.server.model.CandidateOccupation;
-import org.tbbtalent.server.model.Occupation;
+import org.tbbtalent.server.model.*;
 import org.tbbtalent.server.repository.CandidateJobExperienceRepository;
 import org.tbbtalent.server.repository.CandidateOccupationRepository;
 import org.tbbtalent.server.repository.CandidateRepository;
@@ -57,6 +55,8 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
 
     @Override
     public CandidateOccupation createCandidateOccupation(CreateCandidateOccupationRequest request) {
+        User user = userContext.getLoggedInUser();
+
         // Load the industry from the database - throw an exception if not found
         Occupation occupation = occupationRepository.findById(request.getOccupationId())
                 .orElseThrow(() -> new NoSuchObjectException(Occupation.class, request.getOccupationId()));
@@ -65,8 +65,8 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         CandidateOccupation candidateOccupation = new CandidateOccupation();
 
         Candidate candidate;
-        /* Check if the candidate ID is explicitly set - this means the request is coming from admin */
-        if (request.getCandidateId() != null) {
+        /* Check if request is coming from admin */
+        if (user.getRole().equals(Role.admin)) {
             candidate = candidateRepository.findById(request.getCandidateId())
                     .orElseThrow(() -> new NoSuchObjectException(Candidate.class, request.getCandidateId()));
             // Set verified if request coming from admin
@@ -94,13 +94,23 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
 
     @Override
     public void deleteCandidateOccupation(Long id) {
-        Candidate candidate = userContext.getLoggedInCandidate();
+        User user = userContext.getLoggedInUser();
+
         CandidateOccupation candidateOccupation = candidateOccupationRepository.findByIdLoadCandidate(id)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateOccupation.class, id));
 
-        // Check that the user is deleting their own candidateOccupation
-        if (!candidate.getId().equals(candidateOccupation.getCandidate().getId())) {
-            throw new InvalidCredentialsException("You do not have permission to perform that action");
+        Candidate candidate;
+
+        // If request is coming from admin portal
+        if (user.getRole().equals(Role.admin)) {
+            candidate = candidateRepository.findById(candidateOccupation.getCandidate().getId())
+                    .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateOccupation.getCandidate().getId()));
+        } else {
+            candidate = userContext.getLoggedInCandidate();
+            // Check that the user is deleting their own attachment
+            if (!candidate.getId().equals(candidateOccupation.getCandidate().getId())) {
+                throw new InvalidCredentialsException("You do not have permission to perform that action");
+            }
         }
 
         candidateOccupationRepository.delete(candidateOccupation);

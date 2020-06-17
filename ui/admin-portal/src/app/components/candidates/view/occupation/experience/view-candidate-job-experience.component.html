@@ -12,14 +12,18 @@
   <div class="card-header">
     {{candidateOccupation.occupation.name}} ({{candidateOccupation.yearsExperience}} years)
 
-    <div class="button-group pull-right" *ngIf="editable">
+    <div class="button-group float-right" *ngIf="editable">
       <button class="btn btn-sm btn-outline-dark mr-2" (click)="verifyOccupation()">
         <i *ngIf="candidateOccupation.verified" class="fas fa-check" title="Verified by TBB"></i>
         <i *ngIf="!candidateOccupation.verified" class="fas fa-question" title="Candidate specified, not verified"></i>
       </button>
 
-      <button class="btn btn-sm btn-primary" (click)="createCandidateJobExperience()">
+      <button class="btn btn-sm btn-primary mr-2" (click)="createCandidateJobExperience()">
         <i class="fas fa-plus"></i>
+      </button>
+
+      <button class="btn btn-sm btn-danger" (click)="doDeleteCandidateOccupation()">
+        <i class="fas fa-trash"></i>
       </button>
     </div>
 

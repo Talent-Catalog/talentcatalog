@@ -144,5 +144,14 @@ export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
       .catch(() => { /* Isn't possible */
       });
   }
+
+
+  deleteCandidateOccupation(candidateOccupation: CandidateOccupation) {
+    this.candidateOccupationService.delete(candidateOccupation.id).subscribe(
+      results => {
+        this.doSearch();
+      })
+  }
 }
+
 

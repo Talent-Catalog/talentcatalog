@@ -34,4 +34,8 @@ export class CandidateOccupationService {
   create(id: number, details): Observable<CandidateOccupation>  {
     return this.http.post<CandidateOccupation>(`${this.apiUrl}/${id}`, details);
   }
+
+  delete(id: number): Observable<CandidateOccupation>  {
+    return this.http.delete<CandidateOccupation>(`${this.apiUrl}/${id}`);
+  }
 }

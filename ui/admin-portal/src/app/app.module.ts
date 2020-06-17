@@ -309,7 +309,8 @@ import { DeleteCandidateOccupationComponent } from './components/candidates/view
     EditCandidateSurveyComponent,
     CreateListComponent,
     UpdateListComponent,
-    CreateCandidateOccupationComponent
+    CreateCandidateOccupationComponent,
+    DeleteCandidateOccupationComponent
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},

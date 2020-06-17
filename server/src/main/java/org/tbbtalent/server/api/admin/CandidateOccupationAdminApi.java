@@ -1,6 +1,7 @@
 package org.tbbtalent.server.api.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.model.CandidateOccupation;
 import org.tbbtalent.server.model.Occupation;
@@ -56,6 +57,12 @@ public class CandidateOccupationAdminApi {
         request.setCandidateId(candidateId);
         CandidateOccupation candidateOccupation = candidateOccupationService.createCandidateOccupation(request);
         return candidateOccupationDto().build(candidateOccupation);
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity deleteCandidateOccupation(@PathVariable("id") Long id) {
+        candidateOccupationService.deleteCandidateOccupation(id);
+        return ResponseEntity.ok().build();
     }
 
     private DtoBuilder occupationDto() {
