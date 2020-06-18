@@ -361,6 +361,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     showSaveModal.result
       .then((savedSearch) => {
         this.savedSearch = savedSearch;
+        this.searchForm.controls['savedSearchId'].patchValue(savedSearch.id);
       })
       .catch(() => { /* Isn't possible */
       });
