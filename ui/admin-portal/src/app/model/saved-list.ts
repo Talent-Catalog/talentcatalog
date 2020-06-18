@@ -2,7 +2,7 @@
  * Copyright (c) 2020 Talent Beyond Boundaries. All rights reserved.
  */
 
-import {User} from "./user";
+import {CandidateSource} from "./base";
 
 export enum SearchBy {
   type,
@@ -11,13 +11,7 @@ export enum SearchBy {
   sharedWithMe
 }
 
-export interface SavedList {
-  id: number;
-  name: string;
-  fixed: boolean;
-  users?: User[];
-  watcherUserIds?: number[];
-  createdBy?: User;
+export interface SavedList extends CandidateSource {
 }
 
 export function indexOfSavedList(savedListID: number, savedLists: SavedList[]): number {

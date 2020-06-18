@@ -1,5 +1,17 @@
-import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
-import {defaultReviewStatusFilter, SavedSearch} from "../../../../model/saved-search";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
+import {
+  defaultReviewStatusFilter,
+  SavedSearch
+} from "../../../../model/saved-search";
 import {Subscription} from "rxjs";
 import {CandidateService} from "../../../../services/candidate.service";
 import {Candidate} from "../../../../model/candidate";
@@ -10,6 +22,7 @@ import {
   CachedSearchResults,
   SavedSearchResultsCacheService
 } from "../../../../services/saved-search-results-cache.service";
+import {CandidateSource} from "../../../../model/base";
 
 @Component({
   selector: 'app-saved-search-results',
@@ -19,14 +32,14 @@ import {
 export class SavedSearchResultsComponent implements OnInit, OnChanges, OnDestroy {
   error: null;
   pageNumber: number;
-  private pageSize: number;
+  pageSize: number;
   results: SearchResults<Candidate>;
-  @Input() savedSearch: SavedSearch;
+  @Input() savedSearch: CandidateSource;
   @Output() toggleWatch = new EventEmitter<SavedSearch>();
   searching: boolean;
-  private sortField: string;
-  private sortDirection: string;
-  private subscription: Subscription;
+  sortField: string;
+  sortDirection: string;
+  subscription: Subscription;
   timestamp: number;
 
 constructor(
@@ -87,6 +100,12 @@ constructor(
     }
 
     if (!done) {
+      //todo call a candidateSourceService passing the this."savedSearch"
+      //which can then call the appropriate service based on what kind of
+      //candidate source is being requested
+
+      //todo Doesn't make sense to be loading the request and then doing
+      //a search from request call. Should be able to do it in one call to the server
       this.savedSearchService.load(this.savedSearch.id).subscribe(
         request => {
           this.searchFromRequest(request);
@@ -154,8 +173,8 @@ constructor(
   }
 
   toggleSort(column) {
-    if (this.sortField == column) {
-      this.sortDirection = this.sortDirection == 'ASC' ? 'DESC' : 'ASC';
+    if (this.sortField === column) {
+      this.sortDirection = this.sortDirection === 'ASC' ? 'DESC' : 'ASC';
     } else {
       this.sortField = column;
       this.sortDirection = 'ASC';

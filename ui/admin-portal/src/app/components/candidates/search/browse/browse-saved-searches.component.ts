@@ -9,7 +9,7 @@ import {SearchResults} from '../../../../model/search-results';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
 import {
-  indexOfSavedSearch,
+  indexOfAuditable,
   SavedSearch,
   SavedSearchSubtype,
   SavedSearchType,
@@ -20,6 +20,7 @@ import {Router} from '@angular/router';
 import {LocalStorageService} from "angular-2-local-storage";
 import {AuthService} from "../../../../services/auth.service";
 import {User} from "../../../../model/user";
+import {CandidateSource} from "../../../../model/base";
 
 @Component({
   selector: 'app-browse-saved-searches',
@@ -38,8 +39,8 @@ export class BrowseSavedSearchesComponent implements OnInit, OnChanges {
   error: any;
   pageNumber: number;
   pageSize: number;
-  results: SearchResults<SavedSearch>;
-  selectedSavedSearch: SavedSearch;
+  results: SearchResults<CandidateSource>;
+  selectedSavedSearch: CandidateSource;
   selectedIndex = 0;
   private loggedInUser: User;
 
@@ -122,7 +123,7 @@ export class BrowseSavedSearchesComponent implements OnInit, OnChanges {
           //Selected previously search if any
           const savedSearchID: number = this.localStorageService.get(this.savedStateKey());
           if (savedSearchID) {
-            this.selectedIndex = indexOfSavedSearch(savedSearchID, this.results.content);
+            this.selectedIndex = indexOfAuditable(savedSearchID, this.results.content);
             if (this.selectedIndex >= 0) {
               this.selectedSavedSearch = this.results.content[this.selectedIndex];
             } else {
@@ -141,16 +142,17 @@ export class BrowseSavedSearchesComponent implements OnInit, OnChanges {
     }
   }
 
-  onSelect(savedSearch: SavedSearch) {
+  onSelect(savedSearch: CandidateSource) {
     this.selectedSavedSearch = savedSearch;
 
     const savedSearchID: number = savedSearch.id;
     this.localStorageService.set(this.savedStateKey(), savedSearchID);
 
-    this.selectedIndex = indexOfSavedSearch(savedSearchID, this.results.content);
+    this.selectedIndex = indexOfAuditable(savedSearchID, this.results.content);
   }
 
   private savedStateKey() {
+    //todo Different key for non saved searches
     return this.savedStateKeyPrefix + this.savedSearchType +
       (this.savedSearchSubtype ? '/' + this.savedSearchSubtype : "");
   }
@@ -205,7 +207,7 @@ export class BrowseSavedSearchesComponent implements OnInit, OnChanges {
   }
 
   private updateLocalSavedSearchCopy(savedSearch: SavedSearch) {
-    const index: number = indexOfSavedSearch(savedSearch.id, this.results.content);
+    const index: number = indexOfAuditable(savedSearch.id, this.results.content);
     if (index >= 0) {
       this.results.content[index] = savedSearch;
     }

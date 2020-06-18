@@ -1,6 +1,6 @@
 import {SearchCandidateRequest} from "./search-candidate-request";
 import {SavedSearchTypeInfo} from "../services/saved-search.service";
-import {User} from "./user";
+import {Auditable, CandidateSource} from "./base";
 
 export enum ReviewedStatus {
   pending,
@@ -56,14 +56,8 @@ export interface SavedSearchJoin {
   childSavedSearch: SavedSearch;
 }
 
-export interface SavedSearch extends SearchCandidateRequest {
-  id: number;
-  name: string;
-  fixed: boolean;
+export interface SavedSearch extends CandidateSource, SearchCandidateRequest {
   reviewable: boolean;
-  users?: User[];
-  watcherUserIds?: number[];
-  createdBy?: User;
   savedSearchType: SavedSearchType;
   savedSearchSubtype: SavedSearchSubtype;
 }
@@ -89,9 +83,9 @@ export function getSavedSearchBreadcrumb(savedSearch: SavedSearch, infos: SavedS
     : 'Search';
 }
 
-export function indexOfSavedSearch(savedSearchID: number, savedSearches: SavedSearch[]): number {
-  for (let i = 0; i < savedSearches.length; i++) {
-    if (savedSearches[i].id === savedSearchID) {
+export function indexOfAuditable(id: number, auditables: Auditable[]): number {
+  for (let i = 0; i < auditables.length; i++) {
+    if (auditables[i].id === id) {
       return i;
     }
   }
