@@ -25,6 +25,7 @@ export class JoinSavedSearchComponent implements OnInit {
   searching = false;
   searchFailed = false;
   doSavedSearchSearch;
+  currentSavedSearchId: number;
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
@@ -52,7 +53,9 @@ export class JoinSavedSearchComponent implements OnInit {
           this.savedSearchService.search({keyword: term, owned: true, shared: true}).pipe(
             tap(() => this.searchFailed = false),
             map(result =>
-              result.content),
+              // filter to avoid circular reference exception by removing the same search as the loaded search
+              result.content.filter(content =>
+                content.id != this.currentSavedSearchId)),
             catchError(() => {
               this.searchFailed = true;
               return of([]);
