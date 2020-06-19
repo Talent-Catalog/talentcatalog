@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from '../../../../../model/candidate';
 import {CandidateOccupation} from '../../../../../model/candidate-occupation';
@@ -9,6 +9,7 @@ import {CreateCandidateJobExperienceComponent} from './create/create-candidate-j
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {SearchResults} from '../../../../../model/search-results';
 import {EditCandidateOccupationComponent} from '../edit/edit-candidate-occupation.component';
+import {ConfirmationComponent} from "../../../../util/confirm/confirmation.component";
 
 @Component({
   selector: 'app-view-candidate-job-experience',
@@ -20,6 +21,7 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
   @Input() candidate: Candidate;
   @Input() editable: boolean;
   @Input() candidateOccupation: CandidateOccupation;
+  @Output() deleteOccupation = new EventEmitter<CandidateOccupation>();
 
   candidateJobExperienceForm: FormGroup;
   loading: boolean;
@@ -80,7 +82,7 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
    this.doSearch();
   }
 
-  verifyOccupation() {
+  editOccupation() {
     const modal = this.modalService.open(EditCandidateOccupationComponent, {
       centered: true,
       backdrop: 'static'
@@ -125,6 +127,52 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
       .catch(() => { /* Isn't possible */
       });
 
+  }
+
+  deleteCandidateOccupation() {
+    // Check if occupation has associated job experience
+    if(this.experiences.length == 0) {
+        this.deleteOccupation.emit(this.candidateOccupation);
+    } else {
+      // throw confirmation modal if job experience associated with occupation
+      const deleteCandidateOccupationModal = this.modalService.open(ConfirmationComponent, {
+        centered: true,
+        backdrop: 'static'
+      });
+
+      deleteCandidateOccupationModal.componentInstance.message = 'Are you sure you want to delete this occupation? All associated job experiences will also be deleted.';
+
+      deleteCandidateOccupationModal.result
+        .then(() => this.deleteOccupation.emit(this.candidateOccupation))
+        .catch(() => { /* Isn't possible */
+        });
+    }
+  }
+
+  deleteCandidateJobExperience(candidateJobExperience: CandidateJobExperience) {
+    const deleteCandidateJobExperienceModal = this.modalService.open(ConfirmationComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    deleteCandidateJobExperienceModal.componentInstance.message = 'Are you sure you want to delete this job experience?';
+
+    deleteCandidateJobExperienceModal.result
+      .then((result) => {
+        if (result === true) {
+          this.candidateJobExperienceService.delete(candidateJobExperience.id).subscribe(
+            (user) => {
+              this.loading = false;
+              this.doSearch();
+            },
+            (error) => {
+              this.error = error;
+              this.loading = false;
+            });
+          this.doSearch();
+        }
+      })
+      .catch(() => { /* Isn't possible */ });
   }
 
 }

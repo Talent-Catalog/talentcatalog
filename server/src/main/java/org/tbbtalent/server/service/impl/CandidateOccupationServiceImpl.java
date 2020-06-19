@@ -11,9 +11,7 @@ import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.Candidate;
-import org.tbbtalent.server.model.CandidateOccupation;
-import org.tbbtalent.server.model.Occupation;
+import org.tbbtalent.server.model.*;
 import org.tbbtalent.server.repository.CandidateJobExperienceRepository;
 import org.tbbtalent.server.repository.CandidateOccupationRepository;
 import org.tbbtalent.server.repository.CandidateRepository;
@@ -57,7 +55,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
 
     @Override
     public CandidateOccupation createCandidateOccupation(CreateCandidateOccupationRequest request) {
-        Candidate candidate = userContext.getLoggedInCandidate();
+        User user = userContext.getLoggedInUser();
 
         // Load the industry from the database - throw an exception if not found
         Occupation occupation = occupationRepository.findById(request.getOccupationId())
@@ -65,7 +63,30 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
 
         // Create a new candidateOccupation object to insert into the database
         CandidateOccupation candidateOccupation = new CandidateOccupation();
+
+        Candidate candidate;
+        /* Check if request is coming from admin */
+        if (user.getRole().equals(Role.admin)) {
+            candidate = candidateRepository.findById(request.getCandidateId())
+                    .orElseThrow(() -> new NoSuchObjectException(Candidate.class, request.getCandidateId()));
+            // Set verified if request coming from admin
+            candidateOccupation.setVerified(request.isVerified());
+
+            candidateOccupation.setAuditFields(userContext.getLoggedInUser());
+            // removed verification note as verified no longer used
+//            candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(request.getCandidateId(),
+//                    occupation.getName() +" verification status set to "+request.isVerified(), request.getComment()));
+        } else {
+            candidate = userContext.getLoggedInCandidate();
+        }
+
         candidateOccupation.setCandidate(candidate);
+
+        // Check candidate doesn't already have this occupation and isn't the same candidateOccupation
+        CandidateOccupation existing = candidateOccupationRepository.findByCandidateIdAAndOccupationId(candidateOccupation.getCandidate().getId(), request.getOccupationId());
+        if (existing != null && !existing.getId().equals(candidateOccupation.getId())){
+            throw new EntityExistsException("occupation");
+        }
         candidateOccupation.setOccupation(occupation);
         candidateOccupation.setYearsExperience(request.getYearsExperience());
 
@@ -80,13 +101,23 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
 
     @Override
     public void deleteCandidateOccupation(Long id) {
-        Candidate candidate = userContext.getLoggedInCandidate();
+        User user = userContext.getLoggedInUser();
+
         CandidateOccupation candidateOccupation = candidateOccupationRepository.findByIdLoadCandidate(id)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateOccupation.class, id));
 
-        // Check that the user is deleting their own candidateOccupation
-        if (!candidate.getId().equals(candidateOccupation.getCandidate().getId())) {
-            throw new InvalidCredentialsException("You do not have permission to perform that action");
+        Candidate candidate;
+
+        // If request is coming from admin portal
+        if (user.getRole().equals(Role.admin)) {
+            candidate = candidateRepository.findById(candidateOccupation.getCandidate().getId())
+                    .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateOccupation.getCandidate().getId()));
+        } else {
+            candidate = userContext.getLoggedInCandidate();
+            // Check that the user is deleting their own attachment
+            if (!candidate.getId().equals(candidateOccupation.getCandidate().getId())) {
+                throw new InvalidCredentialsException("You do not have permission to perform that action");
+            }
         }
 
         candidateOccupationRepository.delete(candidateOccupation);
@@ -166,7 +197,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
     }
 
     @Override
-    @Audit(type = AuditType.CANDIDATE_OCCUPATION, action = AuditAction.VERIFY, extraInfo = "Set verified to {input.verified} with comment: {input.comment}")
+    //@Audit(type = AuditType.CANDIDATE_OCCUPATION, action = AuditAction.VERIFY, extraInfo = "Set verified to {input.verified} with comment: {input.comment}")
     public CandidateOccupation verifyCandidateOccupation(VerifyCandidateOccupationRequest request) {
         CandidateOccupation candidateOccupation = candidateOccupationRepository.findByIdLoadCandidate(request.getId())
                 .orElseThrow(() -> new NoSuchObjectException(CandidateOccupation.class, request.getId()));
@@ -182,11 +213,13 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         }
 
         candidateOccupation.setOccupation(verifiedOccupation);
+        candidateOccupation.setYearsExperience(request.getYearsExperience());
         candidateOccupation.setVerified(request.isVerified());
 
         candidateOccupation.setAuditFields(userContext.getLoggedInUser());
-        candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(candidateOccupation.getCandidate().getId(),
-                candidateOccupation.getOccupation().getName() +" verification status set to "+request.isVerified(), request.getComment()));
+        // removed as no longer use verification
+//        candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(candidateOccupation.getCandidate().getId(),
+//                candidateOccupation.getOccupation().getName() +" verification status set to "+request.isVerified(), request.getComment()));
 
         return candidateOccupationRepository.save(candidateOccupation);
 

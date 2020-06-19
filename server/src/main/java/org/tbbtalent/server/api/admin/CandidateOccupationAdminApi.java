@@ -1,13 +1,16 @@
 package org.tbbtalent.server.api.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.model.CandidateOccupation;
 import org.tbbtalent.server.model.Occupation;
+import org.tbbtalent.server.request.candidate.occupation.CreateCandidateOccupationRequest;
 import org.tbbtalent.server.request.candidate.occupation.VerifyCandidateOccupationRequest;
 import org.tbbtalent.server.service.CandidateOccupationService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -46,6 +49,20 @@ public class CandidateOccupationAdminApi {
         request.setId(id);
         CandidateOccupation candidateOccupation = this.candidateOccupationService.verifyCandidateOccupation(request);
         return candidateOccupationDto().build(candidateOccupation);
+    }
+
+    @PostMapping("{id}")
+    public Map<String, Object> create(@Valid @PathVariable("id") Long candidateId,
+                                                         @Valid @RequestBody CreateCandidateOccupationRequest request) {
+        request.setCandidateId(candidateId);
+        CandidateOccupation candidateOccupation = candidateOccupationService.createCandidateOccupation(request);
+        return candidateOccupationDto().build(candidateOccupation);
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity delete(@PathVariable("id") Long id) {
+        candidateOccupationService.deleteCandidateOccupation(id);
+        return ResponseEntity.ok().build();
     }
 
     private DtoBuilder occupationDto() {

@@ -10,8 +10,14 @@
 
 <ng-container *ngIf="!loading">
 
-  <!-- ORDER BY -->
-  <div class="dropdown" ngbDropdown>
+  <div class="dropdown my-2" ngbDropdown>
+    <!-- ADD OCCUPATION BTN-->
+    <div class="float-right" *ngIf="editable">
+      <button class="btn btn-sm btn-primary" (click)="createCandidateOccupation()">
+        <i class="fas fa-plus"></i> Occupation
+      </button>
+    </div>
+    <!-- ORDER BY -->
     <a class="dropdown-toggle btn btn-sm" ngbDropdownToggle>
       Order By {{orderOccupation ? 'Occupation' : 'Date'}}
     </a>
@@ -27,7 +33,8 @@
     <app-view-candidate-job-experience *ngFor="let occupation of candidateOccupations"
                                        [candidate]="candidate"
                                        [candidateOccupation]="occupation"
-                                       [editable]="editable">
+                                       [editable]="editable"
+                                       (deleteOccupation)="deleteCandidateOccupation($event)">
     </app-view-candidate-job-experience>
 
   </ng-container>

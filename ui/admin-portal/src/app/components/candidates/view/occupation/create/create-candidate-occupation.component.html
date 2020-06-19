@@ -1,6 +1,6 @@
 <div class="modal-header">
 
-  <h4 class="modal-title">Edit Candidate Occupation</h4>
+  <h4 class="modal-title">Add Candidate Occupation</h4>
 
   <button type="button" class="close" aria-label="Close" (click)="dismiss()">
     <span aria-hidden="true">&times;</span>
@@ -21,12 +21,18 @@
 
     <form [formGroup]="form">
 
+      <div class="row">
 
-      <div class="form-group">
-        <select class="form-control" name="occupationId" id="occupationId" [formControlName]="'occupationId'">
-          <option value=""></option>
-          <option *ngFor="let occupation of occupations" [value]="occupation.id">{{occupation.name}}</option>
-        </select>
+        <div class="col-12">
+          <div class="form-group">
+            <label for="occupationId">Occupation</label>
+            <select class="form-control" name="occupationId" id="occupationId" [formControlName]="'occupationId'">
+              <option value=""></option>
+              <option *ngFor="let occupation of occupations" [value]="occupation.id">{{occupation.name}}</option>
+            </select>
+          </div>
+        </div>
+
       </div>
 
       <div class="row">
@@ -39,13 +45,6 @@
         </div>
 
       </div>
-
-      <div class="row">
-        <div class="col-12">
-          <app-updated-by *ngIf="candidateOccupation.updatedDate" [object]="candidateOccupation"></app-updated-by>
-        </div>
-      </div>
-
 
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="onSave()"
