@@ -22,7 +22,8 @@ import {
   CachedSearchResults,
   SavedSearchResultsCacheService
 } from "../../../../services/saved-search-results-cache.service";
-import {CandidateSource} from "../../../../model/base";
+import {CandidateSource, PagedSearchRequest} from "../../../../model/base";
+import {CandidateSourceService} from "../../../../services/candidate-source.service";
 
 @Component({
   selector: 'app-saved-search-results',
@@ -44,6 +45,7 @@ export class SavedSearchResultsComponent implements OnInit, OnChanges, OnDestroy
 
 constructor(
     private candidateService: CandidateService,
+    private candidateSourceService: CandidateSourceService,
     private router: Router,
     private savedSearchService: SavedSearchService,
     private savedSearchResultsCacheService: SavedSearchResultsCacheService
@@ -100,21 +102,66 @@ constructor(
     }
 
     if (!done) {
-      //todo call a candidateSourceService passing the this."savedSearch"
-      //which can then call the appropriate service based on what kind of
-      //candidate source is being requested
+      //todo Is this the best place to do the defaulting?
+      //todo Need do defaulting in search request, then pick up actual info
+      //from returned results.
+      //todo Currently server sends back used page number and size but does
+      //not echo back sort info. It should be changed to do so.
+      if (!this.pageNumber) {
+        this.pageNumber = 1;
+      }
+      if (!this.pageSize) {
+        this.pageSize = 20;
+      }
+      if (!this.sortField) {
+        this.sortField = 'id';
+      }
+      if (!this.sortDirection) {
+        this.sortDirection = 'DESC';
+      }
+      const pagedSearchRequest: PagedSearchRequest = {
+        pageNumber: this.pageNumber - 1,
+        pageSize: this.pageSize,
+        sortFields: [this.sortField],
+        sortDirection: this.sortDirection
+      };
+      this.candidateSourceService.searchPaged(
+        this.savedSearch, pagedSearchRequest).subscribe(
+        results => {
+          this.timestamp = Date.now();
+          this.results = results;
 
-      //todo Doesn't make sense to be loading the request and then doing
-      //a search from request call. Should be able to do it in one call to the server
-      this.savedSearchService.load(this.savedSearch.id).subscribe(
-        request => {
-          this.searchFromRequest(request);
+          this.savedSearchResultsCacheService.cache({
+            searchID: this.savedSearch.id,
+            pageNumber: this.pageNumber,
+            pageSize: this.pageSize,
+            sortFields: [this.sortField],
+            sortDirection: this.sortDirection,
+            reviewStatusFilter: defaultReviewStatusFilter,
+            results: this.results,
+            timestamp: this.timestamp
+          });
+
+          this.searching = false;
         },
         error => {
           this.error = error;
           this.searching = false;
-          // this._loading.savedSearch = false;
         });
+
+      //todo still need to sort out review filtering
+      //todo test this
+      // //todo Doesn't make  sense to be loading the request and then doing
+      // //a search from request call. Should be able to do it in one call to the server
+      // this.savedSearchService.load(this.savedSearch.id).subscribe(
+      //   request => {
+      //     this.searchFromRequest(request);
+      //   },
+      //   error => {
+      //     this.error = error;
+      //     this.searching = false;
+      //     // this._loading.savedSearch = false;
+      //   });
     }
 
   }

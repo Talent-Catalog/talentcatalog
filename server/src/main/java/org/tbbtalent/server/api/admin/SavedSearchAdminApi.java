@@ -46,9 +46,6 @@ public class SavedSearchAdminApi implements
     private final SavedListService savedListService;
     private final SavedSearchService savedSearchService;
 
-    /*
-        Standard ITableApi methods
-     */
     @Autowired
     public SavedSearchAdminApi(SavedSearchService savedSearchService,
                                SavedListService savedListService,
@@ -58,6 +55,9 @@ public class SavedSearchAdminApi implements
         this.savedSearchService = savedSearchService;
     }
 
+    /*
+        Standard ITableApi methods
+     */
     @Override
     public @NotNull Map<String, Object> create(@Valid UpdateSavedSearchRequest request) throws EntityExistsException {
         SavedSearch savedSearch = this.savedSearchService.createSavedSearch(request);

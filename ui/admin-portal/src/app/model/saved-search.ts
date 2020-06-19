@@ -62,6 +62,10 @@ export interface SavedSearch extends CandidateSource, SearchCandidateRequest {
   savedSearchSubtype: SavedSearchSubtype;
 }
 
+export function isSavedSearch(source: CandidateSource): boolean {
+  return 'savedSearchType' in source;
+}
+
 export function getSavedSearchBreadcrumb(savedSearch: SavedSearch, infos: SavedSearchTypeInfo[]): string {
   let subtypeTitle: string = '';
   if (savedSearch) {
