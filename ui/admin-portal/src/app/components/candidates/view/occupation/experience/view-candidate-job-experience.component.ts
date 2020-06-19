@@ -82,7 +82,7 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
    this.doSearch();
   }
 
-  verifyOccupation() {
+  editOccupation() {
     const modal = this.modalService.open(EditCandidateOccupationComponent, {
       centered: true,
       backdrop: 'static'

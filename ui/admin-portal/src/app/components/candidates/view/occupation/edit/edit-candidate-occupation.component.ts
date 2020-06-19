@@ -32,9 +32,8 @@ export class EditCandidateOccupationComponent implements OnInit {
   ngOnInit() {
     this.loading = true;
     this.form = this.fb.group({
-      verified: [this.candidateOccupation.verified, Validators.required],
       occupationId: [this.candidateOccupation.occupation.id, Validators.required],
-      comment: [null, Validators.required]
+      yearsExperience: [this.candidateOccupation.yearsExperience, Validators.required],
     });
 
     /* LOAD OCCUPATIONS */

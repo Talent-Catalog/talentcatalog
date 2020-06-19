@@ -73,8 +73,9 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
             candidateOccupation.setVerified(request.isVerified());
 
             candidateOccupation.setAuditFields(userContext.getLoggedInUser());
-            candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(request.getCandidateId(),
-                    occupation.getName() +" verification status set to "+request.isVerified(), request.getComment()));
+            // removed verification note as verified no longer used
+//            candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(request.getCandidateId(),
+//                    occupation.getName() +" verification status set to "+request.isVerified(), request.getComment()));
         } else {
             candidate = userContext.getLoggedInCandidate();
         }
@@ -190,7 +191,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
     }
 
     @Override
-    @Audit(type = AuditType.CANDIDATE_OCCUPATION, action = AuditAction.VERIFY, extraInfo = "Set verified to {input.verified} with comment: {input.comment}")
+    //@Audit(type = AuditType.CANDIDATE_OCCUPATION, action = AuditAction.VERIFY, extraInfo = "Set verified to {input.verified} with comment: {input.comment}")
     public CandidateOccupation verifyCandidateOccupation(VerifyCandidateOccupationRequest request) {
         CandidateOccupation candidateOccupation = candidateOccupationRepository.findByIdLoadCandidate(request.getId())
                 .orElseThrow(() -> new NoSuchObjectException(CandidateOccupation.class, request.getId()));
@@ -206,11 +207,13 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         }
 
         candidateOccupation.setOccupation(verifiedOccupation);
+        candidateOccupation.setYearsExperience(request.getYearsExperience());
         candidateOccupation.setVerified(request.isVerified());
 
         candidateOccupation.setAuditFields(userContext.getLoggedInUser());
-        candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(candidateOccupation.getCandidate().getId(),
-                candidateOccupation.getOccupation().getName() +" verification status set to "+request.isVerified(), request.getComment()));
+        // removed as no longer use verification
+//        candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(candidateOccupation.getCandidate().getId(),
+//                candidateOccupation.getOccupation().getName() +" verification status set to "+request.isVerified(), request.getComment()));
 
         return candidateOccupationRepository.save(candidateOccupation);
 

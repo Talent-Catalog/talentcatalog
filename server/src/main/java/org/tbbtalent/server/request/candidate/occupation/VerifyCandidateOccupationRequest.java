@@ -6,6 +6,7 @@ public class VerifyCandidateOccupationRequest {
     private boolean verified;
     private Long occupationId;
     private String comment;
+    private Long yearsExperience;
 
     public Long getId() {
         return id;
@@ -34,4 +35,8 @@ public class VerifyCandidateOccupationRequest {
     public void setComment(String comment) {
         this.comment = comment;
     }
+
+    public Long getYearsExperience() { return yearsExperience; }
+
+    public void setYearsExperience(Long yearsExperience) { this.yearsExperience = yearsExperience; }
 }
