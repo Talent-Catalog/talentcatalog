@@ -1,6 +1,6 @@
 import {SearchCandidateRequest} from "./search-candidate-request";
 import {SavedSearchTypeInfo} from "../services/saved-search.service";
-import {Auditable, CandidateSource} from "./base";
+import {Auditable, CandidateSource, PagedSearchRequest} from "./base";
 
 export enum ReviewedStatus {
   pending,
@@ -47,6 +47,10 @@ export enum SavedSearchSubtype {
    au,
    ca,
    uk
+}
+
+export class SavedSearchGetRequest extends PagedSearchRequest {
+  reviewStatusFilter: string[];
 }
 
 export interface SavedSearchJoin {

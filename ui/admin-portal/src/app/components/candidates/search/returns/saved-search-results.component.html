@@ -1,9 +1,9 @@
-<div *ngIf="savedSearch">
+<div *ngIf="candidateSource">
   <app-saved-search
-    [savedSearch]="savedSearch" [showAll]="false" [showMore]="true"
-    [showOpen]="true"
-    (openSearch)="openSearch()"
-    (toggleWatch)="onToggleWatch($event)"
+          [savedSearch]="candidateSource" [showAll]="false" [showMore]="true"
+          [showOpen]="true"
+          (openSearch)="openSearch()"
+          (toggleWatch)="onToggleWatch($event)"
   >
   </app-saved-search>
 </div>

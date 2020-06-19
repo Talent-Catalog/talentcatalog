@@ -54,7 +54,8 @@
     </div>
   </div>
   <div *ngIf="selectedSavedSearch" class="col-sm-8 admin-panel">
-    <app-saved-search-results [savedSearch]="selectedSavedSearch" (toggleWatch)="onToggleWatch($event)"></app-saved-search-results>
+    <app-saved-search-results [candidateSource]="selectedSavedSearch"
+                              (toggleWatch)="onToggleWatch($event)"></app-saved-search-results>
   </div>
 </div>
 

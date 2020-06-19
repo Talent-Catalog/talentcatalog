@@ -10,7 +10,9 @@ import {
 } from '@angular/core';
 import {
   defaultReviewStatusFilter,
-  SavedSearch
+  isSavedSearch,
+  SavedSearch,
+  SavedSearchGetRequest
 } from "../../../../model/saved-search";
 import {Subscription} from "rxjs";
 import {CandidateService} from "../../../../services/candidate.service";
@@ -22,8 +24,9 @@ import {
   CachedSearchResults,
   SavedSearchResultsCacheService
 } from "../../../../services/saved-search-results-cache.service";
-import {CandidateSource, PagedSearchRequest} from "../../../../model/base";
+import {CandidateSource} from "../../../../model/base";
 import {CandidateSourceService} from "../../../../services/candidate-source.service";
+import {SavedListGetRequest} from "../../../../model/saved-list";
 
 @Component({
   selector: 'app-saved-search-results',
@@ -35,7 +38,7 @@ export class SavedSearchResultsComponent implements OnInit, OnChanges, OnDestroy
   pageNumber: number;
   pageSize: number;
   results: SearchResults<Candidate>;
-  @Input() savedSearch: CandidateSource;
+  @Input() candidateSource: CandidateSource;
   @Output() toggleWatch = new EventEmitter<SavedSearch>();
   searching: boolean;
   sortField: string;
@@ -66,7 +69,7 @@ constructor(
 
   openSearch() {
     //Open search at same page number, size
-    this.router.navigate(['candidates', 'search', this.savedSearch.id],
+    this.router.navigate(['candidates', 'search', this.candidateSource.id],
       {
         queryParams: {pageNumber: this.pageNumber, pageSize: this.pageSize}
       });
@@ -82,7 +85,7 @@ constructor(
     if (!refresh) {
       const cached: CachedSearchResults =
         this.savedSearchResultsCacheService.getFromCache(
-          this.savedSearch.id, defaultReviewStatusFilter);
+          this.candidateSource.id, defaultReviewStatusFilter);
       if (cached) {
         this.results = cached.results;
         this.pageNumber = cached.pageNumber;
@@ -107,6 +110,7 @@ constructor(
       //from returned results.
       //todo Currently server sends back used page number and size but does
       //not echo back sort info. It should be changed to do so.
+
       if (!this.pageNumber) {
         this.pageNumber = 1;
       }
@@ -119,20 +123,30 @@ constructor(
       if (!this.sortDirection) {
         this.sortDirection = 'DESC';
       }
-      const pagedSearchRequest: PagedSearchRequest = {
-        pageNumber: this.pageNumber - 1,
-        pageSize: this.pageSize,
-        sortFields: [this.sortField],
-        sortDirection: this.sortDirection
-      };
+
+      //Create the appropriate request
+      let request;
+      if (isSavedSearch(this.candidateSource)) {
+        request = new SavedSearchGetRequest();
+      } else {
+        request = new SavedListGetRequest();
+      }
+      request.pageNumber = this.pageNumber - 1;
+      request.pageSize = this.pageSize;
+      request.sortFields = [this.sortField];
+      request.sortDirection = this.sortDirection;
+      if (request instanceof SavedSearchGetRequest) {
+        request.reviewStatusFilter = defaultReviewStatusFilter;
+      }
+
       this.candidateSourceService.searchPaged(
-        this.savedSearch, pagedSearchRequest).subscribe(
+        this.candidateSource, request).subscribe(
         results => {
           this.timestamp = Date.now();
           this.results = results;
 
           this.savedSearchResultsCacheService.cache({
-            searchID: this.savedSearch.id,
+            searchID: this.candidateSource.id,
             pageNumber: this.pageNumber,
             pageSize: this.pageSize,
             sortFields: [this.sortField],
@@ -148,20 +162,6 @@ constructor(
           this.error = error;
           this.searching = false;
         });
-
-      //todo still need to sort out review filtering
-      //todo test this
-      // //todo Doesn't make  sense to be loading the request and then doing
-      // //a search from request call. Should be able to do it in one call to the server
-      // this.savedSearchService.load(this.savedSearch.id).subscribe(
-      //   request => {
-      //     this.searchFromRequest(request);
-      //   },
-      //   error => {
-      //     this.error = error;
-      //     this.searching = false;
-      //     // this._loading.savedSearch = false;
-      //   });
     }
 
   }
@@ -200,7 +200,7 @@ constructor(
         this.results = results;
 
         this.savedSearchResultsCacheService.cache({
-          searchID: this.savedSearch.id,
+          searchID: this.candidateSource.id,
           pageNumber: this.pageNumber,
           pageSize: this.pageSize,
           sortFields: [this.sortField],

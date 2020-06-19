@@ -53,6 +53,11 @@ public class SavedSearchCandidateAdminApi implements IManyToManyApi<SavedSearchG
             throws NoSuchObjectException {
         SearchCandidateRequest searchRequest =
                 this.savedSearchService.loadSavedSearch(savedSearchId);
+
+        //Merge the SavedSearchGetRequest - notably the page request - in to
+        //the standard saved search request. 
+        searchRequest.merge(request);
+        
         Page<Candidate> candidates = 
                 this.candidateService.searchCandidates(searchRequest);
         DtoBuilder builder = builderSelector.selectBuilder();

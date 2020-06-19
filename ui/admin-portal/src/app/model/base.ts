@@ -15,9 +15,9 @@ export interface CandidateSource extends Auditable {
   watcherUserIds?: number[];
 }
 
-export interface PagedSearchRequest {
-  pageSize: number;
-  pageNumber: number;
-  sortFields: string[];
-  sortDirection: string;
+export class PagedSearchRequest {
+  pageSize?: number;
+  pageNumber?: number;
+  sortFields?: string[];
+  sortDirection?: string;
 }

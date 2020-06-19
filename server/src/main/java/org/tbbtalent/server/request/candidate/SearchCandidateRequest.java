@@ -313,5 +313,20 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     public void setFromDate(LocalDate fromDate) {
         this.fromDate = fromDate;
     }
+
+    /**
+     * Merge in a SavedSearchGetRequest - eg paging info
+     * @param request Request to merge in.
+     */
+    public void merge(SavedSearchGetRequest request) {
+        //Copy across the reviewStatusFilter
+        setShortlistStatus(request.getReviewStatusFilter());
+        
+        //Copy paging request across to search request
+        setPageNumber(request.getPageNumber());
+        setPageSize(request.getPageSize());
+        setSortDirection(request.getSortDirection());
+        setSortFields(request.getSortFields());
+    }
 }
 
