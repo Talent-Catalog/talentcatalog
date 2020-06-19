@@ -505,6 +505,8 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
       backdrop: 'static'
     });
 
+    joinSavedSearchComponent.componentInstance.currentSavedSearchId = this.savedSearch.id;
+
     joinSavedSearchComponent.result
       .then((join) => {
         this.searchJoinArray.push(this.fb.group(join));
