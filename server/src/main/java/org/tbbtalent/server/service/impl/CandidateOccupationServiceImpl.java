@@ -81,6 +81,12 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         }
 
         candidateOccupation.setCandidate(candidate);
+
+        // Check candidate doesn't already have this occupation and isn't the same candidateOccupation
+        CandidateOccupation existing = candidateOccupationRepository.findByCandidateIdAAndOccupationId(candidateOccupation.getCandidate().getId(), request.getOccupationId());
+        if (existing != null && !existing.getId().equals(candidateOccupation.getId())){
+            throw new EntityExistsException("occupation");
+        }
         candidateOccupation.setOccupation(occupation);
         candidateOccupation.setYearsExperience(request.getYearsExperience());
 
