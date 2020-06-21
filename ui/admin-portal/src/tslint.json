@@ -21,6 +21,10 @@
         false,
         "check-space"
       ],
+      "max-line-length": [
+        false,
+        140
+      ],
       "member-ordering": [
         false,
         {
