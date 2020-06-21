@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import {
   defaultReviewStatusFilter,
+  getCandidateSourceType,
   isSavedSearch,
   SavedSearch,
   SavedSearchGetRequest
@@ -22,18 +23,18 @@ import {SavedSearchService} from "../../../../services/saved-search.service";
 import {Router} from "@angular/router";
 import {
   CachedSearchResults,
-  SavedSearchResultsCacheService
-} from "../../../../services/saved-search-results-cache.service";
+  CandidateSourceResultsCacheService
+} from "../../../../services/candidate-source-results-cache.service";
 import {CandidateSource} from "../../../../model/base";
 import {CandidateSourceService} from "../../../../services/candidate-source.service";
 import {SavedListGetRequest} from "../../../../model/saved-list";
 
 @Component({
-  selector: 'app-saved-search-results',
-  templateUrl: './saved-search-results.component.html',
-  styleUrls: ['./saved-search-results.component.scss']
+  selector: 'app-candidate-source-results',
+  templateUrl: './candidate-source-results.component.html',
+  styleUrls: ['./candidate-source-results.component.scss']
 })
-export class SavedSearchResultsComponent implements OnInit, OnChanges, OnDestroy {
+export class CandidateSourceResultsComponent implements OnInit, OnChanges, OnDestroy {
   error: null;
   pageNumber: number;
   pageSize: number;
@@ -51,7 +52,7 @@ constructor(
     private candidateSourceService: CandidateSourceService,
     private router: Router,
     private savedSearchService: SavedSearchService,
-    private savedSearchResultsCacheService: SavedSearchResultsCacheService
+    private savedSearchResultsCacheService: CandidateSourceResultsCacheService
   ) { };
 
   ngOnInit() {
@@ -85,6 +86,7 @@ constructor(
     if (!refresh) {
       const cached: CachedSearchResults =
         this.savedSearchResultsCacheService.getFromCache(
+          getCandidateSourceType(this.candidateSource),
           this.candidateSource.id, defaultReviewStatusFilter);
       if (cached) {
         this.results = cached.results;
@@ -145,7 +147,9 @@ constructor(
           this.timestamp = Date.now();
           this.results = results;
 
-          this.savedSearchResultsCacheService.cache({
+          this.savedSearchResultsCacheService.cache(
+            getCandidateSourceType(this.candidateSource),
+            {
             searchID: this.candidateSource.id,
             pageNumber: this.pageNumber,
             pageSize: this.pageSize,
@@ -163,59 +167,6 @@ constructor(
           this.searching = false;
         });
     }
-
-  }
-
-  private searchFromRequest(request: any) {
-
-    //todo Is this the best place to do the defaulting?
-    //todo Need do defaulting in search request, then pick up actual info
-    //from returned results.
-    //todo Currently server sends back used page number and size but does
-    //not echo back sort info. It should be changed to do so.
-    if (!this.pageNumber) {
-      this.pageNumber = 1;
-    }
-    if (!this.pageSize) {
-      this.pageSize = 20;
-    }
-    if (!this.sortField) {
-      this.sortField = 'id';
-    }
-    if (!this.sortDirection) {
-      this.sortDirection = 'DESC';
-    }
-
-    request.pageNumber = this.pageNumber - 1;
-    request.pageSize = this.pageSize;
-    request.sortFields = [this.sortField];
-    request.sortDirection = this.sortDirection;
-
-    //Review status is hard coded for this simple display as we don't want
-    //to display or modify review status.
-    request.shortlistStatus = defaultReviewStatusFilter;
-    this.subscription = this.candidateService.search(request).subscribe(
-      results => {
-        this.timestamp = Date.now();
-        this.results = results;
-
-        this.savedSearchResultsCacheService.cache({
-          searchID: this.candidateSource.id,
-          pageNumber: this.pageNumber,
-          pageSize: this.pageSize,
-          sortFields: [this.sortField],
-          sortDirection: this.sortDirection,
-          reviewStatusFilter: defaultReviewStatusFilter,
-          results: this.results,
-          timestamp: this.timestamp
-        });
-
-        this.searching = false;
-      },
-      error => {
-        this.error = error;
-        this.searching = false;
-      });
 
   }
 

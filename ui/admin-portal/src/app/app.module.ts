@@ -106,7 +106,7 @@ import {InfographicComponent} from './components/infograhics/infographic.compone
 import {ChartComponent} from './components/infograhics/chart/chart.component';
 import {MonthPickerComponent} from "./components/util/month-picker/month-picker.component";
 import {UpdateSearchComponent} from "./components/search/update/update-search.component";
-import {SavedSearchResultsComponent} from './components/candidates/search/returns/saved-search-results.component';
+import {CandidateSourceResultsComponent} from './components/candidates/search/returns/candidate-source-results.component';
 import {DefineSearchComponent} from './components/search/define-search/define-search.component';
 import {NotFoundComponent} from "./not-found/not-found.component";
 import {GeneralTranslationsComponent} from './components/settings/translations/general/general-translations.component';
@@ -220,7 +220,7 @@ import {SelectListComponent} from './components/list/select/select-list.componen
     MonthPickerComponent,
     NotFoundComponent,
     GeneralTranslationsComponent,
-    SavedSearchResultsComponent,
+    CandidateSourceResultsComponent,
     DefineSearchComponent,
     MonthPickerComponent,
     NotFoundComponent,

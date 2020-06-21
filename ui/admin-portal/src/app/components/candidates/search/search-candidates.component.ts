@@ -11,6 +11,7 @@ import {ActivatedRoute} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
 import {
   defaultReviewStatusFilter,
+  getCandidateSourceType,
   getSavedSearchBreadcrumb,
   ReviewedStatus,
   SavedSearch,
@@ -20,8 +21,8 @@ import {
 } from "../../../model/saved-search";
 import {
   CachedSearchResults,
-  SavedSearchResultsCacheService
-} from "../../../services/saved-search-results-cache.service";
+  CandidateSourceResultsCacheService
+} from "../../../services/candidate-source-results-cache.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {IDropdownSettings} from "ng-multiselect-dropdown";
 import {ListItem} from "ng-multiselect-dropdown/multiselect.model";
@@ -81,7 +82,7 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
               private savedSearchService: SavedSearchService,
               private modalService: NgbModal,
               private route: ActivatedRoute,
-              private savedSearchResultsCacheService: SavedSearchResultsCacheService,
+              private savedSearchResultsCacheService: CandidateSourceResultsCacheService,
               private authService: AuthService
 
   ) {
@@ -158,8 +159,11 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
     let done: boolean = false;
     if (!refresh) {
+
       const cached: CachedSearchResults =
-        this.savedSearchResultsCacheService.getFromCache(this.savedSearchId, this.reviewStatusFilter);
+        this.savedSearchResultsCacheService.getFromCache(
+          getCandidateSourceType(this.savedSearch),
+          this.savedSearchId, this.reviewStatusFilter);
       if (cached) {
         //If we are not required to use the pageNumber (usePageNumber = false)
         //we can take the pageNumber of whatever the cache has.
@@ -202,7 +206,9 @@ export class SearchCandidatesComponent implements OnInit, OnDestroy {
 
     //We only cache results with the default review status filter.
     if (this.reviewStatusFilter.toString() === defaultReviewStatusFilter.toString()) {
-      this.savedSearchResultsCacheService.cache({
+      this.savedSearchResultsCacheService.cache(
+        getCandidateSourceType(this.savedSearch),
+        {
         searchID: this.savedSearchId,
         pageNumber: this.pageNumber,
         pageSize: this.pageSize,
