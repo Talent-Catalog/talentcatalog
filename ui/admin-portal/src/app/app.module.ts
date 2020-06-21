@@ -121,6 +121,7 @@ import {CreateListComponent} from './components/list/create/create-list.componen
 import {UpdateListComponent} from './components/list/update/update-list.component';
 import {SelectListComponent} from './components/list/select/select-list.component';
 import {CandidatesSearchComponent} from './components/candidates/candidates-search/candidates-search.component';
+import {CandidatesListComponent} from './components/candidates/candidates-list/candidates-list.component';
 
 @NgModule({
   declarations: [
@@ -233,7 +234,8 @@ import {CandidatesSearchComponent} from './components/candidates/candidates-sear
     CreateListComponent,
     UpdateListComponent,
     SelectListComponent,
-    CandidatesSearchComponent
+    CandidatesSearchComponent,
+    CandidatesListComponent
   ],
   imports: [
     BrowserModule,

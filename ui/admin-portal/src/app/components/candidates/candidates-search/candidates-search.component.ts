@@ -14,7 +14,7 @@ export class CandidatesSearchComponent implements OnInit {
   pageNumber: number;
   pageSize: number;
   savedSearch: SavedSearch;
-  savedSearchId: number;
+  private savedSearchId: number;
 
   constructor(private route: ActivatedRoute,
               private savedSearchService: SavedSearchService) { }
