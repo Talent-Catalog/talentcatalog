@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {SearchCandidatesComponent} from './components/candidates/search/search-candidates.component';
+import {ShowCandidatesComponent} from './components/candidates/search/show-candidates.component';
 import {ViewCandidateComponent} from './components/candidates/view/view-candidate.component';
 import {AuthGuard} from "./services/auth.guard";
 import {LoginComponent} from "./components/login/login.component";
@@ -58,7 +58,7 @@ const routes: Routes = [
           },
           {
             path: 'search/:savedSearchId',
-            component: SearchCandidatesComponent,
+            component: ShowCandidatesComponent,
             data: {title: 'TBB Admin - Candidate search'}
           },
           {

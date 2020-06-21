@@ -32,11 +32,11 @@ import {UserService} from "../../../services/user.service";
 import {SelectListComponent} from "../../list/select/select-list.component";
 
 @Component({
-  selector: 'app-search-candidates',
-  templateUrl: './search-candidates.component.html',
-  styleUrls: ['./search-candidates.component.scss']
+  selector: 'app-show-candidates',
+  templateUrl: './show-candidates.component.html',
+  styleUrls: ['./show-candidates.component.scss']
 })
-export class SearchCandidatesComponent implements OnInit, OnDestroy {
+export class ShowCandidatesComponent implements OnInit, OnDestroy {
 
   @ViewChild('downloadCsvErrorModal', {static: true}) downloadCsvErrorModal;
 

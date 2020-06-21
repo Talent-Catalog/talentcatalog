@@ -7,7 +7,7 @@ import {NgMultiSelectDropDownModule} from 'ng-multiselect-dropdown';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './components/app.component';
 import {HeaderComponent} from './components/header/header.component';
-import {SearchCandidatesComponent} from './components/candidates/search/search-candidates.component';
+import {ShowCandidatesComponent} from './components/candidates/search/show-candidates.component';
 import {HomeComponent} from './components/candidates/home.component';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -127,7 +127,7 @@ import {SelectListComponent} from './components/list/select/select-list.componen
     LoginComponent,
     HeaderComponent,
     ConfirmationComponent,
-    SearchCandidatesComponent,
+    ShowCandidatesComponent,
     HomeComponent,
     ViewCandidateComponent,
     EditCandidateStatusComponent,
