@@ -120,6 +120,7 @@ import {EditCandidateSurveyComponent} from './components/candidates/view/survey/
 import {CreateListComponent} from './components/list/create/create-list.component';
 import {UpdateListComponent} from './components/list/update/update-list.component';
 import {SelectListComponent} from './components/list/select/select-list.component';
+import {CandidatesSearchComponent} from './components/candidates/candidates-search/candidates-search.component';
 
 @NgModule({
   declarations: [
@@ -231,7 +232,8 @@ import {SelectListComponent} from './components/list/select/select-list.componen
     EditCandidateSurveyComponent,
     CreateListComponent,
     UpdateListComponent,
-    SelectListComponent
+    SelectListComponent,
+    CandidatesSearchComponent
   ],
   imports: [
     BrowserModule,

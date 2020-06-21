@@ -1,4 +1,12 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {
+  Component,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  SimpleChanges,
+  ViewChild
+} from '@angular/core';
 
 import {Candidate} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
@@ -7,14 +15,13 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {SavedSearchService} from "../../../services/saved-search.service";
 import {Subscription} from "rxjs";
 import {CandidateShortlistItem} from "../../../model/candidate-shortlist-item";
-import {ActivatedRoute} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
 import {
   defaultReviewStatusFilter,
   getCandidateSourceType,
   getSavedSearchBreadcrumb,
+  isSavedSearch,
   ReviewedStatus,
-  SavedSearch,
   SavedSearchRunRequest,
   SaveSelectionRequest,
   SelectCandidateInSearchRequest
@@ -30,15 +37,20 @@ import {User} from "../../../model/user";
 import {AuthService} from "../../../services/auth.service";
 import {UserService} from "../../../services/user.service";
 import {SelectListComponent} from "../../list/select/select-list.component";
+import {CandidateSource} from "../../../model/base";
 
 @Component({
   selector: 'app-show-candidates',
   templateUrl: './show-candidates.component.html',
   styleUrls: ['./show-candidates.component.scss']
 })
-export class ShowCandidatesComponent implements OnInit, OnDestroy {
+export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   @ViewChild('downloadCsvErrorModal', {static: true}) downloadCsvErrorModal;
+
+  @Input() candidateSource: CandidateSource;
+  @Input() pageNumber: number;
+  @Input() pageSize: number;
 
   error: any;
   loading: boolean;
@@ -48,11 +60,7 @@ export class ShowCandidatesComponent implements OnInit, OnDestroy {
   searchForm: FormGroup;
 
   results: SearchResults<Candidate>;
-  savedSearch: SavedSearch;
-  savedSearchId;
   subscription: Subscription;
-  pageNumber: number;
-  pageSize: number;
   sortField = 'id';
   sortDirection = 'DESC';
 
@@ -81,7 +89,6 @@ export class ShowCandidatesComponent implements OnInit, OnDestroy {
               private userService: UserService,
               private savedSearchService: SavedSearchService,
               private modalService: NgbModal,
-              private route: ActivatedRoute,
               private savedSearchResultsCacheService: CandidateSourceResultsCacheService,
               private authService: AuthService
 
@@ -92,7 +99,6 @@ export class ShowCandidatesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.loading = true;
     this.selectedCandidate = null;
     this.loggedInUser = this.authService.getLoggedInUser();
 
@@ -102,37 +108,12 @@ export class ShowCandidatesComponent implements OnInit, OnDestroy {
         this.statuses.push(key);
       }
     }
+  }
 
-    // start listening to route params after everything is loaded
-    this.route.queryParamMap.subscribe(
-      params => {
-        this.pageNumber = +params.get('pageNumber');
-        if (!this.pageNumber) {
-          this.pageNumber = 1;
-        }
-        this.pageSize = +params.get('pageSize');
-        if (!this.pageSize) {
-          this.pageSize = 20;
-        }
-      }
-    );
-
-    this.route.paramMap.subscribe(params => {
-      this.savedSearchId = +params.get('savedSearchId');
-      if (this.savedSearchId) {
-
-        //Load saved search to get name and type to display
-        this.savedSearchService.get(this.savedSearchId).subscribe(result => {
-          this.savedSearch = result;
-          this.loading = false;
-        }, err => {
-          this.error = err;
-        });
-
-        this.doSearch(false);
-      }
-    });
-
+  ngOnChanges(changes: SimpleChanges): void {
+    if (this.candidateSource) {
+      this.doSearch(false);
+    }
   }
 
   ngOnDestroy(): void {
@@ -143,7 +124,7 @@ export class ShowCandidatesComponent implements OnInit, OnDestroy {
 
   private constructRunRequest(): SavedSearchRunRequest {
     return {
-      savedSearchId: this.savedSearchId,
+      savedSearchId: this.candidateSource.id,
       pageNumber: this.pageNumber - 1,
       pageSize: this.pageSize,
       sortFields: [this.sortField],
@@ -162,8 +143,8 @@ export class ShowCandidatesComponent implements OnInit, OnDestroy {
 
       const cached: CachedSearchResults =
         this.savedSearchResultsCacheService.getFromCache(
-          getCandidateSourceType(this.savedSearch),
-          this.savedSearchId, this.reviewStatusFilter);
+          getCandidateSourceType(this.candidateSource),
+          this.candidateSource.id, this.reviewStatusFilter);
       if (cached) {
         //If we are not required to use the pageNumber (usePageNumber = false)
         //we can take the pageNumber of whatever the cache has.
@@ -207,9 +188,9 @@ export class ShowCandidatesComponent implements OnInit, OnDestroy {
     //We only cache results with the default review status filter.
     if (this.reviewStatusFilter.toString() === defaultReviewStatusFilter.toString()) {
       this.savedSearchResultsCacheService.cache(
-        getCandidateSourceType(this.savedSearch),
+        getCandidateSourceType(this.candidateSource),
         {
-        searchID: this.savedSearchId,
+        searchID: this.candidateSource.id,
         pageNumber: this.pageNumber,
         pageSize: this.pageSize,
         sortFields: [this.sortField],
@@ -302,9 +283,15 @@ export class ShowCandidatesComponent implements OnInit, OnDestroy {
     )
   }
 
-  getBreadcrumb() {
-    const infos = this.savedSearchService.getSavedSearchTypeInfos();
-    return getSavedSearchBreadcrumb(this.savedSearch, infos)
+  getBreadcrumb(): string {
+    let breadcrumb: string;
+    if (isSavedSearch(this.candidateSource)) {
+      const infos = this.savedSearchService.getSavedSearchTypeInfos();
+      breadcrumb = getSavedSearchBreadcrumb(this.candidateSource, infos);
+    } else {
+      breadcrumb = "Todo - SavedList breadcrumb"; //Todo - SavedList breadcrumb
+    }
+    return breadcrumb;
   }
 
   private onReviewStatusFilterChange() {
@@ -336,10 +323,10 @@ export class ShowCandidatesComponent implements OnInit, OnDestroy {
 
   addToSharedWithMe() {
     this.savedSearchService.addSharedUser(
-      this.savedSearchId, {userId: this.loggedInUser.id}).subscribe(
+      this.candidateSource.id, {userId: this.loggedInUser.id}).subscribe(
       result => {
         if (result) {
-          this.savedSearch = result;
+          this.candidateSource = result;
         } else {
           console.log('Did not work!')
         }
@@ -352,10 +339,10 @@ export class ShowCandidatesComponent implements OnInit, OnDestroy {
 
   removeFromSharedWithMe() {
     this.savedSearchService.removeSharedUser(
-      this.savedSearchId, {userId: this.loggedInUser.id}).subscribe(
+      this.candidateSource.id, {userId: this.loggedInUser.id}).subscribe(
       result => {
         if (result) {
-          this.savedSearch = result;
+          this.candidateSource = result;
         } else {
           console.log('Did not work!')
         }
@@ -370,10 +357,10 @@ export class ShowCandidatesComponent implements OnInit, OnDestroy {
     let shareable: boolean = false;
 
     //Is shareable with me if it is not fixed or created by me.
-    if (this.savedSearch) {
-      if (!this.savedSearch.fixed) {
+    if (this.candidateSource) {
+      if (!this.candidateSource.fixed) {
         //was it created by me?
-        if (this.savedSearch.createdBy.id !== this.loggedInUser.id) {
+        if (this.candidateSource.createdBy.id !== this.loggedInUser.id) {
           shareable = true;
         }
       }
@@ -383,8 +370,8 @@ export class ShowCandidatesComponent implements OnInit, OnDestroy {
 
   isSharedWithMe(): boolean {
     //Logged in user is in saved search user
-    return this.savedSearch ?
-      this.savedSearch.users.find(u => u.id === this.loggedInUser.id ) !== undefined
+    return this.candidateSource ?
+      this.candidateSource.users.find(u => u.id === this.loggedInUser.id ) !== undefined
       : false;
 
   }
@@ -403,7 +390,7 @@ export class ShowCandidatesComponent implements OnInit, OnDestroy {
         candidateId: candidate.id,
         selected: selected
       };
-    this.savedSearchService.selectCandidate(this.savedSearchId, request).subscribe(
+    this.savedSearchService.selectCandidate(this.candidateSource.id, request).subscribe(
       result => {},
       err => {
         this.error = err;
@@ -422,7 +409,7 @@ export class ShowCandidatesComponent implements OnInit, OnDestroy {
 
         //Save selection as specified in request
         this.savingSelection = true;
-        this.savedSearchService.saveSelection(this.savedSearchId, request).subscribe(
+        this.savedSearchService.saveSelection(this.candidateSource.id, request).subscribe(
         result => {
           this.savingSelection = false;
         },

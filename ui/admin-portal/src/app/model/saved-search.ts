@@ -70,7 +70,7 @@ export function getCandidateSourceType(source: CandidateSource) {
   return isSavedSearch(source) ? "Search" : "List";
 }
 
-export function isSavedSearch(source: CandidateSource): boolean {
+export function isSavedSearch(source: CandidateSource): source is SavedSearch {
   return source ? 'savedSearchType' in source : false;
 }
 

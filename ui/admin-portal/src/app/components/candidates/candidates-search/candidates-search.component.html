@@ -1,0 +1,9 @@
+<div class="alert alert-danger" *ngIf="error">
+  {{error}}
+</div>
+
+<app-show-candidates *ngIf="!error"
+                     [candidateSource]="savedSearch"
+                     [pageNumber]="pageNumber"
+                     [pageSize]="pageSize"
+></app-show-candidates>
