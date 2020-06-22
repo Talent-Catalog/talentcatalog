@@ -2,7 +2,11 @@
   {{error}}
 </div>
 
-<app-show-candidates *ngIf="!error"
+<div *ngIf="loading">
+  <i class="fas fa-spinner fa-spin"></i>
+</div>
+
+<app-show-candidates *ngIf="!error && !loading"
                      [candidateSource]="savedSearch"
                      [pageNumber]="pageNumber"
                      [pageSize]="pageSize"

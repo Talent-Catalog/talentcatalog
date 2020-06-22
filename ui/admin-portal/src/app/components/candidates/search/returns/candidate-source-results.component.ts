@@ -70,9 +70,15 @@ constructor(
 
   openSearch() {
     //todo Different depending on SavedList or SavedSearch
-    //Open search at same page number, size
+    //Open search at same page number
+    let extras;
+    if (this.pageNumber === 1) {
+      extras = {};
+    } else {
+      extras = {queryParams: {pageNumber: this.pageNumber}};
+    }
     this.router.navigate(['candidates', 'search', this.candidateSource.id],
-      {});
+      extras);
   }
 
   search(refresh: boolean) {
