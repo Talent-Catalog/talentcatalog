@@ -2,7 +2,6 @@ package org.tbbtalent.server.api.admin;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.rmi.server.ExportException;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -20,13 +19,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.tbbtalent.server.exception.ExportFailedException;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
 import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tbbtalent.server.request.candidate.CandidatePhoneSearchRequest;
 import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
-import org.tbbtalent.server.request.candidate.SavedSearchRunRequest;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateLinksRequest;
@@ -147,15 +146,7 @@ public class CandidateAdminApi {
 
     @PostMapping(value = "export/csv", produces = MediaType.TEXT_PLAIN_VALUE)
     public void export(@RequestBody SearchCandidateRequest request,
-                       HttpServletResponse response) throws IOException, ExportException {
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + "candidates.csv\"");
-        response.setContentType("text/csv; charset=utf-8");
-        candidateService.exportToCsv(request, response.getWriter());
-    }
-
-    @PostMapping(value = "exportsearch/csv", produces = MediaType.TEXT_PLAIN_VALUE)
-    public void export(@RequestBody SavedSearchRunRequest request,
-                       HttpServletResponse response) throws IOException, ExportException {
+                       HttpServletResponse response) throws IOException, ExportFailedException {
         response.setHeader("Content-Disposition", "attachment; filename=\"" + "candidates.csv\"");
         response.setContentType("text/csv; charset=utf-8");
         candidateService.exportToCsv(request, response.getWriter());

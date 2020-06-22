@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/index';
+import {Observable} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from "../model/search-results";
@@ -23,6 +23,14 @@ export class CandidateSourceService {
 
     return this.http.post<SearchResults<Candidate>>(
       `${apiUrl}/${source.id}/search-paged`, request);
+  }
+
+  export(source: CandidateSource, request: PagedSearchRequest) {
+    const apiUrl = isSavedSearch(source) ?
+      this.savedSearchApiUrl : this.savedListApiUrl;
+
+    return this.http.post(
+      `${apiUrl}/${source.id}/export/csv`, request, {responseType: 'blob'});
   }
 
 }

@@ -24,7 +24,6 @@ import {
   isSavedSearch,
   ReviewedStatus,
   SavedSearchGetRequest,
-  SavedSearchRunRequest,
   SaveSelectionRequest,
   SelectCandidateInSearchRequest
 } from "../../../model/saved-search";
@@ -124,17 +123,6 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   ngOnDestroy(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();
-    }
-  }
-
-  private constructRunRequest(): SavedSearchRunRequest {
-    return {
-      savedSearchId: this.candidateSource.id,
-      pageNumber: this.pageNumber - 1,
-      pageSize: this.pageSize,
-      sortFields: [this.sortField],
-      sortDirection: this.sortDirection,
-      shortlistStatus: this.reviewStatusFilter
     }
   }
 
@@ -243,9 +231,23 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   exportCandidates() {
     this.exporting = true;
 
-    //todo Need generic alternative to this
-    const request = this.constructRunRequest();
-    this.candidateService.exportFromSavedSearch(request, 10000).subscribe(
+    //Create the appropriate request
+    let request;
+    if (isSavedSearch(this.candidateSource)) {
+      request = new SavedSearchGetRequest();
+    } else {
+      request = new SavedListGetRequest();
+    }
+    request.pageNumber = this.pageNumber - 1;
+    request.pageSize = this.pageSize;
+    request.sortFields = [this.sortField];
+    request.sortDirection = this.sortDirection;
+    if (request instanceof SavedSearchGetRequest) {
+      request.reviewStatusFilter = this.reviewStatusFilter;
+    }
+
+    this.candidateSourceService.export(
+      this.candidateSource, request).subscribe(
       result => {
         const options = {type: 'text/csv;charset=utf-8;'};
         const filename = 'candidates.csv';
