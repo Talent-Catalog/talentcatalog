@@ -74,7 +74,14 @@ export function isSavedSearch(source: CandidateSource): source is SavedSearch {
   return source ? 'savedSearchType' in source : false;
 }
 
+export function getCandidateSourceBreadcrumb(candidateSource: CandidateSource): string {
+  const sourceType = getCandidateSourceType(candidateSource);
+  return candidateSource != null ?
+    (sourceType + ': ' + candidateSource.name) : sourceType;
+}
+
 export function getSavedSearchBreadcrumb(savedSearch: SavedSearch, infos: SavedSearchTypeInfo[]): string {
+  const sourceType = getCandidateSourceType(savedSearch);
   let subtypeTitle: string = '';
   if (savedSearch) {
     if (savedSearch.savedSearchSubtype != null) {
@@ -90,9 +97,9 @@ export function getSavedSearchBreadcrumb(savedSearch: SavedSearch, infos: SavedS
   }
 
   return savedSearch && savedSearch.savedSearchType != null ?
-    (infos[savedSearch.savedSearchType].title +
+    (sourceType + ': ' + infos[savedSearch.savedSearchType].title +
     (subtypeTitle ? "/" + subtypeTitle : "") + ': ' + savedSearch.name)
-    : 'Search';
+    : sourceType;
 }
 
 export function indexOfAuditable(id: number, auditables: Auditable[]): number {
@@ -119,15 +126,6 @@ export interface SavedSearchRequest {
   savedSearchSubtype?: SavedSearchSubtype;
 
   searchCandidateRequest?: SearchCandidateRequest;
-}
-
-export interface SavedSearchRunRequest {
-  savedSearchId: number;
-  shortlistStatus?: string[];
-  pageNumber?: number;
-  pageSize?: number;
-  sortFields?: string[];
-  sortDirection?: string;
 }
 
 export interface SaveSelectionRequest {

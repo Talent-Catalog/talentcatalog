@@ -10,6 +10,7 @@ import {DefineSearchComponent} from "./components/search/define-search/define-se
 import {NotFoundComponent} from "./not-found/not-found.component";
 import {RoleGuardService} from "./services/role-guard.service";
 import {CandidatesSearchComponent} from "./components/candidates/candidates-search/candidates-search.component";
+import {CandidatesListComponent} from "./components/candidates/candidates-list/candidates-list.component";
 
 /*
 Urls:
@@ -57,7 +58,12 @@ const routes: Routes = [
             data: {title: 'TBB Admin - Browse searches'}
           },
           {
-            path: 'search/:savedSearchId',
+            path: 'list/:id',
+            component: CandidatesListComponent,
+            data: {title: 'TBB Admin - Candidate list'}
+          },
+          {
+            path: 'search/:id',
             component: CandidatesSearchComponent,
             data: {title: 'TBB Admin - Candidate search'}
           },

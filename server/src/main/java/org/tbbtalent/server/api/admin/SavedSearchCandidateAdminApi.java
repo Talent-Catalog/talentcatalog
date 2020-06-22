@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.request.candidate.SavedSearchGetRequest;
-import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.list.HasSetOfCandidatesImpl;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.CandidateService;
@@ -51,15 +50,8 @@ public class SavedSearchCandidateAdminApi implements IManyToManyApi<SavedSearchG
     public @NotNull Map<String, Object> searchPaged(
             long savedSearchId, @Valid SavedSearchGetRequest request) 
             throws NoSuchObjectException {
-        SearchCandidateRequest searchRequest =
-                this.savedSearchService.loadSavedSearch(savedSearchId);
-
-        //Merge the SavedSearchGetRequest - notably the page request - in to
-        //the standard saved search request. 
-        searchRequest.merge(request);
-        
-        Page<Candidate> candidates = 
-                this.candidateService.searchCandidates(searchRequest);
+        Page<Candidate> candidates =
+                this.candidateService.searchCandidates(savedSearchId, request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.buildPage(candidates);
     }

@@ -77,6 +77,7 @@ import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
 import org.tbbtalent.server.request.candidate.IHasSetOfSavedLists;
 import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
 import org.tbbtalent.server.request.candidate.SavedListGetRequest;
+import org.tbbtalent.server.request.candidate.SavedSearchGetRequest;
 import org.tbbtalent.server.request.candidate.SavedSearchRunRequest;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.candidate.SearchJoinRequest;
@@ -151,29 +152,30 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Page<Candidate> searchCandidates(SavedSearchRunRequest request) {
-        
-        Long savedSearchId = request.getSavedSearchId();
+    public Page<Candidate> searchCandidates(
+            long savedSearchId, SavedSearchGetRequest request) 
+            throws NoSuchObjectException {
 
         //Check for selection list to set the selected attribute on returned 
         // candidates.
         SavedList selectionList = null;
         User user = userContext.getLoggedInUser();
         if (user != null) {
-            selectionList = savedSearchService.getSelectionList(savedSearchId, user.getId());
+            selectionList = savedSearchService
+                    .getSelectionList(savedSearchId, user.getId());
         }
-        
-        SavedSearch savedSearch = this.savedSearchRepository.findByIdLoadSearchJoins(savedSearchId)
-                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, savedSearchId));
-        SearchCandidateRequest searchCandidateRequest = convertToSearchCandidateRequest(savedSearch);
-        
-        searchCandidateRequest.setPageNumber(request.getPageNumber());
-        searchCandidateRequest.setPageSize(request.getPageSize());
-        searchCandidateRequest.setSortDirection(request.getSortDirection());
-        searchCandidateRequest.setSortFields(request.getSortFields());
-        searchCandidateRequest.setShortlistStatus(request.getShortlistStatus());
 
-        final Page<Candidate> candidates = searchCandidates(searchCandidateRequest);
+        SearchCandidateRequest searchRequest =
+                this.savedSearchService.loadSavedSearch(savedSearchId);
+
+        //Merge the SavedSearchGetRequest - notably the page request - in to
+        //the standard saved search request. 
+        searchRequest.merge(request);
+
+        //Do the search
+        final Page<Candidate> candidates = searchCandidates(searchRequest);
+        
+        //Add in any selections
         if (selectionList != null) {
             Set<Candidate> selectedCandidates = selectionList.getCandidates();
             if (selectedCandidates.size() > 0) {

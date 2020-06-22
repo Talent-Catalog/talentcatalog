@@ -14,7 +14,7 @@ export class CandidatesSearchComponent implements OnInit {
   pageNumber: number;
   pageSize: number;
   savedSearch: SavedSearch;
-  private savedSearchId: number;
+  private id: number;
 
   constructor(private route: ActivatedRoute,
               private savedSearchService: SavedSearchService) { }
@@ -37,11 +37,11 @@ export class CandidatesSearchComponent implements OnInit {
     );
 
     this.route.paramMap.subscribe(params => {
-      this.savedSearchId = +params.get('savedSearchId');
-      if (this.savedSearchId) {
+      this.id = +params.get('id');
+      if (this.id) {
 
         //Load saved search to get name and type to display
-        this.savedSearchService.get(this.savedSearchId).subscribe(result => {
+        this.savedSearchService.get(this.id).subscribe(result => {
           this.savedSearch = result;
           this.loading = false;
         }, err => {

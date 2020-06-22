@@ -12,11 +12,7 @@ export class CandidateService {
 
   private apiUrl = environment.apiUrl + '/candidate';
 
-  constructor(private http:HttpClient) {}
-
-  runSavedSearch(runRequest: SavedSearchRunRequest): Observable<SearchResults<Candidate>> {
-    return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/runsavedsearch`, runRequest);
-  }
+  constructor(private http: HttpClient) {}
 
   search(request): Observable<SearchResults<Candidate>> {
     return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/search`, request);

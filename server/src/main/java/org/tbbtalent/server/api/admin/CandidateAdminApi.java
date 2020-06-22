@@ -51,13 +51,6 @@ public class CandidateAdminApi {
         builderSelector = new CandidateBuilderSelector(userContext);
     }
 
-    @PostMapping("runsavedsearch")
-    public Map<String, Object> runSavedSearch(@RequestBody SavedSearchRunRequest request) {
-        Page<Candidate> candidates = this.candidateService.searchCandidates(request);
-        DtoBuilder builder = builderSelector.selectBuilder();
-        return builder.buildPage(candidates);
-    }
-
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchCandidateRequest request) {
         Page<Candidate> candidates = this.candidateService.searchCandidates(request);

@@ -18,10 +18,12 @@ import {CandidateShortlistItem} from "../../../model/candidate-shortlist-item";
 import {HttpClient} from "@angular/common/http";
 import {
   defaultReviewStatusFilter,
+  getCandidateSourceBreadcrumb,
   getCandidateSourceType,
   getSavedSearchBreadcrumb,
   isSavedSearch,
   ReviewedStatus,
+  SavedSearchGetRequest,
   SavedSearchRunRequest,
   SaveSelectionRequest,
   SelectCandidateInSearchRequest
@@ -38,6 +40,8 @@ import {AuthService} from "../../../services/auth.service";
 import {UserService} from "../../../services/user.service";
 import {SelectListComponent} from "../../list/select/select-list.component";
 import {CandidateSource} from "../../../model/base";
+import {SavedListGetRequest} from "../../../model/saved-list";
+import {CandidateSourceService} from "../../../services/candidate-source.service";
 
 @Component({
   selector: 'app-show-candidates',
@@ -86,6 +90,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   constructor(private http: HttpClient,
               private fb: FormBuilder,
               private candidateService: CandidateService,
+              private candidateSourceService: CandidateSourceService,
               private userService: UserService,
               private savedSearchService: SavedSearchService,
               private modalService: NgbModal,
@@ -167,9 +172,24 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     if (!done) {
       this.searching = true;
 
-      this.subscription = this.candidateService.runSavedSearch(this.constructRunRequest()).subscribe(
-        results => {
+      //Create the appropriate request
+      let request;
+      if (isSavedSearch(this.candidateSource)) {
+        request = new SavedSearchGetRequest();
+      } else {
+        request = new SavedListGetRequest();
+      }
+      request.pageNumber = this.pageNumber - 1;
+      request.pageSize = this.pageSize;
+      request.sortFields = [this.sortField];
+      request.sortDirection = this.sortDirection;
+      if (request instanceof SavedSearchGetRequest) {
+        request.reviewStatusFilter = this.reviewStatusFilter;
+      }
 
+      this.candidateSourceService.searchPaged(
+        this.candidateSource, request).subscribe(
+        results => {
           this.results = results;
           this.cacheResults();
 
@@ -222,6 +242,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   exportCandidates() {
     this.exporting = true;
+
+    //todo Need generic alternative to this
     const request = this.constructRunRequest();
     this.candidateService.exportFromSavedSearch(request, 10000).subscribe(
       result => {
@@ -289,7 +311,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       const infos = this.savedSearchService.getSavedSearchTypeInfos();
       breadcrumb = getSavedSearchBreadcrumb(this.candidateSource, infos);
     } else {
-      breadcrumb = "Todo - SavedList breadcrumb"; //Todo - SavedList breadcrumb
+      breadcrumb = getCandidateSourceBreadcrumb(this.candidateSource);
     }
     return breadcrumb;
   }

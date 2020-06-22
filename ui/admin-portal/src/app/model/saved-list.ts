@@ -59,3 +59,4 @@ export class SavedListGetRequest extends PagedSearchRequest {
 export interface UpdateSharingRequest {
   savedSearchId: number;
 }
+

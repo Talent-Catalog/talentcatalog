@@ -19,6 +19,7 @@ import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
 import org.tbbtalent.server.request.candidate.IHasSetOfSavedLists;
 import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
 import org.tbbtalent.server.request.candidate.SavedListGetRequest;
+import org.tbbtalent.server.request.candidate.SavedSearchGetRequest;
 import org.tbbtalent.server.request.candidate.SavedSearchRunRequest;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
@@ -32,10 +33,12 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tbbtalent.server.request.candidate.stat.CandidateStatDateRequest;
 
 public interface CandidateService {
-
+    
     Page<Candidate> searchCandidates(SearchCandidateRequest request);
 
-    Page<Candidate> searchCandidates(SavedSearchRunRequest request);
+    Page<Candidate> searchCandidates(
+            long savedSearchId, SavedSearchGetRequest request) 
+            throws NoSuchObjectException;
 
     Page<Candidate> searchCandidates(CandidateEmailSearchRequest request);
 
