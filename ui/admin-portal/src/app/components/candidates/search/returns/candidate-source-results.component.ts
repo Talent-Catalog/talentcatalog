@@ -72,9 +72,7 @@ constructor(
     //todo Different depending on SavedList or SavedSearch
     //Open search at same page number, size
     this.router.navigate(['candidates', 'search', this.candidateSource.id],
-      {
-        queryParams: {pageNumber: this.pageNumber, pageSize: this.pageSize}
-      });
+      {});
   }
 
   search(refresh: boolean) {
