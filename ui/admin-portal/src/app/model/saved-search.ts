@@ -11,7 +11,7 @@ export enum ReviewedStatus {
 export enum SearchBy {
   type,
   all,
-  mySearches,
+  mine,
   sharedWithMe
 }
 

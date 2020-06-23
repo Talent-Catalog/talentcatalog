@@ -13,20 +13,20 @@
               <option *ngFor="let subtypeInfo of savedSearchTypeSubInfos" [value]="subtypeInfo.savedSearchSubtype">{{subtypeInfo.title}}</option>
             </select>
           </form>
-          <app-browse-saved-searches
+          <app-browse-candidate-sources
             [savedSearchType]="typeInfo.savedSearchType"
             [savedSearchSubtype]="selectedSavedSearchSubtype"
           >
-          </app-browse-saved-searches>
+          </app-browse-candidate-sources>
         </div>
 
         <!-- Saved Searches with no subtype -->
         <div *ngIf="!savedSearchTypeSubInfos">
-          <app-browse-saved-searches
+          <app-browse-candidate-sources
             [savedSearchType]="typeInfo.savedSearchType"
             [savedSearchSubtype]="null"
           >
-          </app-browse-saved-searches>
+          </app-browse-candidate-sources>
         </div>
       </ng-template>
     </ngb-tab>
@@ -34,22 +34,22 @@
 
   <ngb-tab id="MySearches" title="My Searches">
     <ng-template ngbTabContent>
-      <app-browse-saved-searches [searchBy]="SearchBy.mySearches">
-      </app-browse-saved-searches>
+      <app-browse-candidate-sources [searchBy]="SearchBy.mine">
+      </app-browse-candidate-sources>
     </ng-template>
   </ngb-tab>
 
   <ngb-tab id="SharedWithMe" title="SharedWithMe">
     <ng-template ngbTabContent>
-        <app-browse-saved-searches [searchBy]="SearchBy.sharedWithMe">
-        </app-browse-saved-searches>
+        <app-browse-candidate-sources [searchBy]="SearchBy.sharedWithMe">
+        </app-browse-candidate-sources>
     </ng-template>
   </ngb-tab>
 
   <ngb-tab id="All" title="All">
     <ng-template ngbTabContent>
-      <app-browse-saved-searches [searchBy]="SearchBy.all">
-      </app-browse-saved-searches>
+      <app-browse-candidate-sources [searchBy]="SearchBy.all">
+      </app-browse-candidate-sources>
     </ng-template>
   </ngb-tab>
 </ngb-tabset>

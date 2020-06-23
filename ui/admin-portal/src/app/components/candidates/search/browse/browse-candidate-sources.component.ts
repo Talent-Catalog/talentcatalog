@@ -23,11 +23,11 @@ import {User} from "../../../../model/user";
 import {CandidateSource} from "../../../../model/base";
 
 @Component({
-  selector: 'app-browse-saved-searches',
-  templateUrl: './browse-saved-searches.component.html',
-  styleUrls: ['./browse-saved-searches.component.scss']
+  selector: 'app-browse-candidate-sources',
+  templateUrl: './browse-candidate-sources.component.html',
+  styleUrls: ['./browse-candidate-sources.component.scss']
 })
-export class BrowseSavedSearchesComponent implements OnInit, OnChanges {
+export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
 
   private savedStateKeyPrefix: string = 'BrowseKey';
 
@@ -40,7 +40,7 @@ export class BrowseSavedSearchesComponent implements OnInit, OnChanges {
   pageNumber: number;
   pageSize: number;
   results: SearchResults<CandidateSource>;
-  selectedSavedSearch: CandidateSource;
+  selectedSource: CandidateSource;
   selectedIndex = 0;
   private loggedInUser: User;
 
@@ -96,7 +96,7 @@ export class BrowseSavedSearchesComponent implements OnInit, OnChanges {
 
     } else {
       switch (this.searchBy) {
-        case SearchBy.mySearches:
+        case SearchBy.mine:
           request.owned = true;
           break;
         case SearchBy.sharedWithMe:
@@ -116,6 +116,8 @@ export class BrowseSavedSearchesComponent implements OnInit, OnChanges {
       this.error = "Haven't implemented search by " + SearchBy[this.searchBy];
     } else {
       this.loading = true;
+
+      //todo Make generic
       this.savedSearchService.searchPaged(request).subscribe(results => {
         this.results = results;
 
@@ -125,7 +127,7 @@ export class BrowseSavedSearchesComponent implements OnInit, OnChanges {
           if (savedSearchID) {
             this.selectedIndex = indexOfAuditable(savedSearchID, this.results.content);
             if (this.selectedIndex >= 0) {
-              this.selectedSavedSearch = this.results.content[this.selectedIndex];
+              this.selectedSource = this.results.content[this.selectedIndex];
             } else {
               //Select the first search if can't find previous (category of search
               // may have changed)
@@ -143,7 +145,7 @@ export class BrowseSavedSearchesComponent implements OnInit, OnChanges {
   }
 
   onSelect(savedSearch: CandidateSource) {
-    this.selectedSavedSearch = savedSearch;
+    this.selectedSource = savedSearch;
 
     const savedSearchID: number = savedSearch.id;
     this.localStorageService.set(this.savedStateKey(), savedSearchID);
@@ -212,7 +214,7 @@ export class BrowseSavedSearchesComponent implements OnInit, OnChanges {
       this.results.content[index] = savedSearch;
     }
     if (this.selectedIndex === index) {
-      this.selectedSavedSearch = savedSearch;
+      this.selectedSource = savedSearch;
     }
   }
 }

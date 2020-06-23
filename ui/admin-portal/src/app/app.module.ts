@@ -100,7 +100,7 @@ import {FileUploadComponent} from "./components/util/file-upload/file-upload.com
 import {CandidateAdditionalInfoTabComponent} from './components/candidates/view/tab/candidate-additional-info-tab/candidate-additional-info-tab.component';
 import {ViewCandidateAdditionalInfoComponent} from './components/candidates/view/additional-info/view-candidate-additional-info.component';
 import {ViewCandidateSkillComponent} from "./components/candidates/view/skill/view-candidate-skill.component";
-import {BrowseSavedSearchesComponent} from './components/candidates/search/browse/browse-saved-searches.component';
+import {BrowseCandidateSourcesComponent} from './components/candidates/search/browse/browse-candidate-sources.component';
 import {ChartsModule} from "ng2-charts";
 import {InfographicComponent} from './components/infograhics/infographic.component';
 import {ChartComponent} from './components/infograhics/chart/chart.component';
@@ -216,7 +216,7 @@ import {CandidatesListComponent} from './components/candidates/candidates-list/c
     ViewCandidateAdditionalInfoComponent,
     ViewCandidateSkillComponent,
     FileUploadComponent,
-    BrowseSavedSearchesComponent,
+    BrowseCandidateSourcesComponent,
     InfographicComponent,
     ChartComponent,
     MonthPickerComponent,
