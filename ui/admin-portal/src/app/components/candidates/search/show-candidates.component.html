@@ -37,7 +37,14 @@
     </div>
 
     <div class="filter-results text-muted" *ngIf="!searching">
-      <button class="btn" *ngIf="timestamp" (click)="doSearch(true)"><i class="fas fa-sync" title="Refresh search"></i></button>
+
+      <button *ngIf="isSelectable()" class="btn btn-outline-secondary" (click)="clearSelection()">
+        Clear Selection
+      </button>
+
+      <button class="btn" *ngIf="timestamp" (click)="doSearch(true)">
+        <i class="fas fa-sync" title="Refresh search"></i>
+      </button>
       {{results?.totalElements}} candidates. Timestamp {{timestamp | date: 'yyyy-MM-dd HH:mm:ss'}}
 
       <div *ngIf="targetList">
@@ -49,7 +56,7 @@
         </button>
       </div>
 
-      <button  *ngIf="isSelectable()" class="btn btn-outline-secondary" (click)="saveSelection()">
+      <button *ngIf="isSelectable()" class="btn btn-outline-secondary" (click)="saveSelection()">
         <i class="fas fa-spinner fa-spin" *ngIf=savingSelection></i>
         Save Selection
       </button>

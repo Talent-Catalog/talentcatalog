@@ -17,6 +17,7 @@ import {Subscription} from "rxjs";
 import {CandidateShortlistItem} from "../../../model/candidate-shortlist-item";
 import {HttpClient} from "@angular/common/http";
 import {
+  ClearSelectionRequest,
   defaultReviewStatusFilter,
   getCandidateSourceBreadcrumb,
   getCandidateSourceType,
@@ -483,4 +484,16 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       });
   }
 
+  clearSelection() {
+    const request: ClearSelectionRequest = {
+      userId: this.loggedInUser.id,
+    };
+    this.savedSearchService.clearSelection(this.candidateSource.id, request).subscribe(
+      result => {
+        this.doSearch(true);
+      },
+      err => {
+        this.error = err;
+      });
+  }
 }

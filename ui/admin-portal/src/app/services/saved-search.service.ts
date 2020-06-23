@@ -4,6 +4,7 @@ import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
 import {
+  ClearSelectionRequest,
   SavedSearch,
   SavedSearchRequest,
   SavedSearchSubtype,
@@ -160,6 +161,10 @@ export class SavedSearchService {
       .pipe(
         map(savedSearch => SavedSearchService.convertSavedSearchEnums(savedSearch))
       );
+  }
+
+  clearSelection(id: number, request: ClearSelectionRequest): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/clear-selection/${id}`, request);
   }
 
   saveSelection(id: number, request: SaveSelectionRequest): Observable<SavedList> {

@@ -25,6 +25,8 @@ import org.tbbtalent.server.model.SavedSearch;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.list.CreateSavedListRequest;
 import org.tbbtalent.server.request.list.HasSetOfCandidatesImpl;
+import org.tbbtalent.server.request.list.IHasSetOfCandidates;
+import org.tbbtalent.server.request.search.ClearSelectionRequest;
 import org.tbbtalent.server.request.search.SaveSelectionRequest;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
 import org.tbbtalent.server.request.search.SelectCandidateInSearchRequest;
@@ -92,6 +94,28 @@ public class SavedSearchAdminApi implements
         End standard ITableApi methods
      */
 
+    /**
+     * Clears the given user's selections for the given saved search.
+     * @param id ID of saved search
+     * @param request Request containing the associated user.
+     * @throws InvalidRequestException if not authorized.
+     * @throws NoSuchObjectException if there is no such saved search
+     */
+    @PutMapping("/clear-selection/{id}")
+    public void clearSelection(@PathVariable("id") long id,
+                               @Valid @RequestBody ClearSelectionRequest request)
+            throws InvalidRequestException, NoSuchObjectException {
+
+        //Get the selection list for this user and saved search.
+        SavedList selectionList =
+                savedSearchService.getSelectionList(id, request.getUserId());
+
+        //Create an empty list request. This will clear the list.
+        IHasSetOfCandidates listRequest = new HasSetOfCandidatesImpl();
+        savedListService.replaceSavedList(selectionList.getId(), listRequest);
+        
+    }
+    
     /**
      * Saves the given user's selections for the given saved search to either
      * the specified existing list, or to a newly created list.

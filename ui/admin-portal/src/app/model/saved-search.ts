@@ -128,6 +128,11 @@ export interface SavedSearchRequest {
   searchCandidateRequest?: SearchCandidateRequest;
 }
 
+export interface ClearSelectionRequest {
+  //User making the selections
+  userId: number;
+}
+
 export interface SaveSelectionRequest {
   //User making the selections
   userId: number;
