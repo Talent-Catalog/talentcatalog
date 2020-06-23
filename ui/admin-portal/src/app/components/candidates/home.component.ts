@@ -71,9 +71,9 @@ export class HomeComponent implements OnInit {
     this.activeTabId = id;
 
     const parts = id.split(':');
-    if (parts[0] == 'type' && parts.length == 2) {
+    if (parts[0] === 'type' && parts.length === 2) {
 
-      let type: SavedSearchType = SavedSearchType[parts[1]];
+      const type: SavedSearchType = SavedSearchType[parts[1]];
       this.savedSearchTypeSubInfos = this.savedSearchTypeInfos[type].categories;
 
     }
