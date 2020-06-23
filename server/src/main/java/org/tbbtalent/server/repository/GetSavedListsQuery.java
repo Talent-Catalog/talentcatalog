@@ -63,15 +63,13 @@ public class GetSavedListsQuery implements Specification<SavedList> {
         if (request.getShared() != null && request.getShared()) {
             if (loggedInUser != null) {
                 Set<SavedList> sharedLists = loggedInUser.getSharedLists();
-                if (!sharedLists.isEmpty()) {
-                    Set<Long> sharedIDs = new HashSet<>();
-                    for (SavedList sharedList : sharedLists) {
-                        sharedIDs.add(sharedList.getId());
-                    }
-                    ors.getExpressions().add(
-                            savedList.get("id").in( sharedIDs )
-                    );
+                Set<Long> sharedIDs = new HashSet<>();
+                for (SavedList sharedList : sharedLists) {
+                    sharedIDs.add(sharedList.getId());
                 }
+                ors.getExpressions().add(
+                        savedList.get("id").in( sharedIDs )
+                );
             }
         }
 

@@ -9,7 +9,6 @@ import {
   SimpleChanges
 } from '@angular/core';
 import {
-  defaultReviewStatusFilter,
   getCandidateSourceType,
   isSavedSearch,
   SavedSearch,
@@ -25,8 +24,11 @@ import {
   CachedSearchResults,
   CandidateSourceResultsCacheService
 } from "../../../../services/candidate-source-results-cache.service";
-import {CandidateSource} from "../../../../model/base";
-import {CandidateSourceService} from "../../../../services/candidate-source.service";
+import {
+  CandidateSource,
+  defaultReviewStatusFilter
+} from "../../../../model/base";
+import {CandidateSourceCandidateService} from "../../../../services/candidate-source-candidate.service";
 import {SavedListGetRequest} from "../../../../model/saved-list";
 
 @Component({
@@ -49,7 +51,7 @@ export class CandidateSourceResultsComponent implements OnInit, OnChanges, OnDes
 
 constructor(
     private candidateService: CandidateService,
-    private candidateSourceService: CandidateSourceService,
+    private candidateSourceCandidateService: CandidateSourceCandidateService,
     private router: Router,
     private savedSearchService: SavedSearchService,
     private savedSearchResultsCacheService: CandidateSourceResultsCacheService
@@ -69,7 +71,6 @@ constructor(
   }
 
   openSearch() {
-    //todo Different depending on SavedList or SavedSearch
     //Open search at same page number
     let extras;
     if (this.pageNumber === 1) {
@@ -77,7 +78,10 @@ constructor(
     } else {
       extras = {queryParams: {pageNumber: this.pageNumber}};
     }
-    this.router.navigate(['candidates', 'search', this.candidateSource.id],
+    const urlSelector: string =
+      isSavedSearch(this.candidateSource) ? 'search' : 'list';
+    this.router.navigate(
+      ['candidates', urlSelector, this.candidateSource.id],
       extras);
   }
 
@@ -146,7 +150,7 @@ constructor(
         request.reviewStatusFilter = defaultReviewStatusFilter;
       }
 
-      this.candidateSourceService.searchPaged(
+      this.candidateSourceCandidateService.searchPaged(
         this.candidateSource, request).subscribe(
         results => {
           this.timestamp = Date.now();

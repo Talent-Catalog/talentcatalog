@@ -2,7 +2,11 @@
  * Copyright (c) 2020 Talent Beyond Boundaries. All rights reserved.
  */
 
-import {CandidateSource, PagedSearchRequest} from "./base";
+import {
+  CandidateSource,
+  PagedSearchRequest,
+  SearchCandidateSourcesRequest
+} from "./base";
 
 export enum SearchBy {
   type,
@@ -37,15 +41,8 @@ export interface IHasSetOfCandidates {
   candidateIds: number[];
 }
 
-export interface SearchSavedListRequest {
-  keyword?: string;
-  fixed?: boolean;
-  owned?: boolean;
-  shared?: boolean;
-  pageSize?: number;
-  pageNumber?: number;
-  sortDirection?: string;
-  sortFields?: string[];
+export class SearchSavedListRequest extends SearchCandidateSourcesRequest {
+
 }
 
 export interface UpdateSavedListInfoRequest {
@@ -59,4 +56,3 @@ export class SavedListGetRequest extends PagedSearchRequest {
 export interface UpdateSharingRequest {
   savedSearchId: number;
 }
-

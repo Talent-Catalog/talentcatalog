@@ -1,24 +1,11 @@
 import {SearchCandidateRequest} from "./search-candidate-request";
 import {SavedSearchTypeInfo} from "../services/saved-search.service";
-import {Auditable, CandidateSource, PagedSearchRequest} from "./base";
-
-export enum ReviewedStatus {
-  pending,
-  verified,
-  rejected
-}
-
-export enum SearchBy {
-  type,
-  all,
-  mine,
-  sharedWithMe
-}
-
-export const defaultReviewStatusFilter: string[] = [
-  ReviewedStatus[ReviewedStatus.pending],
-  ReviewedStatus[ReviewedStatus.verified]
-];
+import {
+  Auditable,
+  CandidateSource,
+  PagedSearchRequest,
+  SearchCandidateSourcesRequest
+} from "./base";
 
 export enum SavedSearchType {
   profession,
@@ -62,6 +49,11 @@ export interface SavedSearchJoin {
 
 export interface SavedSearch extends CandidateSource, SearchCandidateRequest {
   reviewable: boolean;
+  savedSearchType: SavedSearchType;
+  savedSearchSubtype: SavedSearchSubtype;
+}
+
+export class SearchSavedSearchRequest extends SearchCandidateSourcesRequest {
   savedSearchType: SavedSearchType;
   savedSearchSubtype: SavedSearchSubtype;
 }

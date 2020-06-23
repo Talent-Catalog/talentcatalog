@@ -14,6 +14,7 @@
             </select>
           </form>
           <app-browse-candidate-sources
+            [sourceType]="CandidateSourceType.SavedSearch"
             [savedSearchType]="typeInfo.savedSearchType"
             [savedSearchSubtype]="selectedSavedSearchSubtype"
           >
@@ -23,6 +24,7 @@
         <!-- Saved Searches with no subtype -->
         <div *ngIf="!savedSearchTypeSubInfos">
           <app-browse-candidate-sources
+            [sourceType]="CandidateSourceType.SavedSearch"
             [savedSearchType]="typeInfo.savedSearchType"
             [savedSearchSubtype]="null"
           >
@@ -34,22 +36,46 @@
 
   <ngb-tab id="MySearches" title="My Searches">
     <ng-template ngbTabContent>
-      <app-browse-candidate-sources [searchBy]="SearchBy.mine">
+      <app-browse-candidate-sources
+        [sourceType]="CandidateSourceType.SavedSearch"
+        [searchBy]="SearchBy.mine" >
       </app-browse-candidate-sources>
     </ng-template>
   </ngb-tab>
 
-  <ngb-tab id="SharedWithMe" title="SharedWithMe">
+  <ngb-tab id="SearchesSharedWithMe" title="Searches Shared With Me">
     <ng-template ngbTabContent>
-        <app-browse-candidate-sources [searchBy]="SearchBy.sharedWithMe">
+        <app-browse-candidate-sources
+          [sourceType]="CandidateSourceType.SavedSearch"
+          [searchBy]="SearchBy.sharedWithMe">
         </app-browse-candidate-sources>
     </ng-template>
   </ngb-tab>
 
-  <ngb-tab id="All" title="All">
+  <ngb-tab id="AllSearches" title="All Searches">
     <ng-template ngbTabContent>
-      <app-browse-candidate-sources [searchBy]="SearchBy.all">
+      <app-browse-candidate-sources
+        [sourceType]="CandidateSourceType.SavedSearch"
+        [searchBy]="SearchBy.all">
       </app-browse-candidate-sources>
+    </ng-template>
+  </ngb-tab>
+
+  <ngb-tab id="MyLists" title="My Lists">
+    <ng-template ngbTabContent>
+      <app-browse-candidate-sources
+        [sourceType]="CandidateSourceType.SavedList"
+        [searchBy]="SearchBy.mine" >
+      </app-browse-candidate-sources>
+    </ng-template>
+  </ngb-tab>
+
+  <ngb-tab id="ListsSharedWithMe" title="Lists Shared With Me">
+    <ng-template ngbTabContent>
+        <app-browse-candidate-sources
+          [sourceType]="CandidateSourceType.SavedList"
+          [searchBy]="SearchBy.sharedWithMe">
+        </app-browse-candidate-sources>
     </ng-template>
   </ngb-tab>
 </ngb-tabset>

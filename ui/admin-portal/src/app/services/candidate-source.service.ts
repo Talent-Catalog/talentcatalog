@@ -3,34 +3,40 @@ import {Observable} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from "../model/search-results";
-import {Candidate} from "../model/candidate";
-import {CandidateSource, PagedSearchRequest} from "../model/base";
-import {isSavedSearch} from "../model/saved-search";
+import {CandidateSource, SearchCandidateSourcesRequest} from "../model/base";
+import {isSavedSearch, SearchSavedSearchRequest} from "../model/saved-search";
+import {map} from "rxjs/operators";
+import {SavedSearchService} from "./saved-search.service";
 
 @Injectable({providedIn: 'root'})
 export class CandidateSourceService {
 
-  private savedListApiUrl = environment.apiUrl + '/saved-list-candidate';
-  private savedSearchApiUrl = environment.apiUrl + '/saved-search-candidate';
+  private savedListApiUrl = environment.apiUrl + '/saved-list';
+  private savedSearchApiUrl = environment.apiUrl + '/saved-search';
 
   constructor(private http: HttpClient) {}
 
-  searchPaged(source: CandidateSource, request: PagedSearchRequest):
-    Observable<SearchResults<Candidate>> {
+  searchPaged(request: SearchCandidateSourcesRequest):
+    Observable<SearchResults<CandidateSource>> {
 
-    const apiUrl = isSavedSearch(source) ?
+    const apiUrl = request instanceof SearchSavedSearchRequest ?
       this.savedSearchApiUrl : this.savedListApiUrl;
 
-    return this.http.post<SearchResults<Candidate>>(
-      `${apiUrl}/${source.id}/search-paged`, request);
+    return this.http.post<SearchResults<CandidateSource>>(
+      `${apiUrl}/search-paged`, request)
+      .pipe(
+        map(results => this.processPostResults(results))
+      );
   }
 
-  export(source: CandidateSource, request: PagedSearchRequest) {
-    const apiUrl = isSavedSearch(source) ?
-      this.savedSearchApiUrl : this.savedListApiUrl;
-
-    return this.http.post(
-      `${apiUrl}/${source.id}/export/csv`, request, {responseType: 'blob'});
-  }
+  processPostResults(results: SearchResults<CandidateSource>):
+    SearchResults<CandidateSource> {
+    for (let savedSearch of results.content) {
+      if (isSavedSearch(savedSearch)) {
+        savedSearch = SavedSearchService.convertSavedSearchEnums(savedSearch);
+      }
+    }
+    return results;
+  };
 
 }

@@ -47,8 +47,11 @@
       </button>
       {{results?.totalElements}} candidates. Timestamp {{timestamp | date: 'yyyy-MM-dd HH:mm:ss'}}
 
-      <div *ngIf="targetList">
-        {{(targetListReplace ? "Replacing " : "Saving to ") + targetList.name}}
+      <div *ngIf="haveTargetList()">
+        {{(targetListReplace ? "Replacing " : "Saving to ")}}
+        <a [routerLink]="['/candidates/list',targetListId]">
+          {{targetListName}}
+        </a>
         <button class="btn btn-outline-secondary"
                  (click)="saveSelectionAgain()">
           <i class="fas fa-spinner fa-spin" *ngIf=savingSelection></i>

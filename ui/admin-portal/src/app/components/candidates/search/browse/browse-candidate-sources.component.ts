@@ -13,14 +13,21 @@ import {
   SavedSearch,
   SavedSearchSubtype,
   SavedSearchType,
-  SearchBy
+  SearchSavedSearchRequest
 } from '../../../../model/saved-search';
 import {SavedSearchService} from '../../../../services/saved-search.service';
 import {Router} from '@angular/router';
 import {LocalStorageService} from "angular-2-local-storage";
 import {AuthService} from "../../../../services/auth.service";
 import {User} from "../../../../model/user";
-import {CandidateSource} from "../../../../model/base";
+import {
+  CandidateSource,
+  CandidateSourceType,
+  SearchBy,
+  SearchCandidateSourcesRequest
+} from "../../../../model/base";
+import {SearchSavedListRequest} from "../../../../model/saved-list";
+import {CandidateSourceService} from "../../../../services/candidate-source.service";
 
 @Component({
   selector: 'app-browse-candidate-sources',
@@ -31,6 +38,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
 
   private savedStateKeyPrefix: string = 'BrowseKey';
 
+  @Input() sourceType: CandidateSourceType;
   @Input() searchBy: SearchBy;
   @Input() savedSearchType: SavedSearchType;
   @Input() savedSearchSubtype: SavedSearchSubtype;
@@ -48,6 +56,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
               private localStorageService: LocalStorageService,
               private router: Router,
               private authService: AuthService,
+              private candidateSourceService: CandidateSourceService,
               private savedSearchService: SavedSearchService) {
   }
 
@@ -62,6 +71,10 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
     this.pageSize = 50;
 
     this.onChanges();
+  }
+
+  get keyword(): string {
+    return this.searchForm ? this.searchForm.value.keyword : "";
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -81,67 +94,73 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   }
 
   search() {
-    let request = this.searchForm ? this.searchForm.value : {keyword: ""};
-    request.pageNumber = this.pageNumber - 1;
-    request.pageSize = this.pageSize;
-    request.sortFields = ['name'];
-    request.sortDirection = 'ASC';
-    if (this.savedSearchType !== undefined) {
-      request.savedSearchType = this.savedSearchType;
-      request.savedSearchSubtype = this.savedSearchSubtype;
-
-      request.fixed = true;
-      request.owned = true;
-      request.shared = true;
-
+    let req: SearchCandidateSourcesRequest;
+    if (this.sourceType === CandidateSourceType.SavedSearch) {
+      req = new SearchSavedSearchRequest();
     } else {
-      switch (this.searchBy) {
-        case SearchBy.mine:
-          request.owned = true;
-          break;
-        case SearchBy.sharedWithMe:
-          request.shared = true;
-          break;
-        case SearchBy.all:
-          request.fixed = true;
-          request.owned = true;
-          request.shared = true;
-          break;
-        default:
-          request = null;
+      req = new SearchSavedListRequest();
+    }
+    req.keyword = this.keyword;
+    req.pageNumber = this.pageNumber - 1;
+    req.pageSize = this.pageSize;
+    req.sortFields = ['name'];
+    req.sortDirection = 'ASC';
+    req.pageNumber = this.pageNumber - 1;
+    req.pageSize = this.pageSize;
+    req.sortFields = ['name'];
+    req.sortDirection = 'ASC';
+    switch (this.searchBy) {
+      case SearchBy.mine:
+        req.owned = true;
+        break;
+      case SearchBy.sharedWithMe:
+        req.shared = true;
+        break;
+      case SearchBy.all:
+        req.fixed = true;
+        req.owned = true;
+        req.shared = true;
+        break;
+    }
+    if (this.savedSearchType !== undefined) {
+      if (req instanceof SearchSavedSearchRequest) {
+        req.savedSearchType = this.savedSearchType;
+        req.savedSearchSubtype = this.savedSearchSubtype;
+        req.fixed = true;
+        req.owned = true;
+        req.shared = true;
       }
     }
 
-    if (request == null) {
-      this.error = "Haven't implemented search by " + SearchBy[this.searchBy];
-    } else {
-      this.loading = true;
+    this.loading = true;
 
-      //todo Make generic
-      this.savedSearchService.searchPaged(request).subscribe(results => {
-        this.results = results;
+    this.candidateSourceService.searchPaged(req).subscribe(results => {
+      this.results = results;
 
-        if (results.content.length > 0) {
-          //Selected previously search if any
-          const savedSearchID: number = this.localStorageService.get(this.savedStateKey());
-          if (savedSearchID) {
-            this.selectedIndex = indexOfAuditable(savedSearchID, this.results.content);
-            if (this.selectedIndex >= 0) {
-              this.selectedSource = this.results.content[this.selectedIndex];
-            } else {
-              //Select the first search if can't find previous (category of search
-              // may have changed)
-              this.onSelect(this.results.content[0]);
-            }
+      if (results.content.length > 0) {
+        //Selected previously search if any
+        const savedSearchID: number = this.localStorageService.get(this.savedStateKey());
+        if (savedSearchID) {
+          this.selectedIndex = indexOfAuditable(savedSearchID, this.results.content);
+          if (this.selectedIndex >= 0) {
+            this.selectedSource = this.results.content[this.selectedIndex];
           } else {
-            //Select the first search if no previous
+            //Select the first search if can't find previous (category of search
+            // may have changed)
             this.onSelect(this.results.content[0]);
           }
+        } else {
+          //Select the first search if no previous
+          this.onSelect(this.results.content[0]);
         }
+      }
 
-        this.loading = false;
-      });
-    }
+      this.loading = false;
+    },
+    error => {
+      this.error = error;
+      this.loading = false;
+    });
   }
 
   onSelect(savedSearch: CandidateSource) {

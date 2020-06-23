@@ -120,7 +120,7 @@ export class SavedSearchService {
     return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
   }
 
-  private static convertSavedSearchEnums(savedSearch: any): SavedSearch {
+  public static convertSavedSearchEnums(savedSearch: any): SavedSearch {
     if (typeof savedSearch.savedSearchType === "string") {
       savedSearch.savedSearchType = SavedSearchType[savedSearch.savedSearchType];
     }

@@ -18,12 +18,10 @@ import {CandidateShortlistItem} from "../../../model/candidate-shortlist-item";
 import {HttpClient} from "@angular/common/http";
 import {
   ClearSelectionRequest,
-  defaultReviewStatusFilter,
   getCandidateSourceBreadcrumb,
   getCandidateSourceType,
   getSavedSearchBreadcrumb,
   isSavedSearch,
-  ReviewedStatus,
   SavedSearchGetRequest,
   SaveSelectionRequest,
   SelectCandidateInSearchRequest
@@ -39,9 +37,13 @@ import {User} from "../../../model/user";
 import {AuthService} from "../../../services/auth.service";
 import {UserService} from "../../../services/user.service";
 import {SelectListComponent} from "../../list/select/select-list.component";
-import {CandidateSource} from "../../../model/base";
-import {SavedList, SavedListGetRequest} from "../../../model/saved-list";
-import {CandidateSourceService} from "../../../services/candidate-source.service";
+import {
+  CandidateSource,
+  defaultReviewStatusFilter,
+  ReviewedStatus
+} from "../../../model/base";
+import {SavedListGetRequest} from "../../../model/saved-list";
+import {CandidateSourceCandidateService} from "../../../services/candidate-source-candidate.service";
 
 @Component({
   selector: 'app-show-candidates',
@@ -83,7 +85,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   selectedCandidate: Candidate;
   loggedInUser: User;
-  targetList: SavedList;
+  targetListName: string;
+  targetListId: number;
   targetListReplace: boolean;
   timestamp: number;
   private reviewStatusFilter: string[] = defaultReviewStatusFilter;
@@ -92,7 +95,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   constructor(private http: HttpClient,
               private fb: FormBuilder,
               private candidateService: CandidateService,
-              private candidateSourceService: CandidateSourceService,
+              private candidateSourceCandidateService: CandidateSourceCandidateService,
               private userService: UserService,
               private savedSearchService: SavedSearchService,
               private modalService: NgbModal,
@@ -178,7 +181,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         request.reviewStatusFilter = this.reviewStatusFilter;
       }
 
-      this.candidateSourceService.searchPaged(
+      this.candidateSourceCandidateService.searchPaged(
         this.candidateSource, request).subscribe(
         results => {
           this.results = results;
@@ -249,7 +252,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       request.reviewStatusFilter = this.reviewStatusFilter;
     }
 
-    this.candidateSourceService.export(
+    this.candidateSourceCandidateService.export(
       this.candidateSource, request).subscribe(
       result => {
         const options = {type: 'text/csv;charset=utf-8;'};
@@ -380,6 +383,10 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     );
   }
 
+  haveTargetList(): boolean {
+    return this.targetListName && this.targetListName.length > 0;
+  }
+
   isCandidateNameViewable(): boolean {
     const role = this.loggedInUser ? this.loggedInUser.role : null;
     return role !== 'semilimited' && role !== 'limited';
@@ -461,7 +468,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   saveSelectionAgain() {
     const request: SaveSelectionRequest = {
       userId: this.loggedInUser.id,
-      savedListId: this.targetList.id,
+      savedListId: this.targetListId,
       replace: this.targetListReplace
     };
     this.doSaveSelection(request);
@@ -475,7 +482,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         this.savingSelection = false;
 
         //Save the target list
-        this.targetList = result;
+        this.targetListId = result.id;
+        this.targetListName = result.name;
         this.targetListReplace = request.replace;
       },
       err => {
