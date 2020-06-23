@@ -45,6 +45,7 @@ public class SavedSearchAdminApi implements
     private final CandidateService candidateService;
     private final SavedListService savedListService;
     private final SavedSearchService savedSearchService;
+    private final SavedListBuilderSelector savedListBuilderSelector = new SavedListBuilderSelector();
 
     @Autowired
     public SavedSearchAdminApi(SavedSearchService savedSearchService,
@@ -100,6 +101,7 @@ public class SavedSearchAdminApi implements
      * @param request Request containing details of the list to be saved to,
      *                the associated user and whether or not the save should
      *                add ot or replace existing contents.
+     * @return List which selection was saved to
      * @throws EntityExistsException If a new list needs to be created but the
      * list name already exists.
      * @throws InvalidRequestException if not authorized.
@@ -107,7 +109,7 @@ public class SavedSearchAdminApi implements
      * with the given ids
      */
     @PutMapping("/save-selection/{id}")
-    public void saveSelection(@PathVariable("id") long id,
+    public Map<String, Object> saveSelection(@PathVariable("id") long id,
                               @Valid @RequestBody SaveSelectionRequest request)
             throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
 
@@ -126,14 +128,17 @@ public class SavedSearchAdminApi implements
         }
         listRequest.setCandidateIds(candidateIds);
 
-        long targetListId = request.getSavedListId(); 
+        long targetListId = request.getSavedListId();
+        SavedList targetList;
         if (targetListId == 0) {
             //Create list
             CreateSavedListRequest createRequest = new CreateSavedListRequest();
             createRequest.setName(request.getNewListName());
             createRequest.setFixed(false);
-            SavedList targetList = savedListService.createSavedList(createRequest);
+            targetList = savedListService.createSavedList(createRequest);
             targetListId = targetList.getId();
+        } else {
+            targetList = savedListService.get(targetListId);
         }
 
         boolean done;
@@ -146,6 +151,7 @@ public class SavedSearchAdminApi implements
         if (!done) {
             throw new NoSuchObjectException(SavedList.class, targetListId);
         }
+        return savedListBuilderSelector.selectBuilder().build(targetList);
     }
 
     /**

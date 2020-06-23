@@ -40,7 +40,16 @@
       <button class="btn" *ngIf="timestamp" (click)="doSearch(true)"><i class="fas fa-sync" title="Refresh search"></i></button>
       {{results?.totalElements}} candidates. Timestamp {{timestamp | date: 'yyyy-MM-dd HH:mm:ss'}}
 
-      <button class="btn btn-outline-secondary" (click)="saveSelection()">
+      <div *ngIf="targetList">
+        {{(targetListReplace ? "Replacing " : "Saving to ") + targetList.name}}
+        <button class="btn btn-outline-secondary"
+                 (click)="saveSelectionAgain()">
+          <i class="fas fa-spinner fa-spin" *ngIf=savingSelection></i>
+          {{(targetListReplace ? "Replace" : "Save")}} Again
+        </button>
+      </div>
+
+      <button  *ngIf="isSelectable()" class="btn btn-outline-secondary" (click)="saveSelection()">
         <i class="fas fa-spinner fa-spin" *ngIf=savingSelection></i>
         Save Selection
       </button>
@@ -54,7 +63,7 @@
     <form class="filter-form" [formGroup]="searchForm">
 
       <!-- REVIEW STATUS FILTER -->
-      <div *ngIf="savedSearch?.reviewable" class="form-group col-12">
+      <div *ngIf="isReviewable()" class="form-group col-12">
         <ng-multiselect-dropdown
           id="reviewStatus"
           [placeholder]="'Review status: Empty displays everything'"
@@ -80,7 +89,7 @@
               <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
               Candidate #
             </th>
-            <th>
+            <th *ngIf="isSelectable()">
               <i class="far fa-hand-pointer"></i>
             </th>
             <th *ngIf="loggedInUser && (loggedInUser.role !== 'semilimited' && loggedInUser.role !== 'limited')" (click)="toggleSort('user.firstName')">
@@ -93,7 +102,7 @@
                              [sortDirection]="sortDirection"></app-sorted-by>
               Last Name
             </th>
-            <th *ngIf="savedSearch?.reviewable">Reviewed</th>
+            <th *ngIf="isReviewable()">Reviewed</th>
             <th (click)="toggleSort('nationality.name')">
               <app-sorted-by [column]="'nationality.name'" [sortColumn]="sortField"
                              [sortDirection]="sortDirection"></app-sorted-by>
@@ -134,7 +143,7 @@
               </a>
 
             </td>
-            <td>
+            <td *ngIf="isSelectable()">
               <input type="checkbox" class="custom-checkbox" id="selected"
                      (ngModelChange)="onSelectionChange(candidate, $event)" [ngModel]="candidate.selected" >
             </td>
@@ -142,10 +151,10 @@
                 by simple method calls - eg isCandidateNameViewable() etc-->
             <td *ngIf="loggedInUser && (loggedInUser.role !== 'semilimited' && loggedInUser.role !== 'limited')">{{candidate.user.firstName}}</td>
             <td *ngIf="loggedInUser && (loggedInUser.role !== 'semilimited' && loggedInUser.role !== 'limited')">{{candidate.user.lastName}}</td>
-            <app-candidate-shortlist-item *ngIf="savedSearch?.reviewable"
+            <app-candidate-shortlist-item *ngIf="isReviewable()"
                                           [candidateId]="candidate.id"
                                           [candidateShortlistItems]="candidate.candidateShortlistItems"
-                                          [savedSearch]="savedSearch"
+                                          [savedSearch]="candidateSource"
                                           (reviewStatusChange)="onReviewStatusChange($event)"></app-candidate-shortlist-item>
             <td *ngIf="loggedInUser && loggedInUser.role !== 'limited'">{{candidate.nationality?.name}}</td>
             <td *ngIf="loggedInUser && loggedInUser.role !== 'limited'">{{candidate.country?.name}}</td>

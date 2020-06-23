@@ -12,6 +12,7 @@ import {
   SelectCandidateInSearchRequest
 } from "../model/saved-search";
 import {map} from "rxjs/operators";
+import {SavedList} from "../model/saved-list";
 
 export interface SavedSearchTypeInfo {
   savedSearchType?: SavedSearchType;
@@ -161,7 +162,7 @@ export class SavedSearchService {
       );
   }
 
-  saveSelection(id: number, request: SaveSelectionRequest): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/save-selection/${id}`, request);
+  saveSelection(id: number, request: SaveSelectionRequest): Observable<SavedList> {
+    return this.http.put<SavedList>(`${this.apiUrl}/save-selection/${id}`, request);
   }
 }

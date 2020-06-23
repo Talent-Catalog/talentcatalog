@@ -39,7 +39,7 @@ import {AuthService} from "../../../services/auth.service";
 import {UserService} from "../../../services/user.service";
 import {SelectListComponent} from "../../list/select/select-list.component";
 import {CandidateSource} from "../../../model/base";
-import {SavedListGetRequest} from "../../../model/saved-list";
+import {SavedList, SavedListGetRequest} from "../../../model/saved-list";
 import {CandidateSourceService} from "../../../services/candidate-source.service";
 
 @Component({
@@ -82,6 +82,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   selectedCandidate: Candidate;
   loggedInUser: User;
+  targetList: SavedList;
+  targetListReplace: boolean;
   timestamp: number;
   private reviewStatusFilter: string[] = defaultReviewStatusFilter;
 
@@ -377,6 +379,14 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     );
   }
 
+  isReviewable(): boolean {
+    return isSavedSearch(this.candidateSource);
+  }
+
+  isSelectable(): boolean {
+    return isSavedSearch(this.candidateSource);
+  }
+
   isShareable(): boolean {
     let shareable: boolean = false;
 
@@ -430,20 +440,37 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       .then((request: SaveSelectionRequest) => {
 
         request.userId = this.loggedInUser.id;
-
-        //Save selection as specified in request
-        this.savingSelection = true;
-        this.savedSearchService.saveSelection(this.candidateSource.id, request).subscribe(
-        result => {
-          this.savingSelection = false;
-        },
-        err => {
-          this.error = err;
-          this.savingSelection = false;
-        });
+        this.doSaveSelection(request);
       })
       .catch(() => { /* Isn't possible */
       });
 
   }
+
+  saveSelectionAgain() {
+    const request: SaveSelectionRequest = {
+      userId: this.loggedInUser.id,
+      savedListId: this.targetList.id,
+      replace: this.targetListReplace
+    };
+    this.doSaveSelection(request);
+  }
+
+  private doSaveSelection(request: SaveSelectionRequest) {
+    //Save selection as specified in request
+    this.savingSelection = true;
+    this.savedSearchService.saveSelection(this.candidateSource.id, request).subscribe(
+      result => {
+        this.savingSelection = false;
+
+        //Save the target list
+        this.targetList = result;
+        this.targetListReplace = request.replace;
+      },
+      err => {
+        this.error = err;
+        this.savingSelection = false;
+      });
+  }
+
 }
