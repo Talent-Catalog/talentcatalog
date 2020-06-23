@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {SearchResults} from '../../../model/search-results';
 
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from "rxjs/operators";
 import {SavedSearch} from "../../../model/saved-search";
 import {SavedSearchService} from "../../../services/saved-search.service";
@@ -25,6 +25,7 @@ export class JoinSavedSearchComponent implements OnInit {
   searching = false;
   searchFailed = false;
   doSavedSearchSearch;
+  currentSavedSearchId: number;
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
@@ -37,7 +38,7 @@ export class JoinSavedSearchComponent implements OnInit {
     this.searchForm = this.fb.group({
       selectedSavedSearch: [null],
       saveSearchId: [''],
-      searchType: ['']
+      searchType: ['', Validators.required]
     });
     //dropdown to add joined searches
     this.doSavedSearchSearch = (text$: Observable<string>) =>
@@ -49,9 +50,12 @@ export class JoinSavedSearchComponent implements OnInit {
           this.error = null
         }),
         switchMap(term =>
-          this.savedSearchService.search({keyword: term}).pipe(
+          this.savedSearchService.search({keyword: term, owned: true, shared: true}).pipe(
             tap(() => this.searchFailed = false),
-            map(result => result.content),
+            map(result =>
+              // filter to avoid circular reference exception by removing the same search as the loaded search
+              result.content.filter(content =>
+                content.id != this.currentSavedSearchId)),
             catchError(() => {
               this.searchFailed = true;
               return of([]);
@@ -65,8 +69,6 @@ export class JoinSavedSearchComponent implements OnInit {
   renderSavedSearchRow(savedSearch: SavedSearch) {
     return savedSearch.name;
   }
-
-
 
   add(){
      let searchJoin = this.searchForm.value;

@@ -361,6 +361,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     showSaveModal.result
       .then((savedSearch) => {
         this.savedSearch = savedSearch;
+        this.searchForm.controls['savedSearchId'].patchValue(savedSearch.id);
       })
       .catch(() => { /* Isn't possible */
       });
@@ -503,6 +504,8 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
       centered: true,
       backdrop: 'static'
     });
+
+    joinSavedSearchComponent.componentInstance.currentSavedSearchId = this.savedSearch.id;
 
     joinSavedSearchComponent.result
       .then((join) => {
