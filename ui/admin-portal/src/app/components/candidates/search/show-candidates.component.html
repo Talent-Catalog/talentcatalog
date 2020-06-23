@@ -92,23 +92,23 @@
             <th *ngIf="isSelectable()">
               <i class="far fa-hand-pointer"></i>
             </th>
-            <th *ngIf="loggedInUser && (loggedInUser.role !== 'semilimited' && loggedInUser.role !== 'limited')" (click)="toggleSort('user.firstName')">
+            <th *ngIf="isCandidateNameViewable()" (click)="toggleSort('user.firstName')">
               <app-sorted-by [column]="'user.firstName'" [sortColumn]="sortField"
                              [sortDirection]="sortDirection"></app-sorted-by>
               First Name
             </th>
-            <th *ngIf="loggedInUser && (loggedInUser.role !== 'semilimited' && loggedInUser.role !== 'limited')" (click)="toggleSort('user.lastName')">
+            <th *ngIf="isCountryViewable()" (click)="toggleSort('user.lastName')">
               <app-sorted-by [column]="'user.lastName'" [sortColumn]="sortField"
                              [sortDirection]="sortDirection"></app-sorted-by>
               Last Name
             </th>
             <th *ngIf="isReviewable()">Reviewed</th>
-            <th (click)="toggleSort('nationality.name')">
+            <th *ngIf="isCountryViewable()" (click)="toggleSort('nationality.name')">
               <app-sorted-by [column]="'nationality.name'" [sortColumn]="sortField"
                              [sortDirection]="sortDirection"></app-sorted-by>
               Nationality
             </th>
-            <th *ngIf="loggedInUser && loggedInUser.role !== 'limited'" (click)="toggleSort('country.name')">
+            <th *ngIf="isCountryViewable()" (click)="toggleSort('country.name')">
               <app-sorted-by [column]="'country.name'" [sortColumn]="sortField"
                              [sortDirection]="sortDirection"></app-sorted-by>
               Location
@@ -147,17 +147,15 @@
               <input type="checkbox" class="custom-checkbox" id="selected"
                      (ngModelChange)="onSelectionChange(candidate, $event)" [ngModel]="candidate.selected" >
             </td>
-<!--            todo These repeated complex logical expressions should be replace
-                by simple method calls - eg isCandidateNameViewable() etc-->
-            <td *ngIf="loggedInUser && (loggedInUser.role !== 'semilimited' && loggedInUser.role !== 'limited')">{{candidate.user.firstName}}</td>
-            <td *ngIf="loggedInUser && (loggedInUser.role !== 'semilimited' && loggedInUser.role !== 'limited')">{{candidate.user.lastName}}</td>
+            <td *ngIf="isCandidateNameViewable()">{{candidate.user.firstName}}</td>
+            <td *ngIf="isCandidateNameViewable()">{{candidate.user.lastName}}</td>
             <app-candidate-shortlist-item *ngIf="isReviewable()"
                                           [candidateId]="candidate.id"
                                           [candidateShortlistItems]="candidate.candidateShortlistItems"
                                           [savedSearch]="candidateSource"
                                           (reviewStatusChange)="onReviewStatusChange($event)"></app-candidate-shortlist-item>
-            <td *ngIf="loggedInUser && loggedInUser.role !== 'limited'">{{candidate.nationality?.name}}</td>
-            <td *ngIf="loggedInUser && loggedInUser.role !== 'limited'">{{candidate.country?.name}}</td>
+            <td *ngIf="isCountryViewable()">{{candidate.nationality?.name}}</td>
+            <td *ngIf="isCountryViewable()">{{candidate.country?.name}}</td>
             <td>{{candidate.gender | titlecase}}</td>
             <td>
               <div ngbDropdown placement="bottom-right" (click)="$event.stopPropagation();" container="body">

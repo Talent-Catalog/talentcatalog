@@ -379,6 +379,16 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     );
   }
 
+  isCandidateNameViewable(): boolean {
+    const role = this.loggedInUser ? this.loggedInUser.role : null;
+    return role !== 'semilimited' && role !== 'limited';
+  }
+
+  isCountryViewable(): boolean {
+    const role = this.loggedInUser ? this.loggedInUser.role : null;
+    return role !== 'limited';
+  }
+
   isReviewable(): boolean {
     return isSavedSearch(this.candidateSource);
   }
