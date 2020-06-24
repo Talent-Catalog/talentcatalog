@@ -25,6 +25,11 @@
                       (pageChange)="doSearch(true)">
       </ngb-pagination>
 
+      <button class="btn" *ngIf="timestamp" (click)="doSearch(true)">
+        <i class="fas fa-sync" title="Refresh search"></i>
+      </button>
+      {{results?.totalElements}} candidates. Timestamp {{timestamp | date: 'yyyy-MM-dd HH:mm:ss'}}
+
       <button *ngIf="isShareable() && !isSharedWithMe()"
         class="btn btn-outline-secondary" (click)="addToSharedWithMe()">
         <i class="far fa-handshake"></i> Add to searches shared with me
@@ -42,13 +47,8 @@
         Clear Selection
       </button>
 
-      <button class="btn" *ngIf="timestamp" (click)="doSearch(true)">
-        <i class="fas fa-sync" title="Refresh search"></i>
-      </button>
-      {{results?.totalElements}} candidates. Timestamp {{timestamp | date: 'yyyy-MM-dd HH:mm:ss'}}
-
       <div *ngIf="haveTargetList()">
-        {{(targetListReplace ? "Replacing " : "Saving to ")}}
+        {{(targetListReplace ? "Replace list " : "Save to list ")}}
         <a [routerLink]="['/candidates/list',targetListId]">
           {{targetListName}}
         </a>

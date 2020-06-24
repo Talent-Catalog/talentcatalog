@@ -44,6 +44,14 @@ import {
 } from "../../../model/base";
 import {SavedListGetRequest} from "../../../model/saved-list";
 import {CandidateSourceCandidateService} from "../../../services/candidate-source-candidate.service";
+import {LocalStorageService} from "angular-2-local-storage";
+
+interface CachedTargetList {
+  searchID: number;
+  listID: number;
+  name: string;
+  replace: boolean
+}
 
 @Component({
   selector: 'app-show-candidates',
@@ -99,6 +107,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
               private userService: UserService,
               private savedSearchService: SavedSearchService,
               private modalService: NgbModal,
+              private localStorageService: LocalStorageService,
               private savedSearchResultsCacheService: CandidateSourceResultsCacheService,
               private authService: AuthService
 
@@ -122,6 +131,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.candidateSource) {
+      this.restoreTargetListFromCache();
       this.doSearch(false);
     }
   }
@@ -485,6 +495,10 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         this.targetListId = result.id;
         this.targetListName = result.name;
         this.targetListReplace = request.replace;
+
+        //todo cache the target list
+        this.cacheTargetList();
+
       },
       err => {
         this.error = err;
@@ -503,5 +517,33 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       err => {
         this.error = err;
       });
+  }
+
+  private cacheTargetList() {
+    if (isSavedSearch(this.candidateSource)) {
+      const cachedTargetList: CachedTargetList = {
+        searchID: this.candidateSource.id,
+        listID: this.targetListId,
+        name: this.targetListName,
+        replace: this.targetListReplace
+      }
+      this.localStorageService.set(this.savedTargetListKey(), cachedTargetList);
+    }
+  }
+
+  private restoreTargetListFromCache() {
+    if (isSavedSearch(this.candidateSource)) {
+      const cachedTargetList: CachedTargetList =
+         this.localStorageService.get(this.savedTargetListKey());
+      if (cachedTargetList) {
+        this.targetListId = cachedTargetList.listID;
+        this.targetListName = cachedTargetList.name;
+        this.targetListReplace = cachedTargetList.replace;
+      }
+    }
+  }
+
+  private savedTargetListKey(): string {
+    return "Target" + this.candidateSource.id;
   }
 }
