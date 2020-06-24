@@ -496,7 +496,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         this.targetListName = result.name;
         this.targetListReplace = request.replace;
 
-        //todo cache the target list
+        //Cache the target list
         this.cacheTargetList();
 
       },

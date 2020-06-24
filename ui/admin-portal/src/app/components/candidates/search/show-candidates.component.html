@@ -52,6 +52,10 @@
         <a [routerLink]="['/candidates/list',targetListId]">
           {{targetListName}}
         </a>
+        <a target="_blank" [routerLink]="['/candidates/list',targetListId]">
+          <i class="fas fa-external-link-alt" title="Show list in new tab"></i>
+        </a>
+
         <button class="btn btn-outline-secondary"
                  (click)="saveSelectionAgain()">
           <i class="fas fa-spinner fa-spin" *ngIf=savingSelection></i>
