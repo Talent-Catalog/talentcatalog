@@ -4,7 +4,7 @@ import {SearchResults} from "../model/search-results";
 import {Candidate} from "../model/candidate";
 
 export interface CachedSearchResults {
-  searchID: number;
+  id: number;
   pageNumber: number;
   pageSize: number;
   sortFields: string[];
@@ -30,7 +30,7 @@ export class CandidateSourceResultsCacheService {
 
   cache(sourceType: string, cachedSearchResults: CachedSearchResults) {
     const cacheKey = CandidateSourceResultsCacheService.cacheKey(sourceType,
-      cachedSearchResults.searchID, cachedSearchResults.reviewStatusFilter);
+      cachedSearchResults.id, cachedSearchResults.reviewStatusFilter);
     this.localStorageService.set(cacheKey, cachedSearchResults);
   }
 

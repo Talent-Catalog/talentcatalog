@@ -159,7 +159,7 @@ constructor(
           this.savedSearchResultsCacheService.cache(
             getCandidateSourceType(this.candidateSource),
             {
-            searchID: this.candidateSource.id,
+            id: this.candidateSource.id,
             pageNumber: this.pageNumber,
             pageSize: this.pageSize,
             sortFields: [this.sortField],
