@@ -22,6 +22,7 @@ import {
   getCandidateSourceType,
   getSavedSearchBreadcrumb,
   isSavedSearch,
+  SavedSearch,
   SavedSearchGetRequest,
   SaveSelectionRequest,
   SelectCandidateInSearchRequest
@@ -45,6 +46,7 @@ import {
 import {SavedListGetRequest} from "../../../model/saved-list";
 import {CandidateSourceCandidateService} from "../../../services/candidate-source-candidate.service";
 import {LocalStorageService} from "angular-2-local-storage";
+import {EditCandidateShortlistItemComponent} from "../../util/candidate-review/edit/edit-candidate-shortlist-item.component";
 
 interface CachedTargetList {
   searchID: number;
@@ -545,5 +547,27 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   private savedTargetListKey(): string {
     return "Target" + this.candidateSource.id;
+  }
+
+  review(candidate: Candidate) {
+    const editModal = this.modalService.open(EditCandidateShortlistItemComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    let item: CandidateShortlistItem = null;
+    const items: CandidateShortlistItem[] = candidate.candidateShortlistItems;
+    if (items) {
+      item = items.find(s => s.savedSearch.id === this.candidateSource.id);
+    }
+
+    editModal.componentInstance.candidateShortListItemId = item ? item.id : null;
+    editModal.componentInstance.candidateId = candidate.id;
+    editModal.componentInstance.savedSearch = this.candidateSource as SavedSearch;
+
+    editModal.result
+      .then((review) => this.onReviewStatusChange(review))
+      .catch(() => { /* Isn't possible */ });
+
   }
 }

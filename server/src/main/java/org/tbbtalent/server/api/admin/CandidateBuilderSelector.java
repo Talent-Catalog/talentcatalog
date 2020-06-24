@@ -126,12 +126,14 @@ public class CandidateBuilderSelector {
                 .add("firstName")
                 .add("lastName")
                 .add("email")
+                .add("createdDate")
                 ;
     }
 
     private DtoBuilder userSemiLimitedDto() {
         return new DtoBuilder()
                 .add("id")
+                .add("createdDate")
                 ;
     }
 
