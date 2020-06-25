@@ -122,6 +122,7 @@ import {UpdateListComponent} from './components/list/update/update-list.componen
 import {SelectListComponent} from './components/list/select/select-list.component';
 import {CandidatesSearchComponent} from './components/candidates/candidates-search/candidates-search.component';
 import {CandidatesListComponent} from './components/candidates/candidates-list/candidates-list.component';
+import {CreateCandidateOccupationComponent} from './components/candidates/view/occupation/create/create-candidate-occupation.component';
 
 @NgModule({
   declarations: [
@@ -129,7 +130,7 @@ import {CandidatesListComponent} from './components/candidates/candidates-list/c
     LoginComponent,
     HeaderComponent,
     ConfirmationComponent,
-    ShowCandidatesComponent,
+    SearchCandidatesComponent,
     HomeComponent,
     ViewCandidateComponent,
     EditCandidateStatusComponent,
@@ -216,13 +217,13 @@ import {CandidatesListComponent} from './components/candidates/candidates-list/c
     ViewCandidateAdditionalInfoComponent,
     ViewCandidateSkillComponent,
     FileUploadComponent,
-    BrowseCandidateSourcesComponent,
+    BrowseSavedSearchesComponent,
     InfographicComponent,
     ChartComponent,
     MonthPickerComponent,
     NotFoundComponent,
     GeneralTranslationsComponent,
-    CandidateSourceResultsComponent,
+    SavedSearchResultsComponent,
     DefineSearchComponent,
     MonthPickerComponent,
     NotFoundComponent,
@@ -235,7 +236,9 @@ import {CandidatesListComponent} from './components/candidates/candidates-list/c
     UpdateListComponent,
     SelectListComponent,
     CandidatesSearchComponent,
-    CandidatesListComponent
+    CandidatesListComponent,
+    UpdateListComponent,
+    CreateCandidateOccupationComponent
   ],
   imports: [
     BrowserModule,
@@ -311,7 +314,8 @@ import {CandidatesListComponent} from './components/candidates/candidates-list/c
     EditCandidateSurveyComponent,
     CreateListComponent,
     SelectListComponent,
-    UpdateListComponent
+    UpdateListComponent,
+    CreateCandidateOccupationComponent
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},

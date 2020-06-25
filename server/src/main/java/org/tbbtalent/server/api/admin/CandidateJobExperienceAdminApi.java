@@ -2,6 +2,7 @@ package org.tbbtalent.server.api.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.model.CandidateJobExperience;
@@ -46,6 +47,11 @@ public class CandidateJobExperienceAdminApi {
         return candidateJobExperienceDto().build(candidateJobExperience);
     }
 
+    @DeleteMapping("{id}")
+    public ResponseEntity delete(@PathVariable("id") Long id) {
+        candidateJobExperienceService.deleteCandidateJobExperience(id);
+        return ResponseEntity.ok().build();
+    }
 
     private DtoBuilder candidateJobExperienceDto() {
         return new DtoBuilder()

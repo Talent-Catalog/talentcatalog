@@ -228,6 +228,12 @@ const ALL_FIELDS = {
         },
         "BUTTON": {
           "ADD": null
+        },
+        "DELETE": {
+          "TITLE": null,
+          "CONFIRMATION": null,
+          "YES": null,
+          "NO": null
         }
       },
       "EXPERIENCE": {

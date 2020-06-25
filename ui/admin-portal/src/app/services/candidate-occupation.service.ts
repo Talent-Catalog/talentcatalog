@@ -4,6 +4,7 @@ import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {Occupation} from "../model/occupation";
 import {CandidateOccupation} from "../model/candidate-occupation";
+import {CandidateNote} from "../model/candidate-note";
 
 @Injectable({providedIn: 'root'})
 export class CandidateOccupationService {
@@ -28,5 +29,13 @@ export class CandidateOccupationService {
 
   update(id: number, details): Observable<CandidateOccupation>  {
     return this.http.put<CandidateOccupation>(`${this.apiUrl}/${id}`, details);
+  }
+
+  create(id: number, details): Observable<CandidateOccupation>  {
+    return this.http.post<CandidateOccupation>(`${this.apiUrl}/${id}`, details);
+  }
+
+  delete(id: number): Observable<CandidateOccupation>  {
+    return this.http.delete<CandidateOccupation>(`${this.apiUrl}/${id}`);
   }
 }

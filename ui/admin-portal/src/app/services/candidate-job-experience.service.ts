@@ -28,4 +28,8 @@ export class CandidateJobExperienceService {
     return this.http.post<SearchResults<CandidateJobExperience>>(`${this.apiUrl}/search`, request);
   }
 
+  delete(id: number): Observable<CandidateJobExperience>  {
+    return this.http.delete<CandidateJobExperience>(`${this.apiUrl}/${id}`);
+  }
+
 }

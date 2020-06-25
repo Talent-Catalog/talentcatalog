@@ -1,22 +1,22 @@
-import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
+import { Component, OnInit } from '@angular/core';
 import {CandidateOccupation} from "../../../../../model/candidate-occupation";
-import {CandidateOccupationService} from "../../../../../services/candidate-occupation.service";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Occupation} from "../../../../../model/occupation";
+import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
+import {CandidateOccupationService} from "../../../../../services/candidate-occupation.service";
 import {OccupationService} from "../../../../../services/occupation.service";
 
 @Component({
-  selector: 'app-edit-candidate-occupation',
-  templateUrl: './edit-candidate-occupation.component.html',
-  styleUrls: ['./edit-candidate-occupation.component.scss']
+  selector: 'app-create-candidate-occupation',
+  templateUrl: './create-candidate-occupation.component.html',
+  styleUrls: ['./create-candidate-occupation.component.scss']
 })
-export class EditCandidateOccupationComponent implements OnInit {
+export class CreateCandidateOccupationComponent implements OnInit {
 
   candidateOccupation: CandidateOccupation;
 
   form: FormGroup;
-
+  candidateId: number;
   occupations: Occupation[];
   years = [];
   error;
@@ -32,8 +32,8 @@ export class EditCandidateOccupationComponent implements OnInit {
   ngOnInit() {
     this.loading = true;
     this.form = this.fb.group({
-      occupationId: [this.candidateOccupation.occupation.id, Validators.required],
-      yearsExperience: [this.candidateOccupation.yearsExperience, Validators.required],
+      occupationId: [null, Validators.required],
+      yearsExperience: [null, Validators.required],
     });
 
     /* LOAD OCCUPATIONS */
@@ -52,7 +52,7 @@ export class EditCandidateOccupationComponent implements OnInit {
 
   onSave() {
     this.saving = true;
-    this.candidateOccupationService.update(this.candidateOccupation.id, this.form.value).subscribe(
+    this.candidateOccupationService.create(this.candidateId, this.form.value).subscribe(
       (candidateOccupation) => {
         this.closeModal(candidateOccupation);
         this.saving = false;
@@ -61,7 +61,7 @@ export class EditCandidateOccupationComponent implements OnInit {
         this.error = error;
         this.saving = false;
       });
-    }
+  }
 
   closeModal(candidateOccupation: CandidateOccupation) {
     this.activeModal.close(candidateOccupation);
@@ -70,4 +70,5 @@ export class EditCandidateOccupationComponent implements OnInit {
   dismiss() {
     this.activeModal.dismiss(false);
   }
+
 }

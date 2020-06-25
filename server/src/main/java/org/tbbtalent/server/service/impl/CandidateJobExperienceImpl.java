@@ -5,10 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.Candidate;
-import org.tbbtalent.server.model.CandidateJobExperience;
-import org.tbbtalent.server.model.CandidateOccupation;
-import org.tbbtalent.server.model.Country;
+import org.tbbtalent.server.model.*;
 import org.tbbtalent.server.repository.CandidateJobExperienceRepository;
 import org.tbbtalent.server.repository.CandidateOccupationRepository;
 import org.tbbtalent.server.repository.CandidateRepository;
@@ -133,13 +130,23 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
 
     @Override
     public void deleteCandidateJobExperience(Long id) {
-        Candidate candidate = userContext.getLoggedInCandidate();
+        User user = userContext.getLoggedInUser();
+
         CandidateJobExperience candidateJobExperience = candidateJobExperienceRepository.findByIdLoadCandidate(id)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateJobExperience.class, id));
 
-        // Check that the user is deleting their own candidate job experience
-        if (!candidate.getId().equals(candidateJobExperience.getCandidate().getId())) {
-            throw new InvalidCredentialsException("You do not have permission to perform that action");
+        Candidate candidate;
+
+        // If request is coming from admin portal
+        if (user.getRole().equals(Role.admin)) {
+            candidate = candidateRepository.findById(candidateJobExperience.getCandidate().getId())
+                    .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateJobExperience.getCandidate().getId()));
+        } else {
+            candidate = userContext.getLoggedInCandidate();
+            // Check that the user is deleting their own attachment
+            if (!candidate.getId().equals(candidateJobExperience.getCandidate().getId())) {
+                throw new InvalidCredentialsException("You do not have permission to perform that action");
+            }
         }
 
         candidateJobExperienceRepository.delete(candidateJobExperience);
