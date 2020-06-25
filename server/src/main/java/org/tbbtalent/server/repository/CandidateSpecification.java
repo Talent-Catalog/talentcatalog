@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.Candidate;
+import org.tbbtalent.server.model.CandidateAttachment;
 import org.tbbtalent.server.model.CandidateEducation;
 import org.tbbtalent.server.model.CandidateJobExperience;
 import org.tbbtalent.server.model.CandidateLanguage;
@@ -40,7 +41,6 @@ import org.tbbtalent.server.model.SavedSearch;
 import org.tbbtalent.server.model.SearchType;
 import org.tbbtalent.server.model.ShortlistStatus;
 import org.tbbtalent.server.model.User;
-import org.tbbtalent.server.model.*;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 
 import io.jsonwebtoken.lang.Collections;
@@ -203,12 +203,12 @@ public class CandidateSpecification {
 
                     // This is adding an OR statement IF the keyword search includes uploaded files AND cv is true.
                     // May be a better way to do this, but it works.
-                    if(BooleanUtils.isTrue(request.getIncludeUploadedFiles())) {
-                        predicates.get(0).getExpressions().add(builder.and(
-                                builder.isTrue(candidateAttachments.get("cv")),
-                                builder.like(builder.lower(candidateAttachments.get("textExtract")), likeMatchTerm)));
-
-                    }
+//                    if(BooleanUtils.isTrue(request.getIncludeUploadedFiles())) {
+//                        predicates.get(0).getExpressions().add(builder.and(
+//                                builder.isTrue(candidateAttachments.get("cv")),
+//                                builder.like(builder.lower(candidateAttachments.get("textExtract")), likeMatchTerm)));
+//
+//                    }
                 }
                 if (predicates.size() > 1) {
                     conjunction.getExpressions().add(builder.and(builder.and(predicates.toArray(new Predicate[0]))));
