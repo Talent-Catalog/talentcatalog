@@ -15,6 +15,7 @@
           </form>
           <app-browse-candidate-sources
             [sourceType]="CandidateSourceType.SavedSearch"
+            [searchBy]="SearchBy.type"
             [savedSearchType]="typeInfo.savedSearchType"
             [savedSearchSubtype]="selectedSavedSearchSubtype"
           >
@@ -25,6 +26,7 @@
         <div *ngIf="!savedSearchTypeSubInfos">
           <app-browse-candidate-sources
             [sourceType]="CandidateSourceType.SavedSearch"
+            [searchBy]="SearchBy.type"
             [savedSearchType]="typeInfo.savedSearchType"
             [savedSearchSubtype]="null"
           >

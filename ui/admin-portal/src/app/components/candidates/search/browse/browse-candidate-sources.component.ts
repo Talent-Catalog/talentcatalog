@@ -139,9 +139,9 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
 
       if (results.content.length > 0) {
         //Selected previously search if any
-        const savedSearchID: number = this.localStorageService.get(this.savedStateKey());
-        if (savedSearchID) {
-          this.selectedIndex = indexOfAuditable(savedSearchID, this.results.content);
+        const id: number = this.localStorageService.get(this.savedStateKey());
+        if (id) {
+          this.selectedIndex = indexOfAuditable(id, this.results.content);
           if (this.selectedIndex >= 0) {
             this.selectedSource = this.results.content[this.selectedIndex];
           } else {
@@ -163,19 +163,31 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
     });
   }
 
-  onSelect(savedSearch: CandidateSource) {
-    this.selectedSource = savedSearch;
+  onSelect(source: CandidateSource) {
+    this.selectedSource = source;
 
-    const savedSearchID: number = savedSearch.id;
-    this.localStorageService.set(this.savedStateKey(), savedSearchID);
+    const id: number = source.id;
+    this.localStorageService.set(this.savedStateKey(), id);
 
-    this.selectedIndex = indexOfAuditable(savedSearchID, this.results.content);
+    this.selectedIndex = indexOfAuditable(id, this.results.content);
   }
 
   private savedStateKey() {
-    //todo Different key for non saved searches
-    return this.savedStateKeyPrefix + this.savedSearchType +
-      (this.savedSearchSubtype ? '/' + this.savedSearchSubtype : "");
+    //We save the last state of each combination of inputs - ie the last
+    //selected item.
+    //(These inputs are associated with each tab in home.component.html)
+
+    //The standard key is "Browse" + the sourceType + the search type
+    let key = this.savedStateKeyPrefix
+      + CandidateSourceType[this.sourceType]
+      + SearchBy[this.searchBy];
+
+    //If searching by type, also need the saved search type
+    if (this.searchBy === SearchBy.type && this.savedSearchType !== undefined) {
+      key += this.savedSearchType +
+        (this.savedSearchSubtype !== undefined ? '/' + this.savedSearchSubtype : "");
+    }
+    return key;
   }
 
   keyDown(event: KeyboardEvent) {
