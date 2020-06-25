@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {SearchResults} from '../../../model/search-results';
-
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {
   catchError,
   debounceTime,
@@ -9,8 +9,6 @@ import {
   switchMap,
   tap
 } from "rxjs/operators";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from "rxjs/operators";
 import {SavedSearch} from "../../../model/saved-search";
 import {SavedSearchService} from "../../../services/saved-search.service";
 import {Router} from "@angular/router";
@@ -79,7 +77,7 @@ export class JoinSavedSearchComponent implements OnInit {
   }
 
   add(){
-     let searchJoin = this.searchForm.value;
+     const searchJoin = this.searchForm.value;
      searchJoin.savedSearchId = searchJoin.selectedSavedSearch.id;
      searchJoin.name = searchJoin.selectedSavedSearch.name;
      this.closeModal(searchJoin);
