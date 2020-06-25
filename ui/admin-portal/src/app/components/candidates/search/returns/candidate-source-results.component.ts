@@ -11,7 +11,6 @@ import {
 import {
   getCandidateSourceType,
   isSavedSearch,
-  SavedSearch,
   SavedSearchGetRequest
 } from "../../../../model/saved-search";
 import {Subscription} from "rxjs";
@@ -42,7 +41,7 @@ export class CandidateSourceResultsComponent implements OnInit, OnChanges, OnDes
   pageSize: number;
   results: SearchResults<Candidate>;
   @Input() candidateSource: CandidateSource;
-  @Output() toggleWatch = new EventEmitter<SavedSearch>();
+  @Output() toggleWatch = new EventEmitter<CandidateSource>();
   searching: boolean;
   sortField: string;
   sortDirection: string;
@@ -70,8 +69,8 @@ constructor(
     }
   }
 
-  openSearch() {
-    //Open search at same page number
+  openSource() {
+    //Open source at same page number
     let extras;
     if (this.pageNumber === 1) {
       extras = {};
@@ -189,10 +188,10 @@ constructor(
     this.search(true);
   }
 
-  //Pass toggle watch up to BrowseSavedSearchesComponent for it to
-  //do the update and refresh its copy of the savedSearch details
+  //Pass toggle watch up to BrowseCandidateSourcesComponent for it to
+  //do the update and refresh its copy of the candidate source details
   // (which is passed through to all contained components)
-  onToggleWatch(savedSearch: SavedSearch) {
-    this.toggleWatch.emit(savedSearch);
+  onToggleWatch(source: CandidateSource) {
+    this.toggleWatch.emit(source);
   }
 }

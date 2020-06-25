@@ -77,7 +77,7 @@ import {EditUserComponent} from './components/settings/users/edit/edit-user.comp
 import {CreateUserComponent} from './components/settings/users/create/create-user.component';
 import {CandidateEducationTabComponent} from "./components/candidates/view/tab/candidate-education-tab/candidate-education-tab.component";
 import {JoinSavedSearchComponent} from "./components/search/join-search/join-saved-search.component";
-import {SavedSearchComponent} from "./components/util/saved-search/saved-search.component";
+import {CandidateSourceComponent} from "./components/util/candidate-source/candidate-source.component";
 import {LanguageLevelFormControlComponent} from './components/util/form/language-proficiency/language-level-form-control.component';
 import {CandidatePipe} from './pipes/candidate.pipe';
 import {EditCandidateShortlistItemComponent} from "./components/util/candidate-review/edit/edit-candidate-shortlist-item.component";
@@ -193,10 +193,9 @@ import {CreateCandidateOccupationComponent} from './components/candidates/view/o
     DropdownTranslationsComponent,
     LanguageLevelFormControlComponent,
     DateRangePickerComponent,
-    SavedSearchComponent,
     UserPipe,
     UpdatedByComponent,
-    SavedSearchComponent,
+    CandidateSourceComponent,
     ViewCandidateOccupationComponent,
     ViewCandidateJobExperienceComponent,
     LanguageLevelFormControlComponent,

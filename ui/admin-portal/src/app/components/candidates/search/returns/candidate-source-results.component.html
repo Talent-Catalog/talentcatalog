@@ -1,11 +1,11 @@
 <div *ngIf="candidateSource">
-  <app-saved-search
-          [savedSearch]="candidateSource" [showAll]="false" [showMore]="true"
+  <app-candidate-source
+          [candidateSource]="candidateSource" [showAll]="false" [showMore]="true"
           [showOpen]="true"
-          (openSearch)="openSearch()"
+          (openSource)="openSource()"
           (toggleWatch)="onToggleWatch($event)"
   >
-  </app-saved-search>
+  </app-candidate-source>
 </div>
 <div *ngIf="error">
   Error: {{error}}
