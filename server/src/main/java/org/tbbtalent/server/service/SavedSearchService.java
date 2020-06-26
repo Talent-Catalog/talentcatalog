@@ -28,9 +28,32 @@ public interface SavedSearchService {
 
     boolean deleteSavedSearch(long id);
 
-    SavedSearch addSharedUser(long id, UpdateSharingRequest request);
-
-    SavedSearch removeSharedUser(long id, UpdateSharingRequest request);
+    /**
+     * Adds a user who wants to share the given saved search (created by someone 
+     * else).
+     * @param id id of Saved Search being shared
+     * @param request Contains the id of the user who is sharing the search
+     * @return The updated saved search with a modified collection of users
+     * who are sharing it.
+     * @throws NoSuchObjectException if there is no saved search with this id
+     * or the user is not found.
+     */
+    SavedSearch addSharedUser(long id, UpdateSharingRequest request) 
+            throws NoSuchObjectException;
+    
+    /**
+     * Removes a user who was sharing the given saved search (created by someone 
+     * else).
+     * @param id id of Saved Search
+     * @param request Contains the id of the user who is no longer interested
+     *                in sharing the search
+     * @return The updated saved search with a modified collection of users
+     * who are sharing it.
+     * @throws NoSuchObjectException if there is no saved search with this id
+     * or the user is not found.
+     */
+    SavedSearch removeSharedUser(long id, UpdateSharingRequest request)
+            throws NoSuchObjectException;
 
     SavedSearch addWatcher(long id, UpdateWatchingRequest request);
 

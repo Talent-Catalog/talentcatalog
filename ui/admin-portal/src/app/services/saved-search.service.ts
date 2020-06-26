@@ -135,20 +135,6 @@ export class SavedSearchService {
     return this.http.put<void>(`${this.apiUrl}/select-candidate/${id}`, request);
   }
 
-  addSharedUser(id: number, request: { userId: number }): Observable<SavedSearch> {
-    return this.http.put<SavedSearch>(`${this.apiUrl}/shared-add/${id}`, request)
-      .pipe(
-        map(savedSearch => SavedSearchService.convertSavedSearchEnums(savedSearch))
-      );
-  }
-
-  removeSharedUser(id: number, request: { userId: number }): Observable<SavedSearch> {
-    return this.http.put<SavedSearch>(`${this.apiUrl}/shared-remove/${id}`, request)
-      .pipe(
-        map(savedSearch => SavedSearchService.convertSavedSearchEnums(savedSearch))
-      );
-  }
-
   addWatcher(id: number, request: { userId: number }): Observable<SavedSearch> {
     return this.http.put<SavedSearch>(`${this.apiUrl}/watcher-add/${id}`, request)
       .pipe(

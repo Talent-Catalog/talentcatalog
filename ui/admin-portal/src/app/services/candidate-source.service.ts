@@ -16,6 +16,30 @@ export class CandidateSourceService {
 
   constructor(private http: HttpClient) {}
 
+  addSharedUser(source: CandidateSource, request: { userId: number }):
+    Observable<CandidateSource> {
+
+    const apiUrl = isSavedSearch(source) ?
+      this.savedSearchApiUrl : this.savedListApiUrl;
+
+    return this.http.put<CandidateSource>(`${apiUrl}/shared-add/${source.id}`, request)
+      .pipe(
+        map(result => this.processPostResult(result))
+      );
+  }
+
+  removeSharedUser(source: CandidateSource, request: { userId: number }):
+    Observable<CandidateSource> {
+
+    const apiUrl = isSavedSearch(source) ?
+      this.savedSearchApiUrl : this.savedListApiUrl;
+
+    return this.http.put<CandidateSource>(`${apiUrl}/shared-remove/${source.id}`, request)
+      .pipe(
+        map(result => this.processPostResult(result))
+      );
+  }
+
   searchPaged(request: SearchCandidateSourcesRequest):
     Observable<SearchResults<CandidateSource>> {
 
@@ -29,12 +53,17 @@ export class CandidateSourceService {
       );
   }
 
+  processPostResult(result: CandidateSource): CandidateSource {
+    if (isSavedSearch(result)) {
+      result = SavedSearchService.convertSavedSearchEnums(result);
+    }
+    return result;
+  };
+
   processPostResults(results: SearchResults<CandidateSource>):
     SearchResults<CandidateSource> {
-    for (let savedSearch of results.content) {
-      if (isSavedSearch(savedSearch)) {
-        savedSearch = SavedSearchService.convertSavedSearchEnums(savedSearch);
-      }
+    for (const result of results.content) {
+      this.processPostResult(result);
     }
     return results;
   };

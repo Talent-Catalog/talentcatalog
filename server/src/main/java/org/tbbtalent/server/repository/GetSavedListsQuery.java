@@ -14,6 +14,7 @@ import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.SavedList;
 import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
@@ -28,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GetSavedListsQuery implements Specification<SavedList> {
     final private SearchSavedListRequest request;
-    final private User loggedInUser;
+    @Nullable final private User loggedInUser;
     
     @Override
     public Predicate toPredicate(

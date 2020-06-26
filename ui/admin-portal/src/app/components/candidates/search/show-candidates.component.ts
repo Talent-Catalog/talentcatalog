@@ -49,6 +49,7 @@ import {CandidateSourceCandidateService} from "../../../services/candidate-sourc
 import {LocalStorageService} from "angular-2-local-storage";
 import {EditCandidateShortlistItemComponent} from "../../util/candidate-review/edit/edit-candidate-shortlist-item.component";
 import {Router} from "@angular/router";
+import {CandidateSourceService} from "../../../services/candidate-source.service";
 
 interface CachedTargetList {
   searchID: number;
@@ -107,6 +108,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   constructor(private http: HttpClient,
               private fb: FormBuilder,
               private candidateService: CandidateService,
+              private candidateSourceService: CandidateSourceService,
               private candidateSourceCandidateService: CandidateSourceCandidateService,
               private userService: UserService,
               private savedSearchService: SavedSearchService,
@@ -367,9 +369,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   addToSharedWithMe() {
-    //todo Need generic solution to this shared stuff
-    this.savedSearchService.addSharedUser(
-      this.candidateSource.id, {userId: this.loggedInUser.id}).subscribe(
+    this.candidateSourceService.addSharedUser(
+      this.candidateSource, {userId: this.loggedInUser.id}).subscribe(
       result => {
         if (result) {
           this.candidateSource = result;
@@ -384,10 +385,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   removeFromSharedWithMe() {
-    //todo Need generic solution to this shared stuff
-
-    this.savedSearchService.removeSharedUser(
-      this.candidateSource.id, {userId: this.loggedInUser.id}).subscribe(
+    this.candidateSourceService.removeSharedUser(
+      this.candidateSource, {userId: this.loggedInUser.id}).subscribe(
       result => {
         if (result) {
           this.candidateSource = result;

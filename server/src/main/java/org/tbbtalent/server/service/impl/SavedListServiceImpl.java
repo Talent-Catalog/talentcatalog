@@ -32,6 +32,7 @@ import org.tbbtalent.server.request.list.CreateSavedListRequest;
 import org.tbbtalent.server.request.list.IHasSetOfCandidates;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
+import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.SavedListService;
 
@@ -83,10 +84,11 @@ public class SavedListServiceImpl implements SavedListService {
         SavedList savedList = savedListRepository.findByIdLoadCandidates(savedListId)
                 .orElse(null);
 
-        if (savedList != null) {
+        final User loggedInUser = userContext.getLoggedInUser();
+        if (savedList != null && loggedInUser != null) {
 
             // Check if user owns this list
-            if(savedList.getCreatedBy().getId().equals(userContext.getLoggedInUser().getId())) {
+            if(savedList.getCreatedBy().getId().equals(loggedInUser.getId())) {
 
                 //Need to clear out many to many relationships before deleting
                 //the list otherwise we will have other entities pointing to 
@@ -169,9 +171,9 @@ public class SavedListServiceImpl implements SavedListService {
 
     @Override
     public List<SavedList> search(long candidateId, SearchSavedListRequest request) {
-        User userWithSharedSearches =
-                userRepository.findByIdLoadSharedSearches(
-                        userContext.getLoggedInUser().getId());
+        final User loggedInUser = userContext.getLoggedInUser();
+        User userWithSharedSearches = loggedInUser == null ? null :
+                userRepository.findByIdLoadSharedSearches(loggedInUser.getId());
         GetSavedListsQuery getSavedListsQuery =
                 new GetSavedListsQuery(request, userWithSharedSearches);
 
@@ -187,9 +189,10 @@ public class SavedListServiceImpl implements SavedListService {
 
     @Override
     public List<SavedList> listSavedLists(SearchSavedListRequest request) {
-        User userWithSharedSearches =
+        final User loggedInUser = userContext.getLoggedInUser();
+        User userWithSharedSearches = loggedInUser == null ? null :
                 userRepository.findByIdLoadSharedSearches(
-                        userContext.getLoggedInUser().getId());
+                        loggedInUser.getId());
         GetSavedListsQuery getSavedListsQuery = 
                 new GetSavedListsQuery(request, userWithSharedSearches);
         
@@ -203,9 +206,10 @@ public class SavedListServiceImpl implements SavedListService {
 
     @Override
     public Page<SavedList> searchSavedLists(SearchSavedListRequest request) {
-        User userWithSharedSearches =
+        final User loggedInUser = userContext.getLoggedInUser();
+        User userWithSharedSearches = loggedInUser == null ? null :
                 userRepository.findByIdLoadSharedSearches(
-                        userContext.getLoggedInUser().getId());
+                        loggedInUser.getId());
         GetSavedListsQuery getSavedListsQuery = 
                 new GetSavedListsQuery(request, userWithSharedSearches);
         
@@ -225,6 +229,38 @@ public class SavedListServiceImpl implements SavedListService {
         checkDuplicates(null, request.getName());
         request.populateFromRequest(savedList);
         return saveIt(savedList);
+    }
+
+    @Override
+    @Transactional
+    public SavedList addSharedUser(long id, UpdateSharingRequest request) 
+            throws NoSuchObjectException {
+        SavedList savedList = savedListRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(SavedList.class, id));
+
+        final Long userID = request.getUserId();
+        User user = userRepository.findById(userID)
+                .orElseThrow(() -> new NoSuchObjectException(User.class, userID));
+
+        savedList.addUser(user);
+
+        return savedListRepository.save(savedList);
+    }
+
+    @Override
+    @Transactional
+    public SavedList removeSharedUser(long id, UpdateSharingRequest request) 
+            throws NoSuchObjectException {
+        SavedList savedList = savedListRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(SavedList.class, id));
+
+        final Long userID = request.getUserId();
+        User user = userRepository.findById(userID)
+                .orElseThrow(() -> new NoSuchObjectException(User.class, userID));
+
+        savedList.removeUser(user);
+
+        return savedListRepository.save(savedList);
     }
 
     // TODO: 1/5/20 This could be common code - or at least the checking 
