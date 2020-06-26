@@ -9,6 +9,7 @@ import {
   SimpleChanges
 } from '@angular/core';
 import {
+  getCandidateSourceNavigation,
   getCandidateSourceType,
   isSavedSearch,
   SavedSearchGetRequest
@@ -77,11 +78,8 @@ constructor(
     } else {
       extras = {queryParams: {pageNumber: this.pageNumber}};
     }
-    const urlSelector: string =
-      isSavedSearch(this.candidateSource) ? 'search' : 'list';
-    this.router.navigate(
-      ['candidates', urlSelector, this.candidateSource.id],
-      extras);
+    const urlCommands = getCandidateSourceNavigation(this.candidateSource);
+    this.router.navigate(urlCommands, extras);
   }
 
   search(refresh: boolean) {

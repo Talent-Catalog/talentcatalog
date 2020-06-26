@@ -6,6 +6,8 @@ import {
   PagedSearchRequest,
   SearchCandidateSourcesRequest
 } from "./base";
+import {Router, UrlTree} from "@angular/router";
+import {copyToClipboard} from "../util/clipboard";
 
 export enum SavedSearchType {
   profession,
@@ -56,6 +58,22 @@ export interface SavedSearch extends CandidateSource, SearchCandidateRequest {
 export class SearchSavedSearchRequest extends SearchCandidateSourcesRequest {
   savedSearchType: SavedSearchType;
   savedSearchSubtype: SavedSearchSubtype;
+}
+
+export function getCandidateSourceNavigation(source: CandidateSource) {
+  const urlSelector: string = isSavedSearch(source) ? 'search' : 'list';
+  return ['candidates', urlSelector, source.id];
+}
+
+export function copyCandidateSourceLinkToClipboard(
+  router: Router, source: CandidateSource) {
+  //Get navigation commands for the given source
+  const urlCommands = getCandidateSourceNavigation(source);
+  //And convert to an absolute url
+  const urlTree: UrlTree = router.createUrlTree(urlCommands);
+  const href = document.location.origin + router.serializeUrl(urlTree);
+  //...which is copied to the clipboard
+  copyToClipboard(href);
 }
 
 export function getCandidateSourceType(source: CandidateSource) {

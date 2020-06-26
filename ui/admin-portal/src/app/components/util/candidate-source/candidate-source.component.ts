@@ -1,9 +1,14 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {isSavedSearch, SavedSearch} from "../../../model/saved-search";
+import {
+  copyCandidateSourceLinkToClipboard,
+  isSavedSearch,
+  SavedSearch
+} from "../../../model/saved-search";
 import {SavedSearchService} from "../../../services/saved-search.service";
 import {AuthService} from "../../../services/auth.service";
 import {User} from "../../../model/user";
 import {CandidateSource} from "../../../model/base";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-candidate-source',
@@ -14,6 +19,7 @@ export class CandidateSourceComponent implements OnInit {
 
   @Input() candidateSource: CandidateSource;
   @Input() showAll: boolean;
+  @Input() showLink: boolean = true;
   @Input() showMore: boolean = true;
   @Input() showOpen: boolean = true;
   @Input() showWatch: boolean = true;
@@ -32,6 +38,7 @@ export class CandidateSourceComponent implements OnInit {
 
   constructor(
     private savedSearchService: SavedSearchService,
+    private router: Router,
     private authService: AuthService
   ) {
   }
@@ -71,6 +78,10 @@ export class CandidateSourceComponent implements OnInit {
 
   doDeleteSource(){
     this.deleteSource.emit(this.candidateSource);
+  }
+
+  doCopyLink() {
+    copyCandidateSourceLinkToClipboard(this.router, this.candidateSource);
   }
 
   doToggleWatch() {

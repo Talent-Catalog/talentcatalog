@@ -29,7 +29,8 @@ public class SavedListBuilderSelector {
                 .add("createdDate")
                 .add("updatedBy", userDto())
                 .add("updatedDate")
-                ;
+                .add("users", userDto())
+        ;
     }
 
     private DtoBuilder userDto() {

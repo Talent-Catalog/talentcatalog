@@ -18,6 +18,7 @@ import {CandidateShortlistItem} from "../../../model/candidate-shortlist-item";
 import {HttpClient} from "@angular/common/http";
 import {
   ClearSelectionRequest,
+  copyCandidateSourceLinkToClipboard,
   getCandidateSourceBreadcrumb,
   getCandidateSourceType,
   getSavedSearchBreadcrumb,
@@ -47,6 +48,7 @@ import {SavedListGetRequest} from "../../../model/saved-list";
 import {CandidateSourceCandidateService} from "../../../services/candidate-source-candidate.service";
 import {LocalStorageService} from "angular-2-local-storage";
 import {EditCandidateShortlistItemComponent} from "../../util/candidate-review/edit/edit-candidate-shortlist-item.component";
+import {Router} from "@angular/router";
 
 interface CachedTargetList {
   searchID: number;
@@ -110,6 +112,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
               private savedSearchService: SavedSearchService,
               private modalService: NgbModal,
               private localStorageService: LocalStorageService,
+              private router: Router,
               private savedSearchResultsCacheService: CandidateSourceResultsCacheService,
               private authService: AuthService
 
@@ -364,6 +367,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   addToSharedWithMe() {
+    //todo Need generic solution to this shared stuff
     this.savedSearchService.addSharedUser(
       this.candidateSource.id, {userId: this.loggedInUser.id}).subscribe(
       result => {
@@ -380,6 +384,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   removeFromSharedWithMe() {
+    //todo Need generic solution to this shared stuff
+
     this.savedSearchService.removeSharedUser(
       this.candidateSource.id, {userId: this.loggedInUser.id}).subscribe(
       result => {
@@ -569,5 +575,9 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       .then((review) => this.onReviewStatusChange(review))
       .catch(() => { /* Isn't possible */ });
 
+  }
+
+  doCopyLink() {
+    copyCandidateSourceLinkToClipboard(this.router, this.candidateSource);
   }
 }
