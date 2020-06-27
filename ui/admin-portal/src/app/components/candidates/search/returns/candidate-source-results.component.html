@@ -1,9 +1,10 @@
 <div *ngIf="candidateSource">
   <app-candidate-source
           [candidateSource]="candidateSource" [showAll]="false" [showMore]="true"
-          [showOpen]="true"
+          [showOpen]="true" [showDelete]="true"
           (openSource)="openSource()"
           (toggleWatch)="onToggleWatch($event)"
+          (deleteSource)="onDeleteSource($event)"
   >
   </app-candidate-source>
 </div>

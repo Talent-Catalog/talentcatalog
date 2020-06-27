@@ -28,6 +28,13 @@ export class CandidateSourceService {
       );
   }
 
+  delete(source: CandidateSource): Observable<boolean>  {
+    const apiUrl = isSavedSearch(source) ?
+      this.savedSearchApiUrl : this.savedListApiUrl;
+
+    return this.http.delete<boolean>(`${apiUrl}/${source.id}`);
+  }
+
   removeSharedUser(source: CandidateSource, request: { userId: number }):
     Observable<CandidateSource> {
 

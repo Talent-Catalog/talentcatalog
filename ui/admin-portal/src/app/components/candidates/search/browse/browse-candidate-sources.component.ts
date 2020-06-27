@@ -10,7 +10,7 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
 import {
   indexOfAuditable,
-  SavedSearch,
+  isSavedSearch,
   SavedSearchSubtype,
   SavedSearchType,
   SearchSavedSearchRequest
@@ -23,6 +23,7 @@ import {User} from "../../../../model/user";
 import {
   CandidateSource,
   CandidateSourceType,
+  isSharedWithMe,
   SearchBy,
   SearchCandidateSourcesRequest
 } from "../../../../model/base";
@@ -209,43 +210,79 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
     }
   }
 
-  onToggleWatch(savedSearch: SavedSearch) {
+  onDeleteSource(source: CandidateSource) {
+    //If shared just remove from my shares, otherwise delete
     this.loading = true;
-    if (this.isWatching(savedSearch)) {
-      this.savedSearchService
-        .removeWatcher(savedSearch.id, {userId: this.loggedInUser.id})
-        .subscribe(result => {
-          //Update local copy
-          this.updateLocalSavedSearchCopy(result);
+    if (isSharedWithMe(source, this.authService)) {
+      //Remove from sharing
+      const loggedInUser = this.authService.getLoggedInUser();
+
+      this.candidateSourceService.removeSharedUser(
+        source, {userId: loggedInUser.id}).subscribe(
+        result => {
+          //Refresh display which will remove source if displayed.
+          this.search();
           this.loading = false;
-        }, err => {
+        },
+        error => {
+          this.error = error;
           this.loading = false;
-          this.error = err;
-        })
+        }
+      )
     } else {
-      this.savedSearchService
-        .addWatcher(savedSearch.id, {userId: this.loggedInUser.id})
-        .subscribe(result => {
-          this.updateLocalSavedSearchCopy(result);
-          this.loading = false;
-        }, err => {
-          this.loading = false;
-          this.error = err;
-        })
+      this.candidateSourceService.delete(source).subscribe(
+          (result) => {
+            //Refresh display which will remove source if displayed.
+            this.search();
+            this.loading = false;
+          },
+          (error) => {
+            this.error = error;
+            this.loading = false;
+          });
     }
   }
 
-  private isWatching(savedSearch: SavedSearch): boolean {
-    return savedSearch.watcherUserIds.indexOf(this.loggedInUser.id) >= 0;
+  onToggleWatch(source: CandidateSource) {
+    //Currently only watch save searches
+    if (isSavedSearch(source)) {
+      this.loading = true;
+      if (this.isWatching(source)) {
+        this.savedSearchService
+          .removeWatcher(source.id, {userId: this.loggedInUser.id})
+          .subscribe(result => {
+            //Update local copy
+            this.updateLocalCandidateSourceCopy(result);
+            this.loading = false;
+          }, err => {
+            this.loading = false;
+            this.error = err;
+          })
+      } else {
+        this.savedSearchService
+          .addWatcher(source.id, {userId: this.loggedInUser.id})
+          .subscribe(result => {
+            this.updateLocalCandidateSourceCopy(result);
+            this.loading = false;
+          }, err => {
+            this.loading = false;
+            this.error = err;
+          })
+      }
+    }
   }
 
-  private updateLocalSavedSearchCopy(savedSearch: SavedSearch) {
-    const index: number = indexOfAuditable(savedSearch.id, this.results.content);
+  private isWatching(source: CandidateSource): boolean {
+    return source.watcherUserIds.indexOf(this.loggedInUser.id) >= 0;
+  }
+
+  private updateLocalCandidateSourceCopy(source: CandidateSource) {
+    const index: number = indexOfAuditable(source.id, this.results.content);
     if (index >= 0) {
-      this.results.content[index] = savedSearch;
+      this.results.content[index] = source;
     }
     if (this.selectedIndex === index) {
-      this.selectedSource = savedSearch;
+      this.selectedSource = source;
     }
   }
 }

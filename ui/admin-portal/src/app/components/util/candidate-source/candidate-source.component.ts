@@ -98,12 +98,16 @@ export class CandidateSourceComponent implements OnInit {
       ? this.candidateSource as SavedSearch : null;
   }
 
-  isShared(source: CandidateSource) {
-    return !isMine(source, this.authService);
+  isSavedSearch() {
+    return isSavedSearch(this.candidateSource);
   }
 
-  get isSavedSearch() {
-    return isSavedSearch;
+  isShared() {
+    return !isMine(this.candidateSource, this.authService);
   }
 
+  isDeletable() {
+    return isMine(this.candidateSource, this.authService) ||
+      !this.candidateSource.fixed;
+  }
 }

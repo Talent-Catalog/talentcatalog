@@ -55,7 +55,11 @@
   </div>
   <div *ngIf="selectedSource" class="col-sm-8 admin-panel">
     <app-candidate-source-results [candidateSource]="selectedSource"
-                                  (toggleWatch)="onToggleWatch($event)"></app-candidate-source-results>
+                                  (toggleWatch)="onToggleWatch($event)"
+                                  (deleteSource)="onDeleteSource($event)"
+    >
+
+    </app-candidate-source-results>
   </div>
 </div>
 

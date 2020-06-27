@@ -29,6 +29,13 @@ import {
   SelectCandidateInSearchRequest
 } from "../../../model/saved-search";
 import {
+  CandidateSource,
+  defaultReviewStatusFilter,
+  isMine,
+  isSharedWithMe,
+  ReviewedStatus
+} from "../../../model/base";
+import {
   CachedSearchResults,
   CandidateSourceResultsCacheService
 } from "../../../services/candidate-source-results-cache.service";
@@ -39,12 +46,6 @@ import {User} from "../../../model/user";
 import {AuthService} from "../../../services/auth.service";
 import {UserService} from "../../../services/user.service";
 import {SelectListComponent} from "../../list/select/select-list.component";
-import {
-  CandidateSource,
-  defaultReviewStatusFilter,
-  isMine,
-  ReviewedStatus
-} from "../../../model/base";
 import {SavedListGetRequest} from "../../../model/saved-list";
 import {CandidateSourceCandidateService} from "../../../services/candidate-source-candidate.service";
 import {LocalStorageService} from "angular-2-local-storage";
@@ -373,11 +374,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.candidateSourceService.addSharedUser(
       this.candidateSource, {userId: this.loggedInUser.id}).subscribe(
       result => {
-        if (result) {
-          this.candidateSource = result;
-        } else {
-          console.log('Did not work!')
-        }
+        this.candidateSource = result;
       },
       error => {
         this.error = error;
@@ -389,11 +386,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.candidateSourceService.removeSharedUser(
       this.candidateSource, {userId: this.loggedInUser.id}).subscribe(
       result => {
-        if (result) {
-          this.candidateSource = result;
-        } else {
-          console.log('Did not work!')
-        }
+        this.candidateSource = result;
       },
       error => {
         this.error = error;
@@ -430,7 +423,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     if (this.candidateSource) {
       if (!this.candidateSource.fixed) {
         //was it created by me?
-        if (isMine(this.candidateSource, this.authService)) {
+        if (!isMine(this.candidateSource, this.authService)) {
           shareable = true;
         }
       }
@@ -439,11 +432,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isSharedWithMe(): boolean {
-    //Logged in user is in saved search user
-    return this.candidateSource ?
-      this.candidateSource.users.find(u => u.id === this.loggedInUser.id ) !== undefined
-      : false;
-
+    return isSharedWithMe(this.candidateSource, this.authService);
   }
 
   onSelectionChange(candidate: Candidate, selected: boolean) {

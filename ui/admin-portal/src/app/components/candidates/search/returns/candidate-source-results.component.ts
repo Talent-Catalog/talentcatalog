@@ -30,6 +30,8 @@ import {
 } from "../../../../model/base";
 import {CandidateSourceCandidateService} from "../../../../services/candidate-source-candidate.service";
 import {SavedListGetRequest} from "../../../../model/saved-list";
+import {AuthService} from "../../../../services/auth.service";
+import {CandidateSourceService} from "../../../../services/candidate-source.service";
 
 @Component({
   selector: 'app-candidate-source-results',
@@ -43,6 +45,7 @@ export class CandidateSourceResultsComponent implements OnInit, OnChanges, OnDes
   results: SearchResults<Candidate>;
   @Input() candidateSource: CandidateSource;
   @Output() toggleWatch = new EventEmitter<CandidateSource>();
+  @Output() deleteSource = new EventEmitter<CandidateSource>();
   searching: boolean;
   sortField: string;
   sortDirection: string;
@@ -50,7 +53,9 @@ export class CandidateSourceResultsComponent implements OnInit, OnChanges, OnDes
   timestamp: number;
 
 constructor(
+    private authService: AuthService,
     private candidateService: CandidateService,
+    private candidateSourceService: CandidateSourceService,
     private candidateSourceCandidateService: CandidateSourceCandidateService,
     private router: Router,
     private savedSearchService: SavedSearchService,
@@ -191,5 +196,9 @@ constructor(
   // (which is passed through to all contained components)
   onToggleWatch(source: CandidateSource) {
     this.toggleWatch.emit(source);
+  }
+
+  onDeleteSource(source: CandidateSource) {
+    this.deleteSource.emit(source);
   }
 }

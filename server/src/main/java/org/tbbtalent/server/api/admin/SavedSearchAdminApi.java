@@ -287,6 +287,7 @@ public class SavedSearchAdminApi implements
                 .add("reviewable")
                 .add("watcherUserIds")
                 .add("createdBy", userDto())
+                .add("users", userDto())
                 ;
     }
 
@@ -313,7 +314,6 @@ public class SavedSearchAdminApi implements
                 .add("createdDate")
                 .add("updatedBy", userDto())
                 .add("updatedDate")
-                .add("users", userDto())
                 .add("searchJoins", searchJoinDto());
 
     }
