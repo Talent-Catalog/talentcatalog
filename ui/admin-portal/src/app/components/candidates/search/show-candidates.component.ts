@@ -134,7 +134,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
               private modalService: NgbModal,
               private localStorageService: LocalStorageService,
               private router: Router,
-              private savedSearchResultsCacheService: CandidateSourceResultsCacheService,
+              private candidateSourceResultsCacheService: CandidateSourceResultsCacheService,
               private authService: AuthService
 
   ) {
@@ -197,7 +197,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     if (!refresh) {
 
       const cached: CachedSearchResults =
-        this.savedSearchResultsCacheService.getFromCache(
+        this.candidateSourceResultsCacheService.getFromCache(
           getCandidateSourceType(this.candidateSource),
           this.candidateSource.id, this.reviewStatusFilter);
       if (cached) {
@@ -257,7 +257,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
     //We only cache results with the default review status filter.
     if (this.reviewStatusFilter.toString() === defaultReviewStatusFilter.toString()) {
-      this.savedSearchResultsCacheService.cache(
+      this.candidateSourceResultsCacheService.cache(
         getCandidateSourceType(this.candidateSource),
         {
         id: this.candidateSource.id,
