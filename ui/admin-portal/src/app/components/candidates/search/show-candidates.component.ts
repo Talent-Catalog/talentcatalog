@@ -41,17 +41,20 @@ import {
 } from "../../../services/candidate-source-results-cache.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {IDropdownSettings} from "ng-multiselect-dropdown";
-import {ListItem} from "ng-multiselect-dropdown/multiselect.model";
 import {User} from "../../../model/user";
 import {AuthService} from "../../../services/auth.service";
 import {UserService} from "../../../services/user.service";
 import {SelectListComponent} from "../../list/select/select-list.component";
-import {SavedListGetRequest} from "../../../model/saved-list";
+import {
+  IHasSetOfCandidates,
+  SavedListGetRequest
+} from "../../../model/saved-list";
 import {CandidateSourceCandidateService} from "../../../services/candidate-source-candidate.service";
 import {LocalStorageService} from "angular-2-local-storage";
 import {EditCandidateShortlistItemComponent} from "../../util/candidate-review/edit/edit-candidate-shortlist-item.component";
 import {Router} from "@angular/router";
 import {CandidateSourceService} from "../../../services/candidate-source.service";
+import {SavedListCandidateService} from "../../../services/saved-list-candidate.service";
 
 interface CachedTargetList {
   searchID: number;
@@ -114,6 +117,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
               private candidateSourceCandidateService: CandidateSourceCandidateService,
               private userService: UserService,
               private savedSearchService: SavedSearchService,
+              private savedListCandidateService: SavedListCandidateService,
               private modalService: NgbModal,
               private localStorageService: LocalStorageService,
               private router: Router,
@@ -239,7 +243,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.selectedCandidate = candidate;
   }
 
-  onReviewStatusChange(candidateShortlistItem: CandidateShortlistItem) {
+  onReviewStatusChange() {
     this.doSearch(true);
   }
 
@@ -354,15 +358,15 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.doSearch(false, false);
   }
 
-  onItemSelect($event: ListItem) {
+  onItemSelect() {
     this.onReviewStatusFilterChange();
   }
 
-  onItemDeSelect($event: ListItem) {
+  onItemDeSelect() {
     this.onReviewStatusFilterChange();
   }
 
-  onSelectAll($event: Array<ListItem>) {
+  onSelectAll() {
     this.onReviewStatusFilterChange();
   }
 
@@ -408,6 +412,10 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     return role !== 'limited';
   }
 
+  isDeletable(): boolean {
+    return !isSavedSearch(this.candidateSource);
+  }
+
   isReviewable(): boolean {
     return isSavedSearch(this.candidateSource);
   }
@@ -450,7 +458,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         selected: selected
       };
     this.savedSearchService.selectCandidate(this.candidateSource.id, request).subscribe(
-      result => {},
+      () => {},
       err => {
         this.error = err;
       }
@@ -508,7 +516,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       userId: this.loggedInUser.id,
     };
     this.savedSearchService.clearSelection(this.candidateSource.id, request).subscribe(
-      result => {
+      () => {
         this.doSearch(true);
       },
       err => {
@@ -561,12 +569,27 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     editModal.componentInstance.savedSearch = this.candidateSource as SavedSearch;
 
     editModal.result
-      .then((review) => this.onReviewStatusChange(review))
+      .then(() => this.onReviewStatusChange())
       .catch(() => { /* Isn't possible */ });
 
   }
 
   doCopyLink() {
     copyCandidateSourceLinkToClipboard(this.router, this.candidateSource);
+  }
+
+  removeCandidateFromList(candidate: Candidate) {
+    const request: IHasSetOfCandidates = {
+      candidateIds: [candidate.id]
+    };
+    this.savedListCandidateService.remove(this.candidateSource.id, request).subscribe(
+      () => {
+        this.doSearch(true);
+      },
+      (error) => {
+        this.error = error;
+      }
+    );
+
   }
 }

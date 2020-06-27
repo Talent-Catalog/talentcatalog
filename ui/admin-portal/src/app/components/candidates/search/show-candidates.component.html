@@ -87,9 +87,9 @@
           [data]="statuses"
           formControlName="statusesDisplay"
           [settings]="dropdownSettings"
-          (onSelect)="onItemSelect($event)"
-          (onDeSelect)="onItemDeSelect($event)"
-          (onSelectAll)="onSelectAll($event)"
+          (onSelect)="onItemSelect()"
+          (onDeSelect)="onItemDeSelect()"
+          (onSelectAll)="onSelectAll()"
           (onDeSelectAll)="onDeSelectAll()">
         </ng-multiselect-dropdown>
       </div>
@@ -191,6 +191,8 @@
                   <li class="dropdown-divider"></li>
                   <li ngbDropdownItem><a target="_blank" class="no-link" [routerLink]="['/candidates', candidate.candidateNumber]">Open
                     in new tab</a></li>
+                  <li class="dropdown-divider"></li>
+                  <li *ngIf="isDeletable()" ngbDropdownItem (click)="removeCandidateFromList(candidate)">Delete from list</li>
                 </ul>
               </div>
             </td>
