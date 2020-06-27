@@ -13,7 +13,7 @@ import {CandidateService} from '../../../services/candidate.service';
 import {SearchResults} from '../../../model/search-results';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {SavedSearchService} from "../../../services/saved-search.service";
-import {Subscription} from "rxjs";
+import {Observable, of, Subscription} from "rxjs";
 import {CandidateShortlistItem} from "../../../model/candidate-shortlist-item";
 import {HttpClient} from "@angular/common/http";
 import {
@@ -55,6 +55,14 @@ import {EditCandidateShortlistItemComponent} from "../../util/candidate-review/e
 import {Router} from "@angular/router";
 import {CandidateSourceService} from "../../../services/candidate-source.service";
 import {SavedListCandidateService} from "../../../services/saved-list-candidate.service";
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  switchMap,
+  tap
+} from "rxjs/operators";
 
 interface CachedTargetList {
   searchID: number;
@@ -87,6 +95,11 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   subscription: Subscription;
   sortField = 'id';
   sortDirection = 'DESC';
+
+  /* Add candidates */
+  doNumberOrNameSearch;
+  searchFailed: boolean;
+
 
   /* MULTI SELECT */
   statuses: string[];
@@ -140,6 +153,26 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         this.statuses.push(key);
       }
     }
+
+    this.doNumberOrNameSearch = (text$: Observable<string>) =>
+      text$.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        tap(() => {
+          this.error = null
+        }),
+        switchMap(candidateNumberOrName =>
+          this.candidateService.findByCandidateNumberOrName(
+            {candidateNumberOrName: candidateNumberOrName, pageSize: 10}).pipe(
+            tap(() => this.searchFailed = false),
+            map(result => result.content),
+            catchError(() => {
+              this.searchFailed = true;
+              return of([]);
+            }))
+        )
+      );
+
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -412,7 +445,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     return role !== 'limited';
   }
 
-  isDeletable(): boolean {
+  isContentModifiable(): boolean {
     return !isSavedSearch(this.candidateSource);
   }
 
@@ -578,6 +611,21 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     copyCandidateSourceLinkToClipboard(this.router, this.candidateSource);
   }
 
+  addCandidateToList(candidate: Candidate) {
+    const request: IHasSetOfCandidates = {
+      candidateIds: [candidate.id]
+    };
+    this.savedListCandidateService.merge(this.candidateSource.id, request).subscribe(
+      () => {
+        this.doSearch(true);
+      },
+      (error) => {
+        this.error = error;
+      }
+    );
+
+  }
+
   removeCandidateFromList(candidate: Candidate) {
     const request: IHasSetOfCandidates = {
       candidateIds: [candidate.id]
@@ -592,4 +640,17 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     );
 
   }
+
+  renderCandidateRow(candidate: Candidate) {
+    return candidate.candidateNumber + ": " + candidate.user.firstName + " " + candidate.user.lastName;
+  }
+
+  selectSearchResult ($event, input) {
+    $event.preventDefault();
+    input.value = '';
+    const candidate: Candidate = $event.item;
+    this.addCandidateToList(candidate);
+
+  }
+
 }

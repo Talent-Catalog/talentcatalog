@@ -36,7 +36,7 @@ export class HeaderComponent implements OnInit {
               private router: Router) { }
 
   ngOnInit() {
-    //dropdown to add joined searches
+
     this.doNumberOrNameSearch = (text$: Observable<string>) =>
       text$.pipe(
         debounceTime(300),
