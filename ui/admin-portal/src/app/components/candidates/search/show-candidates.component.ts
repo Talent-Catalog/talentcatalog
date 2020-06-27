@@ -20,7 +20,6 @@ import {
   ClearSelectionRequest,
   copyCandidateSourceLinkToClipboard,
   getCandidateSourceBreadcrumb,
-  getCandidateSourceType,
   getSavedSearchBreadcrumb,
   isSavedSearch,
   SavedSearch,
@@ -194,27 +193,32 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.error = null;
 
     let done: boolean = false;
+
     if (!refresh) {
 
-      const cached: CachedSearchResults =
-        this.candidateSourceResultsCacheService.getFromCache(
-          getCandidateSourceType(this.candidateSource),
-          this.candidateSource.id, this.reviewStatusFilter);
-      if (cached) {
-        //If we are not required to use the pageNumber (usePageNumber = false)
-        //we can take the pageNumber of whatever the cache has.
-        //If we have to use the page number, the pageNumber and size must match
-        //what is in the cache or we can't use it.
-        done = !usePageNumber ||
-          (cached.pageNumber === this.pageNumber && cached.pageSize === this.pageSize);
-        if (done) {
-          this.results = cached.results;
-          this.sortField = cached.sortFields[0];
-          this.sortDirection = cached.sortDirection;
-          this.reviewStatusFilter = cached.reviewStatusFilter;
-          this.timestamp = cached.timestamp;
-          this.pageNumber = cached.pageNumber;
-          this.pageSize = cached.pageSize;
+      //Is there anything in cache?
+      //We only cache if not reviewable or if reviewable with the default filter
+      if (!this.isReviewable() ||
+        this.reviewStatusFilter.toString() === defaultReviewStatusFilter.toString()) {
+
+        const cached: CachedSearchResults =
+          this.candidateSourceResultsCacheService.getFromCache(this.candidateSource);
+        if (cached) {
+          //If we are not required to use the pageNumber (usePageNumber = false)
+          //we can take the pageNumber of whatever the cache has.
+          //If we have to use the page number, the pageNumber and size must match
+          //what is in the cache or we can't use it.
+          done = !usePageNumber ||
+            (cached.pageNumber === this.pageNumber && cached.pageSize === this.pageSize);
+          if (done) {
+            this.results = cached.results;
+            this.sortField = cached.sortFields[0];
+            this.sortDirection = cached.sortDirection;
+            this.reviewStatusFilter = defaultReviewStatusFilter;
+            this.timestamp = cached.timestamp;
+            this.pageNumber = cached.pageNumber;
+            this.pageSize = cached.pageSize;
+          }
         }
       }
     }
@@ -257,15 +261,13 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
     //We only cache results with the default review status filter.
     if (this.reviewStatusFilter.toString() === defaultReviewStatusFilter.toString()) {
-      this.candidateSourceResultsCacheService.cache(
-        getCandidateSourceType(this.candidateSource),
+      this.candidateSourceResultsCacheService.cache(this.candidateSource,
         {
         id: this.candidateSource.id,
         pageNumber: this.pageNumber,
         pageSize: this.pageSize,
         sortFields: [this.sortField],
         sortDirection: this.sortDirection,
-        reviewStatusFilter: this.reviewStatusFilter,
         results: this.results,
         timestamp: this.timestamp
       });
@@ -526,16 +528,20 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     //Save selection as specified in request
     this.savingSelection = true;
     this.savedSearchService.saveSelection(this.candidateSource.id, request).subscribe(
-      result => {
+      savedListResult => {
         this.savingSelection = false;
 
         //Save the target list
-        this.targetListId = result.id;
-        this.targetListName = result.name;
+        this.targetListId = savedListResult.id;
+        this.targetListName = savedListResult.name;
         this.targetListReplace = request.replace;
 
         //Cache the target list
         this.cacheTargetList();
+
+        //Invalidate the cache for this list (so that user does not need
+        //to refresh in order to see latest list contents)
+        this.candidateSourceResultsCacheService.removeFromCache(savedListResult);
 
       },
       err => {

@@ -10,7 +10,6 @@ import {
 } from '@angular/core';
 import {
   getCandidateSourceNavigation,
-  getCandidateSourceType,
   isSavedSearch,
   SavedSearchGetRequest
 } from "../../../../model/saved-search";
@@ -60,7 +59,7 @@ constructor(
     private candidateSourceCandidateService: CandidateSourceCandidateService,
     private router: Router,
     private savedSearchService: SavedSearchService,
-    private savedSearchResultsCacheService: CandidateSourceResultsCacheService
+    private candidateSourceResultsCacheService: CandidateSourceResultsCacheService
   ) { };
 
   ngOnInit() {
@@ -97,9 +96,7 @@ constructor(
     let done: boolean = false;
     if (!refresh) {
       const cached: CachedSearchResults =
-        this.savedSearchResultsCacheService.getFromCache(
-          getCandidateSourceType(this.candidateSource),
-          this.candidateSource.id, defaultReviewStatusFilter);
+        this.candidateSourceResultsCacheService.getFromCache(this.candidateSource);
       if (cached) {
         this.results = cached.results;
         this.pageNumber = cached.pageNumber;
@@ -159,15 +156,13 @@ constructor(
           this.timestamp = Date.now();
           this.results = results;
 
-          this.savedSearchResultsCacheService.cache(
-            getCandidateSourceType(this.candidateSource),
+          this.candidateSourceResultsCacheService.cache(this.candidateSource,
             {
             id: this.candidateSource.id,
             pageNumber: this.pageNumber,
             pageSize: this.pageSize,
             sortFields: [this.sortField],
             sortDirection: this.sortDirection,
-            reviewStatusFilter: defaultReviewStatusFilter,
             results: this.results,
             timestamp: this.timestamp
           });

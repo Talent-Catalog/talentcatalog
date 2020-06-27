@@ -2,6 +2,8 @@ import {Injectable} from '@angular/core';
 import {LocalStorageService} from "angular-2-local-storage";
 import {SearchResults} from "../model/search-results";
 import {Candidate} from "../model/candidate";
+import {CandidateSource} from "../model/base";
+import {getCandidateSourceType} from "../model/saved-search";
 
 export interface CachedSearchResults {
   id: number;
@@ -9,7 +11,6 @@ export interface CachedSearchResults {
   pageSize: number;
   sortFields: string[];
   sortDirection: string;
-  reviewStatusFilter?: string[];
   results?: SearchResults<Candidate>;
   timestamp: number;
 }
@@ -24,20 +25,22 @@ export class CandidateSourceResultsCacheService {
 
   ) { }
 
-  private static cacheKey(sourceType: string, id: number, reviewStatusFilter: string[]): string {
-    return sourceType + id + '/' + reviewStatusFilter;
+  private static cacheKey(source: CandidateSource): string {
+    return getCandidateSourceType(source) + source.id;
   }
 
-  cache(sourceType: string, cachedSearchResults: CachedSearchResults) {
-    const cacheKey = CandidateSourceResultsCacheService.cacheKey(sourceType,
-      cachedSearchResults.id, cachedSearchResults.reviewStatusFilter);
+  cache(source: CandidateSource, cachedSearchResults: CachedSearchResults) {
+    const cacheKey = CandidateSourceResultsCacheService.cacheKey(source);
     this.localStorageService.set(cacheKey, cachedSearchResults);
   }
 
-  getFromCache(sourceType: string, id: number, reviewStatusFilter: string[])
-    : CachedSearchResults {
-    const cacheKey = CandidateSourceResultsCacheService
-      .cacheKey(sourceType, id, reviewStatusFilter);
+  getFromCache(source: CandidateSource): CachedSearchResults {
+    const cacheKey = CandidateSourceResultsCacheService.cacheKey(source);
     return this.localStorageService.get<CachedSearchResults>(cacheKey);
+  }
+
+  removeFromCache(source: CandidateSource): boolean {
+    const cacheKey = CandidateSourceResultsCacheService.cacheKey(source);
+    return this.localStorageService.remove(cacheKey);
   }
 }
