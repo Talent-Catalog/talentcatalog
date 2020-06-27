@@ -24,10 +24,12 @@ export class CandidateSourceComponent implements OnInit {
   @Input() showOpen: boolean = true;
   @Input() showWatch: boolean = true;
   @Input() showSelect: boolean = false;
+  @Input() showCopy: boolean = false;
   @Input() showEdit: boolean = false;
   @Input() showDelete: boolean = false;
   @Output() openSource = new EventEmitter<CandidateSource>();
   @Output() selectSource = new EventEmitter<CandidateSource>();
+  @Output() copySource = new EventEmitter<CandidateSource>();
   @Output() editSource = new EventEmitter<CandidateSource>();
   @Output() deleteSource = new EventEmitter<CandidateSource>();
   @Output() toggleWatch = new EventEmitter<CandidateSource>();
@@ -74,6 +76,10 @@ export class CandidateSourceComponent implements OnInit {
 
   doEditSource(){
     this.editSource.emit(this.candidateSource);
+  }
+
+  doCopySource(){
+    this.copySource.emit(this.candidateSource);
   }
 
   doDeleteSource(){
