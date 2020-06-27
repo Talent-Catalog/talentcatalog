@@ -46,6 +46,7 @@ export class CandidateSourceResultsComponent implements OnInit, OnChanges, OnDes
   @Input() candidateSource: CandidateSource;
   @Output() toggleWatch = new EventEmitter<CandidateSource>();
   @Output() deleteSource = new EventEmitter<CandidateSource>();
+  @Output() editSource = new EventEmitter<CandidateSource>();
   searching: boolean;
   sortField: string;
   sortDirection: string;
@@ -200,5 +201,9 @@ constructor(
 
   onDeleteSource(source: CandidateSource) {
     this.deleteSource.emit(source);
+  }
+
+  onEditSource(source: CandidateSource) {
+    this.editSource.emit(source);
   }
 }

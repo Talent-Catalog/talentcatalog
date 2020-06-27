@@ -106,8 +106,7 @@ export class CandidateSourceComponent implements OnInit {
     return !isMine(this.candidateSource, this.authService);
   }
 
-  isDeletable() {
-    return isMine(this.candidateSource, this.authService) ||
-      !this.candidateSource.fixed;
+  isEditable() {
+    return isMine(this.candidateSource, this.authService);
   }
 }

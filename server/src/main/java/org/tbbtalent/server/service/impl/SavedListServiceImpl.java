@@ -226,7 +226,7 @@ public class SavedListServiceImpl implements SavedListService {
     public SavedList updateSavedList(long savedListId, UpdateSavedListInfoRequest request) 
             throws NoSuchObjectException, EntityExistsException {
         SavedList savedList = get(savedListId);
-        checkDuplicates(null, request.getName());
+        checkDuplicates(savedListId, request.getName());
         request.populateFromRequest(savedList);
         return saveIt(savedList);
     }

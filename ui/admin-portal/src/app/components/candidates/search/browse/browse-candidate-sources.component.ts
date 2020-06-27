@@ -29,6 +29,9 @@ import {
 } from "../../../../model/base";
 import {SearchSavedListRequest} from "../../../../model/saved-list";
 import {CandidateSourceService} from "../../../../services/candidate-source.service";
+import {UpdateSearchComponent} from "../../../search/update/update-search.component";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {UpdateListComponent} from "../../../list/update/update-list.component";
 
 @Component({
   selector: 'app-browse-candidate-sources',
@@ -57,6 +60,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
               private localStorageService: LocalStorageService,
               private router: Router,
               private authService: AuthService,
+              private modalService: NgbModal,
               private candidateSourceService: CandidateSourceService,
               private savedSearchService: SavedSearchService) {
   }
@@ -88,7 +92,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
         debounceTime(400),
         distinctUntilChanged()
       )
-      .subscribe(res => {
+      .subscribe(() => {
         this.search();
       });
     this.search();
@@ -219,7 +223,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
 
       this.candidateSourceService.removeSharedUser(
         source, {userId: loggedInUser.id}).subscribe(
-        result => {
+        () => {
           //Refresh display which will remove source if displayed.
           this.search();
           this.loading = false;
@@ -231,7 +235,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
       )
     } else {
       this.candidateSourceService.delete(source).subscribe(
-          (result) => {
+          () => {
             //Refresh display which will remove source if displayed.
             this.search();
             this.loading = false;
@@ -241,6 +245,35 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
             this.loading = false;
           });
     }
+  }
+
+  onEditSource(source: CandidateSource) {
+    if (isSavedSearch(source)) {
+      const editModal = this.modalService.open(UpdateSearchComponent);
+
+      editModal.componentInstance.savedSearch = source;
+
+      editModal.result
+        .then(() => {
+          //Refresh display
+          this.search();
+        })
+        .catch(() => { /* Isn't possible */
+        });
+    } else {
+      const editModal = this.modalService.open(UpdateListComponent);
+
+      editModal.componentInstance.savedList = source;
+
+      editModal.result
+        .then(() => {
+          //Refresh display
+          this.search();
+        })
+        .catch(() => { /* Isn't possible */
+        });
+    }
+
   }
 
   onToggleWatch(source: CandidateSource) {
