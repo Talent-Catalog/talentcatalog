@@ -42,6 +42,7 @@ import {SelectListComponent} from "../../list/select/select-list.component";
 import {
   CandidateSource,
   defaultReviewStatusFilter,
+  isMine,
   ReviewedStatus
 } from "../../../model/base";
 import {SavedListGetRequest} from "../../../model/saved-list";
@@ -429,7 +430,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     if (this.candidateSource) {
       if (!this.candidateSource.fixed) {
         //was it created by me?
-        if (this.candidateSource.createdBy.id !== this.loggedInUser.id) {
+        if (isMine(this.candidateSource, this.authService)) {
           shareable = true;
         }
       }

@@ -286,6 +286,7 @@ public class SavedSearchAdminApi implements
                 .add("fixed")
                 .add("reviewable")
                 .add("watcherUserIds")
+                .add("createdBy", userDto())
                 ;
     }
 
@@ -309,7 +310,6 @@ public class SavedSearchAdminApi implements
                 .add("otherWrittenLevel")
                 .add("otherSpokenLevel")
                 .add("minEducationLevelName")
-                .add("createdBy", userDto())
                 .add("createdDate")
                 .add("updatedBy", userDto())
                 .add("updatedDate")

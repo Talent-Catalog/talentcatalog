@@ -7,7 +7,7 @@ import {
 import {SavedSearchService} from "../../../services/saved-search.service";
 import {AuthService} from "../../../services/auth.service";
 import {User} from "../../../model/user";
-import {CandidateSource} from "../../../model/base";
+import {CandidateSource, isMine} from "../../../model/base";
 import {Router} from "@angular/router";
 
 @Component({
@@ -97,4 +97,13 @@ export class CandidateSourceComponent implements OnInit {
     return isSavedSearch(this.candidateSource)
       ? this.candidateSource as SavedSearch : null;
   }
+
+  isShared(source: CandidateSource) {
+    return !isMine(source, this.authService);
+  }
+
+  get isSavedSearch() {
+    return isSavedSearch;
+  }
+
 }

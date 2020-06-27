@@ -1,4 +1,5 @@
 import {User} from "./user";
+import {AuthService} from "../services/auth.service";
 
 export enum CandidateSourceType {
   SavedList,
@@ -50,5 +51,14 @@ export class SearchCandidateSourcesRequest extends PagedSearchRequest {
   fixed?: boolean;
   owned?: boolean;
   shared?: boolean;
+}
+
+export function isMine(source: CandidateSource, auth: AuthService) {
+  let mine: boolean = false;
+  const me: User = auth.getLoggedInUser();
+  if (source && me) {
+    mine = source.createdBy.id === me.id;
+  }
+  return mine;
 }
 
