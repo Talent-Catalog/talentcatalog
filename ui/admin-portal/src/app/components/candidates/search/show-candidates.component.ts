@@ -35,7 +35,7 @@ import {
   ReviewedStatus
 } from "../../../model/base";
 import {
-  CachedSearchResults,
+  CachedSourceResults,
   CandidateSourceResultsCacheService
 } from "../../../services/candidate-source-results-cache.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
@@ -197,11 +197,9 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     if (!refresh) {
 
       //Is there anything in cache?
-      //We only cache if not reviewable or if reviewable with the default filter
-      if (!this.isReviewable() ||
-        this.reviewStatusFilter.toString() === defaultReviewStatusFilter.toString()) {
-
-        const cached: CachedSearchResults =
+      //We only cache certain results
+      if (this.isCacheable()) {
+        const cached: CachedSourceResults =
           this.candidateSourceResultsCacheService.getFromCache(this.candidateSource);
         if (cached) {
           //If we are not required to use the pageNumber (usePageNumber = false)
@@ -259,8 +257,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   private cacheResults() {
     this.timestamp = Date.now();
 
-    //We only cache results with the default review status filter.
-    if (this.reviewStatusFilter.toString() === defaultReviewStatusFilter.toString()) {
+    //We only cache certain results
+    if (this.isCacheable()) {
       this.candidateSourceResultsCacheService.cache(this.candidateSource,
         {
         id: this.candidateSource.id,
@@ -272,6 +270,11 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         timestamp: this.timestamp
       });
     }
+  }
+
+  private isCacheable(): boolean {
+    return !this.isReviewable() ||
+      this.reviewStatusFilter.toString() === defaultReviewStatusFilter.toString();
   }
 
   viewCandidate(candidate: Candidate) {

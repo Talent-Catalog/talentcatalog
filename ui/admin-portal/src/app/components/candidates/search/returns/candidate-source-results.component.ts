@@ -20,7 +20,7 @@ import {SearchResults} from "../../../../model/search-results";
 import {SavedSearchService} from "../../../../services/saved-search.service";
 import {Router} from "@angular/router";
 import {
-  CachedSearchResults,
+  CachedSourceResults,
   CandidateSourceResultsCacheService
 } from "../../../../services/candidate-source-results-cache.service";
 import {
@@ -95,7 +95,7 @@ constructor(
 
     let done: boolean = false;
     if (!refresh) {
-      const cached: CachedSearchResults =
+      const cached: CachedSourceResults =
         this.candidateSourceResultsCacheService.getFromCache(this.candidateSource);
       if (cached) {
         this.results = cached.results;
