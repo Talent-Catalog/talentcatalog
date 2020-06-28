@@ -85,7 +85,8 @@ public class SavedSearchAdminApi implements
     }
 
     @Override
-    public @NotNull Map<String, Object> update(long id, @Valid UpdateSavedSearchRequest request) throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
+    public @NotNull Map<String, Object> update(long id, @Valid UpdateSavedSearchRequest request) 
+            throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
         SavedSearch savedSearch = this.savedSearchService.updateSavedSearch(id, request);
         return savedSearchDto().build(savedSearch);
     }
