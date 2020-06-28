@@ -95,7 +95,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   sortField = 'id';
   sortDirection = 'DESC';
 
-  /* Add candidates */
+  /* Add candidates support */
   doNumberOrNameSearch;
   searchFailed: boolean;
 
