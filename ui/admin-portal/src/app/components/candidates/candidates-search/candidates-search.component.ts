@@ -46,6 +46,7 @@ export class CandidatesSearchComponent implements OnInit {
           this.loading = false;
         }, err => {
           this.error = err;
+          this.loading = false;
         });
       }
     });

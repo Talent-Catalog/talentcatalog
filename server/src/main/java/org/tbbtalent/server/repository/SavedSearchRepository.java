@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tbbtalent.server.model.SavedSearch;
+import org.tbbtalent.server.model.Status;
 
 public interface SavedSearchRepository extends JpaRepository<SavedSearch, Long>, JpaSpecificationExecutor<SavedSearch> {
 
@@ -22,8 +23,11 @@ public interface SavedSearchRepository extends JpaRepository<SavedSearch, Long>,
 
     @Query(" select distinct s from SavedSearch s "
             + " left join fetch s.users"
-            + " where s.id = :id" )
-    Optional<SavedSearch> findByIdLoadUsers(@Param("id") long id);
+            + " where s.id = :id"
+            + " and s.status <> :exclude"
+    )
+    Optional<SavedSearch> findByIdLoadUsers(
+            @Param("id") long id, @Param("exclude") Status exclude);
 
     @Query(" select distinct s from SavedSearch s "
             + " left join fetch s.createdBy"

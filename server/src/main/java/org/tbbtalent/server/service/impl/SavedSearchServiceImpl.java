@@ -103,9 +103,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     @Override
     public Page<SavedSearch> searchSavedSearches(SearchSavedSearchRequest request) {
-        User userWithSharedSearches =
+        final User loggedInUser = userContext.getLoggedInUser();
+        User userWithSharedSearches = loggedInUser == null ? null :
                 userRepository.findByIdLoadSharedSearches(
-                        userContext.getLoggedInUser().getId());
+                        loggedInUser.getId());
 
         Page<SavedSearch> savedSearches = savedSearchRepository.findAll(
                 SavedSearchSpecification.buildSearchQuery(
@@ -129,7 +130,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     @Override
     public SavedSearch getSavedSearch(long id) {
-        SavedSearch savedSearch = this.savedSearchRepository.findByIdLoadUsers(id)
+        SavedSearch savedSearch = this.savedSearchRepository
+                .findByIdLoadUsers(id, Status.deleted)
                 .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
 
         savedSearch.parseType();
@@ -186,10 +188,12 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     @Override
     @Transactional
-    public SavedSearch updateSavedSearch(long id, UpdateSavedSearchRequest request) throws EntityExistsException {
+    public SavedSearch updateSavedSearch(long id, UpdateSavedSearchRequest request) 
+            throws EntityExistsException {
         // if no search candidate request, only update the search name and type
         if(request.getSearchCandidateRequest() == null){
-            SavedSearch savedSearch = savedSearchRepository.findById(id).orElse(null);
+            SavedSearch savedSearch = savedSearchRepository.findById(id)
+                    .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
             savedSearch.setName(request.getName());
             savedSearch.setFixed(request.getFixed());
             savedSearch.setReviewable(request.getReviewable());
@@ -213,11 +217,12 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     @Transactional
     public boolean deleteSavedSearch(long id)  {
         SavedSearch savedSearch = savedSearchRepository.findByIdLoadAudit(id).orElse(null);
+        final User loggedInUser = userContext.getLoggedInUser();
 
-        if (savedSearch != null) {
+        if (savedSearch != null && loggedInUser != null) {
 
             // Check if saved search was created by the user deleting.
-            if(savedSearch.getCreatedBy().getId() == userContext.getLoggedInUser().getId()) {
+            if(savedSearch.getCreatedBy().getId().equals(loggedInUser.getId())) {
                 savedSearch.setStatus(Status.deleted);
                 
                 //Change name so that that name can be reused
@@ -416,7 +421,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         List<Long> requestCountries = getIdsFromString(request.getCountryIds());
 
         // if a user has source country restrictions AND IF the request has countries selected
-        if(user.getSourceCountries().size() > 0 && request.getCountryIds() != null) {
+        if(user != null 
+                && user.getSourceCountries().size() > 0 
+                && request.getCountryIds() != null) {
             List<Long> sourceCountries = user.getSourceCountries().stream()
                     .map(Country::getId)
                     .collect(Collectors.toList());

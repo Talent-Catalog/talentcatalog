@@ -380,10 +380,12 @@ public class CandidateServiceImpl implements CandidateService {
 
         if (searchForNumber) {
             candidates = candidateRepository.searchCandidateNumber(
-                        s +'%', sourceCountries, request.getPageRequestWithoutSort());
+                        s +'%', sourceCountries, 
+                    CandidateStatus.deleted, request.getPageRequestWithoutSort());
         } else {
             candidates = candidateRepository.searchCandidateName(
-                        '%' + s +'%', sourceCountries, request.getPageRequestWithoutSort());
+                        '%' + s +'%', sourceCountries, 
+                    CandidateStatus.deleted, request.getPageRequestWithoutSort());
         }
 
         log.info("Found " + candidates.getTotalElements() + " candidates in search");

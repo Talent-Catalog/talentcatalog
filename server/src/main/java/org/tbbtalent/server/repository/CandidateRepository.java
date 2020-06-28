@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tbbtalent.server.model.Candidate;
+import org.tbbtalent.server.model.CandidateStatus;
 import org.tbbtalent.server.model.Country;
 
 public interface CandidateRepository extends JpaRepository<Candidate, Long>, JpaSpecificationExecutor<Candidate> {
@@ -87,6 +88,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
      * ADMIN PORTAL DISPLAY CANDIDATE METHODS: includes source country restrictions.
      */
     String sourceCountryRestriction = " and c.country in (:userSourceCountries)";
+    String excludeDeleted = " and c.status <> :exclude";
 
     @Query(" select distinct c from Candidate c "
             + " where lower(c.candidateNumber) like lower(:number)"
@@ -101,11 +103,24 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
                                          @Param("userSourceCountries") Set<Country> userSourceCountries,
                                          Pageable pageable);
 
+    /**
+     * Note that we need to pass in a CandidateStatus.deleted constant in the
+     * "exclude" parameter because I haven't been able to just put
+     * CanadidateStatus.deleted constant directly into the query. 
+     * Theoretically the fully qualified name should work eg
+     * " and c.status <> org.tbbtalent.server.model.CandidateStatus.deleted"
+     * See https://stackoverflow.com/questions/8217144/problems-with-making-a-query-when-using-enum-in-entity
+     * but Hibernate rejects that at run time with the following error:
+     * org.hibernate.hql.internal.ast.QuerySyntaxException: Invalid path
+     * - JC
+     */
     @Query(" select distinct c from Candidate c "
             + " where lower(c.candidateNumber) like lower(:candidateNumber) "
+            + excludeDeleted
             + sourceCountryRestriction)
     Page<Candidate> searchCandidateNumber(@Param("candidateNumber") String candidateNumber,
                                           @Param("userSourceCountries") Set<Country> userSourceCountries,
+                                          @Param("exclude") CandidateStatus exclude,
                                           Pageable pageable);
 
     @Query(" select distinct c from Candidate c "
@@ -117,9 +132,11 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
 
     @Query(" select distinct c from Candidate c left join c.user u "
             + " where lower(concat(u.firstName, ' ', u.lastName)) like lower(:candidateName)"
+            + excludeDeleted
             + sourceCountryRestriction)
     Page<Candidate> searchCandidateName(@Param("candidateName") String candidateName,
                                         @Param("userSourceCountries") Set<Country> userSourceCountries,
+                                        @Param("exclude") CandidateStatus exclude,
                                         Pageable pageable);
 
     @Query(" select c from Candidate c "
