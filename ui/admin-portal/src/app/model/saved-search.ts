@@ -1,24 +1,13 @@
 import {SearchCandidateRequest} from "./search-candidate-request";
 import {SavedSearchTypeInfo} from "../services/saved-search.service";
-import {User} from "./user";
-
-export enum ReviewedStatus {
-  pending,
-  verified,
-  rejected
-}
-
-export enum SearchBy {
-  type,
-  all,
-  mySearches,
-  sharedWithMe
-}
-
-export const defaultReviewStatusFilter: string[] = [
-  ReviewedStatus[ReviewedStatus.pending],
-  ReviewedStatus[ReviewedStatus.verified]
-];
+import {
+  Auditable,
+  CandidateSource,
+  PagedSearchRequest,
+  SearchCandidateSourcesRequest
+} from "./base";
+import {Router, UrlTree} from "@angular/router";
+import {copyToClipboard} from "../util/clipboard";
 
 export enum SavedSearchType {
   profession,
@@ -49,6 +38,10 @@ export enum SavedSearchSubtype {
    uk
 }
 
+export class SavedSearchGetRequest extends PagedSearchRequest {
+  reviewStatusFilter: string[];
+}
+
 export interface SavedSearchJoin {
   savedSearchId: number;
   name: string;
@@ -56,26 +49,56 @@ export interface SavedSearchJoin {
   childSavedSearch: SavedSearch;
 }
 
-export interface SavedSearch extends SearchCandidateRequest {
-  id: number;
-  name: string;
-  fixed: boolean;
+export interface SavedSearch extends CandidateSource, SearchCandidateRequest {
   reviewable: boolean;
-  users?: User[];
-  watcherUserIds?: number[];
-  createdBy?: User;
   savedSearchType: SavedSearchType;
   savedSearchSubtype: SavedSearchSubtype;
 }
 
+export class SearchSavedSearchRequest extends SearchCandidateSourcesRequest {
+  savedSearchType: SavedSearchType;
+  savedSearchSubtype: SavedSearchSubtype;
+}
+
+export function getCandidateSourceNavigation(source: CandidateSource) {
+  const urlSelector: string = isSavedSearch(source) ? 'search' : 'list';
+  return ['candidates', urlSelector, source.id];
+}
+
+export function copyCandidateSourceLinkToClipboard(
+  router: Router, source: CandidateSource) {
+  //Get navigation commands for the given source
+  const urlCommands = getCandidateSourceNavigation(source);
+  //And convert to an absolute url
+  const urlTree: UrlTree = router.createUrlTree(urlCommands);
+  const href = document.location.origin + router.serializeUrl(urlTree);
+  //...which is copied to the clipboard
+  copyToClipboard(href);
+}
+
+export function getCandidateSourceType(source: CandidateSource) {
+  return isSavedSearch(source) ? "Search" : "List";
+}
+
+export function isSavedSearch(source: CandidateSource): source is SavedSearch {
+  return source ? 'savedSearchType' in source : false;
+}
+
+export function getCandidateSourceBreadcrumb(candidateSource: CandidateSource): string {
+  const sourceType = getCandidateSourceType(candidateSource);
+  return candidateSource != null ?
+    (sourceType + ': ' + candidateSource.name) : sourceType;
+}
+
 export function getSavedSearchBreadcrumb(savedSearch: SavedSearch, infos: SavedSearchTypeInfo[]): string {
+  const sourceType = getCandidateSourceType(savedSearch);
   let subtypeTitle: string = '';
   if (savedSearch) {
     if (savedSearch.savedSearchSubtype != null) {
-      let savedSearchTypeSubInfos = infos[savedSearch.savedSearchType].categories;
+      const savedSearchTypeSubInfos = infos[savedSearch.savedSearchType].categories;
       if (savedSearchTypeSubInfos) {
-        let savedSearchTypeSubInfo = savedSearchTypeSubInfos.find(
-          info => info.savedSearchSubtype == savedSearch.savedSearchSubtype);
+        const savedSearchTypeSubInfo = savedSearchTypeSubInfos.find(
+          info => info.savedSearchSubtype === savedSearch.savedSearchSubtype);
         if (savedSearchTypeSubInfo) {
           subtypeTitle = savedSearchTypeSubInfo.title;
         }
@@ -84,14 +107,14 @@ export function getSavedSearchBreadcrumb(savedSearch: SavedSearch, infos: SavedS
   }
 
   return savedSearch && savedSearch.savedSearchType != null ?
-    (infos[savedSearch.savedSearchType].title +
+    (sourceType + ': ' + infos[savedSearch.savedSearchType].title +
     (subtypeTitle ? "/" + subtypeTitle : "") + ': ' + savedSearch.name)
-    : 'Search';
+    : sourceType;
 }
 
-export function indexOfSavedSearch(savedSearchID: number, savedSearches: SavedSearch[]): number {
-  for (let i = 0; i < savedSearches.length; i++) {
-    if (savedSearches[i].id == savedSearchID) {
+export function indexOfAuditable(id: number, auditables: Auditable[]): number {
+  for (let i = 0; i < auditables.length; i++) {
+    if (auditables[i].id === id) {
       return i;
     }
   }
@@ -115,23 +138,40 @@ export interface SavedSearchRequest {
   searchCandidateRequest?: SearchCandidateRequest;
 }
 
-export interface SavedSearchRunRequest {
-  savedSearchId: number;
-  shortlistStatus?: string[];
-  pageNumber?: number;
-  pageSize?: number;
-  sortFields?: string[];
-  sortDirection?: string;
+export interface ClearSelectionRequest {
+  //User making the selections
+  userId: number;
+}
+
+export interface SaveSelectionRequest {
+  //User making the selections
+  userId: number;
+
+  //List to save to - 0 if new list
+  savedListId: number;
+
+  //Name of new list to be created (if any - only used if savedListId = 0
+  newListName?: string;
+
+  //If true any existing contents of list are replace, otherwise contents are
+  //added (merged).
+  replace: boolean;
 }
 
 export interface UpdateSharingRequest {
   savedSearchId: number;
 }
 
+export interface SelectCandidateInSearchRequest {
+  userId: number;
+  candidateId: number;
+  selected: boolean;
+}
+
 /**
  * Create a SavedSearchRequest from a SavedSearch and a search request.
- * @param savedSearch
- * @param searchCandidateRequest
+ * @param savedSearch Saved search
+ * @param searchCandidateRequest Search request
  */
 export function convertToSavedSearchRequest
 (savedSearch: SavedSearch, searchCandidateRequest: SearchCandidateRequest):

@@ -63,7 +63,7 @@ export class SearchSavedSearchesComponent implements OnInit {
     request.fixed = false;
     request.owned = true;
     request.shared = true;
-    this.savedSearchService.search(request).subscribe(results => {
+    this.savedSearchService.searchPaged(request).subscribe(results => {
       this.results = results;
       this.loading = false;
     });

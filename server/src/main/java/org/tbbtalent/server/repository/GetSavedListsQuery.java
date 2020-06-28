@@ -14,6 +14,7 @@ import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.SavedList;
 import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
@@ -28,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GetSavedListsQuery implements Specification<SavedList> {
     final private SearchSavedListRequest request;
-    final private User loggedInUser;
+    @Nullable final private User loggedInUser;
     
     @Override
     public Predicate toPredicate(
@@ -36,6 +37,11 @@ public class GetSavedListsQuery implements Specification<SavedList> {
         Predicate conjunction = cb.conjunction();
         query.distinct(true);
 
+        //Only return lists which are not Selection lists - 
+        //ie lists with no associated saved search.
+        conjunction.getExpressions().add(
+                cb.isNull(savedList.get("savedSearch")));
+        
         // KEYWORD SEARCH
         if (!StringUtils.isBlank(request.getKeyword())){
             String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
@@ -58,15 +64,13 @@ public class GetSavedListsQuery implements Specification<SavedList> {
         if (request.getShared() != null && request.getShared()) {
             if (loggedInUser != null) {
                 Set<SavedList> sharedLists = loggedInUser.getSharedLists();
-                if (!sharedLists.isEmpty()) {
-                    Set<Long> sharedIDs = new HashSet<>();
-                    for (SavedList sharedList : sharedLists) {
-                        sharedIDs.add(sharedList.getId());
-                    }
-                    ors.getExpressions().add(
-                            savedList.get("id").in( sharedIDs )
-                    );
+                Set<Long> sharedIDs = new HashSet<>();
+                for (SavedList sharedList : sharedLists) {
+                    sharedIDs.add(sharedList.getId());
                 }
+                ors.getExpressions().add(
+                        savedList.get("id").in( sharedIDs )
+                );
             }
         }
 

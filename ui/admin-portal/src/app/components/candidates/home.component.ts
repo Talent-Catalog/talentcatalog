@@ -1,10 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {NgbTabChangeEvent} from "@ng-bootstrap/ng-bootstrap";
-import {
-  SavedSearchSubtype,
-  SavedSearchType,
-  SearchBy
-} from "../../model/saved-search";
+import {SavedSearchSubtype, SavedSearchType} from "../../model/saved-search";
+import {CandidateSourceType, SearchBy} from "../../model/base"
 import {LocalStorageService} from "angular-2-local-storage";
 import {
   SavedSearchService,
@@ -71,9 +68,9 @@ export class HomeComponent implements OnInit {
     this.activeTabId = id;
 
     const parts = id.split(':');
-    if (parts[0] == 'type' && parts.length == 2) {
+    if (parts[0] === 'type' && parts.length === 2) {
 
-      let type: SavedSearchType = SavedSearchType[parts[1]];
+      const type: SavedSearchType = SavedSearchType[parts[1]];
       this.savedSearchTypeSubInfos = this.savedSearchTypeInfos[type].categories;
 
     }
@@ -89,6 +86,11 @@ export class HomeComponent implements OnInit {
   }
 
   //Make some Enum types visible in HTML
+
+  get CandidateSourceType() {
+    return CandidateSourceType;
+  }
+
   get SearchBy() {
     return SearchBy;
   }

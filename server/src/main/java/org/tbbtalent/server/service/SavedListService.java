@@ -15,6 +15,7 @@ import org.tbbtalent.server.request.list.CreateSavedListRequest;
 import org.tbbtalent.server.request.list.IHasSetOfCandidates;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
+import org.tbbtalent.server.request.search.UpdateSharingRequest;
 
 /**
  * Saved List Service
@@ -121,4 +122,32 @@ public interface SavedListService {
     SavedList updateSavedList(long savedListId, UpdateSavedListInfoRequest request)
             throws NoSuchObjectException, EntityExistsException;
 
+
+    /**
+     * Adds a user who wants to share the given saved list (created by someone 
+     * else).
+     * @param id id of Saved List being shared
+     * @param request Contains the id of the user who is sharing the list
+     * @return The updated saved list with a modified collection of users
+     * who are sharing it.
+     * @throws NoSuchObjectException if there is no saved list with this id
+     * or the user is not found.
+     */
+    SavedList addSharedUser(long id, UpdateSharingRequest request)
+            throws NoSuchObjectException;
+
+    /**
+     * Removes a user who was sharing the given saved list (created by someone 
+     * else).
+     * @param id id of Saved List
+     * @param request Contains the id of the user who is no longer interested
+     *                in sharing the list
+     * @return The updated saved list with a modified collection of users
+     * who are sharing it.
+     * @throws NoSuchObjectException if there is no saved list with this id
+     * or the user is not found.
+     */
+    SavedList removeSharedUser(long id, UpdateSharingRequest request)
+            throws NoSuchObjectException;
+    
 }

@@ -4,12 +4,16 @@ import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
 import {
+  ClearSelectionRequest,
   SavedSearch,
   SavedSearchRequest,
   SavedSearchSubtype,
-  SavedSearchType
+  SavedSearchType,
+  SaveSelectionRequest,
+  SelectCandidateInSearchRequest
 } from "../model/saved-search";
 import {map} from "rxjs/operators";
+import {SavedList} from "../model/saved-list";
 
 export interface SavedSearchTypeInfo {
   savedSearchType?: SavedSearchType;
@@ -76,8 +80,8 @@ export class SavedSearchService {
     return this.savedSearchTypeInfos;
   }
 
-  search(request): Observable<SearchResults<SavedSearch>> {
-    return this.http.post<SearchResults<SavedSearch>>(`${this.apiUrl}/search`, request)
+  searchPaged(request): Observable<SearchResults<SavedSearch>> {
+    return this.http.post<SearchResults<SavedSearch>>(`${this.apiUrl}/search-paged`, request)
       .pipe(
         map(results => this.processPostResults(results))
       );
@@ -116,7 +120,7 @@ export class SavedSearchService {
     return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
   }
 
-  private static convertSavedSearchEnums(savedSearch: any): SavedSearch {
+  public static convertSavedSearchEnums(savedSearch: any): SavedSearch {
     if (typeof savedSearch.savedSearchType === "string") {
       savedSearch.savedSearchType = SavedSearchType[savedSearch.savedSearchType];
     }
@@ -126,18 +130,9 @@ export class SavedSearchService {
     return savedSearch;
   }
 
-  addSharedUser(id: number, request: { userId: number }): Observable<SavedSearch> {
-    return this.http.put<SavedSearch>(`${this.apiUrl}/shared-add/${id}`, request)
-      .pipe(
-        map(savedSearch => SavedSearchService.convertSavedSearchEnums(savedSearch))
-      );
-  }
-
-  removeSharedUser(id: number, request: { userId: number }): Observable<SavedSearch> {
-    return this.http.put<SavedSearch>(`${this.apiUrl}/shared-remove/${id}`, request)
-      .pipe(
-        map(savedSearch => SavedSearchService.convertSavedSearchEnums(savedSearch))
-      );
+  selectCandidate(id: number, request: SelectCandidateInSearchRequest):
+    Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/select-candidate/${id}`, request);
   }
 
   addWatcher(id: number, request: { userId: number }): Observable<SavedSearch> {
@@ -152,5 +147,13 @@ export class SavedSearchService {
       .pipe(
         map(savedSearch => SavedSearchService.convertSavedSearchEnums(savedSearch))
       );
+  }
+
+  clearSelection(id: number, request: ClearSelectionRequest): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/clear-selection/${id}`, request);
+  }
+
+  saveSelection(id: number, request: SaveSelectionRequest): Observable<SavedList> {
+    return this.http.put<SavedList>(`${this.apiUrl}/save-selection/${id}`, request);
   }
 }

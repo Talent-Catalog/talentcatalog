@@ -18,15 +18,15 @@ export class SavedListCandidateService {
   constructor(private http: HttpClient) {
   }
 
-  merge(id: number, request: IHasSetOfCandidates): Observable<boolean> {
-    return this.http.put<boolean>(`${this.apiUrl}/${id}/merge`, request);
+  merge(id: number, request: IHasSetOfCandidates): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}/merge`, request);
   }
 
-  remove(id: number, request: IHasSetOfCandidates): Observable<boolean> {
-    return this.http.put<boolean>(`${this.apiUrl}/${id}/remove`, request);
+  remove(id: number, request: IHasSetOfCandidates): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}/remove`, request);
   }
 
-  replace(id: number, request: IHasSetOfCandidates): Observable<boolean> {
-    return this.http.put<boolean>(`${this.apiUrl}/${id}/replace`, request);
+  replace(id: number, request: IHasSetOfCandidates): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}/replace`, request);
   }
 }

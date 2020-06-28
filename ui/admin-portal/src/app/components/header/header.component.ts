@@ -21,7 +21,7 @@ import {User} from "../../model/user";
 })
 export class HeaderComponent implements OnInit {
 
-  isNavbarCollapsed=true;
+  isNavbarCollapsed = true;
   doEmailSearch;
   doNumberOrNameSearch;
   doPhoneSearch;
@@ -36,7 +36,7 @@ export class HeaderComponent implements OnInit {
               private router: Router) { }
 
   ngOnInit() {
-    //dropdown to add joined searches
+
     this.doNumberOrNameSearch = (text$: Observable<string>) =>
       text$.pipe(
         debounceTime(300),
@@ -104,13 +104,14 @@ export class HeaderComponent implements OnInit {
   }
 
   renderCandidateRow(candidate: Candidate) {
-    return candidate.candidateNumber+": "+candidate.user.firstName + " "+candidate.user.lastName;
+    return candidate.candidateNumber + ": " + candidate.user.firstName + " " + candidate.user.lastName;
   }
 
 
   logout() {
     this.authService.logout();
     this.router.navigate(['login']);
+    localStorage.clear();
   }
 
   selectSearchResult ($event, input) {
@@ -119,10 +120,5 @@ export class HeaderComponent implements OnInit {
     console.log('going to', $event.item);
     this.router.navigate(['candidates',  $event.item.candidateNumber]);
 
-  }
-
-  clearCache() {
-    this.logout();
-    localStorage.clear();
   }
 }

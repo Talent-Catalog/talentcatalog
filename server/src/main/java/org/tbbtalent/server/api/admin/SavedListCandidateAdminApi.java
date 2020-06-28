@@ -4,15 +4,23 @@
 
 package org.tbbtalent.server.api.admin;
 
+import java.io.IOException;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.tbbtalent.server.exception.ExportFailedException;
+import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.request.candidate.SavedListGetRequest;
 import org.tbbtalent.server.request.list.HasSetOfCandidatesImpl;
@@ -58,26 +66,41 @@ public class SavedListCandidateAdminApi implements IManyToManyApi<SavedListGetRe
     }
 
     @Override
-    public boolean merge(long savedListId, @Valid HasSetOfCandidatesImpl request) {
-        return savedListService.mergeSavedList(savedListId, request);
+    public void merge(long savedListId, @Valid HasSetOfCandidatesImpl request) 
+            throws NoSuchObjectException {
+        savedListService.mergeSavedList(savedListId, request);
     }
 
     @Override
-    public boolean remove(long savedListId, @Valid HasSetOfCandidatesImpl request) {
-        return savedListService.removeFromSavedList(savedListId, request);
+    public void remove(long savedListId, @Valid HasSetOfCandidatesImpl request) 
+            throws NoSuchObjectException {
+        savedListService.removeFromSavedList(savedListId, request);
     }
 
     @Override
-    public boolean replace(long savedListId, @Valid HasSetOfCandidatesImpl request) {
-        return savedListService.replaceSavedList(savedListId, request);
+    public void replace(long savedListId, @Valid HasSetOfCandidatesImpl request) 
+            throws NoSuchObjectException {
+        savedListService.replaceSavedList(savedListId, request);
     }
 
     @Override
     public @NotNull Map<String, Object> searchPaged(
-            long savedListId, @Valid SavedListGetRequest request) {
+            long savedListId, @Valid SavedListGetRequest request) 
+            throws NoSuchObjectException {
         Page<Candidate> candidates = this.candidateService
                 .getSavedListCandidates(savedListId, request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.buildPage(candidates);
     }
+
+    @PostMapping(value = "{id}/export/csv", produces = MediaType.TEXT_PLAIN_VALUE)
+    public void export(
+            @PathVariable("id") long savedListId,
+            @Valid  @RequestBody SavedListGetRequest request,
+            HttpServletResponse response) throws IOException, ExportFailedException {
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + "candidates.csv\"");
+        response.setContentType("text/csv; charset=utf-8");
+        candidateService.exportToCsv(savedListId, request, response.getWriter());
+    }
+    
 }

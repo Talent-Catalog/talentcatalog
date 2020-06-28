@@ -42,7 +42,7 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
     /**
      * If true, only the owner can modify the details of the candidate source
      */
-    private Boolean fixed;
+    private Boolean fixed = false;
 
     /**
      * Stored as comma separated list of watching user ids 

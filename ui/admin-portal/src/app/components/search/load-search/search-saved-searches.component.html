@@ -42,13 +42,13 @@
 
     <tbody>
     <tr *ngFor="let savedSearch of results?.content">
-      <td><app-saved-search [savedSearch]="savedSearch"
-                            [showAll]="false" [showWatch]="false"
-                            [showOpen]="false" [showSearch]="true"
-                            (selectSearch)="selectSearch($event)"
+      <td><app-candidate-source [candidateSource]="savedSearch"
+                                [showAll]="false" [showWatch]="false"
+                                [showOpen]="false" [showSelect]="true"
+                                (selectSource)="selectSearch($event)"
                             >
 
-      </app-saved-search></td>
+      </app-candidate-source></td>
     </tr>
 
     <!-- loading -->

@@ -5,18 +5,13 @@ import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
 import {map} from "rxjs/operators";
-import {SavedSearchRunRequest} from "../model/saved-search";
 
 @Injectable({providedIn: 'root'})
 export class CandidateService {
 
   private apiUrl = environment.apiUrl + '/candidate';
 
-  constructor(private http:HttpClient) {}
-
-  runSavedSearch(runRequest: SavedSearchRunRequest): Observable<SearchResults<Candidate>> {
-    return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/runsavedsearch`, runRequest);
-  }
+  constructor(private http: HttpClient) {}
 
   search(request): Observable<SearchResults<Candidate>> {
     return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/search`, request);
@@ -68,11 +63,6 @@ export class CandidateService {
 
   delete(id: number): Observable<boolean>  {
     return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
-  }
-
-  //todo Implement
-  exportFromSavedSearch(request: SavedSearchRunRequest, size: number) {
-    return this.http.post(`${this.apiUrl}/exportsearch/csv`, request, {responseType: 'blob'});
   }
 
   export(request) {

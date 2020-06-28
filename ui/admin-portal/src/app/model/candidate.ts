@@ -32,4 +32,5 @@ export interface Candidate {
   unRegistrationNumber: string;
   surveyType: SurveyType;
   surveyComment: string;
+  selected: boolean;
 }

@@ -4,6 +4,7 @@
 
 package org.tbbtalent.server.request.list;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import lombok.Getter;
@@ -18,4 +19,11 @@ import lombok.ToString;
 @ToString
 public class HasSetOfCandidatesImpl implements IHasSetOfCandidates {
     private Set<Long> candidateIds;
+    
+    public void addCandidateId(Long id) {
+        if (candidateIds == null) {
+            candidateIds = new HashSet<>();
+        }
+        candidateIds.add(id);
+    }
 }

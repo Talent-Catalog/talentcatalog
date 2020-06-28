@@ -19,8 +19,6 @@ export class UpdateListComponent implements OnInit {
   saving: boolean;
   savedList: SavedList;
 
-  get name() { return this.form.get('name'); }
-
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
               private savedListService: SavedListService) {
@@ -28,15 +26,20 @@ export class UpdateListComponent implements OnInit {
 
   ngOnInit() {
     this.form = this.fb.group({
-      name: [null, Validators.required],
+      name: [this.savedList.name, Validators.required],
+      fixed: [this.savedList.fixed],
     });
   }
+
+  get fixed() { return this.form.value.fixed; }
+  get name() { return this.form.value.name; }
 
   save() {
     this.saving = true;
 
     const request: UpdateSavedListInfoRequest = {
-      name: this.form.value.name
+      name: this.name,
+      fixed: this.fixed
     };
     this.savedListService.update(this.savedList.id, request).subscribe(
       (savedList) => {

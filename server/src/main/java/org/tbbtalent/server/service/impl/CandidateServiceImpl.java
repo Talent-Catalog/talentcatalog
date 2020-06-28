@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.rmi.server.ExportException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -77,7 +76,7 @@ import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
 import org.tbbtalent.server.request.candidate.IHasSetOfSavedLists;
 import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
 import org.tbbtalent.server.request.candidate.SavedListGetRequest;
-import org.tbbtalent.server.request.candidate.SavedSearchRunRequest;
+import org.tbbtalent.server.request.candidate.SavedSearchGetRequest;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.candidate.SearchJoinRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
@@ -151,20 +150,42 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Page<Candidate> searchCandidates(SavedSearchRunRequest request) {
+    public Page<Candidate> searchCandidates(
+            long savedSearchId, SavedSearchGetRequest request) 
+            throws NoSuchObjectException {
+
+        //Check for selection list to set the selected attribute on returned 
+        // candidates.
+        SavedList selectionList = null;
+        User user = userContext.getLoggedInUser();
+        if (user != null) {
+            selectionList = savedSearchService
+                    .getSelectionList(savedSearchId, user.getId());
+        }
+
+        SearchCandidateRequest searchRequest =
+                this.savedSearchService.loadSavedSearch(savedSearchId);
+
+        //Merge the SavedSearchGetRequest - notably the page request - in to
+        //the standard saved search request. 
+        searchRequest.merge(request);
+
+        //Do the search
+        final Page<Candidate> candidates = searchCandidates(searchRequest);
         
-        Long savedSearchId = request.getSavedSearchId(); 
-        SavedSearch savedSearch = this.savedSearchRepository.findByIdLoadSearchJoins(savedSearchId)
-                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, savedSearchId));
-        SearchCandidateRequest searchCandidateRequest = convertToSearchCandidateRequest(savedSearch);
+        //Add in any selections
+        if (selectionList != null) {
+            Set<Candidate> selectedCandidates = selectionList.getCandidates();
+            if (selectedCandidates.size() > 0) {
+                for (Candidate candidate : candidates) {
+                    if (selectedCandidates.contains(candidate)) {
+                        candidate.setSelected(true);
+                    }
+                }
+            }
+        }
         
-        searchCandidateRequest.setPageNumber(request.getPageNumber());
-        searchCandidateRequest.setPageSize(request.getPageSize());
-        searchCandidateRequest.setSortDirection(request.getSortDirection());
-        searchCandidateRequest.setSortFields(request.getSortFields());
-        searchCandidateRequest.setShortlistStatus(request.getShortlistStatus());
-        
-        return searchCandidates(searchCandidateRequest);
+        return candidates;
     }
 
     @Override
@@ -409,7 +430,7 @@ public class CandidateServiceImpl implements CandidateService {
 
 
     @Override
-    public Candidate getCandidate(long id) {
+    public Candidate getCandidate(long id) throws NoSuchObjectException {
         return this.candidateRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
     }
@@ -952,52 +973,19 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public void exportToCsv(SavedSearchRunRequest request, PrintWriter writer) throws ExportException {
-        Long savedSearchId = request.getSavedSearchId();
-        SavedSearch savedSearch = this.savedSearchRepository.findByIdLoadSearchJoins(savedSearchId)
-                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, savedSearchId));
-        SearchCandidateRequest searchCandidateRequest = convertToSearchCandidateRequest(savedSearch);
-
-        searchCandidateRequest.setPageNumber(request.getPageNumber());
-        searchCandidateRequest.setPageSize(request.getPageSize());
-        searchCandidateRequest.setSortDirection(request.getSortDirection());
-        searchCandidateRequest.setSortFields(request.getSortFields());
-        searchCandidateRequest.setShortlistStatus(request.getShortlistStatus());
-        exportToCsv(searchCandidateRequest, writer);
-    }
-
-    @Override
-    public void exportToCsv(SearchCandidateRequest request, PrintWriter writer) {
+    public void exportToCsv(
+            long savedListId, SavedListGetRequest request, PrintWriter writer) 
+            throws ExportFailedException {
         try (CSVWriter csvWriter = new CSVWriter(writer)) {
-
-            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-mm-yyyy");
-            csvWriter.writeNext(new String[] {
-                    "Candidate Number", "Candidate First Name", "Candidate Last Name","Gender", "Country Residing", "Nationality",
-                    "Dob","Email", "Max Education Level", "Education Major", "English Spoken Level", "Occupation"
-            });
+            csvWriter.writeNext(getExportTitles());
 
             request.setPageNumber(0);
             request.setPageSize(500);
             boolean hasMore = true;
             while (hasMore) {
-                Page<Candidate> result = this.searchCandidates(request);
-
+                Page<Candidate> result = getSavedListCandidates(savedListId, request);
                 for (Candidate candidate : result.getContent()) {
-                    csvWriter.writeNext(new String[] {
-                            candidate.getCandidateNumber(),
-                            candidate.getUser().getFirstName(),
-                            candidate.getUser().getLastName(),
-                            candidate.getGender() != null ? candidate.getGender().toString() : null,
-                            candidate.getCountry() != null ? candidate.getCountry().getName() : candidate.getMigrationCountry(),
-                            candidate.getNationality() != null ? candidate.getNationality().getName() : null,
-                            candidate.getDob() != null ? candidate.getDob().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) : null,
-                            candidate.getUser().getEmail(),
-                            candidate.getMaxEducationLevel() != null ? candidate.getMaxEducationLevel().getName() : null,
-                            formatCandidateMajor(candidate.getCandidateEducations()),
-                            getEnglishSpokenProficiency(candidate.getCandidateLanguages()),
-                            formatCandidateOccupation(candidate.getCandidateOccupations())
-
-                    });
+                    csvWriter.writeNext(getExportCandidateStrings(candidate));
                 }
 
                 if (result.getNumber() * request.getPageSize() < result.getTotalElements()) {
@@ -1009,6 +997,69 @@ public class CandidateServiceImpl implements CandidateService {
         } catch (IOException e) {
             throw new ExportFailedException( e);
         }
+    }
+
+    @Override
+    public void exportToCsv(
+            long savedSearchId, SavedSearchGetRequest request, PrintWriter writer) 
+            throws ExportFailedException {
+        SearchCandidateRequest searchRequest =
+                this.savedSearchService.loadSavedSearch(savedSearchId);
+
+        //Merge the SavedSearchGetRequest - notably the page request - in to
+        //the standard saved search request. 
+        searchRequest.merge(request);
+        exportToCsv(searchRequest, writer);
+    }
+
+    @Override
+    public void exportToCsv(SearchCandidateRequest request, PrintWriter writer) 
+            throws ExportFailedException {
+        try (CSVWriter csvWriter = new CSVWriter(writer)) {
+            csvWriter.writeNext(getExportTitles());
+
+            request.setPageNumber(0);
+            request.setPageSize(500);
+            boolean hasMore = true;
+            while (hasMore) {
+                Page<Candidate> result = searchCandidates(request);
+                for (Candidate candidate : result.getContent()) {
+                    csvWriter.writeNext(getExportCandidateStrings(candidate));
+                }
+
+                if (result.getNumber() * request.getPageSize() < result.getTotalElements()) {
+                    request.setPageNumber(request.getPageNumber()+1);
+                } else {
+                    hasMore = false;
+                }
+            }
+        } catch (IOException e) {
+            throw new ExportFailedException( e);
+        }
+    }
+
+    private String[] getExportTitles() {
+        return new String[]{
+                "Candidate Number", "Candidate First Name", "Candidate Last Name", "Gender", "Country Residing", "Nationality",
+                "Dob", "Email", "Max Education Level", "Education Major", "English Spoken Level", "Occupation"
+        };
+    }
+
+    private String[] getExportCandidateStrings(Candidate candidate) {
+        return new String[] {
+                candidate.getCandidateNumber(),
+                candidate.getUser().getFirstName(),
+                candidate.getUser().getLastName(),
+                candidate.getGender() != null ? candidate.getGender().toString() : null,
+                candidate.getCountry() != null ? candidate.getCountry().getName() : candidate.getMigrationCountry(),
+                candidate.getNationality() != null ? candidate.getNationality().getName() : null,
+                candidate.getDob() != null ? candidate.getDob().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) : null,
+                candidate.getUser().getEmail(),
+                candidate.getMaxEducationLevel() != null ? candidate.getMaxEducationLevel().getName() : null,
+                formatCandidateMajor(candidate.getCandidateEducations()),
+                getEnglishSpokenProficiency(candidate.getCandidateLanguages()),
+                formatCandidateOccupation(candidate.getCandidateOccupations())
+        };
     }
 
     public String formatCandidateMajor(List<CandidateEducation> candidateEducations){

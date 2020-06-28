@@ -18,10 +18,10 @@
       </form>
     </div>
     <ul class="searches" (window:keydown)="keyDown($event)">
-      <li *ngFor="let savedSearch of results?.content; let i = index"
-          [class.selected]="savedSearch === selectedSavedSearch"
-          (click)="onSelect(savedSearch)"  >
-        {{savedSearch.name}}
+      <li *ngFor="let source of results?.content; let i = index"
+          [class.selected]="source === selectedSource"
+          (click)="onSelect(source)"  >
+        {{source.name}}
       </li>
 
     </ul>
@@ -36,25 +36,31 @@
                       (pageChange)="search()">
       </ngb-pagination>
 
-      Found {{results?.totalElements}} saved searches
+      Found {{results?.totalElements}} searches/lists
     </div>
 
     <!-- loading -->
     <div *ngIf="loading">
-      <div colspan="42">
+      <div>
         <i class="fas fa-spinner fa-spin"></i> Loading...
       </div>
     </div>
 
     <!-- no results -->
     <div *ngIf="!loading && !results?.totalElements">
-      <div colspan="42">
-        <span class="text-muted">(no matching searches)</span>
+      <div>
+        <span class="text-muted">(no matching searches/lists)</span>
       </div>
     </div>
   </div>
-  <div *ngIf="selectedSavedSearch" class="col-sm-8 admin-panel">
-    <app-saved-search-results [savedSearch]="selectedSavedSearch" (toggleWatch)="onToggleWatch($event)"></app-saved-search-results>
+  <div *ngIf="selectedSource" class="col-sm-8 admin-panel">
+    <app-candidate-source-results [candidateSource]="selectedSource"
+                                  (toggleWatch)="onToggleWatch($event)"
+                                  (deleteSource)="onDeleteSource($event)"
+                                  (editSource)="onEditSource($event)"
+    >
+
+    </app-candidate-source-results>
   </div>
 </div>
 

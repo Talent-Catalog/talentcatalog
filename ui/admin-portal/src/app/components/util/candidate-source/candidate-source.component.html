@@ -2,23 +2,32 @@
 <!--  <div *ngIf="loading"><i class="fas fa-spinner fa-spin"></i></div>-->
   <div class="card-body">
     <div class="row">
-      <div class="w-75"><strong>{{savedSearch.name}}</strong></div>
-      <div class="w-25 pull-right">
+      <div class="w-75">
+        <strong>{{candidateSource.name}} </strong>
+        <span>
+          <i *ngIf="isSavedSearch()" title="Saved Search" class="fas fa-search"></i>
+          <i *ngIf="!isSavedSearch()" title="Saved List" class="fas fa-list"></i>
+          <i *ngIf="isShared()" title="Shared" class="fas fa-gift"></i>
+          <i *ngIf="candidateSource.fixed" title="Fixed - can't change" class="fas fa-lock"></i>
+        </span>
+      </div>
+      <div class="w-25 float-right">
         <div class="btn-toolbar">
-          <button class="btn" *ngIf="showMore" (click)="loadSavedSearch()"><i class="fas fa-ellipsis-h" title="View details"></i></button>
-          <button class="btn" *ngIf="showOpen" (click)="doOpenSearch()"><i class="fas fa-expand" title="Expand saved search"></i></button>
-          <button class="btn" *ngIf="showSearch" (click)="doSelectSearch()"><i class="far fa-hand-pointer" title="Rename saved search"></i></button>
-          <button class="btn" *ngIf="showEdit" (click)="doEditSearch()"><i class="fas fa-edit" title="Rename saved search"></i></button>
-          <button class="btn" *ngIf="showDelete" (click)="doDeleteSearch()"><i class="fas fa-trash" title="Delete saved search"></i></button>
-          <button class="btn" *ngIf="showWatch" (click)="doToggleWatch()">
-<!--todo change colour to yellow when watching-->
-            <i *ngIf="isWatching()" class="fas fa-eye watched" title="Unwatch saved search"></i>
-            <i *ngIf="!isWatching()" class="far fa-eye notwatched" title="Watch saved search"></i>
+          <button class="btn" *ngIf="showOpen" (click)="doOpenSource()"><i class="fas fa-expand" title="Open"></i></button>
+          <button class="btn" *ngIf="showLink" (click)="doCopyLink()"><i class="fas fa-link" title="Get shareable link"></i></button>
+          <button class="btn" *ngIf="showWatch && savedSearch" (click)="doToggleWatch()">
+            <i *ngIf="isWatching()" class="fas fa-eye watched" title="Unwatch"></i>
+            <i *ngIf="!isWatching()" class="far fa-eye notwatched" title="Watch"></i>
           </button>
+          <button class="btn" *ngIf="showEdit && isEditable()" (click)="doEditSource()"><i class="fas fa-edit" title="Rename"></i></button>
+          <button class="btn" *ngIf="showCopy && !isSavedSearch()" (click)="doCopySource()"><i class="fas fa-clone"></i></button>
+          <button class="btn" *ngIf="showMore && isSavedSearch()" (click)="loadSavedSearch()"><i class="fas fa-ellipsis-h" title="View details"></i></button>
+          <button class="btn" *ngIf="showSelect" (click)="doSelectSource()"><i class="far fa-hand-pointer" title="Select"></i></button>
+          <button class="btn" *ngIf="showDelete && isEditable()" (click)="doDeleteSource()"><i class="fas fa-trash" title="Delete"></i></button>
         </div>
       </div>
     </div>
-    <div class="row" *ngIf="showAll">
+    <div class="row" *ngIf="showAll && isSavedSearch()">
       <div class="w-100" *ngIf="savedSearch.keyword">Keyword: {{savedSearch.keyword}},</div>
       <div class="w-100" *ngIf="savedSearch.statuses">Statuses: {{savedSearch.statuses}},</div>
       <div class="w-100" *ngIf="savedSearch.includeDraftAndDeleted">Includes deleted and draft candidates,</div>
@@ -66,7 +75,7 @@
   </div>
   <div class="card-footer" *ngIf="showAll">
     <div class="w-100">
-      <app-updated-by [object]="savedSearch"></app-updated-by>
+      <app-updated-by [object]="candidateSource"></app-updated-by>
     </div>
   </div>
 

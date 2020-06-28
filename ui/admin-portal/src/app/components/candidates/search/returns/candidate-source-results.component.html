@@ -1,11 +1,13 @@
-<div *ngIf="savedSearch">
-  <app-saved-search
-    [savedSearch]="savedSearch" [showAll]="false" [showMore]="true"
-    [showOpen]="true"
-    (openSearch)="openSearch()"
-    (toggleWatch)="onToggleWatch($event)"
+<div *ngIf="candidateSource">
+  <app-candidate-source
+          [candidateSource]="candidateSource" [showAll]="false" [showMore]="true"
+          [showOpen]="true" [showDelete]="true" [showEdit]="true"
+          (openSource)="openSource()"
+          (toggleWatch)="onToggleWatch($event)"
+          (deleteSource)="onDeleteSource($event)"
+          (editSource)="onEditSource($event)"
   >
-  </app-saved-search>
+  </app-candidate-source>
 </div>
 <div *ngIf="error">
   Error: {{error}}

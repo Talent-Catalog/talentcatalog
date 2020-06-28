@@ -187,8 +187,7 @@ export class ViewCandidateComponent implements OnInit {
       candidateIds: [this.candidate.id]
     };
     this.savedListCandidateService.merge(savedListId, request).subscribe(
-          (ok) => {
-            const x: boolean = ok;
+          () => {
             if (reload) {
               this.loadLists();
             }
@@ -210,9 +209,7 @@ export class ViewCandidateComponent implements OnInit {
     this.candidateSavedListService.replace(this.candidate.id,
       {savedListIds: ids})
       .subscribe(
-        (ok) => {
-          const x: boolean = ok;
-        },
+        () => {},
         (error) => {
           this.error = error;
         }
@@ -224,9 +221,7 @@ export class ViewCandidateComponent implements OnInit {
       candidateIds: [this.candidate.id]
     };
     this.savedListCandidateService.remove(savedListId, request).subscribe(
-          (ok) => {
-            const x: boolean = ok;
-          },
+          () => {},
           (error) => {
             this.error = error;
           }

@@ -1,8 +1,14 @@
 import {Component, OnInit} from '@angular/core';
 import {SearchResults} from '../../../model/search-results';
-
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from "rxjs/operators";
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  switchMap,
+  tap
+} from "rxjs/operators";
 import {SavedSearch} from "../../../model/saved-search";
 import {SavedSearchService} from "../../../services/saved-search.service";
 import {Router} from "@angular/router";
@@ -50,12 +56,12 @@ export class JoinSavedSearchComponent implements OnInit {
           this.error = null
         }),
         switchMap(term =>
-          this.savedSearchService.search({keyword: term, owned: true, shared: true}).pipe(
+          this.savedSearchService.searchPaged({keyword: term, owned: true, shared: true}).pipe(
             tap(() => this.searchFailed = false),
             map(result =>
               // filter to avoid circular reference exception by removing the same search as the loaded search
               result.content.filter(content =>
-                content.id != this.currentSavedSearchId)),
+                content.id !== this.currentSavedSearchId)),
             catchError(() => {
               this.searchFailed = true;
               return of([]);
@@ -71,7 +77,7 @@ export class JoinSavedSearchComponent implements OnInit {
   }
 
   add(){
-     let searchJoin = this.searchForm.value;
+     const searchJoin = this.searchForm.value;
      searchJoin.savedSearchId = searchJoin.selectedSavedSearch.id;
      searchJoin.name = searchJoin.selectedSavedSearch.name;
      this.closeModal(searchJoin);

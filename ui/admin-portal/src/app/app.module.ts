@@ -7,7 +7,7 @@ import {NgMultiSelectDropDownModule} from 'ng-multiselect-dropdown';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './components/app.component';
 import {HeaderComponent} from './components/header/header.component';
-import {SearchCandidatesComponent} from './components/candidates/search/search-candidates.component';
+import {ShowCandidatesComponent} from './components/candidates/search/show-candidates.component';
 import {HomeComponent} from './components/candidates/home.component';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -77,7 +77,7 @@ import {EditUserComponent} from './components/settings/users/edit/edit-user.comp
 import {CreateUserComponent} from './components/settings/users/create/create-user.component';
 import {CandidateEducationTabComponent} from "./components/candidates/view/tab/candidate-education-tab/candidate-education-tab.component";
 import {JoinSavedSearchComponent} from "./components/search/join-search/join-saved-search.component";
-import {SavedSearchComponent} from "./components/util/saved-search/saved-search.component";
+import {CandidateSourceComponent} from "./components/util/candidate-source/candidate-source.component";
 import {LanguageLevelFormControlComponent} from './components/util/form/language-proficiency/language-level-form-control.component';
 import {CandidatePipe} from './pipes/candidate.pipe';
 import {EditCandidateShortlistItemComponent} from "./components/util/candidate-review/edit/edit-candidate-shortlist-item.component";
@@ -100,13 +100,13 @@ import {FileUploadComponent} from "./components/util/file-upload/file-upload.com
 import {CandidateAdditionalInfoTabComponent} from './components/candidates/view/tab/candidate-additional-info-tab/candidate-additional-info-tab.component';
 import {ViewCandidateAdditionalInfoComponent} from './components/candidates/view/additional-info/view-candidate-additional-info.component';
 import {ViewCandidateSkillComponent} from "./components/candidates/view/skill/view-candidate-skill.component";
-import {BrowseSavedSearchesComponent} from './components/candidates/search/browse/browse-saved-searches.component';
+import {BrowseCandidateSourcesComponent} from './components/candidates/search/browse/browse-candidate-sources.component';
 import {ChartsModule} from "ng2-charts";
 import {InfographicComponent} from './components/infograhics/infographic.component';
 import {ChartComponent} from './components/infograhics/chart/chart.component';
 import {MonthPickerComponent} from "./components/util/month-picker/month-picker.component";
 import {UpdateSearchComponent} from "./components/search/update/update-search.component";
-import {SavedSearchResultsComponent} from './components/candidates/search/returns/saved-search-results.component';
+import {CandidateSourceResultsComponent} from './components/candidates/search/returns/candidate-source-results.component';
 import {DefineSearchComponent} from './components/search/define-search/define-search.component';
 import {NotFoundComponent} from "./not-found/not-found.component";
 import {GeneralTranslationsComponent} from './components/settings/translations/general/general-translations.component';
@@ -119,6 +119,9 @@ import {EditCandidateAdditionalInfoComponent} from './components/candidates/view
 import {EditCandidateSurveyComponent} from './components/candidates/view/survey/edit/edit-candidate-survey.component';
 import {CreateListComponent} from './components/list/create/create-list.component';
 import {UpdateListComponent} from './components/list/update/update-list.component';
+import {SelectListComponent} from './components/list/select/select-list.component';
+import {CandidatesSearchComponent} from './components/candidates/candidates-search/candidates-search.component';
+import {CandidatesListComponent} from './components/candidates/candidates-list/candidates-list.component';
 import {CreateCandidateOccupationComponent} from './components/candidates/view/occupation/create/create-candidate-occupation.component';
 
 @NgModule({
@@ -127,7 +130,6 @@ import {CreateCandidateOccupationComponent} from './components/candidates/view/o
     LoginComponent,
     HeaderComponent,
     ConfirmationComponent,
-    SearchCandidatesComponent,
     HomeComponent,
     ViewCandidateComponent,
     EditCandidateStatusComponent,
@@ -191,10 +193,9 @@ import {CreateCandidateOccupationComponent} from './components/candidates/view/o
     DropdownTranslationsComponent,
     LanguageLevelFormControlComponent,
     DateRangePickerComponent,
-    SavedSearchComponent,
     UserPipe,
     UpdatedByComponent,
-    SavedSearchComponent,
+    CandidateSourceComponent,
     ViewCandidateOccupationComponent,
     ViewCandidateJobExperienceComponent,
     LanguageLevelFormControlComponent,
@@ -214,13 +215,11 @@ import {CreateCandidateOccupationComponent} from './components/candidates/view/o
     ViewCandidateAdditionalInfoComponent,
     ViewCandidateSkillComponent,
     FileUploadComponent,
-    BrowseSavedSearchesComponent,
     InfographicComponent,
     ChartComponent,
     MonthPickerComponent,
     NotFoundComponent,
     GeneralTranslationsComponent,
-    SavedSearchResultsComponent,
     DefineSearchComponent,
     MonthPickerComponent,
     NotFoundComponent,
@@ -230,6 +229,14 @@ import {CreateCandidateOccupationComponent} from './components/candidates/view/o
     EditCandidateAdditionalInfoComponent,
     EditCandidateSurveyComponent,
     CreateListComponent,
+    UpdateListComponent,
+    SelectListComponent,
+    BrowseCandidateSourcesComponent,
+    CandidatesSearchComponent,
+    CandidatesListComponent,
+    CandidateSourceResultsComponent,
+    CreateCandidateOccupationComponent,
+    ShowCandidatesComponent,
     UpdateListComponent,
     CreateCandidateOccupationComponent
   ],
@@ -306,6 +313,7 @@ import {CreateCandidateOccupationComponent} from './components/candidates/view/o
     EditCandidateAdditionalInfoComponent,
     EditCandidateSurveyComponent,
     CreateListComponent,
+    SelectListComponent,
     UpdateListComponent,
     CreateCandidateOccupationComponent
   ],

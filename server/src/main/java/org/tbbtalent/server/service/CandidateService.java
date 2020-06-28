@@ -1,11 +1,12 @@
 package org.tbbtalent.server.service;
 
 import java.io.PrintWriter;
-import java.rmi.server.ExportException;
 import java.util.List;
 
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
+import org.tbbtalent.server.exception.ExportFailedException;
+import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.model.DataRow;
@@ -18,7 +19,7 @@ import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
 import org.tbbtalent.server.request.candidate.IHasSetOfSavedLists;
 import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
 import org.tbbtalent.server.request.candidate.SavedListGetRequest;
-import org.tbbtalent.server.request.candidate.SavedSearchRunRequest;
+import org.tbbtalent.server.request.candidate.SavedSearchGetRequest;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateContactRequest;
@@ -31,10 +32,12 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tbbtalent.server.request.candidate.stat.CandidateStatDateRequest;
 
 public interface CandidateService {
-
+    
     Page<Candidate> searchCandidates(SearchCandidateRequest request);
 
-    Page<Candidate> searchCandidates(SavedSearchRunRequest request);
+    Page<Candidate> searchCandidates(
+            long savedSearchId, SavedSearchGetRequest request) 
+            throws NoSuchObjectException;
 
     Page<Candidate> searchCandidates(CandidateEmailSearchRequest request);
 
@@ -72,7 +75,7 @@ public interface CandidateService {
      */
     boolean replaceCandidateSavedLists(long candidateId, IHasSetOfSavedLists request);
 
-    Candidate getCandidate(long id);
+    Candidate getCandidate(long id) throws NoSuchObjectException;
 
     Candidate createCandidate(CreateCandidateRequest request) throws UsernameTakenException;
 
@@ -116,9 +119,14 @@ public interface CandidateService {
 
     Candidate findByCandidateNumber(String candidateNumber);
 
-    void exportToCsv(SavedSearchRunRequest request, PrintWriter writer) throws ExportException;
+    void exportToCsv(long savedListId, SavedListGetRequest request, PrintWriter writer) 
+            throws ExportFailedException;
 
-    void exportToCsv(SearchCandidateRequest request, PrintWriter writer) throws ExportException;
+    void exportToCsv(long savedSearchId, SavedSearchGetRequest request, PrintWriter writer) 
+            throws ExportFailedException;
+
+    void exportToCsv(SearchCandidateRequest request, PrintWriter writer) 
+            throws ExportFailedException;
 
     List<DataRow> getGenderStats(CandidateStatDateRequest request);
 

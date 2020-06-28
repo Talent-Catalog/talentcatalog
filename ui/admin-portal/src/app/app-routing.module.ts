@@ -1,6 +1,5 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {SearchCandidatesComponent} from './components/candidates/search/search-candidates.component';
 import {ViewCandidateComponent} from './components/candidates/view/view-candidate.component';
 import {AuthGuard} from "./services/auth.guard";
 import {LoginComponent} from "./components/login/login.component";
@@ -10,6 +9,8 @@ import {InfographicComponent} from "./components/infograhics/infographic.compone
 import {DefineSearchComponent} from "./components/search/define-search/define-search.component";
 import {NotFoundComponent} from "./not-found/not-found.component";
 import {RoleGuardService} from "./services/role-guard.service";
+import {CandidatesSearchComponent} from "./components/candidates/candidates-search/candidates-search.component";
+import {CandidatesListComponent} from "./components/candidates/candidates-list/candidates-list.component";
 
 /*
 Urls:
@@ -57,8 +58,13 @@ const routes: Routes = [
             data: {title: 'TBB Admin - Browse searches'}
           },
           {
-            path: 'search/:savedSearchId',
-            component: SearchCandidatesComponent,
+            path: 'list/:id',
+            component: CandidatesListComponent,
+            data: {title: 'TBB Admin - Candidate list'}
+          },
+          {
+            path: 'search/:id',
+            component: CandidatesSearchComponent,
             data: {title: 'TBB Admin - Candidate search'}
           },
           {

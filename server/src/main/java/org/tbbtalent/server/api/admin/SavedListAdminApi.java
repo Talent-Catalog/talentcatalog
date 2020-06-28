@@ -8,6 +8,9 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.EntityExistsException;
@@ -17,6 +20,7 @@ import org.tbbtalent.server.model.SavedList;
 import org.tbbtalent.server.request.list.CreateSavedListRequest;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
+import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.service.SavedListService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -33,6 +37,10 @@ public class SavedListAdminApi implements
         this.savedListService = savedListService;
     }
 
+    /*
+        Standard ITableApi methods
+     */
+    
     /**
      * Creates a new SavedList.
      * <p>
@@ -116,4 +124,28 @@ public class SavedListAdminApi implements
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(savedList);
     }
+    
+    /*
+        End standard ITableApi methods
+     */
+
+
+    @PutMapping("/shared-add/{id}")
+    public Map<String, Object> addSharedUser(
+            @PathVariable("id") long id,
+            @RequestBody UpdateSharingRequest request) {
+        SavedList savedList = this.savedListService.addSharedUser(id, request);
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.build(savedList);
+    }
+
+    @PutMapping("/shared-remove/{id}")
+    public Map<String, Object> removeSharedUser(
+            @PathVariable("id") long id,
+            @RequestBody UpdateSharingRequest request) {
+        SavedList savedList = this.savedListService.removeSharedUser(id, request);
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.build(savedList);
+    }
+    
 }

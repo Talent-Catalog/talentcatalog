@@ -25,6 +25,14 @@
                       (pageChange)="doSearch(true)">
       </ngb-pagination>
 
+      <button class="btn" *ngIf="timestamp" (click)="doSearch(true)">
+        <i class="fas fa-sync" title="Refresh search"></i>
+      </button>
+      <button class="btn" (click)="doCopyLink()">
+        <i class="fas fa-link" title="Get shareable link"></i>
+      </button>
+      {{results?.totalElements}} candidates. Timestamp {{timestamp | date: 'yyyy-MM-dd HH:mm:ss'}}
+
       <button *ngIf="isShareable() && !isSharedWithMe()"
         class="btn btn-outline-secondary" (click)="addToSharedWithMe()">
         <i class="far fa-handshake"></i> Add to searches shared with me
@@ -34,31 +42,69 @@
         class="btn btn-outline-secondary" (click)="removeFromSharedWithMe()">
         <i class="fas fa-handshake-slash"></i> Remove from searches shared with me
       </button>
+    </div>
+
+    <div class="filter-results text-muted" *ngIf="!searching">
+
+      <button *ngIf="isSelectable()" class="btn btn-outline-secondary" (click)="clearSelection()">
+        Clear Selection
+      </button>
+
+      <div *ngIf="haveTargetList()">
+        {{(targetListReplace ? "Replace list " : "Save to list ")}}
+        <a [routerLink]="['/candidates/list',targetListId]">
+          {{targetListName}}
+        </a>
+        <a target="_blank" [routerLink]="['/candidates/list',targetListId]">
+          <i class="fas fa-external-link-alt" title="Show list in new tab"></i>
+        </a>
+
+        <button class="btn btn-outline-secondary"
+                 (click)="saveSelectionAgain()">
+          <i class="fas fa-spinner fa-spin" *ngIf=savingSelection></i>
+          {{(targetListReplace ? "Replace" : "Save")}} Again
+        </button>
+      </div>
+
+      <button *ngIf="isSelectable()" class="btn btn-outline-secondary" (click)="saveSelection()">
+        <i class="fas fa-spinner fa-spin" *ngIf=savingSelection></i>
+        Save Selection
+      </button>
 
       <button class="btn btn-outline-secondary" (click)="exportCandidates()">
         <i class="fas fa-spinner fa-spin" *ngIf=exporting></i>
         <i class="fas fa-file-excel"></i> Export
       </button>
-    </div>
 
-    <div *ngIf="!searching">
-      <button class="btn" *ngIf="timestamp" (click)="doSearch(true)"><i class="fas fa-sync" title="Refresh search"></i></button>
-      {{results?.totalElements}} candidates. Timestamp {{timestamp | date: 'yyyy-MM-dd HH:mm:ss'}}
+      <div *ngIf="isContentModifiable()" class="form-group">
+        <input id="quickNumberOrNameSearch"
+               type="text" class="form-control" #input
+               [ngbTypeahead]="doNumberOrNameSearch"
+               [resultTemplate]="rt"
+               [inputFormatter]="renderCandidateRow"
+               [editable]="false"
+               (selectItem)="selectSearchResult($event, input)"
+               placeholder="Add by name/number..."/>
+        <ng-template #rt let-r="result" let-t="term">
+          <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
+        </ng-template>
+      </div>
+
     </div>
 
     <form class="filter-form" [formGroup]="searchForm">
 
       <!-- REVIEW STATUS FILTER -->
-      <div *ngIf="savedSearch?.reviewable" class="form-group col-12">
+      <div *ngIf="isReviewable()" class="form-group col-12">
         <ng-multiselect-dropdown
           id="reviewStatus"
           [placeholder]="'Review status: Empty displays everything'"
           [data]="statuses"
           formControlName="statusesDisplay"
           [settings]="dropdownSettings"
-          (onSelect)="onItemSelect($event)"
-          (onDeSelect)="onItemDeSelect($event)"
-          (onSelectAll)="onSelectAll($event)"
+          (onSelect)="onItemSelect()"
+          (onDeSelect)="onItemDeSelect()"
+          (onSelectAll)="onSelectAll()"
           (onDeSelectAll)="onDeSelectAll()">
         </ng-multiselect-dropdown>
       </div>
@@ -75,23 +121,35 @@
               <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
               Candidate #
             </th>
-            <th *ngIf="loggedInUser && (loggedInUser.role !== 'semilimited' && loggedInUser.role !== 'limited')" (click)="toggleSort('user.firstName')">
+            <th *ngIf="isSelectable()">
+              <i class="far fa-hand-pointer"></i>
+            </th>
+            <th *ngIf="isCandidateNameViewable()" (click)="toggleSort('user.firstName')">
               <app-sorted-by [column]="'user.firstName'" [sortColumn]="sortField"
                              [sortDirection]="sortDirection"></app-sorted-by>
               First Name
             </th>
-            <th *ngIf="loggedInUser && (loggedInUser.role !== 'semilimited' && loggedInUser.role !== 'limited')" (click)="toggleSort('user.lastName')">
+            <th *ngIf="isCountryViewable()" (click)="toggleSort('user.lastName')">
               <app-sorted-by [column]="'user.lastName'" [sortColumn]="sortField"
                              [sortDirection]="sortDirection"></app-sorted-by>
               Last Name
             </th>
-            <th *ngIf="savedSearch?.reviewable">Reviewed</th>
-            <th (click)="toggleSort('nationality.name')">
+            <th (click)="toggleSort('status')">
+              <app-sorted-by [column]="'status'" [sortColumn]="sortField"
+                             [sortDirection]="sortDirection"></app-sorted-by>
+              Status
+            </th>
+            <th (click)="toggleSort('user.createdDate')">
+              <app-sorted-by [column]="'user.createdDate'" [sortColumn]="sortField"
+                             [sortDirection]="sortDirection"></app-sorted-by>
+              Registered
+            </th>
+            <th *ngIf="isCountryViewable()" (click)="toggleSort('nationality.name')">
               <app-sorted-by [column]="'nationality.name'" [sortColumn]="sortField"
                              [sortDirection]="sortDirection"></app-sorted-by>
               Nationality
             </th>
-            <th *ngIf="loggedInUser && loggedInUser.role !== 'limited'" (click)="toggleSort('country.name')">
+            <th *ngIf="isCountryViewable()" (click)="toggleSort('country.name')">
               <app-sorted-by [column]="'country.name'" [sortColumn]="sortField"
                              [sortDirection]="sortDirection"></app-sorted-by>
               Location
@@ -126,15 +184,16 @@
               </a>
 
             </td>
-            <td *ngIf="loggedInUser && (loggedInUser.role !== 'semilimited' && loggedInUser.role !== 'limited')">{{candidate.user.firstName}}</td>
-            <td *ngIf="loggedInUser && (loggedInUser.role !== 'semilimited' && loggedInUser.role !== 'limited')">{{candidate.user.lastName}}</td>
-            <app-candidate-shortlist-item *ngIf="savedSearch?.reviewable"
-                                          [candidateId]="candidate.id"
-                                          [candidateShortlistItems]="candidate.candidateShortlistItems"
-                                          [savedSearch]="savedSearch"
-                                          (reviewStatusChange)="onReviewStatusChange($event)"></app-candidate-shortlist-item>
-            <td *ngIf="loggedInUser && loggedInUser.role !== 'limited'">{{candidate.nationality?.name}}</td>
-            <td *ngIf="loggedInUser && loggedInUser.role !== 'limited'">{{candidate.country?.name}}</td>
+            <td *ngIf="isSelectable()">
+              <input type="checkbox" class="custom-checkbox" id="selected"
+                     (ngModelChange)="onSelectionChange(candidate, $event)" [ngModel]="candidate.selected" >
+            </td>
+            <td *ngIf="isCandidateNameViewable()">{{candidate.user.firstName}}</td>
+            <td *ngIf="isCandidateNameViewable()">{{candidate.user.lastName}}</td>
+            <td>{{candidate.status}}</td>
+            <td>{{candidate.user.createdDate | date: 'yyyy-MM-dd'}}</td>
+            <td *ngIf="isCountryViewable()">{{candidate.nationality?.name}}</td>
+            <td *ngIf="isCountryViewable()">{{candidate.country?.name}}</td>
             <td>{{candidate.gender | titlecase}}</td>
             <td>
               <div ngbDropdown placement="bottom-right" (click)="$event.stopPropagation();" container="body">
@@ -142,10 +201,13 @@
                   <i class="fas fa-ellipsis-h"></i>
                 </button>
                 <ul ngbDropdownMenu>
+                  <li *ngIf="isReviewable()" ngbDropdownItem (click)="review(candidate)">Change reviewed status</li>
                   <li ngbDropdownItem (click)="downloadCv(candidate)">Download CV</li>
                   <li class="dropdown-divider"></li>
                   <li ngbDropdownItem><a target="_blank" class="no-link" [routerLink]="['/candidates', candidate.candidateNumber]">Open
                     in new tab</a></li>
+                  <li class="dropdown-divider"></li>
+                  <li *ngIf="isContentModifiable()" ngbDropdownItem (click)="removeCandidateFromList(candidate)">Delete from list</li>
                 </ul>
               </div>
             </td>

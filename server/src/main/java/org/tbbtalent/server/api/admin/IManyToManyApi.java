@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.NotImplementedException;
 /**
  * <h1>Many to Many Association API</h1> 
@@ -50,10 +51,12 @@ public interface IManyToManyApi<SEARCH, CONTENT> extends ITalentCatalogWebApi {
      * <p/>
      * @param masterId ID of master record whose slave records we want
      * @return All slave records associated with master
+     * @throws NoSuchObjectException if masterId is unknown
      */
     @GetMapping("{id}/list")
     default @NotNull List<Map<String, Object>> list(
-            @PathVariable("id") long masterId) {
+            @PathVariable("id") long masterId)
+            throws NoSuchObjectException {
         throw new NotImplementedException(this.getClass(), "list");
     }
 
@@ -69,11 +72,12 @@ public interface IManyToManyApi<SEARCH, CONTENT> extends ITalentCatalogWebApi {
      * @param masterId ID of master record associated with slave records
      * @param request The request contains a set (no duplicates) of "slave ids" 
      *                to be added to the existing set of slave ids.
-     * @return False if no master with that id was found, otherwise true.
+     * @throws NoSuchObjectException if any ids are unknown
      */
     @PutMapping("{id}/merge")
-    default boolean merge(
-            @PathVariable("id") long masterId, @Valid @RequestBody CONTENT request) {
+    default void merge(
+            @PathVariable("id") long masterId, @Valid @RequestBody CONTENT request) 
+            throws NoSuchObjectException {
         throw new NotImplementedException(this.getClass(), "merge");
     }
 
@@ -85,11 +89,12 @@ public interface IManyToManyApi<SEARCH, CONTENT> extends ITalentCatalogWebApi {
      * @param masterId ID of master record associated with slave records
      * @param request The request contains a set (no duplicates) of "slave ids" 
      *                to be removed.
-     * @return False if no master with that id was found, otherwise true.
+     * @throws NoSuchObjectException if any ids are unknown
      */
     @PutMapping("{id}/remove")
-    default boolean remove(
-            @PathVariable("id") long masterId, @Valid @RequestBody CONTENT request) {
+    default void remove(
+            @PathVariable("id") long masterId, @Valid @RequestBody CONTENT request)
+            throws NoSuchObjectException {
         throw new NotImplementedException(this.getClass(), "remove");
     }
 
@@ -107,11 +112,12 @@ public interface IManyToManyApi<SEARCH, CONTENT> extends ITalentCatalogWebApi {
      * @param masterId ID of master record associated with slave records
      * @param request The request contains a set (no duplicates) of "slave ids" 
      *                become new set of slave ids.
-     * @return False if no master with that id was found, otherwise true.
+     * @throws NoSuchObjectException if any ids are unknown
      */
     @PutMapping("{id}/replace")
-    default boolean replace(
-            @PathVariable("id") long masterId, @Valid @RequestBody CONTENT request) {
+    default void replace(
+            @PathVariable("id") long masterId, @Valid @RequestBody CONTENT request)
+            throws NoSuchObjectException {
         throw new NotImplementedException(this.getClass(), "replace");
     }
     
@@ -121,10 +127,12 @@ public interface IManyToManyApi<SEARCH, CONTENT> extends ITalentCatalogWebApi {
      * @param masterId ID of master record whose slave records we want
      * @param request Defines which slave records should be returned. 
      * @return All matching slave records associated with the given master
+     * @throws NoSuchObjectException if masterId is unknown
      */
     @PostMapping("{id}/search")
     default @NotNull List<Map<String, Object>> search(
-            @PathVariable("id") long masterId, @Valid @RequestBody SEARCH request) {
+            @PathVariable("id") long masterId, @Valid @RequestBody SEARCH request)
+            throws NoSuchObjectException {
         throw new NotImplementedException(this.getClass(), "search");
     }
 
@@ -134,10 +142,12 @@ public interface IManyToManyApi<SEARCH, CONTENT> extends ITalentCatalogWebApi {
      * @param masterId ID of master record whose slave records we want
      * @param request Defines which slave records should be returned. 
      * @return A page of slave records associated with the given master
+     * @throws NoSuchObjectException if masterId is unknown
      */
     @PostMapping("{id}/search-paged")
     default @NotNull Map<String, Object> searchPaged(
-            @PathVariable("id") long masterId, @Valid @RequestBody SEARCH request) {
+            @PathVariable("id") long masterId, @Valid @RequestBody SEARCH request)
+            throws NoSuchObjectException {
         throw new NotImplementedException(this.getClass(), "searchPaged");
     }
 
