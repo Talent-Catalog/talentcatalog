@@ -14,6 +14,7 @@ import org.tbbtalent.server.model.SavedList;
 import org.tbbtalent.server.request.list.CreateSavedListRequest;
 import org.tbbtalent.server.request.list.IHasSetOfCandidates;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
+import org.tbbtalent.server.request.list.TargetListSelection;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
 
@@ -23,6 +24,21 @@ import org.tbbtalent.server.request.search.UpdateSharingRequest;
  * @author John Cameron
  */
 public interface SavedListService {
+
+    /**
+     * Copies the given list to the list specified in the given request (which
+     * may be a requested new list).
+     * @param id ID of list to be copied
+     * @param request Defines the target list and also whether copy is a 
+     *                replace or an add.
+     * @return The target list                
+     * @throws EntityExistsException If a new list needs to be created but the
+     * list name already exists.
+     * @throws NoSuchObjectException if there is no saved list matching the id
+     * or the target list id. 
+     */
+    SavedList copy(long id, TargetListSelection request)
+            throws EntityExistsException, NoSuchObjectException;
 
     /**
      * Create a new SavedList 
@@ -149,5 +165,4 @@ public interface SavedListService {
      */
     SavedList removeSharedUser(long id, UpdateSharingRequest request)
             throws NoSuchObjectException;
-    
 }

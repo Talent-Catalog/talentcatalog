@@ -32,6 +32,10 @@ import {CandidateSourceService} from "../../../../services/candidate-source.serv
 import {UpdateSearchComponent} from "../../../search/update/update-search.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {UpdateListComponent} from "../../../list/update/update-list.component";
+import {
+  SelectListComponent,
+  TargetListSelection
+} from "../../../list/select/select-list.component";
 
 @Component({
   selector: 'app-browse-candidate-sources',
@@ -212,6 +216,29 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
     if (this.selectedIndex !== oldSelectedIndex) {
       this.onSelect(this.results.content[this.selectedIndex])
     }
+  }
+
+  onCopySource(source: CandidateSource) {
+    //Show modal allowing for list selection
+    const modal = this.modalService.open(SelectListComponent);
+
+    modal.result
+      .then((selection: TargetListSelection) => {
+        this.loading = true;
+        this.candidateSourceService.copy(source, selection).subscribe(
+          () => {
+            //Refresh display which may display new list if there is one.
+            this.search();
+            this.loading = false;
+          },
+          error => {
+            this.error = error;
+            this.loading = false;
+          }
+        );
+      })
+      .catch(() => { /* Isn't possible */
+      });
   }
 
   onDeleteSource(source: CandidateSource) {

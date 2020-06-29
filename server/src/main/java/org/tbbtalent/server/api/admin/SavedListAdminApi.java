@@ -19,6 +19,7 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.SavedList;
 import org.tbbtalent.server.request.list.CreateSavedListRequest;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
+import org.tbbtalent.server.request.list.TargetListSelection;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.service.SavedListService;
@@ -129,6 +130,23 @@ public class SavedListAdminApi implements
         End standard ITableApi methods
      */
 
+    /**
+     * Copies the given list to the list specified in the given request (which
+     * may be a requested new list).
+     * @param id ID of list to be copied
+     * @param request Defines the target list and also whether copy is a 
+     *                replace or an add.
+     * @throws EntityExistsException If a new list needs to be created but the
+     * list name already exists.
+     * @throws NoSuchObjectException if there is no saved list matching the id
+     * or the target list id. 
+     */
+    @PutMapping("/copy/{id}")
+    public void copy(@PathVariable("id") long id,
+            @RequestBody TargetListSelection request) 
+            throws EntityExistsException, NoSuchObjectException {
+        SavedList savedList = this.savedListService.copy(id, request);
+    }
 
     @PutMapping("/shared-add/{id}")
     public Map<String, Object> addSharedUser(

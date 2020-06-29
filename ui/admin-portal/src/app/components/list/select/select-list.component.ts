@@ -4,7 +4,20 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {SavedList, SearchSavedListRequest} from "../../../model/saved-list";
 import {IDropdownSettings} from "ng-multiselect-dropdown";
 import {SavedListService} from "../../../services/saved-list.service";
-import {SaveSelectionRequest} from "../../../model/saved-search";
+
+
+export interface TargetListSelection {
+  //List id - 0 if new list requested
+  savedListId: number;
+
+  //Name of new list to be created (if any - only used if savedListId = 0)
+  newListName?: string;
+
+  //If true any existing contents of target list should be replaced, otherwise
+  //contents are added (merged).
+  replace: boolean;
+}
+
 
 @Component({
   selector: 'app-select-list',
@@ -17,6 +30,7 @@ export class SelectListComponent implements OnInit {
   form: FormGroup;
   loading: boolean;
   saving: boolean;
+  title: string = "Select List";
 
   lists: SavedList[] = [];
 
@@ -40,7 +54,6 @@ export class SelectListComponent implements OnInit {
       savedList: [null],
       replace: [false],
     });
-
     this.loadLists();
   }
 
@@ -75,12 +88,11 @@ export class SelectListComponent implements OnInit {
   }
 
   select() {
-    const request: SaveSelectionRequest = {
-      userId: 0, //Will be filled in later before sending
+    const selection: TargetListSelection = {
       savedListId: this.savedList === null ? 0 : this.savedList[0].id,
       newListName: this.newList ? this.newListName : null,
       replace: this.replace
     }
-    this.activeModal.close(request);
+    this.activeModal.close(selection);
   }
 }

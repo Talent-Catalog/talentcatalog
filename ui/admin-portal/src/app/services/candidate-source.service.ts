@@ -7,6 +7,7 @@ import {CandidateSource, SearchCandidateSourcesRequest} from "../model/base";
 import {isSavedSearch, SearchSavedSearchRequest} from "../model/saved-search";
 import {map} from "rxjs/operators";
 import {SavedSearchService} from "./saved-search.service";
+import {TargetListSelection} from "../components/list/select/select-list.component";
 
 @Injectable({providedIn: 'root'})
 export class CandidateSourceService {
@@ -26,6 +27,13 @@ export class CandidateSourceService {
       .pipe(
         map(result => this.processPostResult(result))
       );
+  }
+
+  copy(source: CandidateSource, selection: TargetListSelection): Observable<void> {
+    const apiUrl = isSavedSearch(source) ?
+      this.savedSearchApiUrl : this.savedListApiUrl;
+
+    return this.http.put<void>(`${apiUrl}/copy/${source.id}`, selection);
   }
 
   delete(source: CandidateSource): Observable<boolean>  {
@@ -74,5 +82,4 @@ export class CandidateSourceService {
     }
     return results;
   };
-
 }
