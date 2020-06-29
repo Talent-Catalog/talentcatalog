@@ -56,7 +56,7 @@ export class SearchCandidateSourcesRequest extends PagedSearchRequest {
 export function isMine(source: CandidateSource, auth: AuthService) {
   let mine: boolean = false;
   const me: User = auth.getLoggedInUser();
-  if (source && me) {
+  if (source && source.createdBy && me) {
     mine = source.createdBy.id === me.id;
   }
   return mine;
