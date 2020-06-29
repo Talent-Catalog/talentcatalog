@@ -136,16 +136,19 @@ public class SavedListAdminApi implements
      * @param id ID of list to be copied
      * @param request Defines the target list and also whether copy is a 
      *                replace or an add.
+     * @return The target list                
      * @throws EntityExistsException If a new list needs to be created but the
      * list name already exists.
      * @throws NoSuchObjectException if there is no saved list matching the id
      * or the target list id. 
      */
     @PutMapping("/copy/{id}")
-    public void copy(@PathVariable("id") long id,
+    public @NotNull Map<String, Object> copy(@PathVariable("id") long id,
             @RequestBody TargetListSelection request) 
             throws EntityExistsException, NoSuchObjectException {
-        SavedList savedList = this.savedListService.copy(id, request);
+        SavedList targetList = this.savedListService.copy(id, request);
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.build(targetList);
     }
 
     @PutMapping("/shared-add/{id}")

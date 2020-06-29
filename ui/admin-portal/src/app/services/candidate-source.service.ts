@@ -29,11 +29,11 @@ export class CandidateSourceService {
       );
   }
 
-  copy(source: CandidateSource, selection: TargetListSelection): Observable<void> {
+  copy(source: CandidateSource, selection: TargetListSelection): Observable<CandidateSource> {
     const apiUrl = isSavedSearch(source) ?
       this.savedSearchApiUrl : this.savedListApiUrl;
 
-    return this.http.put<void>(`${apiUrl}/copy/${source.id}`, selection);
+    return this.http.put<CandidateSource>(`${apiUrl}/copy/${source.id}`, selection);
   }
 
   delete(source: CandidateSource): Observable<boolean>  {

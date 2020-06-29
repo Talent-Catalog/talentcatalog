@@ -36,6 +36,7 @@ import {
   SelectListComponent,
   TargetListSelection
 } from "../../../list/select/select-list.component";
+import {CandidateSourceResultsCacheService} from "../../../../services/candidate-source-results-cache.service";
 
 @Component({
   selector: 'app-browse-candidate-sources',
@@ -65,6 +66,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
               private router: Router,
               private authService: AuthService,
               private modalService: NgbModal,
+              private candidateSourceResultsCacheService: CandidateSourceResultsCacheService,
               private candidateSourceService: CandidateSourceService,
               private savedSearchService: SavedSearchService) {
   }
@@ -226,9 +228,13 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
       .then((selection: TargetListSelection) => {
         this.loading = true;
         this.candidateSourceService.copy(source, selection).subscribe(
-          () => {
+          (targetSource) => {
             //Refresh display which may display new list if there is one.
             this.search();
+
+            //Clear cache for target list as its contents will have changed.
+            this.candidateSourceResultsCacheService.removeFromCache(targetSource);
+
             this.loading = false;
           },
           error => {
