@@ -35,41 +35,6 @@ public class AuthenticatedUser implements UserDetails {
         } else {
             this.authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         }
-//
-//        if (user.getRole().equals(Role.admin)) {
-//            this.authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-//        } else if (user.getRole().equals(Role.sourcepartneradmin)) {
-//            this.authorities.add(new SimpleGrantedAuthority("ROLE_SOURCEPARTNERADMIN"));
-//        } else if (user.getRole().equals(Role.semilimited)) {
-//            this.authorities.add(new SimpleGrantedAuthority("ROLE_SEMILIMITED"));
-//        } else if (user.getRole().equals(Role.limited)) {
-//            this.authorities.add(new SimpleGrantedAuthority("ROLE_LIMITED"));
-//        } else if (user.getRole().equals(Role.readonly)) {
-//            this.authorities.add(new SimpleGrantedAuthority("ROLE_READONLY"));
-//        } else {
-//            this.authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-//        }
-
-        /*
-        if(user.getReadOnly === true){
-          this.authorities.add(new SimpleGrantedAuthority("ROLE_READONLY")
-        } else if (user.getRole().equals(Role.admin)) {
-            this.authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-        } else if (user.getRole().equals(Role.sourcepartneradmin)) {
-            this.authorities.add(new SimpleGrantedAuthority("ROLE_SOURCEPARTNERADMIN"));
-        } else if (user.getRole().equals(Role.semilimited)) {
-            this.authorities.add(new SimpleGrantedAuthority("ROLE_SEMILIMITED"));
-        } else if (user.getRole().equals(Role.limited)) {
-            this.authorities.add(new SimpleGrantedAuthority("ROLE_LIMITED"));
-        } else if (user.getRole().equals(Role.readonly)) {
-            this.authorities.add(new SimpleGrantedAuthority("ROLE_READONLY"));
-        } else {
-            this.authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-        }
-
-
-
-        */
     }
 
     public User getUser() {

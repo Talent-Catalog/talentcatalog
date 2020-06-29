@@ -66,7 +66,8 @@
         </button>
       </div>
 
-      <button *ngIf="isSelectable()" class="btn btn-outline-secondary" (click)="saveSelection()">
+      <button *ngIf="isSelectable()" class="btn btn-outline-secondary"
+              (click)="saveSelection()">
         <i class="fas fa-spinner fa-spin" *ngIf=savingSelection></i>
         Save Selection
       </button>
