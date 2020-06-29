@@ -31,6 +31,7 @@ import org.tbbtalent.server.repository.UserRepository;
 import org.tbbtalent.server.request.list.CreateSavedListRequest;
 import org.tbbtalent.server.request.list.IHasSetOfCandidates;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
+import org.tbbtalent.server.request.list.TargetListSelection;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.security.UserContext;
@@ -63,7 +64,40 @@ public class SavedListServiceImpl implements SavedListService {
         this.userRepository = userRepository;
         this.userContext = userContext;
     }
-    
+
+    @Override
+    public SavedList copy(long id, TargetListSelection request) 
+            throws EntityExistsException, NoSuchObjectException {
+        SavedList sourceList = savedListRepository.findByIdLoadCandidates(id)
+                .orElseThrow(() -> new NoSuchObjectException(SavedList.class, id));
+
+        SavedList targetList;
+        final Long targetId = request.getSavedListId();
+        if (targetId == 0) {
+            //Request is to create a new list
+            CreateSavedListRequest createRequest = new CreateSavedListRequest();
+            createRequest.setName(request.getNewListName());
+            createRequest.setFixed(false);
+            targetList = createSavedList(createRequest);
+        } else {
+            targetList = savedListRepository.findByIdLoadCandidates(targetId)
+                    .orElseThrow(() -> new NoSuchObjectException(SavedList.class, targetId));
+        }
+
+        //Get candidates in source list
+        final Set<Candidate> candidates = sourceList.getCandidates();
+
+        //Add or replace them to target as requested.
+        if (request.isReplace()) {
+            targetList.setCandidates(candidates);
+        } else {
+            targetList.addCandidates(candidates);
+        }
+        saveIt(targetList);
+
+        return targetList;
+    }
+
     @Override
     @Transactional
     public SavedList createSavedList(CreateSavedListRequest request) 

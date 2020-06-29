@@ -8,6 +8,7 @@ import {
 } from "./base";
 import {Router, UrlTree} from "@angular/router";
 import {copyToClipboard} from "../util/clipboard";
+import {TargetListSelection} from "../components/list/select/select-list.component";
 
 export enum SavedSearchType {
   profession,
@@ -143,19 +144,9 @@ export interface ClearSelectionRequest {
   userId: number;
 }
 
-export interface SaveSelectionRequest {
+export interface SaveSelectionRequest extends TargetListSelection{
   //User making the selections
-  userId: number;
-
-  //List to save to - 0 if new list
-  savedListId: number;
-
-  //Name of new list to be created (if any - only used if savedListId = 0
-  newListName?: string;
-
-  //If true any existing contents of list are replace, otherwise contents are
-  //added (merged).
-  replace: boolean;
+  userId?: number;
 }
 
 export interface UpdateSharingRequest {

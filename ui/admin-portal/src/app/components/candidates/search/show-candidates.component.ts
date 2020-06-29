@@ -43,7 +43,10 @@ import {IDropdownSettings} from "ng-multiselect-dropdown";
 import {User} from "../../../model/user";
 import {AuthService} from "../../../services/auth.service";
 import {UserService} from "../../../services/user.service";
-import {SelectListComponent} from "../../list/select/select-list.component";
+import {
+  SelectListComponent,
+  TargetListSelection
+} from "../../list/select/select-list.component";
 import {
   IHasSetOfCandidates,
   SavedListGetRequest
@@ -506,10 +509,11 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   saveSelection() {
     //Show modal allowing for list selection
     const modal = this.modalService.open(SelectListComponent);
+    modal.componentInstance.title = "Save Selection to List";
 
     modal.result
-      .then((request: SaveSelectionRequest) => {
-
+      .then((selection: TargetListSelection) => {
+        const request: SaveSelectionRequest = selection;
         request.userId = this.loggedInUser.id;
         this.doSaveSelection(request);
       })
