@@ -7,6 +7,7 @@ import {
   SearchCandidateSourcesRequest
 } from "./base";
 import {Router, UrlTree} from "@angular/router";
+import {Location} from "@angular/common";
 import {copyToClipboard} from "../util/clipboard";
 import {TargetListSelection} from "../components/list/select/select-list.component";
 
@@ -67,12 +68,13 @@ export function getCandidateSourceNavigation(source: CandidateSource) {
 }
 
 export function copyCandidateSourceLinkToClipboard(
-  router: Router, source: CandidateSource) {
+  router: Router, location: Location, source: CandidateSource) {
   //Get navigation commands for the given source
   const urlCommands = getCandidateSourceNavigation(source);
   //And convert to an absolute url
   const urlTree: UrlTree = router.createUrlTree(urlCommands);
-  const href = document.location.origin + router.serializeUrl(urlTree);
+  const href = document.location.origin +
+    location.prepareExternalUrl(router.serializeUrl(urlTree));
   //...which is copied to the clipboard
   copyToClipboard(href);
 }

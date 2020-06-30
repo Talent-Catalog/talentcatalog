@@ -65,6 +65,7 @@ import {
   switchMap,
   tap
 } from "rxjs/operators";
+import {Location} from "@angular/common";
 
 interface CachedTargetList {
   searchID: number;
@@ -135,6 +136,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
               private savedListCandidateService: SavedListCandidateService,
               private modalService: NgbModal,
               private localStorageService: LocalStorageService,
+              private location: Location,
               private router: Router,
               private candidateSourceResultsCacheService: CandidateSourceResultsCacheService,
               private authService: AuthService
@@ -621,7 +623,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   doCopyLink() {
-    copyCandidateSourceLinkToClipboard(this.router, this.candidateSource);
+    copyCandidateSourceLinkToClipboard(this.router, this.location, this.candidateSource);
   }
 
   addCandidateToList(candidate: Candidate) {
