@@ -9,6 +9,7 @@ import {AuthService} from "../../../services/auth.service";
 import {User} from "../../../model/user";
 import {CandidateSource, isMine} from "../../../model/base";
 import {Router} from "@angular/router";
+import {Location} from "@angular/common";
 
 @Component({
   selector: 'app-candidate-source',
@@ -40,6 +41,7 @@ export class CandidateSourceComponent implements OnInit {
 
   constructor(
     private savedSearchService: SavedSearchService,
+    private location: Location,
     private router: Router,
     private authService: AuthService
   ) {
@@ -87,7 +89,7 @@ export class CandidateSourceComponent implements OnInit {
   }
 
   doCopyLink() {
-    copyCandidateSourceLinkToClipboard(this.router, this.candidateSource);
+    copyCandidateSourceLinkToClipboard(this.router, this.location, this.candidateSource);
   }
 
   doToggleWatch() {
