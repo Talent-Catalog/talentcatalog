@@ -1094,8 +1094,10 @@ public class CandidateServiceImpl implements CandidateService {
         StringBuffer buffer = new StringBuffer();
         if (!CollectionUtils.isEmpty(candidateLanguages)){
             for (CandidateLanguage candidateLanguage : candidateLanguages) {
-                if ("english".equalsIgnoreCase(candidateLanguage.getLanguage().getName())){
-                    buffer.append(candidateLanguage.getSpokenLevel().getName()).append("\n");
+                if ((candidateLanguage.getLanguage() != null) && "english".equalsIgnoreCase(candidateLanguage.getLanguage().getName())){
+                    if(candidateLanguage.getSpokenLevel() != null) {
+                        buffer.append(candidateLanguage.getSpokenLevel().getName()).append("\n");
+                    }
                 }
             }
         }
