@@ -310,10 +310,12 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchObjectException(User.class, userId));
-        
+
+        log.info("getSelectionList: finding list for user " + userId + " search " + id);
         SavedList savedList = savedListRepository.findSelectionList(id, userId)
                         .orElse(null);
         if (savedList == null) {
+            log.info("getSelectionList: Creating list for user " + userId + " search " + id);
             savedList = new SavedList();
             savedList.setSavedSearch(savedSearch);
             savedList.setCreatedBy(user);
