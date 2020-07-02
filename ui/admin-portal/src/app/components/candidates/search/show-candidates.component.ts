@@ -182,7 +182,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
      return isSavedSearch(this.candidateSource) ? "searches" : "lists";
   }
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.candidateSource) {
+    const change = changes.candidateSource;
+    if (change && change.previousValue !== change.currentValue) {
       this.restoreTargetListFromCache();
       this.doSearch(false);
     }
