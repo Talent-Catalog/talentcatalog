@@ -137,7 +137,6 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
       if (req instanceof SearchSavedSearchRequest) {
         req.savedSearchType = this.savedSearchType;
         req.savedSearchSubtype = this.savedSearchSubtype;
-        req.fixed = true;
         req.owned = true;
         req.shared = true;
       }
