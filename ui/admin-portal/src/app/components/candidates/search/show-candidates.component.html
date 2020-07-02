@@ -35,12 +35,12 @@
 
       <button *ngIf="isShareable() && !isSharedWithMe()"
         class="btn btn-outline-secondary" (click)="addToSharedWithMe()">
-        <i class="far fa-handshake"></i> Add to searches shared with me
+        <i class="far fa-handshake"></i> Add to {{pluralType}} shared with me
       </button>
 
       <button *ngIf="isShareable() && isSharedWithMe()"
         class="btn btn-outline-secondary" (click)="removeFromSharedWithMe()">
-        <i class="fas fa-handshake-slash"></i> Remove from searches shared with me
+        <i class="fas fa-handshake-slash"></i> Remove from {{pluralType}} shared with me
       </button>
     </div>
 

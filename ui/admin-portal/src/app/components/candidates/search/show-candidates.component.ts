@@ -178,7 +178,9 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       );
 
   }
-
+  get pluralType() {
+     return isSavedSearch(this.candidateSource) ? "searches" : "lists";
+  }
   ngOnChanges(changes: SimpleChanges): void {
     if (this.candidateSource) {
       this.restoreTargetListFromCache();
