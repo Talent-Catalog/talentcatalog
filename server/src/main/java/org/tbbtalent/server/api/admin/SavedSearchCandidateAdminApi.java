@@ -61,7 +61,6 @@ public class SavedSearchCandidateAdminApi implements IManyToManyApi<SavedSearchG
     public @NotNull Map<String, Object> searchPaged(
             long savedSearchId, @Valid SavedSearchGetRequest request) 
             throws NoSuchObjectException {
-        log.info("searchPaged for search " + savedSearchId);        
         Page<Candidate> candidates =
                 this.candidateService.searchCandidates(savedSearchId, request);
         DtoBuilder builder = builderSelector.selectBuilder();
