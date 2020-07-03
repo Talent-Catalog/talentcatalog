@@ -514,6 +514,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   saveSelection() {
     //Show modal allowing for list selection
     const modal = this.modalService.open(SelectListComponent);
+    modal.componentInstance.action = "Save";
     modal.componentInstance.title = "Save Selection to List";
 
     modal.result

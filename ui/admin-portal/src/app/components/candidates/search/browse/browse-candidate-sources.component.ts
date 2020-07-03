@@ -223,6 +223,8 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   onCopySource(source: CandidateSource) {
     //Show modal allowing for list selection
     const modal = this.modalService.open(SelectListComponent);
+    modal.componentInstance.action = "Copy";
+    modal.componentInstance.title = "Copy to another List";
 
     modal.result
       .then((selection: TargetListSelection) => {

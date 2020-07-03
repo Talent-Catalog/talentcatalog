@@ -30,6 +30,7 @@ export class SelectListComponent implements OnInit {
   form: FormGroup;
   loading: boolean;
   saving: boolean;
+  action: string = "Save";
   title: string = "Select List";
 
   lists: SavedList[] = [];
