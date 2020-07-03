@@ -415,7 +415,7 @@ class SavedListRepositoryTest {
         assertNotNull(sharedUser);
         
         //Retrieve the list by its name        
-        SavedList listFromName = savedListRepository.findByNameIgnoreCase("testlist")
+        SavedList listFromName = savedListRepository.findByNameIgnoreCase("testlist", owningUser.getId())
                 .orElse(null);
                 
         assertNotNull(listFromName);

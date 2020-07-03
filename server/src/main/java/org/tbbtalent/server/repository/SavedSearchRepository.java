@@ -13,8 +13,11 @@ import org.tbbtalent.server.model.Status;
 public interface SavedSearchRepository extends JpaRepository<SavedSearch, Long>, JpaSpecificationExecutor<SavedSearch> {
 
     @Query(" select distinct s from SavedSearch s "
-            + " where lower(s.name) = lower(:name)" )
-    SavedSearch findByNameIgnoreCase(@Param("name") String name);
+            + " where lower(s.name) = lower(:name)"
+            + " and s.createdBy.id = :userId"
+    )
+    SavedSearch findByNameIgnoreCase(
+            @Param("name") String name, @Param("userId") long userId);
 
     @Query(" select distinct s from SavedSearch s "
             + " left join fetch s.searchJoins"

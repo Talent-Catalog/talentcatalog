@@ -102,7 +102,10 @@ public class SavedListServiceImpl implements SavedListService {
     @Transactional
     public SavedList createSavedList(CreateSavedListRequest request) 
             throws EntityExistsException {
-        checkDuplicates(null, request.getName());
+        final User loggedInUser = userContext.getLoggedInUser();
+        if (loggedInUser != null) {
+            checkDuplicates(null, request.getName(), loggedInUser.getId());
+        }
         SavedList savedList = new SavedList();
         request.populateFromRequest(savedList);
 
@@ -259,8 +262,11 @@ public class SavedListServiceImpl implements SavedListService {
     @Override
     public SavedList updateSavedList(long savedListId, UpdateSavedListInfoRequest request) 
             throws NoSuchObjectException, EntityExistsException {
+        final User loggedInUser = userContext.getLoggedInUser();
+        if (loggedInUser != null) {
+            checkDuplicates(savedListId, request.getName(), loggedInUser.getId());
+        }
         SavedList savedList = get(savedListId);
-        checkDuplicates(savedListId, request.getName());
         request.populateFromRequest(savedList);
         return saveIt(savedList);
     }
@@ -297,13 +303,12 @@ public class SavedListServiceImpl implements SavedListService {
         return savedListRepository.save(savedList);
     }
 
-    // TODO: 1/5/20 This could be common code - or at least the checking 
-    private void checkDuplicates(Long id, String name) 
+    private void checkDuplicates(Long savedListId, String name, Long userId) 
             throws EntityExistsException {
-        SavedList existing = savedListRepository.findByNameIgnoreCase(name)
+        SavedList existing = savedListRepository.findByNameIgnoreCase(name, userId)
                 .orElse(null);
         if (existing != null && existing.getStatus() != Status.deleted) {
-            if (!existing.getId().equals(id)) {
+            if (!existing.getId().equals(savedListId)) {
                 throw new EntityExistsException("SavedList " + existing.getId());
             }
         }
