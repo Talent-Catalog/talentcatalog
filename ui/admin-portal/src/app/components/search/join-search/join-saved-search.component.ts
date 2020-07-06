@@ -33,8 +33,7 @@ export class JoinSavedSearchComponent implements OnInit {
   doSavedSearchSearch;
   currentSavedSearchId: number;
 
-  constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder,
+  constructor(private fb: FormBuilder,
               private router: Router,
               private savedSearchService: SavedSearchService) {
   }
@@ -43,8 +42,6 @@ export class JoinSavedSearchComponent implements OnInit {
 
     this.searchForm = this.fb.group({
       selectedSavedSearch: [null],
-      saveSearchId: [''],
-      searchType: ['', Validators.required]
     });
     //dropdown to add joined searches
     this.doSavedSearchSearch = (text$: Observable<string>) =>
@@ -77,18 +74,15 @@ export class JoinSavedSearchComponent implements OnInit {
   }
 
   add(){
-     const searchJoin = this.searchForm.value;
-     searchJoin.savedSearchId = searchJoin.selectedSavedSearch.id;
-     searchJoin.name = searchJoin.selectedSavedSearch.name;
-     this.closeModal(searchJoin);
+     const searchJoin = {
+       savedSearchId: this.searchForm.value.selectedSavedSearch.id,
+       name: this.searchForm.value.selectedSavedSearch.name,
+       searchType: this.searchForm.value.searchType
+     };
   }
 
-  closeModal(searchJoin) {
-    this.activeModal.close(searchJoin);
-  }
+  selected(selection: SavedSearch) {
 
-  dismiss() {
-    this.activeModal.dismiss(false);
   }
 
 }

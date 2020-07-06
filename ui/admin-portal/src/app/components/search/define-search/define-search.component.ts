@@ -505,7 +505,9 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
       backdrop: 'static'
     });
 
-    joinSavedSearchComponent.componentInstance.currentSavedSearchId = this.savedSearch.id;
+    if(this.savedSearch != null){
+      joinSavedSearchComponent.componentInstance.currentSavedSearchId = this.savedSearch.id;
+    };
 
     joinSavedSearchComponent.result
       .then((join) => {
@@ -627,7 +629,20 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     )
   }
 
+  add(){
+    const searchJoin = {
+      savedSearchId: this.searchForm.value.selectedSavedSearch.id,
+      name: this.searchForm.value.selectedSavedSearch.name,
+      searchType: this.searchForm.value.searchType
+    };
+  }
 
+  renderSavedSearchRow(savedSearch: SavedSearch) {
+    return savedSearch.name;
+  }
 
+  selected(selection: SavedSearch) {
+    console.log(selection);
+  }
 
 }
