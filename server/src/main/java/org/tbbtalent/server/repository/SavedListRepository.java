@@ -11,8 +11,11 @@ import org.tbbtalent.server.model.SavedList;
 public interface SavedListRepository extends JpaRepository<SavedList, Long>, JpaSpecificationExecutor<SavedList> {
 
     @Query(" select distinct s from SavedList s "
-            + " where lower(s.name) = lower(:name)" )
-    Optional<SavedList> findByNameIgnoreCase(@Param("name") String name);
+            + " where lower(s.name) = lower(:name)"
+            + " and s.createdBy.id = :userId"
+    )
+    Optional<SavedList> findByNameIgnoreCase(
+            @Param("name") String name, @Param("userId")Long userId);
 
     @Query(" select distinct s from SavedList s left join fetch s.users"
             + " where s.id = :id" )

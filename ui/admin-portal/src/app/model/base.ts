@@ -49,6 +49,7 @@ export class PagedSearchRequest {
 export class SearchCandidateSourcesRequest extends PagedSearchRequest {
   keyword?: string;
   fixed?: boolean;
+  global?: boolean;
   owned?: boolean;
   shared?: boolean;
 }

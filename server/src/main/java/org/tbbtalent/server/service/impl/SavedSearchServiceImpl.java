@@ -179,8 +179,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     @Transactional
     public SavedSearch createSavedSearch(UpdateSavedSearchRequest request) throws EntityExistsException {
         SavedSearch savedSearch = convertToSavedSearch(request);
-        checkDuplicates(null, request.getName());
-        savedSearch.setAuditFields(userContext.getLoggedInUser());
+        final User loggedInUser = userContext.getLoggedInUser();
+        if (loggedInUser != null) {
+            checkDuplicates(null, request.getName(), loggedInUser.getId());
+        }
+        savedSearch.setAuditFields(loggedInUser);
         savedSearch = this.savedSearchRepository.save(savedSearch);
         savedSearch = addSearchJoins(request, savedSearch);
         return savedSearch;
@@ -208,8 +211,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         savedSearch.setId(id);
         savedSearch = addSearchJoins(request, savedSearch);
-        savedSearch.setAuditFields(userContext.getLoggedInUser());
-        checkDuplicates(id, request.getName());
+        final User loggedInUser = userContext.getLoggedInUser();
+        savedSearch.setAuditFields(loggedInUser);
+        if (loggedInUser != null) {
+            checkDuplicates(id, request.getName(), loggedInUser.getId());
+        }
         return savedSearchRepository.save(savedSearch);
     }
 
@@ -310,7 +316,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchObjectException(User.class, userId));
-        
+
         SavedList savedList = savedListRepository.findSelectionList(id, userId)
                         .orElse(null);
         if (savedList == null) {
@@ -331,10 +337,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 "Search" + savedSearch.getId(); 
     }
 
-    private void checkDuplicates(Long id, String name) {
-        SavedSearch existing = savedSearchRepository.findByNameIgnoreCase(name);
+    private void checkDuplicates(Long savedSearchId, String name, Long userId) {
+        SavedSearch existing = 
+                savedSearchRepository.findByNameIgnoreCase(name, userId);
         if (existing != null && existing.getStatus() != Status.deleted) {
-            if (!existing.getId().equals(id)) {
+            if (!existing.getId().equals(savedSearchId)) {
                 throw new EntityExistsException("savedSearch");
             }
         }

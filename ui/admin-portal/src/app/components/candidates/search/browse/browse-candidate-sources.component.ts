@@ -128,7 +128,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
         req.shared = true;
         break;
       case SearchBy.all:
-        req.fixed = true;
+        req.global = true;
         req.owned = true;
         req.shared = true;
         break;
@@ -137,7 +137,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
       if (req instanceof SearchSavedSearchRequest) {
         req.savedSearchType = this.savedSearchType;
         req.savedSearchSubtype = this.savedSearchSubtype;
-        req.fixed = true;
+        req.global = true;
         req.owned = true;
         req.shared = true;
       }
@@ -223,6 +223,8 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   onCopySource(source: CandidateSource) {
     //Show modal allowing for list selection
     const modal = this.modalService.open(SelectListComponent);
+    modal.componentInstance.action = "Copy";
+    modal.componentInstance.title = "Copy to another List";
 
     modal.result
       .then((selection: TargetListSelection) => {

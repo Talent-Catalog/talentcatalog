@@ -178,9 +178,12 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       );
 
   }
-
+  get pluralType() {
+     return isSavedSearch(this.candidateSource) ? "searches" : "lists";
+  }
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.candidateSource) {
+    const change = changes.candidateSource;
+    if (change && change.previousValue !== change.currentValue) {
       this.restoreTargetListFromCache();
       this.doSearch(false);
     }
@@ -511,6 +514,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   saveSelection() {
     //Show modal allowing for list selection
     const modal = this.modalService.open(SelectListComponent);
+    modal.componentInstance.action = "Save";
     modal.componentInstance.title = "Save Selection to List";
 
     modal.result

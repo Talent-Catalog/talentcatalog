@@ -67,7 +67,11 @@ constructor(
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.search(false);
+    //Do search if candidate source has changed.
+    const change = changes.candidateSource;
+    if (change && change.previousValue !== change.currentValue) {
+      this.search(false);
+    }
   }
 
   ngOnDestroy(): void {
@@ -92,6 +96,12 @@ constructor(
     this.results = null;
     this.timestamp = null;
     this.error = null;
+
+    //If already searching just exit.
+    if (this.searching) {
+      return;
+    }
+
     this.searching = true;
 
     let done: boolean = false;
@@ -205,5 +215,13 @@ constructor(
 
   onCopySource(source: CandidateSource) {
     this.copySource.emit(source);
+  }
+
+  onPageChange() {
+    this.search(true);
+  }
+
+  onRefreshRequest() {
+    this.search(true);
   }
 }

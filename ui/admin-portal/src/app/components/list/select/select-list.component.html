@@ -21,7 +21,7 @@
   <form [formGroup]="form">
     <div class="form-group" >
       <div class="form-inline"  *ngIf="!newList">
-        <label>Save to existing list</label>
+        <label>Existing list</label>
         <ng-multiselect-dropdown formControlName="savedList"
           id="savedLists"
           [data]="lists"
@@ -48,6 +48,6 @@
   <button type="button" class="btn btn-primary" (click)="select()"
           [disabled]="form?.invalid || saving">
     <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
-    Select
+    {{action}}
   </button>
 </div>

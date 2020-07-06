@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.model.Candidate;
 import org.tbbtalent.server.model.Role;
 import org.tbbtalent.server.model.SavedList;
@@ -67,7 +65,7 @@ class CandidateRepositoryEndToEndTest {
 
         //Create a test list if it is not already there
         String listName = "TestList";
-        savedList = savedListRepository.findByNameIgnoreCase(listName)
+        savedList = savedListRepository.findByNameIgnoreCase(listName, owningUser.getId() )
                 .orElse(null);
 
         if (savedList == null) {

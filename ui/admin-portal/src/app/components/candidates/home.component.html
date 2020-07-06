@@ -36,6 +36,15 @@
     </ngb-tab>
   </ng-container>
 
+  <ngb-tab id="AllSearches" title="All Searches">
+    <ng-template ngbTabContent>
+      <app-browse-candidate-sources
+        [sourceType]="CandidateSourceType.SavedSearch"
+        [searchBy]="SearchBy.all">
+      </app-browse-candidate-sources>
+    </ng-template>
+  </ngb-tab>
+
   <ngb-tab id="MySearches" title="My Searches">
     <ng-template ngbTabContent>
       <app-browse-candidate-sources
@@ -51,15 +60,6 @@
           [sourceType]="CandidateSourceType.SavedSearch"
           [searchBy]="SearchBy.sharedWithMe">
         </app-browse-candidate-sources>
-    </ng-template>
-  </ngb-tab>
-
-  <ngb-tab id="AllSearches" title="All Searches">
-    <ng-template ngbTabContent>
-      <app-browse-candidate-sources
-        [sourceType]="CandidateSourceType.SavedSearch"
-        [searchBy]="SearchBy.all">
-      </app-browse-candidate-sources>
     </ng-template>
   </ngb-tab>
 

@@ -45,6 +45,12 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
     private Boolean fixed = false;
 
     /**
+     * If true, all users will see this candidate source. It does not need to be
+     * shared.
+     */
+    private Boolean global = false;
+
+    /**
      * Stored as comma separated list of watching user ids 
      */
     private String watcherIds;
@@ -67,6 +73,14 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
 
     public void setFixed(Boolean fixed) {
         this.fixed = fixed;
+    }
+
+    public Boolean getGlobal() {
+        return global;
+    }
+
+    public void setGlobal(Boolean global) {
+        this.global = global;
     }
 
     public Status getStatus() {
