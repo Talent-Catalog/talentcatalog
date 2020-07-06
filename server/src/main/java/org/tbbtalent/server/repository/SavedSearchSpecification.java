@@ -81,17 +81,14 @@ public class SavedSearchSpecification {
                 );
             }
 
-            // (shared OR owned)
+            // (shared OR owned OR global)
             Predicate ors = builder.disjunction();
 
-            //todo Hack until global attribute introduced
-            //todo Add fixed back into OR (because all current fixed are also global)
-            if (request.getFixed() != null && request.getFixed()) {
+            if (request.getGlobal() != null && request.getGlobal()) {
                 ors.getExpressions().add(
-                        builder.equal(savedSearch.get("fixed"), request.getFixed())
+                        builder.equal(savedSearch.get("global"), request.getGlobal())
                 );
             }
-            //todo end hack
 
             //If shared is specified, only supply searches shared with the owner
             if (request.getShared() != null && request.getShared()) {

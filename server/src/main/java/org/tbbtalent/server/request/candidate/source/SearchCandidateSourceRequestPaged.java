@@ -12,6 +12,7 @@ import lombok.ToString;
 public class SearchCandidateSourceRequestPaged extends PagedSearchRequest {
     private String keyword;
     private Boolean fixed;
+    private Boolean global;
     private Boolean owned;
     private Boolean shared;
 }
