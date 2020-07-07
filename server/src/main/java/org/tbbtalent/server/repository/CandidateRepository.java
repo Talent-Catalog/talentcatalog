@@ -12,7 +12,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tbbtalent.server.model.Candidate;
-import org.tbbtalent.server.model.CandidateStatus;
 import org.tbbtalent.server.model.Country;
 
 public interface CandidateRepository extends JpaRepository<Candidate, Long>, JpaSpecificationExecutor<Candidate> {
@@ -88,7 +87,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
      * ADMIN PORTAL DISPLAY CANDIDATE METHODS: includes source country restrictions.
      */
     String sourceCountryRestriction = " and c.country in (:userSourceCountries)";
-    String excludeDeleted = " and c.status <> :exclude";
+    String excludeDeleted = " and c.status <> 'deleted'";
 
     @Query(" select distinct c from Candidate c "
             + " where lower(c.candidateNumber) like lower(:number)"
@@ -120,7 +119,6 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             + sourceCountryRestriction)
     Page<Candidate> searchCandidateNumber(@Param("candidateNumber") String candidateNumber,
                                           @Param("userSourceCountries") Set<Country> userSourceCountries,
-                                          @Param("exclude") CandidateStatus exclude,
                                           Pageable pageable);
 
     @Query(" select distinct c from Candidate c "
@@ -136,7 +134,6 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             + sourceCountryRestriction)
     Page<Candidate> searchCandidateName(@Param("candidateName") String candidateName,
                                         @Param("userSourceCountries") Set<Country> userSourceCountries,
-                                        @Param("exclude") CandidateStatus exclude,
                                         Pageable pageable);
 
     @Query(" select c from Candidate c "
