@@ -16,7 +16,8 @@ export enum SearchBy {
   type,
   all,
   mine,
-  sharedWithMe
+  sharedWithMe,
+  watched
 }
 
 export const defaultReviewStatusFilter: string[] = [
@@ -52,6 +53,7 @@ export class SearchCandidateSourcesRequest extends PagedSearchRequest {
   global?: boolean;
   owned?: boolean;
   shared?: boolean;
+  watched?: boolean;
 }
 
 export function isMine(source: CandidateSource, auth: AuthService) {

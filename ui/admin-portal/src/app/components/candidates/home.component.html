@@ -36,11 +36,20 @@
     </ngb-tab>
   </ng-container>
 
-  <ngb-tab id="AllSearches" title="All Searches">
+  <ngb-tab id="AllSearches" title="All">
     <ng-template ngbTabContent>
       <app-browse-candidate-sources
         [sourceType]="CandidateSourceType.SavedSearch"
         [searchBy]="SearchBy.all">
+      </app-browse-candidate-sources>
+    </ng-template>
+  </ngb-tab>
+
+  <ngb-tab id="MyWatchedSearches" title="My Watches">
+    <ng-template ngbTabContent>
+      <app-browse-candidate-sources
+        [sourceType]="CandidateSourceType.SavedSearch"
+        [searchBy]="SearchBy.watched" >
       </app-browse-candidate-sources>
     </ng-template>
   </ngb-tab>

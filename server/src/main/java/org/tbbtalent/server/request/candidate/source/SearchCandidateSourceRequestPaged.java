@@ -15,5 +15,6 @@ public class SearchCandidateSourceRequestPaged extends PagedSearchRequest {
     private Boolean global;
     private Boolean owned;
     private Boolean shared;
+    private Boolean watched;
 }
 

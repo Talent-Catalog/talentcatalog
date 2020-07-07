@@ -127,6 +127,9 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
       case SearchBy.sharedWithMe:
         req.shared = true;
         break;
+      case SearchBy.watched:
+        req.watched = true;
+        break;
       case SearchBy.all:
         req.global = true;
         req.owned = true;

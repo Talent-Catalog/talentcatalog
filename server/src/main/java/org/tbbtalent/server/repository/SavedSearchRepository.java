@@ -53,7 +53,8 @@ public interface SavedSearchRepository extends JpaRepository<SavedSearch, Long>,
 
     @Query(value=" select * from saved_search s "
             + " where cast(:userId as text) in " +
-            " (select * from regexp_split_to_table(s.watcher_ids, ','))", 
+            " (select * from regexp_split_to_table(s.watcher_ids, ','))" +
+            " and s.status <> 'deleted'", 
             nativeQuery = true )
     Set<SavedSearch> findUserWatchedSearches(@Param("userId") long userId);
 }

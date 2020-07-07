@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -104,13 +105,28 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     @Override
     public Page<SavedSearch> searchSavedSearches(SearchSavedSearchRequest request) {
         final User loggedInUser = userContext.getLoggedInUser();
-        User userWithSharedSearches = loggedInUser == null ? null :
-                userRepository.findByIdLoadSharedSearches(
-                        loggedInUser.getId());
 
-        Page<SavedSearch> savedSearches = savedSearchRepository.findAll(
-                SavedSearchSpecification.buildSearchQuery(
-                        request, userWithSharedSearches), request.getPageRequest());
+        Page<SavedSearch> savedSearches;
+        //If requesting watches
+        if (request.getWatched() != null && request.getWatched() ) {
+            Set<SavedSearch> watches;
+            if (loggedInUser == null) {
+                //Just provide empty set
+                watches = new HashSet<>();
+            } else {
+                watches = savedSearchRepository.findUserWatchedSearches(loggedInUser.getId());
+            }
+            savedSearches = new PageImpl<>(
+                    new ArrayList<>(watches), request.getPageRequest(), 
+                    watches.size());
+        } else {
+            User userWithSharedSearches = loggedInUser == null ? null :
+                    userRepository.findByIdLoadSharedSearches(
+                            loggedInUser.getId());
+            savedSearches = savedSearchRepository.findAll(
+                    SavedSearchSpecification.buildSearchQuery(
+                            request, userWithSharedSearches), request.getPageRequest());
+        }
         log.info("Found " + savedSearches.getTotalElements() + " savedSearches in search");
 
         for (SavedSearch savedSearch: savedSearches) {
