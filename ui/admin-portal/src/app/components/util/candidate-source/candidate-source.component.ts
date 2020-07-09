@@ -52,26 +52,18 @@ export class CandidateSourceComponent implements OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges){
-    if (changes && changes.candidateSource.previousValue && changes.candidateSource.previousValue !== changes.candidateSource.currentValue) {
-      this.getNamesFromIds();
+    // WHEN candidateSource changes IF showAll fetch the savedSearch object which has the multi select Names to display (not just Ids).
+    if(this.showAll){
+      this.getSavedSearch();
     }
   }
 
-  loadSavedSearch() {
-    if (this.showAll === true){
-      this.showAll = false;
-    } else {
+  toggleShowAll() {
+    this.showAll = !this.showAll;
+    if(this.showAll){
       this.loading = true;
-      this.savedSearchService.get(this.candidateSource.id).subscribe(result => {
-        this.candidateSource = result;
-        this.showAll = true;
-        this.loading = false;
-      }, err => {
-        this.loading = false;
-        this.error = err;
-      })
+      this.getSavedSearch();
     }
-
   }
 
   doOpenSource(){
@@ -124,8 +116,7 @@ export class CandidateSourceComponent implements OnInit {
     return isMine(this.candidateSource, this.authService);
   }
 
-  getNamesFromIds(){
-    this.loading = true;
+  getSavedSearch() {
     this.savedSearchService.get(this.candidateSource.id).subscribe(result => {
       this.candidateSource = result;
       this.loading = false;
