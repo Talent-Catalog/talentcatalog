@@ -251,31 +251,32 @@
       <!--        </select>-->
       <!--      </div>-->
 
-<!--      <hr class="w-100"> removed for now-->
+      <hr class="w-100">
 
-<!--      <div class="form-group col-12">-->
-<!--        <span>Joined Searches</span>-->
-<!--        <div class="pull-right">-->
-<!--          <button class="btn btn-primary" (click)="addSavedSearchJoin()">Add</button>-->
-<!--        </div>-->
-<!--      </div>-->
+      <div class="col-12 col-md-6">
+        <app-join-saved-search
+          (addBaseSearch)="addBaseSearchJoin($event)"
+          [baseSearch]= "selectedBaseJoin"
+        ></app-join-saved-search>
+      </div>
+
+
+
+
+
+
 
       <!-- SEARCH JOINS -->
-      <ng-container *ngFor="let join of searchForm.value.searchJoinRequests">
-        <div class="form-group col-2">
-          <div class="form-control">
-            {{join.searchType}}
-          </div>
-        </div>
-        <div class="form-group col-5 offset-4">
-          <div class="form-control">
-            {{join.name}}
-          </div>
-        </div>
-        <div class="form-group col-1">
-          <button class="btn btn-danger" (click)="deleteSavedSearchJoin(join)"><i class="fas fa-trash"></i></button>
-        </div>
-      </ng-container>
+<!--      <ng-container *ngIf="selectedBaseJoin">-->
+<!--        <div class="form-group">-->
+<!--          <div class="form-control selected">-->
+<!--            {{selectedBaseJoin.name}}-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <div class="form-group col-1">-->
+<!--          <button class="btn btn-danger" (click)="deleteSavedSearchJoin(selectedBaseJoin)"><i class="fas fa-trash"></i></button>-->
+<!--        </div>-->
+<!--      </ng-container>-->
 
 
     </div>
