@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, SimpleChanges} from '@angular/core';
 import {
   copyCandidateSourceLinkToClipboard,
   isSavedSearch,
@@ -49,6 +49,12 @@ export class CandidateSourceComponent implements OnInit {
 
   ngOnInit() {
     this.loggedInUser = this.authService.getLoggedInUser();
+  }
+
+  ngOnChanges(changes: SimpleChanges){
+    if (changes && changes.candidateSource.previousValue && changes.candidateSource.previousValue !== changes.candidateSource.currentValue) {
+      this.getNamesFromIds();
+    }
   }
 
   loadSavedSearch() {
@@ -104,7 +110,6 @@ export class CandidateSourceComponent implements OnInit {
   get savedSearch(): SavedSearch {
     return isSavedSearch(this.candidateSource)
       ? this.candidateSource as SavedSearch : null;
-    console.log('test')
   }
 
   isSavedSearch() {
@@ -118,4 +123,16 @@ export class CandidateSourceComponent implements OnInit {
   isEditable() {
     return isMine(this.candidateSource, this.authService);
   }
+
+  getNamesFromIds(){
+    this.loading = true;
+    this.savedSearchService.get(this.candidateSource.id).subscribe(result => {
+      this.candidateSource = result;
+      this.loading = false;
+    }, err => {
+      this.loading = false;
+      this.error = err;
+    })
+  }
+
 }
