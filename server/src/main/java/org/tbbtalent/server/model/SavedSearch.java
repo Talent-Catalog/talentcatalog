@@ -20,6 +20,7 @@ import javax.persistence.Transient;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 @Entity
@@ -29,6 +30,9 @@ public class SavedSearch extends AbstractCandidateSource {
     private static final Logger log = LoggerFactory.getLogger(SavedSearch.class);
 
     private String type;
+    
+    private Boolean defaultSearch = false; 
+    
     private String keyword;
     private String statuses;
     private Gender gender;
@@ -71,7 +75,7 @@ public class SavedSearch extends AbstractCandidateSource {
     private String educationMajorIds;
 
     private Boolean includeDraftAndDeleted;
-    private Boolean reviewable;
+    private Boolean reviewable = false;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "savedSearch", cascade = CascadeType.MERGE)
     private Set<SearchJoin> searchJoins = new HashSet<>();
@@ -96,6 +100,16 @@ public class SavedSearch extends AbstractCandidateSource {
     @Transient private SavedSearchSubtype savedSearchSubtype;
 
     public SavedSearch() {
+    }
+
+    public Boolean getDefaultSearch() {
+        return defaultSearch;
+    }
+
+    public void setDefaultSearch(Boolean defaultSearch) {
+        if (defaultSearch != null) {
+            this.defaultSearch = defaultSearch;
+        }
     }
 
     public String getKeyword() {
@@ -414,11 +428,11 @@ public class SavedSearch extends AbstractCandidateSource {
         this.savedSearchType = type;
     }
 
-    public SavedSearchSubtype getSavedSearchSubtype() {
+    @Nullable public SavedSearchSubtype getSavedSearchSubtype() {
         return savedSearchSubtype;
     }
 
-    public void setSavedSearchSubtype(SavedSearchSubtype savedSearchSubtype) {
+    public void setSavedSearchSubtype(@Nullable SavedSearchSubtype savedSearchSubtype) {
         this.savedSearchSubtype = savedSearchSubtype;
     }
 
@@ -453,7 +467,9 @@ public class SavedSearch extends AbstractCandidateSource {
       }
     
     public void setReviewable(Boolean reviewable) {
-        this.reviewable = reviewable;
+        if (reviewable != null) {
+            this.reviewable = reviewable;
+        }
     }
 
     public Set<User> getUsers() {

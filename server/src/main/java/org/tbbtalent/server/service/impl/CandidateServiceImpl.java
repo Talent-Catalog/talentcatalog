@@ -29,6 +29,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -89,6 +90,7 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tbbtalent.server.request.candidate.stat.CandidateStatDateRequest;
 import org.tbbtalent.server.request.note.CreateCandidateNoteRequest;
+import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.security.PasswordHelper;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.CandidateNoteService;
@@ -147,45 +149,6 @@ public class CandidateServiceImpl implements CandidateService {
         this.surveyTypeRepository = surveyTypeRepository;
         this.emailHelper = emailHelper;
         this.pdfHelper = pdfHelper;
-    }
-
-    @Override
-    public Page<Candidate> searchCandidates(
-            long savedSearchId, SavedSearchGetRequest request) 
-            throws NoSuchObjectException {
-
-        //Check for selection list to set the selected attribute on returned 
-        // candidates.
-        SavedList selectionList = null;
-        User user = userContext.getLoggedInUser();
-        if (user != null) {
-            selectionList = savedSearchService
-                    .getSelectionList(savedSearchId, user.getId());
-        }
-
-        SearchCandidateRequest searchRequest =
-                this.savedSearchService.loadSavedSearch(savedSearchId);
-
-        //Merge the SavedSearchGetRequest - notably the page request - in to
-        //the standard saved search request. 
-        searchRequest.merge(request);
-
-        //Do the search
-        final Page<Candidate> candidates = searchCandidates(searchRequest);
-        
-        //Add in any selections
-        if (selectionList != null) {
-            Set<Candidate> selectedCandidates = selectionList.getCandidates();
-            if (selectedCandidates.size() > 0) {
-                for (Candidate candidate : candidates) {
-                    if (selectedCandidates.contains(candidate)) {
-                        candidate.setSelected(true);
-                    }
-                }
-            }
-        }
-        
-        return candidates;
     }
 
     @Override
@@ -335,8 +298,7 @@ public class CandidateServiceImpl implements CandidateService {
                 .collect(Collectors.toList()) : null;
     }
 
-    @Override
-    public Page<Candidate> searchCandidates(SearchCandidateRequest request) {
+    private Page<Candidate> doSearchCandidates(SearchCandidateRequest request) {
         User user = userContext.getLoggedInUser();
 
         List<Long> searchIds = new ArrayList<>();
@@ -353,6 +315,83 @@ public class CandidateServiceImpl implements CandidateService {
 
         Page<Candidate> candidates = candidateRepository.findAll(query, request.getPageRequestWithoutSort());
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
+        return candidates;
+    }
+
+    private void addInSelections(@Nullable Long savedSearchId, Page<Candidate> candidates) {
+        if (savedSearchId != null) {
+            //Check for selection list to set the selected attribute on returned 
+            // candidates.
+            SavedList selectionList = null;
+            User user = userContext.getLoggedInUser();
+            if (user != null) {
+                selectionList = savedSearchService
+                        .getSelectionList(savedSearchId, user.getId());
+            }
+            if (selectionList != null) {
+                Set<Candidate> selectedCandidates = selectionList.getCandidates();
+                if (selectedCandidates.size() > 0) {
+                    for (Candidate candidate : candidates) {
+                        if (selectedCandidates.contains(candidate)) {
+                            candidate.setSelected(true);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public Page<Candidate> searchCandidates(
+            long savedSearchId, SavedSearchGetRequest request)
+            throws NoSuchObjectException {
+
+        SearchCandidateRequest searchRequest =
+                this.savedSearchService.loadSavedSearch(savedSearchId);
+
+        //Merge the SavedSearchGetRequest - notably the page request - in to
+        //the standard saved search request. 
+        searchRequest.merge(request);
+
+        //Do the search
+        final Page<Candidate> candidates = doSearchCandidates(searchRequest);
+
+        //Add in any selections
+        addInSelections(savedSearchId, candidates);
+
+        return candidates;
+    }
+
+    @Override
+    public Page<Candidate> searchCandidates(SearchCandidateRequest request) {
+        Page<Candidate> candidates;
+        User user = userContext.getLoggedInUser();
+        if (user == null) {
+            candidates = doSearchCandidates(request);
+        } else {
+            //Update default search
+            SavedSearch defaultSavedSearch =
+                    savedSearchService.getDefaultSavedSearch();
+            Long savedSearchId = defaultSavedSearch.getId();
+            UpdateSavedSearchRequest updateRequest = new UpdateSavedSearchRequest();
+            updateRequest.setSearchCandidateRequest(request);
+            //Set other fields - no changes there
+            updateRequest.setName(defaultSavedSearch.getName());
+            updateRequest.setDefaultSearch(defaultSavedSearch.getDefaultSearch());
+            updateRequest.setFixed(defaultSavedSearch.getFixed());
+            updateRequest.setReviewable(defaultSavedSearch.getReviewable());
+            updateRequest.setSavedSearchType(defaultSavedSearch.getSavedSearchType());
+            updateRequest.setSavedSearchSubtype(defaultSavedSearch.getSavedSearchSubtype());
+            //todo Need special method which only updates search part. Then don't need the above "no changes there" stuff
+            savedSearchService.updateSavedSearch(savedSearchId, updateRequest);
+
+            //Do the search
+            candidates = doSearchCandidates(request);
+
+            //Add in any selections
+            addInSelections(savedSearchId, candidates);
+        }
+        
         return candidates;
     }
 
@@ -1024,7 +1063,7 @@ public class CandidateServiceImpl implements CandidateService {
             request.setPageSize(500);
             boolean hasMore = true;
             while (hasMore) {
-                Page<Candidate> result = searchCandidates(request);
+                Page<Candidate> result = doSearchCandidates(request);
                 for (Candidate candidate : result.getContent()) {
                     csvWriter.writeNext(getExportCandidateStrings(candidate));
                 }
@@ -1135,7 +1174,7 @@ public class CandidateServiceImpl implements CandidateService {
                 LocalDate date = LocalDate.now().minusDays(1);
                 searchCandidateRequest.setFromDate(date);
                 Page<Candidate> candidates =
-                        searchCandidates(searchCandidateRequest);
+                        doSearchCandidates(searchCandidateRequest);
 
                 if (candidates.getNumberOfElements() > 0) {
                     //Query has results. Need to let watchers know

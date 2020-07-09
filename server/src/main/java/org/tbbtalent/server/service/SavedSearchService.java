@@ -60,6 +60,15 @@ public interface SavedSearchService {
     SavedSearch removeWatcher(long id, UpdateWatchingRequest request);
 
     /**
+     * Returns the scratch saved search for the logged in user,
+     * creating one if necessary (there should only ever be one)
+     * @return A saved search to be used by the given user for defining
+     * searches which have not been saved.
+     * @throws NoSuchObjectException is there is no logged in user
+     */
+    @NotNull SavedSearch getDefaultSavedSearch() throws NoSuchObjectException;
+
+    /**
      * Returns a selection saved list for the given saved search and user,
      * creating one if necessary (there should only ever be one)
      * @param id Saved search ID

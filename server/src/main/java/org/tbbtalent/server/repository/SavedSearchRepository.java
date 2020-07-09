@@ -57,4 +57,11 @@ public interface SavedSearchRepository extends JpaRepository<SavedSearch, Long>,
             " and s.status <> 'deleted'", 
             nativeQuery = true )
     Set<SavedSearch> findUserWatchedSearches(@Param("userId") long userId);
+
+
+    @Query(" select distinct s from SavedSearch s " +
+            " where s.createdBy.id = :userId " +
+            " and s.defaultSearch = true" )
+    Optional<SavedSearch> findDefaultSavedSearch(@Param("userId")Long userId);
+    
 }

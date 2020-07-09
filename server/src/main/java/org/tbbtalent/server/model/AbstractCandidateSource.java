@@ -72,7 +72,9 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
     }
 
     public void setFixed(Boolean fixed) {
-        this.fixed = fixed;
+        if (fixed != null) {
+            this.fixed = fixed;
+        }
     }
 
     public Boolean getGlobal() {
@@ -80,7 +82,9 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
     }
 
     public void setGlobal(Boolean global) {
-        this.global = global;
+        if (global != null) {
+            this.global = global;
+        }
     }
 
     public Status getStatus() {

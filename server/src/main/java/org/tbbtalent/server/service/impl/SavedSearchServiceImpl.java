@@ -32,6 +32,7 @@ import org.tbbtalent.server.model.Language;
 import org.tbbtalent.server.model.LanguageLevel;
 import org.tbbtalent.server.model.SavedList;
 import org.tbbtalent.server.model.SavedSearch;
+import org.tbbtalent.server.model.SavedSearchType;
 import org.tbbtalent.server.model.SearchJoin;
 import org.tbbtalent.server.model.Status;
 import org.tbbtalent.server.model.User;
@@ -193,7 +194,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     @Override
     @Transactional
-    public SavedSearch createSavedSearch(UpdateSavedSearchRequest request) throws EntityExistsException {
+    public SavedSearch createSavedSearch(UpdateSavedSearchRequest request) 
+            throws EntityExistsException {
         SavedSearch savedSearch = convertToSavedSearch(request);
         final User loggedInUser = userContext.getLoggedInUser();
         if (loggedInUser != null) {
@@ -324,6 +326,30 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
     @Override
+    public @NotNull SavedSearch getDefaultSavedSearch() 
+            throws NoSuchObjectException {
+        //Check that we have a logged in user.
+        User loggedInUser = userContext.getLoggedInUser();
+        if (loggedInUser == null) {
+            throw new NoSuchObjectException(User.class, 0);
+        }
+
+        SavedSearch savedSearch = 
+                savedSearchRepository.findDefaultSavedSearch(loggedInUser.getId())
+                .orElse(null);
+        if (savedSearch == null) {
+            //Create a default saved search for logged in user
+            UpdateSavedSearchRequest request = new UpdateSavedSearchRequest();
+            request.setName(constructDefaultSearchName(loggedInUser));
+            request.setSavedSearchType(SavedSearchType.other);
+            request.setDefaultSearch(true);
+            savedSearch = createSavedSearch(request);
+        }
+
+        return savedSearch;
+    }
+
+    @Override
     public @NotNull SavedList getSelectionList(long id, Long userId) 
             throws NoSuchObjectException {
         //Check that saved search and user are valid.
@@ -347,6 +373,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return savedList;
     }
 
+    private static String constructDefaultSearchName(User user) {
+        return "_DefaultSavedSearchForUser" + user.getId(); 
+    }
+
     private static String constructSelectionListName(
             User user, SavedSearch savedSearch) {
         return "_SelectionListUser" + user.getId() + 
@@ -365,15 +395,17 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     private SavedSearch addSearchJoins(UpdateSavedSearchRequest request, SavedSearch savedSearch) {
         Set<SearchJoin> searchJoins = new HashSet<>();
-        if (!CollectionUtils.isEmpty(request.getSearchCandidateRequest().getSearchJoinRequests())){
-            for (SearchJoinRequest searchJoinRequest : request.getSearchCandidateRequest().getSearchJoinRequests()) {
-                SearchJoin searchJoin = new SearchJoin();
-                searchJoin.setSavedSearch(savedSearch);
-                searchJoin.setChildSavedSearch(savedSearchRepository.findById(searchJoinRequest.getSavedSearchId()).orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, searchJoinRequest.getSavedSearchId())));
-                searchJoin.setSearchType(searchJoinRequest.getSearchType());
-                this.searchJoinRepository.save(searchJoin);
+        if (request.getSearchCandidateRequest() != null) {
+            if (!CollectionUtils.isEmpty(request.getSearchCandidateRequest().getSearchJoinRequests())) {
+                for (SearchJoinRequest searchJoinRequest : request.getSearchCandidateRequest().getSearchJoinRequests()) {
+                    SearchJoin searchJoin = new SearchJoin();
+                    searchJoin.setSavedSearch(savedSearch);
+                    searchJoin.setChildSavedSearch(savedSearchRepository.findById(searchJoinRequest.getSavedSearchId()).orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, searchJoinRequest.getSavedSearchId())));
+                    searchJoin.setSearchType(searchJoinRequest.getSearchType());
+                    this.searchJoinRepository.save(searchJoin);
+                }
+                savedSearch.setSearchJoins(searchJoins);
             }
-            savedSearch.setSearchJoins(searchJoins);
         }
 
         return savedSearch;
@@ -387,6 +419,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         SavedSearch savedSearch = new SavedSearch();
         savedSearch.setName(request.getName());
         savedSearch.setFixed(request.getFixed());
+        savedSearch.setDefaultSearch(request.getDefaultSearch());
         savedSearch.setReviewable(request.getReviewable());
         savedSearch.setType(request.getSavedSearchType(), request.getSavedSearchSubtype());
 

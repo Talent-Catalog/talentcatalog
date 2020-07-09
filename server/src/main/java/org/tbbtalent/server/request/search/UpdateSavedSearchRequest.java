@@ -14,6 +14,7 @@ import lombok.ToString;
 @ToString
 public class UpdateSavedSearchRequest extends AbstractUpdateCandidateSourceRequest {
 
+    private Boolean defaultSearch;
     private Boolean reviewable;
     private SavedSearchType savedSearchType;
     private SavedSearchSubtype savedSearchSubtype;
