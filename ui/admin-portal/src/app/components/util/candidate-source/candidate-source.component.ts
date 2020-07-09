@@ -104,6 +104,7 @@ export class CandidateSourceComponent implements OnInit {
   get savedSearch(): SavedSearch {
     return isSavedSearch(this.candidateSource)
       ? this.candidateSource as SavedSearch : null;
+    console.log('test')
   }
 
   isSavedSearch() {

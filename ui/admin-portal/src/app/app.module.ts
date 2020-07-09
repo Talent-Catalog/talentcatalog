@@ -288,7 +288,6 @@ import {CreateCandidateOccupationComponent} from './components/candidates/view/o
     CreateSearchComponent,
     UpdateSearchComponent,
     EditCandidateContactComponent,
-    JoinSavedSearchComponent,
     CreateCandidateNoteComponent,
     EditCandidateNoteComponent,
     CreateCandidateEducationComponent,

@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {SearchResults} from '../../../model/search-results';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {
@@ -14,6 +14,7 @@ import {SavedSearchService} from "../../../services/saved-search.service";
 import {Router} from "@angular/router";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {Observable, of} from "rxjs";
+import {CandidateOccupation} from "../../../model/candidate-occupation";
 
 @Component({
   selector: 'app-join-saved-search',
@@ -32,9 +33,12 @@ export class JoinSavedSearchComponent implements OnInit {
   searchFailed = false;
   doSavedSearchSearch;
   currentSavedSearchId: number;
+  selectedBaseSearch: SavedSearch;
 
-  constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder,
+  @Input() baseSearch: SavedSearch;
+  @Output() addBaseSearch = new EventEmitter<SavedSearch>();
+
+  constructor(private fb: FormBuilder,
               private router: Router,
               private savedSearchService: SavedSearchService) {
   }
@@ -43,8 +47,6 @@ export class JoinSavedSearchComponent implements OnInit {
 
     this.searchForm = this.fb.group({
       selectedSavedSearch: [null],
-      saveSearchId: [''],
-      searchType: ['', Validators.required]
     });
     //dropdown to add joined searches
     this.doSavedSearchSearch = (text$: Observable<string>) =>
@@ -73,22 +75,17 @@ export class JoinSavedSearchComponent implements OnInit {
   }
 
   renderSavedSearchRow(savedSearch: SavedSearch) {
-    return savedSearch.name;
+    return '';
   }
 
-  add(){
-     const searchJoin = this.searchForm.value;
-     searchJoin.savedSearchId = searchJoin.selectedSavedSearch.id;
-     searchJoin.name = searchJoin.selectedSavedSearch.name;
-     this.closeModal(searchJoin);
+
+  selected(selectedSearch: SavedSearch) {
+    this.selectedBaseSearch = selectedSearch;
+    this.addBaseSearch.emit(this.selectedBaseSearch);
   }
 
-  closeModal(searchJoin) {
-    this.activeModal.close(searchJoin);
-  }
-
-  dismiss() {
-    this.activeModal.dismiss(false);
+  test($event) {
+    console.log($event);
   }
 
 }
