@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {SearchResults} from '../../../model/search-results';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {
@@ -14,6 +14,7 @@ import {SavedSearchService} from "../../../services/saved-search.service";
 import {Router} from "@angular/router";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {Observable, of} from "rxjs";
+import {CandidateOccupation} from "../../../model/candidate-occupation";
 
 @Component({
   selector: 'app-join-saved-search',
@@ -32,6 +33,10 @@ export class JoinSavedSearchComponent implements OnInit {
   searchFailed = false;
   doSavedSearchSearch;
   currentSavedSearchId: number;
+  selectedBaseSearch: SavedSearch;
+
+  @Input() baseSearch: SavedSearch;
+  @Output() addBaseSearch = new EventEmitter<SavedSearch>();
 
   constructor(private fb: FormBuilder,
               private router: Router,
@@ -70,19 +75,17 @@ export class JoinSavedSearchComponent implements OnInit {
   }
 
   renderSavedSearchRow(savedSearch: SavedSearch) {
-    return savedSearch.name;
+    return '';
   }
 
-  add(){
-     const searchJoin = {
-       savedSearchId: this.searchForm.value.selectedSavedSearch.id,
-       name: this.searchForm.value.selectedSavedSearch.name,
-       searchType: this.searchForm.value.searchType
-     };
+
+  selected(selectedSearch: SavedSearch) {
+    this.selectedBaseSearch = selectedSearch;
+    this.addBaseSearch.emit(this.selectedBaseSearch);
   }
 
-  selected(selection: SavedSearch) {
-
+  test($event) {
+    console.log($event);
   }
 
 }

@@ -117,6 +117,8 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
   otherLanguageModel: LanguageLevelFormControlModel;
   loggedInUser: User;
 
+  selectedBaseJoin;
+
   constructor(private http: HttpClient, private fb: FormBuilder,
               private candidateService: CandidateService,
               private nationalityService: NationalityService,
@@ -307,6 +309,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     while (this.searchJoinArray.length) {
       this.searchJoinArray.removeAt(0); // Clear the form array
     }
+    this.selectedBaseJoin = null;
 
     this.modifiedDatePicker.clearDates();
     this.englishLanguagePicker.clearProficiencies();
@@ -637,12 +640,17 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     };
   }
 
-  renderSavedSearchRow(savedSearch: SavedSearch) {
-    return savedSearch.name;
-  }
-
-  selected(selection: SavedSearch) {
-    console.log(selection);
+  addBaseSearchJoin(baseSearch: SavedSearch) {
+    this.selectedBaseJoin = {
+      savedSearchId: baseSearch.id,
+      name: baseSearch.name,
+      searchType: "and"
+    };
+    // Clear the array before adding new base search
+    if(this.searchJoinArray.length) {
+      this.searchJoinArray.removeAt(0);
+    }
+    this.searchJoinArray.push(this.fb.group(this.selectedBaseJoin));
   }
 
 }
