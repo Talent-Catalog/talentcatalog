@@ -344,6 +344,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             request.setSavedSearchType(SavedSearchType.other);
             request.setDefaultSearch(true);
             savedSearch = createSavedSearch(request);
+        } else {
+            savedSearch.parseType();
         }
 
         return savedSearch;

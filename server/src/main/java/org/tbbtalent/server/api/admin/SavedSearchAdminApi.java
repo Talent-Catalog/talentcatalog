@@ -175,6 +175,12 @@ public class SavedSearchAdminApi implements
         }
     }
 
+    @GetMapping("/default")
+    public @NotNull Map<String, Object> getDefault() {
+        SavedSearch savedSearch = this.savedSearchService.getDefaultSavedSearch();
+        return savedSearchDtoExtended().build(savedSearch);
+    }
+
     @GetMapping("{id}/load")
     public SearchCandidateRequest load(@PathVariable("id") long id) {
         return this.savedSearchService.loadSavedSearch(id);
