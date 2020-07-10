@@ -17,7 +17,7 @@ import {LanguageService} from "../../../services/language.service";
 import {SearchResults} from '../../../model/search-results';
 
 import {NgbDate, NgbDateStruct, NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {FormArray, FormBuilder, FormGroup} from "@angular/forms";
+import {FormArray, FormBuilder, FormGroup, ValidationErrors, ValidatorFn} from "@angular/forms";
 import {SearchSavedSearchesComponent} from "../load-search/search-saved-searches.component";
 import {CreateSearchComponent} from "../create/create-search.component";
 import {SavedSearchService} from "../../../services/saved-search.service";
@@ -174,8 +174,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
       nationalities: [[]],
       statusesDisplay: [[]],
       includeDraftAndDeleted: [false],
-      includeUploadedFiles: [false]
-    });
+      includeUploadedFiles: [false]}, {validator: this.validateDuplicateSearches('savedSearchId')});
   }
 
   ngOnInit() {
@@ -252,6 +251,31 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();
+    }
+  }
+
+  validateDuplicateSearches(id: string) {
+    return (group: FormGroup): { [key: string]: any } => {
+      let savedSearchId = group.controls[id].value;
+      if(this.selectedBaseJoin){
+        let baseJoinId = this.selectedBaseJoin.savedSearchId;
+        if (savedSearchId && baseJoinId && savedSearchId === baseJoinId) {
+          return {
+            error: "Can't select same base search as saved search."
+          };
+        }
+        return {};
+      }
+    }
+  }
+
+  getError(){
+    if(this.error) {
+      return this.error;
+    } else if (this.searchForm.hasError('error')){
+      return this.searchForm.getError('error');
+    } else {
+      return null;
     }
   }
 
@@ -343,6 +367,13 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
   loadSavedSearch(id) {
     // this._loading.savedSearch = true;
     this.searchForm.controls['savedSearchId'].patchValue(id);
+
+    // Clear the search join array and remove base search
+    if(this.searchJoinArray.length) {
+      this.searchJoinArray.removeAt(0);
+    }
+    this.selectedBaseJoin = null;
+
     this.savedSearchService.load(id).subscribe(
       request => {
         this.populateFormWithSavedSearch(request);
@@ -648,14 +679,6 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
         this.error = error;
       }
     )
-  }
-
-  add(){
-    const searchJoin = {
-      savedSearchId: this.searchForm.value.selectedSavedSearch.id,
-      name: this.searchForm.value.selectedSavedSearch.name,
-      searchType: this.searchForm.value.searchType
-    };
   }
 
   addBaseSearchJoin(baseSearch: SavedSearch) {
