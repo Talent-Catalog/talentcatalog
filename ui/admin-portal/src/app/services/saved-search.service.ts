@@ -105,6 +105,13 @@ export class SavedSearchService {
       );
   }
 
+  getDefault(): Observable<SavedSearch> {
+    return this.http.get<SavedSearch>(`${this.apiUrl}/default`)
+      .pipe(
+        map(savedSearch => SavedSearchService.convertSavedSearchEnums(savedSearch))
+      );
+  }
+
   create(savedSearchRequest: SavedSearchRequest): Observable<SavedSearch>  {
     return this.http.post<SavedSearch>(`${this.apiUrl}`, savedSearchRequest)
       .pipe(
