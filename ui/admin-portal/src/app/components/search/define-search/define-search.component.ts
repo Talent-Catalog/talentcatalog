@@ -325,6 +325,13 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
   loadSavedSearch(id) {
     // this._loading.savedSearch = true;
     this.searchForm.controls['savedSearchId'].patchValue(id);
+
+    // Clear the search join array and remove base search
+    if(this.searchJoinArray.length) {
+      this.searchJoinArray.removeAt(0);
+    }
+    this.selectedBaseJoin = null;
+
     this.savedSearchService.load(id).subscribe(
       request => {
         this.populateFormWithSavedSearch(request);

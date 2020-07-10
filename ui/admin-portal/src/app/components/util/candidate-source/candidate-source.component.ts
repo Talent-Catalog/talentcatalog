@@ -53,7 +53,7 @@ export class CandidateSourceComponent implements OnInit {
 
   ngOnChanges(changes: SimpleChanges){
     // WHEN candidateSource changes IF showAll fetch the savedSearch object which has the multi select Names to display (not just Ids).
-    if(this.showAll){
+    if(this.showAll && changes && changes.candidateSource && changes.candidateSource.previousValue != changes.candidateSource.currentValue){
       this.getSavedSearch();
     }
   }
