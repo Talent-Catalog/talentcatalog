@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, SimpleChanges} from '@angular/core';
 import {
   copyCandidateSourceLinkToClipboard,
   isSavedSearch,
@@ -51,21 +51,19 @@ export class CandidateSourceComponent implements OnInit {
     this.loggedInUser = this.authService.getLoggedInUser();
   }
 
-  loadSavedSearch() {
-    if (this.showAll === true){
-      this.showAll = false;
-    } else {
-      this.loading = true;
-      this.savedSearchService.get(this.candidateSource.id).subscribe(result => {
-        this.candidateSource = result;
-        this.showAll = true;
-        this.loading = false;
-      }, err => {
-        this.loading = false;
-        this.error = err;
-      })
+  ngOnChanges(changes: SimpleChanges){
+    // WHEN candidateSource changes IF showAll fetch the savedSearch object which has the multi select Names to display (not just Ids).
+    if(this.showAll && changes && changes.candidateSource && changes.candidateSource.previousValue != changes.candidateSource.currentValue){
+      this.getSavedSearch();
     }
+  }
 
+  toggleShowAll() {
+    this.showAll = !this.showAll;
+    if(this.showAll){
+      this.loading = true;
+      this.getSavedSearch();
+    }
   }
 
   doOpenSource(){
@@ -104,7 +102,6 @@ export class CandidateSourceComponent implements OnInit {
   get savedSearch(): SavedSearch {
     return isSavedSearch(this.candidateSource)
       ? this.candidateSource as SavedSearch : null;
-    console.log('test')
   }
 
   isSavedSearch() {
@@ -118,4 +115,15 @@ export class CandidateSourceComponent implements OnInit {
   isEditable() {
     return isMine(this.candidateSource, this.authService);
   }
+
+  getSavedSearch() {
+    this.savedSearchService.get(this.candidateSource.id).subscribe(result => {
+      this.candidateSource = result;
+      this.loading = false;
+    }, err => {
+      this.loading = false;
+      this.error = err;
+    })
+  }
+
 }
