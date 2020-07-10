@@ -128,9 +128,9 @@ public class CandidateSpecification {
             //been reviewed as belonging in this saved search.
             //We want candidates whose MOST RECENT review status for this search id is in filtered statuses.
             if (request.getSavedSearchId() != null) {
-                if (CollectionUtils.isNotEmpty(request.getShortlistStatus())) {
+                if (CollectionUtils.isNotEmpty(request.getReviewStatusFilter())) {
                     Predicate pendingPredicate = null;
-                    if (request.getShortlistStatus().contains(ShortlistStatus.pending)) {
+                    if (request.getReviewStatusFilter().contains(ShortlistStatus.pending)) {
                         Subquery<Candidate> sq = query.subquery(Candidate.class);
                         Root<Candidate> subCandidate = sq.from(Candidate.class);
                         /*
@@ -154,7 +154,7 @@ public class CandidateSpecification {
                     sq.select(subCandidate).where(
                             builder.and(
                                     builder.equal(subSavedSearch.get("id"), request.getSavedSearchId()), 
-                                    subShortList.get("shortlistStatus").in(request.getShortlistStatus())
+                                    subShortList.get("shortlistStatus").in(request.getReviewStatusFilter())
                             )
                     );
                     

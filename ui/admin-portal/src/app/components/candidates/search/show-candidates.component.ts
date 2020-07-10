@@ -25,6 +25,7 @@ import {
   SavedSearch,
   SavedSearchGetRequest,
   SaveSelectionRequest,
+  SearchCandidateRequestPaged,
   SelectCandidateInSearchRequest
 } from "../../../model/saved-search";
 import {
@@ -86,6 +87,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   @Input() candidateSource: CandidateSource;
   @Input() pageNumber: number;
   @Input() pageSize: number;
+  @Input() searchRequest: SearchCandidateRequestPaged;
 
   error: any;
   loading: boolean;
@@ -182,10 +184,12 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
      return isSavedSearch(this.candidateSource) ? "searches" : "lists";
   }
   ngOnChanges(changes: SimpleChanges): void {
-    const change = changes.candidateSource;
+    const change = changes.candidateSource || changes.searchRequest;
     if (change && change.previousValue !== change.currentValue) {
-      this.restoreTargetListFromCache();
-      this.doSearch(false);
+      if (this.candidateSource) {
+        this.restoreTargetListFromCache();
+        this.doSearch(true);
+      }
     }
   }
 

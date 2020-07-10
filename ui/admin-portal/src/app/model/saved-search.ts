@@ -44,6 +44,10 @@ export class SavedSearchGetRequest extends PagedSearchRequest {
   reviewStatusFilter: string[];
 }
 
+export interface SearchCandidateRequestPaged extends SearchCandidateRequest, SavedSearchGetRequest {
+
+}
+
 export interface SavedSearchJoin {
   savedSearchId: number;
   name: string;

@@ -50,7 +50,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     private Integer maxAge;
     private Integer minEducationLevel;
     private List<Long> educationMajorIds;
-    private List<ShortlistStatus> shortlistStatus;
+    private List<ShortlistStatus> reviewStatusFilter;
     private boolean includeNew;
     private Boolean includeDraftAndDeleted;
     private Boolean includeUploadedFiles;
@@ -278,12 +278,12 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         this.searchJoinRequests = searchJoinRequests;
     }
 
-    public List<ShortlistStatus> getShortlistStatus() {
-        return shortlistStatus;
+    public List<ShortlistStatus> getReviewStatusFilter() {
+        return reviewStatusFilter;
     }
 
-    public void setShortlistStatus(List<ShortlistStatus> shortlistStatus) {
-        this.shortlistStatus = shortlistStatus;
+    public void setReviewStatusFilter(List<ShortlistStatus> reviewStatusFilter) {
+        this.reviewStatusFilter = reviewStatusFilter;
     }
 
     public boolean isIncludeNew() {
@@ -320,7 +320,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
      */
     public void merge(SavedSearchGetRequest request) {
         //Copy across the reviewStatusFilter
-        setShortlistStatus(request.getReviewStatusFilter());
+        setReviewStatusFilter(request.getReviewStatusFilter());
         
         //Copy paging request across to search request
         setPageNumber(request.getPageNumber());

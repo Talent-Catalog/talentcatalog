@@ -45,7 +45,8 @@ import {LocalStorageService} from "angular-2-local-storage";
 import {UpdateSearchComponent} from "../update/update-search.component";
 import {
   getSavedSearchBreadcrumb,
-  SavedSearch
+  SavedSearch,
+  SearchCandidateRequestPaged
 } from "../../../model/saved-search";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {User} from "../../../model/user";
@@ -77,6 +78,9 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
   results: SearchResults<Candidate>;
   savedSearch: SavedSearch;
   savedSearchId;
+
+  searchRequest: SearchCandidateRequestPaged;
+
   subscription: Subscription;
   pageNumber: number;
   pageSize: number;
@@ -215,15 +219,25 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
             this.error = err;
           });
         } else {
-          let localStorageSearchRequest = JSON.parse(localStorage.getItem(this.searchKey));
-          if (localStorageSearchRequest){
-            setTimeout(() => {
-              this.populateFormWithSavedSearch(localStorageSearchRequest);
-              this.search();
-            }, 200);
-          } else {
+          this.savedSearchService.getDefault().subscribe(result => {
+            this.savedSearch = result;
+            this.savedSearchId = this.savedSearch.id;
+            this.loadSavedSearch(this.savedSearchId);
             this.search();
-          }
+          }, err => {
+            this.error = err;
+          });
+          //
+          // //todo fetch default saved search - api call to get
+          // let localStorageSearchRequest = JSON.parse(localStorage.getItem(this.searchKey));
+          // if (localStorageSearchRequest){
+          //   setTimeout(() => {
+          //     this.populateFormWithSavedSearch(localStorageSearchRequest);
+          //     this.search();
+          //   }, 200);
+          // } else {
+          //   this.search();
+          // }
         }
       });
 
@@ -252,25 +266,29 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     this.results = null;
     this.error = null;
 
-    let request = this.searchForm.value;
+    let request: SearchCandidateRequestPaged = this.searchForm.value;
 
     request = this.getIdsMultiSelect(request);
 
-    request.shortlistStatus = null;
+    request.reviewStatusFilter = null;
     request.pageNumber = this.pageNumber - 1;
     request.pageSize = this.pageSize;
     request.sortFields = [this.sortField];
     request.sortDirection = this.sortDirection;
     localStorage.setItem(this.searchKey, JSON.stringify(request));
 
+    this.searchRequest = request;
+
     this.subscription = this.candidateService.search(request).subscribe(
       results => {
         this.results = results;
         this.searching = false;
+        this.searchRequest = null;
       },
       error => {
         this.error = error;
         this.searching = false;
+        this.searchRequest = null;
       });
   }
 

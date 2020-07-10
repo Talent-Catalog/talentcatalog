@@ -292,9 +292,21 @@
 
   </form>
 
+  <app-show-candidates *ngIf="!error && !loading"
+                       [candidateSource]="savedSearch"
+                       [pageNumber]="pageNumber"
+                       [pageSize]="pageSize"
+                       [searchRequest]="searchRequest"
+  ></app-show-candidates>
+
   <div class="results-area">
 
+
+
     <div class="filter-results text-muted" *ngIf="!searching">
+
+
+
       <span>{{results?.totalElements}} candidates</span>
 
       <ngb-pagination [boundaryLinks]="true"
