@@ -170,7 +170,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
       nationalities: [[]],
       statusesDisplay: [[]],
       includeDraftAndDeleted: [false],
-      includeUploadedFiles: [false]}, {validator: this.checkDuplicateSearches('savedSearchId')});
+      includeUploadedFiles: [false]}, {validator: this.validateDuplicateSearches('savedSearchId')});
   }
 
   ngOnInit() {
@@ -240,18 +240,28 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     }
   }
 
-  checkDuplicateSearches(id: string) {
+  validateDuplicateSearches(id: string) {
     return (group: FormGroup): { [key: string]: any } => {
       let savedSearchId = group.controls[id].value;
       if(this.selectedBaseJoin){
         let baseJoinId = this.selectedBaseJoin.savedSearchId;
         if (savedSearchId && baseJoinId && savedSearchId === baseJoinId) {
           return {
-            error: "Can't have the same saved search loaded as a selected base search."
+            error: "Can't select same base search as saved search."
           };
         }
         return {};
       }
+    }
+  }
+
+  getError(){
+    if(this.error) {
+      return this.error;
+    } else if (this.searchForm.hasError('error')){
+      return this.searchForm.getError('error');
+    } else {
+      return null;
     }
   }
 

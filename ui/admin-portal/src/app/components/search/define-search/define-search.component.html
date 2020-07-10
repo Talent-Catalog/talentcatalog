@@ -24,8 +24,8 @@
 
   </div>
 
-  <div class="alert alert-danger" *ngIf="error || this.searchForm.hasError('error')">
-    {{error || this.searchForm.getError('error')}}
+  <div class="alert alert-danger" *ngIf="getError()">
+    {{getError()}}
   </div>
 
   <form class="filter-form" [formGroup]="searchForm" (ngSubmit)="search()" #formWrapper>
