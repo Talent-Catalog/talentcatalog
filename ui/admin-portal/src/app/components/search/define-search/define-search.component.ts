@@ -17,7 +17,7 @@ import {LanguageService} from "../../../services/language.service";
 import {SearchResults} from '../../../model/search-results';
 
 import {NgbDate, NgbDateStruct, NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {FormArray, FormBuilder, FormGroup} from "@angular/forms";
+import {FormArray, FormBuilder, FormGroup, ValidationErrors, ValidatorFn} from "@angular/forms";
 import {SearchSavedSearchesComponent} from "../load-search/search-saved-searches.component";
 import {CreateSearchComponent} from "../create/create-search.component";
 import {SavedSearchService} from "../../../services/saved-search.service";
@@ -170,8 +170,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
       nationalities: [[]],
       statusesDisplay: [[]],
       includeDraftAndDeleted: [false],
-      includeUploadedFiles: [false]
-    });
+      includeUploadedFiles: [false]}, {validator: this.checkDuplicateSearches('savedSearchId')});
   }
 
   ngOnInit() {
@@ -238,6 +237,21 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();
+    }
+  }
+
+  checkDuplicateSearches(id: string) {
+    return (group: FormGroup): { [key: string]: any } => {
+      let savedSearchId = group.controls[id].value;
+      if(this.selectedBaseJoin){
+        let baseJoinId = this.selectedBaseJoin.savedSearchId;
+        if (savedSearchId && baseJoinId && savedSearchId === baseJoinId) {
+          return {
+            error: "Can't have the same saved search loaded as a selected base search."
+          };
+        }
+        return {};
+      }
     }
   }
 
@@ -637,14 +651,6 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
         this.error = error;
       }
     )
-  }
-
-  add(){
-    const searchJoin = {
-      savedSearchId: this.searchForm.value.selectedSavedSearch.id,
-      name: this.searchForm.value.selectedSavedSearch.name,
-      searchType: this.searchForm.value.searchType
-    };
   }
 
   addBaseSearchJoin(baseSearch: SavedSearch) {

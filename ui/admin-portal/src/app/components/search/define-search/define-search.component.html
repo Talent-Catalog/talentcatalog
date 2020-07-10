@@ -24,8 +24,8 @@
 
   </div>
 
-  <div class="alert alert-danger" *ngIf="error">
-    {{error}}
+  <div class="alert alert-danger" *ngIf="error || this.searchForm.hasError('error')">
+    {{error || this.searchForm.getError('error')}}
   </div>
 
   <form class="filter-form" [formGroup]="searchForm" (ngSubmit)="search()" #formWrapper>
@@ -241,6 +241,10 @@
         </select>
       </div>
 
+      <div *ngIf="searchForm.errors && (searchForm.dirty || searchForm.touched)">
+        <p *ngIf="searchForm.errors.invalidDate">Email is required</p>
+      </div>
+
       <!-- UN REGISTERED - removed for now -->
       <!--      <div class="form-group col-12 col-md-3">-->
       <!--        <label for="unRegistered">UN Registered</label>-->
@@ -260,32 +264,13 @@
         ></app-join-saved-search>
       </div>
 
-
-
-
-
-
-
-      <!-- SEARCH JOINS -->
-<!--      <ng-container *ngIf="selectedBaseJoin">-->
-<!--        <div class="form-group">-->
-<!--          <div class="form-control selected">-->
-<!--            {{selectedBaseJoin.name}}-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        <div class="form-group col-1">-->
-<!--          <button class="btn btn-danger" (click)="deleteSavedSearchJoin(selectedBaseJoin)"><i class="fas fa-trash"></i></button>-->
-<!--        </div>-->
-<!--      </ng-container>-->
-
-
     </div>
 
     <hr class="w-100">
 
     <div class="col-12">
       <div class="d-flex justify-content-end">
-        <button type="submit" class="btn btn-outline-primary" [disabled]="loading">Apply</button>
+        <button type="submit" class="btn btn-outline-primary" [disabled]="loading || searchForm.invalid">Apply</button>
       </div>
     </div>
 
