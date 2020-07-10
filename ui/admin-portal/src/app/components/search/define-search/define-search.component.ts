@@ -17,7 +17,7 @@ import {LanguageService} from "../../../services/language.service";
 import {SearchResults} from '../../../model/search-results';
 
 import {NgbDate, NgbDateStruct, NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {FormArray, FormBuilder, FormGroup, ValidationErrors, ValidatorFn} from "@angular/forms";
+import {FormArray, FormBuilder, FormGroup} from "@angular/forms";
 import {SearchSavedSearchesComponent} from "../load-search/search-saved-searches.component";
 import {CreateSearchComponent} from "../create/create-search.component";
 import {SavedSearchService} from "../../../services/saved-search.service";
@@ -256,9 +256,9 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
 
   validateDuplicateSearches(id: string) {
     return (group: FormGroup): { [key: string]: any } => {
-      let savedSearchId = group.controls[id].value;
-      if(this.selectedBaseJoin){
-        let baseJoinId = this.selectedBaseJoin.savedSearchId;
+      const savedSearchId = group.controls[id].value;
+      if (this.selectedBaseJoin){
+        const baseJoinId = this.selectedBaseJoin.savedSearchId;
         if (savedSearchId && baseJoinId && savedSearchId === baseJoinId) {
           return {
             error: "Can't select same base search as saved search."
@@ -270,7 +270,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
   }
 
   getError(){
-    if(this.error) {
+    if (this.error) {
       return this.error;
     } else if (this.searchForm.hasError('error')){
       return this.searchForm.getError('error');
@@ -369,7 +369,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     this.searchForm.controls['savedSearchId'].patchValue(id);
 
     // Clear the search join array and remove base search
-    if(this.searchJoinArray.length) {
+    if (this.searchJoinArray.length) {
       this.searchJoinArray.removeAt(0);
     }
     this.selectedBaseJoin = null;
@@ -432,7 +432,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
       .then((result) => {
         if (result === true) {
           this.savedSearchService.delete(this.savedSearch.id).subscribe(
-            (savedSearch) => {
+            (found) => {
               this.savedSearch = null;
               this.loading = false;
             },
@@ -476,7 +476,8 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     /* VERIFIED OCCUPATIONS */
     let verifiedOccupations = [];
     if (request.verifiedOccupationIds && this.verifiedOccupations) {
-      verifiedOccupations = this.verifiedOccupations.filter(c => request.verifiedOccupationIds.indexOf(c.id) != -1);
+      verifiedOccupations = this.verifiedOccupations
+        .filter(c => request.verifiedOccupationIds.indexOf(c.id) !== -1);
     }
     this.searchForm.controls['verifiedOccupations'].patchValue(verifiedOccupations);
 
@@ -489,19 +490,20 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     /* UNVERIFIED OCCUPATIONS */
     let occupations = [];
     if (request.occupationIds && this.candidateOccupations) {
-      occupations = this.candidateOccupations.filter(c => request.occupationIds.indexOf(c.id) != -1);
+      occupations = this.candidateOccupations
+        .filter(c => request.occupationIds.indexOf(c.id) !== -1);
     }
     this.searchForm.controls['occupations'].patchValue(occupations);
 
     /* MODIFIED DATES */
     if (request.lastModifiedFrom) {
-      let [y, m, d] = request.lastModifiedFrom.split('-');
-      let date: NgbDate = new NgbDate(Number(y), Number(m), Number(d));
+      const [y, m, d] = request.lastModifiedFrom.split('-');
+      const date: NgbDate = new NgbDate(Number(y), Number(m), Number(d));
       this.modifiedDatePicker.selectDate(date);
     }
     if (request.lastModifiedTo) {
-      let [y, m, d] = request.lastModifiedTo.split('-');
-      let date: NgbDate = new NgbDate(Number(y), Number(m), Number(d));
+      const [y, m, d] = request.lastModifiedTo.split('-');
+      const date: NgbDate = new NgbDate(Number(y), Number(m), Number(d));
       this.modifiedDatePicker.selectDate(date);
     }
 
@@ -515,7 +517,8 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     /* EDUCATION MAJORS */
     let educationMajors = [];
     if (request.educationMajorIds && this.educationMajors) {
-      educationMajors = this.educationMajors.filter(c => request.educationMajorIds.indexOf(c.id) != -1);
+      educationMajors = this.educationMajors
+        .filter(c => request.educationMajorIds.indexOf(c.id) !== -1);
     }
     this.searchForm.controls['educationMajors'].patchValue(educationMajors);
 
@@ -557,9 +560,9 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
       backdrop: 'static'
     });
 
-    if(this.savedSearch != null){
+    if (this.savedSearch != null){
       joinSavedSearchComponent.componentInstance.currentSavedSearchId = this.savedSearch.id;
-    };
+    }
 
     joinSavedSearchComponent.result
       .then((join) => {
@@ -619,18 +622,18 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
 
   exportCandidates() {
     this.exporting = true;
-    let request = this.searchForm.value;
+    const request = this.searchForm.value;
     request.size = 10000;
     this.candidateService.export(request).subscribe(
       result => {
-        let options = {type: 'text/csv;charset=utf-8;'};
-        let filename = 'candidates.csv';
+        const options = {type: 'text/csv;charset=utf-8;'};
+        const filename = 'candidates.csv';
         this.createAndDownloadBlobFile(result, options, filename);
         this.exporting = false;
       },
       err => {
         const reader = new FileReader();
-        let _this = this;
+        const _this = this;
         reader.addEventListener('loadend', function () {
           if (typeof reader.result === 'string') {
             _this.error = JSON.parse(reader.result);
@@ -649,15 +652,15 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
   }
 
   createAndDownloadBlobFile(body, options, filename) {
-    let blob = new Blob([body], options);
+    const blob = new Blob([body], options);
     if (navigator.msSaveBlob) {
       // IE 10+
       navigator.msSaveBlob(blob, filename);
     } else {
-      let link = document.createElement('a');
+      const link = document.createElement('a');
       // Browsers that support HTML5 download attribute
       if (link.download !== undefined) {
-        let url = URL.createObjectURL(blob);
+        const url = URL.createObjectURL(blob);
         link.setAttribute('href', url);
         link.setAttribute('download', filename);
         link.style.visibility = 'hidden';
@@ -669,7 +672,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
   }
 
   downloadCv(candidate){
-    let tab = window.open();
+    const tab = window.open();
     this.candidateService.downloadCv(candidate.id).subscribe(
       result => {
         const fileUrl = URL.createObjectURL(result);
@@ -688,7 +691,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
       searchType: "and"
     };
     // Clear the array before adding new base search
-    if(this.searchJoinArray.length) {
+    if (this.searchJoinArray.length) {
       this.searchJoinArray.removeAt(0);
     }
     this.searchJoinArray.push(this.fb.group(this.selectedBaseJoin));
