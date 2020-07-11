@@ -189,29 +189,23 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.searchRequest) {
-      if (changes.searchRequest.previousValue !== changes.searchRequest.currentValue) {
-        if (this.searchRequest) {
-          this.subscription = this.candidateService.search(this.searchRequest).subscribe(
-            results => {
-              this.results = results;
-              this.searching = false;
-              this.searchRequest = null;
-            },
-            error => {
-              this.error = error;
-              this.searching = false;
-              this.searchRequest = null;
-            });
-        }
-      }
-    }
-
+    //If we get both a source change and a request change, do the source
+    //change in preference to the request change because the source change
+    //in that case will be a saved search and it will load a new search request
+    //anyway - being the search request associated with the saved search.
     if (changes.candidateSource) {
       if (changes.candidateSource.previousValue !== changes.candidateSource.currentValue) {
         if (this.candidateSource) {
           this.restoreTargetListFromCache();
           this.doSearch(false);
+        }
+      }
+    } else {
+      if (changes.searchRequest) {
+        if (changes.searchRequest.previousValue !== changes.searchRequest.currentValue) {
+          if (this.searchRequest) {
+            this.updatedSearch();
+          }
         }
       }
     }
@@ -221,6 +215,24 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
+  }
+
+  private updatedSearch() {
+    this.results = null;
+    this.error = null;
+    this.searching = true;
+    this.subscription = this.candidateService.search(this.searchRequest).subscribe(
+      results => {
+        this.results = results;
+        this.cacheResults();
+        this.searching = false;
+        this.searchRequest = null;
+      },
+      error => {
+        this.error = error;
+        this.searching = false;
+        this.searchRequest = null;
+      });
   }
 
   doSearch(refresh: boolean, usePageNumber = true) {
@@ -496,7 +508,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isReviewable(): boolean {
-    return isSavedSearch(this.candidateSource);
+    return isSavedSearch(this.candidateSource)
+      ? this.candidateSource.reviewable : false;
   }
 
   isSelectable(): boolean {
@@ -704,5 +717,4 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.addCandidateToList(candidate);
 
   }
-
 }

@@ -1,4 +1,4 @@
-<!--todo Only split if someone else is not also splitting.-->
+<!--todo Only  split if someone else is not also splitting.-->
 <div [hidden]="loading">
 <!--     [class.split]="!!selectedCandidate"-->
 
@@ -17,6 +17,11 @@
   </div>
 
   <div class="results-area">
+
+    <!-- loading -->
+    <div *ngIf="searching">
+      <i class="fas fa-spinner fa-spin"></i> Loading...
+    </div>
 
     <div class="filter-results text-muted" *ngIf="!searching">
 
@@ -167,7 +172,7 @@
           </tr>
           </thead>
 
-          <tbody>
+          <tbody *ngIf="!searching">
           <tr *ngFor="let candidate of results?.content" (click)="viewCandidate(candidate)"
               [ngClass]="{'selected': selectedCandidate?.id == candidate.id}">
             <td>
@@ -216,13 +221,6 @@
               </div>
             </td>
 
-          </tr>
-
-          <!-- loading -->
-          <tr *ngIf="searching">
-            <td colspan="42">
-              <i class="fas fa-spinner fa-spin"></i> Loading...
-            </td>
           </tr>
 
           <!-- no results -->
