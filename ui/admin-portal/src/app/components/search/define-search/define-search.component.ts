@@ -222,21 +222,10 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
             this.savedSearch = result;
             this.savedSearchId = this.savedSearch.id;
             this.loadSavedSearch(this.savedSearchId);
-            this.search();
+            this.apply();
           }, err => {
             this.error = err;
           });
-          //
-          // //todo fetch default saved search - api call to get
-          // let localStorageSearchRequest = JSON.parse(localStorage.getItem(this.searchKey));
-          // if (localStorageSearchRequest){
-          //   setTimeout(() => {
-          //     this.populateFormWithSavedSearch(localStorageSearchRequest);
-          //     this.search();
-          //   }, 200);
-          // } else {
-          //   this.search();
-          // }
         }
       });
 
@@ -279,9 +268,22 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     }
   }
 
-  search() {
-    this.pageNumber = 1;
-    this.doSearch();
+  apply() {
+    //Construct the search request
+    let request: SearchCandidateRequestPaged = this.searchForm.value;
+
+    request = this.getIdsMultiSelect(request);
+
+    request.reviewStatusFilter = null;
+    request.pageNumber = 0;
+    request.pageSize = this.pageSize;
+    request.sortFields = [this.sortField];
+    request.sortDirection = this.sortDirection;
+
+    //todo Get rid of unncessary caching
+    localStorage.setItem(this.searchKey, JSON.stringify(request));
+
+    this.searchRequest = request;
   }
 
   /* SEARCH FORM */
@@ -356,7 +358,6 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     this.modifiedDatePicker.clearDates();
     this.englishLanguagePicker.clearProficiencies();
     this.otherLanguagePicker.form.reset();
-    this.savedSearch = null;
   }
 
   getBreadcrumb() {
@@ -617,7 +618,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
       this.sortField = column;
       this.sortDirection = 'ASC';
     }
-    this.search();
+    this.apply();
   }
 
   exportCandidates() {

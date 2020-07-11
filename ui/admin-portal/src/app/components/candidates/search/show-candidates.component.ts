@@ -1,9 +1,11 @@
 import {
   Component,
+  EventEmitter,
   Input,
   OnChanges,
   OnDestroy,
   OnInit,
+  Output,
   SimpleChanges,
   ViewChild
 } from '@angular/core';
@@ -88,6 +90,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   @Input() pageNumber: number;
   @Input() pageSize: number;
   @Input() searchRequest: SearchCandidateRequestPaged;
+  @Output() onSelectedCandidate =  new EventEmitter();
 
   error: any;
   loading: boolean;
@@ -150,7 +153,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit() {
-    this.selectedCandidate = null;
+    this.setSelectedCandidate(null);
     this.loggedInUser = this.authService.getLoggedInUser();
 
     this.statuses = [];
@@ -180,15 +183,36 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       );
 
   }
+
   get pluralType() {
      return isSavedSearch(this.candidateSource) ? "searches" : "lists";
   }
+
   ngOnChanges(changes: SimpleChanges): void {
-    const change = changes.candidateSource || changes.searchRequest;
-    if (change && change.previousValue !== change.currentValue) {
-      if (this.candidateSource) {
-        this.restoreTargetListFromCache();
-        this.doSearch(true);
+    if (changes.searchRequest) {
+      if (changes.searchRequest.previousValue !== changes.searchRequest.currentValue) {
+        if (this.searchRequest) {
+          this.subscription = this.candidateService.search(this.searchRequest).subscribe(
+            results => {
+              this.results = results;
+              this.searching = false;
+              this.searchRequest = null;
+            },
+            error => {
+              this.error = error;
+              this.searching = false;
+              this.searchRequest = null;
+            });
+        }
+      }
+    }
+
+    if (changes.candidateSource) {
+      if (changes.candidateSource.previousValue !== changes.candidateSource.currentValue) {
+        if (this.candidateSource) {
+          this.restoreTargetListFromCache();
+          this.doSearch(false);
+        }
       }
     }
   }
@@ -289,8 +313,13 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       this.reviewStatusFilter.toString() === defaultReviewStatusFilter.toString();
   }
 
-  viewCandidate(candidate: Candidate) {
+  setSelectedCandidate(candidate: Candidate) {
     this.selectedCandidate = candidate;
+    this.onSelectedCandidate.emit(candidate);
+  }
+
+  viewCandidate(candidate: Candidate) {
+    this.setSelectedCandidate(candidate);
   }
 
   onReviewStatusChange() {

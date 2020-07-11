@@ -1,4 +1,7 @@
-<div [hidden]="loading" [class.split]="!!selectedCandidate">
+<!--todo Only split if someone else is not also splitting.-->
+<div [hidden]="loading">
+<!--     [class.split]="!!selectedCandidate"-->
+
 
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
@@ -238,7 +241,7 @@
                                  *ngIf="selectedCandidate"
                                  [candidate]="selectedCandidate"
                                  [loggedInUser]="loggedInUser"
-                                 (onClose)="selectedCandidate = null">
+                                 (onClose)="setSelectedCandidate(null)">
       </app-candidate-search-card>
 
     </div>
