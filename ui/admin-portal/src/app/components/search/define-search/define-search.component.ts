@@ -118,6 +118,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
   loggedInUser: User;
 
   selectedBaseJoin;
+  storedBaseJoin;
 
   constructor(private http: HttpClient, private fb: FormBuilder,
               private candidateService: CandidateService,
@@ -179,6 +180,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     this.pageNumber = 1;
     this.pageSize = 20;
     this.loggedInUser = this.authService.getLoggedInUser();
+    this.storedBaseJoin = null;
 
     forkJoin({
       'nationalities': this.nationalityService.listNationalities(),
@@ -334,6 +336,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
       this.searchJoinArray.removeAt(0); // Clear the form array
     }
     this.selectedBaseJoin = null;
+    this.storedBaseJoin = null;
 
     this.modifiedDatePicker.clearDates();
     this.englishLanguagePicker.clearProficiencies();
@@ -524,6 +527,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
         this.searchJoinArray.push(this.fb.group(join)); // If present, repopulate the array from the request
       });
     }
+    this.storedBaseJoin = request.searchJoinRequests[0];
 
     /* Perform a mouse event to force the multi-select components to update */
     this.formWrapper.nativeElement.click();

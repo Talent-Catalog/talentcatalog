@@ -15,9 +15,10 @@
       <ngb-highlight [result]="r.name" [term]="t"></ngb-highlight>
     </ng-template>
 
-  <div *ngIf="baseSearch" class="col-12 col-md-6">
+  <div *ngIf="this.selectedBaseSearch || this.storedBaseSearch" class="col-12 col-md-6">
     <app-candidate-source
       [candidateSource]="selectedBaseSearch"
+      [storedBaseSearch]="storedBaseSearch"
       [showAll]="true"
       [showWatch]="false"
       [showOpen]="false"
