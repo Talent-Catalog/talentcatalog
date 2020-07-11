@@ -69,7 +69,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
   error: any;
   loading: boolean;
   searchForm: FormGroup;
-  moreFilters: boolean;
+  showSearchRequest: boolean;
   results: SearchResults<Candidate>;
   savedSearch: SavedSearch;
   savedSearchId;
@@ -174,7 +174,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.moreFilters = true;
+    this.showSearchRequest = true;
     this.selectedCandidate = null;
     this.pageNumber = 1;
     this.pageSize = 20;
@@ -582,4 +582,21 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     this.searchJoinArray.push(this.fb.group(this.selectedBaseJoin));
   }
 
+  canChangeSearchRequest(): boolean {
+    //We can change the search request if we own the savedSearch or if it
+    //not fixed.
+    let changeable: boolean = false;
+    if (this.savedSearch) {
+      if (!this.savedSearch.fixed) {
+        changeable = true;
+      } else {
+        //Only can change the request associated with a saved search if we
+        //own that search.
+        if (this.loggedInUser && this.savedSearch.createdBy) {
+          changeable = this.savedSearch.createdBy.id === this.loggedInUser.id;
+        }
+      }
+    }
+    return changeable;
+  }
 }

@@ -6,10 +6,10 @@ import {
   PagedSearchRequest,
   SearchCandidateSourcesRequest
 } from "./base";
-import {Router, UrlTree} from "@angular/router";
+import {Router} from "@angular/router";
 import {Location} from "@angular/common";
-import {copyToClipboard} from "../util/clipboard";
 import {TargetListSelection} from "../components/list/select/select-list.component";
+import {getExternalHref} from "../util/url";
 
 export enum SavedSearchType {
   profession,
@@ -67,21 +67,14 @@ export class SearchSavedSearchRequest extends SearchCandidateSourcesRequest {
   savedSearchSubtype: SavedSearchSubtype;
 }
 
-export function getCandidateSourceNavigation(source: CandidateSource) {
+export function getCandidateSourceNavigation(source: CandidateSource): any[] {
   const urlSelector: string = isSavedSearch(source) ? 'search' : 'list';
   return ['candidates', urlSelector, source.id];
 }
 
-export function copyCandidateSourceLinkToClipboard(
-  router: Router, location: Location, source: CandidateSource) {
-  //Get navigation commands for the given source
-  const urlCommands = getCandidateSourceNavigation(source);
-  //And convert to an absolute url
-  const urlTree: UrlTree = router.createUrlTree(urlCommands);
-  const href = document.location.origin +
-    location.prepareExternalUrl(router.serializeUrl(urlTree));
-  //...which is copied to the clipboard
-  copyToClipboard(href);
+export function getCandidateSourceExternalHref(
+  router: Router, location: Location, source: CandidateSource): string {
+  return getExternalHref(router, location, getCandidateSourceNavigation(source));
 }
 
 export function getCandidateSourceType(source: CandidateSource) {

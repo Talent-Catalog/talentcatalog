@@ -9,274 +9,282 @@
     </ol>
   </nav>
 
-  <div class="d-flex justify-content-between mb-4">
-    <h3 class="m-0">Candidate Search</h3>
+  <div [hidden]="!showSearchRequest" >
 
-    <div>
-      <button type="button" class="btn btn-outline-dark mr-2" [disabled]="loading" (click)="clearForm()">Clear Search</button>
-      <button type="button" class="btn btn-outline-dark" (click)="showSavedSearches()">Load Search</button>
+    <div [hidden]="canChangeSearchRequest()">
+      <app-candidate-source
+        [candidateSource]="savedSearch"
+        [showAll]="true"
+        [showWatch]="false"
+        [showOpen]="false"
+        [showSelect]="false"
+        [showLink]="false"
+        [showMore]="false"
+      >
+      </app-candidate-source>
     </div>
-    <div>
-      <button type="button" class="ml-2 btn btn-outline-primary" [disabled]="!savedSearch" (click)="updateSavedSearchModal()">Update Saved Search</button>
-      <button type="button" class="ml-2 btn btn-outline-primary" [disabled]="!savedSearch" (click)="deleteSavedSearchModal()">Delete Saved Search</button>
-      <button type="button" class="ml-2 btn btn-outline-primary" (click)="createNewSavedSearchModal()">Make New Saved Search</button>
-    </div>
 
-  </div>
+    <div [hidden]="!canChangeSearchRequest()" >
+      <div class="d-flex justify-content-between mb-4">
 
-  <div class="alert alert-danger" *ngIf="getError()">
-    {{getError()}}
-  </div>
+        <h3 class="m-0">Candidate Search</h3>
 
-  <form class="filter-form" [formGroup]="searchForm" (ngSubmit)="apply()" #formWrapper>
-
-    <div class="row">
-
-      <!-- KEYWORD -->
-      <div class="form-group col-12 col-md-{{savedSearch ? 2 : 3}}">
-        <label for="keyword">Keyword</label>
-        <input id="keyword" type="text" class="form-control" placeholder="Search..." aria-label="Search"
-               formControlName="keyword">
-      </div>
-
-      <!-- STATUS -->
-      <div class="form-group col-12 col-md-3">
-        <label>Status</label>
-        <ng-multiselect-dropdown
-          id="statuses"
-          [placeholder]="''"
-          [data]="statuses"
-          formControlName="statusesDisplay"
-          [settings]="dropdownSettings">
-        </ng-multiselect-dropdown>
-        <div class="operator">
-          <input type="checkbox" class="custom-checkbox"  id="includeDraftAndDeleted" [value]="'includeDraftAndDeleted'" [formControlName]="'includeDraftAndDeleted'">
-          <label for="includeDraftAndDeleted" class="custom-checkbox">
-            Include Draft and Deleted
-          </label>
+        <div>
+          <button type="button" class="btn btn-outline-dark mr-2" [disabled]="loading" (click)="clearForm()">Clear Search</button>
+          <button type="button" class="btn btn-outline-dark" (click)="showSavedSearches()">Load Search</button>
+        </div>
+        <div>
+          <button type="button" class="ml-2 btn btn-outline-primary" [hidden]="savedSearch?.defaultSearch" (click)="updateSavedSearchModal()">Update Saved Search</button>
+          <button type="button" class="ml-2 btn btn-outline-primary" [hidden]="savedSearch?.defaultSearch" (click)="deleteSavedSearchModal()">Delete Saved Search</button>
+          <button type="button" class="ml-2 btn btn-outline-primary" (click)="createNewSavedSearchModal()">Make New Saved Search</button>
         </div>
 
       </div>
 
-      <!-- ENGLISH LANGUAGE -->
-      <div class="form-group col-12 col-md-{{savedSearch ? 2 : 3}}">
-        <label>English</label>
-        <app-language-level-form-control #englishLanguage
-                                         [model]="englishLanguageModel"
-                                         [languages]="languages"
-                                         [languageLevels]="languageLevels"
-                                         [languageDisabled]="true"
-                                         (modelUpdated)="handleLanguageLevelChange($event, 'english')">
-        </app-language-level-form-control>
+      <div class="alert alert-danger" *ngIf="getError()">
+        {{getError()}}
       </div>
 
-    </div>
+      <form class="filter-form" [formGroup]="searchForm" (ngSubmit)="apply()" #formWrapper>
 
-    <!-- TOGGLE FILTERS -->
-    <div class="text-right">
-      <a class="link" (click)="moreFilters = !moreFilters">
-        <ng-container *ngIf="!moreFilters">
-          <i class="fas fa-caret-right"></i> more filters
-        </ng-container>
-        <ng-container *ngIf="moreFilters">
-          <i class="fas fa-caret-down"></i> less filters
-        </ng-container>
-      </a>
-    </div>
+        <div class="row">
 
+          <!-- KEYWORD -->
+          <div class="form-group col-12 col-md-{{savedSearch ? 2 : 3}}">
+            <label for="keyword">Keyword</label>
+            <input id="keyword" type="text" class="form-control" placeholder="Search..." aria-label="Search"
+                   formControlName="keyword">
+          </div>
 
-    <div class="form-row p-0 w-100" [hidden]="!moreFilters">
-
-      <hr class="w-100">
-
-      <!-- OCCUPATION + PROFILE GROUP -->
-      <div class="col-12 col-md-4 filter-group">
-
-        <div class="d-flex flex-wrap">
-
-          <!-- OCCUPATION MULTISELECT -->
-          <div class="form-group col-12">
-            <label>Occupation (candidate specified)</label>
+          <!-- STATUS -->
+          <div class="form-group col-12 col-md-3">
+            <label>Status</label>
             <ng-multiselect-dropdown
-              id="occupationIds"
+              id="statuses"
               [placeholder]="''"
-              [data]="candidateOccupations"
-              formControlName="occupations"
+              [data]="statuses"
+              formControlName="statusesDisplay"
               [settings]="dropdownSettings">
             </ng-multiselect-dropdown>
-          </div>
-
-          <!-- PROFILE KEYWORD -->
-          <div class="form-group col-12">
-            <label for="orProfileKeyword">
-              Or profile has any of the phrases, separated by commas, below.
-              The profile must contain ALL of the words in a phrase.
-            </label>
-            <input id="orProfileKeyword" type="text" class="form-control" placeholder="Keyword search: eg welder, diesel mechanic"
-                   aria-label="Search" formControlName="orProfileKeyword">
-<!--            <div class="operator">-->
-<!--              <input type="checkbox" class="custom-checkbox"  id="includeUploadedFiles" [formControlName]="'includeUploadedFiles'" >-->
-<!--              <label for="includeUploadedFiles" class="custom-checkbox">-->
-<!--                Include Uploaded CV Files-->
-<!--              </label>-->
-<!--            </div>-->
-          </div>
-
-        </div>
-
-      </div>
-
-      <div class="col-12 col-md-8">
-
-        <div class="d-flex flex-wrap">
-
-          <!-- AGE -->
-          <div class="col-12 col-md-6">
-
-            <div class="d-flex flex-wrap">
-
-              <!-- MIN AGE -->
-              <div class="form-group col-6 pl-0">
-                <label for="minAge">Min Age</label>
-                <input id="minAge" type="number" class="form-control" name="minAge" [formControlName]="'minAge'">
-              </div>
-
-              <!-- MAX AGE -->
-              <div class="form-group col-6 pr-0">
-                <label for="maxAge">Max Age</label>
-                <input id="maxAge" type="number" class="form-control" name="maxAge" [formControlName]="'maxAge'">
-              </div>
+            <div class="operator">
+              <input type="checkbox" class="custom-checkbox"  id="includeDraftAndDeleted" [value]="'includeDraftAndDeleted'" [formControlName]="'includeDraftAndDeleted'">
+              <label for="includeDraftAndDeleted" class="custom-checkbox">
+                Include Draft and Deleted
+              </label>
             </div>
 
           </div>
 
-          <!-- MODIFIED BETWEEN -->
-          <div class="form-group col-12 col-md-6">
-            <label>Last Modified</label>
-            <app-date-range-picker #modifiedDate (dateSelected)="handleDateSelected($event, 'lastModified')">
-            </app-date-range-picker>
+          <!-- ENGLISH LANGUAGE -->
+          <div class="form-group col-12 col-md-{{savedSearch ? 2 : 3}}">
+            <label>English</label>
+            <app-language-level-form-control #englishLanguage
+                                             [model]="englishLanguageModel"
+                                             [languages]="languages"
+                                             [languageLevels]="languageLevels"
+                                             [languageDisabled]="true"
+                                             (modelUpdated)="handleLanguageLevelChange($event, 'english')">
+            </app-language-level-form-control>
           </div>
 
-          <!-- COUNTRIES  -->
-          <div class="form-group col-12 col-md-4">
-            <label>Country</label>
+        </div>
+
+        <div class="form-row p-0 w-100">
+
+          <hr class="w-100">
+
+          <!-- OCCUPATION + PROFILE GROUP -->
+          <div class="col-12 col-md-4 filter-group">
+
+            <div class="d-flex flex-wrap">
+
+              <!-- OCCUPATION MULTISELECT -->
+              <div class="form-group col-12">
+                <label>Occupation (candidate specified)</label>
+                <ng-multiselect-dropdown
+                  id="occupationIds"
+                  [placeholder]="''"
+                  [data]="candidateOccupations"
+                  formControlName="occupations"
+                  [settings]="dropdownSettings">
+                </ng-multiselect-dropdown>
+              </div>
+
+              <!-- PROFILE KEYWORD -->
+              <div class="form-group col-12">
+                <label for="orProfileKeyword">
+                  Or profile has any of the phrases, separated by commas, below.
+                  The profile must contain ALL of the words in a phrase.
+                </label>
+                <input id="orProfileKeyword" type="text" class="form-control" placeholder="Keyword search: eg welder, diesel mechanic"
+                       aria-label="Search" formControlName="orProfileKeyword">
+                <!--            <div class="operator">-->
+                <!--              <input type="checkbox" class="custom-checkbox"  id="includeUploadedFiles" [formControlName]="'includeUploadedFiles'" >-->
+                <!--              <label for="includeUploadedFiles" class="custom-checkbox">-->
+                <!--                Include Uploaded CV Files-->
+                <!--              </label>-->
+                <!--            </div>-->
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="col-12 col-md-8">
+
+            <div class="d-flex flex-wrap">
+
+              <!-- AGE -->
+              <div class="col-12 col-md-6">
+
+                <div class="d-flex flex-wrap">
+
+                  <!-- MIN AGE -->
+                  <div class="form-group col-6 pl-0">
+                    <label for="minAge">Min Age</label>
+                    <input id="minAge" type="number" class="form-control" name="minAge" [formControlName]="'minAge'">
+                  </div>
+
+                  <!-- MAX AGE -->
+                  <div class="form-group col-6 pr-0">
+                    <label for="maxAge">Max Age</label>
+                    <input id="maxAge" type="number" class="form-control" name="maxAge" [formControlName]="'maxAge'">
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- MODIFIED BETWEEN -->
+              <div class="form-group col-12 col-md-6">
+                <label>Last Modified</label>
+                <app-date-range-picker #modifiedDate (dateSelected)="handleDateSelected($event, 'lastModified')">
+                </app-date-range-picker>
+              </div>
+
+              <!-- COUNTRIES  -->
+              <div class="form-group col-12 col-md-4">
+                <label>Country</label>
+                <ng-multiselect-dropdown
+                  id="country"
+                  [data]="countries"
+                  formControlName="countries"
+                  [settings]="dropdownSettings">
+                </ng-multiselect-dropdown>
+              </div>
+
+              <!-- EDUCATION LEVEL -->
+              <div class="form-group col-12 col-md-4">
+                <label for="minEducationLevel">Education Level (minimum)</label>
+                <select class="form-control" id="minEducationLevel" name="minEducationLevel"
+                        [formControlName]="'minEducationLevel'">
+                  <option value=""></option>
+                  <option *ngFor="let level of educationLevels" [value]="level.level">
+                    {{level.name}}
+                  </option>
+                </select>
+              </div>
+
+              <!-- EDUCATION MAJOR -->
+              <div class="form-group col-12 col-md-4">
+                <label>Education major</label>
+                <ng-multiselect-dropdown
+                  id="educationMajorIds"
+                  [data]="educationMajors"
+                  formControlName="educationMajors"
+                  [settings]="dropdownSettings">
+                </ng-multiselect-dropdown>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- OTHER LANGUAGE -->
+          <div class="form-group col-12 col-md-4 mt-2">
+            <label>Other Language</label>
+            <app-language-level-form-control #otherLanguage
+                                             [languages]="languages"
+                                             [languageLevels]="languageLevels"
+                                             [model]="otherLanguageModel"
+                                             (modelUpdated)="handleLanguageLevelChange($event, 'other')">
+            </app-language-level-form-control>
+          </div>
+
+          <!-- NATIONALITY -->
+          <div class="form-group col-12 col-md-4 mt-2">
+            <label>Nationality</label>
+
+            <div class="operator">
+              <button class="btn btn-link" type="button"
+                      [class.active]="searchForm.value.nationalitySearchType === 'or'"
+                      (click)="handleSearchTypeChange('nationalitySearchType', 'or')">any
+              </button>
+              <button class="btn btn-link" type="button"
+                      [class.active]="searchForm.value.nationalitySearchType === 'not'"
+                      (click)="handleSearchTypeChange('nationalitySearchType', 'not')">not
+              </button>
+            </div>
+
             <ng-multiselect-dropdown
-              id="country"
-              [data]="countries"
-              formControlName="countries"
+              id="selectedNationalities"
+              [placeholder]="'Select Nationalities'"
+              [data]="nationalities"
+              formControlName="nationalities"
               [settings]="dropdownSettings">
             </ng-multiselect-dropdown>
           </div>
 
-          <!-- EDUCATION LEVEL -->
-          <div class="form-group col-12 col-md-4">
-            <label for="minEducationLevel">Education Level (minimum)</label>
-            <select class="form-control" id="minEducationLevel" name="minEducationLevel"
-                    [formControlName]="'minEducationLevel'">
-              <option value=""></option>
-              <option *ngFor="let level of educationLevels" [value]="level.level">
-                {{level.name}}
-              </option>
+          <!-- GENDER -->
+          <div class="form-group col-12 col-md-4 mt-2">
+            <label for="gender">Gender</label>
+            <select class="form-control" name="gender" id="gender" [formControlName]="'gender'">
+              <option [ngValue]="null"></option>
+              <option value="female">Female</option>
+              <option value="male">Male</option>
+              <option value="other">Other</option>
             </select>
           </div>
 
-          <!-- EDUCATION MAJOR -->
-          <div class="form-group col-12 col-md-4">
-            <label>Education major</label>
-            <ng-multiselect-dropdown
-              id="educationMajorIds"
-              [data]="educationMajors"
-              formControlName="educationMajors"
-              [settings]="dropdownSettings">
-            </ng-multiselect-dropdown>
+          <div *ngIf="searchForm.errors && (searchForm.dirty || searchForm.touched)">
+            <p *ngIf="searchForm.errors.invalidDate">Email is required</p>
+          </div>
+
+          <!-- UN REGISTERED - removed for now -->
+          <!--      <div class="form-group col-12 col-md-3">-->
+          <!--        <label for="unRegistered">UN Registered</label>-->
+          <!--        <select class="form-control" name="unRegistered" id="unRegistered" [formControlName]="'unRegistered'">-->
+          <!--          <option value=""></option>-->
+          <!--          <option [value]="true">Yes</option>-->
+          <!--          <option [value]="false">No</option>-->
+          <!--        </select>-->
+          <!--      </div>-->
+
+          <hr class="w-100">
+
+          <div class="col-12 col-md-6">
+            <app-join-saved-search
+              (addBaseSearch)="addBaseSearchJoin($event)"
+              [storedBaseSearch]="storedBaseJoin"
+              [baseSearch]= "selectedBaseJoin"
+            ></app-join-saved-search>
           </div>
 
         </div>
 
-      </div>
+        <hr class="w-100">
 
-      <!-- OTHER LANGUAGE -->
-      <div class="form-group col-12 col-md-4 mt-2">
-        <label>Other Language</label>
-        <app-language-level-form-control #otherLanguage
-                                         [languages]="languages"
-                                         [languageLevels]="languageLevels"
-                                         [model]="otherLanguageModel"
-                                         (modelUpdated)="handleLanguageLevelChange($event, 'other')">
-        </app-language-level-form-control>
-      </div>
-
-      <!-- NATIONALITY -->
-      <div class="form-group col-12 col-md-4 mt-2">
-        <label>Nationality</label>
-
-        <div class="operator">
-          <button class="btn btn-link" type="button"
-                  [class.active]="searchForm.value.nationalitySearchType === 'or'"
-                  (click)="handleSearchTypeChange('nationalitySearchType', 'or')">any
-          </button>
-          <button class="btn btn-link" type="button"
-                  [class.active]="searchForm.value.nationalitySearchType === 'not'"
-                  (click)="handleSearchTypeChange('nationalitySearchType', 'not')">not
-          </button>
+        <div class="col-12">
+          <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-outline-primary" [disabled]="loading || searchForm.invalid">Apply</button>
+          </div>
         </div>
 
-        <ng-multiselect-dropdown
-          id="selectedNationalities"
-          [placeholder]="'Select Nationalities'"
-          [data]="nationalities"
-          formControlName="nationalities"
-          [settings]="dropdownSettings">
-        </ng-multiselect-dropdown>
-      </div>
 
-      <!-- GENDER -->
-      <div class="form-group col-12 col-md-4 mt-2">
-        <label for="gender">Gender</label>
-        <select class="form-control" name="gender" id="gender" [formControlName]="'gender'">
-          <option [ngValue]="null"></option>
-          <option value="female">Female</option>
-          <option value="male">Male</option>
-          <option value="other">Other</option>
-        </select>
-      </div>
-
-      <div *ngIf="searchForm.errors && (searchForm.dirty || searchForm.touched)">
-        <p *ngIf="searchForm.errors.invalidDate">Email is required</p>
-      </div>
-
-      <!-- UN REGISTERED - removed for now -->
-      <!--      <div class="form-group col-12 col-md-3">-->
-      <!--        <label for="unRegistered">UN Registered</label>-->
-      <!--        <select class="form-control" name="unRegistered" id="unRegistered" [formControlName]="'unRegistered'">-->
-      <!--          <option value=""></option>-->
-      <!--          <option [value]="true">Yes</option>-->
-      <!--          <option [value]="false">No</option>-->
-      <!--        </select>-->
-      <!--      </div>-->
-
-      <hr class="w-100">
-
-      <div class="col-12 col-md-6">
-        <app-join-saved-search
-          (addBaseSearch)="addBaseSearchJoin($event)"
-          [storedBaseSearch]="storedBaseJoin"
-          [baseSearch]= "selectedBaseJoin"
-        ></app-join-saved-search>
-      </div>
+      </form>
 
     </div>
 
-    <hr class="w-100">
-
-    <div class="col-12">
-      <div class="d-flex justify-content-end">
-        <button type="submit" class="btn btn-outline-primary" [disabled]="loading || searchForm.invalid">Apply</button>
-      </div>
-    </div>
-
-
-  </form>
+  </div>
 
   <app-show-candidates *ngIf="!error && !loading"
                        [candidateSource]="savedSearch"
@@ -284,12 +292,22 @@
                        [pageSize]="pageSize"
                        [searchRequest]="searchRequest"
                        [manageScreenSplits]="false"
+                       [showBreadcrumb]="false"
                        (candidateSelection)="selectedCandidate = $event"
   >
-<!--   todo add in button  here which can open/close search-->
+    <!--Toggle search details-->
+    <div>
+      <a class="link" (click)="showSearchRequest = !showSearchRequest">
+        <ng-container *ngIf="!showSearchRequest">
+          <i class="fas fa-caret-up"></i> Show search request
+        </ng-container>
+        <ng-container *ngIf="showSearchRequest">
+          <i class="fas fa-caret-right"></i> Hide search request
+        </ng-container>
+      </a>
+    </div>
   </app-show-candidates>
 </div>
-
 
 <!-- Modals -->
 <ng-template #downloadCsvErrorModal let-c="close" let-d="dismiss">

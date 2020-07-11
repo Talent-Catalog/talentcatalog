@@ -20,8 +20,8 @@ import {CandidateShortlistItem} from "../../../model/candidate-shortlist-item";
 import {HttpClient} from "@angular/common/http";
 import {
   ClearSelectionRequest,
-  copyCandidateSourceLinkToClipboard,
   getCandidateSourceBreadcrumb,
+  getCandidateSourceExternalHref,
   getSavedSearchBreadcrumb,
   isSavedSearch,
   SavedSearch,
@@ -69,6 +69,7 @@ import {
   tap
 } from "rxjs/operators";
 import {Location} from "@angular/common";
+import {copyToClipboard} from "../../../util/clipboard";
 
 interface CachedTargetList {
   searchID: number;
@@ -88,6 +89,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() candidateSource: CandidateSource;
   @Input() manageScreenSplits: boolean = true;
+  @Input() showBreadcrumb: boolean = true;
   @Input() pageNumber: number;
   @Input() pageSize: number;
   @Input() searchRequest: SearchCandidateRequestPaged;
@@ -674,7 +676,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   doCopyLink() {
-    copyCandidateSourceLinkToClipboard(this.router, this.location, this.candidateSource);
+    copyToClipboard(getCandidateSourceExternalHref(
+      this.router, this.location, this.candidateSource));
   }
 
   addCandidateToList(candidate: Candidate) {

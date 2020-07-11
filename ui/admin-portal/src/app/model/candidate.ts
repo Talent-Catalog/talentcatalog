@@ -5,6 +5,9 @@ import {CandidateShortlistItem} from "./candidate-shortlist-item";
 import {EducationMajor} from "./education-major";
 import {EducationLevel} from "./education-level";
 import {SurveyType} from "./survey-type";
+import {Router} from "@angular/router";
+import {Location} from "@angular/common";
+import {getExternalHref} from "../util/url";
 
 export interface Candidate {
   id: number;
@@ -33,4 +36,13 @@ export interface Candidate {
   surveyType: SurveyType;
   surveyComment: string;
   selected: boolean;
+}
+
+export function getCandidateNavigation(candidate: Candidate): any[] {
+  return ['candidates', candidate.id];
+}
+
+export function getCandidateExternalHref(
+  router: Router, location: Location, candidate: Candidate): string {
+  return getExternalHref(router, location, getCandidateNavigation(candidate));
 }

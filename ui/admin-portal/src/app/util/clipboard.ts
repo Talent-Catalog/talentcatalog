@@ -15,3 +15,4 @@ export function copyToClipboard(s: string) {
   document.execCommand('copy');
   document.body.removeChild(selBox);
 }
+

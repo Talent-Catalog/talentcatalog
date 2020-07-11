@@ -3,8 +3,9 @@
 <div [hidden]="loading"
      [class.split]="manageScreenSplits && !!selectedCandidate">
 
+  <ng-content></ng-content>
 
-  <nav aria-label="breadcrumb">
+  <nav aria-label="breadcrumb" [hidden]="!showBreadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a [routerLink]="['/']">Home</a></li>
       <li class="breadcrumb-item active" aria-current="page">

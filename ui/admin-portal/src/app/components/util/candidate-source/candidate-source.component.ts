@@ -1,6 +1,13 @@
-import {Component, EventEmitter, Input, OnInit, Output, SimpleChanges} from '@angular/core';
 import {
-  copyCandidateSourceLinkToClipboard,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
+import {
+  getCandidateSourceExternalHref,
   isSavedSearch,
   SavedSearch
 } from "../../../model/saved-search";
@@ -10,6 +17,7 @@ import {User} from "../../../model/user";
 import {CandidateSource, isMine} from "../../../model/base";
 import {Router} from "@angular/router";
 import {Location} from "@angular/common";
+import {copyToClipboard} from "../../../util/clipboard";
 
 @Component({
   selector: 'app-candidate-source',
@@ -29,6 +37,7 @@ export class CandidateSourceComponent implements OnInit {
   @Input() showCopy: boolean = false;
   @Input() showEdit: boolean = false;
   @Input() showDelete: boolean = false;
+  @Input() showAudit: boolean = false;
   @Output() openSource = new EventEmitter<CandidateSource>();
   @Output() selectSource = new EventEmitter<CandidateSource>();
   @Output() copySource = new EventEmitter<CandidateSource>();
@@ -54,17 +63,17 @@ export class CandidateSourceComponent implements OnInit {
 
   ngOnChanges(changes: SimpleChanges){
     // WHEN candidateSource changes IF showAll fetch the savedSearch object which has the multi select Names to display (not just Ids).
-    if(this.showAll && changes && changes.candidateSource && changes.candidateSource.previousValue != changes.candidateSource.currentValue){
+    if (this.showAll && changes && changes.candidateSource && changes.candidateSource.previousValue !== changes.candidateSource.currentValue){
       this.getSavedSearch();
     }
-    if(this.storedBaseSearch && changes && changes.storedBaseSearch.firstChange){
+    if (this.storedBaseSearch && changes && changes.storedBaseSearch.firstChange){
       this.getSavedSearch()
     }
   }
 
   toggleShowAll() {
     this.showAll = !this.showAll;
-    if(this.showAll){
+    if (this.showAll) {
       this.loading = true;
       this.getSavedSearch();
     }
@@ -91,7 +100,8 @@ export class CandidateSourceComponent implements OnInit {
   }
 
   doCopyLink() {
-    copyCandidateSourceLinkToClipboard(this.router, this.location, this.candidateSource);
+    copyToClipboard(getCandidateSourceExternalHref(
+      this.router, this.location, this.candidateSource));
   }
 
   doToggleWatch() {

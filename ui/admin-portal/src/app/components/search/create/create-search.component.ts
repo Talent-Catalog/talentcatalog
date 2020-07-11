@@ -36,9 +36,21 @@ export class CreateSearchComponent implements OnInit {
   savedSearchTypeSubInfos: SavedSearchTypeSubInfo[];
   update;
 
-  get name() { return this.form.get('name'); }
-  get savedSearchType() { return this.form.get('savedSearchType'); }
-  get savedSearchSubtype() { return this.form.get('savedSearchSubtype'); }
+  get nameControl(): AbstractControl {
+    return this.form.get('name')
+  }
+
+  get savedSearchType(): number {
+    const val = this.form.get('savedSearchType').value;
+    //Convert value to number - or null if not populated
+    return val ? +val : null;
+  }
+
+  get savedSearchSubtype(): number {
+    const val = this.form.get('savedSearchSubtype').value;
+    //Convert value to number - or null if not populated
+    return val ? +val : null;
+  }
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
@@ -67,7 +79,7 @@ export class CreateSearchComponent implements OnInit {
       //If there are subtypes associated with the currently selected type,
       //as indicated by a non null savedSearchTypeSubInfos, the subtype control
       //is required, ie must have a non empty value.
-      return this.savedSearchTypeSubInfos && (control.value == undefined) ?
+      return this.savedSearchTypeSubInfos && (control.value === undefined) ?
         { 'subtypeRequired': true } : null;
     };
   };
@@ -79,11 +91,11 @@ export class CreateSearchComponent implements OnInit {
     const formValues = this.form.value;
     this.savedSearch = {
       id: 0,
-      name: formValues.name,
-      //Use parseInt rather than +, because + returns zero when null or undefined.
-      savedSearchType: parseInt(formValues.savedSearchType),
-      savedSearchSubtype: parseInt(formValues.savedSearchSubtype),
+      name: this.nameControl.value,
+      savedSearchType: this.savedSearchType,
+      savedSearchSubtype: this.savedSearchSubtype,
       fixed: false,
+      defaultSearch: false,
       reviewable: formValues.reviewable
     };
 
