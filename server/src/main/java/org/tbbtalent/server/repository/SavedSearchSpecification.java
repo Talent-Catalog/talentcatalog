@@ -39,6 +39,8 @@ public class SavedSearchSpecification {
                  and 
                  search status = active
                  and
+                 not default search
+                 and
                  (
                     owned
                     or
@@ -51,6 +53,11 @@ public class SavedSearchSpecification {
             // ONLY SHOW ACTIVE SAVED SEARCHES
             conjunction.getExpressions().add(
                     builder.equal(savedSearch.get("status"), Status.active)
+            );
+
+            // DON'T SHOW DEFAULT SAVED SEARCHES
+            conjunction.getExpressions().add(
+                    builder.not(savedSearch.get("defaultSearch"))
             );
 
             // Filter by keyword if present
