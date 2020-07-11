@@ -56,6 +56,7 @@ export interface SavedSearchJoin {
 }
 
 export interface SavedSearch extends CandidateSource, SearchCandidateRequest {
+  defaultSearch: boolean;
   reviewable: boolean;
   savedSearchType: SavedSearchType;
   savedSearchSubtype: SavedSearchSubtype;
@@ -98,25 +99,33 @@ export function getCandidateSourceBreadcrumb(candidateSource: CandidateSource): 
 }
 
 export function getSavedSearchBreadcrumb(savedSearch: SavedSearch, infos: SavedSearchTypeInfo[]): string {
-  const sourceType = getCandidateSourceType(savedSearch);
-  let subtypeTitle: string = '';
+  let breadcrumb: string = "";
   if (savedSearch) {
-    if (savedSearch.savedSearchSubtype != null) {
-      const savedSearchTypeSubInfos = infos[savedSearch.savedSearchType].categories;
-      if (savedSearchTypeSubInfos) {
-        const savedSearchTypeSubInfo = savedSearchTypeSubInfos.find(
-          info => info.savedSearchSubtype === savedSearch.savedSearchSubtype);
-        if (savedSearchTypeSubInfo) {
-          subtypeTitle = savedSearchTypeSubInfo.title;
+    breadcrumb += getCandidateSourceType(savedSearch) + ": ";
+
+    if (savedSearch.defaultSearch) {
+      breadcrumb += "Unsaved"
+    } else {
+      if (savedSearch.savedSearchType != null) {
+        breadcrumb += infos[savedSearch.savedSearchType].title;
+      }
+      let subtypeTitle: string = '';
+      if (savedSearch.savedSearchSubtype != null) {
+        const savedSearchTypeSubInfos = infos[savedSearch.savedSearchType].categories;
+        if (savedSearchTypeSubInfos) {
+          const savedSearchTypeSubInfo = savedSearchTypeSubInfos.find(
+            info => info.savedSearchSubtype === savedSearch.savedSearchSubtype);
+          if (savedSearchTypeSubInfo) {
+            subtypeTitle = savedSearchTypeSubInfo.title;
+          }
+          breadcrumb += " " + subtypeTitle + ": ";
         }
       }
+
+      breadcrumb += savedSearch.name;
     }
   }
-
-  return savedSearch && savedSearch.savedSearchType != null ?
-    (sourceType + ': ' + infos[savedSearch.savedSearchType].title +
-    (subtypeTitle ? "/" + subtypeTitle : "") + ': ' + savedSearch.name)
-    : sourceType;
+  return breadcrumb;
 }
 
 export function indexOfAuditable(id: number, auditables: Auditable[]): number {

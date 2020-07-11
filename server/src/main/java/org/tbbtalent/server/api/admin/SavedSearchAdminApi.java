@@ -258,6 +258,7 @@ public class SavedSearchAdminApi implements
                 .add("unRegistered")
                 .add("fixed")
                 .add("reviewable")
+                .add("defaultSearch")
                 .add("watcherUserIds")
                 .add("createdBy", userDto())
                 .add("users", userDto())
