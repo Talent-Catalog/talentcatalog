@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, SimpleChanges} from '@angular/core';
 import {SearchResults} from '../../../model/search-results';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {
@@ -34,8 +34,8 @@ export class JoinSavedSearchComponent implements OnInit {
   doSavedSearchSearch;
   currentSavedSearchId: number;
   selectedBaseSearch: SavedSearch;
-
-  @Input() baseSearch: SavedSearch;
+  @Input() storedBaseSearch;
+  @Input() baseSearch;
   @Output() addBaseSearch = new EventEmitter<SavedSearch>();
 
   constructor(private fb: FormBuilder,
@@ -48,6 +48,7 @@ export class JoinSavedSearchComponent implements OnInit {
     this.searchForm = this.fb.group({
       selectedSavedSearch: [null],
     });
+
     //dropdown to add joined searches
     this.doSavedSearchSearch = (text$: Observable<string>) =>
       text$.pipe(
@@ -72,6 +73,12 @@ export class JoinSavedSearchComponent implements OnInit {
         tap(() => this.searching = false)
       );
 
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if(changes && changes.baseSearch && changes.baseSearch.currentValue === null){
+      this.selectedBaseSearch = null;
+    }
   }
 
   renderSavedSearchRow(savedSearch: SavedSearch) {

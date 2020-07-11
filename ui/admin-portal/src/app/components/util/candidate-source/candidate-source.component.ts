@@ -19,6 +19,7 @@ import {Location} from "@angular/common";
 export class CandidateSourceComponent implements OnInit {
 
   @Input() candidateSource: CandidateSource;
+  @Input() storedBaseSearch;
   @Input() showAll: boolean;
   @Input() showLink: boolean = true;
   @Input() showMore: boolean = true;
@@ -55,6 +56,9 @@ export class CandidateSourceComponent implements OnInit {
     // WHEN candidateSource changes IF showAll fetch the savedSearch object which has the multi select Names to display (not just Ids).
     if(this.showAll && changes && changes.candidateSource && changes.candidateSource.previousValue != changes.candidateSource.currentValue){
       this.getSavedSearch();
+    }
+    if(this.storedBaseSearch && changes && changes.storedBaseSearch.firstChange){
+      this.getSavedSearch()
     }
   }
 
@@ -117,7 +121,8 @@ export class CandidateSourceComponent implements OnInit {
   }
 
   getSavedSearch() {
-    this.savedSearchService.get(this.candidateSource.id).subscribe(result => {
+    const savedSearchId = this.candidateSource ? this.candidateSource.id : this.storedBaseSearch.savedSearchId;
+    this.savedSearchService.get(savedSearchId).subscribe(result => {
       this.candidateSource = result;
       this.loading = false;
     }, err => {

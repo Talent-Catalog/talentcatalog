@@ -260,6 +260,7 @@
       <div class="col-12 col-md-6">
         <app-join-saved-search
           (addBaseSearch)="addBaseSearchJoin($event)"
+          [storedBaseSearch]="storedBaseJoin"
           [baseSearch]= "selectedBaseJoin"
         ></app-join-saved-search>
       </div>
