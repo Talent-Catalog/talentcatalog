@@ -1,6 +1,7 @@
-<!--todo Only  split if someone else is not also splitting.-->
-<div [hidden]="loading">
-<!--     [class.split]="!!selectedCandidate"-->
+<!--Only split if someone else (parent) is not managing splits
+(ie resizing themselves to make room for selected candidate details.-->
+<div [hidden]="loading"
+     [class.split]="manageScreenSplits && !!selectedCandidate">
 
 
   <nav aria-label="breadcrumb">

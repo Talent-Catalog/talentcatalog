@@ -87,6 +87,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild('downloadCsvErrorModal', {static: true}) downloadCsvErrorModal;
 
   @Input() candidateSource: CandidateSource;
+  @Input() manageScreenSplits: boolean = true;
   @Input() pageNumber: number;
   @Input() pageSize: number;
   @Input() searchRequest: SearchCandidateRequestPaged;
