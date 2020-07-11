@@ -2,7 +2,7 @@
 
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a [routerLink]="['/candidates']">Candidates</a></li>
+      <li class="breadcrumb-item"><a [routerLink]="['/']">Home</a></li>
       <li class="breadcrumb-item active" aria-current="page">
         {{getBreadcrumb()}}
         </li>
@@ -286,135 +286,8 @@
                        [manageScreenSplits]="false"
                        (candidateSelection)="selectedCandidate = $event"
   >
-<!--   todo add in button here which can open/close search-->
+<!--   todo add in button  here which can open/close search-->
   </app-show-candidates>
-
-<!--  <div class="results-area">-->
-
-
-
-<!--    <div class="filter-results text-muted" *ngIf="!searching">-->
-
-
-
-<!--      <span>{{results?.totalElements}} candidates</span>-->
-
-<!--      <ngb-pagination [boundaryLinks]="true"-->
-<!--                      [pageSize]="pageSize"-->
-<!--                      [collectionSize]="results?.totalElements"-->
-<!--                      [(page)]="pageNumber"-->
-<!--                      maxSize="5"-->
-<!--                      (pageChange)="doSearch()">-->
-<!--      </ngb-pagination>-->
-
-<!--      <button class="btn btn-outline-secondary" (click)="exportCandidates()">-->
-<!--        <i class="fas fa-spinner fa-spin" *ngIf=exporting></i>-->
-<!--        <i class="fas fa-file-excel"></i> Export-->
-<!--      </button>-->
-<!--    </div>-->
-
-<!--    <div class="split-view">-->
-
-<!--      <div class="table-wrapper">-->
-<!--        <table class="table">-->
-
-<!--          <thead>-->
-<!--          <tr>-->
-<!--            <th class="candidate-number-row" (click)="toggleSort('id')">-->
-<!--              <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>-->
-<!--              Candidate #-->
-<!--            </th>-->
-<!--            <th class="candidate-number-row">-->
-<!--              Select #-->
-<!--            </th>-->
-<!--            <th *ngIf="loggedInUser && (loggedInUser.role !== 'semilimited' && loggedInUser.role !== 'limited')" (click)="toggleSort('user.firstName')">-->
-<!--              <app-sorted-by [column]="'user.firstName'" [sortColumn]="sortField"-->
-<!--                             [sortDirection]="sortDirection"></app-sorted-by>-->
-<!--              First Name-->
-<!--            </th>-->
-<!--            <th *ngIf="loggedInUser && (loggedInUser.role !== 'semilimited' && loggedInUser.role !== 'limited')" (click)="toggleSort('user.lastName')">-->
-<!--              <app-sorted-by [column]="'user.lastName'" [sortColumn]="sortField"-->
-<!--                             [sortDirection]="sortDirection"></app-sorted-by>-->
-<!--              Last Name-->
-<!--            </th>-->
-<!--            <th *ngIf="loggedInUser && loggedInUser.role !== 'limited'" (click)="toggleSort('nationality.name')">-->
-<!--              <app-sorted-by [column]="'nationality.name'" [sortColumn]="sortField"-->
-<!--                             [sortDirection]="sortDirection"></app-sorted-by>-->
-<!--              Nationality-->
-<!--            </th>-->
-<!--            <th *ngIf="loggedInUser && loggedInUser.role !== 'limited'" (click)="toggleSort('country.name')">-->
-<!--              <app-sorted-by [column]="'country.name'" [sortColumn]="sortField"-->
-<!--                             [sortDirection]="sortDirection"></app-sorted-by>-->
-<!--              Location-->
-<!--            </th>-->
-<!--            <th (click)="toggleSort('gender')">-->
-<!--              <app-sorted-by [column]="'gender'" [sortColumn]="sortField"-->
-<!--                             [sortDirection]="sortDirection"></app-sorted-by>-->
-<!--              Gender-->
-<!--            </th>-->
-<!--            <th></th>-->
-<!--          </tr>-->
-<!--          </thead>-->
-
-<!--          <tbody>-->
-<!--          <tr *ngFor="let candidate of results?.content" (click)="viewCandidate(candidate)"-->
-<!--              [ngClass]="{'selected': selectedCandidate?.id == candidate.id}">-->
-<!--            <td>-->
-<!--              <a [routerLink]="['/candidates',candidate.candidateNumber]">-->
-<!--                {{candidate.candidateNumber}}-->
-<!--              </a>-->
-<!--            </td>-->
-<!--            <td>{{candidate.selected}}</td>-->
-<!--            <td *ngIf="loggedInUser && (loggedInUser.role !== 'semilimited' && loggedInUser.role !== 'limited')">{{candidate.user.firstName}}</td>-->
-<!--            <td *ngIf="loggedInUser && (loggedInUser.role !== 'semilimited' && loggedInUser.role !== 'limited')">{{candidate.user.lastName}}</td>-->
-<!--            <td *ngIf="loggedInUser && loggedInUser.role !== 'limited'">{{candidate.nationality?.name}}</td>-->
-<!--            <td *ngIf="loggedInUser && loggedInUser.role !== 'limited'">{{candidate.country?.name}}</td>-->
-<!--            <td>{{candidate.gender | titlecase}}</td>-->
-<!--            <td>-->
-<!--              <div ngbDropdown placement="bottom-right" (click)="$event.stopPropagation();">-->
-<!--                <button class="btn btn-xs hide-after" ngbDropdownToggle>-->
-<!--                  <i class="fas fa-ellipsis-h"></i>-->
-<!--                </button>-->
-<!--                <ul ngbDropdownMenu>-->
-<!--                  <li ngbDropdownItem (click)="downloadCv(candidate)">Download CV</li>-->
-<!--                  <li class="dropdown-divider"></li>-->
-<!--                  <li ngbDropdownItem><a target="_blank" class="no-link" [routerLink]="['/candidates', candidate.candidateNumber]">Open-->
-<!--                    in new tab</a></li>-->
-<!--                </ul>-->
-<!--              </div>-->
-<!--            </td>-->
-
-<!--          </tr>-->
-
-<!--          &lt;!&ndash; loading &ndash;&gt;-->
-<!--          <tr *ngIf="searching">-->
-<!--            <td colspan="42">-->
-<!--              <i class="fas fa-spinner fa-spin"></i> Loading...-->
-<!--            </td>-->
-<!--          </tr>-->
-
-<!--          &lt;!&ndash; no results &ndash;&gt;-->
-<!--          <tr *ngIf="!searching && !results?.totalElements">-->
-<!--            <td colspan="42">-->
-<!--              <span class="text-muted">(no matching candidates)</span>-->
-<!--            </td>-->
-<!--          </tr>-->
-
-<!--          </tbody>-->
-
-<!--        </table>-->
-<!--      </div>-->
-
-<!--      <app-candidate-search-card class="profile"-->
-<!--                                 *ngIf="selectedCandidate"-->
-<!--                                 [candidate]="selectedCandidate"-->
-<!--                                 [loggedInUser]="loggedInUser"-->
-<!--                                 (onClose)="selectedCandidate = null">-->
-<!--      </app-candidate-search-card>-->
-
-<!--    </div>-->
-<!--  </div>-->
-
 </div>
 
 

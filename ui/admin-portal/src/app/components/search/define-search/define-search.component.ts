@@ -68,11 +68,6 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
 
   error: any;
   loading: boolean;
-  searching: boolean;
-  exporting: boolean;
-
-  searchKey = 'searchRequest';
-
   searchForm: FormGroup;
   moreFilters: boolean;
   results: SearchResults<Candidate>;
@@ -224,7 +219,6 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
             this.savedSearch = result;
             this.savedSearchId = this.savedSearch.id;
             this.loadSavedSearch(this.savedSearchId);
-            this.apply();
           }, err => {
             this.error = err;
           });
@@ -282,42 +276,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     request.sortFields = [this.sortField];
     request.sortDirection = this.sortDirection;
 
-    //todo Get rid of unncessary caching
-    localStorage.setItem(this.searchKey, JSON.stringify(request));
-
     this.searchRequest = request;
-  }
-
-  /* SEARCH FORM */
-  doSearch() {
-    this.searching = true;
-    this.results = null;
-    this.error = null;
-
-    let request: SearchCandidateRequestPaged = this.searchForm.value;
-
-    request = this.getIdsMultiSelect(request);
-
-    request.reviewStatusFilter = null;
-    request.pageNumber = this.pageNumber - 1;
-    request.pageSize = this.pageSize;
-    request.sortFields = [this.sortField];
-    request.sortDirection = this.sortDirection;
-    localStorage.setItem(this.searchKey, JSON.stringify(request));
-
-    this.searchRequest = request;
-
-    this.subscription = this.candidateService.search(request).subscribe(
-      results => {
-        this.results = results;
-        this.searching = false;
-        this.searchRequest = null;
-      },
-      error => {
-        this.error = error;
-        this.searching = false;
-        this.searchRequest = null;
-      });
   }
 
   getIdsMultiSelect(request): any {
@@ -350,7 +309,6 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
   }
 
   clearForm() {
-    localStorage.setItem(this.searchKey, null);
     this.searchForm.reset();
     while (this.searchJoinArray.length) {
       this.searchJoinArray.removeAt(0); // Clear the form array
@@ -581,10 +539,6 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     this.searchJoinArray.removeAt(this.searchJoinArray.value.findIndex(join => join.name === joinToRemove.name && join.searchType === joinToRemove.searchType))
   }
 
-  viewCandidate(candidate: Candidate) {
-    this.selectedCandidate = candidate;
-  }
-
   handleDateSelected(e: { fromDate: NgbDateStruct, toDate: NgbDateStruct }, control: string) {
     if (e.fromDate) {
       // console.log(e);
@@ -613,80 +567,6 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
 
   handleSearchTypeChange(control: string, value: 'or' | 'not') {
     this.searchForm.controls[control].patchValue(value);
-  }
-
-  toggleSort(column) {
-    if (this.sortField === column) {
-      this.sortDirection = this.sortDirection === 'ASC' ? 'DESC' : 'ASC';
-    } else {
-      this.sortField = column;
-      this.sortDirection = 'ASC';
-    }
-    this.apply();
-  }
-
-  exportCandidates() {
-    this.exporting = true;
-    const request = this.searchForm.value;
-    request.size = 10000;
-    this.candidateService.export(request).subscribe(
-      result => {
-        const options = {type: 'text/csv;charset=utf-8;'};
-        const filename = 'candidates.csv';
-        this.createAndDownloadBlobFile(result, options, filename);
-        this.exporting = false;
-      },
-      err => {
-        const reader = new FileReader();
-        const _this = this;
-        reader.addEventListener('loadend', function () {
-          if (typeof reader.result === 'string') {
-            _this.error = JSON.parse(reader.result);
-            const modalRef = _this.modalService.open(_this.downloadCsvErrorModal);
-            modalRef.result
-              .then(() => {
-              })
-              .catch(() => {
-              });
-          }
-        });
-        reader.readAsText(err.error);
-        this.exporting = false;
-      }
-    );
-  }
-
-  createAndDownloadBlobFile(body, options, filename) {
-    const blob = new Blob([body], options);
-    if (navigator.msSaveBlob) {
-      // IE 10+
-      navigator.msSaveBlob(blob, filename);
-    } else {
-      const link = document.createElement('a');
-      // Browsers that support HTML5 download attribute
-      if (link.download !== undefined) {
-        const url = URL.createObjectURL(blob);
-        link.setAttribute('href', url);
-        link.setAttribute('download', filename);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-    }
-  }
-
-  downloadCv(candidate){
-    const tab = window.open();
-    this.candidateService.downloadCv(candidate.id).subscribe(
-      result => {
-        const fileUrl = URL.createObjectURL(result);
-        tab.location.href = fileUrl;
-      },
-      error => {
-        this.error = error;
-      }
-    )
   }
 
   addBaseSearchJoin(baseSearch: SavedSearch) {
