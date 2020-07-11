@@ -8,7 +8,7 @@
 
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a [routerLink]="['/candidates']">Candidates</a></li>
+      <li class="breadcrumb-item"><a [routerLink]="['/']">Home</a></li>
       <li *ngIf="candidate.user.firstName" class="breadcrumb-item active" aria-current="page">{{candidate.user.firstName}}</li>
       <li *ngIf="!candidate.user.firstName" class="breadcrumb-item active" aria-current="page">{{candidate.candidateNumber}}</li>
     </ol>
