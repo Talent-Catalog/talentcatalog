@@ -1,8 +1,11 @@
 import {
   Component,
   ElementRef,
+  Input,
+  OnChanges,
   OnDestroy,
   OnInit,
+  SimpleChanges,
   ViewChild
 } from '@angular/core';
 
@@ -58,7 +61,7 @@ import {AuthService} from "../../../services/auth.service";
   templateUrl: './define-search.component.html',
   styleUrls: ['./define-search.component.scss']
 })
-export class DefineSearchComponent implements OnInit, OnDestroy {
+export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
 
   @ViewChild('modifiedDate', {static: true}) modifiedDatePicker: DateRangePickerComponent;
   @ViewChild('englishLanguage', {static: true}) englishLanguagePicker: LanguageLevelFormControlComponent;
@@ -66,19 +69,20 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
   @ViewChild('formWrapper', {static: true}) formWrapper: ElementRef;
   @ViewChild('downloadCsvErrorModal', {static: true}) downloadCsvErrorModal;
 
+  @Input() savedSearch: SavedSearch;
+  @Input() pageNumber: number;
+  @Input() pageSize: number;
+
   error: any;
   loading: boolean;
   searchForm: FormGroup;
-  showSearchRequest: boolean;
+  showSearchRequest: boolean = false;
   results: SearchResults<Candidate>;
-  savedSearch: SavedSearch;
   savedSearchId;
 
   searchRequest: SearchCandidateRequestPaged;
 
   subscription: Subscription;
-  pageNumber: number;
-  pageSize: number;
   sortField = 'id';
   sortDirection = 'DESC';
 
@@ -174,10 +178,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.showSearchRequest = true;
     this.selectedCandidate = null;
-    this.pageNumber = 1;
-    this.pageSize = 20;
     this.loggedInUser = this.authService.getLoggedInUser();
     this.storedBaseJoin = null;
 
@@ -204,27 +205,13 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
       const englishLanguageObj = this.languages.find(l => l.name.toLowerCase() === 'english');
       this.englishLanguageModel = Object.assign(emptyLanguageLevelFormControlModel, {languageId: englishLanguageObj.id || null});
 
-      // start listening to route params after everything is loaded
-      this.route.params.subscribe(params => {
-        this.savedSearchId = params['savedSearchId'];
-        if (this.savedSearchId) {
-          this.savedSearchService.get(this.savedSearchId).subscribe(result => {
-            this.savedSearch = result;
-            this.loadSavedSearch(this.savedSearchId);
-          }, err => {
-            this.error = err;
-          });
-        } else {
-          this.savedSearchService.getDefault().subscribe(result => {
-            this.savedSearch = result;
-            this.savedSearchId = this.savedSearch.id;
-            this.loadSavedSearch(this.savedSearchId);
-          }, err => {
-            this.error = err;
-          });
-        }
-      });
+      if (this.savedSearch) {
+        this.loadSavedSearch(this.savedSearch.id);
 
+        //By default, hide the saved search's request details unless we are
+        //showing the default search (ie an unsaved search).
+        this.showSearchRequest = this.savedSearch.defaultSearch;
+      }
 
     }, error => {
       this.loading = false;
@@ -232,6 +219,20 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     });
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.savedSearch) {
+      if (changes.savedSearch.previousValue !== changes.savedSearch.currentValue) {
+        if (this.savedSearch) {
+          this.savedSearchId = this.savedSearch.id;
+
+          //The very first change will be loaded after ngInit finishes.
+          if (!changes.savedSearch.isFirstChange()) {
+            this.loadSavedSearch(this.savedSearchId);
+          }
+        }
+      }
+    }
+  }
 
   ngOnDestroy(): void {
     if (this.subscription) {
@@ -265,12 +266,17 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
   }
 
   apply() {
-    //Construct the search request
-    let request: SearchCandidateRequestPaged = this.searchForm.value;
+    //Take a copy of the form data and convert the names to ids.
+    let formData = this.searchForm.value;
+    formData = this.getIdsMultiSelect(formData);
 
-    request = this.getIdsMultiSelect(request);
+    //Initialize a search request from the modified formData
+    const request: SearchCandidateRequestPaged = formData;
 
     request.reviewStatusFilter = null;
+
+    //A new search request has to clear page number. Old page number no longer
+    //relevant with new search.
     request.pageNumber = 0;
     request.pageSize = this.pageSize;
     request.sortFields = [this.sortField];
@@ -279,30 +285,30 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     this.searchRequest = request;
   }
 
-  getIdsMultiSelect(request): any {
+  getIdsMultiSelect(request): SearchCandidateRequestPaged {
     if (request.countries != null) {
       request.countryIds = request.countries.map(c => c.id);
-      request.countries = null;
+      delete request.countries;
     }
 
     if (request.nationalities != null) {
       request.nationalityIds = request.nationalities.map(n => n.id);
-      request.nationalities = null;
+      delete request.nationalities;
     }
 
     if (request.occupations != null) {
       request.occupationIds = request.occupations.map(o => o.id);
-      request.occupations = null;
+      delete request.occupations;
     }
 
     if (request.educationMajors != null) {
       request.educationMajorIds = request.educationMajors.map(o => o.id);
-      request.educationMajors = null;
+      delete request.educationMajors;
     }
 
     if (request.statusesDisplay != null) {
       request.statuses = request.statusesDisplay.map(s => s.id);
-      request.statusesDisplay = null;
+      delete request.statusesDisplay;
     }
 
     return request;
@@ -327,7 +333,7 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
   }
 
   loadSavedSearch(id) {
-    // this._loading.savedSearch = true;
+    this.loading = true;
     this.searchForm.controls['savedSearchId'].patchValue(id);
 
     // Clear the search join array and remove base search
@@ -339,10 +345,11 @@ export class DefineSearchComponent implements OnInit, OnDestroy {
     this.savedSearchService.load(id).subscribe(
       request => {
         this.populateFormWithSavedSearch(request);
+        this.loading = false;
       },
       error => {
         this.error = error;
-        // this._loading.savedSearch = false;
+        this.loading = false;
       });
   }
 

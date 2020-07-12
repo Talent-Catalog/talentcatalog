@@ -6,8 +6,8 @@
   <i class="fas fa-spinner fa-spin"></i>
 </div>
 
-<app-show-candidates *ngIf="!error && !loading"
-                     [candidateSource]="savedSearch"
+<app-define-search *ngIf="!error && !loading"
+                     [savedSearch]="savedSearch"
                      [pageNumber]="pageNumber"
                      [pageSize]="pageSize"
-></app-show-candidates>
+></app-define-search>

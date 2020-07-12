@@ -10,6 +10,13 @@
   </nav>
 
   <div [hidden]="!showSearchRequest" >
+    <div>
+      <a class="link" (click)="showSearchRequest = false">
+        <ng-container>
+          <i class="fas fa-caret-right"></i> Hide search request
+        </ng-container>
+      </a>
+    </div>
 
     <div [hidden]="canChangeSearchRequest()">
       <app-candidate-source
@@ -31,12 +38,11 @@
 
         <div>
           <button type="button" class="btn btn-outline-dark mr-2" [disabled]="loading" (click)="clearForm()">Clear Search</button>
-          <button type="button" class="btn btn-outline-dark" (click)="showSavedSearches()">Load Search</button>
         </div>
         <div>
-          <button type="button" class="ml-2 btn btn-outline-primary" [hidden]="savedSearch?.defaultSearch" (click)="updateSavedSearchModal()">Update Saved Search</button>
-          <button type="button" class="ml-2 btn btn-outline-primary" [hidden]="savedSearch?.defaultSearch" (click)="deleteSavedSearchModal()">Delete Saved Search</button>
-          <button type="button" class="ml-2 btn btn-outline-primary" (click)="createNewSavedSearchModal()">Make New Saved Search</button>
+          <button type="button" class="ml-2 btn btn-outline-primary" [hidden]="savedSearch?.defaultSearch" (click)="updateSavedSearchModal()">Update Search</button>
+          <button type="button" class="ml-2 btn btn-outline-primary" [hidden]="savedSearch?.defaultSearch" (click)="deleteSavedSearchModal()"><i class="fas fa-trash" title="Delete"></i>Delete Search</button>
+          <button type="button" class="ml-2 btn btn-outline-primary" [hidden]="!savedSearch?.defaultSearch" (click)="createNewSavedSearchModal()">Save Search</button>
         </div>
 
       </div>

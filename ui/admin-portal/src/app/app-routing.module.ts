@@ -23,6 +23,20 @@ Urls:
 /candidates/candidate/:id - Display candidate id
  */
 
+
+//todo Review urls
+/*
+/search (DefineSearch)
+/search/:id
+/list/:id
+/candidate/:id
+/ (home)
+
+Redirect
+candidates/list -> /list
+candidates/search -> /search
+candidates/:id -> /candidate/:id
+ */
 const routes: Routes = [
   {
     path: '',
@@ -61,6 +75,12 @@ const routes: Routes = [
             path: 'list/:id',
             component: CandidatesListComponent,
             data: {title: 'TBB Admin - Candidate list'}
+          },
+          {
+            path: 'search',
+            pathMatch: 'full',
+            component: CandidatesSearchComponent,
+            data: {title: 'TBB Admin - Candidate search'}
           },
           {
             path: 'search/:id',

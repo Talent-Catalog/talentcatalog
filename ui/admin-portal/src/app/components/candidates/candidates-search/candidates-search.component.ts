@@ -48,6 +48,14 @@ export class CandidatesSearchComponent implements OnInit {
           this.error = err;
           this.loading = false;
         });
+      } else {
+        this.savedSearchService.getDefault().subscribe(result => {
+          this.savedSearch = result;
+          this.loading = false;
+        }, err => {
+          this.error = err;
+          this.loading = false;
+        });
       }
     });
   }
