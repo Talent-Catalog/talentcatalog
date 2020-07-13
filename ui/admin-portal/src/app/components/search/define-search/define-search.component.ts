@@ -42,11 +42,12 @@ import {LanguageLevel} from "../../../model/language-level";
 import {LanguageLevelService} from '../../../services/language-level.service';
 import {DateRangePickerComponent} from "../../util/form/date-range-picker/date-range-picker.component";
 import {LanguageLevelFormControlComponent} from "../../util/form/language-proficiency/language-level-form-control.component";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
 import {LocalStorageService} from "angular-2-local-storage";
 import {UpdateSearchComponent} from "../update/update-search.component";
 import {
+  getCandidateSourceNavigation,
   getSavedSearchBreadcrumb,
   SavedSearch,
   SearchCandidateRequestPaged
@@ -136,6 +137,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
               private modalService: NgbModal,
               private localStorageService: LocalStorageService,
               private route: ActivatedRoute,
+              private router: Router,
               private authService: AuthService) {
     /* SET UP FORM */
     this.searchForm = this.fb.group({
@@ -266,12 +268,9 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   apply() {
-    //Take a copy of the form data and convert the names to ids.
-    let formData = this.searchForm.value;
-    formData = this.getIdsMultiSelect(formData);
-
     //Initialize a search request from the modified formData
-    const request: SearchCandidateRequestPaged = formData;
+    const request: SearchCandidateRequestPaged =
+      this.getIdsMultiSelect(this.searchForm.value)
 
     request.reviewStatusFilter = null;
 
@@ -381,10 +380,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
 
     showSaveModal.result
       .then((savedSearch) => {
-        this.savedSearch = savedSearch;
-        this.searchForm.controls['savedSearchId'].patchValue(savedSearch.id);
+        const urlCommands = getCandidateSourceNavigation(savedSearch);
+        this.router.navigate(urlCommands);
       })
-      .catch(() => { /* Isn't possible */
+      .catch(() => {
       });
   }
 

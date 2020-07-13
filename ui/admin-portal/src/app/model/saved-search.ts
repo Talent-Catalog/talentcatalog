@@ -111,11 +111,11 @@ export function getSavedSearchBreadcrumb(savedSearch: SavedSearch, infos: SavedS
           if (savedSearchTypeSubInfo) {
             subtypeTitle = savedSearchTypeSubInfo.title;
           }
-          breadcrumb += " " + subtypeTitle + ": ";
+          breadcrumb += " " + subtypeTitle;
         }
       }
 
-      breadcrumb += savedSearch.name;
+      breadcrumb += ": " + savedSearch.name;
     }
   }
   return breadcrumb;
