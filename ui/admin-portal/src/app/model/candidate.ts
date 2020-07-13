@@ -39,7 +39,7 @@ export interface Candidate {
 }
 
 export function getCandidateNavigation(candidate: Candidate): any[] {
-  return ['candidates', candidate.id];
+  return ['candidate', candidate.candidateNumber];
 }
 
 export function getCandidateExternalHref(

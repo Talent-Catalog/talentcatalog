@@ -117,8 +117,7 @@ export class HeaderComponent implements OnInit {
   selectSearchResult ($event, input) {
     $event.preventDefault();
     input.value = '';
-    console.log('going to', $event.item);
-    this.router.navigate(['candidates',  $event.item.candidateNumber]);
+    this.router.navigate(['candidate',  $event.item.candidateNumber]);
 
   }
 }

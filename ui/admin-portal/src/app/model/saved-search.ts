@@ -69,7 +69,7 @@ export class SearchSavedSearchRequest extends SearchCandidateSourcesRequest {
 
 export function getCandidateSourceNavigation(source: CandidateSource): any[] {
   const urlSelector: string = isSavedSearch(source) ? 'search' : 'list';
-  return ['candidates', urlSelector, source.id];
+  return [urlSelector, source.id];
 }
 
 export function getCandidateSourceExternalHref(

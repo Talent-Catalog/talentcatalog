@@ -12,10 +12,13 @@
     <div [ngbCollapse]="isNavbarCollapsed" class="collapse navbar-collapse" id="navbarsDefault">
       <ul class="navbar-nav mr-auto">
          <li class="nav-item" [routerLinkActive]="'active'">
-          <a class="nav-link" [routerLink]="'/candidates'">Candidates</a>
+          <a class="nav-link" [routerLink]="'/'">Home</a>
         </li>
         <li class="nav-item" [routerLinkActive]="'active'">
-          <a class="nav-link" [routerLink]="'/candidates/search'">Define Searches</a>
+          <a class="nav-link" [routerLink]="'/list'">New List</a>
+        </li>
+        <li class="nav-item" [routerLinkActive]="'active'">
+          <a class="nav-link" [routerLink]="'/search'">New Search</a>
         </li>
         <li class="nav-item" [routerLinkActive]="'active'">
           <a class="nav-link" [routerLink]="'/infographics'">Infographics</a>

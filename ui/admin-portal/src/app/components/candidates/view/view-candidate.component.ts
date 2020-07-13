@@ -114,7 +114,7 @@ export class ViewCandidateComponent implements OnInit {
     const modal = this.modalService.open(DeleteCandidateComponent);
     modal.componentInstance.candidate = this.candidate;
     modal.result.then(result => {
-      this.router.navigate(['/candidates']);
+      this.router.navigate(['/']);
     });
   }
 

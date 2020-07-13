@@ -1,7 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {SavedList} from "../../../model/saved-list";
-import {ActivatedRoute} from "@angular/router";
+import {Location} from "@angular/common"
+import {ActivatedRoute, Router} from "@angular/router";
 import {SavedListService} from "../../../services/saved-list.service";
+import {CreateListComponent} from "../../list/create/create-list.component";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {getCandidateSourceNavigation} from "../../../model/saved-search";
 
 @Component({
   selector: 'app-candidates-list',
@@ -17,6 +21,9 @@ export class CandidatesListComponent implements OnInit {
   private id: number;
 
   constructor(private route: ActivatedRoute,
+              private modalService: NgbModal,
+              private location: Location,
+              private router: Router,
               private savedListService: SavedListService) { }
 
   ngOnInit() {
@@ -48,8 +55,22 @@ export class CandidatesListComponent implements OnInit {
           this.error = err;
           this.loading = false;
         });
+      } else {
+        this.createNewList();
+        this.loading = false;
       }
     });
   }
 
+  private createNewList() {
+    const modal = this.modalService.open(CreateListComponent);
+    modal.result
+      .then((savedList: SavedList) => {
+        const urlCommands = getCandidateSourceNavigation(savedList);
+        this.router.navigate(urlCommands);
+      })
+      .catch(() => {
+        this.location.back();
+      });
+  }
 }
