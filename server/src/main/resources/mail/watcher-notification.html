@@ -15,7 +15,7 @@
     
     <ul>
         <li th:each="search : ${searches}"> 
-            <a th:href="'https://tbbtalent.org/admin-portal/candidates/search/'+ ${search.getId()}" 
+            <a th:href="'https://tbbtalent.org/admin-portal/search/'+ ${search.getId()}" 
                th:text="${search.getName()}">Search name</a> 
         </li>
     </ul>
