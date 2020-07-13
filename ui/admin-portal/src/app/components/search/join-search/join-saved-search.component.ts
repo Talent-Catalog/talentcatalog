@@ -37,6 +37,7 @@ export class JoinSavedSearchComponent implements OnInit {
   @Input() storedBaseSearch;
   @Input() baseSearch;
   @Output() addBaseSearch = new EventEmitter<SavedSearch>();
+  @Output() deleteBaseSearch = new EventEmitter();
 
   constructor(private fb: FormBuilder,
               private router: Router,
@@ -59,7 +60,7 @@ export class JoinSavedSearchComponent implements OnInit {
           this.error = null
         }),
         switchMap(term =>
-          this.savedSearchService.searchPaged({keyword: term, owned: true, shared: true}).pipe(
+          this.savedSearchService.searchPaged({keyword: term, global: true, owned: true, shared: true}).pipe(
             tap(() => this.searchFailed = false),
             map(result =>
               // filter to avoid circular reference exception by removing the same search as the loaded search
@@ -91,8 +92,9 @@ export class JoinSavedSearchComponent implements OnInit {
     this.addBaseSearch.emit(this.selectedBaseSearch);
   }
 
-  test($event) {
-    console.log($event);
+  deleteSearch(){
+    this.selectedBaseSearch = null;
+    this.deleteBaseSearch.emit();
   }
 
 }

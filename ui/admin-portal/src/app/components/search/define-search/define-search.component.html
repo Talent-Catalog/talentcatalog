@@ -264,9 +264,10 @@
 
           <hr class="w-100">
 
-          <div class="col-12 col-md-6">
+          <div class="col-12">
             <app-join-saved-search
               (addBaseSearch)="addBaseSearchJoin($event)"
+              (deleteBaseSearch)="deleteBaseSearchJoin()"
               [storedBaseSearch]="storedBaseJoin"
               [baseSearch]= "selectedBaseJoin"
             ></app-join-saved-search>

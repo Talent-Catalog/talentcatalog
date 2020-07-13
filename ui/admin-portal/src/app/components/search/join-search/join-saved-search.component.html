@@ -1,5 +1,5 @@
 <div class="row">
-  <div class="col-12 col-md-6">
+  <div class="col-4">
     <label for="savedSearch">Base Search</label>
     <input id="savedSearch"
            type="text" class="form-control"
@@ -9,13 +9,13 @@
            [resultTemplate]="rt"
            [inputFormatter]="renderSavedSearchRow"
            [editable]="false"
-           placeholder="Add Base Search..."/>
+           placeholder="Type the name of a base search..."/>
   </div>
     <ng-template #rt let-r="result" let-t="term">
       <ngb-highlight [result]="r.name" [term]="t"></ngb-highlight>
     </ng-template>
 
-  <div *ngIf="this.selectedBaseSearch || this.storedBaseSearch" class="col-12 col-md-6">
+  <div *ngIf="this.selectedBaseSearch || this.storedBaseSearch" class="d-flex">
     <app-candidate-source
       [candidateSource]="selectedBaseSearch"
       [storedBaseSearch]="storedBaseSearch"
@@ -27,6 +27,8 @@
       [showMore]="false"
     >
     </app-candidate-source>
+    <button type="button" class="btn btn-default" (click)="deleteSearch()" ><i
+      class="fas fa-trash"></i></button>
   </div>
 </div>
 
