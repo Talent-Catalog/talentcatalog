@@ -65,7 +65,7 @@ const routes: Routes = [
           {
             path: ':candidateNumber',
             component: ViewCandidateComponent,
-            data: {title: 'TBB Admin - Candidate'}
+            data: {title: 'TBB Candidate'}
           },
         ]
       },
@@ -80,7 +80,7 @@ const routes: Routes = [
             path: '',
             pathMatch: 'full',
             component: SettingsComponent,
-            data: {title: 'TBB Admin - Settings'}
+            data: {title: 'TBB Settings'}
           },
         ]
       },
@@ -91,7 +91,7 @@ const routes: Routes = [
             path: '',
             pathMatch: 'full',
             component: InfographicComponent,
-            data: {title: 'TBB Admin - Infographics'}
+            data: {title: 'TBB Infographics'}
           }
         ]
       },
