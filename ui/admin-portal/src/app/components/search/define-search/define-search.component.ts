@@ -401,7 +401,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
         if (result === true) {
           this.savedSearchService.delete(this.savedSearch.id).subscribe(
             (found) => {
-              this.savedSearch = null;
+              this.router.navigate(['search']);
               this.loading = false;
             },
             (error) => {
@@ -410,7 +410,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
             });
         }
       })
-      .catch(() => { /* Isn't possible */ });
+      .catch(() => { });
   }
 
   updateSavedSearchModal() {
