@@ -589,6 +589,14 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     this.searchJoinArray.push(this.fb.group(this.selectedBaseJoin));
   }
 
+  deleteBaseSearchJoin() {
+    if (this.searchJoinArray.length) {
+      this.searchJoinArray.removeAt(0);
+    }
+    this.storedBaseJoin = null;
+    this.selectedBaseJoin = null;
+  }
+
   canChangeSearchRequest(): boolean {
     //We can change the search request if we own the savedSearch or if it
     //not fixed.
