@@ -1,6 +1,5 @@
 package org.tbbtalent.server.model;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -11,8 +10,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "candidate_shortlist_item")
-@SequenceGenerator(name = "seq_gen", sequenceName = "candidate_shortlist_item_id_seq", allocationSize = 1)
+@Table(name = "candidate_review_item")
+@SequenceGenerator(name = "seq_gen", sequenceName = "candidate_review_item_id_seq", allocationSize = 1)
 public class CandidateReviewStatusItem extends AbstractAuditableDomainObject<Long>  {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -25,8 +24,6 @@ public class CandidateReviewStatusItem extends AbstractAuditableDomainObject<Lon
 
     private String comment;
 
-    //Can remove this once database field name has been renamed
-    @Column(name = "shortlist_status")
     @Enumerated(EnumType.STRING)
     private ReviewStatus reviewStatus;
 
