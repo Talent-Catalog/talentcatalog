@@ -29,7 +29,7 @@ import org.tbbtalent.server.model.CandidateEducation;
 import org.tbbtalent.server.model.CandidateJobExperience;
 import org.tbbtalent.server.model.CandidateLanguage;
 import org.tbbtalent.server.model.CandidateOccupation;
-import org.tbbtalent.server.model.CandidateShortlistItem;
+import org.tbbtalent.server.model.CandidateReviewStatusItem;
 import org.tbbtalent.server.model.CandidateSkill;
 import org.tbbtalent.server.model.CandidateStatus;
 import org.tbbtalent.server.model.EducationLevel;
@@ -37,9 +37,9 @@ import org.tbbtalent.server.model.EducationMajor;
 import org.tbbtalent.server.model.Language;
 import org.tbbtalent.server.model.LanguageLevel;
 import org.tbbtalent.server.model.Occupation;
+import org.tbbtalent.server.model.ReviewStatus;
 import org.tbbtalent.server.model.SavedSearch;
 import org.tbbtalent.server.model.SearchType;
-import org.tbbtalent.server.model.ShortlistStatus;
 import org.tbbtalent.server.model.User;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 
@@ -130,31 +130,31 @@ public class CandidateSpecification {
             if (request.getSavedSearchId() != null) {
                 if (CollectionUtils.isNotEmpty(request.getReviewStatusFilter())) {
                     Predicate pendingPredicate = null;
-                    if (request.getReviewStatusFilter().contains(ShortlistStatus.pending)) {
+                    if (request.getReviewStatusFilter().contains(ReviewStatus.pending)) {
                         Subquery<Candidate> sq = query.subquery(Candidate.class);
                         Root<Candidate> subCandidate = sq.from(Candidate.class);
                         /*
                         select Candidate from Candidate join 
-                        CandidateShortListItems join 
+                        candidateReviewStatusItems join 
                         SavedSearch where savedSearchid = requestid
                          pendingPredicate = candidate id not in the result of the query
                          
                          Is this just defaulting everything else as pending? 
                          */
-                        Join<Object, Object> subShortList = subCandidate.join("candidateShortlistItems");
-                        Join<Object, Object> subSavedSearch = subShortList.join("savedSearch");
+                        Join<Object, Object> subReviewStatus = subCandidate.join("candidateReviewStatusItems");
+                        Join<Object, Object> subSavedSearch = subReviewStatus.join("savedSearch");
                         sq.select(subCandidate).where(builder.equal(subSavedSearch.get("id"), request.getSavedSearchId()));
                         pendingPredicate = builder.not(builder.in(candidate.get("id")).value(sq));
                     }
 
                     Subquery<Candidate> sq = query.subquery(Candidate.class);
                     Root<Candidate> subCandidate = sq.from(Candidate.class);
-                    Join<Object, Object> subShortList = subCandidate.join("candidateShortlistItems");
-                    Join<Object, Object> subSavedSearch = subShortList.join("savedSearch");
+                    Join<Object, Object> subReviewStatus = subCandidate.join("candidateReviewStatusItems");
+                    Join<Object, Object> subSavedSearch = subReviewStatus.join("savedSearch");
                     sq.select(subCandidate).where(
                             builder.and(
                                     builder.equal(subSavedSearch.get("id"), request.getSavedSearchId()), 
-                                    subShortList.get("shortlistStatus").in(request.getReviewStatusFilter())
+                                    subReviewStatus.get("reviewStatus").in(request.getReviewStatusFilter())
                             )
                     );
                     
@@ -166,8 +166,8 @@ public class CandidateSpecification {
                         conjunction.getExpressions().add(statusPredicate);
                     }
                 } else if (query.getResultType().equals(Candidate.class)) {
-                    Fetch<Candidate, CandidateShortlistItem> candidateShortlistItem = candidate.fetch("candidateShortlistItems", JoinType.LEFT);
-                    Fetch<CandidateShortlistItem, SavedSearch> savedSearch = candidateShortlistItem.fetch("savedSearch", JoinType.LEFT);
+                    Fetch<Candidate, CandidateReviewStatusItem> candidateReviewStatusItem = candidate.fetch("candidateReviewStatusItems", JoinType.LEFT);
+                    Fetch<CandidateReviewStatusItem, SavedSearch> savedSearch = candidateReviewStatusItem.fetch("savedSearch", JoinType.LEFT);
                 }
             }
 

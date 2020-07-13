@@ -1,10 +1,10 @@
 import {User} from "./user";
 import {SavedSearch} from "./saved-search";
 
-export interface CandidateShortlistItem {
+export interface CandidateReviewStatusItem {
   id: number;
   savedSearch: SavedSearch;
-  shortlistStatus: string;
+  reviewStatus: string;
   comment: string;
   createdBy: User;
   createdDate: number;

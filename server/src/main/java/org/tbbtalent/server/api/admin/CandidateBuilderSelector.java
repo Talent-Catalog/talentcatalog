@@ -68,7 +68,7 @@ public class CandidateBuilderSelector {
                 .add("country", countryDto())
                 .add("nationality", nationalityDto())
                 .add("user", userDto())
-                .add("candidateShortlistItems", shortlistDto())
+                .add("candidateReviewStatusItems", reviewDto())
                 ;
     }
 
@@ -76,7 +76,7 @@ public class CandidateBuilderSelector {
         return candidateBaseDto()
                 .add("maxEducationLevel", educationLevelDto())
                 .add("user", userDto())
-                .add("candidateShortlistItems", shortlistDto())
+                .add("candidateReviewStatusItems", reviewDto())
                 ;
     }
 
@@ -98,7 +98,7 @@ public class CandidateBuilderSelector {
                 .add("country", countryDto())
                 .add("user",userSemiLimitedDto())
                 .add("nationality", nationalityDto())
-                .add("candidateShortlistItems", shortlistDto())
+                .add("candidateReviewStatusItems", reviewDto())
                 ;
     }
 
@@ -116,7 +116,7 @@ public class CandidateBuilderSelector {
                 .add("sflink")
                 .add("selected")
                 .add("user",userSemiLimitedDto())
-                .add("candidateShortlistItems", shortlistDto())
+                .add("candidateReviewStatusItems", reviewDto())
                 ;
     }
 
@@ -151,10 +151,10 @@ public class CandidateBuilderSelector {
                 ;
     }
 
-    private DtoBuilder shortlistDto() {
+    private DtoBuilder reviewDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("shortlistStatus")
+                .add("reviewStatus")
                 .add("savedSearch", savedSearchDto())
                 ;
     }

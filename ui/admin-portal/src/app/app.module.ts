@@ -80,8 +80,8 @@ import {JoinSavedSearchComponent} from "./components/search/join-search/join-sav
 import {CandidateSourceComponent} from "./components/util/candidate-source/candidate-source.component";
 import {LanguageLevelFormControlComponent} from './components/util/form/language-proficiency/language-level-form-control.component';
 import {CandidatePipe} from './pipes/candidate.pipe';
-import {EditCandidateShortlistItemComponent} from "./components/util/candidate-review/edit/edit-candidate-shortlist-item.component";
-import {CandidateShortlistItemComponent} from "./components/util/candidate-review/candidate-shortlist-item.component";
+import {EditCandidateReviewStatusItemComponent} from "./components/util/candidate-review/edit/edit-candidate-review-status-item.component";
+import {CandidateReviewStatusItemComponent} from "./components/util/candidate-review/candidate-review-status-item.component";
 import {UserPipe} from "./components/util/user/user.pipe";
 import {UpdatedByComponent} from "./components/util/user/updated-by/updated-by.component";
 import {DateRangePickerComponent} from './components/util/form/date-range-picker/date-range-picker.component';
@@ -187,8 +187,8 @@ import {CreateCandidateOccupationComponent} from './components/candidates/view/o
     CreateCandidateCertificationComponent,
     EditCandidateCertificationComponent,
     JoinSavedSearchComponent,
-    CandidateShortlistItemComponent,
-    EditCandidateShortlistItemComponent,
+    CandidateReviewStatusItemComponent,
+    EditCandidateReviewStatusItemComponent,
     DateRangePickerComponent,
     DropdownTranslationsComponent,
     LanguageLevelFormControlComponent,
@@ -296,7 +296,7 @@ import {CreateCandidateOccupationComponent} from './components/candidates/view/o
     EditCandidateCertificationComponent,
     DropdownTranslationsComponent,
     EditCandidateCertificationComponent,
-    EditCandidateShortlistItemComponent,
+    EditCandidateReviewStatusItemComponent,
     CreateCandidateJobExperienceComponent,
     EditCandidateJobExperienceComponent,
     EditCandidateOccupationComponent,

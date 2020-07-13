@@ -9,20 +9,20 @@ import {
 } from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {CandidateService} from "../../../services/candidate.service";
-import {EditCandidateShortlistItemComponent} from "./edit/edit-candidate-shortlist-item.component";
+import {EditCandidateReviewStatusItemComponent} from "./edit/edit-candidate-review-status-item.component";
 import {SavedSearch} from "../../../model/saved-search";
-import {CandidateShortlistItem} from "../../../model/candidate-shortlist-item";
+import {CandidateReviewStatusItem} from "../../../model/candidate-review-status-item";
 import {CandidateSource} from "../../../model/base";
 
 @Component({
-  selector: 'app-candidate-shortlist-item',
-  templateUrl: './candidate-shortlist-item.component.html',
-  styleUrls: ['./candidate-shortlist-item.component.scss']
+  selector: 'app-candidate-review-status-item',
+  templateUrl: './candidate-review-status-item.component.html',
+  styleUrls: ['./candidate-review-status-item.component.scss']
 })
-export class CandidateShortlistItemComponent implements OnInit, OnChanges {
+export class CandidateReviewStatusItemComponent implements OnInit, OnChanges {
 
   @Input() candidateId: number;
-  @Input() candidateShortlistItems: CandidateShortlistItem[];
+  @Input() candidateReviewStatusItems: CandidateReviewStatusItem[];
   @Input() savedSearch: CandidateSource;
 
   @Output() reviewStatusChange = new EventEmitter();
@@ -30,7 +30,7 @@ export class CandidateShortlistItemComponent implements OnInit, OnChanges {
   loading: boolean;
   error;
   debug: boolean = false;
-  candidateShortlistItem;
+  candidateReviewStatusItem;
 
   constructor(private candidateService: CandidateService,
               private modalService: NgbModal) { }
@@ -44,24 +44,24 @@ export class CandidateShortlistItemComponent implements OnInit, OnChanges {
   }
 
   private selectReviewStatus() {
-    if (this.candidateShortlistItems && this.savedSearch) {
-      this.candidateShortlistItem = this.candidateShortlistItems.find(
+    if (this.candidateReviewStatusItems && this.savedSearch) {
+      this.candidateReviewStatusItem = this.candidateReviewStatusItems.find(
         s => s.savedSearch.id === this.savedSearch.id);
     }
   }
 
-  editShortlistItem() {
-    const editModal = this.modalService.open(EditCandidateShortlistItemComponent, {
+  editReviewStatusItem() {
+    const editModal = this.modalService.open(EditCandidateReviewStatusItemComponent, {
       centered: true,
       backdrop: 'static'
     });
 
-    editModal.componentInstance.candidateShortListItemId = this.candidateShortlistItem ? this.candidateShortlistItem.id : null;
+    editModal.componentInstance.candidateReviewStatusItemId = this.candidateReviewStatusItem ? this.candidateReviewStatusItem.id : null;
     editModal.componentInstance.candidateId = this.candidateId;
     editModal.componentInstance.savedSearch = this.savedSearch as SavedSearch;
 
     editModal.result
-      .then((candidateShortListItem) => this.reviewStatusChange.emit(candidateShortListItem))
+      .then((candidateReviewStatusItem) => this.reviewStatusChange.emit(candidateReviewStatusItem))
       .catch(() => { /* Isn't possible */ });
   }
 

@@ -10,8 +10,8 @@ import javax.validation.constraints.NotNull;
 import org.springframework.data.domain.Sort;
 import org.tbbtalent.server.model.CandidateStatus;
 import org.tbbtalent.server.model.Gender;
+import org.tbbtalent.server.model.ReviewStatus;
 import org.tbbtalent.server.model.SearchType;
-import org.tbbtalent.server.model.ShortlistStatus;
 import org.tbbtalent.server.request.PagedSearchRequest;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -50,7 +50,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     private Integer maxAge;
     private Integer minEducationLevel;
     private List<Long> educationMajorIds;
-    private List<ShortlistStatus> reviewStatusFilter;
+    private List<ReviewStatus> reviewStatusFilter;
     private boolean includeNew;
     private Boolean includeDraftAndDeleted;
     private Boolean includeUploadedFiles;
@@ -278,11 +278,11 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         this.searchJoinRequests = searchJoinRequests;
     }
 
-    public List<ShortlistStatus> getReviewStatusFilter() {
+    public List<ReviewStatus> getReviewStatusFilter() {
         return reviewStatusFilter;
     }
 
-    public void setReviewStatusFilter(List<ShortlistStatus> reviewStatusFilter) {
+    public void setReviewStatusFilter(List<ReviewStatus> reviewStatusFilter) {
         this.reviewStatusFilter = reviewStatusFilter;
     }
 

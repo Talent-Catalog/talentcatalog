@@ -1,7 +1,7 @@
 import {User} from "./user";
 import {Country} from "./country";
 import {Nationality} from "./nationality";
-import {CandidateShortlistItem} from "./candidate-shortlist-item";
+import {CandidateReviewStatusItem} from "./candidate-review-status-item";
 import {EducationMajor} from "./education-major";
 import {EducationLevel} from "./education-level";
 import {SurveyType} from "./survey-type";
@@ -23,7 +23,7 @@ export interface Candidate {
   phone: string;
   whatsapp: string;
   user: User;
-  candidateShortlistItems: CandidateShortlistItem[];
+  candidateReviewStatusItems: CandidateReviewStatusItem[];
   migrationEducationMajor: EducationMajor;
   additionalInfo: string;
   candidateMessage: string;
