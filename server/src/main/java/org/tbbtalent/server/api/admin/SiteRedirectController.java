@@ -24,6 +24,6 @@ public class SiteRedirectController {
 
     @RequestMapping(value = "/view-resume")
     public String redirectOldResumeUrl(@RequestParam("id") String candidateNumber) {
-      return "redirect:" + adminUrl + "/candidates/" + candidateNumber;
+      return "redirect:" + adminUrl + "/candidate/" + candidateNumber;
     }
 }
