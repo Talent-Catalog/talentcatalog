@@ -1,7 +1,7 @@
 <div>
   <div class="section">
-    <div class="pull-right">
-      <div class="pull-right">
+    <div class="float-right">
+      <div class="float-right">
         <button *ngIf="loggedInUser.role === 'admin'" class="btn btn-primary" (click)="addUser()">Add</button>
       </div>
     </div>
@@ -30,7 +30,7 @@
 
   <div class="text-muted mb-2 align-middle">
 
-    <ngb-pagination class="pull-right"
+    <ngb-pagination class="float-right"
                     [boundaryLinks]="true"
                     [pageSize]="pageSize"
                     [collectionSize]="results?.totalElements"

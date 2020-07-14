@@ -15,7 +15,7 @@
   </nav>
 
   <div>
-    <div class="pull-right">
+    <div class="float-right">
       <div class="input-group">
         <input type="text" class="form-control" id="status" title="{{candidate.candidateMessage}}"
                value="{{candidate.status | titlecase}}" disabled>
@@ -122,7 +122,7 @@
     </div>
     <div class="col-sm-{{sidePanelColWidth}} admin-panel">
       <div class="w-100">
-        <div class="pull-right">
+        <div class="float-right">
           <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
             class="fas fa-arrow-{{sidePanelColWidth == 8 ? 'right' : 'left'}}"></i></button>
         </div>

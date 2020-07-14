@@ -8,7 +8,7 @@
 
   <div class="card-header">
     Certifications
-    <div class="pull-right" *ngIf="editable">
+    <div class="float-right" *ngIf="editable">
       <button type="button" class="btn btn-primary btn-sm" (click)="createCandidateCertification()">
         <i class="fas fa-plus"></i>
       </button>
@@ -29,7 +29,7 @@
           <span class="card-title">{{candidateCertification.name}}</span>
         </div>
         <div class="col-6">
-          <div class="pull-right" *ngIf="editable">
+          <div class="float-right" *ngIf="editable">
             <button type="button" class="btn btn-default" (click)="editCandidateCertification(candidateCertification)"><i
               class="fas fa-edit"></i></button>
           </div>
