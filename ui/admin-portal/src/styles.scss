@@ -1,4 +1,11 @@
-@import '~bootstrap/scss/bootstrap-reboot';
+/* import the necessary Bootstrap files */
+@import "~bootstrap/scss/bootstrap-reboot";
+@import "~bootstrap/scss/variables";
+
+$theme-colors: (
+  primary: #0eb1e3,
+);
+
 @import '~bootstrap/scss/bootstrap';
 
 $fa-font-path: "../node_modules/@fortawesome/fontawesome-free/webfonts";
@@ -9,6 +16,7 @@ $fa-font-path: "../node_modules/@fortawesome/fontawesome-free/webfonts";
 
 @import "~src/scss/common";
 @import "~src/scss/page";
+
 
 
 body {

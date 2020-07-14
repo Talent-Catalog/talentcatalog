@@ -1,6 +1,10 @@
 <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
   <div class="container-fluid">
 
+    <!-- LOGO -->
+    <a [routerLink]="'/'">
+      <img class="logo" src="assets/images/logo.png" alt="Logo">
+    </a>
 
     <button class="navbar-toggler hidden-sm-up" type="button"
             (click)="isNavbarCollapsed = !isNavbarCollapsed"
