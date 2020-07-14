@@ -1082,7 +1082,7 @@ public class CandidateServiceImpl implements CandidateService {
     private String[] getExportTitles() {
         return new String[]{
                 "Candidate Number", "Candidate First Name", "Candidate Last Name", "Gender", "Country Residing", "Nationality",
-                "Dob", "Email", "Max Education Level", "Education Major", "English Spoken Level", "Occupation"
+                "Dob", "Email", "Max Education Level", "Education Major", "English Spoken Level", "Occupation", "Link"
         };
     }
 
@@ -1099,8 +1099,13 @@ public class CandidateServiceImpl implements CandidateService {
                 candidate.getMaxEducationLevel() != null ? candidate.getMaxEducationLevel().getName() : null,
                 formatCandidateMajor(candidate.getCandidateEducations()),
                 getEnglishSpokenProficiency(candidate.getCandidateLanguages()),
-                formatCandidateOccupation(candidate.getCandidateOccupations())
+                formatCandidateOccupation(candidate.getCandidateOccupations()),
+                getCandidateExternalHref(candidate.getCandidateNumber())
         };
+    }
+
+    private String getCandidateExternalHref(String candidateNumber) {
+        return "https://www.tbbtalent.org/admin-portal/candidate/" + candidateNumber;
     }
 
     public String formatCandidateMajor(List<CandidateEducation> candidateEducations){
