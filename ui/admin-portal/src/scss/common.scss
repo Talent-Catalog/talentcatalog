@@ -1,3 +1,8 @@
+@import "~src/scss/variables";
+@import '~bootstrap/scss/bootstrap-reboot';
+@import '~bootstrap/scss/bootstrap';
+@import '~bootstrap/scss/pagination';
+
 .section {
   padding: 10px 0;
 
@@ -10,6 +15,52 @@
   }
 }
 
-a {
-  color: $primary;
+.link,
+.link:not([href]):not([tabindex]){
+  color: $color-primary;
+  cursor: pointer;
+  text-decoration: $link-decoration;
+  &:hover {
+    color: $color-primary-darker;
+    text-decoration: $link-hover-decoration;
+  }
 }
+
+.page-link {
+  position: relative;
+  display: block;
+  color: $color-primary;
+  background-color: $pagination-bg;
+
+  &:hover {
+    z-index: 2;
+    text-decoration: none;
+    background-color: $color-primary;
+    color: $color-background;
+  }
+
+  &:focus {
+    z-index: 2;
+    outline: $pagination-focus-outline;
+    box-shadow: $pagination-focus-box-shadow;
+  }
+}
+
+.page-item {
+
+  &.active .page-link {
+    background-color: $color-primary;
+    border-color: $color-primary;
+  }
+
+  &.disabled .page-link {
+    color: $pagination-disabled-color;
+    pointer-events: none;
+    // Opinionated: remove the "hand" cursor set previously for .page-link
+    cursor: auto;
+    background-color: $pagination-disabled-bg;
+    border-color: $pagination-disabled-border-color;
+  }
+}
+
+

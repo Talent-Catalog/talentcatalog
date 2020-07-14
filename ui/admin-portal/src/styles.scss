@@ -1,11 +1,4 @@
-/* import the necessary Bootstrap files */
-@import "~bootstrap/scss/bootstrap-reboot";
-@import "~bootstrap/scss/variables";
-
-$theme-colors: (
-  primary: #0eb1e3,
-);
-
+@import '~bootstrap/scss/bootstrap-reboot';
 @import '~bootstrap/scss/bootstrap';
 
 $fa-font-path: "../node_modules/@fortawesome/fontawesome-free/webfonts";
@@ -16,8 +9,8 @@ $fa-font-path: "../node_modules/@fortawesome/fontawesome-free/webfonts";
 
 @import "~src/scss/common";
 @import "~src/scss/page";
-
-
+@import "~src/scss/variables";
+@import "~src/scss/btn";
 
 body {
   padding-top: 6rem;
@@ -31,16 +24,7 @@ h1 {
   margin-bottom: 2rem;
 }
 
-.link,
-.link:not([href]):not([tabindex]){
-  color: $link-color;
-  cursor: pointer;
-  text-decoration: $link-decoration;
-  &:hover {
-    color: $link-hover-color;
-    text-decoration: $link-hover-decoration;
-  }
-}
+ng-multiselect-dropdown span .dropdown-btn
 
 .multiselect-dropdown .dropdown-btn {
     border: 1px solid #ced4da !important;
@@ -81,6 +65,6 @@ label,a > i.fas,i.fab,i.far {
 }
 
 .fa-file-download {
-  color: $link-color;
+  color: $color-primary;
 }
 
