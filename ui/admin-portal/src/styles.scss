@@ -20,8 +20,39 @@ body {
   cursor: pointer;
 }
 
+.nav-tabs {
+  border-bottom: $nav-tabs-border-width solid $nav-tabs-border-color;
+
+  .nav-item {
+    margin-bottom: -$nav-tabs-border-width;
+  }
+
+  .nav-link {
+    color: $color-primary-darker;
+
+    &.disabled {
+      color: $nav-link-disabled-color;
+      background-color: transparent;
+      border-color: transparent;
+    }
+  }
+
+  .nav-link.active,
+  .nav-item.show .nav-link {
+    color: $color-primary;
+    background-color: $nav-tabs-link-active-bg;
+    border-color: $nav-tabs-link-active-border-color;
+  }
+
+}
+
+
 h1 {
   margin-bottom: 2rem;
+}
+
+#savedLists .multiselect-dropdown .dropdown-btn{
+  margin-bottom: 20px;
 }
 
 ng-multiselect-dropdown span .dropdown-btn

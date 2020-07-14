@@ -46,24 +46,28 @@
     </h1>
 
 <!--    <todo>Comment the below back in when Lists are ready for viewing</todo>-->
-    <div>
-      <label>Lists</label>
-      <div>
-        <button class="btn btn-link" type="button"
-                (click)="onNewList()">New List
+    <div class="d-flex align-items-center justify-content-end">
+      <div class="flex-grow-1">
+        <p class="small text-muted mb-0">Add candidate to a list</p>
+        <ng-multiselect-dropdown
+          id="savedLists"
+          class="flex-fill"
+          [data]="lists"
+          [(ngModel)]="selectedLists"
+          [settings]="dropdownSettings"
+          (onSelectAll)="onSelectAll($event)"
+          (onDeSelectAll)="onDeSelectAll($event)"
+          (onSelect)="onItemSelect($event)"
+          (onDeSelect)="onItemDeSelect($event)">
+        </ng-multiselect-dropdown>
+      </div>
+      <div class="pl-2 text-right">
+        <button class="btn btn-sm btn-secondary" type="button"
+                (click)="onNewList()">+ New List
         </button>
       </div>
 
-      <ng-multiselect-dropdown
-        id="savedLists"
-        [data]="lists"
-        [(ngModel)]="selectedLists"
-        [settings]="dropdownSettings"
-        (onSelectAll)="onSelectAll($event)"
-        (onDeSelectAll)="onDeSelectAll($event)"
-        (onSelect)="onItemSelect($event)"
-        (onDeSelect)="onItemDeSelect($event)">
-      </ng-multiselect-dropdown>
+
 
     </div>
   </div>

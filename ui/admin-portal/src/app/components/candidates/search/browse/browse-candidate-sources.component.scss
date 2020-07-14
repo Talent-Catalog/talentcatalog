@@ -12,13 +12,19 @@
   padding: 0;
   width: 21em;
 }
+
+.searches .form-control {
+  margin-top: 1em;
+}
+
 .searches li {
   cursor: pointer;
   position: relative;
   left: 0;
   background-color: white;
   margin: .5em;
-  padding: .3em 0;
+  margin-left: 0em;
+  padding: 0 .3em;
   height: 1.6em;
   border-radius: 4px;
 }

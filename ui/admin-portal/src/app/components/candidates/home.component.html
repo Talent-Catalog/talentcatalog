@@ -5,9 +5,9 @@
       <ng-template ngbTabContent>
 
         <!-- Saved Searches with subtypes -->
-        <div *ngIf="savedSearchTypeSubInfos">
-          <form [formGroup]="categoryForm" class="col-sm-4">
-            <label for="savedSearchSubtype">Category</label>
+        <div *ngIf="savedSearchTypeSubInfos" class="no-gutters">
+          <form [formGroup]="categoryForm" class="col-sm-4 pt-3">
+<!--            <label for="savedSearchSubtype">Category</label>-->
             <select class="form-control" id="savedSearchSubtype" formControlName="savedSearchSubtype"
                     (change)="onSavedSearchSubtypeChange($event)">
               <option *ngFor="let subtypeInfo of savedSearchTypeSubInfos" [value]="subtypeInfo.savedSearchSubtype">{{subtypeInfo.title}}</option>
