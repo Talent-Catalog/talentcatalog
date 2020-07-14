@@ -1,11 +1,18 @@
 package org.tbbtalent.server.model;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 @Entity
-@Table(name = "candidate_shortlist_item")
-@SequenceGenerator(name = "seq_gen", sequenceName = "candidate_shortlist_item_id_seq", allocationSize = 1)
-public class CandidateShortlistItem extends AbstractAuditableDomainObject<Long>  {
+@Table(name = "candidate_review_item")
+@SequenceGenerator(name = "seq_gen", sequenceName = "candidate_review_item_id_seq", allocationSize = 1)
+public class CandidateReviewStatusItem extends AbstractAuditableDomainObject<Long>  {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_id")
@@ -16,10 +23,11 @@ public class CandidateShortlistItem extends AbstractAuditableDomainObject<Long> 
     private SavedSearch savedSearch;
 
     private String comment;
-    @Enumerated(EnumType.STRING)
-    private ShortlistStatus shortlistStatus;
 
-    public CandidateShortlistItem() {
+    @Enumerated(EnumType.STRING)
+    private ReviewStatus reviewStatus;
+
+    public CandidateReviewStatusItem() {
     }
 
     public Candidate getCandidate() {
@@ -46,11 +54,11 @@ public class CandidateShortlistItem extends AbstractAuditableDomainObject<Long> 
         this.comment = comment;
     }
 
-    public ShortlistStatus getShortlistStatus() {
-        return shortlistStatus;
+    public ReviewStatus getReviewStatus() {
+        return reviewStatus;
     }
 
-    public void setShortlistStatus(ShortlistStatus shortlistStatus) {
-        this.shortlistStatus = shortlistStatus;
+    public void setReviewStatus(ReviewStatus reviewStatus) {
+        this.reviewStatus = reviewStatus;
     }
 }

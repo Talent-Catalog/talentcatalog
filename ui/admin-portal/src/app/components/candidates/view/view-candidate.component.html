@@ -30,7 +30,7 @@
           <label (click)="downloadCV()">
             <i class="fas fa-file-download" title="Download CV"></i>
           </label>
-          <a target="_blank" [routerLink]="['/candidates',candidate.candidateNumber]">
+          <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
             <i class="fas fa-external-link-alt" title="Show candidate in new tab"></i>
           </a>
           <a *ngIf="candidate.sflink" [href]="candidate.sflink" target="_blank">

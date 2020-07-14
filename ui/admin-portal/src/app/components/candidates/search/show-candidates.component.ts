@@ -16,7 +16,7 @@ import {SearchResults} from '../../../model/search-results';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {SavedSearchService} from "../../../services/saved-search.service";
 import {Observable, of, Subscription} from "rxjs";
-import {CandidateShortlistItem} from "../../../model/candidate-shortlist-item";
+import {CandidateReviewStatusItem} from "../../../model/candidate-review-status-item";
 import {HttpClient} from "@angular/common/http";
 import {
   ClearSelectionRequest,
@@ -56,7 +56,7 @@ import {
 } from "../../../model/saved-list";
 import {CandidateSourceCandidateService} from "../../../services/candidate-source-candidate.service";
 import {LocalStorageService} from "angular-2-local-storage";
-import {EditCandidateShortlistItemComponent} from "../../util/candidate-review/edit/edit-candidate-shortlist-item.component";
+import {EditCandidateReviewStatusItemComponent} from "../../util/candidate-review/edit/edit-candidate-review-status-item.component";
 import {Router} from "@angular/router";
 import {CandidateSourceService} from "../../../services/candidate-source.service";
 import {SavedListCandidateService} from "../../../services/saved-list-candidate.service";
@@ -654,18 +654,18 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   review(candidate: Candidate) {
-    const editModal = this.modalService.open(EditCandidateShortlistItemComponent, {
+    const editModal = this.modalService.open(EditCandidateReviewStatusItemComponent, {
       centered: true,
       backdrop: 'static'
     });
 
-    let item: CandidateShortlistItem = null;
-    const items: CandidateShortlistItem[] = candidate.candidateShortlistItems;
+    let item: CandidateReviewStatusItem = null;
+    const items: CandidateReviewStatusItem[] = candidate.candidateReviewStatusItems;
     if (items) {
       item = items.find(s => s.savedSearch.id === this.candidateSource.id);
     }
 
-    editModal.componentInstance.candidateShortListItemId = item ? item.id : null;
+    editModal.componentInstance.candidateReviewStatusItemId = item ? item.id : null;
     editModal.componentInstance.candidateId = candidate.id;
     editModal.componentInstance.savedSearch = this.candidateSource as SavedSearch;
 

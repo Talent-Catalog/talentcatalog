@@ -2,7 +2,7 @@ package org.tbbtalent.server.request.candidate;
 
 import java.util.List;
 
-import org.tbbtalent.server.model.ShortlistStatus;
+import org.tbbtalent.server.model.ReviewStatus;
 import org.tbbtalent.server.request.PagedSearchRequest;
 
 import lombok.Getter;
@@ -13,5 +13,5 @@ import lombok.ToString;
 @Setter
 @ToString(callSuper = true)
 public class SavedSearchGetRequest extends PagedSearchRequest {
-    private List<ShortlistStatus> reviewStatusFilter;
+    private List<ReviewStatus> reviewStatusFilter;
 }

@@ -1,10 +1,10 @@
-package org.tbbtalent.server.request.shortlist;
-
-import org.tbbtalent.server.model.ShortlistStatus;
+package org.tbbtalent.server.request.reviewstatus;
 
 import javax.validation.constraints.NotNull;
 
-public class CreateCandidateShortlistRequest {
+import org.tbbtalent.server.model.ReviewStatus;
+
+public class CreateCandidateReviewStatusRequest {
 
     @NotNull
     Long candidateId;
@@ -13,7 +13,7 @@ public class CreateCandidateShortlistRequest {
     Long savedSearchId;
 
     @NotNull
-    private ShortlistStatus shortlistStatus;
+    private ReviewStatus reviewStatus;
 
     String comment;
 
@@ -33,12 +33,12 @@ public class CreateCandidateShortlistRequest {
         this.savedSearchId = savedSearchId;
     }
 
-    public ShortlistStatus getShortlistStatus() {
-        return shortlistStatus;
+    public ReviewStatus getReviewStatus() {
+        return reviewStatus;
     }
 
-    public void setShortlistStatus(ShortlistStatus shortlistStatus) {
-        this.shortlistStatus = shortlistStatus;
+    public void setReviewStatus(ReviewStatus reviewStatus) {
+        this.reviewStatus = reviewStatus;
     }
 
     public String getComment() {
