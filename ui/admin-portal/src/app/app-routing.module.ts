@@ -18,6 +18,10 @@ const routes: Routes = [
     children: [
       //Redirect old urls that were prefixed by 'candidates'.
       {
+        path: 'candidates/:id',
+        redirectTo: 'candidate/:id',
+      },
+      {
         path: 'candidates',
         redirectTo: '',
       },
