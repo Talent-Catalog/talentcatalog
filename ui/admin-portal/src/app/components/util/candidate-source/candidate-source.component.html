@@ -2,9 +2,9 @@
 <!--  <div *ngIf="loading"><i class="fas fa-spinner fa-spin"></i></div>-->
   <div class="card-body">
     <div class="row">
-      <div class="w-75">
+      <div class="w-75 align-self-center pl-2">
         <strong>{{candidateSource?.name}} </strong>
-        <span>
+        <span class="d-flex">
           <i *ngIf="isSavedSearch()" title="Saved Search" class="fas fa-search"></i>
           <i *ngIf="!isSavedSearch()" title="Saved List" class="fas fa-list"></i>
           <i *ngIf="isShared()" title="Shared" class="fas fa-gift"></i>

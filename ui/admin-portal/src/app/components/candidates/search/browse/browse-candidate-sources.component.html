@@ -1,7 +1,7 @@
 
 
 <div class="row">
-  <div class="col-sm-4">
+  <div class="col-md-4">
     <div>
       <div class="alert alert-danger" *ngIf="error">
         {{error}}
@@ -53,7 +53,7 @@
       </div>
     </div>
   </div>
-  <div *ngIf="selectedSource" class="col-sm-8 admin-panel">
+  <div *ngIf="selectedSource" class="col-md-6 admin-panel">
     <app-candidate-source-results [candidateSource]="selectedSource"
                                   [loggedInUser]="loggedInUser"
                                   (toggleWatch)="onToggleWatch($event)"
