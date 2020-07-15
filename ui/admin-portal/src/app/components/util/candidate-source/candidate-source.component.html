@@ -27,7 +27,7 @@
         </div>
       </div>
     </div>
-    <div class="row" *ngIf="showAll && isSavedSearch()">
+    <div class="row pl-2 pt-1" *ngIf="showAll && isSavedSearch()">
       <div class="w-100" *ngIf="savedSearch.keyword">Keyword: {{savedSearch.keyword}},</div>
       <div class="w-100" *ngIf="savedSearch.statuses">Statuses: {{savedSearch.statuses}},</div>
       <div class="w-100" *ngIf="savedSearch.includeDraftAndDeleted">Includes deleted and draft candidates,</div>
