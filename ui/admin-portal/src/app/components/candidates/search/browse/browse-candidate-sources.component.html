@@ -55,6 +55,7 @@
   </div>
   <div *ngIf="selectedSource" class="col-sm-8 admin-panel">
     <app-candidate-source-results [candidateSource]="selectedSource"
+                                  [loggedInUser]="loggedInUser"
                                   (toggleWatch)="onToggleWatch($event)"
                                   (deleteSource)="onDeleteSource($event)"
                                   (editSource)="onEditSource($event)"

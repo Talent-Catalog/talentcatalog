@@ -31,6 +31,7 @@ import {CandidateSourceCandidateService} from "../../../../services/candidate-so
 import {SavedListGetRequest} from "../../../../model/saved-list";
 import {AuthService} from "../../../../services/auth.service";
 import {CandidateSourceService} from "../../../../services/candidate-source.service";
+import {User} from '../../../../model/user';
 
 @Component({
   selector: 'app-candidate-source-results',
@@ -43,6 +44,7 @@ export class CandidateSourceResultsComponent implements OnInit, OnChanges, OnDes
   pageSize: number;
   results: SearchResults<Candidate>;
   @Input() candidateSource: CandidateSource;
+  @Input() loggedInUser: User;
   @Output() toggleWatch = new EventEmitter<CandidateSource>();
   @Output() copySource = new EventEmitter<CandidateSource>();
   @Output() deleteSource = new EventEmitter<CandidateSource>();
@@ -223,5 +225,15 @@ constructor(
 
   onRefreshRequest() {
     this.search(true);
+  }
+
+  isCandidateNameViewable(): boolean {
+    const role = this.loggedInUser ? this.loggedInUser.role : null;
+    return role !== 'semilimited' && role !== 'limited';
+  }
+
+  isCountryViewable(): boolean {
+    const role = this.loggedInUser ? this.loggedInUser.role : null;
+    return role !== 'limited';
   }
 }

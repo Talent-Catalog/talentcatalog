@@ -140,7 +140,7 @@
                              [sortDirection]="sortDirection"></app-sorted-by>
               First Name
             </th>
-            <th *ngIf="isCountryViewable()" (click)="toggleSort('user.lastName')">
+            <th *ngIf="isCandidateNameViewable()" (click)="toggleSort('user.lastName')">
               <app-sorted-by [column]="'user.lastName'" [sortColumn]="sortField"
                              [sortDirection]="sortDirection"></app-sorted-by>
               Last Name

@@ -46,15 +46,15 @@
           <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
           #
         </th>
-        <th>
+        <th *ngIf="isCandidateNameViewable()">
           Name
         </th>
-        <th (click)="toggleSort('nationality.name')">
+        <th *ngIf="isCountryViewable()" (click)="toggleSort('nationality.name')">
           <app-sorted-by [column]="'nationality.name'" [sortColumn]="sortField"
                          [sortDirection]="sortDirection"></app-sorted-by>
           Nationality
         </th>
-        <th (click)="toggleSort('country.name')">
+        <th *ngIf="isCountryViewable()" (click)="toggleSort('country.name')">
           <app-sorted-by [column]="'country.name'" [sortColumn]="sortField"
                          [sortDirection]="sortDirection"></app-sorted-by>
           Location
@@ -64,7 +64,7 @@
                          [sortDirection]="sortDirection"></app-sorted-by>
           Gender
         </th>
-        <th></th>
+
       </tr>
       </thead>
 
@@ -88,9 +88,9 @@
             <i class="fas fa-video" title="Show candidate's one way video"></i>
           </a>
         </td>
-        <td>{{candidate.user.firstName}} {{candidate.user.lastName}}</td>
-        <td>{{candidate.nationality?.name}}</td>
-        <td>{{candidate.country?.name}}</td>
+        <td *ngIf="isCandidateNameViewable()">{{candidate.user.firstName}} {{candidate.user.lastName}}</td>
+        <td *ngIf="isCountryViewable()">{{candidate.nationality?.name}}</td>
+        <td *ngIf="isCountryViewable()">{{candidate.country?.name}}</td>
         <td>{{candidate.gender | titlecase}}</td>
       </tr>
 
