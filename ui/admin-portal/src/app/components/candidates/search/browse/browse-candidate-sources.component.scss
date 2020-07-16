@@ -1,3 +1,5 @@
+@import "~src/scss/variables";
+
 .admin-panel {
   justify-content: space-between;
   //align-items: flex-end;
@@ -10,7 +12,7 @@
   margin: 0 0 2em 0;
   list-style-type: none;
   padding: 0;
-  width: 21em;
+  width: 25em;
 }
 
 .searches .form-control {
@@ -21,23 +23,21 @@
   cursor: pointer;
   position: relative;
   left: 0;
-  background-color: white;
+  background-color: $color-text-inactive;
   margin: .5em;
   margin-left: 0em;
-  padding: 0 .3em;
-  height: 1.6em;
+  padding: 0.1em .4em;
   border-radius: 4px;
 }
-.searches li:hover {
-  color: #607D8B;
-  background-color: #DDD;
+.searches li:hover {;
+  background-color: $color-primary-dark;
   left: .1em;
 }
 .searches li.selected {
-  background-color: #CFD8DC;
+  background-color: $color-text-secondary;
   color: white;
 }
 .searches li.selected:hover {
-  background-color: #BBD8DC;
+  background-color: $color-primary-darker;
   color: white;
 }
