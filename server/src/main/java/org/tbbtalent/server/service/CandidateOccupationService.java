@@ -1,12 +1,12 @@
 package org.tbbtalent.server.service;
 
-import org.tbbtalent.server.model.CandidateOccupation;
-import org.tbbtalent.server.model.Occupation;
+import java.util.List;
+
+import org.tbbtalent.server.model.db.CandidateOccupation;
+import org.tbbtalent.server.model.db.Occupation;
 import org.tbbtalent.server.request.candidate.occupation.CreateCandidateOccupationRequest;
 import org.tbbtalent.server.request.candidate.occupation.UpdateCandidateOccupationsRequest;
 import org.tbbtalent.server.request.candidate.occupation.VerifyCandidateOccupationRequest;
-
-import java.util.List;
 
 public interface CandidateOccupationService {
 

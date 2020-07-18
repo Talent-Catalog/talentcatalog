@@ -1,5 +1,6 @@
 package org.tbbtalent.server.service.impl;
 
+import java.io.File;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,13 +15,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.AttachmentType;
-import org.tbbtalent.server.model.Candidate;
-import org.tbbtalent.server.model.CandidateAttachment;
-import org.tbbtalent.server.model.Role;
-import org.tbbtalent.server.model.User;
-import org.tbbtalent.server.repository.CandidateAttachmentRepository;
-import org.tbbtalent.server.repository.CandidateRepository;
+import org.tbbtalent.server.model.db.AttachmentType;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateAttachment;
+import org.tbbtalent.server.model.db.Role;
+import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
+import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.request.PagedSearchRequest;
 import org.tbbtalent.server.request.attachment.CreateCandidateAttachmentRequest;
 import org.tbbtalent.server.request.attachment.SearchCandidateAttachmentsRequest;
@@ -29,8 +30,6 @@ import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.CandidateAttachmentService;
 import org.tbbtalent.server.service.aws.S3ResourceHelper;
 import org.tbbtalent.server.util.textExtract.TextExtractHelper;
-
-import java.io.*;
 
 @Service
 public class CandidateAttachmentsServiceImpl implements CandidateAttachmentService {

@@ -1,14 +1,14 @@
 package org.tbbtalent.server.security;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.tbbtalent.server.model.Role;
-import org.tbbtalent.server.model.User;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.tbbtalent.server.model.db.Role;
+import org.tbbtalent.server.model.db.User;
 
 public class AuthenticatedUser implements UserDetails {
 

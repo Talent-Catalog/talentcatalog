@@ -1,19 +1,23 @@
 package org.tbbtalent.server.service.impl;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.*;
-import org.tbbtalent.server.repository.CandidateNoteRepository;
-import org.tbbtalent.server.repository.CandidateRepository;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateEducation;
+import org.tbbtalent.server.model.db.CandidateNote;
+import org.tbbtalent.server.model.db.NoteType;
+import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.repository.db.CandidateNoteRepository;
+import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.request.note.CreateCandidateNoteRequest;
 import org.tbbtalent.server.request.note.SearchCandidateNotesRequest;
 import org.tbbtalent.server.request.note.UpdateCandidateNoteRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.CandidateNoteService;
-
-import javax.transaction.Transactional;
 
 @Service
 public class CandidateNotesServiceImpl implements CandidateNoteService {

@@ -1,14 +1,17 @@
 package org.tbbtalent.server.api.admin;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.*;
-import org.tbbtalent.server.model.CandidateSkill;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.tbbtalent.server.model.db.CandidateSkill;
 import org.tbbtalent.server.request.skill.SearchCandidateSkillRequest;
 import org.tbbtalent.server.service.CandidateSkillService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
-
-import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate-skill")

@@ -1,20 +1,24 @@
 package org.tbbtalent.server.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.*;
-import org.tbbtalent.server.repository.CandidateEducationRepository;
-import org.tbbtalent.server.repository.CandidateRepository;
-import org.tbbtalent.server.repository.CountryRepository;
-import org.tbbtalent.server.repository.EducationMajorRepository;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateEducation;
+import org.tbbtalent.server.model.db.Country;
+import org.tbbtalent.server.model.db.EducationMajor;
+import org.tbbtalent.server.model.db.EducationType;
+import org.tbbtalent.server.repository.db.CandidateEducationRepository;
+import org.tbbtalent.server.repository.db.CandidateRepository;
+import org.tbbtalent.server.repository.db.CountryRepository;
+import org.tbbtalent.server.repository.db.EducationMajorRepository;
 import org.tbbtalent.server.request.candidate.education.CreateCandidateEducationRequest;
 import org.tbbtalent.server.request.candidate.education.UpdateCandidateEducationRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.CandidateEducationService;
-
-import java.util.List;
 
 @Service
 public class CandidateEducationServiceImpl implements CandidateEducationService {

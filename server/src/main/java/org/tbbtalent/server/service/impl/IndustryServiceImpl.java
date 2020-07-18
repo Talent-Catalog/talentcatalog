@@ -1,5 +1,7 @@
 package org.tbbtalent.server.service.impl;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,18 +11,16 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.Industry;
-import org.tbbtalent.server.model.Status;
-import org.tbbtalent.server.repository.CandidateRepository;
-import org.tbbtalent.server.repository.IndustryRepository;
-import org.tbbtalent.server.repository.IndustrySpecification;
+import org.tbbtalent.server.model.db.Industry;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.repository.db.CandidateRepository;
+import org.tbbtalent.server.repository.db.IndustryRepository;
+import org.tbbtalent.server.repository.db.IndustrySpecification;
 import org.tbbtalent.server.request.industry.CreateIndustryRequest;
 import org.tbbtalent.server.request.industry.SearchIndustryRequest;
 import org.tbbtalent.server.request.industry.UpdateIndustryRequest;
 import org.tbbtalent.server.service.IndustryService;
 import org.tbbtalent.server.service.TranslationService;
-
-import java.util.List;
 
 @Service
 public class IndustryServiceImpl implements IndustryService {

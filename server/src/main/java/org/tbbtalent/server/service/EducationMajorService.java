@@ -1,14 +1,14 @@
 package org.tbbtalent.server.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
-import org.tbbtalent.server.model.EducationMajor;
+import org.tbbtalent.server.model.db.EducationMajor;
 import org.tbbtalent.server.request.education.major.CreateEducationMajorRequest;
 import org.tbbtalent.server.request.education.major.SearchEducationMajorRequest;
 import org.tbbtalent.server.request.education.major.UpdateEducationMajorRequest;
-
-import java.util.List;
 
 public interface EducationMajorService {
 

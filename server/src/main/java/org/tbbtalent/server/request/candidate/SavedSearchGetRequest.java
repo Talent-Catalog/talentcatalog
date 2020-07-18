@@ -2,7 +2,7 @@ package org.tbbtalent.server.request.candidate;
 
 import java.util.List;
 
-import org.tbbtalent.server.model.ReviewStatus;
+import org.tbbtalent.server.model.db.ReviewStatus;
 import org.tbbtalent.server.request.PagedSearchRequest;
 
 import lombok.Getter;

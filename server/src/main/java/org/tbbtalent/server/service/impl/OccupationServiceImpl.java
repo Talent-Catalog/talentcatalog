@@ -1,6 +1,7 @@
 package org.tbbtalent.server.service.impl;
 
-import io.jsonwebtoken.lang.Collections;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,19 +12,19 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.CandidateOccupation;
-import org.tbbtalent.server.model.Occupation;
-import org.tbbtalent.server.model.Status;
-import org.tbbtalent.server.repository.CandidateOccupationRepository;
-import org.tbbtalent.server.repository.OccupationRepository;
-import org.tbbtalent.server.repository.OccupationSpecification;
+import org.tbbtalent.server.model.db.CandidateOccupation;
+import org.tbbtalent.server.model.db.Occupation;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.repository.db.CandidateOccupationRepository;
+import org.tbbtalent.server.repository.db.OccupationRepository;
+import org.tbbtalent.server.repository.db.OccupationSpecification;
 import org.tbbtalent.server.request.occupation.CreateOccupationRequest;
 import org.tbbtalent.server.request.occupation.SearchOccupationRequest;
 import org.tbbtalent.server.request.occupation.UpdateOccupationRequest;
 import org.tbbtalent.server.service.OccupationService;
 import org.tbbtalent.server.service.TranslationService;
 
-import java.util.List;
+import io.jsonwebtoken.lang.Collections;
 
 @Service
 public class OccupationServiceImpl implements OccupationService {

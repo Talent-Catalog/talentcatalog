@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.SavedList;
+import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.request.candidate.HasSetOfSavedListsImpl;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
 import org.tbbtalent.server.service.CandidateService;

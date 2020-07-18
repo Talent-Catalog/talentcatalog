@@ -1,5 +1,10 @@
 package org.tbbtalent.server.service.impl;
 
+import java.time.OffsetDateTime;
+import java.util.UUID;
+
+import javax.security.auth.login.AccountLockedException;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,16 +31,16 @@ import org.tbbtalent.server.exception.PasswordExpiredException;
 import org.tbbtalent.server.exception.PasswordMatchException;
 import org.tbbtalent.server.exception.UserDeactivatedException;
 import org.tbbtalent.server.exception.UsernameTakenException;
-import org.tbbtalent.server.model.Candidate;
-import org.tbbtalent.server.model.Country;
-import org.tbbtalent.server.model.SavedSearch;
-import org.tbbtalent.server.model.Status;
-import org.tbbtalent.server.model.User;
-import org.tbbtalent.server.repository.CandidateRepository;
-import org.tbbtalent.server.repository.CountryRepository;
-import org.tbbtalent.server.repository.SavedSearchRepository;
-import org.tbbtalent.server.repository.UserRepository;
-import org.tbbtalent.server.repository.UserSpecification;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.Country;
+import org.tbbtalent.server.model.db.SavedSearch;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.repository.db.CandidateRepository;
+import org.tbbtalent.server.repository.db.CountryRepository;
+import org.tbbtalent.server.repository.db.SavedSearchRepository;
+import org.tbbtalent.server.repository.db.UserRepository;
+import org.tbbtalent.server.repository.db.UserSpecification;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.user.CheckPasswordResetTokenRequest;
 import org.tbbtalent.server.request.user.CreateUserRequest;
@@ -52,10 +57,6 @@ import org.tbbtalent.server.security.PasswordHelper;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.UserService;
 import org.tbbtalent.server.service.email.EmailHelper;
-
-import javax.security.auth.login.AccountLockedException;
-import java.time.OffsetDateTime;
-import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {

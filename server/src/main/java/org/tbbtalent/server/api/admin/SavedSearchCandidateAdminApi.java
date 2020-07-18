@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.ExportFailedException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.Candidate;
+import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.request.candidate.SavedSearchGetRequest;
 import org.tbbtalent.server.request.list.HasSetOfCandidatesImpl;
 import org.tbbtalent.server.security.UserContext;

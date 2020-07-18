@@ -3,7 +3,7 @@ package org.tbbtalent.server.service;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
-import org.tbbtalent.server.model.CandidateAttachment;
+import org.tbbtalent.server.model.db.CandidateAttachment;
 import org.tbbtalent.server.request.PagedSearchRequest;
 import org.tbbtalent.server.request.attachment.CreateCandidateAttachmentRequest;
 import org.tbbtalent.server.request.attachment.SearchCandidateAttachmentsRequest;

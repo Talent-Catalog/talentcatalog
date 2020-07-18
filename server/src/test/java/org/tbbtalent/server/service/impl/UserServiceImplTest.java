@@ -1,25 +1,25 @@
 package org.tbbtalent.server.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.AdditionalAnswers.returnsFirstArg;
-import static org.mockito.Mockito.when;
-
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.tbbtalent.server.model.Country;
-import org.tbbtalent.server.model.Role;
-import org.tbbtalent.server.model.Status;
-import org.tbbtalent.server.model.User;
-import org.tbbtalent.server.repository.UserRepository;
+import org.tbbtalent.server.model.db.Country;
+import org.tbbtalent.server.model.db.Role;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.repository.db.UserRepository;
 import org.tbbtalent.server.request.user.CreateUserRequest;
 import org.tbbtalent.server.security.PasswordHelper;
 
-import java.util.ArrayList;
-import java.util.List;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class UserServiceImplTest {

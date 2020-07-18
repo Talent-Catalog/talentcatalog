@@ -11,22 +11,22 @@ import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.*;
-import org.tbbtalent.server.repository.CandidateJobExperienceRepository;
-import org.tbbtalent.server.repository.CandidateOccupationRepository;
-import org.tbbtalent.server.repository.CandidateRepository;
-import org.tbbtalent.server.repository.OccupationRepository;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateOccupation;
+import org.tbbtalent.server.model.db.Occupation;
+import org.tbbtalent.server.model.db.Role;
+import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.repository.db.CandidateJobExperienceRepository;
+import org.tbbtalent.server.repository.db.CandidateOccupationRepository;
+import org.tbbtalent.server.repository.db.CandidateRepository;
+import org.tbbtalent.server.repository.db.OccupationRepository;
 import org.tbbtalent.server.request.candidate.occupation.CreateCandidateOccupationRequest;
 import org.tbbtalent.server.request.candidate.occupation.UpdateCandidateOccupationRequest;
 import org.tbbtalent.server.request.candidate.occupation.UpdateCandidateOccupationsRequest;
 import org.tbbtalent.server.request.candidate.occupation.VerifyCandidateOccupationRequest;
-import org.tbbtalent.server.request.note.CreateCandidateNoteRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.CandidateNoteService;
 import org.tbbtalent.server.service.CandidateOccupationService;
-import org.tbbtalent.server.service.audit.Audit;
-import org.tbbtalent.server.service.audit.AuditAction;
-import org.tbbtalent.server.service.audit.AuditType;
 
 @Service
 public class CandidateOccupationServiceImpl implements CandidateOccupationService {

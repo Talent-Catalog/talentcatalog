@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
-import org.tbbtalent.server.model.Country;
+import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.request.country.SearchCountryRequest;
 import org.tbbtalent.server.request.country.UpdateCountryRequest;
 

@@ -1,12 +1,12 @@
 package org.tbbtalent.server.service;
 
-import org.tbbtalent.server.model.AbstractTranslatableDomainObject;
-import org.tbbtalent.server.model.Translation;
-import org.tbbtalent.server.request.translation.CreateTranslationRequest;
-import org.tbbtalent.server.request.translation.UpdateTranslationRequest;
-
 import java.util.List;
 import java.util.Map;
+
+import org.tbbtalent.server.model.db.AbstractTranslatableDomainObject;
+import org.tbbtalent.server.model.db.Translation;
+import org.tbbtalent.server.request.translation.CreateTranslationRequest;
+import org.tbbtalent.server.request.translation.UpdateTranslationRequest;
 
 public interface TranslationService {
 

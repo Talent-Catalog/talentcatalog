@@ -14,8 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.tbbtalent.server.model.CandidateAttachment;
-import org.tbbtalent.server.repository.CandidateAttachmentRepository;
+import org.tbbtalent.server.model.db.CandidateAttachment;
+import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
 import org.tbbtalent.server.service.aws.S3ResourceHelper;
 import org.tbbtalent.server.util.textExtract.TextExtractHelper;
 

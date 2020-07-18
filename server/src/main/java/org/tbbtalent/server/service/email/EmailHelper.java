@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.EmailSendFailedException;
-import org.tbbtalent.server.model.SavedSearch;
-import org.tbbtalent.server.model.User;
+import org.tbbtalent.server.model.db.SavedSearch;
+import org.tbbtalent.server.model.db.User;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 

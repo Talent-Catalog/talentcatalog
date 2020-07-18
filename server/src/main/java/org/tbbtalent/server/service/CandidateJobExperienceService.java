@@ -1,7 +1,7 @@
 package org.tbbtalent.server.service;
 
 import org.springframework.data.domain.Page;
-import org.tbbtalent.server.model.CandidateJobExperience;
+import org.tbbtalent.server.model.db.CandidateJobExperience;
 import org.tbbtalent.server.request.work.experience.CreateJobExperienceRequest;
 import org.tbbtalent.server.request.work.experience.SearchJobExperienceRequest;
 import org.tbbtalent.server.request.work.experience.UpdateJobExperienceRequest;

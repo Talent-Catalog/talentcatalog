@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import org.tbbtalent.server.model.Gender;
+import org.tbbtalent.server.model.db.Gender;
 
 public class UpdateCandidateRequest extends BaseCandidateContactRequest {
 

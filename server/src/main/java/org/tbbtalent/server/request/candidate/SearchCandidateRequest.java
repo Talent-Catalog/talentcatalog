@@ -8,10 +8,10 @@ import javax.persistence.Enumerated;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.data.domain.Sort;
-import org.tbbtalent.server.model.CandidateStatus;
-import org.tbbtalent.server.model.Gender;
-import org.tbbtalent.server.model.ReviewStatus;
-import org.tbbtalent.server.model.SearchType;
+import org.tbbtalent.server.model.db.CandidateStatus;
+import org.tbbtalent.server.model.db.Gender;
+import org.tbbtalent.server.model.db.ReviewStatus;
+import org.tbbtalent.server.model.db.SearchType;
 import org.tbbtalent.server.request.PagedSearchRequest;
 
 import com.fasterxml.jackson.annotation.JsonFormat;

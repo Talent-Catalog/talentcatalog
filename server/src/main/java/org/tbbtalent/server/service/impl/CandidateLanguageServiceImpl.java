@@ -1,25 +1,29 @@
 package org.tbbtalent.server.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.tbbtalent.server.exception.InvalidCredentialsException;
-import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.*;
-import org.tbbtalent.server.repository.CandidateLanguageRepository;
-import org.tbbtalent.server.repository.CandidateRepository;
-import org.tbbtalent.server.repository.LanguageLevelRepository;
-import org.tbbtalent.server.repository.LanguageRepository;
-import org.tbbtalent.server.request.candidate.language.CreateCandidateLanguageRequest;
-import org.tbbtalent.server.request.candidate.language.UpdateCandidateLanguageRequest;
-import org.tbbtalent.server.request.candidate.language.UpdateCandidateLanguagesRequest;
-import org.tbbtalent.server.security.UserContext;
-import org.tbbtalent.server.service.CandidateLanguageService;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.tbbtalent.server.exception.InvalidCredentialsException;
+import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateLanguage;
+import org.tbbtalent.server.model.db.Language;
+import org.tbbtalent.server.model.db.LanguageLevel;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.repository.db.CandidateLanguageRepository;
+import org.tbbtalent.server.repository.db.CandidateRepository;
+import org.tbbtalent.server.repository.db.LanguageLevelRepository;
+import org.tbbtalent.server.repository.db.LanguageRepository;
+import org.tbbtalent.server.request.candidate.language.CreateCandidateLanguageRequest;
+import org.tbbtalent.server.request.candidate.language.UpdateCandidateLanguageRequest;
+import org.tbbtalent.server.request.candidate.language.UpdateCandidateLanguagesRequest;
+import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.service.CandidateLanguageService;
 
 @Service
 public class CandidateLanguageServiceImpl implements CandidateLanguageService {

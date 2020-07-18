@@ -2,7 +2,7 @@ package org.tbbtalent.server.request.reviewstatus;
 
 import javax.validation.constraints.NotNull;
 
-import org.tbbtalent.server.model.ReviewStatus;
+import org.tbbtalent.server.model.db.ReviewStatus;
 
 public class CreateCandidateReviewStatusRequest {
 

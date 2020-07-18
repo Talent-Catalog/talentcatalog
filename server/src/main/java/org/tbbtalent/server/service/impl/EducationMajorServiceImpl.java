@@ -1,5 +1,7 @@
 package org.tbbtalent.server.service.impl;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,18 +12,16 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.EducationMajor;
-import org.tbbtalent.server.model.Status;
-import org.tbbtalent.server.repository.CandidateEducationRepository;
-import org.tbbtalent.server.repository.EducationMajorRepository;
-import org.tbbtalent.server.repository.EducationMajorSpecification;
+import org.tbbtalent.server.model.db.EducationMajor;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.repository.db.CandidateEducationRepository;
+import org.tbbtalent.server.repository.db.EducationMajorRepository;
+import org.tbbtalent.server.repository.db.EducationMajorSpecification;
 import org.tbbtalent.server.request.education.major.CreateEducationMajorRequest;
 import org.tbbtalent.server.request.education.major.SearchEducationMajorRequest;
 import org.tbbtalent.server.request.education.major.UpdateEducationMajorRequest;
 import org.tbbtalent.server.service.EducationMajorService;
 import org.tbbtalent.server.service.TranslationService;
-
-import java.util.List;
 
 @Service
 public class EducationMajorServiceImpl implements EducationMajorService {

@@ -1,6 +1,6 @@
 package org.tbbtalent.server.request.candidate.education;
 
-import org.tbbtalent.server.model.EducationType;
+import org.tbbtalent.server.model.db.EducationType;
 
 public class CreateCandidateEducationRequest {
 

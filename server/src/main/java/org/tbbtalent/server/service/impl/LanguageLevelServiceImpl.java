@@ -1,6 +1,7 @@
 package org.tbbtalent.server.service.impl;
 
-import io.jsonwebtoken.lang.Collections;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,19 +12,19 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.CandidateLanguage;
-import org.tbbtalent.server.model.LanguageLevel;
-import org.tbbtalent.server.model.Status;
-import org.tbbtalent.server.repository.CandidateLanguageRepository;
-import org.tbbtalent.server.repository.LanguageLevelRepository;
-import org.tbbtalent.server.repository.LanguageLevelSpecification;
+import org.tbbtalent.server.model.db.CandidateLanguage;
+import org.tbbtalent.server.model.db.LanguageLevel;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.repository.db.CandidateLanguageRepository;
+import org.tbbtalent.server.repository.db.LanguageLevelRepository;
+import org.tbbtalent.server.repository.db.LanguageLevelSpecification;
 import org.tbbtalent.server.request.language.level.CreateLanguageLevelRequest;
 import org.tbbtalent.server.request.language.level.SearchLanguageLevelRequest;
 import org.tbbtalent.server.request.language.level.UpdateLanguageLevelRequest;
 import org.tbbtalent.server.service.LanguageLevelService;
 import org.tbbtalent.server.service.TranslationService;
 
-import java.util.List;
+import io.jsonwebtoken.lang.Collections;
 
 @Service
 public class LanguageLevelServiceImpl implements LanguageLevelService {

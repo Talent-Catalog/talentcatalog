@@ -1,6 +1,6 @@
 package org.tbbtalent.server.request.candidate;
 
-import org.tbbtalent.server.model.SearchType;
+import org.tbbtalent.server.model.db.SearchType;
 
 public class SearchJoinRequest {
 

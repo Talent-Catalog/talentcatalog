@@ -1,15 +1,15 @@
 package org.tbbtalent.server.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
-import org.tbbtalent.server.model.Language;
-import org.tbbtalent.server.model.SystemLanguage;
+import org.tbbtalent.server.model.db.Language;
+import org.tbbtalent.server.model.db.SystemLanguage;
 import org.tbbtalent.server.request.language.CreateLanguageRequest;
 import org.tbbtalent.server.request.language.SearchLanguageRequest;
 import org.tbbtalent.server.request.language.UpdateLanguageRequest;
-
-import java.util.List;
 
 public interface LanguageService {
 

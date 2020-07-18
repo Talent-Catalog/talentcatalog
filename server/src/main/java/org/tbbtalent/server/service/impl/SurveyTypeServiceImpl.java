@@ -1,16 +1,16 @@
 package org.tbbtalent.server.service.impl;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.tbbtalent.server.model.Status;
-import org.tbbtalent.server.model.SurveyType;
-import org.tbbtalent.server.repository.SurveyTypeRepository;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.SurveyType;
+import org.tbbtalent.server.repository.db.SurveyTypeRepository;
 import org.tbbtalent.server.service.SurveyTypeService;
 import org.tbbtalent.server.service.TranslationService;
-
-import java.util.List;
 
 @Service
 public class SurveyTypeServiceImpl implements SurveyTypeService {

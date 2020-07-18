@@ -6,7 +6,7 @@ package org.tbbtalent.server.request.list;
 
 import java.util.Set;
 
-import org.tbbtalent.server.model.SavedList;
+import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.request.candidate.AbstractUpdateCandidateSourceRequest;
 
 import lombok.Getter;

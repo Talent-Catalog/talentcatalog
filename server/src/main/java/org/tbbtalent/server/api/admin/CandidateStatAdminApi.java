@@ -1,19 +1,19 @@
 package org.tbbtalent.server.api.admin;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tbbtalent.server.model.Gender;
-import org.tbbtalent.server.model.StatReport;
+import org.tbbtalent.server.model.db.Gender;
+import org.tbbtalent.server.model.db.StatReport;
 import org.tbbtalent.server.request.candidate.stat.CandidateStatDateRequest;
 import org.tbbtalent.server.service.CandidateService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate/stat")

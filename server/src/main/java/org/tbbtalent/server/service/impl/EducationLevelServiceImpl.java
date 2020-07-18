@@ -1,5 +1,7 @@
 package org.tbbtalent.server.service.impl;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,18 +12,16 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.EducationLevel;
-import org.tbbtalent.server.model.Status;
-import org.tbbtalent.server.repository.CandidateEducationRepository;
-import org.tbbtalent.server.repository.EducationLevelRepository;
-import org.tbbtalent.server.repository.EducationLevelSpecification;
+import org.tbbtalent.server.model.db.EducationLevel;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.repository.db.CandidateEducationRepository;
+import org.tbbtalent.server.repository.db.EducationLevelRepository;
+import org.tbbtalent.server.repository.db.EducationLevelSpecification;
 import org.tbbtalent.server.request.education.level.CreateEducationLevelRequest;
 import org.tbbtalent.server.request.education.level.SearchEducationLevelRequest;
 import org.tbbtalent.server.request.education.level.UpdateEducationLevelRequest;
 import org.tbbtalent.server.service.EducationLevelService;
 import org.tbbtalent.server.service.TranslationService;
-
-import java.util.List;
 
 @Service
 public class EducationLevelServiceImpl implements EducationLevelService {

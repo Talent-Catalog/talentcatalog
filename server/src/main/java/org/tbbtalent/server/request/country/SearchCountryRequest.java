@@ -1,7 +1,7 @@
 package org.tbbtalent.server.request.country;
 
 import org.springframework.data.domain.Sort;
-import org.tbbtalent.server.model.Status;
+import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.request.PagedSearchRequest;
 
 public class SearchCountryRequest extends PagedSearchRequest {

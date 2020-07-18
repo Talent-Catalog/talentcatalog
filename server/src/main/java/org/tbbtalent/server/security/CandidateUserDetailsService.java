@@ -6,9 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-import org.tbbtalent.server.model.Role;
-import org.tbbtalent.server.model.User;
-import org.tbbtalent.server.repository.UserRepository;
+import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.repository.db.UserRepository;
 
 @Component
 public class CandidateUserDetailsService implements UserDetailsService {

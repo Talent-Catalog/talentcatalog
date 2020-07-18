@@ -1,6 +1,12 @@
 package org.tbbtalent.server.service.audit;
 
 
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -9,17 +15,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
-import org.tbbtalent.server.model.AbstractDomainObject;
-import org.tbbtalent.server.model.AuditLog;
-import org.tbbtalent.server.model.User;
-import org.tbbtalent.server.repository.AuditLogRepository;
+import org.tbbtalent.server.model.db.AbstractDomainObject;
+import org.tbbtalent.server.model.db.AuditLog;
+import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.repository.db.AuditLogRepository;
 import org.tbbtalent.server.security.UserContext;
-
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Aspect
 @Component

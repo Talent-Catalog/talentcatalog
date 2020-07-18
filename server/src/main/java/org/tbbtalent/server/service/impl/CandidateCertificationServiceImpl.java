@@ -1,19 +1,19 @@
 package org.tbbtalent.server.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.Candidate;
-import org.tbbtalent.server.model.CandidateCertification;
-import org.tbbtalent.server.repository.CandidateCertificationRepository;
-import org.tbbtalent.server.repository.CandidateRepository;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateCertification;
+import org.tbbtalent.server.repository.db.CandidateCertificationRepository;
+import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.request.candidate.certification.CreateCandidateCertificationRequest;
 import org.tbbtalent.server.request.candidate.certification.UpdateCandidateCertificationRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.CandidateCertificationService;
-
-import java.util.List;
 
 @Service
 public class CandidateCertificationServiceImpl implements CandidateCertificationService {

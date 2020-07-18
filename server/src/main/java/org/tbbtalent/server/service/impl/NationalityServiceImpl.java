@@ -1,6 +1,7 @@
 package org.tbbtalent.server.service.impl;
 
-import io.jsonwebtoken.lang.Collections;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,19 +12,19 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.Candidate;
-import org.tbbtalent.server.model.Nationality;
-import org.tbbtalent.server.model.Status;
-import org.tbbtalent.server.repository.CandidateRepository;
-import org.tbbtalent.server.repository.NationalityRepository;
-import org.tbbtalent.server.repository.NationalitySpecification;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.Nationality;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.repository.db.CandidateRepository;
+import org.tbbtalent.server.repository.db.NationalityRepository;
+import org.tbbtalent.server.repository.db.NationalitySpecification;
 import org.tbbtalent.server.request.nationality.CreateNationalityRequest;
 import org.tbbtalent.server.request.nationality.SearchNationalityRequest;
 import org.tbbtalent.server.request.nationality.UpdateNationalityRequest;
 import org.tbbtalent.server.service.NationalityService;
 import org.tbbtalent.server.service.TranslationService;
 
-import java.util.List;
+import io.jsonwebtoken.lang.Collections;
 
 @Service
 public class NationalityServiceImpl implements NationalityService {

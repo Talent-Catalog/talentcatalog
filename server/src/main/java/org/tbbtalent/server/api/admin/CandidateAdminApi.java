@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.ExportFailedException;
 import org.tbbtalent.server.exception.UsernameTakenException;
-import org.tbbtalent.server.model.Candidate;
+import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
 import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tbbtalent.server.request.candidate.CandidatePhoneSearchRequest;

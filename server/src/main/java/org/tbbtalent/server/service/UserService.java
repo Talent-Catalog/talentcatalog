@@ -4,7 +4,7 @@ import javax.security.auth.login.AccountLockedException;
 
 import org.springframework.data.domain.Page;
 import org.tbbtalent.server.exception.UsernameTakenException;
-import org.tbbtalent.server.model.User;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.user.CheckPasswordResetTokenRequest;
 import org.tbbtalent.server.request.user.CreateUserRequest;

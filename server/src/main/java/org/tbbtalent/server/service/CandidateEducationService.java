@@ -1,10 +1,10 @@
 package org.tbbtalent.server.service;
 
-import org.tbbtalent.server.model.CandidateEducation;
+import java.util.List;
+
+import org.tbbtalent.server.model.db.CandidateEducation;
 import org.tbbtalent.server.request.candidate.education.CreateCandidateEducationRequest;
 import org.tbbtalent.server.request.candidate.education.UpdateCandidateEducationRequest;
-
-import java.util.List;
 
 public interface CandidateEducationService {
 

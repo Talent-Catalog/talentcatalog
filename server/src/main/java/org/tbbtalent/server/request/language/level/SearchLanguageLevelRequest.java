@@ -1,7 +1,7 @@
 package org.tbbtalent.server.request.language.level;
 
 import org.springframework.data.domain.Sort;
-import org.tbbtalent.server.model.Status;
+import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.request.PagedSearchRequest;
 
 public class SearchLanguageLevelRequest extends PagedSearchRequest {

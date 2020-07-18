@@ -3,8 +3,8 @@ package org.tbbtalent.server.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-import org.tbbtalent.server.model.CandidateSkill;
-import org.tbbtalent.server.repository.CandidateSkillRepository;
+import org.tbbtalent.server.model.db.CandidateSkill;
+import org.tbbtalent.server.repository.db.CandidateSkillRepository;
 import org.tbbtalent.server.request.skill.SearchCandidateSkillRequest;
 import org.tbbtalent.server.service.CandidateSkillService;
 
