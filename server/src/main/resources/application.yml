@@ -29,7 +29,6 @@ spring:
               name: ${spring.security.user.name}
               password: ${spring.security.user.password}
 
-
 #  To catch resource not found errors (404)
 #  See https://stackoverflow.com/questions/36733254/spring-boot-rest-how-to-configure-404-resource-not-found/36734193#36734193
   mvc:
@@ -58,6 +57,11 @@ management:
    endpoint:
      loggers:
        enabled: true
+   
+   health:
+     elasticsearch:
+       enabled: false
+
 
 jwt:
   secret: JWTSuperSecretKey
