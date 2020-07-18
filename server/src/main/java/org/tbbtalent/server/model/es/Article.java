@@ -11,6 +11,8 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
+import static org.springframework.data.elasticsearch.annotations.FieldType.Keyword;
+
 /**
  * TODO JC Doc
  *
@@ -23,6 +25,9 @@ public class Article {
     private String id;
 
     private String title;
+
+    @Field(type = Keyword)
+    private String[] tags;
 
     @Field(type = FieldType.Nested, includeInParent = true)
     private List<Author> authors;
@@ -57,4 +62,13 @@ public class Article {
     public void setAuthors(List<Author> authors) {
         this.authors = authors;
     }
+
+    public String[] getTags() {
+        return tags;
+    }
+
+    public void setTags(String... tags) {
+        this.tags = tags;
+    }
+    
 }
