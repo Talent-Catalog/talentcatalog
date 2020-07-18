@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.model.db.CandidateOccupation;
 import org.tbbtalent.server.request.candidate.occupation.CreateCandidateOccupationRequest;
 import org.tbbtalent.server.request.candidate.occupation.UpdateCandidateOccupationsRequest;
-import org.tbbtalent.server.service.CandidateOccupationService;
+import org.tbbtalent.server.service.db.CandidateOccupationService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()

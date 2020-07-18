@@ -21,7 +21,7 @@ import org.tbbtalent.server.model.db.LanguageLevel;
 import org.tbbtalent.server.request.language.level.CreateLanguageLevelRequest;
 import org.tbbtalent.server.request.language.level.SearchLanguageLevelRequest;
 import org.tbbtalent.server.request.language.level.UpdateLanguageLevelRequest;
-import org.tbbtalent.server.service.LanguageLevelService;
+import org.tbbtalent.server.service.db.LanguageLevelService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()

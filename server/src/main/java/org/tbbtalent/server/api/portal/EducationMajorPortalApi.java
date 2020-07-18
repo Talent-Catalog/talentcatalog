@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.model.db.EducationMajor;
-import org.tbbtalent.server.service.EducationMajorService;
+import org.tbbtalent.server.service.db.EducationMajorService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.model.db.CandidateLanguage;
 import org.tbbtalent.server.request.candidate.language.UpdateCandidateLanguageRequest;
-import org.tbbtalent.server.service.CandidateLanguageService;
+import org.tbbtalent.server.service.db.CandidateLanguageService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()

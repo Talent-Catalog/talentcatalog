@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.StatReport;
 import org.tbbtalent.server.request.candidate.stat.CandidateStatDateRequest;
-import org.tbbtalent.server.service.CandidateService;
+import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()

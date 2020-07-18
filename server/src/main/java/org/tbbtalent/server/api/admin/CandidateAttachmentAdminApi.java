@@ -18,7 +18,7 @@ import org.tbbtalent.server.request.attachment.CreateCandidateAttachmentRequest;
 import org.tbbtalent.server.request.attachment.SearchCandidateAttachmentsRequest;
 import org.tbbtalent.server.request.attachment.UpdateCandidateAttachmentRequest;
 import org.tbbtalent.server.security.UserContext;
-import org.tbbtalent.server.service.CandidateAttachmentService;
+import org.tbbtalent.server.service.db.CandidateAttachmentService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 //import org.tbbtalent.server.request.attachment.CreateCandidateAttachmentRequest;

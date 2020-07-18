@@ -17,8 +17,8 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.request.candidate.HasSetOfSavedListsImpl;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
-import org.tbbtalent.server.service.CandidateService;
-import org.tbbtalent.server.service.SavedListService;
+import org.tbbtalent.server.service.db.CandidateService;
+import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 /**

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.model.db.CandidateSkill;
 import org.tbbtalent.server.request.skill.SearchCandidateSkillRequest;
-import org.tbbtalent.server.service.CandidateSkillService;
+import org.tbbtalent.server.service.db.CandidateSkillService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()

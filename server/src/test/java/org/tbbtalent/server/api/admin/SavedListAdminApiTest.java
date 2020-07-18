@@ -19,8 +19,8 @@ import org.tbbtalent.server.repository.db.UserRepository;
 import org.tbbtalent.server.request.list.CreateSavedListRequest;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
 import org.tbbtalent.server.security.UserContext;
-import org.tbbtalent.server.service.SavedListService;
-import org.tbbtalent.server.service.impl.SavedListServiceImpl;
+import org.tbbtalent.server.service.db.SavedListService;
+import org.tbbtalent.server.service.db.impl.SavedListServiceImpl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

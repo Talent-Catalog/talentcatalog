@@ -21,7 +21,7 @@ import org.tbbtalent.server.model.db.Nationality;
 import org.tbbtalent.server.request.nationality.CreateNationalityRequest;
 import org.tbbtalent.server.request.nationality.SearchNationalityRequest;
 import org.tbbtalent.server.request.nationality.UpdateNationalityRequest;
-import org.tbbtalent.server.service.NationalityService;
+import org.tbbtalent.server.service.db.NationalityService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()

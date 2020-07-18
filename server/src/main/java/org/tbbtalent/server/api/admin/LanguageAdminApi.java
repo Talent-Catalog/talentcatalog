@@ -22,7 +22,7 @@ import org.tbbtalent.server.model.db.SystemLanguage;
 import org.tbbtalent.server.request.language.CreateLanguageRequest;
 import org.tbbtalent.server.request.language.SearchLanguageRequest;
 import org.tbbtalent.server.request.language.UpdateLanguageRequest;
-import org.tbbtalent.server.service.LanguageService;
+import org.tbbtalent.server.service.db.LanguageService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()

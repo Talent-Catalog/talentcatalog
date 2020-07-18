@@ -7,7 +7,7 @@ package org.tbbtalent.server.configuration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.tbbtalent.server.service.aws.S3ResourceHelper;
+import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
 
 @Configuration
 public class AwsConfiguration {

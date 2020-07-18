@@ -21,7 +21,7 @@ import org.tbbtalent.server.model.db.Industry;
 import org.tbbtalent.server.request.industry.CreateIndustryRequest;
 import org.tbbtalent.server.request.industry.SearchIndustryRequest;
 import org.tbbtalent.server.request.industry.UpdateIndustryRequest;
-import org.tbbtalent.server.service.IndustryService;
+import org.tbbtalent.server.service.db.IndustryService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()

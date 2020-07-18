@@ -14,8 +14,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.tbbtalent.server.service.audit.AuditAction;
-import org.tbbtalent.server.service.audit.AuditType;
+import org.tbbtalent.server.service.db.audit.AuditAction;
+import org.tbbtalent.server.service.db.audit.AuditType;
 
 @Entity
 @Table(name = "audit_log")

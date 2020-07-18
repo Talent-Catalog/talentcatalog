@@ -15,7 +15,7 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
-import org.tbbtalent.server.service.aws.S3ResourceHelper;
+import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
 
 public class TextExtractHelper {
 

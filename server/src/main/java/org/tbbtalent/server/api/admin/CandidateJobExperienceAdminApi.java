@@ -19,7 +19,7 @@ import org.tbbtalent.server.model.db.CandidateJobExperience;
 import org.tbbtalent.server.request.work.experience.CreateJobExperienceRequest;
 import org.tbbtalent.server.request.work.experience.SearchJobExperienceRequest;
 import org.tbbtalent.server.request.work.experience.UpdateJobExperienceRequest;
-import org.tbbtalent.server.service.CandidateJobExperienceService;
+import org.tbbtalent.server.service.db.CandidateJobExperienceService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()

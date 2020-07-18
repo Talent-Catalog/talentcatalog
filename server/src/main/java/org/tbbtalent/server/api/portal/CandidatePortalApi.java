@@ -16,7 +16,7 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateEducationRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
-import org.tbbtalent.server.service.CandidateService;
+import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()

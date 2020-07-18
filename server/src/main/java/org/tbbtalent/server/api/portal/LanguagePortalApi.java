@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.model.db.Language;
 import org.tbbtalent.server.model.db.SystemLanguage;
 import org.tbbtalent.server.model.db.Translation;
-import org.tbbtalent.server.service.LanguageService;
-import org.tbbtalent.server.service.TranslationService;
+import org.tbbtalent.server.service.db.LanguageService;
+import org.tbbtalent.server.service.db.TranslationService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()

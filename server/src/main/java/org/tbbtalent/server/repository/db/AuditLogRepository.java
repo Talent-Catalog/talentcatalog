@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.tbbtalent.server.model.db.AuditLog;
-import org.tbbtalent.server.service.audit.AuditType;
+import org.tbbtalent.server.service.db.audit.AuditType;
 
 public interface AuditLogRepository extends JpaRepository<AuditLog, Long>, JpaSpecificationExecutor<AuditLog> {
 

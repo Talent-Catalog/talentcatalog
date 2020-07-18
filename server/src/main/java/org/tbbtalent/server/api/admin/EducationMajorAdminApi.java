@@ -21,7 +21,7 @@ import org.tbbtalent.server.model.db.EducationMajor;
 import org.tbbtalent.server.request.education.major.CreateEducationMajorRequest;
 import org.tbbtalent.server.request.education.major.SearchEducationMajorRequest;
 import org.tbbtalent.server.request.education.major.UpdateEducationMajorRequest;
-import org.tbbtalent.server.service.EducationMajorService;
+import org.tbbtalent.server.service.db.EducationMajorService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()

@@ -19,7 +19,7 @@ import org.tbbtalent.server.model.db.CandidateOccupation;
 import org.tbbtalent.server.model.db.Occupation;
 import org.tbbtalent.server.request.candidate.occupation.CreateCandidateOccupationRequest;
 import org.tbbtalent.server.request.candidate.occupation.VerifyCandidateOccupationRequest;
-import org.tbbtalent.server.service.CandidateOccupationService;
+import org.tbbtalent.server.service.db.CandidateOccupationService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()

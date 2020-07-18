@@ -27,8 +27,8 @@ import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.request.candidate.SavedSearchGetRequest;
 import org.tbbtalent.server.request.list.HasSetOfCandidatesImpl;
 import org.tbbtalent.server.security.UserContext;
-import org.tbbtalent.server.service.CandidateService;
-import org.tbbtalent.server.service.SavedSearchService;
+import org.tbbtalent.server.service.db.CandidateService;
+import org.tbbtalent.server.service.db.SavedSearchService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 /**

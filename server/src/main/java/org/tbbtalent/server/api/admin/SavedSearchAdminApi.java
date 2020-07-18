@@ -29,9 +29,9 @@ import org.tbbtalent.server.request.search.SelectCandidateInSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.request.search.UpdateWatchingRequest;
-import org.tbbtalent.server.service.CandidateService;
-import org.tbbtalent.server.service.SavedListService;
-import org.tbbtalent.server.service.SavedSearchService;
+import org.tbbtalent.server.service.db.CandidateService;
+import org.tbbtalent.server.service.db.SavedListService;
+import org.tbbtalent.server.service.db.SavedSearchService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()

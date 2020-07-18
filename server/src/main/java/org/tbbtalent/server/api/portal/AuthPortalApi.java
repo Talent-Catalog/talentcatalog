@@ -11,12 +11,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tbbtalent.server.exception.*;
+import org.tbbtalent.server.exception.InvalidCredentialsException;
+import org.tbbtalent.server.exception.InvalidPasswordFormatException;
+import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.exception.PasswordExpiredException;
+import org.tbbtalent.server.exception.UserDeactivatedException;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
 import org.tbbtalent.server.response.JwtAuthenticationResponse;
-import org.tbbtalent.server.service.CandidateService;
-import org.tbbtalent.server.service.UserService;
+import org.tbbtalent.server.service.db.CandidateService;
+import org.tbbtalent.server.service.db.UserService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()

@@ -22,8 +22,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
  */
 @Configuration
 @EnableJpaRepositories(basePackages = "org.tbbtalent.server.repository")
-@EnableElasticsearchRepositories(basePackages = "org.tbbtalent.server.es.repository")
-@ComponentScan(basePackages = { "org.tbbtalent.server.es.service" })
+@EnableElasticsearchRepositories(basePackages = "org.tbbtalent.server.repository.es")
+@ComponentScan(basePackages = { "org.tbbtalent.server.service.es" })
 public class ElasticsearchConfiguration {
     @Bean
     public RestHighLevelClient client() {

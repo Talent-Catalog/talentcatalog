@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.model.db.SurveyType;
-import org.tbbtalent.server.service.SurveyTypeService;
+import org.tbbtalent.server.service.db.SurveyTypeService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()

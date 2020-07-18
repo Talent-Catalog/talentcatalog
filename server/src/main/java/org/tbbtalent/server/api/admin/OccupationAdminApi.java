@@ -21,7 +21,7 @@ import org.tbbtalent.server.model.db.Occupation;
 import org.tbbtalent.server.request.occupation.CreateOccupationRequest;
 import org.tbbtalent.server.request.occupation.SearchOccupationRequest;
 import org.tbbtalent.server.request.occupation.UpdateOccupationRequest;
-import org.tbbtalent.server.service.OccupationService;
+import org.tbbtalent.server.service.db.OccupationService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()

@@ -15,7 +15,7 @@ import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.db.CandidateEducation;
 import org.tbbtalent.server.request.candidate.education.CreateCandidateEducationRequest;
 import org.tbbtalent.server.request.candidate.education.UpdateCandidateEducationRequest;
-import org.tbbtalent.server.service.CandidateEducationService;
+import org.tbbtalent.server.service.db.CandidateEducationService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()

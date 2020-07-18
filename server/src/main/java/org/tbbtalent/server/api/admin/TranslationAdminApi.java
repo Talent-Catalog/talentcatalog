@@ -32,14 +32,14 @@ import org.tbbtalent.server.request.nationality.SearchNationalityRequest;
 import org.tbbtalent.server.request.occupation.SearchOccupationRequest;
 import org.tbbtalent.server.request.translation.CreateTranslationRequest;
 import org.tbbtalent.server.request.translation.UpdateTranslationRequest;
-import org.tbbtalent.server.service.CountryService;
-import org.tbbtalent.server.service.EducationLevelService;
-import org.tbbtalent.server.service.EducationMajorService;
-import org.tbbtalent.server.service.LanguageLevelService;
-import org.tbbtalent.server.service.LanguageService;
-import org.tbbtalent.server.service.NationalityService;
-import org.tbbtalent.server.service.OccupationService;
-import org.tbbtalent.server.service.TranslationService;
+import org.tbbtalent.server.service.db.CountryService;
+import org.tbbtalent.server.service.db.EducationLevelService;
+import org.tbbtalent.server.service.db.EducationMajorService;
+import org.tbbtalent.server.service.db.LanguageLevelService;
+import org.tbbtalent.server.service.db.LanguageService;
+import org.tbbtalent.server.service.db.NationalityService;
+import org.tbbtalent.server.service.db.OccupationService;
+import org.tbbtalent.server.service.db.TranslationService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()

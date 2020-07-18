@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.model.db.CandidateCertification;
 import org.tbbtalent.server.request.candidate.certification.CreateCandidateCertificationRequest;
-import org.tbbtalent.server.service.CandidateCertificationService;
+import org.tbbtalent.server.service.db.CandidateCertificationService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()

@@ -19,7 +19,7 @@ import org.tbbtalent.server.request.user.CheckPasswordResetTokenRequest;
 import org.tbbtalent.server.request.user.ResetPasswordRequest;
 import org.tbbtalent.server.request.user.SendResetPasswordEmailRequest;
 import org.tbbtalent.server.request.user.UpdateUserPasswordRequest;
-import org.tbbtalent.server.service.UserService;
+import org.tbbtalent.server.service.db.UserService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 

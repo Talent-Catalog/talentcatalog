@@ -24,7 +24,7 @@ import org.tbbtalent.server.request.user.UpdateUserPasswordRequest;
 import org.tbbtalent.server.request.user.UpdateUserRequest;
 import org.tbbtalent.server.request.user.UpdateUsernameRequest;
 import org.tbbtalent.server.security.UserContext;
-import org.tbbtalent.server.service.UserService;
+import org.tbbtalent.server.service.db.UserService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()

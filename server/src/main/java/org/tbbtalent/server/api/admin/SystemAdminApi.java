@@ -40,8 +40,8 @@ import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
 import org.tbbtalent.server.security.UserContext;
-import org.tbbtalent.server.service.DataSharingService;
-import org.tbbtalent.server.service.aws.S3ResourceHelper;
+import org.tbbtalent.server.service.db.DataSharingService;
+import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
 import org.tbbtalent.server.util.textExtract.TextExtractHelper;
 
 @RestController
