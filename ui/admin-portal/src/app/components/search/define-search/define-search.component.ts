@@ -508,12 +508,14 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     while (this.searchJoinArray.length) {
       this.searchJoinArray.removeAt(0); // Clear the form array
     }
-    if (request['searchJoinRequests']) {
+    if (request['searchJoinRequests'].length) {
       request['searchJoinRequests'].forEach((join) => {
         this.searchJoinArray.push(this.fb.group(join)); // If present, repopulate the array from the request
       });
+      this.savedSearchService.get(request['searchJoinRequests'][0].savedSearchId).subscribe(result => {
+        this.selectedBaseJoin = result;
+      })
     }
-    this.storedBaseJoin = request.searchJoinRequests[0];
 
     /* Perform a mouse event to force the multi-select components to update */
     this.formWrapper.nativeElement.click();

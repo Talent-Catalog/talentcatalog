@@ -1,7 +1,7 @@
 import {
   Component,
   EventEmitter,
-  Input,
+  Input, OnChanges,
   OnInit,
   Output,
   SimpleChanges
@@ -24,10 +24,9 @@ import {copyToClipboard} from "../../../util/clipboard";
   templateUrl: './candidate-source.component.html',
   styleUrls: ['./candidate-source.component.scss']
 })
-export class CandidateSourceComponent implements OnInit {
+export class CandidateSourceComponent implements OnInit, OnChanges {
 
   @Input() candidateSource: CandidateSource;
-  @Input() storedBaseSearch;
   @Input() showAll: boolean;
   @Input() showLink: boolean = true;
   @Input() showMore: boolean = true;
@@ -61,22 +60,19 @@ export class CandidateSourceComponent implements OnInit {
     this.loggedInUser = this.authService.getLoggedInUser();
   }
 
-  ngOnChanges(changes: SimpleChanges){
+  ngOnChanges (changes: SimpleChanges){
     // WHEN candidateSource changes IF showAll fetch the savedSearch object which has the multi select Names to display (not just Ids).
     if (this.showAll && changes && changes.candidateSource && changes.candidateSource.previousValue !== changes.candidateSource.currentValue){
-      this.getSavedSearch();
-    }
-    if (this.storedBaseSearch && changes && changes.storedBaseSearch.firstChange){
-      this.getSavedSearch()
+      this.candidateSource = changes.candidateSource.currentValue;
     }
   }
 
   toggleShowAll() {
     this.showAll = !this.showAll;
-    if (this.showAll) {
-      this.loading = true;
-      this.getSavedSearch();
-    }
+    // if (this.showAll) {
+    //   this.loading = true;
+    //   this.getSavedSearch();
+    // }
   }
 
   doOpenSource(){
@@ -130,8 +126,7 @@ export class CandidateSourceComponent implements OnInit {
     return isMine(this.candidateSource, this.authService);
   }
 
-  getSavedSearch() {
-    const savedSearchId = this.candidateSource ? this.candidateSource.id : this.storedBaseSearch.savedSearchId;
+  getSavedSearch(savedSearchId: number) {
     this.savedSearchService.get(savedSearchId).subscribe(result => {
       this.candidateSource = result;
       this.loading = false;
