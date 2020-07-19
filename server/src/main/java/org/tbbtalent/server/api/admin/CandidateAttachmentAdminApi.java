@@ -1,5 +1,7 @@
 package org.tbbtalent.server.api.admin;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -10,17 +12,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tbbtalent.server.model.CandidateAttachment;
-import org.tbbtalent.server.model.Role;
-import org.tbbtalent.server.model.User;
+import org.tbbtalent.server.model.db.CandidateAttachment;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.attachment.CreateCandidateAttachmentRequest;
 import org.tbbtalent.server.request.attachment.SearchCandidateAttachmentsRequest;
 import org.tbbtalent.server.request.attachment.UpdateCandidateAttachmentRequest;
 import org.tbbtalent.server.security.UserContext;
-import org.tbbtalent.server.service.CandidateAttachmentService;
+import org.tbbtalent.server.service.db.CandidateAttachmentService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
-
-import java.util.Map;
 
 //import org.tbbtalent.server.request.attachment.CreateCandidateAttachmentRequest;
 //import org.tbbtalent.server.request.note.UpdateCandidateAttachmentRequest;

@@ -1,8 +1,8 @@
 package org.tbbtalent.server.request.candidate;
 
-import org.tbbtalent.server.model.CandidateStatus;
-
 import javax.validation.constraints.NotNull;
+
+import org.tbbtalent.server.model.db.CandidateStatus;
 
 public class UpdateCandidateStatusRequest {
 

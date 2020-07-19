@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.tbbtalent.server.model.User;
+import org.tbbtalent.server.model.db.User;
 
 
 public class LanguageFilter extends OncePerRequestFilter {

@@ -6,7 +6,7 @@ package org.tbbtalent.server.request.candidate;
 
 import javax.validation.constraints.NotBlank;
 
-import org.tbbtalent.server.model.AbstractCandidateSource;
+import org.tbbtalent.server.model.db.AbstractCandidateSource;
 
 import lombok.Getter;
 import lombok.Setter;

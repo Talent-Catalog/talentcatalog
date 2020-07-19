@@ -1,12 +1,13 @@
 package org.tbbtalent.server.request.user;
 
-import org.tbbtalent.server.model.Country;
-import org.tbbtalent.server.model.Role;
-import org.tbbtalent.server.model.Status;
+import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.List;
+
+import org.tbbtalent.server.model.db.Country;
+import org.tbbtalent.server.model.db.Role;
+import org.tbbtalent.server.model.db.Status;
 
 public class UpdateUserRequest {
 

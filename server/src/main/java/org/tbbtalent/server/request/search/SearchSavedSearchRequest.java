@@ -1,7 +1,7 @@
 package org.tbbtalent.server.request.search;
 
-import org.tbbtalent.server.model.SavedSearchSubtype;
-import org.tbbtalent.server.model.SavedSearchType;
+import org.tbbtalent.server.model.db.SavedSearchSubtype;
+import org.tbbtalent.server.model.db.SavedSearchType;
 import org.tbbtalent.server.request.candidate.source.SearchCandidateSourceRequestPaged;
 
 import lombok.Getter;

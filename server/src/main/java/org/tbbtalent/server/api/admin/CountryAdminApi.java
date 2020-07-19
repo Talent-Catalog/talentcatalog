@@ -14,10 +14,10 @@ import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.Country;
+import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.request.country.SearchCountryRequest;
 import org.tbbtalent.server.request.country.UpdateCountryRequest;
-import org.tbbtalent.server.service.CountryService;
+import org.tbbtalent.server.service.db.CountryService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()

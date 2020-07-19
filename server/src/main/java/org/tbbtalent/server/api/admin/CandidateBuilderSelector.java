@@ -7,8 +7,8 @@ package org.tbbtalent.server.api.admin;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.lang.Nullable;
-import org.tbbtalent.server.model.Role;
-import org.tbbtalent.server.model.User;
+import org.tbbtalent.server.model.db.Role;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 

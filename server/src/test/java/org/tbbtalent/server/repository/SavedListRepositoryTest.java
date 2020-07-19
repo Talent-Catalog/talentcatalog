@@ -16,10 +16,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.TestPropertySource;
-import org.tbbtalent.server.model.Candidate;
-import org.tbbtalent.server.model.Role;
-import org.tbbtalent.server.model.SavedList;
-import org.tbbtalent.server.model.User;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.Role;
+import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.repository.db.CandidateRepository;
+import org.tbbtalent.server.repository.db.GetSavedListsQuery;
+import org.tbbtalent.server.repository.db.SavedListRepository;
+import org.tbbtalent.server.repository.db.UserRepository;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

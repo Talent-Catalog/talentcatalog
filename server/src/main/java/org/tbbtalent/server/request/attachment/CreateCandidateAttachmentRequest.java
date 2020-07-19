@@ -1,9 +1,9 @@
 package org.tbbtalent.server.request.attachment;
 
-import org.tbbtalent.server.model.AttachmentType;
-
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+
+import org.tbbtalent.server.model.db.AttachmentType;
 
 public class CreateCandidateAttachmentRequest {
 

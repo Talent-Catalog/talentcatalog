@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.UsernameTakenException;
-import org.tbbtalent.server.model.Role;
-import org.tbbtalent.server.model.User;
+import org.tbbtalent.server.model.db.Role;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.user.CreateUserRequest;
 import org.tbbtalent.server.request.user.SearchUserRequest;
 import org.tbbtalent.server.request.user.UpdateSharingRequest;
@@ -24,11 +24,8 @@ import org.tbbtalent.server.request.user.UpdateUserPasswordRequest;
 import org.tbbtalent.server.request.user.UpdateUserRequest;
 import org.tbbtalent.server.request.user.UpdateUsernameRequest;
 import org.tbbtalent.server.security.UserContext;
-import org.tbbtalent.server.service.UserService;
+import org.tbbtalent.server.service.db.UserService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
-
-import javax.validation.Valid;
-import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/user")

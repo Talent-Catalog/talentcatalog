@@ -10,8 +10,8 @@ import java.util.Map;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.data.domain.Page;
-import org.tbbtalent.server.model.StatReport;
-import org.tbbtalent.server.model.Translatable;
+import org.tbbtalent.server.model.db.StatReport;
+import org.tbbtalent.server.model.db.Translatable;
 
 public class DtoBuilder {
 

@@ -1,16 +1,22 @@
 package org.tbbtalent.server.api.portal;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.tbbtalent.server.model.CandidateEducation;
-import org.tbbtalent.server.request.candidate.education.CreateCandidateEducationRequest;
-import org.tbbtalent.server.request.candidate.education.UpdateCandidateEducationRequest;
-import org.tbbtalent.server.service.CandidateEducationService;
-import org.tbbtalent.server.util.dto.DtoBuilder;
+import java.util.Map;
 
 import javax.validation.Valid;
-import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.tbbtalent.server.model.db.CandidateEducation;
+import org.tbbtalent.server.request.candidate.education.CreateCandidateEducationRequest;
+import org.tbbtalent.server.request.candidate.education.UpdateCandidateEducationRequest;
+import org.tbbtalent.server.service.db.CandidateEducationService;
+import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()
 @RequestMapping("/api/portal/candidate-education")

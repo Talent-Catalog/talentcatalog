@@ -3,7 +3,7 @@ package org.tbbtalent.server.request.country;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import org.tbbtalent.server.model.Status;
+import org.tbbtalent.server.model.db.Status;
 
 import lombok.Getter;
 import lombok.Setter;

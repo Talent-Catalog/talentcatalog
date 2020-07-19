@@ -1,9 +1,9 @@
 package org.tbbtalent.server.request.nationality;
 
-import org.tbbtalent.server.model.Status;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+
+import org.tbbtalent.server.model.db.Status;
 
 public class CreateNationalityRequest {
 

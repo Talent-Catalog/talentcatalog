@@ -1,5 +1,9 @@
 package org.tbbtalent.server.api.admin;
 
+import java.util.Map;
+
+import javax.security.auth.login.AccountLockedException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,11 +15,8 @@ import org.tbbtalent.server.exception.InvalidPasswordFormatException;
 import org.tbbtalent.server.exception.PasswordExpiredException;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.response.JwtAuthenticationResponse;
-import org.tbbtalent.server.service.UserService;
+import org.tbbtalent.server.service.db.UserService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
-
-import javax.security.auth.login.AccountLockedException;
-import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/auth")

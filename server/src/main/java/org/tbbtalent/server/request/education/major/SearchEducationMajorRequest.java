@@ -1,7 +1,7 @@
 package org.tbbtalent.server.request.education.major;
 
 import org.springframework.data.domain.Sort;
-import org.tbbtalent.server.model.Status;
+import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.request.PagedSearchRequest;
 
 public class SearchEducationMajorRequest extends PagedSearchRequest {

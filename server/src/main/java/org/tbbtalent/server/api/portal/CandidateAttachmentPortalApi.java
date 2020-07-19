@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tbbtalent.server.model.CandidateAttachment;
+import org.tbbtalent.server.model.db.CandidateAttachment;
 import org.tbbtalent.server.request.PagedSearchRequest;
 import org.tbbtalent.server.request.attachment.CreateCandidateAttachmentRequest;
-import org.tbbtalent.server.service.CandidateAttachmentService;
+import org.tbbtalent.server.service.db.CandidateAttachmentService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()

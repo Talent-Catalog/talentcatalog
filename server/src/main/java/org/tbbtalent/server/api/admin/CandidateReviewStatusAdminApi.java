@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.EntityExistsException;
-import org.tbbtalent.server.model.CandidateReviewStatusItem;
+import org.tbbtalent.server.model.db.CandidateReviewStatusItem;
 import org.tbbtalent.server.request.reviewstatus.CreateCandidateReviewStatusRequest;
 import org.tbbtalent.server.request.reviewstatus.UpdateCandidateReviewStatusRequest;
-import org.tbbtalent.server.service.CandidateReviewStatusService;
+import org.tbbtalent.server.service.db.CandidateReviewStatusService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()

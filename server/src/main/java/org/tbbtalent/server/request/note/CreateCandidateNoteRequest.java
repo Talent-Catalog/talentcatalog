@@ -1,7 +1,5 @@
 package org.tbbtalent.server.request.note;
 
-import org.tbbtalent.server.model.Status;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 

@@ -1,8 +1,8 @@
 package org.tbbtalent.server.request.candidate;
 
-import org.tbbtalent.server.model.Gender;
-
 import java.time.LocalDate;
+
+import org.tbbtalent.server.model.db.Gender;
 
 public class UpdateCandidatePersonalRequest {
 
