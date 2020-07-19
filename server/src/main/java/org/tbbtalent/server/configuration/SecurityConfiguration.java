@@ -130,6 +130,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // POST: ALL SEARCHES
                 .antMatchers(HttpMethod.POST, "/api/admin/**/search").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
+                // POST: SEARCH BY NUMBER/NAME
+                .antMatchers(HttpMethod.POST, "/api/admin/candidate/findbynumberorname").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // POST: SEARCH BY EMAIL
+                .antMatchers(HttpMethod.POST, "/api/admin/candidate/findbyemail").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // POST: SEARCH BY PHONE
+                .antMatchers(HttpMethod.POST, "/api/admin/candidate/findbyphone").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
                 // POST: ALL PAGED SEARCHES
                 .antMatchers(HttpMethod.POST, "/api/admin/**/search-paged").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
