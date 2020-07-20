@@ -154,9 +154,26 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // POST: CREATE LIST
                 .antMatchers(HttpMethod.POST, "/api/admin/saved-list").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
-                // PUT: MERGE LIST (ADD BY NAME/NUMBER)
+                // PUT: MERGE CANDIDATE INTO LIST (ADD BY NAME/NUMBER)
                 .antMatchers(HttpMethod.PUT, "/api/admin/saved-list-candidate/*/merge").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
+                // PUT: REMOVE CANDIDATE FROM LIST
+                .antMatchers(HttpMethod.PUT, "/api/admin/saved-list-candidate/*/remove").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // PUT: UPDATE SAVED LIST
+                .antMatchers(HttpMethod.PUT, "/api/admin/saved-list/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // PUT: ADD SHARED LIST
+                .antMatchers(HttpMethod.PUT, "/api/admin/saved-list/shared-add/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // PUT: REMOVE SHARED LIST
+                .antMatchers(HttpMethod.PUT, "/api/admin/saved-list/shared-remove/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // PUT: COPY LIST
+                .antMatchers(HttpMethod.PUT, "/api/admin/saved-list/copy/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // POST: EXPORT LIST
+                .antMatchers(HttpMethod.POST, "/api/admin/saved-list-candidate/*/export/csv").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // POST: VIEW TRANSLATIONS
                 .antMatchers(HttpMethod.POST, "/api/admin/translation/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
