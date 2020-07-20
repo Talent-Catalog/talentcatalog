@@ -106,6 +106,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // POST: REQUEST INFOGRAPHICS
                 .antMatchers(HttpMethod.POST, "/api/admin/candidate/stat/all").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
+                /**
+                 * SAVED SEARCH ENDPOINTS
+                */
                 // POST: CREATE SAVED SEARCHES
                 .antMatchers(HttpMethod.POST, "/api/admin/saved-search").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
@@ -127,8 +130,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // POST: EXPORT SAVE SELECTION SAVED SEARCHES
                 .antMatchers(HttpMethod.POST, "/api/admin/saved-search-candidate/*/export/csv").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
+                /**
+                 * SEARCH ENDPOINTS
+                 */
                 // POST: ALL SEARCHES
                 .antMatchers(HttpMethod.POST, "/api/admin/**/search").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // POST: ALL PAGED SEARCHES
+                .antMatchers(HttpMethod.POST, "/api/admin/**/search-paged").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // POST: SEARCH BY NUMBER/NAME
                 .antMatchers(HttpMethod.POST, "/api/admin/candidate/findbynumberorname").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
@@ -139,8 +148,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // POST: SEARCH BY PHONE
                 .antMatchers(HttpMethod.POST, "/api/admin/candidate/findbyphone").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
-                // POST: ALL PAGED SEARCHES
-                .antMatchers(HttpMethod.POST, "/api/admin/**/search-paged").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                /**
+                 * LIST ENDPOINTS
+                 */
+                // POST: CREATE LIST
+                .antMatchers(HttpMethod.POST, "/api/admin/saved-list").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // PUT: MERGE LIST (ADD BY NAME/NUMBER)
+                .antMatchers(HttpMethod.PUT, "/api/admin/saved-list-candidate/*/merge").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
 
                 // POST: VIEW TRANSLATIONS
                 .antMatchers(HttpMethod.POST, "/api/admin/translation/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
