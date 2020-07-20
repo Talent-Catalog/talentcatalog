@@ -37,6 +37,7 @@ public class SavedSearch extends AbstractCandidateSource {
     
     private Boolean defaultSearch = false; 
     
+    private String simpleQueryString;
     private String keyword;
     private String statuses;
     private Gender gender;
@@ -114,6 +115,14 @@ public class SavedSearch extends AbstractCandidateSource {
         if (defaultSearch != null) {
             this.defaultSearch = defaultSearch;
         }
+    }
+
+    public String getSimpleQueryString() {
+        return simpleQueryString;
+    }
+
+    public void setSimpleQueryString(String simpleQueryString) {
+        this.simpleQueryString = simpleQueryString;
     }
 
     public String getKeyword() {

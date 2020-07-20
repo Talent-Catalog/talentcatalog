@@ -10,6 +10,7 @@ import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -310,11 +311,12 @@ public class CandidateServiceImpl implements CandidateService {
         final String simpleQueryString = request.getSimpleQueryString();
         if (simpleQueryString != null) {
             //This is an elastic search request
-            //todo Need to support sorting
+            //todo Need to support sorting 
             Page<CandidateEs> candidateProxies = candidateEsRepository
                     .simpleQueryString(simpleQueryString, request.getPageRequestWithoutSort());
             //Get candidate ids from the returned results - maintaining the sort
-            List<Long> candidateIds = new ArrayList<>();
+            //Avoid duplicates, but maintaining order by using a LinkedHashSet
+            LinkedHashSet<Long> candidateIds = new LinkedHashSet<>();
             for (CandidateEs candidateProxy : candidateProxies) {
                 candidateIds.add(candidateProxy.getMasterId());
             }
