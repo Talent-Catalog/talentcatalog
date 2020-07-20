@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -58,6 +59,7 @@ import org.tbbtalent.server.model.db.SearchType;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.SurveyType;
 import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.CandidateSpecification;
 import org.tbbtalent.server.repository.db.CountryRepository;
@@ -68,6 +70,7 @@ import org.tbbtalent.server.repository.db.SavedListRepository;
 import org.tbbtalent.server.repository.db.SavedSearchRepository;
 import org.tbbtalent.server.repository.db.SurveyTypeRepository;
 import org.tbbtalent.server.repository.db.UserRepository;
+import org.tbbtalent.server.repository.es.CandidateEsRepository;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.candidate.BaseCandidateContactRequest;
 import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
@@ -110,6 +113,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final SavedListRepository savedListRepository;
     private final SavedSearchRepository savedSearchRepository;
     private final CandidateRepository candidateRepository;
+    private final CandidateEsRepository candidateEsRepository;
     private final CountryRepository countryRepository;
     private final EducationLevelRepository educationLevelRepository;
     private final NationalityRepository nationalityRepository;
@@ -126,6 +130,7 @@ public class CandidateServiceImpl implements CandidateService {
                                 SavedListRepository savedListRepository,
                                 SavedSearchRepository savedSearchRepository,
                                 CandidateRepository candidateRepository,
+                                CandidateEsRepository candidateEsRepository,
                                 CountryRepository countryRepository,
                                 EducationLevelRepository educationLevelRepository,
                                 NationalityRepository nationalityRepository,
@@ -139,6 +144,7 @@ public class CandidateServiceImpl implements CandidateService {
         this.savedListRepository = savedListRepository;
         this.savedSearchRepository = savedSearchRepository;
         this.candidateRepository = candidateRepository;
+        this.candidateEsRepository = candidateEsRepository;
         this.countryRepository = countryRepository;
         this.educationLevelRepository = educationLevelRepository;
         this.nationalityRepository = nationalityRepository;
@@ -299,21 +305,53 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     private Page<Candidate> doSearchCandidates(SearchCandidateRequest request) {
-        User user = userContext.getLoggedInUser();
 
-        List<Long> searchIds = new ArrayList<>();
-        if (request.getSavedSearchId() != null) {
-            searchIds.add(request.getSavedSearchId());
-        }
-
-        Specification<Candidate> query = CandidateSpecification.buildSearchQuery(request, user);
-        if (CollectionUtils.isNotEmpty(request.getSearchJoinRequests())) {
-            for (SearchJoinRequest searchJoinRequest : request.getSearchJoinRequests()) {
-                query = addQuery(query, searchJoinRequest, searchIds);
+        Page<Candidate> candidates;
+        final String simpleQueryString = request.getSimpleQueryString();
+        if (simpleQueryString != null) {
+            //This is an elastic search request
+            //todo Need to support sorting
+            Page<CandidateEs> candidateProxies = candidateEsRepository
+                    .simpleQueryString(simpleQueryString, request.getPageRequestWithoutSort());
+            //Get candidate ids from the returned results - maintaining the sort
+            List<Long> candidateIds = new ArrayList<>();
+            for (CandidateEs candidateProxy : candidateProxies) {
+                candidateIds.add(candidateProxy.getMasterId());
             }
-        }
+            //Now fetch those candidates from the normal database
+            //They will come back in random order
+            List<Candidate> unsorted = candidateRepository.findByIds(candidateIds);
+            //Put the results in a map indexed by the id
+            Map<Long, Candidate> mapById = new HashMap<>();
+            for (Candidate candidate : unsorted) {
+                mapById.put(candidate.getId(), candidate);
+            }
+            //Now construct a candidate list sorted according to the original
+            //list of ids.
+            List<Candidate> candidateList = new ArrayList<>();
+            for (Long candidateId : candidateIds) {
+                candidateList.add(mapById.get(candidateId));
+            }
+            candidates = new PageImpl<>(candidateList, request.getPageRequest(), 
+                    candidateProxies.getTotalElements());  
+        } else {
 
-        Page<Candidate> candidates = candidateRepository.findAll(query, request.getPageRequestWithoutSort());
+            User user = userContext.getLoggedInUser();
+
+            List<Long> searchIds = new ArrayList<>();
+            if (request.getSavedSearchId() != null) {
+                searchIds.add(request.getSavedSearchId());
+            }
+
+            Specification<Candidate> query = CandidateSpecification.buildSearchQuery(request, user);
+            if (CollectionUtils.isNotEmpty(request.getSearchJoinRequests())) {
+                for (SearchJoinRequest searchJoinRequest : request.getSearchJoinRequests()) {
+                    query = addQuery(query, searchJoinRequest, searchIds);
+                }
+            }
+
+            candidates = candidateRepository.findAll(query, request.getPageRequestWithoutSort());
+        }
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
         return candidates;
     }

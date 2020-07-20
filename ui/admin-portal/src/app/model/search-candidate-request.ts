@@ -2,6 +2,7 @@ import {Language} from './language';
 import {SavedSearchJoin} from './saved-search';
 
 export interface SearchCandidateRequest {
+  simpleQueryString?: string;
   keyword?: string;
   gender?: string;
   statuses?: string;

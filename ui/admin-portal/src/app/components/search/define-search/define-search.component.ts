@@ -142,6 +142,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     /* SET UP FORM */
     this.searchForm = this.fb.group({
       savedSearchId: [null],
+      simpleQueryString: [null],
       keyword: [null],
       statuses: [[]],
       gender: [null],

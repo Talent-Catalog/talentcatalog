@@ -87,6 +87,62 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             + " where c.user.id = :id ")
     Candidate findByUserIdLoadProfile(@Param("id") Long userId);
 
+    @Query(" select distinct c from Candidate c "
+            + " left join c.candidateOccupations occ "
+            + " left join c.candidateJobExperiences exp "
+            + " left join exp.candidateOccupation expOcc "
+            + " left join exp.country co "
+            + " left join c.candidateEducations edu "
+            + " left join edu.educationMajor maj "
+            + " left join c.candidateCertifications cert "
+            + " left join c.candidateAttachments catt "
+            + " left join c.candidateLanguages clang "
+            + " left join clang.language lang "
+            + " where c.user.id = :id ")
+    Candidate findByUserIdLoadText(@Param("id") Long userId);
+
+    @Query(" select distinct c from Candidate c "
+            + " left join c.candidateOccupations occ "
+            + " left join c.candidateJobExperiences exp "
+            + " left join exp.candidateOccupation expOcc "
+            + " left join exp.country co "
+            + " left join c.candidateEducations edu "
+            + " left join edu.educationMajor maj "
+            + " left join c.candidateCertifications cert "
+            + " left join c.candidateAttachments catt "
+            + " left join c.candidateLanguages clang "
+            + " left join clang.language lang "
+            + " where c.id = :id ")
+    Candidate findByIdLoadText(@Param("id") Long candidateId);
+
+    @Query(" select distinct c from Candidate c "
+            + " left join c.candidateOccupations occ "
+            + " left join c.candidateJobExperiences exp "
+            + " left join exp.candidateOccupation expOcc "
+            + " left join exp.country co "
+            + " left join c.candidateEducations edu "
+            + " left join edu.educationMajor maj "
+            + " left join c.candidateCertifications cert "
+            + " left join c.candidateAttachments catt "
+            + " left join c.candidateLanguages clang "
+            + " left join clang.language lang "
+            + " where c.id in (:ids) ")
+    List<Candidate> findByIds(@Param("ids") Iterable<Long> ids);
+
+    @Query(" select distinct c from Candidate c "
+            + " left join c.candidateOccupations occ "
+            + " left join c.candidateJobExperiences exp "
+            + " left join exp.candidateOccupation expOcc "
+            + " left join exp.country co "
+            + " left join c.candidateEducations edu "
+            + " left join edu.educationMajor maj "
+            + " left join c.candidateCertifications cert "
+            + " left join c.candidateAttachments catt "
+            + " left join c.candidateLanguages clang "
+            + " left join clang.language lang "
+            + " where c.status <> 'deleted'")
+    List<Candidate> findAllLoadText();
+
     /**
      * ADMIN PORTAL DISPLAY CANDIDATE METHODS: includes source country restrictions.
      */
