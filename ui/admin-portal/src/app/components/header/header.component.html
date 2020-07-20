@@ -32,7 +32,7 @@
 
       </ul>
 
-      <div class="form-group">
+      <div class="form-group" *ngIf="!isUserLimited()">
         <input id="quickEmailSearch"
                type="text" class="form-control" #input
                [ngbTypeahead]="doEmailSearch"
@@ -46,7 +46,7 @@
         </ng-template>
       </div>
 
-      <div class="form-group">
+      <div class="form-group" *ngIf="!isUserLimited()">
         <input id="quickPhoneSearch"
                type="text" class="form-control" #input
                [ngbTypeahead]="doPhoneSearch"

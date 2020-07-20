@@ -399,14 +399,18 @@ public class CandidateServiceImpl implements CandidateService {
     public Page<Candidate> searchCandidates(CandidateEmailSearchRequest request) {
         String s = request.getCandidateEmail();
         User loggedInUser = userContext.getLoggedInUser();
-        Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
-        Page<Candidate> candidates;
+        if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.sourcepartneradmin) {
+            Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
+            Page<Candidate> candidates;
 
-        candidates = candidateRepository.searchCandidateEmail(
+            candidates = candidateRepository.searchCandidateEmail(
                     '%' + s +'%', sourceCountries, request.getPageRequestWithoutSort());
 
-        log.info("Found " + candidates.getTotalElements() + " candidates in search");
-        return candidates;
+            log.info("Found " + candidates.getTotalElements() + " candidates in search");
+            return candidates;
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -422,9 +426,13 @@ public class CandidateServiceImpl implements CandidateService {
                         s +'%', sourceCountries,
                     request.getPageRequestWithoutSort());
         } else {
-            candidates = candidateRepository.searchCandidateName(
-                        '%' + s +'%', sourceCountries,
-                    request.getPageRequestWithoutSort());
+            if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.sourcepartneradmin) {
+                candidates = candidateRepository.searchCandidateName(
+                        '%' + s + '%', sourceCountries,
+                        request.getPageRequestWithoutSort());
+            } else {
+                return null;
+            }
         }
 
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
@@ -435,14 +443,18 @@ public class CandidateServiceImpl implements CandidateService {
     public Page<Candidate> searchCandidates(CandidatePhoneSearchRequest request) {
         String s = request.getCandidatePhone();
         User loggedInUser = userContext.getLoggedInUser();
-        Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
-        Page<Candidate> candidates;
+        if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.sourcepartneradmin){
+            Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
+            Page<Candidate> candidates;
 
-        candidates = candidateRepository.searchCandidatePhone(
+            candidates = candidateRepository.searchCandidatePhone(
                     '%' + s +'%', sourceCountries, request.getPageRequestWithoutSort());
 
-        log.info("Found " + candidates.getTotalElements() + " candidates in search");
-        return candidates;
+            log.info("Found " + candidates.getTotalElements() + " candidates in search");
+            return candidates;
+        } else {
+            return null;
+        }
     }
 
     Specification<Candidate> addQuery(Specification<Candidate> query, SearchJoinRequest searchJoinRequest, List<Long> savedSearchIds) {
