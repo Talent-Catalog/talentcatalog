@@ -35,6 +35,9 @@ Download and install the latest of the following tools:
      -     $ brew install flyway
 - cURL (for database migrations, can also use Postman) 
     -      $ brew install curl
+- Elasticsearch (for text search) [https://www.elastic.co/guide/en/elasticsearch/reference/7.8/brew.html] 
+    -      $ brew tap elastic/tap
+    -      $ brew install elastic/tap/elasticsearch-full 
 - Git [https://git-scm.com/downloads]()
 - PostgreSQL [https://www.postgresql.org/download/]()
 - IntelliJ IDEA (or the IDE of your choice) [https://www.jetbrains.com/idea/download/]()
@@ -54,18 +57,26 @@ full privileges
 - The database details are defined in bundle/all/resources/application.yml
 - The database is populated/updated using Flyway at start up - see TbbTalentApplication
 - Run data migration script to add additional data - using tool like postman or curl 
-    - call login http://localhost:8080/api/admin/auth/login and save token 
-        ```
-        $ curl -X POST -H ‘Content-Type: application/json’ -d ‘{“username”:”${USERNAME}”,”password”:"${PASSWORD}"}’ http://localhost:8080/api/admin/auth/login
-        ```
+    - call login http://localhost:8080/api/admin/auth/login and save token
+     
+          $ curl -X POST -H ‘Content-Type: application/json’ -d ‘{“username”:”${USERNAME}”,”password”:"${PASSWORD}"}’ http://localhost:8080/api/admin/auth/login
+
     - call API http://localhost:8080/api/admin/system/migrate with token
-        ```
-      $ curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" http://localhost:8080/api/admin/system/migrate
-        ```
+       
+          $ curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" http://localhost:8080/api/admin/system/migrate
+
 ### Download and edit the code ###
 
 - Clone [the repository](https://bitbucket.org/johncameron/tbbtalentv2/src/master/) to your local system
 - Open the root folder in IntelliJ IDEA (it should auto detect gradle and self-configure)
+
+### Run Elasticsearch ###
+
+    $ elasticsearch
+
+Elasticsearch will run listening on port 9200. You can verify this by running:
+
+    $ curl -X GET "localhost:9200"
 
 ### Run the server ###
 
@@ -104,7 +115,7 @@ chunk {vendor} vendor.js, vendor.js.map (vendor) 3.55 MB [initial] [rendered]
 i ｢wdm｣: Compiled successfully.
 ```
 
-The Candidate Portal is now running locally and you can open a browser (chrome preferred)to: 
+The Candidate Portal is now running locally and you can open a browser (chrome preferred) to: 
 
 [http://localhost:4200]()
 
