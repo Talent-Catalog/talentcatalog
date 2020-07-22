@@ -48,7 +48,6 @@ public class DatabaseConfiguration {
     @Primary
     @ConfigurationProperties("spring.datasource.configuration")
     public DataSource dbDataSource() {
-        DataSourceProperties props = dbDataSourceProperties(); 
         return dbDataSourceProperties().initializeDataSourceBuilder()
                 .type(HikariDataSource.class).build();
     }
