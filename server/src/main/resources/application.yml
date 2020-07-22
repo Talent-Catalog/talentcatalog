@@ -9,6 +9,13 @@ spring:
     user:
       name: client
       password: client
+  
+  elasticsearch:
+    rest:
+      uris: ${ELASTICSEARCH_URL:http://localhost:9200}
+      username: ${ELASTICSEARCH_USERNAME:}
+      password: ${ELASTICSEARCH_PASSWORD:} 
+  
   datasource:
     driverClassName: org.postgresql.Driver
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/tbbtalent}
@@ -17,6 +24,7 @@ spring:
     hikari:
       maximum-pool-size: ${SPRING_DBPOOL_MAX:10}
       minimum-idle:  ${SPRING_DBPOOL_MIN:10}
+      
   boot:
     admin:
       client:
