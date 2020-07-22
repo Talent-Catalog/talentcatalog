@@ -37,6 +37,8 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
   @Input() showEdit: boolean = false;
   @Input() showDelete: boolean = false;
   @Input() showAudit: boolean = false;
+  // Load the extra data for the dropdowns (multiselect names)
+  @Input() loadAll: boolean = true;
   @Output() openSource = new EventEmitter<CandidateSource>();
   @Output() selectSource = new EventEmitter<CandidateSource>();
   @Output() copySource = new EventEmitter<CandidateSource>();
@@ -63,16 +65,16 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
   ngOnChanges (changes: SimpleChanges){
     // WHEN candidateSource changes IF showAll fetch the savedSearch object which has the multi select Names to display (not just Ids).
     if (this.showAll && changes && changes.candidateSource && changes.candidateSource.previousValue !== changes.candidateSource.currentValue){
-      this.candidateSource = changes.candidateSource.currentValue;
+      this.getSavedSearch(this.candidateSource.id);
     }
   }
 
   toggleShowAll() {
     this.showAll = !this.showAll;
-    // if (this.showAll) {
-    //   this.loading = true;
-    //   this.getSavedSearch();
-    // }
+    if (this.showAll) {
+      this.loading = true;
+      this.getSavedSearch(this.candidateSource.id);
+    }
   }
 
   doOpenSource(){
