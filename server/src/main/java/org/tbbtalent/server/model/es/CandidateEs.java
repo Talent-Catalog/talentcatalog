@@ -10,54 +10,83 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateAttachment;
+import org.tbbtalent.server.model.db.CandidateEducation;
+import org.tbbtalent.server.model.db.CandidateJobExperience;
+import org.tbbtalent.server.model.db.CandidateOccupation;
+import org.tbbtalent.server.model.db.CandidateStatus;
 import org.tbbtalent.server.model.db.Gender;
+import org.tbbtalent.server.request.PagedSearchRequest;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-@Document(indexName = "jobs2")
+@Document(indexName = "candidates")
 public class CandidateEs {
+
+    private static final String[] sortingFields = {
+            "masterId",
+            "country",
+            "gender",
+            "firstName",
+            "lastName",
+            "nationality",
+            "status"
+    }; 
+   
     @Id
     private String id;
+
+    @Field(type = FieldType.Keyword)
+    private String country;
+
+    @Field(type = FieldType.Text)
+    private String cvs;
+
+    @Field(type = FieldType.Text)
+    private String educations;
+
+    @Field(type = FieldType.Keyword)
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
+    @Field(type = FieldType.Keyword)
+    private String firstName;
+
+    @Field(type = FieldType.Text)
+    private String jobExperiences;
+
+    @Field(type = FieldType.Keyword)
+    private String lastName;
 
     /**
      * Id of matching Candidate record in database
      */
     private Long masterId;
-    
-    @Enumerated(EnumType.STRING)
-    private Gender gender;
-//    private String additionalInfo;
-//    private String candidateMessage;
-//
-//    private EducationLevel maxEducationLevel;
-//
-//    private Country country;
-//
-//    private Nationality nationality;
-//
-//    private List<CandidateOccupation> candidateOccupations;
-//
-//    private List<CandidateEducation> candidateEducations;
-//
-//    private List<CandidateLanguage> candidateLanguages;
-//
-//    private List<CandidateJobExperience> candidateJobExperiences;
-//
-//    private List<CandidateCertification> candidateCertifications;
-//
-//    @Field(type = FieldType.Nested, includeInParent = true)
-//    private List<CandidateSkill> candidateSkills;
+
+    @Field(type = FieldType.Keyword)
+    private String nationality;
 
     @Field(type = FieldType.Text)
-    private String candidateAttachments;
+    private String occupations;
+
+    @Field(type = FieldType.Keyword)
+    @Enumerated(EnumType.STRING)
+    private CandidateStatus status;
+
+
+    //todo add extra text fields and fields needed for sorting
+//    private String additionalInfo;
+//    private String candidateMessage;
+//    private List<CandidateCertification> candidateCertifications;
+//    private List<CandidateSkill> candidateSkills;
 
     public CandidateEs() {
     }
@@ -68,27 +97,99 @@ public class CandidateEs {
     }
     
     void copy(Candidate candidate) {
-        this.masterId = candidate.getId();
-        this.gender = candidate.getGender();
 //        this.additionalInfo = candidate.getAdditionalInfo();
 //        this.candidateMessage = candidate.getCandidateMessage();
-//        this.maxEducationLevel = candidate.getMaxEducationLevel();
-//        this.country = candidate.getCountry();
-//        this.nationality = candidate.getNationality();
-//        this.candidateOccupations = candidate.getCandidateOccupations();
-//        this.candidateEducations = candidate.getCandidateEducations();
-//        this.candidateLanguages = candidate.getCandidateLanguages();
-//        this.candidateJobExperiences = candidate.getCandidateJobExperiences();
 //        this.candidateCertifications = candidate.getCandidateCertifications();
 //        this.candidateSkills = candidate.getCandidateSkills();
-        
-        this.candidateAttachments = "";
+
+        this.firstName = candidate.getUser().getFirstName();
+        this.gender = candidate.getGender();
+        this.country = candidate.getCountry().getName();
+        this.lastName = candidate.getUser().getLastName();
+        this.masterId = candidate.getId();
+        this.nationality = candidate.getNationality().getName();
+        this.status = candidate.getStatus();
+
+        this.cvs = "";
         List<CandidateAttachment> candidateAttachments = candidate.getCandidateAttachments();
         for (CandidateAttachment attachment : candidateAttachments) {
             final String textExtract = attachment.getTextExtract();
             if (textExtract != null) {
-                this.candidateAttachments += textExtract + " ";
+                this.cvs += textExtract + " ";
             }
         }
+
+        this.educations = "";
+        List<CandidateEducation> educations = candidate.getCandidateEducations();
+        for (CandidateEducation education : educations) {
+            final String text = education.getCourseName();
+            if (text != null) {
+                this.educations += text + " ";
+            }
+        }
+        
+        this.jobExperiences = "";
+        List<CandidateJobExperience> jobs = candidate.getCandidateJobExperiences();
+        for (CandidateJobExperience job : jobs) {
+            String text = job.getRole();
+            if (text != null) {
+                this.jobExperiences += text + " ";
+            }
+            text = job.getDescription();
+            if (text != null) {
+                this.jobExperiences += text + " ";
+            }
+        }
+        
+        this.occupations = "";
+        List<CandidateOccupation> occupations = candidate.getCandidateOccupations();
+        for (CandidateOccupation occupation : occupations) {
+            if (occupation != null && occupation.getOccupation() != null) {
+                String text = occupation.getOccupation().getName();
+                if (text != null) {
+                    this.occupations += text + " ";
+                }
+            }
+        }
+    }
+    
+    public static PageRequest getAdjustedPagedSearchRequest(
+            PagedSearchRequest request) {
+        PageRequest requestAdj;
+        
+        String[] sortFields = request.getSortFields();
+        if (sortFields != null && sortFields.length > 0) {
+            String sortField = sortFields[0];
+            
+            //Special hack for id field - which is masterId in CandidateEs
+            if (sortField.equals("id")) {
+                sortField = "masterId";
+            }
+            
+            boolean matched = false;
+
+            //Type to match field with a sortable field
+            for (String sortingField : sortingFields) {
+                if (sortField.contains(sortingField)) {
+                    matched = true;
+                    sortField = sortingField;
+                    break;
+                }
+            }
+            
+            if (!matched) {
+                requestAdj = PageRequest.of(
+                        request.getPageNumber(), request.getPageSize());
+            } else {
+                requestAdj = PageRequest.of(
+                        request.getPageNumber(), request.getPageSize(),
+                        request.getSortDirection(), sortField
+                );
+            }
+        } else {
+            requestAdj = PageRequest.of(
+                    request.getPageNumber(), request.getPageSize());
+        }
+        return requestAdj;
     }
 }

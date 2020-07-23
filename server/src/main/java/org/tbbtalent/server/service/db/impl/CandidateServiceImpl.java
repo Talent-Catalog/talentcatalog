@@ -30,6 +30,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -308,12 +309,19 @@ public class CandidateServiceImpl implements CandidateService {
     private Page<Candidate> doSearchCandidates(SearchCandidateRequest request) {
 
         Page<Candidate> candidates;
-        final String simpleQueryString = request.getSimpleQueryString();
+        String simpleQueryString = request.getSimpleQueryString();
         if (simpleQueryString != null) {
             //This is an elastic search request
+            
+            //Modify the search to escape out any "
+            final String replacement = "\\\\\\\\\"";
+            simpleQueryString = 
+            simpleQueryString.replaceAll("\"", replacement);
+            
             //todo Need to support sorting 
+            PageRequest req = CandidateEs.getAdjustedPagedSearchRequest(request);
             Page<CandidateEs> candidateProxies = candidateEsRepository
-                    .simpleQueryString(simpleQueryString, request.getPageRequestWithoutSort());
+                    .simpleQueryString(simpleQueryString, req);
             //Get candidate ids from the returned results - maintaining the sort
             //Avoid duplicates, but maintaining order by using a LinkedHashSet
             LinkedHashSet<Long> candidateIds = new LinkedHashSet<>();
@@ -545,7 +553,13 @@ public class CandidateServiceImpl implements CandidateService {
 
         candidate = this.candidateRepository.save(candidate);
 
-
+        //Create the corresponding CandidateEs.
+        CandidateEs ces = new CandidateEs(candidate);
+        ces = candidateEsRepository.save(ces);
+        
+        //Update textSearchId on candidate.
+        String textSearchId = ces.getId();
+        candidate.setTextSearchId(textSearchId);
 
         String candidateNumber = String.format("%04d", candidate.getId());
         candidate.setCandidateNumber(candidateNumber);
@@ -665,7 +679,11 @@ public class CandidateServiceImpl implements CandidateService {
     public boolean deleteCandidate(long id) {
         Candidate candidate = candidateRepository.findById(id).orElse(null);
         if (candidate != null) {
+            String textSearchId = candidate.getTextSearchId();
             candidateRepository.delete(candidate);
+            if (textSearchId != null) {
+                candidateEsRepository.deleteById(textSearchId);
+            }
             return true;
         } else {
             return false;

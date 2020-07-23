@@ -169,7 +169,13 @@ public class SystemAdminApi {
         int count = 0;
         for (Candidate candidate : candidates) {
             ces = new CandidateEs(candidate);
-            candidateEsRepository.save(ces);
+            ces = candidateEsRepository.save(ces);
+
+            //Update textSearchId on candidate.
+            String textSearchId = ces.getId();
+            candidate.setTextSearchId(textSearchId);
+            candidateRepository.save(candidate);
+
             count++;
             if (count%100 == 0) {
                 log.info(count + " candidates added to Elasticsearch");
