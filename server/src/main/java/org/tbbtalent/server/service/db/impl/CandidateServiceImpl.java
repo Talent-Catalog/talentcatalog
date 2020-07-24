@@ -241,7 +241,7 @@ public class CandidateServiceImpl implements CandidateService {
      */
     private void saveIt(Candidate candidate) {
         candidate.setAuditFields(userContext.getLoggedInUser());
-        candidateRepository.save(candidate);
+        save(candidate, true);
     }
 
     //todo this is horrible cloned code duplicated from SavedSearchServiceImpl - factor it out.
@@ -551,19 +551,15 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setCountry(countryRepository.getOne(0L));
         candidate.setNationality(nationalityRepository.getOne(0L));
 
-        candidate = this.candidateRepository.save(candidate);
+        //Save candidate to get id (but don't update Elasticsearch yet)
+        candidate = save(candidate, false);
 
-        //Create the corresponding CandidateEs.
-        CandidateEs ces = new CandidateEs(candidate);
-        ces = candidateEsRepository.save(ces);
-        
-        //Update textSearchId on candidate.
-        String textSearchId = ces.getId();
-        candidate.setTextSearchId(textSearchId);
-
+        //Use id to generate candidate number
         String candidateNumber = String.format("%04d", candidate.getId());
         candidate.setCandidateNumber(candidateNumber);
-        candidate = this.candidateRepository.save(candidate);
+        
+        //Now save again with candidateNumber, updating Elasticsearch
+        candidate = save(candidate, true);
 
         return candidate;
     }
@@ -578,7 +574,7 @@ public class CandidateServiceImpl implements CandidateService {
         CandidateStatus originalStatus = candidate.getStatus();
         candidate.setStatus(request.getStatus());
         candidate.setCandidateMessage(request.getCandidateMessage());
-        candidate = candidateRepository.save(candidate);
+        candidate = save(candidate, true);
         if (!request.getStatus().equals(originalStatus)){
             candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(id, "Status change from " + originalStatus + " to " + request.getStatus(), request.getComment()));
             if (request.getStatus().equals(CandidateStatus.incomplete)) {
@@ -602,7 +598,7 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setSflink(request.getSflink());
         candidate.setFolderlink(request.getFolderlink());
         candidate.setVideolink(request.getVideolink());
-        candidate = candidateRepository.save(candidate);
+        candidate = save(candidate, true);
         return candidate;
     }
 
@@ -642,7 +638,7 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setNationality(nationality);
         candidate.setUnRegistered(request.getUnRegistered());
         candidate.setUnRegistrationNumber(request.getUnRegistrationNumber());
-        return candidateRepository.save(candidate);
+        return save(candidate, true);
     }
 
     @Override
@@ -653,7 +649,7 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
 
         candidate.setAdditionalInfo(request.getAdditionalInfo());
-        return candidateRepository.save(candidate);
+        return save(candidate, true);
     }
 
     @Override
@@ -671,7 +667,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
         candidate.setSurveyType(surveyType);
         candidate.setSurveyComment(request.getSurveyComment());
-        return candidateRepository.save(candidate);
+        return save(candidate, true);
     }
 
     @Override
@@ -749,8 +745,8 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setPhone(request.getPhone());
         candidate.setWhatsapp(request.getWhatsapp());
         candidate.setAuditFields(user);
-        candidate = candidateRepository.save(candidate);
         candidate.setUser(user);
+        candidate = save(candidate, true);
         return candidate;
     }
 
@@ -780,7 +776,7 @@ public class CandidateServiceImpl implements CandidateService {
             candidate.setUnRegistrationNumber(request.getRegistrationId());
             candidate.setAuditFields(user);
         }
-        return candidateRepository.save(candidate);
+        return save(candidate, true);
     }
 
     @Override
@@ -796,7 +792,7 @@ public class CandidateServiceImpl implements CandidateService {
 
         candidate.setMaxEducationLevel(educationLevel);
         candidate.setAuditFields(candidate.getUser());
-        return candidateRepository.save(candidate);
+        return save(candidate, true);
     }
 
     @Override
@@ -813,7 +809,7 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setSurveyComment(request.getSurveyComment());
 
         candidate.setAuditFields(candidate.getUser());
-        return candidateRepository.save(candidate);
+        return save(candidate, true);
     }
 
     @Override
@@ -826,7 +822,7 @@ public class CandidateServiceImpl implements CandidateService {
             emailHelper.sendRegistrationEmail(candidate.getUser());
         }
         candidate.setAuditFields(candidate.getUser());
-        return candidateRepository.save(candidate);
+        return save(candidate, true);
     }
 
     @Override
@@ -1318,5 +1314,42 @@ public class CandidateServiceImpl implements CandidateService {
         }
         return request;
     }
-    
+
+    @Override
+    public Candidate save(Candidate candidate, boolean updateCandidateEs) {
+        Candidate ret = candidateRepository.save(candidate);
+        if (updateCandidateEs) {
+            CandidateEs twin;
+            //Get textSearchId, if any
+            String textSearchId = ret.getTextSearchId();
+            if (textSearchId == null) {
+                //No twin - create one
+                twin = new CandidateEs(candidate);
+            } else {
+                //Get twin
+                twin = candidateEsRepository.findById(textSearchId)
+                        .orElse(null);
+                if (twin == null) {
+                    //Candidate is referring to non existent twin.
+                    //Create new twin
+                    twin = new CandidateEs(candidate);
+
+                    //Shouldn't really happen (except during a complete reload, so log warning
+                    log.warn("Candidate " + ret.getId() +
+                            " refers to non existent Elasticsearch id "
+                            + textSearchId + ". Creating new twin.");
+                } else {
+                    //Update twin from candidate
+                    twin.copy(candidate);
+                }
+            }
+            twin = candidateEsRepository.save(twin);
+            textSearchId = twin.getId();
+
+            //Update textSearchId on candidate.
+            candidate.setTextSearchId(textSearchId);
+            ret = candidateRepository.save(candidate);
+        }
+        return ret;
+    }
 }

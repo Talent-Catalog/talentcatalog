@@ -44,6 +44,7 @@ import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.es.CandidateEsRepository;
 import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.DataSharingService;
 import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
 import org.tbbtalent.server.util.textExtract.TextExtractHelper;
@@ -61,6 +62,7 @@ public class SystemAdminApi {
 
     private final CandidateAttachmentRepository candidateAttachmentRepository;
     private final CandidateRepository candidateRepository;
+    private final CandidateService candidateService;
     private final CandidateEsRepository candidateEsRepository;
     private final S3ResourceHelper s3ResourceHelper;
 
@@ -80,12 +82,14 @@ public class SystemAdminApi {
     @Autowired
     public SystemAdminApi(
             CandidateRepository candidateRepository,
+            CandidateService candidateService,
             CandidateEsRepository candidateEsRepository,
             DataSharingService dataSharingService,
             UserContext userContext, 
             CandidateAttachmentRepository candidateAttachmentRepository, 
             S3ResourceHelper s3ResourceHelper) {
         this.candidateRepository = candidateRepository;
+        this.candidateService = candidateService;
         this.candidateEsRepository = candidateEsRepository;
         this.dataSharingService = dataSharingService;
         this.userContext = userContext;
@@ -95,7 +99,7 @@ public class SystemAdminApi {
     }
 
     public static void main(String[] args) {
-        SystemAdminApi api = new SystemAdminApi(null, null, null, null, null, null);
+        SystemAdminApi api = new SystemAdminApi(null, null, null, null, null, null, null);
         api.setTargetJdbcUrl("jdbc:postgresql://localhost:5432/tbbtalent");
         api.setTargetUser("tbbtalent");
         api.setTargetPwd("tbbtalent");
@@ -168,17 +172,21 @@ public class SystemAdminApi {
         List<Candidate> candidates = candidateRepository.findAllLoadText();
         int count = 0;
         for (Candidate candidate : candidates) {
-            ces = new CandidateEs(candidate);
-            ces = candidateEsRepository.save(ces);
+            try {
+                ces = new CandidateEs(candidate);
+                ces = candidateEsRepository.save(ces);
 
-            //Update textSearchId on candidate.
-            String textSearchId = ces.getId();
-            candidate.setTextSearchId(textSearchId);
-            candidateRepository.save(candidate);
+                //Update textSearchId on candidate.
+                String textSearchId = ces.getId();
+                candidate.setTextSearchId(textSearchId);
+                candidateService.save(candidate, false);
 
-            count++;
-            if (count%100 == 0) {
-                log.info(count + " candidates added to Elasticsearch");
+                count++;
+                if (count % 100 == 0) {
+                    log.info(count + " candidates added to Elasticsearch");
+                }
+            } catch (Exception ex) {
+                log.warn("Could not load candidate " + candidate.getId(), ex);
             }
         }
         log.info("Done: " + count + " candidates added to Elasticsearch");

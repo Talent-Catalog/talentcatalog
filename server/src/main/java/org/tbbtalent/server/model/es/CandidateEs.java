@@ -96,18 +96,22 @@ public class CandidateEs {
         copy(candidate);
     }
     
-    void copy(Candidate candidate) {
+    public void copy(Candidate candidate) {
 //        this.additionalInfo = candidate.getAdditionalInfo();
 //        this.candidateMessage = candidate.getCandidateMessage();
 //        this.candidateCertifications = candidate.getCandidateCertifications();
 //        this.candidateSkills = candidate.getCandidateSkills();
 
-        this.firstName = candidate.getUser().getFirstName();
+        this.firstName = candidate.getUser() == null ? null 
+                : candidate.getUser().getFirstName();
         this.gender = candidate.getGender();
-        this.country = candidate.getCountry().getName();
-        this.lastName = candidate.getUser().getLastName();
+        this.country = candidate.getCountry() == null ? null 
+                : candidate.getCountry().getName();
+        this.lastName = candidate.getUser() == null ? null 
+                : candidate.getUser().getLastName();
         this.masterId = candidate.getId();
-        this.nationality = candidate.getNationality().getName();
+        this.nationality = candidate.getNationality() == null ? null
+                : candidate.getNationality().getName();
         this.status = candidate.getStatus();
 
         this.cvs = "";

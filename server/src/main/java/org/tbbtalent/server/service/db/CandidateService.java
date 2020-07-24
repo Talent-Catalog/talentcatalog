@@ -15,6 +15,7 @@ import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.DataRow;
 import org.tbbtalent.server.model.db.Gender;
+import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
 import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
@@ -157,4 +158,15 @@ public interface CandidateService {
     Resource generateCv(Candidate candidate);
 
     void notifyWatchers();
+
+    /**
+     * IMPORTANT: Use this instead of {@link CandidateRepository#save} 
+     * Saves candidate to repository, but also optionally updates corresponding
+     * Elasticsearch CandidateEs
+     * @param candidate
+     * @param updateCandidateEs If true, will also update Elasticsearch
+     * @return Candidate object as returned by {@link CandidateRepository#save} 
+     */
+    Candidate save(Candidate candidate, boolean updateCandidateEs);
+
 }
