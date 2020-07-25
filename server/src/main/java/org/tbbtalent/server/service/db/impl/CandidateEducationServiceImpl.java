@@ -19,6 +19,7 @@ import org.tbbtalent.server.request.candidate.education.CreateCandidateEducation
 import org.tbbtalent.server.request.candidate.education.UpdateCandidateEducationRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.CandidateEducationService;
+import org.tbbtalent.server.service.db.CandidateService;
 
 @Service
 public class CandidateEducationServiceImpl implements CandidateEducationService {
@@ -27,17 +28,21 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
     private final CountryRepository countryRepository;
     private final EducationMajorRepository educationMajorRepository;
     private final CandidateRepository candidateRepository;
+    private final CandidateService candidateService;
     private final UserContext userContext;
 
     @Autowired
     public CandidateEducationServiceImpl(CandidateEducationRepository candidateEducationRepository,
                                          CountryRepository countryRepository,
-                                         EducationMajorRepository educationMajorRepository, CandidateRepository candidateRepository,
+                                         EducationMajorRepository educationMajorRepository, 
+                                         CandidateRepository candidateRepository,
+                                         CandidateService candidateService,
                                          UserContext userContext) {
         this.candidateEducationRepository = candidateEducationRepository;
         this.countryRepository = countryRepository;
         this.educationMajorRepository = educationMajorRepository;
         this.candidateRepository = candidateRepository;
+        this.candidateService = candidateService;
         this.userContext = userContext;
     }
 
@@ -47,7 +52,7 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
         CandidateEducation education = createCandidateEducation(candidate, request);
 
         candidate.setAuditFields(candidate.getUser());
-        candidateRepository.save(candidate);
+        candidateService.save(candidate, true);
 
         return education;
     }
@@ -86,7 +91,7 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
         Candidate candidate = userContext.getLoggedInCandidate();
         CandidateEducation candidateEducation = updateCandidateEducation(candidate.getId(), request);
         candidate.setAuditFields(candidate.getUser());
-        candidateRepository.save(candidate);
+        candidateService.save(candidate, true);
         return candidateEducation;
     }
 
@@ -105,7 +110,7 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
         candidateEducationRepository.delete(candidateEducation);
 
         candidate.setAuditFields(candidate.getUser());
-        candidateRepository.save(candidate);
+        candidateService.save(candidate, true);
     }
 
     @Override

@@ -20,6 +20,7 @@ import org.tbbtalent.server.request.work.experience.SearchJobExperienceRequest;
 import org.tbbtalent.server.request.work.experience.UpdateJobExperienceRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.CandidateJobExperienceService;
+import org.tbbtalent.server.service.db.CandidateService;
 
 @Service
 public class CandidateJobExperienceImpl implements CandidateJobExperienceService {
@@ -27,6 +28,7 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
     private final CandidateJobExperienceRepository candidateJobExperienceRepository;
     private final CountryRepository countryRepository;
     private final CandidateRepository candidateRepository;
+    private final CandidateService candidateService;
     private final CandidateOccupationRepository candidateOccupationRepository;
     private final UserContext userContext;
 
@@ -34,11 +36,13 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
     public CandidateJobExperienceImpl(CandidateJobExperienceRepository candidateJobExperienceRepository,
                                       CandidateOccupationRepository candidateOccupationRepository,
                                       CountryRepository countryRepository,
+                                      CandidateService candidateService,
                                       CandidateRepository candidateRepository,
                                       UserContext userContext) {
         this.candidateJobExperienceRepository = candidateJobExperienceRepository;
         this.countryRepository = countryRepository;
         this.candidateRepository = candidateRepository;
+        this.candidateService = candidateService;
         this.candidateOccupationRepository = candidateOccupationRepository;
         this.userContext = userContext;
     }
@@ -62,7 +66,6 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
         } else {
             candidate = userContext.getLoggedInCandidate();
             candidate.setAuditFields(candidate.getUser());
-            candidateRepository.save(candidate);
         }
 
         // Load the country from the database - throw an exception if not found
@@ -85,7 +88,12 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
         candidateJobExperience.setDescription(request.getDescription());
 
         // Save the candidateOccupation
-        return candidateJobExperienceRepository.save(candidateJobExperience);
+        final CandidateJobExperience jobExperience = candidateJobExperienceRepository.save(candidateJobExperience);
+
+        //Save the candidate
+        candidateService.save(candidate, true);
+        
+        return jobExperience;
     }
 
     @Override
@@ -93,7 +101,7 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
         Candidate candidate = userContext.getLoggedInCandidate();
         CandidateJobExperience experience = updateCandidateJobExperience(request.getId(), request);
         candidate.setAuditFields(candidate.getUser());
-        candidateRepository.save(candidate);
+        candidateService.save(candidate, true);
 
         return experience;
     }
@@ -157,7 +165,7 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
         candidateJobExperienceRepository.delete(candidateJobExperience);
 
         candidate.setAuditFields(candidate.getUser());
-        candidateRepository.save(candidate);
+        candidateService.save(candidate, true);
     }
 
     // Load the country from the database - throw an exception if not found

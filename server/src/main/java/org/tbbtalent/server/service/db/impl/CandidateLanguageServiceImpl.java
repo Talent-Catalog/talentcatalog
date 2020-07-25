@@ -24,12 +24,14 @@ import org.tbbtalent.server.request.candidate.language.UpdateCandidateLanguageRe
 import org.tbbtalent.server.request.candidate.language.UpdateCandidateLanguagesRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.CandidateLanguageService;
+import org.tbbtalent.server.service.db.CandidateService;
 
 @Service
 public class CandidateLanguageServiceImpl implements CandidateLanguageService {
 
     private final CandidateLanguageRepository candidateLanguageRepository;
     private final CandidateRepository candidateRepository;
+    private final CandidateService candidateService;
     private final LanguageRepository languageRepository;
     private final LanguageLevelRepository languageLevelRepository;
     private final UserContext userContext;
@@ -38,11 +40,13 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
     public CandidateLanguageServiceImpl(CandidateLanguageRepository candidateLanguageRepository,
                                         LanguageRepository languageRepository,
                                         CandidateRepository candidateRepository,
+                                        CandidateService candidateService,
                                         LanguageLevelRepository languageLevelRepository,
                                         UserContext userContext) {
         this.candidateLanguageRepository = candidateLanguageRepository;
         this.languageRepository = languageRepository;
         this.candidateRepository = candidateRepository;
+        this.candidateService = candidateService;
         this.languageLevelRepository = languageLevelRepository;
         this.userContext = userContext;
     }
@@ -72,7 +76,7 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
         // Save the candidateOccupation
         candidateLanguage = candidateLanguageRepository.save(candidateLanguage);
         candidate.setAuditFields(candidate.getUser());
-        candidateRepository.save(candidate);
+        candidateService.save(candidate, true);
         return candidateLanguage;
     }
 
@@ -114,7 +118,7 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
         }
         candidateLanguageRepository.delete(candidateLanguage);
         candidate.setAuditFields(candidate.getUser());
-        candidateRepository.save(candidate);
+        candidateService.save(candidate, true);
     }
 
     @Override
@@ -170,7 +174,7 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
         }
 
         candidate.setAuditFields(candidate.getUser());
-        candidateRepository.save(candidate);
+        candidateService.save(candidate, true);
 
         return candidateLanguages;
     }

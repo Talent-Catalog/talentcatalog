@@ -27,6 +27,7 @@ import org.tbbtalent.server.request.candidate.occupation.VerifyCandidateOccupati
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.CandidateNoteService;
 import org.tbbtalent.server.service.db.CandidateOccupationService;
+import org.tbbtalent.server.service.db.CandidateService;
 
 @Service
 public class CandidateOccupationServiceImpl implements CandidateOccupationService {
@@ -36,6 +37,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
     private final OccupationRepository occupationRepository;
     private final CandidateNoteService candidateNoteService;
     private final CandidateRepository candidateRepository;
+    private final CandidateService candidateService;
     private final UserContext userContext;
 
     @Autowired
@@ -43,10 +45,12 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
                                           CandidateJobExperienceRepository candidateJobExperienceRepository,
                                           OccupationRepository occupationRepository,
                                           CandidateRepository candidateRepository,
+                                          CandidateService candidateService,
                                           CandidateNoteService candidateNoteService, UserContext userContext) {
         this.candidateOccupationRepository = candidateOccupationRepository;
         this.candidateJobExperienceRepository = candidateJobExperienceRepository;
         this.candidateRepository = candidateRepository;
+        this.candidateService = candidateService;
         this.occupationRepository = occupationRepository;
         this.candidateNoteService = candidateNoteService;
         this.userContext = userContext;
@@ -94,7 +98,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         candidateOccupation = candidateOccupationRepository.save(candidateOccupation);
 
         candidate.setAuditFields(candidate.getUser());
-        candidateRepository.save(candidate);
+        candidateService.save(candidate, true);
 
         return candidateOccupation;
     }
@@ -123,7 +127,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         candidateOccupationRepository.delete(candidateOccupation);
 
         candidate.setAuditFields(candidate.getUser());
-        candidateRepository.save(candidate);
+        candidateService.save(candidate, true);
     }
 
     @Override
@@ -191,7 +195,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         }
 
         candidate.setAuditFields(candidate.getUser());
-        candidateRepository.save(candidate);
+        candidateService.save(candidate, true);
 
         return candidateOccupations;
     }

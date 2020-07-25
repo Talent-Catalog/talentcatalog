@@ -28,6 +28,7 @@ import org.tbbtalent.server.request.attachment.SearchCandidateAttachmentsRequest
 import org.tbbtalent.server.request.attachment.UpdateCandidateAttachmentRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.CandidateAttachmentService;
+import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
 import org.tbbtalent.server.util.textExtract.TextExtractHelper;
 
@@ -37,6 +38,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     private static final Logger log = LoggerFactory.getLogger(CandidateAttachmentsServiceImpl.class);
 
     private final CandidateRepository candidateRepository;
+    private final CandidateService candidateService;
     private final CandidateAttachmentRepository candidateAttachmentRepository;
     private final UserContext userContext;
     private final S3ResourceHelper s3ResourceHelper;
@@ -47,10 +49,12 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
     @Autowired
     public CandidateAttachmentsServiceImpl(CandidateRepository candidateRepository,
+                                           CandidateService candidateService,
                                            CandidateAttachmentRepository candidateAttachmentRepository,
                                            S3ResourceHelper s3ResourceHelper,
                                            UserContext userContext) {
         this.candidateRepository = candidateRepository;
+        this.candidateService = candidateService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
         this.s3ResourceHelper = s3ResourceHelper;
         this.userContext = userContext;
@@ -140,7 +144,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
         // Update candidate audit fields
         candidate.setAuditFields(user);
-        candidateRepository.save(candidate);
+        candidateService.save(candidate, true);
 
         return candidateAttachmentRepository.save(attachment);
     }
@@ -175,7 +179,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
         // Update the candidate audit fields
         candidate.setAuditFields(candidate.getUser());
-        candidateRepository.save(candidate);
+        candidateService.save(candidate, true);
     }
 
     @Override
@@ -225,7 +229,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         // Update the candidate audit fields
         Candidate candidate = candidateAttachment.getCandidate();
         candidate.setAuditFields(candidate.getUser());
-        candidateRepository.save(candidate);
+        candidateService.save(candidate, true);
 
         return candidateAttachmentRepository.save(candidateAttachment);
     }
