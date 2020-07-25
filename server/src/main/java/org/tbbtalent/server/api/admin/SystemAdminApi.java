@@ -167,8 +167,9 @@ public class SystemAdminApi {
     @GetMapping("esload")
     public String loadElasticsearch() {
         CandidateEs ces;
-        log.info("Adding candidates to Elasticsearch - deleting old candidates");
+        log.info("Replace all candidates in Elasticsearch - deleting old candidates");
         candidateEsRepository.deleteAll();
+        log.info("Old candidates deleted. Start adding new candidates.");
         List<Candidate> candidates = candidateRepository.findAllLoadText();
         int count = 0;
         for (Candidate candidate : candidates) {
