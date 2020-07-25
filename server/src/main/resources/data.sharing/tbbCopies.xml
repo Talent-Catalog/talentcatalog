@@ -254,9 +254,9 @@
                     </populate>
                     <fields>
                         user_id INT(11) NOT NULL,
-                        education_type VARCHAR(60),
-                        course_name VARCHAR(60),
-                        major VARCHAR(60),
+                        education_type VARCHAR(255),
+                        course_name VARCHAR(255),
+                        major VARCHAR(255),
                         graduation INT(11),
                         country_id INT(11),
                         institution VARCHAR(255)
@@ -310,8 +310,8 @@
                     </populate>
                     <fields>
                         user_id INT(11) NOT NULL,
-                        skill VARCHAR(60),
-                        time_period VARCHAR(60)
+                        skill VARCHAR(255),
+                        time_period VARCHAR(255)
                     </fields>
                 </table>
             </tables>
