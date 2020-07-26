@@ -116,42 +116,50 @@ public class CandidateEs {
 
         this.cvs = "";
         List<CandidateAttachment> candidateAttachments = candidate.getCandidateAttachments();
-        for (CandidateAttachment attachment : candidateAttachments) {
-            final String textExtract = attachment.getTextExtract();
-            if (textExtract != null) {
-                this.cvs += textExtract + " ";
+        if (candidateAttachments != null) {
+            for (CandidateAttachment attachment : candidateAttachments) {
+                final String textExtract = attachment.getTextExtract();
+                if (textExtract != null) {
+                    this.cvs += textExtract + " ";
+                }
             }
         }
 
         this.educations = "";
         List<CandidateEducation> educations = candidate.getCandidateEducations();
-        for (CandidateEducation education : educations) {
-            final String text = education.getCourseName();
-            if (text != null) {
-                this.educations += text + " ";
+        if (educations != null) {
+            for (CandidateEducation education : educations) {
+                final String text = education.getCourseName();
+                if (text != null) {
+                    this.educations += text + " ";
+                }
             }
         }
         
         this.jobExperiences = "";
         List<CandidateJobExperience> jobs = candidate.getCandidateJobExperiences();
-        for (CandidateJobExperience job : jobs) {
-            String text = job.getRole();
-            if (text != null) {
-                this.jobExperiences += text + " ";
-            }
-            text = job.getDescription();
-            if (text != null) {
-                this.jobExperiences += text + " ";
+        if (jobs != null) {
+            for (CandidateJobExperience job : jobs) {
+                String text = job.getRole();
+                if (text != null) {
+                    this.jobExperiences += text + " ";
+                }
+                text = job.getDescription();
+                if (text != null) {
+                    this.jobExperiences += text + " ";
+                }
             }
         }
         
         this.occupations = "";
         List<CandidateOccupation> occupations = candidate.getCandidateOccupations();
-        for (CandidateOccupation occupation : occupations) {
-            if (occupation != null && occupation.getOccupation() != null) {
-                String text = occupation.getOccupation().getName();
-                if (text != null) {
-                    this.occupations += text + " ";
+        if (occupations != null) {
+            for (CandidateOccupation occupation : occupations) {
+                if (occupation != null && occupation.getOccupation() != null) {
+                    String text = occupation.getOccupation().getName();
+                    if (text != null) {
+                        this.occupations += text + " ";
+                    }
                 }
             }
         }
