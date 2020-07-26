@@ -1317,11 +1317,13 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate save(Candidate candidate, boolean updateCandidateEs) {
-        Candidate ret = candidateRepository.save(candidate);
+        candidate = candidateRepository.save(candidate);
+        
         if (updateCandidateEs) {
+            //Find/create Elasticsearch twin candidate
             CandidateEs twin;
             //Get textSearchId, if any
-            String textSearchId = ret.getTextSearchId();
+            String textSearchId = candidate.getTextSearchId();
             if (textSearchId == null) {
                 //No twin - create one
                 twin = new CandidateEs(candidate);
@@ -1334,8 +1336,9 @@ public class CandidateServiceImpl implements CandidateService {
                     //Create new twin
                     twin = new CandidateEs(candidate);
 
-                    //Shouldn't really happen (except during a complete reload, so log warning
-                    log.warn("Candidate " + ret.getId() +
+                    //Shouldn't really happen (except during a complete reload) 
+                    // so log warning
+                    log.warn("Candidate " + candidate.getId() +
                             " refers to non existent Elasticsearch id "
                             + textSearchId + ". Creating new twin.");
                 } else {
@@ -1348,8 +1351,8 @@ public class CandidateServiceImpl implements CandidateService {
 
             //Update textSearchId on candidate.
             candidate.setTextSearchId(textSearchId);
-            ret = candidateRepository.save(candidate);
+            candidate = candidateRepository.save(candidate);
         }
-        return ret;
+        return candidate;
     }
 }

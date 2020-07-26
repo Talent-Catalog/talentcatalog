@@ -174,6 +174,10 @@ public class SystemAdminApi {
         int count = 0;
         for (Candidate candidate : candidates) {
             try {
+                //Remove any existing textSearchId's - because they will be
+                //invalid because we just deleted all existing candidates from
+                //Elasticsearch. This avoids a bunch of warnings being logged.
+                candidate.setTextSearchId(null);
                 ces = new CandidateEs(candidate);
                 ces = candidateEsRepository.save(ces);
 
