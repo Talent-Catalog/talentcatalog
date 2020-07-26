@@ -1370,7 +1370,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Candidate save(Candidate candidate, boolean updateCandidateEs) {
         candidate = candidateRepository.save(candidate);
-        
+        updateCandidateEs = false;
         if (updateCandidateEs) {
             //Find/create Elasticsearch twin candidate
             CandidateEs twin;
