@@ -140,7 +140,9 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             + " left join c.candidateAttachments catt "
             + " left join c.candidateLanguages clang "
             + " left join clang.language lang "
-            + " where c.status <> 'deleted'")
+            + " where c.status <> 'deleted'"
+            + " and c.textSearchId is null"
+    )
     List<Candidate> findAllLoadText();
 
     /**

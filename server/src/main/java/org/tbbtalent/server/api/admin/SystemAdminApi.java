@@ -168,7 +168,7 @@ public class SystemAdminApi {
     public String loadElasticsearch() {
         CandidateEs ces;
         log.info("Replace all candidates in Elasticsearch - deleting old candidates");
-        candidateEsRepository.deleteAll();
+//        candidateEsRepository.deleteAll();
         log.info("Old candidates deleted. Start adding new candidates.");
         List<Candidate> candidates = candidateRepository.findAllLoadText();
         int count = 0;
