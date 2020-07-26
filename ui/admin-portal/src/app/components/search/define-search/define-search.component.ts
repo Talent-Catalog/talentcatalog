@@ -222,6 +222,14 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
+  get simpleQueryString(): string {
+    return this.searchForm.value.simpleQueryString;
+  }
+
+  elastic(): boolean {
+    return this.simpleQueryString != null && this.simpleQueryString.length > 0;
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.savedSearch) {
       if (changes.savedSearch.previousValue !== changes.savedSearch.currentValue) {
