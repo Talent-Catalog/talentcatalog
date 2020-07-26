@@ -711,7 +711,11 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   renderCandidateRow(candidate: Candidate) {
-    return candidate.candidateNumber + ": " + candidate.user.firstName + " " + candidate.user.lastName;
+    if (this.isCandidateNameViewable()) {
+      return candidate.candidateNumber + ": " + candidate.user.firstName + " " + candidate.user.lastName;
+    } else {
+      return candidate.candidateNumber;
+    }
   }
 
   selectSearchResult ($event, input) {

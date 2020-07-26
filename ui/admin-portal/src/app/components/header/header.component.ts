@@ -104,7 +104,11 @@ export class HeaderComponent implements OnInit {
   }
 
   renderCandidateRow(candidate: Candidate) {
-    return candidate.candidateNumber + ": " + candidate.user.firstName + " " + candidate.user.lastName;
+    if (this.isUserLimited()) {
+      return candidate.candidateNumber;
+    } else {
+      return candidate.candidateNumber + ": " + candidate.user.firstName + " " + candidate.user.lastName;
+    }
   }
 
 
@@ -120,4 +124,10 @@ export class HeaderComponent implements OnInit {
     this.router.navigate(['candidate',  $event.item.candidateNumber]);
 
   }
+
+  isUserLimited(): boolean {
+    const role = this.loggedInUser ? this.loggedInUser.role : null;
+    return role === 'semilimited' || role === 'limited';
+  }
+
 }

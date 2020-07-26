@@ -447,14 +447,18 @@ public class CandidateServiceImpl implements CandidateService {
     public Page<Candidate> searchCandidates(CandidateEmailSearchRequest request) {
         String s = request.getCandidateEmail();
         User loggedInUser = userContext.getLoggedInUser();
-        Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
-        Page<Candidate> candidates;
+        if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.sourcepartneradmin) {
+            Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
+            Page<Candidate> candidates;
 
-        candidates = candidateRepository.searchCandidateEmail(
+            candidates = candidateRepository.searchCandidateEmail(
                     '%' + s +'%', sourceCountries, request.getPageRequestWithoutSort());
 
-        log.info("Found " + candidates.getTotalElements() + " candidates in search");
-        return candidates;
+            log.info("Found " + candidates.getTotalElements() + " candidates in search");
+            return candidates;
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -470,9 +474,13 @@ public class CandidateServiceImpl implements CandidateService {
                         s +'%', sourceCountries,
                     request.getPageRequestWithoutSort());
         } else {
-            candidates = candidateRepository.searchCandidateName(
-                        '%' + s +'%', sourceCountries,
-                    request.getPageRequestWithoutSort());
+            if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.sourcepartneradmin) {
+                candidates = candidateRepository.searchCandidateName(
+                        '%' + s + '%', sourceCountries,
+                        request.getPageRequestWithoutSort());
+            } else {
+                return null;
+            }
         }
 
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
@@ -483,14 +491,18 @@ public class CandidateServiceImpl implements CandidateService {
     public Page<Candidate> searchCandidates(CandidatePhoneSearchRequest request) {
         String s = request.getCandidatePhone();
         User loggedInUser = userContext.getLoggedInUser();
-        Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
-        Page<Candidate> candidates;
+        if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.sourcepartneradmin){
+            Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
+            Page<Candidate> candidates;
 
-        candidates = candidateRepository.searchCandidatePhone(
+            candidates = candidateRepository.searchCandidatePhone(
                     '%' + s +'%', sourceCountries, request.getPageRequestWithoutSort());
 
-        log.info("Found " + candidates.getTotalElements() + " candidates in search");
-        return candidates;
+            log.info("Found " + candidates.getTotalElements() + " candidates in search");
+            return candidates;
+        } else {
+            return null;
+        }
     }
 
     Specification<Candidate> addQuery(Specification<Candidate> query, SearchJoinRequest searchJoinRequest, List<Long> savedSearchIds) {
@@ -1134,28 +1146,68 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     private String[] getExportTitles() {
-        return new String[]{
-                "Candidate Number", "Candidate First Name", "Candidate Last Name", "Gender", "Country Residing", "Nationality",
-                "Dob", "Email", "Max Education Level", "Education Major", "English Spoken Level", "Occupation", "Link"
-        };
+        Role role = userContext.getLoggedInUser().getRole();
+        if(role == Role.semilimited){
+            return new String[]{
+                    "Candidate Number", "Gender", "Country Residing", "Nationality",
+                    "Dob", "Max Education Level", "Education Major", "English Spoken Level", "Occupation", "Link"
+            };
+        }else if(role == Role.limited){
+            return new String[]{
+                    "Candidate Number", "Gender", "Dob", "Max Education Level", "Education Major",
+                    "English Spoken Level", "Occupation", "Link"
+            };
+        } else {
+            return new String[]{
+                    "Candidate Number", "Candidate First Name", "Candidate Last Name", "Gender", "Country Residing", "Nationality",
+                    "Dob", "Email", "Max Education Level", "Education Major", "English Spoken Level", "Occupation", "Link"
+            };
+        }
     }
 
     private String[] getExportCandidateStrings(Candidate candidate) {
-        return new String[] {
-                candidate.getCandidateNumber(),
-                candidate.getUser().getFirstName(),
-                candidate.getUser().getLastName(),
-                candidate.getGender() != null ? candidate.getGender().toString() : null,
-                candidate.getCountry() != null ? candidate.getCountry().getName() : candidate.getMigrationCountry(),
-                candidate.getNationality() != null ? candidate.getNationality().getName() : null,
-                candidate.getDob() != null ? candidate.getDob().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) : null,
-                candidate.getUser().getEmail(),
-                candidate.getMaxEducationLevel() != null ? candidate.getMaxEducationLevel().getName() : null,
-                formatCandidateMajor(candidate.getCandidateEducations()),
-                getEnglishSpokenProficiency(candidate.getCandidateLanguages()),
-                formatCandidateOccupation(candidate.getCandidateOccupations()),
-                getCandidateExternalHref(candidate.getCandidateNumber())
-        };
+        Role role = userContext.getLoggedInUser().getRole();
+        if(role == Role.semilimited){
+            return new String[] {
+                    candidate.getCandidateNumber(),
+                    candidate.getGender() != null ? candidate.getGender().toString() : null,
+                    candidate.getCountry() != null ? candidate.getCountry().getName() : candidate.getMigrationCountry(),
+                    candidate.getNationality() != null ? candidate.getNationality().getName() : null,
+                    candidate.getDob() != null ? candidate.getDob().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) : null,
+                    candidate.getMaxEducationLevel() != null ? candidate.getMaxEducationLevel().getName() : null,
+                    formatCandidateMajor(candidate.getCandidateEducations()),
+                    getEnglishSpokenProficiency(candidate.getCandidateLanguages()),
+                    formatCandidateOccupation(candidate.getCandidateOccupations()),
+                    getCandidateExternalHref(candidate.getCandidateNumber())
+            };
+        }else if(role == Role.limited){
+            return new String[] {
+                    candidate.getCandidateNumber(),
+                    candidate.getGender() != null ? candidate.getGender().toString() : null,
+                    candidate.getDob() != null ? candidate.getDob().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) : null,
+                    candidate.getMaxEducationLevel() != null ? candidate.getMaxEducationLevel().getName() : null,
+                    formatCandidateMajor(candidate.getCandidateEducations()),
+                    getEnglishSpokenProficiency(candidate.getCandidateLanguages()),
+                    formatCandidateOccupation(candidate.getCandidateOccupations()),
+                    getCandidateExternalHref(candidate.getCandidateNumber())
+            };
+        }else{
+            return new String[] {
+                    candidate.getCandidateNumber(),
+                    candidate.getUser().getFirstName(),
+                    candidate.getUser().getLastName(),
+                    candidate.getGender() != null ? candidate.getGender().toString() : null,
+                    candidate.getCountry() != null ? candidate.getCountry().getName() : candidate.getMigrationCountry(),
+                    candidate.getNationality() != null ? candidate.getNationality().getName() : null,
+                    candidate.getDob() != null ? candidate.getDob().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) : null,
+                    candidate.getUser().getEmail(),
+                    candidate.getMaxEducationLevel() != null ? candidate.getMaxEducationLevel().getName() : null,
+                    formatCandidateMajor(candidate.getCandidateEducations()),
+                    getEnglishSpokenProficiency(candidate.getCandidateLanguages()),
+                    formatCandidateOccupation(candidate.getCandidateOccupations()),
+                    getCandidateExternalHref(candidate.getCandidateNumber())
+            };
+        }
     }
 
     private String getCandidateExternalHref(String candidateNumber) {
