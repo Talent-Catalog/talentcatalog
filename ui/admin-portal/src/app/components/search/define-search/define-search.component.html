@@ -48,13 +48,13 @@
         {{getError()}}
       </div>
 
-      <p class="alert alert-danger" *ngIf="elastic()">
+      <p hidden="true" class="alert alert-danger" *ngIf="elastic()">
         Note that, for now, if Elasticsearch is specified,
         all other inputs are ignored. But please go ahead and give it a try!
       </p>
 
       <form class="filter-form" [formGroup]="searchForm" (ngSubmit)="apply()" #formWrapper>
-        <div class="row">
+        <div hidden="true" class="row">
           <p>Introducing Elasticsearch which <strong>searches all CV's as well!</strong></p>
           <p>
           When searching + means AND, space means OR.
@@ -68,7 +68,7 @@
         </div>
         <div class="row">
 
-          <div class="form-group col-12 col-md-3">
+          <div hidden="true" class="form-group col-12 col-md-3">
             <label for="simpleQueryString">Elasticsearch</label>
             <input id="simpleQueryString" type="text" class="form-control" placeholder="eg welder diesel+mechanic" aria-label="Elastic"
                    formControlName="simpleQueryString"
