@@ -5,9 +5,7 @@
 package org.tbbtalent.server.repository.es;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -30,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
  *
  * @author John Cameron
  */
-@SpringBootTest
+//@SpringBootTest
 public class CandidateEsRepositoryTest {
 
     @Autowired
@@ -58,8 +56,8 @@ public class CandidateEsRepositoryTest {
 //        candidateEsRepository.deleteAll();
 //    }
 
-    @Transactional
-    @Test
+//    @Transactional
+//    @Test
     public void givenPersistedArticles_whenUseRegexQuery_thenRightArticlesFound() {
         final Query searchQuery = new NativeSearchQueryBuilder()
                 .withQuery(fuzzyQuery("candidateAttachments", "Condell"))
@@ -71,8 +69,8 @@ public class CandidateEsRepositoryTest {
         assertEquals(1, cands.getTotalHits());
     }
 
-    @Transactional
-    @Test
+//    @Transactional
+//    @Test
     public void testSimpleQuery() {
         Page<CandidateEs> candidates = candidateEsRepository
                 .simpleQueryString("sql + html", 
