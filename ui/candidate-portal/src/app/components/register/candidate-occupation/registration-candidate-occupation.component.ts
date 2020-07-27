@@ -42,7 +42,7 @@ export class RegistrationCandidateOccupationComponent implements OnInit, OnDestr
   occupations: Occupation[];
   showForm;
   subscription;
-  occValid: boolean;
+  invalidOccupation: CandidateOccupation;
   candidateOccupation: CandidateOccupation;
   candidateJobExperiences: CandidateJobExperience[];
 
@@ -154,16 +154,11 @@ export class RegistrationCandidateOccupationComponent implements OnInit, OnDestr
     if (this.form.valid) {
       this.addOccupation();
     }
-    this.candidateOccupations.find(occ => {
-      if (occ.yearsExperience == null) {
-        this.occValid = false;
-        this.error = "Years Experience field is required.";
-      }
-    });
+    this.invalidOccupation = this.candidateOccupations.find(occ => occ.yearsExperience < 0 );
     const request = {
       updates: this.candidateOccupations
     };
-    if (this.occValid) {
+    if (!this.invalidOccupation) {
       this.candidateOccupationService.updateCandidateOccupations(request).subscribe(
         (response) => {
           if (dir === 'next') {
@@ -176,6 +171,8 @@ export class RegistrationCandidateOccupationComponent implements OnInit, OnDestr
         (error) => {
           this.error = error;
         });
+    } else {
+      this.error = "You need to put in a years experience value (from 0 upwards).";
     }
   }
 
