@@ -49,10 +49,12 @@
 
   <app-error [error]="error"></app-error>
 
+  <app-registration-footer [nextDisabled]="!form.valid && !candidateOccupations?.length"
+                           [type]="edit ? 'update' : 'step'"
+                           (backClicked)="edit ? cancel() : back()"
+                           (nextClicked)="next()">
+  </app-registration-footer>
+
 </div>
 
-<app-registration-footer [nextDisabled]="!form.valid && !candidateOccupations?.length"
-                         [type]="edit ? 'update' : 'step'"
-                         (backClicked)="edit ? cancel() : back()"
-                         (nextClicked)="next()">
-</app-registration-footer>
+
