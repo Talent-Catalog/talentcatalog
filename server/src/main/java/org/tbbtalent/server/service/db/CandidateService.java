@@ -38,6 +38,8 @@ import org.tbbtalent.server.request.candidate.stat.CandidateStatDateRequest;
 
 public interface CandidateService {
     
+    void populateElasticCandidates(boolean deleteExisting);
+    
     Page<Candidate> searchCandidates(SearchCandidateRequest request);
 
     Page<Candidate> searchCandidates(

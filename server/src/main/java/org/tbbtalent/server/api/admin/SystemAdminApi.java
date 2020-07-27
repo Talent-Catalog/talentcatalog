@@ -27,13 +27,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.model.db.AttachmentType;
-import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateAttachment;
 import org.tbbtalent.server.model.db.CandidateStatus;
 import org.tbbtalent.server.model.db.EducationType;
@@ -41,7 +39,6 @@ import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.NoteType;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.User;
-import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.es.CandidateEsRepository;
@@ -169,45 +166,8 @@ public class SystemAdminApi {
     @GetMapping("esload")
     public String loadElasticsearch(
             @RequestParam(value = "reset", required = false) String reset) {
-        
-        loadElasticCandidates(reset);
+        candidateService.populateElasticCandidates(reset != null);
         return "started";
-    }
-
-    @Async
-    void loadElasticCandidates(String reset) {
-        CandidateEs ces;
-        if (reset != null) {
-            log.info("Replace all candidates in Elasticsearch - deleting old candidates");
-            candidateEsRepository.deleteAll();
-            log.info("Old candidates deleted.");
-        }
-        List<Candidate> candidates = candidateRepository.findAllNonElasticLoadText();
-        log.info(candidates.size() + " candidates to be added.");
-        int count = 0;
-        for (Candidate candidate : candidates) {
-            try {
-                //Remove any existing textSearchId's - because they will be
-                //invalid because we just deleted all existing candidates from
-                //Elasticsearch. This avoids a bunch of warnings being logged.
-                candidate.setTextSearchId(null);
-                ces = new CandidateEs(candidate);
-                ces = candidateEsRepository.save(ces);
-
-                //Update textSearchId on candidate.
-                String textSearchId = ces.getId();
-                candidate.setTextSearchId(textSearchId);
-                candidateService.save(candidate, false);
-
-                count++;
-                if (count % 100 == 0) {
-                    log.info(count + " candidates added to Elasticsearch");
-                }
-            } catch (Exception ex) {
-                log.warn("Could not load candidate " + candidate.getId(), ex);
-            }
-        }
-        log.info("Done: " + count + " candidates added to Elasticsearch");
     }
 
     @GetMapping("migrate/extract")
