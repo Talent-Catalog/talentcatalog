@@ -27,8 +27,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.model.db.AttachmentType;
 import org.tbbtalent.server.model.db.Candidate;
@@ -165,12 +167,23 @@ public class SystemAdminApi {
     }
 
     @GetMapping("esload")
-    public String loadElasticsearch() {
+    public String loadElasticsearch(
+            @RequestParam(value = "reset", required = false) String reset) {
+        
+        loadElasticCandidates(reset);
+        return "started";
+    }
+
+    @Async
+    void loadElasticCandidates(String reset) {
         CandidateEs ces;
-        log.info("Replace all candidates in Elasticsearch - deleting old candidates");
-//        candidateEsRepository.deleteAll();
-        log.info("Old candidates deleted. Start adding new candidates.");
-        List<Candidate> candidates = candidateRepository.findAllLoadText();
+        if (reset != null) {
+            log.info("Replace all candidates in Elasticsearch - deleting old candidates");
+            candidateEsRepository.deleteAll();
+            log.info("Old candidates deleted.");
+        }
+        List<Candidate> candidates = candidateRepository.findAllNonElasticLoadText();
+        log.info(candidates.size() + " candidates to be added.");
         int count = 0;
         for (Candidate candidate : candidates) {
             try {
@@ -195,7 +208,6 @@ public class SystemAdminApi {
             }
         }
         log.info("Done: " + count + " candidates added to Elasticsearch");
-        return "done";
     }
 
     @GetMapping("migrate/extract")

@@ -143,7 +143,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             + " where c.status <> 'deleted'"
             + " and c.textSearchId is null"
     )
-    List<Candidate> findAllLoadText();
+    List<Candidate> findAllNonElasticLoadText();
 
     /**
      * ADMIN PORTAL DISPLAY CANDIDATE METHODS: includes source country restrictions.
