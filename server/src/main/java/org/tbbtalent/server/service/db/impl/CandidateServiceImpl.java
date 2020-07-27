@@ -10,6 +10,7 @@ import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,6 +29,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -58,6 +61,7 @@ import org.tbbtalent.server.model.db.SearchType;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.SurveyType;
 import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.CandidateSpecification;
 import org.tbbtalent.server.repository.db.CountryRepository;
@@ -68,6 +72,7 @@ import org.tbbtalent.server.repository.db.SavedListRepository;
 import org.tbbtalent.server.repository.db.SavedSearchRepository;
 import org.tbbtalent.server.repository.db.SurveyTypeRepository;
 import org.tbbtalent.server.repository.db.UserRepository;
+import org.tbbtalent.server.repository.es.CandidateEsRepository;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.candidate.BaseCandidateContactRequest;
 import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
@@ -110,6 +115,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final SavedListRepository savedListRepository;
     private final SavedSearchRepository savedSearchRepository;
     private final CandidateRepository candidateRepository;
+    private final CandidateEsRepository candidateEsRepository;
     private final CountryRepository countryRepository;
     private final EducationLevelRepository educationLevelRepository;
     private final NationalityRepository nationalityRepository;
@@ -126,6 +132,7 @@ public class CandidateServiceImpl implements CandidateService {
                                 SavedListRepository savedListRepository,
                                 SavedSearchRepository savedSearchRepository,
                                 CandidateRepository candidateRepository,
+                                CandidateEsRepository candidateEsRepository,
                                 CountryRepository countryRepository,
                                 EducationLevelRepository educationLevelRepository,
                                 NationalityRepository nationalityRepository,
@@ -139,6 +146,7 @@ public class CandidateServiceImpl implements CandidateService {
         this.savedListRepository = savedListRepository;
         this.savedSearchRepository = savedSearchRepository;
         this.candidateRepository = candidateRepository;
+        this.candidateEsRepository = candidateEsRepository;
         this.countryRepository = countryRepository;
         this.educationLevelRepository = educationLevelRepository;
         this.nationalityRepository = nationalityRepository;
@@ -233,7 +241,7 @@ public class CandidateServiceImpl implements CandidateService {
      */
     private void saveIt(Candidate candidate) {
         candidate.setAuditFields(userContext.getLoggedInUser());
-        candidateRepository.save(candidate);
+        save(candidate, true);
     }
 
     //todo this is horrible cloned code duplicated from SavedSearchServiceImpl - factor it out.
@@ -299,21 +307,61 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     private Page<Candidate> doSearchCandidates(SearchCandidateRequest request) {
-        User user = userContext.getLoggedInUser();
 
-        List<Long> searchIds = new ArrayList<>();
-        if (request.getSavedSearchId() != null) {
-            searchIds.add(request.getSavedSearchId());
-        }
-
-        Specification<Candidate> query = CandidateSpecification.buildSearchQuery(request, user);
-        if (CollectionUtils.isNotEmpty(request.getSearchJoinRequests())) {
-            for (SearchJoinRequest searchJoinRequest : request.getSearchJoinRequests()) {
-                query = addQuery(query, searchJoinRequest, searchIds);
+        Page<Candidate> candidates;
+        String simpleQueryString = request.getSimpleQueryString();
+        if (simpleQueryString != null) {
+            //This is an elastic search request
+            
+            //Modify the search to escape out any "
+            final String replacement = "\\\\\\\\\"";
+            simpleQueryString = 
+            simpleQueryString.replaceAll("\"", replacement);
+            
+            //todo Need to support sorting 
+            PageRequest req = CandidateEs.getAdjustedPagedSearchRequest(request);
+            Page<CandidateEs> candidateProxies = candidateEsRepository
+                    .simpleQueryString(simpleQueryString, req);
+            //Get candidate ids from the returned results - maintaining the sort
+            //Avoid duplicates, but maintaining order by using a LinkedHashSet
+            LinkedHashSet<Long> candidateIds = new LinkedHashSet<>();
+            for (CandidateEs candidateProxy : candidateProxies) {
+                candidateIds.add(candidateProxy.getMasterId());
             }
-        }
+            //Now fetch those candidates from the normal database
+            //They will come back in random order
+            List<Candidate> unsorted = candidateRepository.findByIds(candidateIds);
+            //Put the results in a map indexed by the id
+            Map<Long, Candidate> mapById = new HashMap<>();
+            for (Candidate candidate : unsorted) {
+                mapById.put(candidate.getId(), candidate);
+            }
+            //Now construct a candidate list sorted according to the original
+            //list of ids.
+            List<Candidate> candidateList = new ArrayList<>();
+            for (Long candidateId : candidateIds) {
+                candidateList.add(mapById.get(candidateId));
+            }
+            candidates = new PageImpl<>(candidateList, request.getPageRequest(), 
+                    candidateProxies.getTotalElements());  
+        } else {
 
-        Page<Candidate> candidates = candidateRepository.findAll(query, request.getPageRequestWithoutSort());
+            User user = userContext.getLoggedInUser();
+
+            List<Long> searchIds = new ArrayList<>();
+            if (request.getSavedSearchId() != null) {
+                searchIds.add(request.getSavedSearchId());
+            }
+
+            Specification<Candidate> query = CandidateSpecification.buildSearchQuery(request, user);
+            if (CollectionUtils.isNotEmpty(request.getSearchJoinRequests())) {
+                for (SearchJoinRequest searchJoinRequest : request.getSearchJoinRequests()) {
+                    query = addQuery(query, searchJoinRequest, searchIds);
+                }
+            }
+
+            candidates = candidateRepository.findAll(query, request.getPageRequestWithoutSort());
+        }
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
         return candidates;
     }
@@ -399,14 +447,18 @@ public class CandidateServiceImpl implements CandidateService {
     public Page<Candidate> searchCandidates(CandidateEmailSearchRequest request) {
         String s = request.getCandidateEmail();
         User loggedInUser = userContext.getLoggedInUser();
-        Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
-        Page<Candidate> candidates;
+        if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.sourcepartneradmin) {
+            Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
+            Page<Candidate> candidates;
 
-        candidates = candidateRepository.searchCandidateEmail(
+            candidates = candidateRepository.searchCandidateEmail(
                     '%' + s +'%', sourceCountries, request.getPageRequestWithoutSort());
 
-        log.info("Found " + candidates.getTotalElements() + " candidates in search");
-        return candidates;
+            log.info("Found " + candidates.getTotalElements() + " candidates in search");
+            return candidates;
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -422,9 +474,13 @@ public class CandidateServiceImpl implements CandidateService {
                         s +'%', sourceCountries,
                     request.getPageRequestWithoutSort());
         } else {
-            candidates = candidateRepository.searchCandidateName(
-                        '%' + s +'%', sourceCountries,
-                    request.getPageRequestWithoutSort());
+            if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.sourcepartneradmin) {
+                candidates = candidateRepository.searchCandidateName(
+                        '%' + s + '%', sourceCountries,
+                        request.getPageRequestWithoutSort());
+            } else {
+                return null;
+            }
         }
 
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
@@ -435,14 +491,18 @@ public class CandidateServiceImpl implements CandidateService {
     public Page<Candidate> searchCandidates(CandidatePhoneSearchRequest request) {
         String s = request.getCandidatePhone();
         User loggedInUser = userContext.getLoggedInUser();
-        Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
-        Page<Candidate> candidates;
+        if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.sourcepartneradmin){
+            Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
+            Page<Candidate> candidates;
 
-        candidates = candidateRepository.searchCandidatePhone(
+            candidates = candidateRepository.searchCandidatePhone(
                     '%' + s +'%', sourceCountries, request.getPageRequestWithoutSort());
 
-        log.info("Found " + candidates.getTotalElements() + " candidates in search");
-        return candidates;
+            log.info("Found " + candidates.getTotalElements() + " candidates in search");
+            return candidates;
+        } else {
+            return null;
+        }
     }
 
     Specification<Candidate> addQuery(Specification<Candidate> query, SearchJoinRequest searchJoinRequest, List<Long> savedSearchIds) {
@@ -503,13 +563,15 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setCountry(countryRepository.getOne(0L));
         candidate.setNationality(nationalityRepository.getOne(0L));
 
-        candidate = this.candidateRepository.save(candidate);
+        //Save candidate to get id (but don't update Elasticsearch yet)
+        candidate = save(candidate, false);
 
-
-
+        //Use id to generate candidate number
         String candidateNumber = String.format("%04d", candidate.getId());
         candidate.setCandidateNumber(candidateNumber);
-        candidate = this.candidateRepository.save(candidate);
+        
+        //Now save again with candidateNumber, updating Elasticsearch
+        candidate = save(candidate, true);
 
         return candidate;
     }
@@ -524,7 +586,7 @@ public class CandidateServiceImpl implements CandidateService {
         CandidateStatus originalStatus = candidate.getStatus();
         candidate.setStatus(request.getStatus());
         candidate.setCandidateMessage(request.getCandidateMessage());
-        candidate = candidateRepository.save(candidate);
+        candidate = save(candidate, true);
         if (!request.getStatus().equals(originalStatus)){
             candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(id, "Status change from " + originalStatus + " to " + request.getStatus(), request.getComment()));
             if (request.getStatus().equals(CandidateStatus.incomplete)) {
@@ -548,7 +610,7 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setSflink(request.getSflink());
         candidate.setFolderlink(request.getFolderlink());
         candidate.setVideolink(request.getVideolink());
-        candidate = candidateRepository.save(candidate);
+        candidate = save(candidate, true);
         return candidate;
     }
 
@@ -588,7 +650,7 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setNationality(nationality);
         candidate.setUnRegistered(request.getUnRegistered());
         candidate.setUnRegistrationNumber(request.getUnRegistrationNumber());
-        return candidateRepository.save(candidate);
+        return save(candidate, true);
     }
 
     @Override
@@ -599,7 +661,7 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
 
         candidate.setAdditionalInfo(request.getAdditionalInfo());
-        return candidateRepository.save(candidate);
+        return save(candidate, true);
     }
 
     @Override
@@ -617,7 +679,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
         candidate.setSurveyType(surveyType);
         candidate.setSurveyComment(request.getSurveyComment());
-        return candidateRepository.save(candidate);
+        return save(candidate, true);
     }
 
     @Override
@@ -625,7 +687,11 @@ public class CandidateServiceImpl implements CandidateService {
     public boolean deleteCandidate(long id) {
         Candidate candidate = candidateRepository.findById(id).orElse(null);
         if (candidate != null) {
+            String textSearchId = candidate.getTextSearchId();
             candidateRepository.delete(candidate);
+            if (textSearchId != null) {
+                candidateEsRepository.deleteById(textSearchId);
+            }
             return true;
         } else {
             return false;
@@ -691,8 +757,8 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setPhone(request.getPhone());
         candidate.setWhatsapp(request.getWhatsapp());
         candidate.setAuditFields(user);
-        candidate = candidateRepository.save(candidate);
         candidate.setUser(user);
+        candidate = save(candidate, true);
         return candidate;
     }
 
@@ -722,7 +788,7 @@ public class CandidateServiceImpl implements CandidateService {
             candidate.setUnRegistrationNumber(request.getRegistrationId());
             candidate.setAuditFields(user);
         }
-        return candidateRepository.save(candidate);
+        return save(candidate, true);
     }
 
     @Override
@@ -738,7 +804,7 @@ public class CandidateServiceImpl implements CandidateService {
 
         candidate.setMaxEducationLevel(educationLevel);
         candidate.setAuditFields(candidate.getUser());
-        return candidateRepository.save(candidate);
+        return save(candidate, true);
     }
 
     @Override
@@ -755,7 +821,7 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setSurveyComment(request.getSurveyComment());
 
         candidate.setAuditFields(candidate.getUser());
-        return candidateRepository.save(candidate);
+        return save(candidate, true);
     }
 
     @Override
@@ -768,7 +834,7 @@ public class CandidateServiceImpl implements CandidateService {
             emailHelper.sendRegistrationEmail(candidate.getUser());
         }
         candidate.setAuditFields(candidate.getUser());
-        return candidateRepository.save(candidate);
+        return save(candidate, true);
     }
 
     @Override
@@ -1080,28 +1146,68 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     private String[] getExportTitles() {
-        return new String[]{
-                "Candidate Number", "Candidate First Name", "Candidate Last Name", "Gender", "Country Residing", "Nationality",
-                "Dob", "Email", "Max Education Level", "Education Major", "English Spoken Level", "Occupation", "Link"
-        };
+        Role role = userContext.getLoggedInUser().getRole();
+        if(role == Role.semilimited){
+            return new String[]{
+                    "Candidate Number", "Gender", "Country Residing", "Nationality",
+                    "Dob", "Max Education Level", "Education Major", "English Spoken Level", "Occupation", "Link"
+            };
+        }else if(role == Role.limited){
+            return new String[]{
+                    "Candidate Number", "Gender", "Dob", "Max Education Level", "Education Major",
+                    "English Spoken Level", "Occupation", "Link"
+            };
+        } else {
+            return new String[]{
+                    "Candidate Number", "Candidate First Name", "Candidate Last Name", "Gender", "Country Residing", "Nationality",
+                    "Dob", "Email", "Max Education Level", "Education Major", "English Spoken Level", "Occupation", "Link"
+            };
+        }
     }
 
     private String[] getExportCandidateStrings(Candidate candidate) {
-        return new String[] {
-                candidate.getCandidateNumber(),
-                candidate.getUser().getFirstName(),
-                candidate.getUser().getLastName(),
-                candidate.getGender() != null ? candidate.getGender().toString() : null,
-                candidate.getCountry() != null ? candidate.getCountry().getName() : candidate.getMigrationCountry(),
-                candidate.getNationality() != null ? candidate.getNationality().getName() : null,
-                candidate.getDob() != null ? candidate.getDob().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) : null,
-                candidate.getUser().getEmail(),
-                candidate.getMaxEducationLevel() != null ? candidate.getMaxEducationLevel().getName() : null,
-                formatCandidateMajor(candidate.getCandidateEducations()),
-                getEnglishSpokenProficiency(candidate.getCandidateLanguages()),
-                formatCandidateOccupation(candidate.getCandidateOccupations()),
-                getCandidateExternalHref(candidate.getCandidateNumber())
-        };
+        Role role = userContext.getLoggedInUser().getRole();
+        if(role == Role.semilimited){
+            return new String[] {
+                    candidate.getCandidateNumber(),
+                    candidate.getGender() != null ? candidate.getGender().toString() : null,
+                    candidate.getCountry() != null ? candidate.getCountry().getName() : candidate.getMigrationCountry(),
+                    candidate.getNationality() != null ? candidate.getNationality().getName() : null,
+                    candidate.getDob() != null ? candidate.getDob().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) : null,
+                    candidate.getMaxEducationLevel() != null ? candidate.getMaxEducationLevel().getName() : null,
+                    formatCandidateMajor(candidate.getCandidateEducations()),
+                    getEnglishSpokenProficiency(candidate.getCandidateLanguages()),
+                    formatCandidateOccupation(candidate.getCandidateOccupations()),
+                    getCandidateExternalHref(candidate.getCandidateNumber())
+            };
+        }else if(role == Role.limited){
+            return new String[] {
+                    candidate.getCandidateNumber(),
+                    candidate.getGender() != null ? candidate.getGender().toString() : null,
+                    candidate.getDob() != null ? candidate.getDob().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) : null,
+                    candidate.getMaxEducationLevel() != null ? candidate.getMaxEducationLevel().getName() : null,
+                    formatCandidateMajor(candidate.getCandidateEducations()),
+                    getEnglishSpokenProficiency(candidate.getCandidateLanguages()),
+                    formatCandidateOccupation(candidate.getCandidateOccupations()),
+                    getCandidateExternalHref(candidate.getCandidateNumber())
+            };
+        }else{
+            return new String[] {
+                    candidate.getCandidateNumber(),
+                    candidate.getUser().getFirstName(),
+                    candidate.getUser().getLastName(),
+                    candidate.getGender() != null ? candidate.getGender().toString() : null,
+                    candidate.getCountry() != null ? candidate.getCountry().getName() : candidate.getMigrationCountry(),
+                    candidate.getNationality() != null ? candidate.getNationality().getName() : null,
+                    candidate.getDob() != null ? candidate.getDob().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) : null,
+                    candidate.getUser().getEmail(),
+                    candidate.getMaxEducationLevel() != null ? candidate.getMaxEducationLevel().getName() : null,
+                    formatCandidateMajor(candidate.getCandidateEducations()),
+                    getEnglishSpokenProficiency(candidate.getCandidateLanguages()),
+                    formatCandidateOccupation(candidate.getCandidateOccupations()),
+                    getCandidateExternalHref(candidate.getCandidateNumber())
+            };
+        }
     }
 
     private String getCandidateExternalHref(String candidateNumber) {
@@ -1260,5 +1366,45 @@ public class CandidateServiceImpl implements CandidateService {
         }
         return request;
     }
-    
+
+    @Override
+    public Candidate save(Candidate candidate, boolean updateCandidateEs) {
+        candidate = candidateRepository.save(candidate);
+        
+        if (updateCandidateEs) {
+            //Find/create Elasticsearch twin candidate
+            CandidateEs twin;
+            //Get textSearchId, if any
+            String textSearchId = candidate.getTextSearchId();
+            if (textSearchId == null) {
+                //No twin - create one
+                twin = new CandidateEs(candidate);
+            } else {
+                //Get twin
+                twin = candidateEsRepository.findById(textSearchId)
+                        .orElse(null);
+                if (twin == null) {
+                    //Candidate is referring to non existent twin.
+                    //Create new twin
+                    twin = new CandidateEs(candidate);
+
+                    //Shouldn't really happen (except during a complete reload) 
+                    // so log warning
+                    log.warn("Candidate " + candidate.getId() +
+                            " refers to non existent Elasticsearch id "
+                            + textSearchId + ". Creating new twin.");
+                } else {
+                    //Update twin from candidate
+                    twin.copy(candidate);
+                }
+            }
+            twin = candidateEsRepository.save(twin);
+            textSearchId = twin.getId();
+
+            //Update textSearchId on candidate.
+            candidate.setTextSearchId(textSearchId);
+            candidate = candidateRepository.save(candidate);
+        }
+        return candidate;
+    }
 }

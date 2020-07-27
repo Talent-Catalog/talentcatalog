@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.model.db.AttachmentType;
+import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateAttachment;
 import org.tbbtalent.server.model.db.CandidateStatus;
 import org.tbbtalent.server.model.db.EducationType;
@@ -38,8 +39,12 @@ import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.NoteType;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
+import org.tbbtalent.server.repository.db.CandidateRepository;
+import org.tbbtalent.server.repository.es.CandidateEsRepository;
 import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.DataSharingService;
 import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
 import org.tbbtalent.server.util.textExtract.TextExtractHelper;
@@ -56,12 +61,15 @@ public class SystemAdminApi {
     private final DataSharingService dataSharingService;
 
     private final CandidateAttachmentRepository candidateAttachmentRepository;
+    private final CandidateRepository candidateRepository;
+    private final CandidateService candidateService;
+    private final CandidateEsRepository candidateEsRepository;
     private final S3ResourceHelper s3ResourceHelper;
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     private final Map<Integer, Integer> countryForGeneralCountry;
-    
+
     @Value("${spring.datasource.url}")
     private String targetJdbcUrl;
     
@@ -73,10 +81,16 @@ public class SystemAdminApi {
     
     @Autowired
     public SystemAdminApi(
+            CandidateRepository candidateRepository,
+            CandidateService candidateService,
+            CandidateEsRepository candidateEsRepository,
             DataSharingService dataSharingService,
             UserContext userContext, 
             CandidateAttachmentRepository candidateAttachmentRepository, 
             S3ResourceHelper s3ResourceHelper) {
+        this.candidateRepository = candidateRepository;
+        this.candidateService = candidateService;
+        this.candidateEsRepository = candidateEsRepository;
         this.dataSharingService = dataSharingService;
         this.userContext = userContext;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
@@ -85,7 +99,7 @@ public class SystemAdminApi {
     }
 
     public static void main(String[] args) {
-        SystemAdminApi api = new SystemAdminApi(null, null, null, null);
+        SystemAdminApi api = new SystemAdminApi(null, null, null, null, null, null, null);
         api.setTargetJdbcUrl("jdbc:postgresql://localhost:5432/tbbtalent");
         api.setTargetUser("tbbtalent");
         api.setTargetPwd("tbbtalent");
@@ -147,6 +161,40 @@ public class SystemAdminApi {
             log.error("unable to migrate status data", e);
         }
 
+        return "done";
+    }
+
+    @GetMapping("esload")
+    public String loadElasticsearch() {
+        CandidateEs ces;
+        log.info("Replace all candidates in Elasticsearch - deleting old candidates");
+//        candidateEsRepository.deleteAll();
+        log.info("Old candidates deleted. Start adding new candidates.");
+        List<Candidate> candidates = candidateRepository.findAllLoadText();
+        int count = 0;
+        for (Candidate candidate : candidates) {
+            try {
+                //Remove any existing textSearchId's - because they will be
+                //invalid because we just deleted all existing candidates from
+                //Elasticsearch. This avoids a bunch of warnings being logged.
+                candidate.setTextSearchId(null);
+                ces = new CandidateEs(candidate);
+                ces = candidateEsRepository.save(ces);
+
+                //Update textSearchId on candidate.
+                String textSearchId = ces.getId();
+                candidate.setTextSearchId(textSearchId);
+                candidateService.save(candidate, false);
+
+                count++;
+                if (count % 100 == 0) {
+                    log.info(count + " candidates added to Elasticsearch");
+                }
+            } catch (Exception ex) {
+                log.warn("Could not load candidate " + candidate.getId(), ex);
+            }
+        }
+        log.info("Done: " + count + " candidates added to Elasticsearch");
         return "done";
     }
 

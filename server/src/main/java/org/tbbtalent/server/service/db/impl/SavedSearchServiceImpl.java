@@ -427,6 +427,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         final SearchCandidateRequest searchCandidateRequest = request.getSearchCandidateRequest();
         if (searchCandidateRequest != null) {
+            savedSearch.setSimpleQueryString(searchCandidateRequest.getSimpleQueryString());
             savedSearch.setKeyword(searchCandidateRequest.getKeyword());
             savedSearch.setStatuses(getStatusListAsString(searchCandidateRequest.getStatuses()));
             savedSearch.setGender(searchCandidateRequest.getGender());
@@ -465,6 +466,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         User user = userContext.getLoggedInUser();
         SearchCandidateRequest searchCandidateRequest = new SearchCandidateRequest();
         searchCandidateRequest.setSavedSearchId(request.getId());
+        searchCandidateRequest.setSimpleQueryString(request.getSimpleQueryString());
         searchCandidateRequest.setKeyword(request.getKeyword());
         searchCandidateRequest.setStatuses(getStatusListFromString(request.getStatuses()));
         searchCandidateRequest.setGender(request.getGender());

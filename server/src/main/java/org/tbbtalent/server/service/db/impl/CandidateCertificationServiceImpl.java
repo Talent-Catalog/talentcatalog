@@ -14,20 +14,24 @@ import org.tbbtalent.server.request.candidate.certification.CreateCandidateCerti
 import org.tbbtalent.server.request.candidate.certification.UpdateCandidateCertificationRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.CandidateCertificationService;
+import org.tbbtalent.server.service.db.CandidateService;
 
 @Service
 public class CandidateCertificationServiceImpl implements CandidateCertificationService {
 
     private final CandidateCertificationRepository candidateCertificationRepository;
     private final CandidateRepository candidateRepository;
+    private final CandidateService candidateService;
     private final UserContext userContext;
 
     @Autowired
     public CandidateCertificationServiceImpl(CandidateCertificationRepository candidateCertificationRepository,
                                              CandidateRepository candidateRepository,
+                                             CandidateService candidateService,
                                              UserContext userContext) {
         this.candidateCertificationRepository = candidateCertificationRepository;
         this.candidateRepository = candidateRepository;
+        this.candidateService = candidateService;
         this.userContext = userContext;
     }
 
@@ -48,7 +52,7 @@ public class CandidateCertificationServiceImpl implements CandidateCertification
         candidateCertification = candidateCertificationRepository.save(candidateCertification);
 
         candidate.setAuditFields(candidate.getUser());
-        candidateRepository.save(candidate);
+        candidateService.save(candidate, true);
 
         return candidateCertification;
     }
@@ -67,7 +71,7 @@ public class CandidateCertificationServiceImpl implements CandidateCertification
         candidateCertificationRepository.delete(candidateCertification);
 
         candidate.setAuditFields(candidate.getUser());
-        candidateRepository.save(candidate);
+        candidateService.save(candidate, true);
 
     }
 
@@ -92,7 +96,7 @@ public class CandidateCertificationServiceImpl implements CandidateCertification
         candidateCertification =  candidateCertificationRepository.save(candidateCertification);
 
         candidate.setAuditFields(candidate.getUser());
-        candidateRepository.save(candidate);
+        candidateService.save(candidate, true);
 
         return candidateCertification;
     }

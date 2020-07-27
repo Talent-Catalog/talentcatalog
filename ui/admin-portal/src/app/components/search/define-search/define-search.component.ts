@@ -142,6 +142,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     /* SET UP FORM */
     this.searchForm = this.fb.group({
       savedSearchId: [null],
+      simpleQueryString: [null],
       keyword: [null],
       statuses: [[]],
       gender: [null],
@@ -219,6 +220,14 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       this.loading = false;
       this.error = error;
     });
+  }
+
+  get simpleQueryString(): string {
+    return this.searchForm.value.simpleQueryString;
+  }
+
+  elastic(): boolean {
+    return this.simpleQueryString != null && this.simpleQueryString.length > 0;
   }
 
   ngOnChanges(changes: SimpleChanges): void {

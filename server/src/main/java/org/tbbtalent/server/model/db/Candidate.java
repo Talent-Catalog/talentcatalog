@@ -25,6 +25,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.tbbtalent.server.api.admin.SavedSearchAdminApi;
+import org.tbbtalent.server.model.es.CandidateEs;
 
 @Entity
 @Table(name = "candidate")
@@ -53,6 +54,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Enumerated(EnumType.STRING)
     private CandidateStatus status;
+
+    /**
+     * ID of corresponding candidate record in Elasticsearch
+     * @see CandidateEs#getId() 
+     */
+    private String textSearchId;
 
     //Note use of Set rather than List as strongly recommended for Many to Many
     //relationships here:
@@ -258,6 +265,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setStatus(CandidateStatus status) {
         this.status = status;
+    }
+
+    public String getTextSearchId() {
+        return textSearchId;
+    }
+
+    public void setTextSearchId(String textSearchId) {
+        this.textSearchId = textSearchId;
     }
 
     public Country getCountry() {

@@ -232,6 +232,7 @@ public class SavedSearchAdminApi implements
                 .add("savedSearchType")
                 .add("savedSearchSubtype")
                 .add("keyword")
+                .add("simpleQueryString")
                 .add("statuses")
                 .add("includeDraftAndDeleted")
                 .add("gender")

@@ -57,7 +57,7 @@ public class CandidateSpecification {
         return (candidate, query, builder) -> {
             
             //To better understand this code, look at the simpler but similar
-            //SavedListGetQuery. JC - The Programmer's Friend.
+            //GetSavedListCandidatesQuery. JC - The Programmer's Friend.
             
             Predicate conjunction = builder.conjunction();
             Join<Object, Object> user = null;
