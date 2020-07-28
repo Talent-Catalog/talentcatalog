@@ -136,5 +136,8 @@
       }
     }
   },
-  "defaultProject": "candidate-portal"
+  "defaultProject": "candidate-portal",
+  "cli": {
+    "analytics": "59b99e65-9190-47a1-adb7-4d515f8c01fc"
+  }
 }
