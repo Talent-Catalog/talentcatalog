@@ -163,12 +163,13 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         List<CandidateOccupation> candidateOccupations = candidateOccupationRepository.findByCandidateId(candidate.getId());
         Map<Long, CandidateOccupation> map = candidateOccupations.stream().collect( Collectors.toMap(CandidateOccupation::getId,
                 Function.identity()) );
+        List<Occupation> occupationsCandidate = candidateOccupations.stream().map(CandidateOccupation::getOccupation).collect(Collectors.toList());
 
         for (UpdateCandidateOccupationRequest update : request.getUpdates()) {
-            /* Check if occupation has been previously saved */
+            /* Check if candidate occupation has been previously saved */
             CandidateOccupation candidateOccupation = update.getId() != null ? map.get(update.getId()) : null;
             if (candidateOccupation != null){
-                /* Check if the occupation has changed */
+                /* Check if the occupation has changed on existing candidate occupation and update */
                 if (!update.getOccupationId().equals(candidateOccupation.getOccupation().getId())){
                     Occupation occupation = occupationRepository.findById(update.getOccupationId())
                             .orElseThrow(() -> new NoSuchObjectException(Occupation.class, update.getOccupationId()));
@@ -176,10 +177,21 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
                 }
                 candidateOccupation.setYearsExperience(update.getYearsExperience());
             } else {
-                /* Create a new candidate occupation */
+                /* Check if candidate already has same occupation, if so update candidateOccupation, else create new. */
+                candidateOccupation = candidateOccupationRepository.findByCandidateIdAAndOccupationId(candidate.getId(),
+                        update.getOccupationId());
+
                 Occupation occupation = occupationRepository.findById(update.getOccupationId())
                         .orElseThrow(() -> new NoSuchObjectException(Occupation.class, update.getOccupationId()));
-                candidateOccupation = new CandidateOccupation(candidate, occupation, update.getYearsExperience());
+
+                if (candidateOccupation != null) {
+                    // If candidate has candidateOccupation with same occupation, just update that one.
+                    candidateOccupation.setYearsExperience(update.getYearsExperience());
+                } else {
+                    // If candidate has not got that occupation, create new occupation.
+                    candidateOccupation = new CandidateOccupation(candidate, occupation, update.getYearsExperience());
+                }
+
             }
             updatedOccupations.add(candidateOccupationRepository.save(candidateOccupation));
             updatedOccupationIds.add(candidateOccupation.getId());

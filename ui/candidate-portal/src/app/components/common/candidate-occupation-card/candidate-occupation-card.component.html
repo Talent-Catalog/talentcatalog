@@ -8,7 +8,7 @@
     <label>{{ 'REGISTRATION.OCCUPATION.LABEL.OCCUPATION' | translate }}</label>
 
     <select class="form-control" [(ngModel)]="candidateOccupation.occupationId" *ngIf="!preview">
-      <option *ngFor="let occupation of occupations" [value]="occupation.id">{{occupation.name}}</option>
+      <option *ngFor="let occupation of filteredOccupations" [value]="occupation.id">{{occupation.name}}</option>
     </select>
 
     <p class="m-0" *ngIf="preview">
