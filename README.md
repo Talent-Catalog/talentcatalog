@@ -98,7 +98,17 @@ Before running, make sure all the libraries have been downloaded locally by runn
 directory of the module (i.e. `tbbtalentv2\ui\candidate-portal`):
 
 > cd tbbtalentv2\ui\candidate-portal
-> npm install 
+>
+> npm install
+
+It is also a good idea to install fsevents for MacOS which will greatly
+reduce your CPU usage
+
+> npm install fsevents
+> 
+> npm rebuild fsevents
+ 
+ 
 
 Then from within the same directory run: 
 
@@ -129,11 +139,7 @@ into the server and serve through Apache Tomcat._
 
 The "Admin Portal" is an Angular Module and can be found in the directory `tbbtalentv2\ui\admin-portal`.
 
-Before running, make sure all the libraries have been downloaded locally by running `npm install` from the root 
-directory of the module (i.e. `tbbtalentv2\ui\admin-portal`):
-
-> cd tbbtalentv2\ui\admin-portal
-> npm install 
+As for the "Candidate Portal", make sure all libraries are installed locally.
 
 Then from within the same directory run: 
 

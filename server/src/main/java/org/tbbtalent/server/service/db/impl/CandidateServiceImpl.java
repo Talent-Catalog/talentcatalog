@@ -33,6 +33,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -157,6 +158,44 @@ public class CandidateServiceImpl implements CandidateService {
         this.surveyTypeRepository = surveyTypeRepository;
         this.emailHelper = emailHelper;
         this.pdfHelper = pdfHelper;
+    }
+
+    @Transactional
+    @Async
+    @Override
+    public void populateElasticCandidates(boolean deleteExisting) {
+        CandidateEs ces;
+        if (deleteExisting) {
+            log.info("Replace all candidates in Elasticsearch - deleting old candidates");
+            candidateEsRepository.deleteAll();
+            log.info("Old candidates deleted.");
+        }
+        List<Candidate> candidates = candidateRepository.findAllNonElasticLoadText();
+        log.info(candidates.size() + " candidates to be added.");
+        int count = 0;
+        for (Candidate candidate : candidates) {
+            try {
+                //Remove any existing textSearchId's - because they will be
+                //invalid because we just deleted all existing candidates from
+                //Elasticsearch. This avoids a bunch of warnings being logged.
+                candidate.setTextSearchId(null);
+                ces = new CandidateEs(candidate);
+                ces = candidateEsRepository.save(ces);
+
+                //Update textSearchId on candidate.
+                String textSearchId = ces.getId();
+                candidate.setTextSearchId(textSearchId);
+                save(candidate, false);
+
+                count++;
+                if (count % 100 == 0) {
+                    log.info(count + " candidates added to Elasticsearch");
+                }
+            } catch (Exception ex) {
+                log.warn("Could not load candidate " + candidate.getId(), ex);
+            }
+        }
+        log.info("Done: " + count + " candidates added to Elasticsearch");
     }
 
     @Override
