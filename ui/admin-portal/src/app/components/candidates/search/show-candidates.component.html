@@ -110,9 +110,9 @@
         <ng-multiselect-dropdown
           id="reviewStatus"
           [placeholder]="'Review status: Empty displays everything'"
+          [settings]="dropdownSettings"
           [data]="statuses"
           formControlName="statusesDisplay"
-          [settings]="dropdownSettings"
           (onSelect)="onItemSelect()"
           (onDeSelect)="onItemDeSelect()"
           (onSelectAll)="onSelectAll()"
