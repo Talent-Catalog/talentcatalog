@@ -1,7 +1,7 @@
 import {
   Component,
   EventEmitter,
-  Input,
+  Input, OnChanges,
   OnInit,
   Output,
   SimpleChanges
@@ -24,11 +24,17 @@ import {copyToClipboard} from "../../../util/clipboard";
   templateUrl: './candidate-source.component.html',
   styleUrls: ['./candidate-source.component.scss']
 })
-export class CandidateSourceComponent implements OnInit {
+export class CandidateSourceComponent implements OnInit, OnChanges {
 
+  // The data processing is dependant on these variables
+  // The candidate source passed in
   @Input() candidateSource: CandidateSource;
-  @Input() storedBaseSearch;
-  @Input() showAll: boolean;
+  // If the extra data can be loaded for the dropdowns (get request)
+  @Input() canLoad: boolean = true;
+  // Handles the toggle state of the candidate source (show less/show more)
+  @Input() seeMore: boolean;
+
+  // The font awesome icon buttons are dependant on these variables
   @Input() showLink: boolean = true;
   @Input() showMore: boolean = true;
   @Input() showOpen: boolean = true;
@@ -38,6 +44,7 @@ export class CandidateSourceComponent implements OnInit {
   @Input() showEdit: boolean = false;
   @Input() showDelete: boolean = false;
   @Input() showAudit: boolean = false;
+
   @Output() openSource = new EventEmitter<CandidateSource>();
   @Output() selectSource = new EventEmitter<CandidateSource>();
   @Output() copySource = new EventEmitter<CandidateSource>();
@@ -61,21 +68,19 @@ export class CandidateSourceComponent implements OnInit {
     this.loggedInUser = this.authService.getLoggedInUser();
   }
 
-  ngOnChanges(changes: SimpleChanges){
+  ngOnChanges (changes: SimpleChanges){
     // WHEN candidateSource changes IF showAll fetch the savedSearch object which has the multi select Names to display (not just Ids).
-    if (this.showAll && changes && changes.candidateSource && changes.candidateSource.previousValue !== changes.candidateSource.currentValue){
-      this.getSavedSearch();
-    }
-    if (this.storedBaseSearch && changes && changes.storedBaseSearch.firstChange){
-      this.getSavedSearch()
+    if (this.seeMore && changes && changes.candidateSource && changes.candidateSource.previousValue !== changes.candidateSource.currentValue){
+      this.getSavedSearch(this.candidateSource.id);
     }
   }
 
-  toggleShowAll() {
-    this.showAll = !this.showAll;
-    if (this.showAll) {
+  toggleShowMore() {
+    this.seeMore = !this.seeMore;
+    // Get extra data from saved search if needed (canLoad:true)
+    if (this.canLoad) {
       this.loading = true;
-      this.getSavedSearch();
+      this.getSavedSearch(this.candidateSource.id);
     }
   }
 
@@ -130,8 +135,7 @@ export class CandidateSourceComponent implements OnInit {
     return isMine(this.candidateSource, this.authService);
   }
 
-  getSavedSearch() {
-    const savedSearchId = this.candidateSource ? this.candidateSource.id : this.storedBaseSearch.savedSearchId;
+  getSavedSearch(savedSearchId: number) {
     this.savedSearchService.get(savedSearchId).subscribe(result => {
       this.candidateSource = result;
       this.loading = false;

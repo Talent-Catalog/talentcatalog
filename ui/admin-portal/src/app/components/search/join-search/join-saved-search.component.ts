@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {SearchResults} from '../../../model/search-results';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {
@@ -21,7 +21,7 @@ import {CandidateOccupation} from "../../../model/candidate-occupation";
   templateUrl: './join-saved-search.component.html',
   styleUrls: ['./join-saved-search.component.scss']
 })
-export class JoinSavedSearchComponent implements OnInit {
+export class JoinSavedSearchComponent implements OnInit, OnChanges {
 
   searchForm: FormGroup;
   loading: boolean;
@@ -34,7 +34,6 @@ export class JoinSavedSearchComponent implements OnInit {
   doSavedSearchSearch;
   currentSavedSearchId: number;
   selectedBaseSearch: SavedSearch;
-  @Input() storedBaseSearch;
   @Input() baseSearch;
   @Output() addBaseSearch = new EventEmitter<SavedSearch>();
   @Output() deleteBaseSearch = new EventEmitter();
@@ -76,9 +75,15 @@ export class JoinSavedSearchComponent implements OnInit {
 
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if(changes && changes.baseSearch && changes.baseSearch.currentValue === null){
+  ngOnChanges (changes: SimpleChanges) {
+    // If clear search is selected, remove the base search
+    if (changes && changes.baseSearch && changes.baseSearch.currentValue === null){
       this.selectedBaseSearch = null;
+    }
+
+    // If base search loaded from database (memory)
+    if (changes && changes.baseSearch && changes.baseSearch.previousValue === null && changes.baseSearch.currentValue !== null) {
+      this.selected(changes.baseSearch.currentValue);
     }
   }
 
@@ -88,8 +93,10 @@ export class JoinSavedSearchComponent implements OnInit {
 
 
   selected(selectedSearch: SavedSearch) {
-    this.selectedBaseSearch = selectedSearch;
-    this.addBaseSearch.emit(this.selectedBaseSearch);
+    this.savedSearchService.get(selectedSearch.id).subscribe(result => {
+      this.selectedBaseSearch = result;
+      this.addBaseSearch.emit(this.selectedBaseSearch);
+    })
   }
 
   deleteSearch(){
