@@ -14,6 +14,8 @@ export class CandidateOccupationCardComponent implements OnChanges {
 
   // The currently selected candidate occupation to display
   @Input() candidateOccupation: CandidateOccupation;
+  // The two way binding for the candidate occupation change
+  @Output() candidateOccupationChange = new EventEmitter<CandidateOccupation>();
 
   // Complete list of a particular candidate's occupations
   @Input() candidateOccupations: CandidateOccupation[];
