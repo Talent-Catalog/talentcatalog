@@ -181,7 +181,7 @@ directory.
 
 > npm install
 >
->ng upgrade   
+> ng update   
 
 ## Version Control ##
 
