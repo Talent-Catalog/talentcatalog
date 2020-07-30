@@ -4,7 +4,7 @@
     <input id="savedSearch"
            type="text" class="form-control"
            input.value = ''
-           (selectItem)="selected($event.item)"
+           (selectItem)="selected($event.item.id)"
            [ngbTypeahead]="doSavedSearchSearch"
            [resultTemplate]="rt"
            [inputFormatter]="renderSavedSearchRow"
