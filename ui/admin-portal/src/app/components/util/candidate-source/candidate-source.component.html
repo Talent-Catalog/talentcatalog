@@ -21,13 +21,13 @@
           </button>
           <button class="btn" *ngIf="showEdit && isEditable()" (click)="doEditSource()"><i class="fas fa-edit" title="Rename"></i></button>
           <button class="btn" *ngIf="showCopy && !isSavedSearch()" (click)="doCopySource()"><i class="fas fa-clone"></i></button>
-          <button class="btn" *ngIf="showMore && isSavedSearch()" (click)="toggleShowAll()"><i class="fas fa-ellipsis-h" title="View details"></i></button>
+          <button class="btn" *ngIf="showMore && isSavedSearch()" (click)="toggleShowMore()"><i class="fas fa-ellipsis-h" title="View details"></i></button>
           <button class="btn" *ngIf="showSelect" (click)="doSelectSource()"><i class="far fa-hand-pointer" title="Select"></i></button>
           <button class="btn" *ngIf="showDelete && isEditable()" (click)="doDeleteSource()"><i class="fas fa-trash" title="Delete"></i></button>
         </div>
       </div>
     </div>
-    <div class="row pl-2 pt-1" *ngIf="showAll && isSavedSearch()">
+    <div class="row pl-2 pt-1" *ngIf="seeMore && isSavedSearch()">
       <div class="w-100" *ngIf="savedSearch.keyword">Keyword: {{savedSearch.keyword}},</div>
       <div class="w-100" *ngIf="savedSearch.statuses">Statuses: {{savedSearch.statuses}},</div>
       <div class="w-100" *ngIf="savedSearch.includeDraftAndDeleted">Includes deleted and draft candidates,</div>
@@ -73,7 +73,7 @@
     </div>
 
   </div>
-  <div class="card-footer" *ngIf="showAll">
+  <div class="card-footer" *ngIf="seeMore">
     <div class="w-100">
       <app-updated-by [object]="candidateSource"></app-updated-by>
     </div>

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {SearchResults} from '../../../model/search-results';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {
@@ -9,7 +9,7 @@ import {
   switchMap,
   tap
 } from "rxjs/operators";
-import {SavedSearch} from "../../../model/saved-search";
+import {SavedSearch, SavedSearchJoin} from '../../../model/saved-search';
 import {SavedSearchService} from "../../../services/saved-search.service";
 import {Router} from "@angular/router";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -21,7 +21,7 @@ import {CandidateOccupation} from "../../../model/candidate-occupation";
   templateUrl: './join-saved-search.component.html',
   styleUrls: ['./join-saved-search.component.scss']
 })
-export class JoinSavedSearchComponent implements OnInit {
+export class JoinSavedSearchComponent implements OnInit, OnChanges {
 
   searchForm: FormGroup;
   loading: boolean;
@@ -34,7 +34,7 @@ export class JoinSavedSearchComponent implements OnInit {
   doSavedSearchSearch;
   currentSavedSearchId: number;
   selectedBaseSearch: SavedSearch;
-  @Input() storedBaseSearch;
+  selectedSearchId: number;
   @Input() baseSearch;
   @Output() addBaseSearch = new EventEmitter<SavedSearch>();
   @Output() deleteBaseSearch = new EventEmitter();
@@ -76,9 +76,15 @@ export class JoinSavedSearchComponent implements OnInit {
 
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if(changes && changes.baseSearch && changes.baseSearch.currentValue === null){
+  ngOnChanges (changes: SimpleChanges) {
+    // If clear search is selected, remove the base search
+    if (changes && changes.baseSearch && changes.baseSearch.currentValue === null){
       this.selectedBaseSearch = null;
+    }
+
+    // If base search loaded from database (memory)
+    if (changes && changes.baseSearch && changes.baseSearch.previousValue === null && changes.baseSearch.currentValue !== null && this.selectedBaseSearch === null) {
+      this.selected(changes.baseSearch.currentValue.id);
     }
   }
 
@@ -87,9 +93,11 @@ export class JoinSavedSearchComponent implements OnInit {
   }
 
 
-  selected(selectedSearch: SavedSearch) {
-    this.selectedBaseSearch = selectedSearch;
-    this.addBaseSearch.emit(this.selectedBaseSearch);
+  selected(selectedSearchId: number) {
+    this.savedSearchService.get(selectedSearchId).subscribe(result => {
+      this.selectedBaseSearch = result;
+      this.addBaseSearch.emit(this.selectedBaseSearch);
+    })
   }
 
   deleteSearch(){

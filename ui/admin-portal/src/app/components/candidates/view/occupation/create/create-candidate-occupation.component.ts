@@ -33,7 +33,7 @@ export class CreateCandidateOccupationComponent implements OnInit {
     this.loading = true;
     this.form = this.fb.group({
       occupationId: [null, Validators.required],
-      yearsExperience: [null, Validators.required],
+      yearsExperience: [null, [Validators.required, Validators.min(0)]],
     });
 
     /* LOAD OCCUPATIONS */

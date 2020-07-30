@@ -1,10 +1,10 @@
 import {
   Component,
   EventEmitter,
-  Input,
+  Input, OnChanges,
   OnDestroy,
   OnInit,
-  Output
+  Output, SimpleChanges
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
@@ -42,6 +42,7 @@ export class RegistrationCandidateOccupationComponent implements OnInit, OnDestr
   occupations: Occupation[];
   showForm;
   subscription;
+  invalidOccupation: CandidateOccupation;
   candidateOccupation: CandidateOccupation;
   candidateJobExperiences: CandidateJobExperience[];
 
@@ -62,7 +63,7 @@ export class RegistrationCandidateOccupationComponent implements OnInit, OnDestr
     this.setUpForm();
 
     this.loadDropDownData();
-    //listen for change of language and save
+    // listen for change of language and save
     this.subscription = this.translateService.onLangChange.subscribe((event: LangChangeEvent) => {
       this.loadDropDownData();
     });
@@ -74,10 +75,10 @@ export class RegistrationCandidateOccupationComponent implements OnInit, OnDestr
             id: occ.id,
             occupationId: occ.occupation.id,
             yearsExperience: occ.yearsExperience
-          }
+          };
         });
         this._loading.candidate = false;
-        this.showForm = this.candidateOccupations.length == 0;
+        this.showForm = this.candidateOccupations.length === 0;
       },
       (error) => {
         this.error = error;
@@ -86,7 +87,7 @@ export class RegistrationCandidateOccupationComponent implements OnInit, OnDestr
     );
   }
 
-  loadDropDownData(){
+  loadDropDownData() {
     this._loading.occupations = true;
 
     this.occupationService.listOccupations().subscribe(
@@ -123,14 +124,14 @@ export class RegistrationCandidateOccupationComponent implements OnInit, OnDestr
       results => {
         // check if the occupation has job experiences associated
         this.candidateJobExperiences = results.candidateJobExperiences.filter(experience =>
-          experience.candidateOccupation.occupation.id == occupationId)
+          experience.candidateOccupation.occupation.id === occupationId);
         // if associated job experience, display modal to confirm deletion
-        if(this.candidateJobExperiences.length > 0) {
+        if (this.candidateJobExperiences.length > 0) {
           this.deleteModal(index);
         } else {
           this.candidateOccupations.splice(index, 1);
         }
-    })
+    });
   }
 
   deleteModal(index: number) {
@@ -153,21 +154,26 @@ export class RegistrationCandidateOccupationComponent implements OnInit, OnDestr
     if (this.form.valid) {
       this.addOccupation();
     }
+    this.invalidOccupation = this.candidateOccupations.find(occ => occ.yearsExperience < 0 );
     const request = {
       updates: this.candidateOccupations
     };
-    this.candidateOccupationService.updateCandidateOccupations(request).subscribe(
-      (response) => {
-        if (dir === 'next') {
-          this.onSave.emit();
-          this.registrationService.next();
-        } else {
-          this.registrationService.back();
-        }
-      },
-      (error) => {
-        this.error = error;
-      });
+    if (!this.invalidOccupation) {
+      this.candidateOccupationService.updateCandidateOccupations(request).subscribe(
+        (response) => {
+          if (dir === 'next') {
+            this.onSave.emit();
+            this.registrationService.next();
+          } else {
+            this.registrationService.back();
+          }
+        },
+        (error) => {
+          this.error = error;
+        });
+    } else {
+      this.error = "You need to put in a years experience value (from 0 upwards).";
+    }
   }
 
   cancel() {
@@ -190,13 +196,13 @@ export class RegistrationCandidateOccupationComponent implements OnInit, OnDestr
     if (!this.occupations) {
       return [];
     } else if (!this.candidateOccupations || !this.occupations.length) {
-      return this.occupations
+      return this.occupations;
     } else {
       const existingIds = this.candidateOccupations.map(candidateOcc => candidateOcc.occupation
         ? candidateOcc.occupation.id.toString()
         : candidateOcc.occupationId.toString()
       );
-      return this.occupations.filter(occ => !existingIds.includes(occ.id.toString()))
+      return this.occupations.filter(occ => !existingIds.includes(occ.id.toString()));
     }
   }
 
