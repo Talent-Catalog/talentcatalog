@@ -9,7 +9,7 @@ import {
   switchMap,
   tap
 } from "rxjs/operators";
-import {SavedSearch} from "../../../model/saved-search";
+import {SavedSearch, SavedSearchJoin} from '../../../model/saved-search';
 import {SavedSearchService} from "../../../services/saved-search.service";
 import {Router} from "@angular/router";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -34,6 +34,7 @@ export class JoinSavedSearchComponent implements OnInit, OnChanges {
   doSavedSearchSearch;
   currentSavedSearchId: number;
   selectedBaseSearch: SavedSearch;
+  selectedSearchId: number;
   @Input() baseSearch;
   @Output() addBaseSearch = new EventEmitter<SavedSearch>();
   @Output() deleteBaseSearch = new EventEmitter();
@@ -82,8 +83,8 @@ export class JoinSavedSearchComponent implements OnInit, OnChanges {
     }
 
     // If base search loaded from database (memory)
-    if (changes && changes.baseSearch && changes.baseSearch.previousValue === null && changes.baseSearch.currentValue !== null) {
-      this.selected(changes.baseSearch.currentValue);
+    if (changes && changes.baseSearch && changes.baseSearch.previousValue === null && changes.baseSearch.currentValue !== null && this.selectedBaseSearch === null) {
+      this.selected(changes.baseSearch.currentValue.id);
     }
   }
 
@@ -92,8 +93,8 @@ export class JoinSavedSearchComponent implements OnInit, OnChanges {
   }
 
 
-  selected(selectedSearch: SavedSearch) {
-    this.savedSearchService.get(selectedSearch.id).subscribe(result => {
+  selected(selectedSearchId: number) {
+    this.savedSearchService.get(selectedSearchId).subscribe(result => {
       this.selectedBaseSearch = result;
       this.addBaseSearch.emit(this.selectedBaseSearch);
     })
