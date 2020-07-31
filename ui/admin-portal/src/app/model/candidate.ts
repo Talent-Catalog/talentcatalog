@@ -36,6 +36,8 @@ export interface Candidate {
   surveyType: SurveyType;
   surveyComment: string;
   selected: boolean;
+  createdDate: number;
+  updatedDate: number;
 }
 
 export function getCandidateNavigation(candidate: Candidate): any[] {

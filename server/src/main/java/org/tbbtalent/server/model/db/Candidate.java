@@ -139,8 +139,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public Candidate() {
     }
 
-    //TODO JC This whole "caller" thing deosn't make any sense. Let's fix this
-    //Only one user is associated with a candidate.
+    //todo The "caller" is the user used to set the createdBy and updatedBy fields
+    //Seems to always be the same as user - so not sure if it has any point.
     public Candidate(User user, String phone, String whatsapp, User caller) {
         super(caller);
         this.user = user;

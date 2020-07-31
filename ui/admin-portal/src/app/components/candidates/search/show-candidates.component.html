@@ -150,10 +150,10 @@
                              [sortDirection]="sortDirection"></app-sorted-by>
               Status
             </th>
-            <th (click)="toggleSort('user.createdDate')">
-              <app-sorted-by [column]="'user.createdDate'" [sortColumn]="sortField"
+            <th (click)="toggleSort('updatedDate')">
+              <app-sorted-by [column]="'updatedDate'" [sortColumn]="sortField"
                              [sortDirection]="sortDirection"></app-sorted-by>
-              Registered
+              Updated
             </th>
             <th *ngIf="isCountryViewable()" (click)="toggleSort('nationality.name')">
               <app-sorted-by [column]="'nationality.name'" [sortColumn]="sortField"
@@ -202,7 +202,7 @@
             <td *ngIf="isCandidateNameViewable()">{{candidate.user.firstName}}</td>
             <td *ngIf="isCandidateNameViewable()">{{candidate.user.lastName}}</td>
             <td>{{candidate.status}}</td>
-            <td>{{candidate.user.createdDate | date: 'yyyy-MM-dd'}}</td>
+            <td>{{candidate.updatedDate | date: 'yyyy-MM-dd'}}</td>
             <td *ngIf="isCountryViewable()">{{candidate.nationality?.name}}</td>
             <td *ngIf="isCountryViewable()">{{candidate.country?.name}}</td>
             <td>{{candidate.gender | titlecase}}</td>
