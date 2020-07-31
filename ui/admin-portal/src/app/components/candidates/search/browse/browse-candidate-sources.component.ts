@@ -59,7 +59,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   results: SearchResults<CandidateSource>;
   selectedSource: CandidateSource;
   selectedIndex = 0;
-  private loggedInUser: User;
+  loggedInUser: User;
 
   constructor(private fb: FormBuilder,
               private localStorageService: LocalStorageService,
