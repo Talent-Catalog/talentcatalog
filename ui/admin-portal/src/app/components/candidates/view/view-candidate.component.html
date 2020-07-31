@@ -52,9 +52,9 @@
         <ng-multiselect-dropdown
           id="savedLists"
           class="flex-fill"
+          [settings]="dropdownSettings"
           [data]="lists"
           [(ngModel)]="selectedLists"
-          [settings]="dropdownSettings"
           (onSelectAll)="onSelectAll($event)"
           (onDeSelectAll)="onDeSelectAll($event)"
           (onSelect)="onItemSelect($event)"

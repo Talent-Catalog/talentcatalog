@@ -94,9 +94,10 @@
             <ng-multiselect-dropdown
               id="statuses"
               [placeholder]="''"
+              [settings]="dropdownSettings"
               [data]="statuses"
               formControlName="statusesDisplay"
-              [settings]="dropdownSettings">
+            >
             </ng-multiselect-dropdown>
             <div class="operator">
               <input type="checkbox" class="custom-checkbox"  id="includeDraftAndDeleted" [value]="'includeDraftAndDeleted'" [formControlName]="'includeDraftAndDeleted'">
@@ -136,9 +137,10 @@
                 <ng-multiselect-dropdown
                   id="occupationIds"
                   [placeholder]="''"
+                  [settings]="dropdownSettings"
                   [data]="candidateOccupations"
                   formControlName="occupations"
-                  [settings]="dropdownSettings">
+                >
                 </ng-multiselect-dropdown>
               </div>
 
@@ -199,9 +201,10 @@
                 <label>Country</label>
                 <ng-multiselect-dropdown
                   id="country"
+                  [settings]="dropdownSettings"
                   [data]="countries"
                   formControlName="countries"
-                  [settings]="dropdownSettings">
+                >
                 </ng-multiselect-dropdown>
               </div>
 
@@ -222,9 +225,10 @@
                 <label>Education major</label>
                 <ng-multiselect-dropdown
                   id="educationMajorIds"
+                  [settings]="dropdownSettings"
                   [data]="educationMajors"
                   formControlName="educationMajors"
-                  [settings]="dropdownSettings">
+                >
                 </ng-multiselect-dropdown>
               </div>
 
@@ -261,9 +265,10 @@
             <ng-multiselect-dropdown
               id="selectedNationalities"
               [placeholder]="'Select Nationalities'"
+              [settings]="dropdownSettings"
               [data]="nationalities"
               formControlName="nationalities"
-              [settings]="dropdownSettings">
+            >
             </ng-multiselect-dropdown>
           </div>
 

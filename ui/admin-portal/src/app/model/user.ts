@@ -11,6 +11,7 @@ export interface User {
   sourceCountries: Country[];
   status: string;
   createdDate: number;
+  updatedDate: number;
   lastLogin: number;
 }
 

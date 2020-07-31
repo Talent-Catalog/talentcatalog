@@ -164,6 +164,25 @@ The Admin Portal is now running locally and you can open a browser (chrome prefe
 __Note:__ _this is for development mode only. In production, the Admin Portal module will be bundled 
 into the server and serve through Apache Tomcat._ 
 
+## Upgrades ##
+
+### Angular ###
+
+See https://angular-update-guide.firebaseapp.com/
+
+Note that you have to separately upgrade each of the Angular directories:
+
+- ui/admin-portal
+- ui/candidate-portal
+
+Assuming that the package.json in each of the above directories has the right
+versions already in there you just need run the following commands in each
+directory.
+
+> npm install
+>
+> ng update   
+
 ## Version Control ##
 
 We use Bitbucket - [https://bitbucket.org/dashboard/overview]()

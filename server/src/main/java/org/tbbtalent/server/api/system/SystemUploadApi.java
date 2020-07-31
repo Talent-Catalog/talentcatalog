@@ -40,8 +40,6 @@ public class SystemUploadApi {
 
     @GetMapping(value = "policy/{s3Key}")
     public S3UploadData getUploadPolicy(@PathVariable("s3Key") String s3Key) throws Exception {
-        log.info("access key"+accessKey);
-        log.info("bucket"+bucket);
         if (StringUtils.isNotBlank(uploadFolder)) {
             s3Key = uploadFolder + "/" + s3Key;
         }

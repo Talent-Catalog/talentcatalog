@@ -64,17 +64,11 @@ public class CandidateBuilderSelector {
                 .add("unRegistrationNumber")
                 .add("surveyComment")
                 .add("selected")
+                .add("createdDate")
+                .add("updatedDate")
                 .add("surveyType", surveyTypeDto())
                 .add("country", countryDto())
                 .add("nationality", nationalityDto())
-                .add("user", userDto())
-                .add("candidateReviewStatusItems", reviewDto())
-                ;
-    }
-
-    private DtoBuilder candidateDto() {
-        return candidateBaseDto()
-                .add("maxEducationLevel", educationLevelDto())
                 .add("user", userDto())
                 .add("candidateReviewStatusItems", reviewDto())
                 ;
@@ -95,6 +89,8 @@ public class CandidateBuilderSelector {
                 .add("folderlink")
                 .add("sflink")
                 .add("selected")
+                .add("createdDate")
+                .add("updatedDate")
                 .add("country", countryDto())
                 .add("user",userSemiLimitedDto())
                 .add("nationality", nationalityDto())
@@ -115,6 +111,8 @@ public class CandidateBuilderSelector {
                 .add("folderlink")
                 .add("sflink")
                 .add("selected")
+                .add("createdDate")
+                .add("updatedDate")
                 .add("user",userSemiLimitedDto())
                 .add("candidateReviewStatusItems", reviewDto())
                 ;
@@ -127,6 +125,7 @@ public class CandidateBuilderSelector {
                 .add("lastName")
                 .add("email")
                 .add("createdDate")
+                .add("updatedDate")
                 ;
     }
 
@@ -134,6 +133,7 @@ public class CandidateBuilderSelector {
         return new DtoBuilder()
                 .add("id")
                 .add("createdDate")
+                .add("updatedDate")
                 ;
     }
 

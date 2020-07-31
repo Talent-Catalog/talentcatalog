@@ -4,9 +4,19 @@ import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './components/app.component';
 import {LandingComponent} from './components/landing/landing.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from "@angular/common/http";
-import {NgbDateAdapter, NgbDateParserFormatter, NgbDatepickerConfig, NgbModule} from "@ng-bootstrap/ng-bootstrap";
+import {
+  HTTP_INTERCEPTORS,
+  HttpClient,
+  HttpClientModule
+} from "@angular/common/http";
+import {
+  NgbDateAdapter,
+  NgbDateParserFormatter,
+  NgbDatepickerConfig,
+  NgbModule
+} from "@ng-bootstrap/ng-bootstrap";
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
+import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha';
 
 import {RegistrationLandingComponent} from './components/register/landing/registration-landing.component';
 import {RegistrationContactComponent} from './components/register/contact/registration-contact.component';
@@ -43,16 +53,22 @@ import {CandidateLanguageCardComponent} from './components/common/candidate-lang
 import {CandidateAttachmentsComponent} from './components/common/candidate-attachments/candidate-attachments.component';
 import {FileUploadComponent} from './components/common/file-upload/file-upload.component';
 import {InputFilterDirective} from './directives/input-filter.directive';
-import {CustomDateAdapter, CustomDateParserFormatter} from "./util/date-adapter/ngb-date-adapter";
+import {
+  CustomDateAdapter,
+  CustomDateParserFormatter
+} from "./util/date-adapter/ngb-date-adapter";
 import {UserPipe} from './pipes/user.pipe';
 import {TrimPipe} from './pipes/trim.pipe';
 import {MonthPickerComponent} from './components/common/month-picker/month-picker.component';
 import {TranslationPipe} from "./pipes/translation.pipe";
-import {FaIconLibrary, FontAwesomeModule} from "@fortawesome/angular-fontawesome";
+import {
+  FaIconLibrary,
+  FontAwesomeModule
+} from "@fortawesome/angular-fontawesome";
 import {faEdit} from "@fortawesome/free-solid-svg-icons";
 import {Observable} from "rxjs";
 import {environment} from "../environments/environment";
-import { DeleteOccupationComponent } from './components/register/candidate-occupation/delete/delete-occupation.component';
+import {DeleteOccupationComponent} from './components/register/candidate-occupation/delete/delete-occupation.component';
 
 export function createTranslateLoader(http: HttpClient) {
   return {
@@ -110,6 +126,7 @@ export function createTranslateLoader(http: HttpClient) {
     HttpClientModule,
     FormsModule,
     NgbModule,
+    RecaptchaV3Module,
     LocalStorageModule.forRoot({
       prefix: 'tbb-candidate-portal',
       storageType: 'localStorage'
@@ -130,6 +147,7 @@ export function createTranslateLoader(http: HttpClient) {
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: LanguageInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
+    {provide: RECAPTCHA_V3_SITE_KEY, useValue: '6Lc_97cZAAAAAIDqR7gT3h_ROGU6P7Jif-wEk9Vu'},
     {provide: NgbDateAdapter, useClass: CustomDateAdapter},
     {provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter},
 

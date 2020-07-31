@@ -7,7 +7,7 @@
     <!-- REVIEW -->
     <div class="card" *ngFor="let occupation of candidateOccupations; let i = index;">
 
-      <app-candidate-occupation-card [(candidateOccupation)]="occupation"
+      <app-candidate-occupation-card [candidateOccupation]="occupation"
                                      [candidateOccupations]="candidateOccupations"
                                      [occupations]="occupations"
                                      [disabled]="saving || loading"
