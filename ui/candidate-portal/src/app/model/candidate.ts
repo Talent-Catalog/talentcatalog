@@ -45,3 +45,17 @@ export enum CandidateStatus {
   employed = 'employed',
   deleted = 'deleted'
 }
+
+export class BaseCandidateContactRequest {
+  id: number;
+  email: string;
+  phone: string;
+  whatsapp: string;
+}
+
+export class RegisterCandidateRequest extends BaseCandidateContactRequest {
+  username: string;
+  password: string;
+  passwordConfirmation: string;
+  reCaptchaV3Token: string;
+}

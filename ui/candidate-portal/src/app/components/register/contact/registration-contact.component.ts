@@ -3,8 +3,9 @@ import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
 import {AuthService} from "../../../services/auth.service";
-import {Candidate} from "../../../model/candidate";
+import {Candidate, RegisterCandidateRequest} from "../../../model/candidate";
 import {RegistrationService} from "../../../services/registration.service";
+import {ReCaptchaV3Service} from "ng-recaptcha";
 
 @Component({
   selector: 'app-registration-contact',
@@ -31,6 +32,7 @@ export class RegistrationContactComponent implements OnInit {
               private router: Router,
               private candidateService: CandidateService,
               private authService: AuthService,
+              private reCaptchaV3Service: ReCaptchaV3Service,
               private registrationService: RegistrationService) { }
 
   ngOnInit() {
@@ -53,7 +55,7 @@ export class RegistrationContactComponent implements OnInit {
             email: candidate.user ? candidate.user.email : '',
             phone: candidate.phone,
             whatsapp: candidate.whatsapp,
-            //username: candidate.user ? response.user.username : ''
+            // username: candidate.user ? response.user.username : ''
           });
           this.loading = false;
         },
@@ -68,6 +70,26 @@ export class RegistrationContactComponent implements OnInit {
       this.form.addControl('passwordConfirmation', new FormControl('', [Validators.required, Validators.minLength(8)]));
       this.loading = false;
     }
+  }
+
+  get email(): string {
+    return this.form.value.email;
+  }
+
+  get password(): string {
+    return this.form.value.password;
+  }
+
+  get passwordConfirmation(): string {
+    return this.form.value.passwordConfirmation;
+  }
+
+  get phone(): string {
+    return this.form.value.phone;
+  }
+
+  get whatsapp(): string {
+    return this.form.value.whatsapp;
   }
 
   cancel() {
@@ -100,17 +122,34 @@ export class RegistrationContactComponent implements OnInit {
       );
     } else {
       // The user has not yet registered - create an account for them
-      this.authService.register(this.form.value).subscribe(
-        (response) => {
-          this.registrationService.next();
-        },
+      const action = 'registration';
+      this.reCaptchaV3Service.execute(action).subscribe(
+        (token) => this.registerWithToken(token),
         (error) => {
-          // console.log(error);
-          this.error = error;
-          this.saving = false;
+          console.log(error);
         }
       );
     }
   }
 
+  private registerWithToken(token: string) {
+    const req: RegisterCandidateRequest = new RegisterCandidateRequest();
+    req.email = this.email;
+    req.phone = this.phone;
+    req.whatsapp = this.whatsapp;
+    req.password = this.password;
+    req.passwordConfirmation = this.passwordConfirmation;
+    req.reCaptchaV3Token = token;
+
+    this.authService.register(req).subscribe(
+      (response) => {
+        this.registrationService.next();
+      },
+      (error) => {
+        // console.log(error);
+        this.error = error;
+        this.saving = false;
+      }
+    );
+  }
 }

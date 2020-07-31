@@ -7,6 +7,7 @@ import {Router} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
 import {LocalStorageService} from "angular-2-local-storage";
 import {User} from "../model/user";
+import {RegisterCandidateRequest} from "../model/candidate";
 
 @Injectable({
   providedIn: 'root'
@@ -61,10 +62,10 @@ export class AuthService {
     );
   }
 
-  register(request: any) {
+  register(request: RegisterCandidateRequest) {
     return this.http.post<JwtResponse>(`${this.apiUrl}/register`, request).pipe(
       map((response) => this.storeCredentials(response)),
-      catchError((e) => {return throwError(e)})
+      catchError((e) => throwError(e))
     );
   }
 
