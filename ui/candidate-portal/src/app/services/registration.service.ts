@@ -75,14 +75,18 @@ export class RegistrationService {
 
   // Observe the query params in the url to determine which step to display
   start() {
+    // Set step back to 0 before starting a new registration.
+    this.currentStepIndex = 0;
+    this.currentStep = this.steps[this.currentStepIndex];
+    this.currentStepKey = this.currentStep.key;
     if (!this.subscription || this.subscription.closed) {
       this.registering = true;
       this.subscription = this.route.queryParams.subscribe(
         params => {
           if (params['step']) {
-            this.openStep(params['step'])
+            this.openStep(params['step']);
           } else {
-            this.routeToStep('landing')
+            this.routeToStep('landing');
           }
         }
       );
