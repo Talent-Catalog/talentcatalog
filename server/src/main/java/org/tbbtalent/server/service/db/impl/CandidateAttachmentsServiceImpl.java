@@ -149,8 +149,9 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         return candidateAttachmentRepository.save(attachment);
     }
 
+    // Removed @Transactional to fix logged error ObjectDeletedException. There is a risk that now deleting from
+    // repository but not from S3 bucket.
     @Override
-    @Transactional
     public void deleteCandidateAttachment(Long id) {
         User user = userContext.getLoggedInUser();
 
