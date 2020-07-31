@@ -150,7 +150,6 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     }
 
     @Override
-    @Transactional
     public void deleteCandidateAttachment(Long id) {
         User user = userContext.getLoggedInUser();
 
