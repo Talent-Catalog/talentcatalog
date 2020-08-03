@@ -1,6 +1,9 @@
 package org.tbbtalent.server.service.db.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -31,6 +34,7 @@ public class NationalityServiceImpl implements NationalityService {
 
     private static final Logger log = LoggerFactory.getLogger(NationalityServiceImpl.class);
 
+    private Map<Long, Nationality> cache = null;
     private final CandidateRepository candidateRepository;
     private final NationalityRepository nationalityRepository;
     private final TranslationService translationService;
@@ -44,9 +48,30 @@ public class NationalityServiceImpl implements NationalityService {
         this.translationService = translationService;
     }
 
+    private void dropCache() {
+        cache = null;
+    }
+
+    private void loadCache() {
+        if (cache == null) {
+            cache = new HashMap<>();
+            List<Nationality> nationalities = nationalityRepository.findAll();
+            for (Nationality nationality : nationalities) {
+                cache.put(nationality.getId(), nationality);
+            }
+        }
+    }
+
+    private List<Nationality> getActiveNationalities() {
+        loadCache();
+        return cache.values().stream()
+                .filter(obj -> obj.getStatus() == Status.active)
+                .collect(Collectors.toList());
+    }
+
     @Override
     public List<Nationality> listNationalities() {
-        List<Nationality> nationalities = nationalityRepository.findByStatus(Status.active);
+        List<Nationality> nationalities = getActiveNationalities();
         translationService.translate(nationalities, "nationality");
         return nationalities;
     }
@@ -64,13 +89,18 @@ public class NationalityServiceImpl implements NationalityService {
 
     @Override
     public Nationality getNationality(long id) {
-        return this.nationalityRepository.findById(id)
-                .orElseThrow(() -> new NoSuchObjectException(Nationality.class, id));
+        loadCache();
+        Nationality nationality = cache.get(id);
+        if (nationality == null) {
+            throw new NoSuchObjectException(Nationality.class, id);
+        }
+        return nationality;
     }
 
     @Override
     @Transactional
     public Nationality createNationality(CreateNationalityRequest request) throws EntityExistsException {
+        dropCache();
         Nationality nationality = new Nationality(
                 request.getName(), request.getStatus());
         checkDuplicates(null, request.getName());
@@ -81,6 +111,7 @@ public class NationalityServiceImpl implements NationalityService {
     @Override
     @Transactional
     public Nationality updateNationality(long id, UpdateNationalityRequest request) throws EntityExistsException {
+        dropCache();
         Nationality nationality = this.nationalityRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(Nationality.class, id));
         checkDuplicates(id, request.getName());
@@ -93,6 +124,7 @@ public class NationalityServiceImpl implements NationalityService {
     @Override
     @Transactional
     public boolean deleteNationality(long id) throws EntityReferencedException {
+        dropCache();
         Nationality nationality = nationalityRepository.findById(id).orElse(null);
         List<Candidate> candidates = candidateRepository.findByNationalityId(id);
         if (!Collections.isEmpty(candidates)){

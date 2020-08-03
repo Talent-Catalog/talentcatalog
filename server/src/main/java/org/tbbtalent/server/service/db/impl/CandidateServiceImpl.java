@@ -23,6 +23,10 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.SimpleQueryStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +35,12 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Async;
@@ -101,6 +111,8 @@ import org.tbbtalent.server.security.PasswordHelper;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.CandidateNoteService;
 import org.tbbtalent.server.service.db.CandidateService;
+import org.tbbtalent.server.service.db.CountryService;
+import org.tbbtalent.server.service.db.NationalityService;
 import org.tbbtalent.server.service.db.SavedSearchService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.service.db.util.PdfHelper;
@@ -117,9 +129,12 @@ public class CandidateServiceImpl implements CandidateService {
     private final SavedSearchRepository savedSearchRepository;
     private final CandidateRepository candidateRepository;
     private final CandidateEsRepository candidateEsRepository;
+    private final ElasticsearchOperations elasticsearchOperations;
     private final CountryRepository countryRepository;
+    private final CountryService countryService;
     private final EducationLevelRepository educationLevelRepository;
     private final NationalityRepository nationalityRepository;
+    private final NationalityService nationalityService;
     private final PasswordHelper passwordHelper;
     private final UserContext userContext;
     private final SavedSearchService savedSearchService;
@@ -134,9 +149,12 @@ public class CandidateServiceImpl implements CandidateService {
                                 SavedSearchRepository savedSearchRepository,
                                 CandidateRepository candidateRepository,
                                 CandidateEsRepository candidateEsRepository,
+                                ElasticsearchOperations elasticsearchOperations,
                                 CountryRepository countryRepository,
+                                CountryService countryService,
                                 EducationLevelRepository educationLevelRepository,
                                 NationalityRepository nationalityRepository,
+                                NationalityService nationalityService,
                                 PasswordHelper passwordHelper,
                                 UserContext userContext,
                                 SavedSearchService savedSearchService,
@@ -148,9 +166,12 @@ public class CandidateServiceImpl implements CandidateService {
         this.savedSearchRepository = savedSearchRepository;
         this.candidateRepository = candidateRepository;
         this.candidateEsRepository = candidateEsRepository;
+        this.elasticsearchOperations = elasticsearchOperations;
         this.countryRepository = countryRepository;
+        this.countryService = countryService;
         this.educationLevelRepository = educationLevelRepository;
         this.nationalityRepository = nationalityRepository;
+        this.nationalityService = nationalityService;
         this.passwordHelper = passwordHelper;
         this.userContext = userContext;
         this.savedSearchService = savedSearchService;
@@ -352,20 +373,93 @@ public class CandidateServiceImpl implements CandidateService {
         if (simpleQueryString != null) {
             //This is an elastic search request
             
-            //Modify the search to escape out any "
-            final String replacement = "\\\\\\\\\"";
-            simpleQueryString = 
-            simpleQueryString.replaceAll("\"", replacement);
+            //Support sorting 
+            PageRequest req = CandidateEs.convertToElasticSortField(request);
             
-            //todo Need to support sorting 
-            PageRequest req = CandidateEs.getAdjustedPagedSearchRequest(request);
-            Page<CandidateEs> candidateProxies = candidateEsRepository
-                    .simpleQueryString(simpleQueryString, req);
+            //Create a simple query string builder from the given string 
+            SimpleQueryStringBuilder simpleQueryStringBuilder = 
+                    QueryBuilders.simpleQueryStringQuery(simpleQueryString);
+
+            //The simple query will be part of a composite query containing
+            //filters.
+            BoolQueryBuilder boolQueryBuilder = 
+                    QueryBuilders.boolQuery().must(simpleQueryStringBuilder);
+
+            //Add filters - each filter must return true for a hit
+            
+            //Add a TermsQuery filter for each multiselect request - eg
+            //countries and nationalities. A match against any one of the 
+            //multiselected values will result in the filter returning true.
+            //There is also a TermQuery which takes only one value.
+            
+            //Countries
+            final List<Long> countryIds = request.getCountryIds();
+            if (countryIds != null) {
+                //Look up country names from ids.
+                List<String> reqCountries = new ArrayList<>();
+                for (Long countryId : countryIds) {
+                    final Country country = countryService.getCountry(countryId);
+                    reqCountries.add(country.getName());
+                }
+                boolQueryBuilder = 
+                        addElasticFilter(boolQueryBuilder,
+                                null,"country", reqCountries);
+            }
+            
+            //Nationalities
+            final List<Long> nationalityIds = request.getNationalityIds();
+            if (nationalityIds != null) {
+                //Look up names from ids.
+                List<String> reqNationalities = new ArrayList<>();
+                for (Long id : nationalityIds) {
+                    final Nationality nationality = nationalityService.getNationality(id);
+                    reqNationalities.add(nationality.getName());
+                }
+                boolQueryBuilder = addElasticFilter(boolQueryBuilder, 
+                        request.getNationalitySearchType(), 
+                        "nationality", reqNationalities);
+            }
+
+            //Statuses
+            List<CandidateStatus> statuses = request.getStatuses();
+            if (request.getIncludeDraftAndDeleted() != null 
+                    && request.getIncludeDraftAndDeleted()) {
+                if (statuses == null) {
+                    statuses = new ArrayList<>();
+                }
+                statuses.add(CandidateStatus.draft);
+                statuses.add(CandidateStatus.deleted);
+            }
+            if (statuses != null) {
+                //Extract names from enums
+                List<String> reqStatuses = new ArrayList<>();
+                for (CandidateStatus status : statuses) {
+                    reqStatuses.add(status.name());
+                }
+                boolQueryBuilder =
+                        addElasticFilter(boolQueryBuilder,
+                                null,"status", reqStatuses);
+            }
+
+            //Gender
+            Gender gender = request.getGender();
+            if (gender != null) {
+                boolQueryBuilder = boolQueryBuilder.filter(
+                        QueryBuilders.termQuery("gender", gender.name()));
+            }
+            
+            NativeSearchQuery query = new NativeSearchQueryBuilder()
+                    .withQuery(boolQueryBuilder)
+                    .withPageable(req)
+                    .build();
+            SearchHits<CandidateEs> hits = elasticsearchOperations.search(
+                    query, CandidateEs.class, IndexCoordinates.of("candidates"));
+            
             //Get candidate ids from the returned results - maintaining the sort
             //Avoid duplicates, but maintaining order by using a LinkedHashSet
             LinkedHashSet<Long> candidateIds = new LinkedHashSet<>();
-            for (CandidateEs candidateProxy : candidateProxies) {
-                candidateIds.add(candidateProxy.getMasterId());
+            for (SearchHit<CandidateEs> hit : hits) {
+                candidateIds.add(hit.getContent().getMasterId());
             }
             //Now fetch those candidates from the normal database
             //They will come back in random order
@@ -382,7 +476,7 @@ public class CandidateServiceImpl implements CandidateService {
                 candidateList.add(mapById.get(candidateId));
             }
             candidates = new PageImpl<>(candidateList, request.getPageRequest(), 
-                    candidateProxies.getTotalElements());  
+                    hits.getTotalHits());  
         } else {
 
             User user = userContext.getLoggedInUser();
@@ -403,6 +497,25 @@ public class CandidateServiceImpl implements CandidateService {
         }
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
         return candidates;
+    }
+
+    private BoolQueryBuilder addElasticFilter(
+            BoolQueryBuilder builder, @Nullable SearchType searchType, String field, 
+            List<String> values) {
+        final int nCountries = values.size();
+        if (nCountries > 0) {
+            QueryBuilder queryBuilder;
+            if (nCountries == 1) {
+                queryBuilder = QueryBuilders.termQuery(field, values.get(0));
+            } else {
+                queryBuilder = QueryBuilders.termsQuery(field, values.toArray());
+            }
+            if (searchType == SearchType.not) {
+                builder = builder.mustNot(queryBuilder);
+            } else {
+                builder = builder.filter(queryBuilder);
+            }
+        } return builder;
     }
 
     private void addInSelections(@Nullable Long savedSearchId, Page<Candidate> candidates) {

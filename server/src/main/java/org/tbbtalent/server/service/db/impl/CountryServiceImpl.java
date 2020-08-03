@@ -1,6 +1,9 @@
 package org.tbbtalent.server.service.db.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -32,6 +35,7 @@ public class CountryServiceImpl implements CountryService {
 
     private static final Logger log = LoggerFactory.getLogger(CountryServiceImpl.class);
 
+    private Map<Long, Country> cache = null;
     private final CandidateRepository candidateRepository;
     private final CountryRepository countryRepository;
     private final TranslationService translationService;
@@ -48,6 +52,27 @@ public class CountryServiceImpl implements CountryService {
         this.userContext = userContext;
     }
 
+    private void dropCache() {
+        cache = null;
+    }
+
+    private void loadCache() {
+        if (cache == null) {
+            cache = new HashMap<>();
+            List<Country> countries = countryRepository.findAll();
+            for (Country country : countries) {
+                cache.put(country.getId(), country);
+            }
+        }
+    }
+
+    private List<Country> getActiveCountries() {
+        loadCache();
+        return cache.values().stream()
+                .filter(obj -> obj.getStatus() == Status.active)
+                .collect(Collectors.toList());
+    }
+
     @Override
     public List<Country> listCountries() {
         User user = userContext.getLoggedInUser();
@@ -57,7 +82,7 @@ public class CountryServiceImpl implements CountryService {
         if(user != null && user.getSourceCountries().size() > 0){
             countries = countryRepository.findByStatusAndSourceCountries(Status.active, user.getSourceCountries());
         }else {
-            countries = countryRepository.findByStatus(Status.active);
+            countries = getActiveCountries();
         }
 
         translationService.translate(countries, "country");
@@ -66,7 +91,7 @@ public class CountryServiceImpl implements CountryService {
 
     @Override
     public List<Country> listCountries(String selectedLanguage) {
-        List<Country> countries = countryRepository.findByStatus(Status.active);
+        List<Country> countries = getActiveCountries();
         translationService.translate(countries, "country", selectedLanguage);
         return countries;
     }
@@ -81,18 +106,21 @@ public class CountryServiceImpl implements CountryService {
         }
         return countries;
     }
-
-
-
+    
     @Override
     public Country getCountry(long id) {
-        return this.countryRepository.findById(id)
-                .orElseThrow(() -> new NoSuchObjectException(Country.class, id));
+        loadCache();
+        Country country = cache.get(id);
+        if (country == null) {
+            throw new NoSuchObjectException(Country.class, id);
+        }
+        return country;
     }
 
     @Override
     @Transactional
     public Country createCountry(UpdateCountryRequest request) throws EntityExistsException {
+        dropCache();
         Country country = new Country(
                 request.getName(), request.getStatus());
         checkDuplicates(null, request.getName());
@@ -102,6 +130,7 @@ public class CountryServiceImpl implements CountryService {
     @Override
     @Transactional
     public Country updateCountry(long id, UpdateCountryRequest request) throws EntityExistsException {
+        dropCache();
         Country country = this.countryRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(Country.class, id));
         checkDuplicates(id, request.getName());
@@ -114,6 +143,7 @@ public class CountryServiceImpl implements CountryService {
     @Override
     @Transactional
     public boolean deleteCountry(long id) throws EntityReferencedException {
+        dropCache();
         Country country = countryRepository.findById(id).orElse(null);
         List<Candidate> candidates = candidateRepository.findByCountryId(id);
         if (!Collections.isEmpty(candidates)){
