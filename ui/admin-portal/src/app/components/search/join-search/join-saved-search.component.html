@@ -3,12 +3,12 @@
     <label for="savedSearch">Base Search</label>
     <input id="savedSearch"
            type="text" class="form-control"
-           input.value = ''
            (selectItem)="selected($event.item.id)"
            [ngbTypeahead]="doSavedSearchSearch"
            [resultTemplate]="rt"
            [inputFormatter]="renderSavedSearchRow"
            [editable]="false"
+           [readOnly]="readonly"
            placeholder="Type the name of a base search..."/>
   </div>
     <ng-template #rt let-r="result" let-t="term">

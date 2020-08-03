@@ -48,11 +48,6 @@
         {{getError()}}
       </div>
 
-      <p class="alert alert-danger" *ngIf="elastic()">
-        Note that, for now, if Elasticsearch is specified,
-        all other inputs are ignored. But please go ahead and give it a try!
-      </p>
-
       <form class="filter-form" [formGroup]="searchForm" (ngSubmit)="apply()" #formWrapper>
         <div class="row">
           <p>Introducing Elasticsearch which <strong>searches all CV's as well!</strong></p>
@@ -85,7 +80,7 @@
           <div class="form-group col-12 col-md-{{savedSearch ? 2 : 3}}">
             <label for="keyword">Keyword</label>
             <input id="keyword" type="text" class="form-control" placeholder="Search..." aria-label="Search"
-                   formControlName="keyword">
+                   formControlName="keyword" [readonly] = elastic()>
           </div>
 
           <!-- STATUS -->
@@ -94,7 +89,7 @@
             <ng-multiselect-dropdown
               id="statuses"
               [placeholder]="''"
-              [settings]="dropdownSettings"
+              [settings]="multiSelectSettings"
               [data]="statuses"
               formControlName="statusesDisplay"
             >
@@ -133,13 +128,14 @@
 
               <!-- OCCUPATION MULTISELECT -->
               <div class="form-group col-12">
-                <label>Occupation (candidate specified)</label>
+                <label>Occupation</label>
                 <ng-multiselect-dropdown
                   id="occupationIds"
                   [placeholder]="''"
-                  [settings]="dropdownSettings"
+                  [settings]="multiSelectSettings"
                   [data]="candidateOccupations"
                   formControlName="occupations"
+                  [disabled]="elastic()"
                 >
                 </ng-multiselect-dropdown>
               </div>
@@ -152,7 +148,7 @@
                   (Note that this is different from Elastic above)
                 </label>
                 <input id="orProfileKeyword" type="text" class="form-control" placeholder="Keyword search: eg welder, diesel mechanic"
-                       aria-label="Search" formControlName="orProfileKeyword">
+                       aria-label="Search" formControlName="orProfileKeyword" [readOnly]="elastic()">
                 <!--            <div class="operator">-->
                 <!--              <input type="checkbox" class="custom-checkbox"  id="includeUploadedFiles" [formControlName]="'includeUploadedFiles'" >-->
                 <!--              <label for="includeUploadedFiles" class="custom-checkbox">-->
@@ -177,13 +173,15 @@
                   <!-- MIN AGE -->
                   <div class="form-group col-6 pl-0">
                     <label for="minAge">Min Age</label>
-                    <input id="minAge" type="number" class="form-control" name="minAge" [formControlName]="'minAge'">
+                    <input id="minAge" type="number" class="form-control"
+                           name="minAge" [formControlName]="'minAge'" [readOnly]="elastic()">
                   </div>
 
                   <!-- MAX AGE -->
                   <div class="form-group col-6 pr-0">
                     <label for="maxAge">Max Age</label>
-                    <input id="maxAge" type="number" class="form-control" name="maxAge" [formControlName]="'maxAge'">
+                    <input id="maxAge" type="number" class="form-control"
+                           name="maxAge" [formControlName]="'maxAge'" [readOnly]="elastic()">
                   </div>
                 </div>
 
@@ -192,7 +190,8 @@
               <!-- MODIFIED BETWEEN -->
               <div class="form-group col-12 col-md-6">
                 <label>Last Modified</label>
-                <app-date-range-picker #modifiedDate (dateSelected)="handleDateSelected($event, 'lastModified')">
+                <app-date-range-picker [readonly]="elastic()"
+                  #modifiedDate (dateSelected)="handleDateSelected($event, 'lastModified')">
                 </app-date-range-picker>
               </div>
 
@@ -201,7 +200,7 @@
                 <label>Country</label>
                 <ng-multiselect-dropdown
                   id="country"
-                  [settings]="dropdownSettings"
+                  [settings]="multiSelectSettings"
                   [data]="countries"
                   formControlName="countries"
                 >
@@ -209,15 +208,26 @@
               </div>
 
               <!-- EDUCATION LEVEL -->
+<!--              <div class="form-group col-12 col-md-4">-->
+<!--                <label for="minEducationLevel">Education Level (minimum)</label>-->
+<!--                <select class="form-control" id="minEducationLevel" name="minEducationLevel"-->
+<!--                        [formControlName]="'minEducationLevel'" [disabled]="elastic()">-->
+<!--                  <option value="" [disabled]="elastic()"></option>-->
+<!--                  <option *ngFor="let level of educationLevels" [value]="level.level" [disabled]="elastic()">-->
+<!--                    {{level.name}}-->
+<!--                  </option>-->
+<!--                </select>-->
+<!--              </div>-->
               <div class="form-group col-12 col-md-4">
-                <label for="minEducationLevel">Education Level (minimum)</label>
-                <select class="form-control" id="minEducationLevel" name="minEducationLevel"
-                        [formControlName]="'minEducationLevel'">
-                  <option value=""></option>
-                  <option *ngFor="let level of educationLevels" [value]="level.level">
-                    {{level.name}}
-                  </option>
-                </select>
+                <label>Education Level (minimum)</label>
+                <ng-multiselect-dropdown
+                  id="minEducationLevel"
+                  [settings]="singleSelectSettings"
+                  [data]="educationLevels"
+                  formControlName="minEducationLevel"
+                  [disabled]="elastic()"
+                >
+                </ng-multiselect-dropdown>
               </div>
 
               <!-- EDUCATION MAJOR -->
@@ -225,9 +235,10 @@
                 <label>Education major</label>
                 <ng-multiselect-dropdown
                   id="educationMajorIds"
-                  [settings]="dropdownSettings"
+                  [settings]="multiSelectSettings"
                   [data]="educationMajors"
                   formControlName="educationMajors"
+                  [disabled]="elastic()"
                 >
                 </ng-multiselect-dropdown>
               </div>
@@ -265,7 +276,7 @@
             <ng-multiselect-dropdown
               id="selectedNationalities"
               [placeholder]="'Select Nationalities'"
-              [settings]="dropdownSettings"
+              [settings]="multiSelectSettings"
               [data]="nationalities"
               formControlName="nationalities"
             >
@@ -304,6 +315,7 @@
               (addBaseSearch)="addBaseSearchJoin($event)"
               (deleteBaseSearch)="deleteBaseSearchJoin()"
               [baseSearch]= "selectedBaseJoin"
+              [readonly]="elastic()"
             ></app-join-saved-search>
           </div>
 

@@ -88,13 +88,21 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
   sortDirection = 'DESC';
 
   /* MULTI SELECT */
-  dropdownSettings: IDropdownSettings = {
+  multiSelectSettings: IDropdownSettings = {
     idField: 'id',
     textField: 'name',
     singleSelection: false,
     selectAllText: 'Select All',
     unSelectAllText: 'Deselect All',
     itemsShowLimit: 2,
+    allowSearchFilter: true
+  };
+
+  /* MULTI SELECT */
+  singleSelectSettings: IDropdownSettings = {
+    idField: 'id',
+    textField: 'name',
+    singleSelection: true,
     allowSearchFilter: true
   };
 
@@ -107,6 +115,9 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
   verifiedOccupations: Occupation[];
   candidateOccupations: Occupation[];
   languageLevels: LanguageLevel[];
+
+  //Data entry classes
+  notElastic;
 
   statuses: { id: string, name: string }[] = [
     {id: 'pending', name: 'pending'},
@@ -184,6 +195,9 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     this.selectedCandidate = null;
     this.loggedInUser = this.authService.getLoggedInUser();
     this.storedBaseJoin = null;
+    this.notElastic = {
+      readonly: this.elastic()
+    }
 
     forkJoin({
       'nationalities': this.nationalityService.listNationalities(),
