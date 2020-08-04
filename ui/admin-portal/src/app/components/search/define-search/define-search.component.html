@@ -111,6 +111,7 @@
                                              [languages]="languages"
                                              [languageLevels]="languageLevels"
                                              [languageDisabled]="true"
+                                             [disabled]="elastic()"
                                              (modelUpdated)="handleLanguageLevelChange($event, 'english')">
             </app-language-level-form-control>
           </div>
@@ -254,7 +255,7 @@
                                              [languages]="languages"
                                              [languageLevels]="languageLevels"
                                              [model]="otherLanguageModel"
-                                             [elastic]="elastic()"
+                                             [disabled]="elastic()"
                                              (modelUpdated)="handleLanguageLevelChange($event, 'other')">
             </app-language-level-form-control>
           </div>
