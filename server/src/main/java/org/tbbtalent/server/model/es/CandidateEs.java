@@ -164,8 +164,16 @@ public class CandidateEs {
             }
         }
     }
-    
-    public static PageRequest getAdjustedPagedSearchRequest(
+
+    /**
+     * Elasticsearch only supports a subset of sort fields. This method
+     * takes a standard PagedSearchRequest and returns a PageRequest which will
+     * only containing a sort field if is supported by Elasticsearch
+     * (as defined in {@link this#sortingFields})
+     * @param request Incoming request which may contain a sort field.
+     * @return PageRequest with modified sort fields suitable for Elasticsearch
+     */
+    public static PageRequest convertToElasticSortField(
             PagedSearchRequest request) {
         PageRequest requestAdj;
         

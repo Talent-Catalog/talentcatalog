@@ -4,14 +4,14 @@
 
   <div class="input-group" (click)="toggle()">
 
-    <div class="form-control">
+    <div class="form-control" [ngClass]="disabledClasses">
       <div class="language-label">
         {{renderLevel()}}
       </div>
     </div>
 
     <div class="input-group-append">
-      <button type="button" class="btn btn-outline-secondary">
+      <button type="button" class="btn btn-outline-secondary" [disabled]="disable">
         <span class="fas fa-angle-down"></span>
       </button>
     </div>

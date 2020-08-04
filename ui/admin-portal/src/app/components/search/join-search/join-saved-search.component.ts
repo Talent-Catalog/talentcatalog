@@ -1,6 +1,14 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {SearchResults} from '../../../model/search-results';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormGroup} from "@angular/forms";
 import {
   catchError,
   debounceTime,
@@ -9,12 +17,10 @@ import {
   switchMap,
   tap
 } from "rxjs/operators";
-import {SavedSearch, SavedSearchJoin} from '../../../model/saved-search';
+import {SavedSearch} from '../../../model/saved-search';
 import {SavedSearchService} from "../../../services/saved-search.service";
 import {Router} from "@angular/router";
-import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {Observable, of} from "rxjs";
-import {CandidateOccupation} from "../../../model/candidate-occupation";
 
 @Component({
   selector: 'app-join-saved-search',
@@ -36,6 +42,7 @@ export class JoinSavedSearchComponent implements OnInit, OnChanges {
   selectedBaseSearch: SavedSearch;
   selectedSearchId: number;
   @Input() baseSearch;
+  @Input() readonly: boolean;
   @Output() addBaseSearch = new EventEmitter<SavedSearch>();
   @Output() deleteBaseSearch = new EventEmitter();
 

@@ -1,4 +1,12 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {Language} from "../../../../model/language";
 import {LanguageService} from "../../../../services/language.service";
 import {LanguageLevel} from "../../../../model/language-level";
@@ -19,9 +27,11 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
   @Input() languages: Language[];
   @Input() spokenLevel: LanguageLevel;
   @Input() writtenLevel: LanguageLevel;
+  @Input() disable: boolean;
 
   @Output() modelUpdated = new EventEmitter<LanguageLevelFormControlModel>();
 
+  disabledClasses;
   showMenu: boolean;
   form: FormGroup;
 
@@ -32,6 +42,7 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+
     this.form = this.fb.group({
       languageId: [this.model ? this.model.languageId : null, Validators.required],
       writtenLevel: [this.model ? this.model.writtenLevel : null, Validators.required],
@@ -68,6 +79,10 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(c: SimpleChanges) {
+    this.disabledClasses = {
+      'disable': this.disable
+    };
+
     if (c.form && c.form.currentValue !== c.form.previousValue
       && c.model && c.model.currentValue !== c.model.previousValue) {
       this.form.patchValue(c.model.currentValue);
@@ -75,7 +90,9 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
   }
 
   toggle() {
-    this.showMenu = !this.showMenu;
+    if (!this.disable) {
+      this.showMenu = !this.showMenu;
+    }
   }
 
   open() {
@@ -88,9 +105,9 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
 
   renderLevel() {
     const val = (this.form.value as LanguageLevelFormControlModel);
-    const language = val.languageId ? this.languages.find(l => l.id == val.languageId).name : '';
-    const written = val.writtenLevel ? 'Written: ' + this.languageLevels.find(l => l.level == val.writtenLevel).name : '';
-    const spoken = val.spokenLevel ? 'Spoken: ' + this.languageLevels.find(l => l.level == val.spokenLevel).name : '';
+    const language = val.languageId ? this.languages.find(l => l.id === val.languageId).name : '';
+    const written = val.writtenLevel ? 'Written: ' + this.languageLevels.find(l => l.level === val.writtenLevel).name : '';
+    const spoken = val.spokenLevel ? 'Spoken: ' + this.languageLevels.find(l => l.level === val.spokenLevel).name : '';
     const proficiencyString = written && spoken ? written + ', ' + spoken : written || spoken;
     return language && proficiencyString ? `${language} (${proficiencyString})` : language ? language : proficiencyString;
   }
@@ -115,7 +132,7 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
   }
 
   patchModel(model: LanguageLevelFormControlModel) {
-    for (let key of Object.keys(model)) {
+    for (const key of Object.keys(model)) {
       this.form.controls[key].patchValue(model[key]);
     }
 

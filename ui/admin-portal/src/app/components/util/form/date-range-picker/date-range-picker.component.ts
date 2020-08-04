@@ -10,6 +10,7 @@ export class DateRangePickerComponent implements OnInit {
 
   @Input() fromDate: NgbDateStruct;
   @Input() toDate: NgbDateStruct;
+  @Input() readonly: boolean;
 
   @Output() dateSelected = new EventEmitter();
 
