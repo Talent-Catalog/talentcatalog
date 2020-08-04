@@ -27,7 +27,7 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
   @Input() languages: Language[];
   @Input() spokenLevel: LanguageLevel;
   @Input() writtenLevel: LanguageLevel;
-  @Input() disabled: boolean;
+  @Input() disable: boolean;
 
   @Output() modelUpdated = new EventEmitter<LanguageLevelFormControlModel>();
 
@@ -80,7 +80,7 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
 
   ngOnChanges(c: SimpleChanges) {
     this.disabledClasses = {
-      'disabled': this.disabled
+      'disable': this.disable
     };
 
     if (c.form && c.form.currentValue !== c.form.previousValue
@@ -90,7 +90,7 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
   }
 
   toggle() {
-    if (!this.disabled) {
+    if (!this.disable) {
       this.showMenu = !this.showMenu;
     }
   }

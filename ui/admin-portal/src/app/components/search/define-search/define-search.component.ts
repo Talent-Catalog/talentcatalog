@@ -98,9 +98,9 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     allowSearchFilter: true
   };
 
-  /* MULTI SELECT */
-  singleSelectSettings: IDropdownSettings = {
-    idField: 'id',
+  /* Education Level Select */
+  educationLevelSettings: IDropdownSettings = {
+    idField: 'level',
     textField: 'name',
     singleSelection: true,
     allowSearchFilter: true
@@ -177,7 +177,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       timezone: moment.tz.guess(),
       minAge: [null],
       maxAge: [null],
-      minEducationLevel: [null],
+      minEducationLevelObj: [[]],
       educationMajorIds: [[]],
       searchJoinRequests: this.fb.array([]),
       //for display purposes
@@ -304,6 +304,9 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     request.sortFields = [this.sortField];
     request.sortDirection = this.sortDirection;
 
+    //Note that just changing searchRequest triggers the display of the results
+    //See the html of this component, for which <app-show-candidates takes
+    //searchRequest as an input.
     this.searchRequest = request;
   }
 
@@ -321,6 +324,12 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     if (request.occupations != null) {
       request.occupationIds = request.occupations.map(o => o.id);
       delete request.occupations;
+    }
+
+    if (request.minEducationLevelObj != null
+      && request.minEducationLevelObj.length > 0) {
+      request.minEducationLevel = request.minEducationLevelObj[0].level;
+      delete request.minEducationLevelObj;
     }
 
     if (request.educationMajors != null) {

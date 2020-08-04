@@ -111,7 +111,7 @@
                                              [languages]="languages"
                                              [languageLevels]="languageLevels"
                                              [languageDisabled]="true"
-                                             [disabled]="elastic()"
+                                             [disable]="elastic()"
                                              (modelUpdated)="handleLanguageLevelChange($event, 'english')">
             </app-language-level-form-control>
           </div>
@@ -150,12 +150,6 @@
                 </label>
                 <input id="orProfileKeyword" type="text" class="form-control" placeholder="Keyword search: eg welder, diesel mechanic"
                        aria-label="Search" formControlName="orProfileKeyword" [readOnly]="elastic()">
-                <!--            <div class="operator">-->
-                <!--              <input type="checkbox" class="custom-checkbox"  id="includeUploadedFiles" [formControlName]="'includeUploadedFiles'" >-->
-                <!--              <label for="includeUploadedFiles" class="custom-checkbox">-->
-                <!--                Include Uploaded CV Files-->
-                <!--              </label>-->
-                <!--            </div>-->
               </div>
 
             </div>
@@ -209,6 +203,7 @@
               </div>
 
               <!-- EDUCATION LEVEL -->
+              
 <!--              <div class="form-group col-12 col-md-4">-->
 <!--                <label for="minEducationLevel">Education Level (minimum)</label>-->
 <!--                <select class="form-control" id="minEducationLevel" name="minEducationLevel"-->
@@ -223,9 +218,9 @@
                 <label>Education Level (minimum)</label>
                 <ng-multiselect-dropdown
                   id="minEducationLevel"
-                  [settings]="singleSelectSettings"
+                  [settings]="educationLevelSettings"
                   [data]="educationLevels"
-                  formControlName="minEducationLevel"
+                  formControlName="minEducationLevelObj"
                   [disabled]="elastic()"
                 >
                 </ng-multiselect-dropdown>
@@ -255,7 +250,7 @@
                                              [languages]="languages"
                                              [languageLevels]="languageLevels"
                                              [model]="otherLanguageModel"
-                                             [disabled]="elastic()"
+                                             [disable]="elastic()"
                                              (modelUpdated)="handleLanguageLevelChange($event, 'other')">
             </app-language-level-form-control>
           </div>
