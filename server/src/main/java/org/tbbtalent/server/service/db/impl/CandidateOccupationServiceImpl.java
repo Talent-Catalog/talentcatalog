@@ -179,6 +179,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
                     Occupation occupation = occupationRepository.findById(update.getOccupationId())
                             .orElseThrow(() -> new NoSuchObjectException(Occupation.class, update.getOccupationId()));
                     candidateOccupation.setOccupation(occupation);
+                    log.info("Set new Occupation to on existing candidate occupation " + occupation.getName());
                 }
                 candidateOccupation.setYearsExperience(update.getYearsExperience());
             } else {
@@ -192,9 +193,11 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
                 if (candidateOccupation != null) {
                     // If candidate has candidateOccupation with same occupation, just update that one.
                     candidateOccupation.setYearsExperience(update.getYearsExperience());
+                    log.info("Updated existing candidate occupation " + candidateOccupation.getOccupation().getName());
                 } else {
                     // If candidate has not got that occupation, create new occupation.
                     candidateOccupation = new CandidateOccupation(candidate, occupation, update.getYearsExperience());
+                    log.info("Created new candidate occupation " + candidateOccupation.getOccupation().getName());
                 }
 
             }
