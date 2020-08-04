@@ -370,7 +370,7 @@ public class CandidateServiceImpl implements CandidateService {
 
         Page<Candidate> candidates;
         String simpleQueryString = request.getSimpleQueryString();
-        if (simpleQueryString != null) {
+        if (simpleQueryString != null && simpleQueryString.length() > 0) {
             //This is an elastic search request
             
             //Support sorting 
