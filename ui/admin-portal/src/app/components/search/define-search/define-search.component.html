@@ -254,6 +254,7 @@
                                              [languages]="languages"
                                              [languageLevels]="languageLevels"
                                              [model]="otherLanguageModel"
+                                             [elastic]="elastic()"
                                              (modelUpdated)="handleLanguageLevelChange($event, 'other')">
             </app-language-level-form-control>
           </div>

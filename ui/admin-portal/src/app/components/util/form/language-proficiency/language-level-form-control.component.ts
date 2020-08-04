@@ -19,6 +19,7 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
   @Input() languages: Language[];
   @Input() spokenLevel: LanguageLevel;
   @Input() writtenLevel: LanguageLevel;
+  @Input() elastic: boolean;
 
   @Output() modelUpdated = new EventEmitter<LanguageLevelFormControlModel>();
 
@@ -75,7 +76,9 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
   }
 
   toggle() {
-    this.showMenu = !this.showMenu;
+    if (!this.elastic) {
+      this.showMenu = !this.showMenu;
+    }
   }
 
   open() {
