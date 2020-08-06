@@ -40,8 +40,6 @@ import org.tbbtalent.server.model.db.NoteType;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
-import org.tbbtalent.server.repository.db.CandidateRepository;
-import org.tbbtalent.server.repository.es.CandidateEsRepository;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.DataSharingService;
@@ -60,9 +58,7 @@ public class SystemAdminApi {
     private final DataSharingService dataSharingService;
 
     private final CandidateAttachmentRepository candidateAttachmentRepository;
-    private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
-    private final CandidateEsRepository candidateEsRepository;
     private final S3ResourceHelper s3ResourceHelper;
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -80,16 +76,12 @@ public class SystemAdminApi {
     
     @Autowired
     public SystemAdminApi(
-            CandidateRepository candidateRepository,
             CandidateService candidateService,
-            CandidateEsRepository candidateEsRepository,
             DataSharingService dataSharingService,
             UserContext userContext, 
             CandidateAttachmentRepository candidateAttachmentRepository, 
             S3ResourceHelper s3ResourceHelper) {
-        this.candidateRepository = candidateRepository;
         this.candidateService = candidateService;
-        this.candidateEsRepository = candidateEsRepository;
         this.dataSharingService = dataSharingService;
         this.userContext = userContext;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
@@ -98,7 +90,7 @@ public class SystemAdminApi {
     }
 
     public static void main(String[] args) {
-        SystemAdminApi api = new SystemAdminApi(null, null, null, null, null, null, null);
+        SystemAdminApi api = new SystemAdminApi(null, null, null, null, null);
         api.setTargetJdbcUrl("jdbc:postgresql://localhost:5432/tbbtalent");
         api.setTargetUser("tbbtalent");
         api.setTargetPwd("tbbtalent");
