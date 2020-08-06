@@ -35,6 +35,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
@@ -188,35 +189,58 @@ public class CandidateServiceImpl implements CandidateService {
         CandidateEs ces;
         if (deleteExisting) {
             log.info("Replace all candidates in Elasticsearch - deleting old candidates");
+            candidateRepository.clearAllCandidateTextSearchIds();
             candidateEsRepository.deleteAll();
             log.info("Old candidates deleted.");
         }
-        List<Candidate> candidates = candidateRepository.findAllNonElasticLoadText();
-        log.info(candidates.size() + " candidates to be added.");
+
+        log.info("Loading candidates.");
+        
         int count = 0;
-        for (Candidate candidate : candidates) {
-            try {
-                //Remove any existing textSearchId's - because they will be
-                //invalid because we just deleted all existing candidates from
-                //Elasticsearch. This avoids a bunch of warnings being logged.
-                candidate.setTextSearchId(null);
-                ces = new CandidateEs(candidate);
-                ces = candidateEsRepository.save(ces);
+        String verb = deleteExisting ? "added" : "updated";
 
-                //Update textSearchId on candidate.
-                String textSearchId = ces.getId();
-                candidate.setTextSearchId(textSearchId);
-                save(candidate, false);
-
-                count++;
-                if (count % 100 == 0) {
-                    log.info(count + " candidates added to Elasticsearch");
-                }
-            } catch (Exception ex) {
-                log.warn("Could not load candidate " + candidate.getId(), ex);
+        boolean loggedTotal = false;
+        int pageNum = 0;
+        final int pageSize = 20;
+        boolean more;
+        
+        //Loop through pages (keeps memory requirements down - compared to
+        //loading all candidates in one go)
+        do {
+            Pageable page = PageRequest.of(pageNum++, pageSize);
+            Page<Candidate> candidates = candidateRepository.findCandidatesWhereStatusNotDeleted(page);
+            more = !candidates.isLast();
+            if (!loggedTotal) {
+                log.info(candidates.getTotalElements() + " candidates to be processed.");
+                loggedTotal = true;
             }
-        }
-        log.info("Done: " + count + " candidates added to Elasticsearch");
+            for (Candidate candidate : candidates) {
+                try {
+                    if (deleteExisting) {
+                        ces = new CandidateEs(candidate);
+                        ces = candidateEsRepository.save(ces);
+
+                        //Update textSearchId on candidate.
+                        String textSearchId = ces.getId();
+                        candidate.setTextSearchId(textSearchId);
+                        save(candidate, false);
+                    } else {
+                        //This also handles all the awkward cases - such as
+                        //links to non existent proxies - creating them as needed.
+                        updateElasticProxy(candidate);
+                    }
+
+                    count++;
+                    if (count % 100 == 0) {
+                        log.info(count + " candidates " + verb  + " to Elasticsearch");
+                    }
+                } catch (Exception ex) {
+                    log.warn("Could not load candidate " + candidate.getId(), ex);
+                }
+            }
+        } while (more);  
+
+        log.info("Done: " + count + " candidates " + verb + " to Elasticsearch");
     }
 
     @Override
@@ -1524,36 +1548,59 @@ public class CandidateServiceImpl implements CandidateService {
         candidate = candidateRepository.save(candidate);
         
         if (updateCandidateEs) {
-            //Find/create Elasticsearch twin candidate
-            CandidateEs twin;
-            //Get textSearchId, if any
-            String textSearchId = candidate.getTextSearchId();
-            if (textSearchId == null) {
-                //No twin - create one
+            candidate = updateElasticProxy(candidate);
+        }
+        return candidate;
+    }
+
+    /**
+     * Does whatever is needed to bring the Elastic proxy into sync with 
+     * its parent candidate on the normal database.
+     * <p>
+     *     Handles the following cases:
+     * </p>
+     * <ul>
+     *     <li>Normal case: updates proxy indicated by textSearchId of master</li>
+     *     <li>Master has no linked proxy (no textSearchId) - create one </li>
+     *     <li>Master has a textSearchId, but no such proxy is found, 
+     *     log warning but create a proxy</li>
+     * </ul>
+     * @param candidate Candidate entity (the master) from thr normal database
+     * @return Potentially modified candidate entity (with latest textSearchId)
+     */
+    private Candidate updateElasticProxy(Candidate candidate) {
+        //Find/create Elasticsearch twin candidate
+        CandidateEs twin;
+        //Get textSearchId, if any
+        String textSearchId = candidate.getTextSearchId();
+        String originalTextSearchId = textSearchId;
+        if (textSearchId == null) {
+            //No twin - create one
+            twin = new CandidateEs(candidate);
+        } else {
+            //Get twin
+            twin = candidateEsRepository.findById(textSearchId)
+                    .orElse(null);
+            if (twin == null) {
+                //Candidate is referring to non existent twin.
+                //Create new twin
                 twin = new CandidateEs(candidate);
+
+                //Shouldn't really happen (except during a complete reload) 
+                // so log warning
+                log.warn("Candidate " + candidate.getId() +
+                        " refers to non existent Elasticsearch id "
+                        + textSearchId + ". Creating new twin.");
             } else {
-                //Get twin
-                twin = candidateEsRepository.findById(textSearchId)
-                        .orElse(null);
-                if (twin == null) {
-                    //Candidate is referring to non existent twin.
-                    //Create new twin
-                    twin = new CandidateEs(candidate);
-
-                    //Shouldn't really happen (except during a complete reload) 
-                    // so log warning
-                    log.warn("Candidate " + candidate.getId() +
-                            " refers to non existent Elasticsearch id "
-                            + textSearchId + ". Creating new twin.");
-                } else {
-                    //Update twin from candidate
-                    twin.copy(candidate);
-                }
+                //Update twin from candidate
+                twin.copy(candidate);
             }
-            twin = candidateEsRepository.save(twin);
-            textSearchId = twin.getId();
+        }
+        twin = candidateEsRepository.save(twin);
+        textSearchId = twin.getId();
 
-            //Update textSearchId on candidate.
+        //Update textSearchId on candidate if necessary
+        if (!textSearchId.equals(originalTextSearchId)) {
             candidate.setTextSearchId(textSearchId);
             candidate = candidateRepository.save(candidate);
         }
