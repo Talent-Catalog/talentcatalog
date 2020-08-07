@@ -43,8 +43,7 @@ public class SavedSearch extends AbstractCandidateSource {
     private Gender gender;
 
     private String occupationIds;
-    private Integer minYrs;
-    private Integer maxYrs;
+    private String orProfileKeyword;
 
     private String verifiedOccupationIds;
     @Enumerated(EnumType.STRING)
@@ -158,13 +157,13 @@ public class SavedSearch extends AbstractCandidateSource {
         this.occupationIds = occupationIds;
     }
 
-    public Integer getMinYrs() { return minYrs; }
+    public String getOrProfileKeyword() {
+        return orProfileKeyword;
+    }
 
-    public void setMinYrs(Integer minYrs) { this.minYrs = minYrs; }
-
-    public Integer getMaxYrs() { return maxYrs; }
-
-    public void setMaxYrs(Integer maxYrs) { this.maxYrs = maxYrs; }
+    public void setOrProfileKeyword(String orProfileKeyword) {
+        this.orProfileKeyword = orProfileKeyword;
+    }
 
     public String getVerifiedOccupationIds() {
         return verifiedOccupationIds;

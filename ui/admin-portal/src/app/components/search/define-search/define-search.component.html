@@ -142,36 +142,14 @@
               </div>
 
               <!-- PROFILE KEYWORD -->
-<!--              <div class="form-group col-12">-->
-<!--                <label for="orProfileKeyword">-->
-<!--                  Or profile has any of the phrases, separated by commas, below.-->
-<!--                  The profile must contain ALL of the words in a phrase.-->
-<!--                  (Note that this is different from Elastic above)-->
-<!--                </label>-->
-<!--                <input id="orProfileKeyword" type="text" class="form-control" placeholder="Keyword search: eg welder, diesel mechanic"-->
-<!--                       aria-label="Search" formControlName="orProfileKeyword" [readOnly]="elastic()">-->
-<!--              </div>-->
-
-              <!-- AGE -->
-              <div class="col-12 ">
-
-                <div class="d-flex flex-wrap">
-
-                  <!-- MIN AGE -->
-                  <div class="form-group col-6 pl-0">
-                    <label for="minYrs">Min Years Experience</label>
-                    <input id="minYrs" type="number" class="form-control"
-                           name="minYrs" [formControlName]="'minYrs'" [readOnly]="elastic()">
-                  </div>
-
-                  <!-- MAX AGE -->
-                  <div class="form-group col-6 pr-0">
-                    <label for="maxYrs">Max Years Experience</label>
-                    <input id="maxYrs" type="number" class="form-control"
-                           name="maxYrs" [formControlName]="'maxYrs'" [readOnly]="elastic()">
-                  </div>
-                </div>
-
+              <div class="form-group col-12">
+                <label for="orProfileKeyword">
+                  Or profile has any of the phrases, separated by commas, below.
+                  The profile must contain ALL of the words in a phrase.
+                  (Note that this is different from Elastic above)
+                </label>
+                <input id="orProfileKeyword" type="text" class="form-control" placeholder="Keyword search: eg welder, diesel mechanic"
+                       aria-label="Search" formControlName="orProfileKeyword" [readOnly]="elastic()">
               </div>
 
             </div>
@@ -225,7 +203,7 @@
               </div>
 
               <!-- EDUCATION LEVEL -->
-
+              
 <!--              <div class="form-group col-12 col-md-4">-->
 <!--                <label for="minEducationLevel">Education Level (minimum)</label>-->
 <!--                <select class="form-control" id="minEducationLevel" name="minEducationLevel"-->

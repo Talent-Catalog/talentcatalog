@@ -31,8 +31,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     @Enumerated(EnumType.STRING)
     private Gender gender;
     private List<Long> occupationIds;
-    private Integer minYrs;
-    private Integer maxYrs;
+    private String orProfileKeyword;
     private List<Long> verifiedOccupationIds;
     private SearchType verifiedOccupationSearchType;
     private List<Long> nationalityIds;
