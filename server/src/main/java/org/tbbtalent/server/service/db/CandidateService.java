@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.tbbtalent.server.exception.ExportFailedException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.UsernameTakenException;
@@ -37,8 +38,32 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tbbtalent.server.request.candidate.stat.CandidateStatDateRequest;
 
 public interface CandidateService {
-    
-    void populateElasticCandidates(boolean deleteExisting);
+
+    /**
+     * Adds or updates the Elasticsearch records corresponding to candidates
+     * on our standard database.
+     * <p/>
+     * This is intended to be a bulk update which updates the contents of
+     * the elasticsearch server to for ALL non deleted candidates on our 
+     * database.
+     * <p/> 
+     * For performance reasons (and to minimize memory use) this update is
+     * done a page of records (eg 20) at a time - as defined by the "pageable" 
+     * parameter passed to this method.
+     * This method will normally be called repeatedly from a background Async 
+     * task, triggered by an API call to SystemAdminApi, starting with page 0,
+     * page 1, etc, until all candidates have been added/updated.
+     * @param pageable The page request - basically the page number.
+     * @param logTotal If true, the method is requested to log the total number
+     *                 of candidates to be updated.
+     * @param createElastic If true, it is assumed that the Elasticsearch has
+     *                      started empty, so new records need to be created
+     *                      (rather than updating existing records).
+     * @return The number of candidates added or updated on this call. Normally
+     * that will be page full (eg 20).
+     */
+    int populateElasticCandidates(
+            Pageable pageable, boolean logTotal, boolean createElastic);
     
     Page<Candidate> searchCandidates(SearchCandidateRequest request);
 
@@ -165,7 +190,7 @@ public interface CandidateService {
      * IMPORTANT: Use this instead of {@link CandidateRepository#save} 
      * Saves candidate to repository, but also optionally updates corresponding
      * Elasticsearch CandidateEs
-     * @param candidate
+     * @param candidate Candidate to be saved
      * @param updateCandidateEs If true, will also update Elasticsearch
      * @return Candidate object as returned by {@link CandidateRepository#save} 
      */

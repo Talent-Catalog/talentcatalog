@@ -41,8 +41,8 @@ import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
 import org.tbbtalent.server.security.UserContext;
-import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.DataSharingService;
+import org.tbbtalent.server.service.db.PopulateElasticsearchService;
 import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
 import org.tbbtalent.server.util.textExtract.TextExtractHelper;
 
@@ -58,7 +58,7 @@ public class SystemAdminApi {
     private final DataSharingService dataSharingService;
 
     private final CandidateAttachmentRepository candidateAttachmentRepository;
-    private final CandidateService candidateService;
+    private final PopulateElasticsearchService populateElasticsearchService;
     private final S3ResourceHelper s3ResourceHelper;
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -76,15 +76,15 @@ public class SystemAdminApi {
     
     @Autowired
     public SystemAdminApi(
-            CandidateService candidateService,
             DataSharingService dataSharingService,
-            UserContext userContext, 
-            CandidateAttachmentRepository candidateAttachmentRepository, 
+            UserContext userContext,
+            CandidateAttachmentRepository candidateAttachmentRepository,
+            PopulateElasticsearchService populateElasticsearchService, 
             S3ResourceHelper s3ResourceHelper) {
-        this.candidateService = candidateService;
         this.dataSharingService = dataSharingService;
         this.userContext = userContext;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
+        this.populateElasticsearchService = populateElasticsearchService;
         this.s3ResourceHelper = s3ResourceHelper;
         countryForGeneralCountry = getExtraCountryMappings();
     }
@@ -158,7 +158,7 @@ public class SystemAdminApi {
     @GetMapping("esload")
     public String loadElasticsearch(
             @RequestParam(value = "reset", required = false) String reset) {
-        candidateService.populateElasticCandidates(reset != null);
+        populateElasticsearchService.populateElasticCandidates(reset != null);
         return "started";
     }
 

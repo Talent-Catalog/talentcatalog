@@ -44,7 +44,6 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -183,64 +182,38 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Transactional
-    @Async
     @Override
-    public void populateElasticCandidates(boolean deleteExisting) {
-        CandidateEs ces;
-        if (deleteExisting) {
-            log.info("Replace all candidates in Elasticsearch - deleting old candidates");
-            candidateRepository.clearAllCandidateTextSearchIds();
-            candidateEsRepository.deleteAll();
-            log.info("Old candidates deleted.");
+    public int populateElasticCandidates(
+            Pageable pageable, boolean logTotal, boolean createElastic) {
+        Page<Candidate> candidates = candidateRepository.findCandidatesWhereStatusNotDeleted(pageable);
+        if (logTotal) {
+            log.info(candidates.getTotalElements() + " candidates to be processed.");
         }
 
-        log.info("Loading candidates.");
-        
         int count = 0;
-        String verb = deleteExisting ? "added" : "updated";
+        for (Candidate candidate : candidates) {
+            try {
+                if (createElastic) {
+                    CandidateEs ces = new CandidateEs(candidate);
+                    ces = candidateEsRepository.save(ces);
 
-        boolean loggedTotal = false;
-        int pageNum = 0;
-        final int pageSize = 20;
-        boolean more;
-        
-        //Loop through pages (keeps memory requirements down - compared to
-        //loading all candidates in one go)
-        do {
-            Pageable page = PageRequest.of(pageNum++, pageSize);
-            Page<Candidate> candidates = candidateRepository.findCandidatesWhereStatusNotDeleted(page);
-            more = !candidates.isLast();
-            if (!loggedTotal) {
-                log.info(candidates.getTotalElements() + " candidates to be processed.");
-                loggedTotal = true;
-            }
-            for (Candidate candidate : candidates) {
-                try {
-                    if (deleteExisting) {
-                        ces = new CandidateEs(candidate);
-                        ces = candidateEsRepository.save(ces);
-
-                        //Update textSearchId on candidate.
-                        String textSearchId = ces.getId();
-                        candidate.setTextSearchId(textSearchId);
-                        save(candidate, false);
-                    } else {
-                        //This also handles all the awkward cases - such as
-                        //links to non existent proxies - creating them as needed.
-                        updateElasticProxy(candidate);
-                    }
-
-                    count++;
-                    if (count % 100 == 0) {
-                        log.info(count + " candidates " + verb  + " to Elasticsearch");
-                    }
-                } catch (Exception ex) {
-                    log.warn("Could not load candidate " + candidate.getId(), ex);
+                    //Update textSearchId on candidate.
+                    String textSearchId = ces.getId();
+                    candidate.setTextSearchId(textSearchId);
+                    save(candidate, false);
+                } else {
+                    //This also handles all the awkward cases - such as
+                    //links to non existent proxies - creating them as needed.
+                    updateElasticProxy(candidate);
                 }
-            }
-        } while (more);  
 
-        log.info("Done: " + count + " candidates " + verb + " to Elasticsearch");
+                count++;
+            } catch (Exception ex) {
+                log.warn("Could not load candidate " + candidate.getId(), ex);
+            }
+        }
+
+        return count;
     }
 
     @Override
