@@ -271,6 +271,8 @@ public class UserServiceImpl implements UserService {
             return new JwtAuthenticationResponse(jwt, user);
 
         } catch (BadCredentialsException e) {
+            //Log details to check for nature of brute force attacks.
+            log.info("Invalid credentials for user: " + request);
             // map spring exception to a service exception for better handling
             throw new InvalidCredentialsException("Invalid credentials for user");
         } catch (LockedException e) {
