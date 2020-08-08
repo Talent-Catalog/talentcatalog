@@ -99,9 +99,8 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
     @Override
     public CandidateJobExperience updateCandidateJobExperience(UpdateJobExperienceRequest request) {
         Candidate candidate = userContext.getLoggedInCandidate();
-        CandidateJobExperience experience = updateCandidateJobExperience(request.getId(), request);
         candidate.setAuditFields(candidate.getUser());
-        candidateService.save(candidate, true);
+        CandidateJobExperience experience = updateCandidateJobExperience(request.getId(), request);
 
         return experience;
     }
@@ -135,9 +134,12 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
         candidateJobExperience.setPaid(request.getPaid());
         candidateJobExperience.setDescription(request.getDescription());
         candidateJobExperience.setCandidateOccupation(candidateOccupation);
-        candidateJobExperienceRepository.save(candidateJobExperience);
+        
+        // Save the candidate experience
+        candidateJobExperience = candidateJobExperienceRepository.save(candidateJobExperience);
 
-        // Save the candidateOccupation
+        candidateService.save(candidateJobExperience.getCandidate(), true);
+
         return candidateJobExperience;
     }
 

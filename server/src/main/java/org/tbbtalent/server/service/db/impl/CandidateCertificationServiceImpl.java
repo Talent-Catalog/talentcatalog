@@ -112,6 +112,8 @@ public class CandidateCertificationServiceImpl implements CandidateCertification
         candidateCertification.setName(request.getName());
         candidateCertification.setDateCompleted(request.getDateCompleted());
 
+        candidateService.save(candidateCertification.getCandidate(), true);
+
         // Save the candidateOccupation
         return candidateCertificationRepository.save(candidateCertification);
 

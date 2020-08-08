@@ -82,6 +82,8 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
         candidateEducation.setYearCompleted(request.getYearCompleted());
         candidateEducation.setIncomplete(request.getIncomplete());
 
+        candidateService.save(candidateEducation.getCandidate(), true);
+
         // Save the candidateOccupation
         return candidateEducationRepository.save(candidateEducation);
     }
@@ -89,9 +91,8 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
     @Override
     public CandidateEducation updateCandidateEducation(UpdateCandidateEducationRequest request) {
         Candidate candidate = userContext.getLoggedInCandidate();
-        CandidateEducation candidateEducation = updateCandidateEducation(candidate.getId(), request);
         candidate.setAuditFields(candidate.getUser());
-        candidateService.save(candidate, true);
+        CandidateEducation candidateEducation = updateCandidateEducation(candidate.getId(), request);
         return candidateEducation;
     }
 
