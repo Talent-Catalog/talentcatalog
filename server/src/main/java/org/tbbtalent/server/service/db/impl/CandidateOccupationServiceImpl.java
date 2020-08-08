@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.EntityExistsException;
@@ -31,6 +33,8 @@ import org.tbbtalent.server.service.db.CandidateService;
 
 @Service
 public class CandidateOccupationServiceImpl implements CandidateOccupationService {
+
+    private static final Logger log = LoggerFactory.getLogger(CandidateServiceImpl.class);
 
     private final CandidateOccupationRepository candidateOccupationRepository;
     private final CandidateJobExperienceRepository candidateJobExperienceRepository;
@@ -163,7 +167,8 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         List<CandidateOccupation> candidateOccupations = candidateOccupationRepository.findByCandidateId(candidate.getId());
         Map<Long, CandidateOccupation> map = candidateOccupations.stream().collect( Collectors.toMap(CandidateOccupation::getId,
                 Function.identity()) );
-        List<Occupation> occupationsCandidate = candidateOccupations.stream().map(CandidateOccupation::getOccupation).collect(Collectors.toList());
+
+        log.info("Update candidate occupations request" + request.getUpdates());
 
         for (UpdateCandidateOccupationRequest update : request.getUpdates()) {
             /* Check if candidate occupation has been previously saved */
@@ -174,6 +179,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
                     Occupation occupation = occupationRepository.findById(update.getOccupationId())
                             .orElseThrow(() -> new NoSuchObjectException(Occupation.class, update.getOccupationId()));
                     candidateOccupation.setOccupation(occupation);
+                    log.info("Set new Occupation to on existing candidate occupation " + occupation.getName());
                 }
                 candidateOccupation.setYearsExperience(update.getYearsExperience());
             } else {
@@ -187,13 +193,16 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
                 if (candidateOccupation != null) {
                     // If candidate has candidateOccupation with same occupation, just update that one.
                     candidateOccupation.setYearsExperience(update.getYearsExperience());
+                    log.info("Updated existing candidate occupation " + candidateOccupation.getOccupation().getName());
                 } else {
                     // If candidate has not got that occupation, create new occupation.
                     candidateOccupation = new CandidateOccupation(candidate, occupation, update.getYearsExperience());
+                    log.info("Created new candidate occupation " + candidateOccupation.getOccupation().getName());
                 }
 
             }
             updatedOccupations.add(candidateOccupationRepository.save(candidateOccupation));
+            log.info("Saved candidate occupation" + candidateOccupation.getOccupation().getName());
             updatedOccupationIds.add(candidateOccupation.getId());
         }
 

@@ -154,7 +154,7 @@ export class RegistrationCandidateOccupationComponent implements OnInit, OnDestr
     if (this.form.valid) {
       this.addOccupation();
     }
-    this.invalidOccupation = this.candidateOccupations.find(occ => occ.yearsExperience < 0 );
+    this.invalidOccupation = this.candidateOccupations.find(occ => occ.yearsExperience < 0 || occ.yearsExperience == null);
     const request = {
       updates: this.candidateOccupations
     };
