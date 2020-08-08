@@ -148,9 +148,9 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
         candidateEducation.setIncomplete(request.getIncomplete());
         // Save the candidate education
         candidateEducation = candidateEducationRepository.save(candidateEducation);
-        // Add the major back to the saved object
-        candidateEducation.setEducationMajor(educationMajor);
-        // Save the candidateOccupation
+        
+        candidateService.save(candidate, true);
+        
         return candidateEducation;
     }
 
