@@ -114,6 +114,7 @@ public class DriveQuickstart {
         if (createFolder) {
             File fileMetadata = new File();
             fileMetadata.setDriveId("0ALMJ566d9WuVUk9PVA");
+            fileMetadata.setParents(Collections.singletonList("0ALMJ566d9WuVUk9PVA"));
             fileMetadata.setName("InvoicesXYZ");
             fileMetadata.setMimeType("application/vnd.google-apps.folder");
             try {
