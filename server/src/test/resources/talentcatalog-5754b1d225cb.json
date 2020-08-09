@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "talentcatalog",
+  "private_key_id": "5754b1d225cbbc2b0ca301a79e17f27802cf83df",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCN1Ff9xKfx8+0n\nfsIKYnI+sX71oJ2XKQzht5S41Y1hiflhyTi6saGenlrUYSLxIO57gj3Z+NcBnDPt\nLUjRiVA9RZpyJf0btlvKjTAlxSn2VmAMwQEK9tgBCCZoy9xakS9T2WmOnY0byrpI\n5CDgQJ9e/phLOfw15KJak8E1JuyatoXnojotUp1QqrB/LWqMrCgJBZza3MyFB35n\nQBAnLiFzsqr4wK7F+oKHBDKwKD6gv487AE0Qab1Dpo9aUbOtVT5hGPhEoapht0d7\n0n2+FSz083Lz7cy0xSaBlR4PhhUVNh3W7gOIznTkgG5x3j+E7UFFLWaHEOAsmG/t\nUDWnGCZ3AgMBAAECggEANFKloYuWz7aHA56KVE1sSz+tEE3QRY9R3sWcurGh5l2B\n4HbdFFbqwns2FAq/2sgk4vCyA8N/AmuPZozhw9eOAAS5DSqBnWMhqvB6VjzOFcBY\nz+u2CEb3ei35CYlHwiu0k5DuFbx+7cVVAwYSMNj2UpPHOF1sc69ky9idmw/AkvR9\nhQJtp69RMO8HFo6kaLXdQ1WwwIYT1h4HNFrY8CYMlZmuONHyCNEhzILVF7LKQQIQ\nmIcn0APv5B1eps2ubumOCZFptfuPGoIHiLLQeREksN2YXJX3rpNl4JdvIr362pcy\nAVC5PfzzTOx85yEaJrUUmOQ2iy9GrfRWijNGdote1QKBgQDCEXL9qQYZZbrT/4xl\nDkW36ZpdOs0q9i/B+Z8lP+1H39PQHrMOPrv+U16riQ55zgdUUEE3slO2xRhviLHJ\nbpqWKS7rnGf+qH0Gj0xwBypBKIO1exJ1sr4KUvcO2lNcyYOl862TWZnd2AFm4ac+\nw5WbeAGKQCPWOzbv6xNmweS+3QKBgQC7FzalgSN4ibJLiwUGB6+Wgjrf7OcO1/j+\n93pUnLuLmnbaRlKcm5qWFCO5Y40DVWiKg5N7eCAd99ug1LJyiuxOcvM+EvgMbSIG\n6ccPGPmm7TBEDFaqOKsLeUnbvxw5Ux0fsnlZm5dSytRXflzil03cXRGxKDSqS7sq\n54fFo0DDYwKBgE2aqrASyhSX4Jjr5Nl4VprPuGG1pNucLMbVqjU8Fgea0tmznQiC\nP6zY68+OdBJzN+0YVqwODHnW4Qmg0O9q4jhP6apgFhn4iF56KSfXRadeqySEPYKB\nYotAV/lBhvpgvts60VtOBkB3I0Bf1gA8N/Q+jecZ9PqzHSndiBmcSXulAoGATmh6\nJH6sqPW8XWCT6GUMN524ouQcKeJlniWFhTRyfR1tNilGsg+ch81E84s/K+h9eZ+P\nDa3Yd/bKeurpJowGYRJX0uoMPtj168PKAw/KgSTil4I8R/ab6KEaTRgY8gVdLU2V\nAfLtRmtu9oQk1Wnn3bS7l21sNPqsJF0IT9INcFUCgYEAlcegl8wI0/jhRHmaEaYv\nwhbEQTKKlNtq1noa4Z1UGD/P85cejgTNkabM2N7Xob+4DVwcVlm1ehwfwRvv2OB5\nMJBg5E1Ztm92BezUhLJAwfU2SDTrKF7DvGoHxAQv8xo6ITRzw2yB47XFuB7UMEWp\nYnCdl5bKpv2aU8qU/rJ8xSk=\n-----END PRIVATE KEY-----\n",
+  "client_email": "talentcatalogdrive@talentcatalog.iam.gserviceaccount.com",
+  "client_id": "100905261598930740359",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/talentcatalogdrive%40talentcatalog.iam.gserviceaccount.com"
+}

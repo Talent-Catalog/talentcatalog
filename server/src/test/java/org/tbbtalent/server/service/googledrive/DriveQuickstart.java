@@ -46,7 +46,7 @@ public class DriveQuickstart {
      * If modifying these scopes, delete your previously saved tokens/ folder.
      */
     private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE);
-    private static final String CREDENTIALS_FILE_PATH = "/quickstart-1596871585479-767c47006695.json";
+    private static final String CREDENTIALS_FILE_PATH = "/talentcatalog-5754b1d225cb.json";
 
     /**
      * Creates an authorized Credential object.
@@ -62,7 +62,7 @@ public class DriveQuickstart {
         }
         GoogleCredential credential = GoogleCredential.fromStream(in)
                 .createScoped(Collections.singleton(DriveScopes.DRIVE))
-                .createDelegated("john@cameronfoundation.org");
+                .createDelegated("jcameron@talentbeyondboundaries.org");
         return credential;
     }
 
