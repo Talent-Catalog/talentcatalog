@@ -33,6 +33,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
+import com.google.api.services.drive.model.DriveList;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
@@ -67,6 +68,9 @@ public class DriveQuickstart {
     }
 
     public static void main(String... args) throws IOException, GeneralSecurityException {
+       boolean createFolder = true;
+       boolean createFile = true;
+       
         // Build a new authorized API client service.
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
         Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
@@ -76,7 +80,11 @@ public class DriveQuickstart {
         // Print the names and IDs for up to 10 files.
         FileList result = service.files().list()
                 .setPageSize(50)
-                .setFields("nextPageToken, files(id, name)")
+                .setCorpora("drive")
+                .setDriveId("0ALMJ566d9WuVUk9PVA")
+                .setIncludeItemsFromAllDrives(true)
+                .setSupportsAllDrives(true)
+                .setFields("nextPageToken, files(driveId,id, name)")
                 .execute();
         List<File> files = result.getFiles();
         if (files == null || files.isEmpty()) {
@@ -84,20 +92,57 @@ public class DriveQuickstart {
         } else {
             System.out.println("Files:");
             for (File file : files) {
-                System.out.printf("%s (%s)\n", file.getName(), file.getId());
+                System.out.printf("%s (%s %s)\n", file.getName(), file.getId(), file.getDriveId());
             }
         }
 
-        File fileMetadata = new File();
-        fileMetadata.setName("InvoicesY");
-        fileMetadata.setMimeType("application/vnd.google-apps.folder");
-        try {
-            File file = service.files().create(fileMetadata)
-                    .setFields("id")
-                    .execute();
-            System.out.println("Folder ID: " + file.getId());
-        } catch (Exception ex) {
-            System.out.println(ex);
+        // Print the names and IDs for up to 10 files.
+        DriveList result2 = service.drives().list()
+                .setPageSize(10)
+                .setFields("nextPageToken, drives(id, name)")
+                .execute();
+        List<com.google.api.services.drive.model.Drive> drives = result2.getDrives();
+        if (drives == null || drives.isEmpty()) {
+            System.out.println("No drives found.");
+        } else {
+            System.out.println("Drives:");
+            for (com.google.api.services.drive.model.Drive drive : drives) {
+                System.out.printf("%s (%s)\n", drive.getName(), drive.getId());
+            }
+        }
+
+        if (createFolder) {
+            File fileMetadata = new File();
+            fileMetadata.setDriveId("0ALMJ566d9WuVUk9PVA");
+            fileMetadata.setName("InvoicesXYZ");
+            fileMetadata.setMimeType("application/vnd.google-apps.folder");
+            try {
+                File file = service.files().create(fileMetadata)
+                        .setSupportsAllDrives(true)
+                        .setFields("id,driveId")
+                        .execute();
+                System.out.println("Drive ID: " + file.getDriveId());
+                System.out.println("Folder ID: " + file.getId());
+            } catch (Exception ex) {
+                System.out.println(ex);
+            }
+        }
+
+        if (createFile) {
+            File fileMetadata = new File();
+            fileMetadata.setDriveId("0ALMJ566d9WuVUk9PVA");
+            fileMetadata.setParents(Collections.singletonList("1itPPs_Nxs86Ozj-ET4Jyq-pTJJbdjUew"));
+            fileMetadata.setName("TestIgnore");
+            try {
+                File file = service.files().create(fileMetadata)
+                        .setFields("id,driveId")
+                        .setSupportsAllDrives(true)
+                        .execute();
+                System.out.println("Drive ID: " + file.getDriveId());
+                System.out.println("Folder ID: " + file.getId());
+            } catch (Exception ex) {
+                System.out.println(ex);
+            }
         }
     }
 }
