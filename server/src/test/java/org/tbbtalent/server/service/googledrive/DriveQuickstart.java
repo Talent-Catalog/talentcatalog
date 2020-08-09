@@ -96,7 +96,7 @@ public class DriveQuickstart {
             }
         }
 
-        // Print the names and IDs for up to 10 files.
+        // Print the names and IDs for up to 10 drives.
         DriveList result2 = service.drives().list()
                 .setPageSize(10)
                 .setFields("nextPageToken, drives(id, name)")
@@ -111,11 +111,28 @@ public class DriveQuickstart {
             }
         }
 
+        // Search for CandidateData drive.
+        DriveList result3 = service.drives().list()
+                .setUseDomainAdminAccess(true)
+                .setQ("name='CandidateData'")
+                .setPageSize(10)
+                .setFields("nextPageToken, drives(id, name)")
+                .execute();
+        List<com.google.api.services.drive.model.Drive> drives2 = result3.getDrives();
+        if (drives2 == null || drives2.isEmpty()) {
+            System.out.println("No CandidateData drive found.");
+        } else {
+            System.out.println("Candidate Data Drives:");
+            for (com.google.api.services.drive.model.Drive drive : drives2) {
+                System.out.printf("%s (%s)\n", drive.getName(), drive.getId());
+            }
+        }
+
         if (createFolder) {
             File fileMetadata = new File();
             fileMetadata.setDriveId("0ALMJ566d9WuVUk9PVA");
             fileMetadata.setParents(Collections.singletonList("0ALMJ566d9WuVUk9PVA"));
-            fileMetadata.setName("InvoicesXYZ");
+            fileMetadata.setName("201345");
             fileMetadata.setMimeType("application/vnd.google-apps.folder");
             try {
                 File file = service.files().create(fileMetadata)
