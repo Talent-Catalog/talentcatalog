@@ -5,7 +5,6 @@ import {Nationality} from "../model/nationality";
 import {Observable, throwError} from "rxjs";
 import {catchError, map} from "rxjs/operators";
 import {LanguageService} from "./language.service";
-import {Country} from "../model/country";
 
 @Injectable({
   providedIn: 'root'
@@ -24,15 +23,23 @@ export class NationalityService {
         items.sort((a, b) => a.name.localeCompare(b.name, locale));
         //Bit of a hack, which only works in English, for putting some names
         //at top.
-        if (locale == 'en') {
-          let iraqi: Nationality = items.find(x=> x.name == "Iraqi");
-          let jordanian: Nationality = items.find(x=> x.name == "Jordanian");
-          let palestinian: Nationality = items.find(x=> x.name == "Palestinian");
-          let syrian: Nationality = items.find(x=> x.name == "Syrian");
-          items.splice(0,0, syrian);
-          items.splice(0,0, palestinian);
-          items.splice(0,0, jordanian);
-          items.splice(0,0, iraqi);
+        if (locale === 'en') {
+          const iraqi: Nationality = items.find(x => x.name === "Iraqi");
+          if (iraqi) {
+            items.splice(0, 0, iraqi);
+          }
+          const jordanian: Nationality = items.find(x => x.name === "Jordanian");
+          if (jordanian) {
+            items.splice(0, 0, jordanian);
+          }
+          const palestinian: Nationality = items.find(x => x.name === "Palestinian");
+          if (palestinian) {
+            items.splice(0, 0, palestinian);
+          }
+          const syrian: Nationality = items.find(x => x.name === "Syrian");
+          if (syrian) {
+            items.splice(0, 0, syrian);
+          }
         }
         return items;
       }),
