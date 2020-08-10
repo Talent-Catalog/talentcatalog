@@ -2,6 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {AuthService} from "../../../services/auth.service";
 import {ActivatedRoute, Router} from "@angular/router";
+import {ReCaptchaV3Service} from "ng-recaptcha";
+import {LoginRequest} from "../../../model/candidate";
 
 @Component({
   selector: 'app-login',
@@ -17,6 +19,7 @@ export class LoginComponent implements OnInit {
 
   constructor(private builder: FormBuilder,
               private authService: AuthService,
+              private reCaptchaV3Service: ReCaptchaV3Service,
               private route: ActivatedRoute,
               private router: Router) {
   }
@@ -32,6 +35,14 @@ export class LoginComponent implements OnInit {
     })
   }
 
+  get username(): string {
+    return this.loginForm.value.username;
+  }
+
+  get password(): string {
+    return this.loginForm.value.password;
+  }
+
   login() {
     this.error = null;
     if (this.loginForm.invalid) {
@@ -40,7 +51,22 @@ export class LoginComponent implements OnInit {
     if (this.loading) { return; }
     this.loading = true;
 
-    this.authService.login(this.loginForm.value)
+    const action = 'login';
+    this.reCaptchaV3Service.execute(action).subscribe(
+      (token) => this.loginWithToken(token),
+      (error) => {
+        console.log(error);
+      }
+    );
+  }
+
+  private loginWithToken(token: string) {
+    const req: LoginRequest = new LoginRequest();
+    req.username = this.username;
+    req.password = this.password;
+    req.reCaptchaV3Token = token;
+
+    this.authService.login(req)
       .subscribe(() => {
         this.loading = false;
         this.router.navigateByUrl(this.returnUrl);
@@ -49,6 +75,7 @@ export class LoginComponent implements OnInit {
         this.error = error;
         this.loading = false;
       });
+
   }
 }
 

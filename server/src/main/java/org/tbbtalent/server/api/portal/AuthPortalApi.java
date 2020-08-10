@@ -44,7 +44,13 @@ public class AuthPortalApi {
     @PostMapping("login")
     public Map<String, Object> login(@RequestBody LoginRequest request)
             throws AccountLockedException, PasswordExpiredException, InvalidCredentialsException,
-            InvalidPasswordFormatException, UserDeactivatedException {
+            InvalidPasswordFormatException, UserDeactivatedException,
+            ReCaptchaInvalidException {
+
+        //Do check for automated logins. Throws exception if it looks
+        //automated.
+        captchaService.processCaptchaV3Token(request.getReCaptchaV3Token(), "login");
+
         JwtAuthenticationResponse response = userService.login(request);
         return jwtDto().build(response);
     }
