@@ -7,6 +7,7 @@ import {Router} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
 import {LocalStorageService} from "angular-2-local-storage";
 import {User} from "../model/user";
+import {LoginRequest} from "../model/base";
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +23,7 @@ export class AuthService {
               private localStorageService: LocalStorageService) {
   }
 
-  login(credentials) {
+  login(credentials: LoginRequest) {
     return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
       map((response: JwtResponse) => {
         this.storeCredentials(response);
@@ -40,11 +41,11 @@ export class AuthService {
   }
 
   getLoggedInUser(): User {
-    if(!this.loggedInUser){
+    if (!this.loggedInUser){
       this.loggedInUser = this.localStorageService.get('user');
     }
 
-    if(!this.isValidUserInfo(this.loggedInUser)){
+    if (!this.isValidUserInfo(this.loggedInUser)){
       console.log("invalid user");
       this.logout();
       this.router.navigate(['login']);
