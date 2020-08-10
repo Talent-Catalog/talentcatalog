@@ -52,7 +52,7 @@ export class CandidateEducationFormComponent implements OnInit {
       courseName: [edu ? edu.courseName : null, Validators.required],
       countryId: [edu && edu.country ? edu.country.id : null, Validators.required],
       institution: [edu ? edu.institution : null, Validators.required],
-      lengthOfCourseYears: [edu ? edu.lengthOfCourseYears.toString() : null, Validators.required],
+      lengthOfCourseYears: [edu ? edu.lengthOfCourseYears?.toString() : null, Validators.required],
       yearCompleted: [edu ? edu.yearCompleted : null],
       incomplete: [edu ? edu.incomplete : null],
       educationMajorId: [edu && edu.educationMajor ? edu.educationMajor.id : null, Validators.required]
