@@ -84,7 +84,7 @@ public class CountryServiceImpl implements CountryService {
         }else {
             countries = getActiveCountries();
         }
-
+        log.info("List Countries - Get users selected language: " + user.getSelectedLanguage());
         translationService.translate(countries, "country");
         return countries;
     }

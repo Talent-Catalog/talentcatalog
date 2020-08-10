@@ -35,7 +35,7 @@ public class LanguageFilter extends OncePerRequestFilter {
                 if (principal instanceof AuthenticatedUser) {
                     User user = ((AuthenticatedUser) principal).getUser();
                     user.setSelectedLanguage(selectedLanguage);
-                    logger.info("User's set language is:" + user.getSelectedLanguage());
+                    logger.info("User: " + user.getUsername() + " set language is: " + user.getSelectedLanguage());
                 }
             }
 
