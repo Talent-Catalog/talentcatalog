@@ -3,7 +3,6 @@ package org.tbbtalent.server.service.db.impl;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -62,16 +61,13 @@ public class NationalityServiceImpl implements NationalityService {
         }
     }
 
-    private List<Nationality> getActiveNationalities() {
-        loadCache();
-        return cache.values().stream()
-                .filter(obj -> obj.getStatus() == Status.active)
-                .collect(Collectors.toList());
-    }
-
     @Override
     public List<Nationality> listNationalities() {
-        List<Nationality> nationalities = getActiveNationalities();
+        //Note: Can't use cache because translationService modifies it adding 
+        //translations - which will always get returned to user (because of
+        //the way Dto builder works - if translation is present, it will use 
+        //that as name).
+        List<Nationality> nationalities = nationalityRepository.findByStatus(Status.active);
         translationService.translate(nationalities, "nationality");
         return nationalities;
     }
