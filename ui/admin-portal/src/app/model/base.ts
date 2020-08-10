@@ -56,6 +56,12 @@ export class SearchCandidateSourcesRequest extends PagedSearchRequest {
   watched?: boolean;
 }
 
+export class LoginRequest {
+  username: string;
+  password: string;
+  reCaptchaV3Token: string;
+}
+
 export function isMine(source: CandidateSource, auth: AuthService) {
   let mine: boolean = false;
   const me: User = auth.getLoggedInUser();

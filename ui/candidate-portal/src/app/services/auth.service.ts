@@ -7,7 +7,7 @@ import {Router} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
 import {LocalStorageService} from "angular-2-local-storage";
 import {User} from "../model/user";
-import {RegisterCandidateRequest} from "../model/candidate";
+import {LoginRequest, RegisterCandidateRequest} from "../model/candidate";
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +25,7 @@ export class AuthService {
               private localStorageService: LocalStorageService) {
   }
 
-  login(credentials) {
+  login(credentials: LoginRequest) {
     return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
       map((response: JwtResponse) => {
         this.storeCredentials(response);

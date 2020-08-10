@@ -15,6 +15,7 @@ import org.tbbtalent.server.exception.InvalidPasswordFormatException;
 import org.tbbtalent.server.exception.PasswordExpiredException;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.response.JwtAuthenticationResponse;
+import org.tbbtalent.server.service.db.CaptchaService;
 import org.tbbtalent.server.service.db.UserService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -23,16 +24,23 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
 public class AuthAdminApi {
 
     private final UserService userService;
+    private final CaptchaService captchaService;
 
     @Autowired
-    public AuthAdminApi(UserService userService) {
+    public AuthAdminApi(UserService userService, CaptchaService captchaService) {
         this.userService = userService;
+        this.captchaService = captchaService;
     }
 
     @PostMapping("login")
     public Map<String, Object> login(@RequestBody LoginRequest request)
             throws AccountLockedException, PasswordExpiredException, InvalidCredentialsException,
             InvalidPasswordFormatException {
+
+        //Do check for automated logins. Throws exception if it looks
+        //automated.
+        captchaService.processCaptchaV3Token(request.getReCaptchaV3Token(), "login");
+
         JwtAuthenticationResponse response = this.userService.login(request);
         return jwtDto().build(response);
     }

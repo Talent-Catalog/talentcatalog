@@ -81,7 +81,7 @@ public class CaptchaServiceImpl implements CaptchaService {
             }
         } catch (RestClientException rce) {
             throw new ReCaptchaInvalidException(
-                    "Registration unavailable at this time.  Please try again later.", rce);
+                    "System unavailable at this time.  Please try again later.", rce);
         }
         reCaptchaSucceeded(getClientIP());
     }
