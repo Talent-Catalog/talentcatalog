@@ -4,6 +4,7 @@
 
 package org.tbbtalent.server.service.db;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
@@ -40,22 +41,22 @@ import org.tbbtalent.server.request.candidate.stat.CandidateStatDateRequest;
 public interface CandidateService {
 
     /**
-     * Adds or updates the Elasticsearch records corresponding to candidates
-     * on our standard database.
+     * Adds or updates the Elasticsearch records corresponding to candidates on
+     * our standard database.
      * <p/>
-     * This is intended to be a bulk update which updates the contents of
-     * the elasticsearch server to for ALL non deleted candidates on our 
-     * database.
-     * <p/> 
-     * For performance reasons (and to minimize memory use) this update is
-     * done a page of records (eg 20) at a time - as defined by the "pageable" 
-     * parameter passed to this method.
-     * This method will normally be called repeatedly from a background Async 
-     * task, triggered by an API call to SystemAdminApi, starting with page 0,
-     * page 1, etc, until all candidates have been added/updated.
-     * @param pageable The page request - basically the page number.
-     * @param logTotal If true, the method is requested to log the total number
-     *                 of candidates to be updated.
+     * This is intended to be a bulk update which updates the contents of the
+     * elasticsearch server to for ALL non deleted candidates on our database.
+     * <p/>
+     * For performance reasons (and to minimize memory use) this update is done
+     * a page of records (eg 20) at a time - as defined by the "pageable"
+     * parameter passed to this method. This method will normally be called
+     * repeatedly from a background Async task, triggered by an API call to
+     * SystemAdminApi, starting with page 0, page 1, etc, until all candidates
+     * have been added/updated.
+     *
+     * @param pageable      The page request - basically the page number.
+     * @param logTotal      If true, the method is requested to log the total
+     *                      number of candidates to be updated.
      * @param createElastic If true, it is assumed that the Elasticsearch has
      *                      started empty, so new records need to be created
      *                      (rather than updating existing records).
@@ -64,11 +65,11 @@ public interface CandidateService {
      */
     int populateElasticCandidates(
             Pageable pageable, boolean logTotal, boolean createElastic);
-    
+
     Page<Candidate> searchCandidates(SearchCandidateRequest request);
 
     Page<Candidate> searchCandidates(
-            long savedSearchId, SavedSearchGetRequest request) 
+            long savedSearchId, SavedSearchGetRequest request)
             throws NoSuchObjectException;
 
     Page<Candidate> searchCandidates(CandidateEmailSearchRequest request);
@@ -82,9 +83,10 @@ public interface CandidateService {
     /**
      * Merge the saved lists indicated in the request into the given candidate's
      * existing lists.
+     *
      * @param candidateId ID of candidate to be updated
-     * @param request Request containing the saved lists to be merged into the 
-     *                candidate's existing lists
+     * @param request     Request containing the saved lists to be merged into
+     *                    the candidate's existing lists
      * @return False if no candidate with that id was found, otherwise true.
      */
     boolean mergeCandidateSavedLists(long candidateId, IHasSetOfSavedLists request);
@@ -92,17 +94,19 @@ public interface CandidateService {
     /**
      * Merge the saved lists indicated in the request into the given candidate's
      * existing lists.
+     *
      * @param candidateId ID of candidate to be updated
-     * @param request Request containing the new saved lists
+     * @param request     Request containing the new saved lists
      * @return False if no candidate with that id was found, otherwise true.
      */
     boolean removeFromCandidateSavedLists(long candidateId, IHasSetOfSavedLists request);
 
     /**
-     * Replace given candidate's existing lists with the saved lists indicated 
+     * Replace given candidate's existing lists with the saved lists indicated
      * in the request.
+     *
      * @param candidateId ID of candidate to be updated
-     * @param request Request containing the new saved lists
+     * @param request     Request containing the new saved lists
      * @return False if no candidate with that id was found, otherwise true.
      */
     boolean replaceCandidateSavedLists(long candidateId, IHasSetOfSavedLists request);
@@ -151,13 +155,13 @@ public interface CandidateService {
 
     Candidate findByCandidateNumber(String candidateNumber);
 
-    void exportToCsv(long savedListId, SavedListGetRequest request, PrintWriter writer) 
+    void exportToCsv(long savedListId, SavedListGetRequest request, PrintWriter writer)
             throws ExportFailedException;
 
-    void exportToCsv(long savedSearchId, SavedSearchGetRequest request, PrintWriter writer) 
+    void exportToCsv(long savedSearchId, SavedSearchGetRequest request, PrintWriter writer)
             throws ExportFailedException;
 
-    void exportToCsv(SearchCandidateRequest request, PrintWriter writer) 
+    void exportToCsv(SearchCandidateRequest request, PrintWriter writer)
             throws ExportFailedException;
 
     List<DataRow> getGenderStats(CandidateStatDateRequest request);
@@ -187,13 +191,28 @@ public interface CandidateService {
     void notifyWatchers();
 
     /**
-     * IMPORTANT: Use this instead of {@link CandidateRepository#save} 
-     * Saves candidate to repository, but also optionally updates corresponding
+     * IMPORTANT: Use this instead of {@link CandidateRepository#save} Saves
+     * candidate to repository, but also optionally updates corresponding
      * Elasticsearch CandidateEs
-     * @param candidate Candidate to be saved
+     *
+     * @param candidate         Candidate to be saved
      * @param updateCandidateEs If true, will also update Elasticsearch
-     * @return Candidate object as returned by {@link CandidateRepository#save} 
+     * @return Candidate object as returned by {@link CandidateRepository#save}
      */
     Candidate save(Candidate candidate, boolean updateCandidateEs);
+
+    /**
+     * Creates a folder for the given candidate on Google Drive.
+     * <p/>
+     * If a folder already exists for the candidate, does nothing.
+     *
+     * @param id ID of candidate
+     * @return Updated candidate object, containing link to folder (created or
+     * existing) in {@link Candidate#getFolderlink()}
+     * @throws NoSuchObjectException if no candidate is found with that id
+     * @throws IOException           if there is a problem creating the folder.
+     */
+    Candidate createCandidateFolder(long id)
+            throws NoSuchObjectException, IOException;
 
 }

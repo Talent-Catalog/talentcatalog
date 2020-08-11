@@ -40,7 +40,6 @@ import com.google.api.services.drive.model.FileList;
 public class DriveQuickstart {
     private static final String APPLICATION_NAME = "Google Drive API Java Quickstart";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-    private static final String TOKENS_DIRECTORY_PATH = "tokens";
 
     /**
      * Global instance of the scopes required by this quickstart.
@@ -51,11 +50,10 @@ public class DriveQuickstart {
 
     /**
      * Creates an authorized Credential object.
-     * @param HTTP_TRANSPORT The network HTTP Transport.
      * @return An authorized Credential object.
      * @throws IOException If the credentials.json file cannot be found.
      */
-    private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
+    private static Credential getCredentials() throws IOException {
         // Load credentials file
         InputStream in = DriveQuickstart.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
         if (in == null) {
@@ -73,7 +71,7 @@ public class DriveQuickstart {
        
         // Build a new authorized API client service.
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-        Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+        Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials())
                 .setApplicationName(APPLICATION_NAME)
                 .build();
 

@@ -168,4 +168,11 @@ public class CandidateAdminApi {
         }
     }
 
+    @PutMapping("{id}/create-folder")
+    public Map<String, Object> createCandidateFolder(@PathVariable("id") long id) throws IOException {
+        Candidate candidate = this.candidateService.createCandidateFolder(id);
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.build(candidate);
+    }
+
 }
