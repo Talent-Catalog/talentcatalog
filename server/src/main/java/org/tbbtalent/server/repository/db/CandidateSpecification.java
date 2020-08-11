@@ -234,37 +234,28 @@ public class CandidateSpecification {
             );
             }
 
-            // occupations SEARCH
-
-
-            if (!Collections.isEmpty(request.getVerifiedOccupationIds()) || !Collections.isEmpty(request.getOccupationIds())) {
+            // Occupations SEARCH
+            if (!Collections.isEmpty(request.getOccupationIds())) {
                 candidateOccupations = candidateOccupations != null ? candidateOccupations: candidate.join("candidateOccupations", JoinType.LEFT);
                 occupation = occupation != null ? occupation : candidateOccupations.join("occupation", JoinType.LEFT);
 
-                if (!Collections.isEmpty(request.getVerifiedOccupationIds())) {
-                    if (SearchType.not.equals(request.getVerifiedOccupationSearchType())) {
-                        conjunction.getExpressions().add(occupation.get("id").in(request.getVerifiedOccupationIds()).not());
-                    } else {
-                        conjunction.getExpressions().add(builder.and(builder.isTrue(candidateOccupations.get("verified")), builder.isTrue(occupation.get("id").in(request.getVerifiedOccupationIds()))
-                        ));
-                    }
+                conjunction.getExpressions().add(
+                        occupation.get("id").in(request.getOccupationIds())
+                );
+
+                //Min / Max Age
+                if (request.getMinYrs() != null) {
+                    Integer minYrs = request.getMinYrs();
+                    conjunction.getExpressions().add(builder.and(
+                            builder.greaterThanOrEqualTo(candidateOccupations.get("yearsExperience"), minYrs),
+                            builder.isTrue(occupation.get("id").in(request.getOccupationIds()))));
                 }
 
-                if (!Collections.isEmpty(request.getOccupationIds())) {
-                    //Min / Max Age
-                    if (request.getMinYrs() != null) {
-                        Integer minYrs = request.getMinYrs();
-                        conjunction.getExpressions().add(builder.and(
-                                builder.greaterThanOrEqualTo(candidateOccupations.get("yearsExperience"), minYrs),
-                                builder.isTrue(occupation.get("id").in(request.getOccupationIds()))));
-                    }
-
-                    if (request.getMaxYrs() != null) {
-                        Integer maxYrs = request.getMaxYrs();
-                        conjunction.getExpressions().add(builder.and(
-                                builder.lessThanOrEqualTo(candidateOccupations.get("yearsExperience"), maxYrs),
-                                builder.isTrue(occupation.get("id").in(request.getOccupationIds()))));
-                    }
+                if (request.getMaxYrs() != null) {
+                    Integer maxYrs = request.getMaxYrs();
+                    conjunction.getExpressions().add(builder.and(
+                            builder.lessThanOrEqualTo(candidateOccupations.get("yearsExperience"), maxYrs),
+                            builder.isTrue(occupation.get("id").in(request.getOccupationIds()))));
                 }
             }
 
