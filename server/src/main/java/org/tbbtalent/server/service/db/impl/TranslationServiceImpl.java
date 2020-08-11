@@ -35,8 +35,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class TranslationServiceImpl implements TranslationService {
 
-    private static final Logger log = LoggerFactory.getLogger(TranslationServiceImpl.class);
-
     private final TranslationRepository translationRepository;
     private final S3ResourceHelper s3ResourceHelper;
     private final UserContext userContext;
@@ -63,7 +61,6 @@ public class TranslationServiceImpl implements TranslationService {
             return;
         }
 
-        log.info("Translation Service: Processing translation now." + " Language: " + selectedLanguage + " type: " + type) ;
         if (CollectionUtils.isNotEmpty(items)) {
             List<Long> itemIds = items.stream().map(c -> (Long) c.getId()).collect(Collectors.toList());
             List<Translation> translations = translationRepository.findByIdsTypeLanguage(itemIds, type, selectedLanguage);

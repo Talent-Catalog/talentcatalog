@@ -315,7 +315,8 @@ public class CandidateServiceImpl implements CandidateService {
         searchCandidateRequest.setStatuses(getStatusListFromString(savedSearch.getStatuses()));
         searchCandidateRequest.setGender(savedSearch.getGender());
         searchCandidateRequest.setOccupationIds(getIdsFromString(savedSearch.getOccupationIds()));
-        searchCandidateRequest.setOrProfileKeyword(savedSearch.getOrProfileKeyword());
+        searchCandidateRequest.setMinYrs(savedSearch.getMinYrs());
+        searchCandidateRequest.setMaxYrs(savedSearch.getMaxYrs());
         searchCandidateRequest.setVerifiedOccupationIds(getIdsFromString(savedSearch.getVerifiedOccupationIds()));
         searchCandidateRequest.setVerifiedOccupationSearchType(savedSearch.getVerifiedOccupationSearchType());
         searchCandidateRequest.setNationalityIds(getIdsFromString(savedSearch.getNationalityIds()));
