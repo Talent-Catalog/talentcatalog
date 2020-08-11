@@ -1,0 +1,51 @@
+<form class="card" [formGroup]="form" *ngIf="addingCertification">
+
+  <div class="form-group">
+    <label for="name">{{ 'REGISTRATION.CERTIFICATIONS.LABEL.NAME' | translate }} <sup>*</sup></label>
+    <input type="text" class="form-control" id="name" placeholder="" [formControlName]="'name'">
+    <app-form-control-error [control]="form.controls.name"></app-form-control-error>
+  </div>
+
+  <div class="form-group">
+    <label for="institution">{{ 'REGISTRATION.CERTIFICATIONS.LABEL.INSTITUTION' | translate }} <sup>*</sup></label>
+    <input type="text" class="form-control" id="institution" placeholder="" [formControlName]="'institution'">
+    <app-form-control-error [control]="form.controls.institution"></app-form-control-error>
+  </div>
+
+  <div class="form-group">
+    <label for="dateCompleted">{{ 'REGISTRATION.CERTIFICATIONS.LABEL.DATECOMPLETED' | translate }} <sup>*</sup></label>
+
+    <div class="input-group">
+      <input id="dateCompleted" type="text" class="form-control" placeholder="YYYY-MM-DD"
+             ngbDatepicker #dateCompleted="ngbDatepicker"
+             [formControlName]="'dateCompleted'"
+             (dateSelect)="form.controls.dateCompleted.markAsDirty()"
+             [autoClose]="true"
+             [outsideDays]="'hidden'"
+             [container]="'#dateCompleted'">
+
+      <div class="input-group-append">
+        <small class="btn btn-link text-secondary" *ngIf="form.controls.dateCompleted.value"
+               (click)="form.controls.dateCompleted.patchValue(null); form.controls.dateCompleted.markAsDirty();">
+          <span>{{ 'FORM.LABEL.CLEAR' | translate }}</span>
+        </small>
+
+        <div class="btn btn-link" *ngIf="!form.controls.dateCompleted.value"
+             (click)="dateCompleted.toggle()">
+          <span>{{ 'FORM.LABEL.CHOOSE' | translate}}</span>
+        </div>
+      </div>
+    </div>
+
+    <app-form-control-error [control]="form.controls.dateCompleted"></app-form-control-error>
+  </div>
+
+  <div class="text-center">
+    <button class="btn btn-outline-primary"
+            (click)="addCertificate()"
+            [disabled]="form.invalid || loading || saving">
+      {{ 'REGISTRATION.CERTIFICATIONS.BUTTON.ADD' | translate }}
+    </button>
+  </div>
+
+</form>

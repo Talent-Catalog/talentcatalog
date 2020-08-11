@@ -4,6 +4,35 @@
 
   <ng-container *ngIf="!loading">
 
+    <!-- EDUCATIONS -->
+    <div class="card parent-card" *ngFor="let certificate of candidateCertifications; let i = index;">
+
+      <app-candidate-certification-card *ngIf="editTarget?.id !== item.id"
+                                        [certificate]="certificate"
+                                        [disabled]="saving || loading"
+                                        (onDelete)="deleteCertificate(i)"
+                                        (onEdit)="editCandidateCertification($event)">
+      </app-candidate-certification-card>
+
+      <app-candidate-certification-form *ngIf="editTarget?.id == item.id"
+                                         [certificate]="certificate"
+                                         (saved)="handleCertificationSaved($event, i)">
+      </app-candidate-certification-form>
+
+    </div>
+
+    <p *ngIf="addingEducation && !candidateEducationItems.length">
+      {{ 'REGISTRATION.EDUCATION.MESSAGE' | translate }}}
+    </p>
+
+    <!-- CREATE NEW EDUCATION -->
+    <app-candidate-education-form *ngIf="addingEducation" class="mt-4"
+                                  [certificate]="certificate"
+                                  (saved)="handleCandidateEducationCreated($event)">
+    </app-candidate-education-form>
+
+    <!-- old code starts here -->
+
     <div class="card" *ngFor="let certificate of candidateCertifications">
       <app-candidate-certification-card [certificate]="certificate"
                                         [disabled]="saving || loading"
