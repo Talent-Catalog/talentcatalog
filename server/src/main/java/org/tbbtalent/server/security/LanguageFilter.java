@@ -23,7 +23,9 @@ public class LanguageFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
+            logger.info(String.valueOf(request.getRequestURL()));
             String selectedLanguage = request.getHeader("X-Language");
+            logger.info("The selected language is:" + selectedLanguage);
             if (StringUtils.isBlank(selectedLanguage)) {
                 selectedLanguage = "en";
             }
@@ -33,6 +35,7 @@ public class LanguageFilter extends OncePerRequestFilter {
                 if (principal instanceof AuthenticatedUser) {
                     User user = ((AuthenticatedUser) principal).getUser();
                     user.setSelectedLanguage(selectedLanguage);
+                    logger.info("User: " + user.getUsername() + " set language is: " + user.getSelectedLanguage());
                 }
             }
 

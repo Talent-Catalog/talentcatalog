@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +34,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class TranslationServiceImpl implements TranslationService {
+
+    private static final Logger log = LoggerFactory.getLogger(TranslationServiceImpl.class);
 
     private final TranslationRepository translationRepository;
     private final S3ResourceHelper s3ResourceHelper;
@@ -55,10 +59,11 @@ public class TranslationServiceImpl implements TranslationService {
     public <T extends AbstractTranslatableDomainObject<Long>> void translate(List<T> items,
                                                                              String type, String selectedLanguage) {
         // if the selected language is english, no need to load translations at all, just return original data
-        if ("en".equals(selectedLanguage)) {
+        if ("en".equals(selectedLanguage) || selectedLanguage == null ) {
             return;
         }
 
+        log.info("Translation Service: Processing translation now." + " Language: " + selectedLanguage + " type: " + type) ;
         if (CollectionUtils.isNotEmpty(items)) {
             List<Long> itemIds = items.stream().map(c -> (Long) c.getId()).collect(Collectors.toList());
             List<Translation> translations = translationRepository.findByIdsTypeLanguage(itemIds, type, selectedLanguage);

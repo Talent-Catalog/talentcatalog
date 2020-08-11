@@ -22,11 +22,15 @@ export class CountryService {
          items.sort((a, b) => a.name.localeCompare(b.name, locale));
         //Bit of a hack, which only works in English, for putting some names
         //at top.
-         if (locale == 'en') {
-           let jordan: Country = items.find(x=> x.name == "Jordan");
-           let lebanon: Country = items.find(x=> x.name == "Lebanon");
-           items.splice(0,0, lebanon);
-           items.splice(0,0, jordan);
+         if (locale === 'en') {
+           const jordan: Country = items.find(x => x.name === "Jordan");
+           if (jordan) {
+             items.splice(0, 0, jordan);
+           }
+           const lebanon: Country = items.find(x => x.name === "Lebanon");
+           if (lebanon) {
+             items.splice(0, 0, lebanon);
+           }
          }
          return items;
       }),

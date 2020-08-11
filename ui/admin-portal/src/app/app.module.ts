@@ -2,6 +2,7 @@ import {BrowserModule, Title} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {NgMultiSelectDropDownModule} from 'ng-multiselect-dropdown';
+import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha';
 
 
 import {AppRoutingModule} from './app-routing.module';
@@ -246,6 +247,7 @@ import {CreateCandidateOccupationComponent} from './components/candidates/view/o
     HttpClientModule,
     ReactiveFormsModule,
     NgbModule,
+    RecaptchaV3Module,
     FormsModule,
     InfiniteScrollModule,
     NgMultiSelectDropDownModule.forRoot(),
@@ -319,6 +321,7 @@ import {CreateCandidateOccupationComponent} from './components/candidates/view/o
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
+    {provide: RECAPTCHA_V3_SITE_KEY, useValue: '6Lc_97cZAAAAAIDqR7gT3h_ROGU6P7Jif-wEk9Vu'},
     AuthService,
     RoleGuardService,
     Title],
