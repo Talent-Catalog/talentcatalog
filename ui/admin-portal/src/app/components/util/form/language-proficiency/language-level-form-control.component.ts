@@ -83,10 +83,10 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
       'disable': this.disable
     };
 
-    if (c.form && c.form.currentValue !== c.form.previousValue
-      && c.model && c.model.currentValue !== c.model.previousValue) {
-      this.form.patchValue(c.model.currentValue);
-    }
+    // if (c.form && c.form.currentValue !== c.form.previousValue
+    //   && c.model && c.model.currentValue !== c.model.previousValue) {
+    //   this.form.patchValue(c.model.currentValue);
+    // }
   }
 
   toggle() {
@@ -104,8 +104,8 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
   }
 
   renderLevel() {
-    const val = (this.form.value as LanguageLevelFormControlModel);
-    const language = val.languageId ? this.languages.find(l => l.id === val.languageId).name : '';
+    const val = this.form.value;
+    const language = val.languageId ? this.languages.find(l => l.id === Number(val.languageId)).name : '';
     const written = val.writtenLevel ? 'Written: ' + this.languageLevels.find(l => l.level === val.writtenLevel).name : '';
     const spoken = val.spokenLevel ? 'Spoken: ' + this.languageLevels.find(l => l.level === val.spokenLevel).name : '';
     const proficiencyString = written && spoken ? written + ', ' + spoken : written || spoken;
