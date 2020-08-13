@@ -1,4 +1,4 @@
-<form class="card" [formGroup]="form" *ngIf="addingCertification">
+<form class="card" [formGroup]="form">
 
   <div class="form-group">
     <label for="name">{{ 'REGISTRATION.CERTIFICATIONS.LABEL.NAME' | translate }} <sup>*</sup></label>
@@ -40,11 +40,11 @@
     <app-form-control-error [control]="form.controls.dateCompleted"></app-form-control-error>
   </div>
 
-  <div class="text-center">
-    <button class="btn btn-outline-primary"
-            (click)="addCertificate()"
-            [disabled]="form.invalid || loading || saving">
-      {{ 'REGISTRATION.CERTIFICATIONS.BUTTON.ADD' | translate }}
+  <div class="text-center mt-4 submit">
+    <button class="btn btn-primary"
+            [disabled]="form.invalid"
+            (click)="save()">
+      {{ 'FORM.LABEL.SAVE' | translate }}
     </button>
   </div>
 

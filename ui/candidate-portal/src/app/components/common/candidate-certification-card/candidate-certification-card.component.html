@@ -1,5 +1,10 @@
 <div class="text-right" *ngIf="!preview">
-  <button class="btn btn-danger btn-card" [disabled]="disabled" (click)="deleteCertificate()">&times;</button>
+  <button class="btn btn-danger btn-card"
+          [disabled]="disabled"
+          (click)="deleteCertificate()">&times;</button>
+  <button class="btn btn-primary btn-card"
+          [disabled]="disabled"
+          (click)="editCertificate()"><fa-icon icon="edit"></fa-icon></button>
 </div>
 
 <p>{{certificate.dateCompleted | date}}</p>

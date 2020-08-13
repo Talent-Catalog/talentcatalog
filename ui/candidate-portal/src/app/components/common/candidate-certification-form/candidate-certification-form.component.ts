@@ -15,14 +15,14 @@ import {generateYearArray} from '../../../util/year-helper';
 })
 export class CandidateCertificationFormComponent implements OnInit {
 
-  @Input() certification: CandidateCertification;
+  @Input() certificate: CandidateCertification;
+
   @Output() saved = new EventEmitter<CandidateCertification>();
 
   error: any;
   saving: boolean;
 
   form: FormGroup;
-  years: number[];
 
   constructor(private fb: FormBuilder,
               private router: Router,
@@ -32,9 +32,8 @@ export class CandidateCertificationFormComponent implements OnInit {
 
   ngOnInit() {
     this.saving = false;
-    this.years = generateYearArray();
     /* Intialise the form */
-    const cert = this.certification;
+    const cert = this.certificate;
     this.form = this.fb.group({
       id: [cert ? cert.id : null],
       name: [cert ? cert.name : null , Validators.required],
@@ -49,7 +48,7 @@ export class CandidateCertificationFormComponent implements OnInit {
 
     // If the candidate hasn't changed anything, skip the update service call
     if (this.form.pristine) {
-      this.saved.emit(this.certification);
+      this.saved.emit(this.certificate);
       return;
     }
 
@@ -64,7 +63,7 @@ export class CandidateCertificationFormComponent implements OnInit {
         },
       );
     } else {
-      this.candidateCertificationService.updateCandidateCertification(this.form.value).subscribe(
+      this.candidateCertificationService.update(this.certificate.id, this.form.value).subscribe(
         (response) => {
           this.saved.emit(response);
         },

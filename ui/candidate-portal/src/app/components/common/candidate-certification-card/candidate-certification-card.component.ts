@@ -13,10 +13,15 @@ export class CandidateCertificationCardComponent {
   @Input() preview: boolean = false;
 
   @Output() onDelete = new EventEmitter<CandidateCertification>();
+  @Output() onEdit = new EventEmitter<CandidateCertification>();
 
   constructor() { }
 
   deleteCertificate() {
     this.onDelete.emit(this.certificate);
+  }
+
+  editCertificate() {
+    this.onEdit.emit(this.certificate);
   }
 }
