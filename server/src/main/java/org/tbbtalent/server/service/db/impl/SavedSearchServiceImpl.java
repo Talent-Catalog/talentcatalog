@@ -432,7 +432,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setStatuses(getStatusListAsString(searchCandidateRequest.getStatuses()));
             savedSearch.setGender(searchCandidateRequest.getGender());
             savedSearch.setOccupationIds(getListAsString(searchCandidateRequest.getOccupationIds()));
-            savedSearch.setOrProfileKeyword(searchCandidateRequest.getOrProfileKeyword());
+            savedSearch.setMinYrs(searchCandidateRequest.getMinYrs());
+            savedSearch.setMaxYrs(searchCandidateRequest.getMaxYrs());
             savedSearch.setVerifiedOccupationIds(getListAsString(searchCandidateRequest.getVerifiedOccupationIds()));
             savedSearch.setVerifiedOccupationSearchType(searchCandidateRequest.getVerifiedOccupationSearchType());
             savedSearch.setNationalityIds(getListAsString(searchCandidateRequest.getNationalityIds()));
@@ -471,7 +472,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setStatuses(getStatusListFromString(request.getStatuses()));
         searchCandidateRequest.setGender(request.getGender());
         searchCandidateRequest.setOccupationIds(getIdsFromString(request.getOccupationIds()));
-        searchCandidateRequest.setOrProfileKeyword(request.getOrProfileKeyword());
+        searchCandidateRequest.setMinYrs(request.getMinYrs());
+        searchCandidateRequest.setMaxYrs(request.getMaxYrs());
         searchCandidateRequest.setVerifiedOccupationIds(getIdsFromString(request.getVerifiedOccupationIds()));
         searchCandidateRequest.setVerifiedOccupationSearchType(request.getVerifiedOccupationSearchType());
         searchCandidateRequest.setNationalityIds(getIdsFromString(request.getNationalityIds()));
