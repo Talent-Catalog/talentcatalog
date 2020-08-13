@@ -23,7 +23,7 @@
 
       <!-- COMPANY NAME -->
       <div class="form-group">
-        <label for="companyName">Company Name</label>
+        <label for="companyName">Company Name *</label>
         <input type="text" class="form-control" id="companyName"
                [formControlName]="'companyName'">
       </div>
@@ -40,7 +40,7 @@
 
       <!-- START DATE -->
       <div class="form-group">
-        <label for="startDate">Start Date</label>
+        <label for="startDate">Start Date *</label>
         <app-month-picker id="startDate" [control]="candidateForm.get('startDate')"></app-month-picker>
       </div>
 
@@ -53,7 +53,7 @@
 
       <!-- FULL TIME -->
       <div class="form-group">
-        <label for="fullTime">Contract Type</label>
+        <label for="fullTime">Contract Type *</label>
         <select class="form-control" name="fullTime" id="fullTime" [formControlName]="'fullTime'">
           <option value=""></option>
           <option value="true">Full time</option>
@@ -63,7 +63,7 @@
 
       <!-- PAID -->
       <div class="form-group">
-        <label for="paid">Employment Type</label>
+        <label for="paid">Employment Type *</label>
         <select class="form-control" name="paid" id="paid" [formControlName]="'paid'">
           <option value=""></option>
           <option value="true">Paid</option>
@@ -73,14 +73,14 @@
 
       <!-- ROLE NAME -->
       <div class="form-group">
-        <label for="role">Role</label>
+        <label for="role">Role *</label>
         <input type="text" class="form-control" id="role" [formControlName]="'role'">
       </div>
 
 
       <!-- DESCRIPTION -->
       <div class="form-group">
-        <label for="description">Description</label>
+        <label for="description">Description *</label>
         <textarea type="text" class="md-textarea-auto form-control" rows="8" id="description" placeholder="" [formControlName]="'description'"></textarea>
       </div>
 
