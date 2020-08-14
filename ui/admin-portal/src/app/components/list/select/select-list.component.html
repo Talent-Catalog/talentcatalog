@@ -26,22 +26,23 @@
                                  id="savedLists"
                                  [settings]="dropdownSettings"
                                  [data]="lists"
+                                 (onSelect)="disableNew()"
+                                 (onDeSelect)="enableNew()"
         >
         </ng-multiselect-dropdown>
         <div class="form-inline">
           <label>Replace existing list contents?</label>
           <input type="checkbox" class="form-control" formControlName="replace">
         </div>
-        <hr>
       </div>
 
       <div class="form-inline">
         <label>New list?</label>
-        <input type="checkbox" class="form-control" formControlName="newList">
+        <input type="checkbox" class="form-control" formControlName="newList" >
       </div>
       <div *ngIf="newList">
         <label>Name</label>
-        <input type="text" class="form-control" formControlName="newListName">
+        <input type="text" class="form-control" formControlName="newListName" [readOnly]="loading">
       </div>
 
     </div>
