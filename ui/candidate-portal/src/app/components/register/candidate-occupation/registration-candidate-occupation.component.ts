@@ -26,6 +26,9 @@ import {CandidateJobExperience} from "../../../model/candidate-job-experience";
 })
 export class RegistrationCandidateOccupationComponent implements OnInit, OnDestroy {
 
+  /* todo: Look at the code for certifications/education for a potentially better way to structure this component.
+        particulary around the editing and saving. */
+
   /* A flag to indicate if the component is being used on the profile component */
   @Input() edit: boolean = false;
 
