@@ -43,9 +43,9 @@ export class EditCandidateCertificationComponent implements OnInit {
     );
 
     this.candidateForm = this.fb.group({
-      name: [this.candidateCertification.name],
-      institution: [this.candidateCertification.institution],
-      dateCompleted: [this.candidateCertification.dateCompleted],
+      name: [this.candidateCertification.name, Validators.required],
+      institution: [this.candidateCertification.institution, Validators.required],
+      dateCompleted: [this.candidateCertification.dateCompleted, Validators.required],
     });
     this.loading = false;
   }
