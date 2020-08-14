@@ -1,6 +1,9 @@
 package org.tbbtalent.server.service.db.impl;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,7 +14,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.AttachmentType;
@@ -28,6 +33,7 @@ import org.tbbtalent.server.request.attachment.UpdateCandidateAttachmentRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.CandidateAttachmentService;
 import org.tbbtalent.server.service.db.CandidateService;
+import org.tbbtalent.server.service.db.GoogleFileSystemService;
 import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
 import org.tbbtalent.server.util.textExtract.TextExtractHelper;
 
@@ -39,6 +45,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
     private final CandidateAttachmentRepository candidateAttachmentRepository;
+    private final GoogleFileSystemService fileSystemService;
     private final UserContext userContext;
     private final S3ResourceHelper s3ResourceHelper;
     private final TextExtractHelper textExtractHelper;
@@ -50,11 +57,12 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     public CandidateAttachmentsServiceImpl(CandidateRepository candidateRepository,
                                            CandidateService candidateService,
                                            CandidateAttachmentRepository candidateAttachmentRepository,
-                                           S3ResourceHelper s3ResourceHelper,
+                                           GoogleFileSystemService fileSystemService, S3ResourceHelper s3ResourceHelper,
                                            UserContext userContext) {
         this.candidateRepository = candidateRepository;
         this.candidateService = candidateService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
+        this.fileSystemService = fileSystemService;
         this.s3ResourceHelper = s3ResourceHelper;
         this.userContext = userContext;
         this.textExtractHelper = new TextExtractHelper(candidateAttachmentRepository, s3ResourceHelper);
@@ -104,6 +112,13 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             attachment.setType(AttachmentType.link);
             attachment.setLocation(request.getLocation());
             attachment.setName(request.getName());
+
+        } else if (request.getType().equals(AttachmentType.googlefile)) {
+            attachment.setLocation(request.getLocation());
+            attachment.setName(request.getName());
+            attachment.setType(AttachmentType.googlefile);
+            attachment.setFileType(request.getFileType());
+            attachment.setCv(request.getCv());
 
         } else if (request.getType().equals(AttachmentType.file)) {
             // Prepend the filename with a UUID to ensure an existing file doesn't get overwritten on S3
@@ -234,4 +249,43 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         return candidateAttachmentRepository.save(candidateAttachment);
     }
 
+    @Override
+    @NonNull
+    public CandidateAttachment uploadAttachment( 
+            Long candidateId, Boolean cv, MultipartFile file )
+            throws IOException, NoSuchObjectException {
+
+        //Save to a temporary file
+        InputStream is = file.getInputStream();
+        File tempFile = File.createTempFile("tc", ".tmp");
+        try (FileOutputStream outputStream = new FileOutputStream(tempFile)) {
+            int read;
+            byte[] bytes = new byte[1024];
+
+            while ((read = is.read(bytes)) != -1) {
+                outputStream.write(bytes, 0, read);
+            }
+        }
+
+        String fileName = file.getName();
+        
+        
+        //todo Need to define the parent folder based on candiadte Id - in this code
+//        FileSystemFile uploadedFile = fileSystemService.uploadFile(parentFolder, fileName, tempFile);
+
+        //Delete tempfile at end
+        tempFile.delete();
+        
+        CreateCandidateAttachmentRequest req = new CreateCandidateAttachmentRequest();
+        req.setName(fileName);
+        req.setCv(cv);
+        req.setType(AttachmentType.googlefile);
+//        req.setLocation(uploadedFile.getUrl());
+        //todo What else
+        
+        CandidateAttachment attachment = 
+                createCandidateAttachment(req, false);
+
+        return attachment;
+    }
 }

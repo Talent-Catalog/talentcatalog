@@ -9,14 +9,14 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * Represents a folder on a remote file system
+ * Base class for representing folders or files on a remote file system
  *
  * @author John Cameron
  */
 @Getter
 @Setter
 @ToString
-public class Folder {
+public abstract class FileSystemBaseEntity {
     private String name;
     private String id;
     private String url;

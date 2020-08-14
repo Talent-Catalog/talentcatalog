@@ -57,7 +57,7 @@
         </div>
       </div>
 
-      <app-file-upload (uploadStarted)="saving = true"
+      <app-file-upload (uploadStarted)="startServerUpload($event)"
                        (uploadFinished)="saving = false"
                        (fileUploaded)="handleAttachmentUploaded($event)"></app-file-upload>
 

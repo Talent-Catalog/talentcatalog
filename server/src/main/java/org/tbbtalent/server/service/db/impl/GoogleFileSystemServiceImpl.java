@@ -13,9 +13,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import org.tbbtalent.server.exception.NotImplementedException;
 import org.tbbtalent.server.service.db.GoogleFileSystemService;
-import org.tbbtalent.server.util.filesystem.Folder;
+import org.tbbtalent.server.util.filesystem.FileSystemFile;
+import org.tbbtalent.server.util.filesystem.FileSystemFolder;
 
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
@@ -41,7 +44,7 @@ public class GoogleFileSystemServiceImpl implements GoogleFileSystemService {
     }
 
     @Override
-    public Folder findAFolder(String folderName) throws IOException {
+    public FileSystemFolder findAFolder(String folderName) throws IOException {
         //See https://developers.google.com/drive/api/v3/search-files
         // and https://developers.google.com/drive/api/v3/enable-shareddrives
         // Search for CandidateData drive.
@@ -57,10 +60,10 @@ public class GoogleFileSystemServiceImpl implements GoogleFileSystemService {
                 .setFields("nextPageToken, files(id,name,webViewLink)")
                 .execute();
         List<File> folders = result.getFiles();
-        Folder folder = null;
+        FileSystemFolder folder = null;
         if (folders != null && !folders.isEmpty()) {
             File file = folders.get(0);
-            folder = new Folder();
+            folder = new FileSystemFolder();
             folder.setId(file.getId());
             folder.setName(folderName);
             folder.setUrl(file.getWebViewLink());
@@ -70,7 +73,7 @@ public class GoogleFileSystemServiceImpl implements GoogleFileSystemService {
 
     @Override
     public @NonNull
-    Folder createFolder(String folderName) throws IOException {
+    FileSystemFolder createFolder(String folderName) throws IOException {
         //See https://developers.google.com/drive/api/v3/folder
         //and https://developers.google.com/drive/api/v3/enable-shareddrives 
         File fileMetadata = new File();
@@ -82,10 +85,18 @@ public class GoogleFileSystemServiceImpl implements GoogleFileSystemService {
                 .setSupportsAllDrives(true)
                 .setFields("id,webViewLink")
                 .execute();
-        Folder folder = new Folder();
+        FileSystemFolder folder = new FileSystemFolder();
         folder.setId(file.getId());
         folder.setName(folderName);
         folder.setUrl(file.getWebViewLink());
         return folder;
+    }
+
+    @Override
+    public @NonNull FileSystemFile uploadFile(
+            @Nullable FileSystemFolder parentFolder, String fileName, java.io.File file) 
+            throws IOException {
+        //TODO JC uploadFile not implemented in GoogleFileSystemServiceImpl
+        throw new NotImplementedException("GoogleFileSystemServiceImpl", "uploadFile");
     }
 }

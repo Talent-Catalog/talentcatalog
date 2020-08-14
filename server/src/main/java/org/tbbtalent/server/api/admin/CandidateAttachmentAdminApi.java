@@ -1,5 +1,6 @@
 package org.tbbtalent.server.api.admin;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.model.db.CandidateAttachment;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.attachment.CreateCandidateAttachmentRequest;
@@ -48,6 +51,16 @@ public class CandidateAttachmentAdminApi {
     @PostMapping()
     public Map<String, Object> createCandidateAttachment(@RequestBody CreateCandidateAttachmentRequest request) {
         CandidateAttachment candidateAttachment = candidateAttachmentService.createCandidateAttachment(request, true);
+        return candidateAttachmentDto().build(candidateAttachment);
+    }
+
+    @PostMapping("{id}/upload")
+    public Map<String, Object> uploadAttachment(
+            @PathVariable("id") long id, @RequestParam("cv") Boolean cv,
+            @RequestParam("file") MultipartFile file ) 
+            throws IOException {
+        CandidateAttachment candidateAttachment = 
+                candidateAttachmentService.uploadAttachment(id, cv, file);
         return candidateAttachmentDto().build(candidateAttachment);
     }
 

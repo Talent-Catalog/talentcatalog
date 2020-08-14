@@ -4,11 +4,13 @@
 
 package org.tbbtalent.server.service.db;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.tbbtalent.server.util.filesystem.Folder;
+import org.tbbtalent.server.util.filesystem.FileSystemFile;
+import org.tbbtalent.server.util.filesystem.FileSystemFolder;
 
 /**
  * Standard interface to any filesystem - tailored to Talent Catalog's use for
@@ -27,7 +29,7 @@ public interface FileSystemService {
      * @throws IOException If problem accessing file system
      */
     @Nullable
-    Folder findAFolder(String folderName) throws IOException;
+    FileSystemFolder findAFolder(String folderName) throws IOException;
 
     /**
      * Creates a folder with the given name.
@@ -38,5 +40,20 @@ public interface FileSystemService {
      * @throws IOException If there was a problem creating the folder
      */
     @NonNull
-    Folder createFolder(String folderName) throws IOException;
+    FileSystemFolder createFolder(String folderName) throws IOException;
+    
+    /**
+     * Uploads the given local file.
+     * @param parentFolder Folder tha file should be uploaded to. If null, 
+     *                     file is uploaded to root.
+     * @param fileName Name assigned to uploaded file
+     * @param file Local file to be uploaded
+     * @return Info about uploaded file on the remote file system 
+     * @throws IOException If there was a problem uploading the file.
+     */
+    @NonNull
+    FileSystemFile uploadFile(
+            @Nullable FileSystemFolder parentFolder, String fileName, File file) 
+            throws IOException;
+    
 }

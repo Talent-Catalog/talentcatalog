@@ -118,7 +118,7 @@ import org.tbbtalent.server.service.db.NationalityService;
 import org.tbbtalent.server.service.db.SavedSearchService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.service.db.util.PdfHelper;
-import org.tbbtalent.server.util.filesystem.Folder;
+import org.tbbtalent.server.util.filesystem.FileSystemFolder;
 
 import com.opencsv.CSVWriter;
 
@@ -1594,7 +1594,7 @@ public class CandidateServiceImpl implements CandidateService {
         
         String candidateNumber = candidate.getCandidateNumber();
         
-        Folder folder = fileSystemService.findAFolder(candidateNumber);
+        FileSystemFolder folder = fileSystemService.findAFolder(candidateNumber);
         
         if (folder == null) {
             folder = fileSystemService.createFolder(candidateNumber);

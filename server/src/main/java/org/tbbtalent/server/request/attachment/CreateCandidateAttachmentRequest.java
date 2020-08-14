@@ -5,72 +5,39 @@ import javax.persistence.Enumerated;
 
 import org.tbbtalent.server.model.db.AttachmentType;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class CreateCandidateAttachmentRequest {
 
     private Long candidateId;
+
     @Enumerated(EnumType.STRING)
     private AttachmentType type;
+    
     private String name;
+    
+    /**
+     * Currently this is the file suffix - eg pdf, docx, jpg, etc
+     */
     private String fileType;
-    private String folder;
-    private String location; // Used for creating link attachments on admin
-    private String textExtract;
+
+    /**
+     * For links {@link AttachmentType#link} and 
+     * Google docs {@link AttachmentType#googlefile}, the associated url.
+     * For S3 files {@link AttachmentType#file}, it is the unique filename
+     * generated on S3.
+     */
+    private String location; 
+    
     private Boolean cv;
 
-    public Long getCandidateId() {
-        return candidateId;
-    }
+    /**
+     * Only used by attachments stored on S3
+     */
+    private String folder;
 
-    public void setCandidateId(Long candidateId) {
-        this.candidateId = candidateId;
-    }
-
-    public AttachmentType getType() {
-        return type;
-    }
-
-    public void setType(AttachmentType type) {
-        this.type = type;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getFileType() {
-        return fileType;
-    }
-
-    public void setFileType(String fileType) {
-        this.fileType = fileType;
-    }
-
-    public String getFolder() {
-        return folder;
-    }
-
-    public void setFolder(String folder) {
-        this.folder = folder;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public String getTextExtract() { return textExtract; }
-
-    public void setTextExtract(String textExtract) { this.textExtract = textExtract; }
-
-    public Boolean getCv() { return cv; }
-
-    public void setCv(Boolean cv) { this.cv = cv; }
 }
 

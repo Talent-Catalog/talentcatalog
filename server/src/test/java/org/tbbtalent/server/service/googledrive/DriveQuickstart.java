@@ -28,6 +28,7 @@ import java.util.List;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.FileContent;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -68,6 +69,8 @@ public class DriveQuickstart {
     public static void main(String... args) throws IOException, GeneralSecurityException {
        boolean createFolder = true;
        boolean createFile = true;
+       File fileMetadata;
+       File file;
        
         // Build a new authorized API client service.
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
@@ -89,11 +92,27 @@ public class DriveQuickstart {
             System.out.println("No files found.");
         } else {
             System.out.println("Files:");
-            for (File file : files) {
-                System.out.printf("%s (%s %s)\n", file.getName(), file.getId(), file.getDriveId());
+            for (File f : files) {
+                System.out.printf("%s (%s %s)\n", f.getName(), f.getId(), f.getDriveId());
             }
         }
 
+        // Upload file.
+        fileMetadata = new File();
+        fileMetadata.setDriveId("0ALMJ566d9WuVUk9PVA");
+        fileMetadata.setParents(Collections.singletonList("0ALMJ566d9WuVUk9PVA"));
+        fileMetadata.setName("EnglishTxt.txt");
+
+        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        java.io.File filePath = new java.io.File(classLoader.getResource("text/EnglishTxt.txt").getFile());
+        FileContent mediaContent = new FileContent("text/plain", filePath);
+        file = service.files().create(fileMetadata, mediaContent)
+                .setSupportsAllDrives(true)
+                .setFields("id")
+                .execute();
+        System.out.println("File ID: " + file.getId());
+
+        
         // Print the names and IDs for up to 10 drives.
         DriveList result2 = service.drives().list()
                 .setPageSize(10)
@@ -127,13 +146,13 @@ public class DriveQuickstart {
         }
 
         if (createFolder) {
-            File fileMetadata = new File();
+            fileMetadata = new File();
             fileMetadata.setDriveId("0ALMJ566d9WuVUk9PVA");
             fileMetadata.setParents(Collections.singletonList("0ALMJ566d9WuVUk9PVA"));
             fileMetadata.setName("201345");
             fileMetadata.setMimeType("application/vnd.google-apps.folder");
             try {
-                File file = service.files().create(fileMetadata)
+                file = service.files().create(fileMetadata)
                         .setSupportsAllDrives(true)
                         .setFields("id,driveId")
                         .execute();
@@ -145,12 +164,12 @@ public class DriveQuickstart {
         }
 
         if (createFile) {
-            File fileMetadata = new File();
+            fileMetadata = new File();
             fileMetadata.setDriveId("0ALMJ566d9WuVUk9PVA");
             fileMetadata.setParents(Collections.singletonList("1itPPs_Nxs86Ozj-ET4Jyq-pTJJbdjUew"));
             fileMetadata.setName("TestIgnore");
             try {
-                File file = service.files().create(fileMetadata)
+                file = service.files().create(fileMetadata)
                         .setFields("id,driveId")
                         .setSupportsAllDrives(true)
                         .execute();

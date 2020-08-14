@@ -1,6 +1,13 @@
-import {Component, EventEmitter, HostListener, OnInit, Output} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  HostListener,
+  OnInit,
+  Output
+} from '@angular/core';
 import {S3HelperService} from "../../../services/s3-helper.service";
 import {S3UploadParams} from "../../../model/s3-upload-params";
+import {CandidateAttachmentService} from "../../../services/candidate-attachment.service";
 
 @Component({
   selector: 'app-file-upload',
@@ -46,7 +53,10 @@ export class FileUploadComponent implements OnInit {
 
   s3Params: S3UploadParams;
 
-  constructor(private s3HelperService: S3HelperService) { }
+  constructor(
+    private s3HelperService: S3HelperService,
+    private candidateAttachmentService: CandidateAttachmentService
+  ) { }
 
   ngOnInit() {
     this.loading = true;
@@ -71,7 +81,7 @@ export class FileUploadComponent implements OnInit {
 
     if (!!this.files && this.files.length) {
       this.uploading = true;
-      this.uploadStarted.emit();
+      this.uploadStarted.emit(this.files);
       this.uploadFilesToS3();
     }
   }
