@@ -56,6 +56,8 @@
             For example <strong>welder diesel+mechanic</strong>
             will find all candidate profiles containing
             the word 'welder' OR both words 'diesel' AND 'mechanic'.</p>
+          <p>You can just match the first part of a word using *. For example
+            'account*' will match 'accounting' or 'accountant'.</p>
           <p>You can also search for phrases as well as words by using
             double quotes. For example <strong>accountant + "hospital director"</strong>
             will find profiles with the word 'accountant' AND the phrase
@@ -104,7 +106,6 @@
                                              [languages]="languages"
                                              [languageLevels]="languageLevels"
                                              [languageDisabled]="true"
-                                             [disable]="elastic()"
                                              (modelUpdated)="handleLanguageLevelChange($event, 'english')">
             </app-language-level-form-control>
           </div>
