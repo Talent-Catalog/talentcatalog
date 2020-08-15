@@ -6,14 +6,12 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.model.db.CandidateCertification;
+import org.tbbtalent.server.model.db.CandidateEducation;
 import org.tbbtalent.server.request.candidate.certification.CreateCandidateCertificationRequest;
+import org.tbbtalent.server.request.candidate.certification.UpdateCandidateCertificationRequest;
+import org.tbbtalent.server.request.candidate.education.UpdateCandidateEducationRequest;
 import org.tbbtalent.server.service.db.CandidateCertificationService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -31,6 +29,13 @@ public class CandidateCertificationPortalApi {
     @PostMapping()
     public Map<String, Object> createCandidateCertification(@Valid @RequestBody CreateCandidateCertificationRequest request) {
         CandidateCertification candidateCertification = candidateCertificationService.createCandidateCertification(request);
+        return candidateCertificationDto().build(candidateCertification);
+    }
+
+    @PutMapping("{id}")
+    public Map<String, Object> update(@PathVariable("id") long id,
+                                      @RequestBody UpdateCandidateCertificationRequest request) {
+        CandidateCertification candidateCertification = this.candidateCertificationService.updateCandidateCertificationAdmin(id, request);
         return candidateCertificationDto().build(candidateCertification);
     }
 

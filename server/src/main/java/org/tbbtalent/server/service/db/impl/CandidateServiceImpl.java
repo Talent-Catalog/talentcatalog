@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.index.query.SimpleQueryStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -309,7 +310,8 @@ public class CandidateServiceImpl implements CandidateService {
         searchCandidateRequest.setStatuses(getStatusListFromString(savedSearch.getStatuses()));
         searchCandidateRequest.setGender(savedSearch.getGender());
         searchCandidateRequest.setOccupationIds(getIdsFromString(savedSearch.getOccupationIds()));
-        searchCandidateRequest.setOrProfileKeyword(savedSearch.getOrProfileKeyword());
+        searchCandidateRequest.setMinYrs(savedSearch.getMinYrs());
+        searchCandidateRequest.setMaxYrs(savedSearch.getMaxYrs());
         searchCandidateRequest.setVerifiedOccupationIds(getIdsFromString(savedSearch.getVerifiedOccupationIds()));
         searchCandidateRequest.setVerifiedOccupationSearchType(savedSearch.getVerifiedOccupationSearchType());
         searchCandidateRequest.setNationalityIds(getIdsFromString(savedSearch.getNationalityIds()));
@@ -372,6 +374,25 @@ public class CandidateServiceImpl implements CandidateService {
             
             //Support sorting 
             PageRequest req = CandidateEs.convertToElasticSortField(request);
+
+            /*
+               Constructing a filtered simple query that looks like this:
+               
+               GET /candidates/_search
+                {
+                  "query": {
+                    "bool": {
+                      "must": [
+                        { "simple_query_string": {"query":"the +jet+ engine"}}
+                      ],
+                      "filter": [
+                        { "term":  { "status": "pending" }},
+                        { "range":  { "minEnglishSpokenLevel": {"gte": 2}}}
+                      ]
+                    }
+                  }
+                }
+             */
             
             //Create a simple query string builder from the given string 
             SimpleQueryStringBuilder simpleQueryStringBuilder = 
@@ -383,11 +404,29 @@ public class CandidateServiceImpl implements CandidateService {
                     QueryBuilders.boolQuery().must(simpleQueryStringBuilder);
 
             //Add filters - each filter must return true for a hit
+            //(Note: Filters are different from "Must" entries only in that
+            //they don't affect the Elasticsearch score)
             
             //Add a TermsQuery filter for each multiselect request - eg
             //countries and nationalities. A match against any one of the 
             //multiselected values will result in the filter returning true.
             //There is also a TermQuery which takes only one value.
+
+            //English levels
+            Integer minSpokenLevel = request.getEnglishMinSpokenLevel();
+            if (minSpokenLevel != null) {
+                boolQueryBuilder =
+                        addElasticRangeFilter(boolQueryBuilder,
+                                "minEnglishSpokenLevel", 
+                                minSpokenLevel, null);
+            }
+            Integer minWrittenLevel = request.getEnglishMinWrittenLevel();
+            if (minWrittenLevel != null) {
+                boolQueryBuilder =
+                        addElasticRangeFilter(boolQueryBuilder,
+                                "minEnglishWrittenLevel",
+                                minWrittenLevel, null);
+            }
             
             //Countries
             final List<Long> countryIds = request.getCountryIds();
@@ -399,7 +438,7 @@ public class CandidateServiceImpl implements CandidateService {
                     reqCountries.add(country.getName());
                 }
                 boolQueryBuilder = 
-                        addElasticFilter(boolQueryBuilder,
+                        addElasticTermFilter(boolQueryBuilder,
                                 null,"country", reqCountries);
             }
             
@@ -412,7 +451,7 @@ public class CandidateServiceImpl implements CandidateService {
                     final Nationality nationality = nationalityService.getNationality(id);
                     reqNationalities.add(nationality.getName());
                 }
-                boolQueryBuilder = addElasticFilter(boolQueryBuilder, 
+                boolQueryBuilder = addElasticTermFilter(boolQueryBuilder, 
                         request.getNationalitySearchType(), 
                         "nationality", reqNationalities);
             }
@@ -434,7 +473,7 @@ public class CandidateServiceImpl implements CandidateService {
                     reqStatuses.add(status.name());
                 }
                 boolQueryBuilder =
-                        addElasticFilter(boolQueryBuilder,
+                        addElasticTermFilter(boolQueryBuilder,
                                 null,"status", reqStatuses);
             }
 
@@ -496,13 +535,24 @@ public class CandidateServiceImpl implements CandidateService {
         return candidates;
     }
 
-    private BoolQueryBuilder addElasticFilter(
+    private BoolQueryBuilder addElasticRangeFilter(
+            BoolQueryBuilder builder, String field, 
+            @Nullable Object min, @Nullable Object max) {
+        if (min != null || max != null) {
+            RangeQueryBuilder rangeQueryBuilder = 
+                    QueryBuilders.rangeQuery(field).from(min).to(max);
+            builder = builder.filter(rangeQueryBuilder);
+        } 
+        return builder;
+    }
+
+    private BoolQueryBuilder addElasticTermFilter(
             BoolQueryBuilder builder, @Nullable SearchType searchType, String field, 
             List<String> values) {
-        final int nCountries = values.size();
-        if (nCountries > 0) {
+        final int nValues = values.size();
+        if (nValues > 0) {
             QueryBuilder queryBuilder;
-            if (nCountries == 1) {
+            if (nValues == 1) {
                 queryBuilder = QueryBuilders.termQuery(field, values.get(0));
             } else {
                 queryBuilder = QueryBuilders.termsQuery(field, values.toArray());

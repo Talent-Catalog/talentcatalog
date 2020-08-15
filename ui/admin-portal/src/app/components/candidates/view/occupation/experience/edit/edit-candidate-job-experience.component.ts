@@ -46,13 +46,13 @@ export class EditCandidateJobExperienceComponent implements OnInit {
 
     this.candidateForm = this.fb.group({
       countryId: [this.candidateJobExperience.country ? this.candidateJobExperience.country.id : null, Validators.required],
-      companyName: [this.candidateJobExperience.companyName],
-      role: [this.candidateJobExperience.role],
-      startDate: [this.candidateJobExperience.startDate],
+      companyName: [this.candidateJobExperience.companyName, Validators.required],
+      role: [this.candidateJobExperience.role, Validators.required],
+      startDate: [this.candidateJobExperience.startDate, Validators.required],
       endDate: [this.candidateJobExperience.endDate],
-      fullTime: [this.candidateJobExperience.fullTime],
-      paid: [this.candidateJobExperience.paid],
-      description: [this.candidateJobExperience.description],
+      fullTime: [this.candidateJobExperience.fullTime, Validators.required],
+      paid: [this.candidateJobExperience.paid, Validators.required],
+      description: [this.candidateJobExperience.description, Validators.required],
     });
     this.loading = false;
   }

@@ -158,7 +158,7 @@ export class RegistrationEducationComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.candidateService.updateCandidateEducation(this.form.value).subscribe(
+    this.candidateService.updateCandidateEducationLevel(this.form.value).subscribe(
       (response) => {
         this.saving = false;
         if (dir === 'next') {
