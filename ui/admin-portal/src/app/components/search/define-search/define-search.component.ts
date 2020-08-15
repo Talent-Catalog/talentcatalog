@@ -223,6 +223,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       const englishLanguageObj = this.languages.find(l => l.name.toLowerCase() === 'english');
       this.englishLanguageModel = Object.assign(emptyLanguageLevelFormControlModel, {languageId: englishLanguageObj.id || null});
 
+      this.otherLanguageModel = Object.assign(emptyLanguageLevelFormControlModel)
+
       if (this.savedSearch) {
         this.loadSavedSearch(this.savedSearch.id);
 

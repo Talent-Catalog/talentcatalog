@@ -20,6 +20,7 @@ import org.tbbtalent.server.model.db.CandidateAttachment;
 import org.tbbtalent.server.model.db.CandidateCertification;
 import org.tbbtalent.server.model.db.CandidateEducation;
 import org.tbbtalent.server.model.db.CandidateJobExperience;
+import org.tbbtalent.server.model.db.CandidateLanguage;
 import org.tbbtalent.server.model.db.CandidateOccupation;
 import org.tbbtalent.server.model.db.CandidateSkill;
 import org.tbbtalent.server.model.db.CandidateStatus;
@@ -83,6 +84,12 @@ public class CandidateEs {
     private String lastName;
 
     @Field(type = FieldType.Keyword)
+    private Integer minEnglishSpokenLevel;
+
+    @Field(type = FieldType.Keyword)
+    private Integer minEnglishWrittenLevel;
+
+    @Field(type = FieldType.Keyword)
     private Long updated;
 
     /**
@@ -127,6 +134,24 @@ public class CandidateEs {
                 : candidate.getNationality().getName();
         this.status = candidate.getStatus();
 
+        this.minEnglishSpokenLevel = null;
+        this.minEnglishWrittenLevel = null;
+        List<CandidateLanguage> proficiencies = candidate.getCandidateLanguages();
+        for (CandidateLanguage proficiency : proficiencies) {
+            //Protect against bad data
+            if (proficiency.getLanguage() != null) {
+                if ("english".equals(proficiency.getLanguage().getName().toLowerCase())) {
+                    if (proficiency.getSpokenLevel() != null) {
+                        this.minEnglishSpokenLevel = proficiency.getSpokenLevel().getLevel();
+                    }
+                    if (proficiency.getWrittenLevel() != null) {
+                        this.minEnglishWrittenLevel = proficiency.getWrittenLevel().getLevel();
+                    }
+                    break;
+                }
+            }
+        }
+        
         this.certifications = new ArrayList<>();
         List<CandidateCertification> certifications = candidate.getCandidateCertifications();
         if (certifications != null) {

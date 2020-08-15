@@ -37,9 +37,12 @@ public class AuthAdminApi {
             throws AccountLockedException, PasswordExpiredException, InvalidCredentialsException,
             InvalidPasswordFormatException {
 
-        //Do check for automated logins. Throws exception if it looks
-        //automated.
-        captchaService.processCaptchaV3Token(request.getReCaptchaV3Token(), "login");
+        final String reCaptchaV3Token = request.getReCaptchaV3Token();
+        if (reCaptchaV3Token != null) {
+            //Do check for automated logins. Throws exception if it looks
+            //automated.
+            captchaService.processCaptchaV3Token(reCaptchaV3Token, "login");
+        }
 
         JwtAuthenticationResponse response = this.userService.login(request);
         return jwtDto().build(response);

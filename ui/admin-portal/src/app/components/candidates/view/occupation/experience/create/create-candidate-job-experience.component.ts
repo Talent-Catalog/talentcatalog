@@ -52,7 +52,7 @@ export class CreateCandidateJobExperienceComponent implements OnInit {
       candidateOccupationId: [this.candidateOccupationId],
       role: ['', [Validators.required]],
       startDate: ['', [Validators.required]],
-      endDate: ['', [Validators.required]],
+      endDate: [''],
       fullTime: ['', [Validators.required]],
       paid: ['', [Validators.required]],
       description: ['', [Validators.required]],

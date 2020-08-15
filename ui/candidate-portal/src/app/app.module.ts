@@ -69,6 +69,7 @@ import {faEdit} from "@fortawesome/free-solid-svg-icons";
 import {Observable} from "rxjs";
 import {environment} from "../environments/environment";
 import {DeleteOccupationComponent} from './components/register/candidate-occupation/delete/delete-occupation.component';
+import { CandidateCertificationFormComponent } from './components/common/candidate-certification-form/candidate-certification-form.component';
 
 export function createTranslateLoader(http: HttpClient) {
   return {
@@ -117,7 +118,8 @@ export function createTranslateLoader(http: HttpClient) {
     TrimPipe,
     TranslationPipe,
     MonthPickerComponent,
-    DeleteOccupationComponent
+    DeleteOccupationComponent,
+    CandidateCertificationFormComponent
   ],
   imports: [
     BrowserModule,

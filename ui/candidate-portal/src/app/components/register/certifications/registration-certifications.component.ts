@@ -1,10 +1,11 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateCertification} from "../../../model/candidate-certification";
 import {CandidateService} from "../../../services/candidate.service";
 import {CandidateCertificationService} from "../../../services/candidate-certification.service";
 import {RegistrationService} from "../../../services/registration.service";
+import {CandidateEducation} from '../../../model/candidate-education';
 
 @Component({
   selector: 'app-registration-certifications',
@@ -25,6 +26,10 @@ export class RegistrationCertificationsComponent implements OnInit {
   form: FormGroup;
   candidateCertifications: CandidateCertification[];
   addingCertification: boolean;
+
+
+  editTarget: CandidateCertification;
+  subscription;
 
   constructor(private fb: FormBuilder,
               private router: Router,
@@ -59,22 +64,6 @@ export class RegistrationCertificationsComponent implements OnInit {
     })
   }
 
-  addCertificate() {
-    this.saving = true;
-    this.candidateCertificationService.createCandidateCertification(this.form.value).subscribe(
-      (response) => {
-        this.candidateCertifications.push(response);
-        this.clearForm();
-        this.addingCertification = false;
-        this.saving = false;
-      },
-      (error) => {
-        this.error = error;
-        this.saving = false;
-      }
-    );
-  }
-
   deleteCertificate(certification) {
     this.saving = true;
     this.candidateCertificationService.deleteCandidateCertification(certification.id).subscribe(
@@ -102,4 +91,32 @@ export class RegistrationCertificationsComponent implements OnInit {
   finishEditing() {
     this.onSave.emit();
   }
+
+  handleCandidateCertificationCreated(certification: CandidateCertification) {
+    let index = -1;
+    if (this.candidateCertifications.length) {
+      index = this.candidateCertifications.findIndex(cert => cert.id === certification.id);
+    }
+    /* Replace the old education item with the updated item */
+    if (index >= 0) {
+      this.candidateCertifications.splice(index, 1, certification);
+    } else {
+      this.candidateCertifications.push(certification);
+    }
+    this.addingCertification = false;
+  }
+
+  cancel() {
+    this.onSave.emit();
+  }
+
+  editCandidateCertification(certification: CandidateCertification) {
+    this.editTarget = certification;
+  }
+
+  handleCertificationSaved(certification: CandidateCertification, i) {
+    this.candidateCertifications[i] = certification;
+    this.editTarget = null;
+  }
+
 }

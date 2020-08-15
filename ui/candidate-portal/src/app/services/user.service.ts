@@ -3,6 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {environment} from "../../environments/environment";
 import {User} from '../model/user';
+import {SendResetPasswordEmailRequest} from "../model/candidate";
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,7 @@ export class UserService {
     return this.http.post(`${this.apiUrl}/password`, request);
   }
 
-  sendResetPassword(request) {
+  sendResetPassword(request: SendResetPasswordEmailRequest) {
     return this.http.post(`${this.apiUrl}/reset-password-email`, request);
   }
 

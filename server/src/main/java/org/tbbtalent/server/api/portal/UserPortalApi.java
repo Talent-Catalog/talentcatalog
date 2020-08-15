@@ -14,11 +14,13 @@ import org.tbbtalent.server.exception.ExpiredTokenException;
 import org.tbbtalent.server.exception.InvalidPasswordFormatException;
 import org.tbbtalent.server.exception.InvalidPasswordTokenException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.exception.ReCaptchaInvalidException;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.user.CheckPasswordResetTokenRequest;
 import org.tbbtalent.server.request.user.ResetPasswordRequest;
 import org.tbbtalent.server.request.user.SendResetPasswordEmailRequest;
 import org.tbbtalent.server.request.user.UpdateUserPasswordRequest;
+import org.tbbtalent.server.service.db.CaptchaService;
 import org.tbbtalent.server.service.db.UserService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -27,10 +29,12 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
 @RequestMapping("/api/portal/user")
 public class UserPortalApi {
 
-    private UserService userService;
+    private final CaptchaService captchaService;
+    private final UserService userService;
 
     @Autowired
-    public UserPortalApi(UserService userService) {
+    public UserPortalApi(CaptchaService captchaService, UserService userService) {
+        this.captchaService = captchaService;
         this.userService = userService;
     }
 
@@ -46,7 +50,14 @@ public class UserPortalApi {
     }
 
     @PostMapping(value="reset-password-email")
-    public void sendResetPasswordEmail(@RequestBody SendResetPasswordEmailRequest request) throws NoSuchObjectException {
+    public void sendResetPasswordEmail(
+            @RequestBody SendResetPasswordEmailRequest request) 
+            throws NoSuchObjectException, ReCaptchaInvalidException {
+
+        //Do check for automated reset requests. Throws exception if it looks
+        //automated.
+        captchaService.processCaptchaV3Token(request.getReCaptchaV3Token(), "resetPassword");
+
         userService.generateResetPasswordToken(request);
     }
 

@@ -65,3 +65,9 @@ export class LoginRequest {
   password: string;
   reCaptchaV3Token: string;
 }
+
+export class SendResetPasswordEmailRequest {
+  email: string;
+  reCaptchaV3Token: string;
+}
+
