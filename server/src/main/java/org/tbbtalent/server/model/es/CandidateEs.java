@@ -137,17 +137,19 @@ public class CandidateEs {
         this.minEnglishSpokenLevel = null;
         this.minEnglishWrittenLevel = null;
         List<CandidateLanguage> proficiencies = candidate.getCandidateLanguages();
-        for (CandidateLanguage proficiency : proficiencies) {
-            //Protect against bad data
-            if (proficiency.getLanguage() != null) {
-                if ("english".equals(proficiency.getLanguage().getName().toLowerCase())) {
-                    if (proficiency.getSpokenLevel() != null) {
-                        this.minEnglishSpokenLevel = proficiency.getSpokenLevel().getLevel();
+        if (proficiencies != null) {
+            for (CandidateLanguage proficiency : proficiencies) {
+                //Protect against bad data
+                if (proficiency.getLanguage() != null) {
+                    if ("english".equals(proficiency.getLanguage().getName().toLowerCase())) {
+                        if (proficiency.getSpokenLevel() != null) {
+                            this.minEnglishSpokenLevel = proficiency.getSpokenLevel().getLevel();
+                        }
+                        if (proficiency.getWrittenLevel() != null) {
+                            this.minEnglishWrittenLevel = proficiency.getWrittenLevel().getLevel();
+                        }
+                        break;
                     }
-                    if (proficiency.getWrittenLevel() != null) {
-                        this.minEnglishWrittenLevel = proficiency.getWrittenLevel().getLevel();
-                    }
-                    break;
                 }
             }
         }
