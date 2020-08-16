@@ -30,7 +30,13 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long>  {
     private String location;
 
     private boolean adminOnly;
+
+    /**
+     * This is recorded just as the suffix of the attachment filename 
+     * (ie name attribute) - eg pdf, doc, jpg etc
+     */
     private String fileType;
+    
     private boolean migrated;
     private boolean cv;
     private String textExtract;

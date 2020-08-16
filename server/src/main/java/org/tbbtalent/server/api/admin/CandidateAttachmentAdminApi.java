@@ -48,12 +48,33 @@ public class CandidateAttachmentAdminApi {
         return candidateAttachmentDto().buildPage(candidateAttachments);
     }
 
+    /**
+     * This was called for attachments which were uploaded to AWS S3.
+     * <p/> 
+     * @deprecated {@link #uploadAttachment} is used now instead. It is
+     * called now that attachments are first uploaded to this server,
+     * then uploaded to Google Drive from here. 
+     * @param request Details about attachment record to be created. 
+     * @return Candidate attachment
+     */
     @PostMapping()
     public Map<String, Object> createCandidateAttachment(@RequestBody CreateCandidateAttachmentRequest request) {
         CandidateAttachment candidateAttachment = candidateAttachmentService.createCandidateAttachment(request, true);
         return candidateAttachmentDto().build(candidateAttachment);
     }
 
+    /**
+     * Upload an attachment associated with the given candidate and
+     * creates a CandidateAttachment record on the database.
+     * <p/>
+     * Processes uploaded file and then uploads it again to Google Drive.
+     * This replaces the old {@link #createCandidateAttachment} 
+     * @param id ID of candidate associated with file attachment
+     * @param cv True if the attachment is a CV (in which case its text is 
+     *           extracted for keywords).
+     * @param file Attachment file           
+     * @return Candidate attachment
+     */
     @PostMapping("{id}/upload")
     public Map<String, Object> uploadAttachment(
             @PathVariable("id") long id, @RequestParam("cv") Boolean cv,

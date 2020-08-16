@@ -7,6 +7,8 @@ package org.tbbtalent.server.service.db.impl;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,11 +17,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
-import org.tbbtalent.server.exception.NotImplementedException;
 import org.tbbtalent.server.service.db.GoogleFileSystemService;
 import org.tbbtalent.server.util.filesystem.FileSystemFile;
 import org.tbbtalent.server.util.filesystem.FileSystemFolder;
 
+import com.google.api.client.http.FileContent;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
@@ -94,9 +96,53 @@ public class GoogleFileSystemServiceImpl implements GoogleFileSystemService {
 
     @Override
     public @NonNull FileSystemFile uploadFile(
-            @Nullable FileSystemFolder parentFolder, String fileName, java.io.File file) 
+            @Nullable FileSystemFolder parentFolder, 
+            String fileName, java.io.File file) 
             throws IOException {
-        //TODO JC uploadFile not implemented in GoogleFileSystemServiceImpl
-        throw new NotImplementedException("GoogleFileSystemServiceImpl", "uploadFile");
+
+        File fileMetadata = new File();
+
+        //Set parent to given folder, or drive (root) if no folder given
+        List<String> parent;
+        if (parentFolder == null) {
+            parent = Collections.singletonList(candidateDataDriveId);
+        } else {
+            parent = Collections.singletonList(parentFolder.getId());
+        }
+        fileMetadata.setParents(parent);
+        
+        fileMetadata.setName(fileName);
+
+        FileContent mediaContent = new FileContent(null, file);
+        
+        //Upload file to Google.
+        File uploadedfile = googleDriveService.files()
+                .create(fileMetadata, mediaContent)
+                .setSupportsAllDrives(true)
+                .setFields("id,webViewLink")
+                .execute();
+        
+        //Return an object representing the uploaded file
+        FileSystemFile fsf = new FileSystemFile();
+        fsf.setId(uploadedfile.getId());
+        fsf.setName(fileName);
+        fsf.setUrl(uploadedfile.getWebViewLink());
+        
+        return fsf;
     }
+
+    public String extractIdFromUrl(String url) {
+
+        //See https://stackoverflow.com/questions/16840038/easiest-way-to-get-file-id-from-url-on-google-apps-script 
+        String pattern = ".*[^-\\w]([-\\w]{25,})[^-\\w]?.*";
+        Pattern r = Pattern.compile(pattern);
+
+        Matcher m = r.matcher(url);
+        if (m.find() && m.groupCount() == 1) {
+            return m.group(1);
+        } else {
+            return null;
+        }
+    }
+    
 }

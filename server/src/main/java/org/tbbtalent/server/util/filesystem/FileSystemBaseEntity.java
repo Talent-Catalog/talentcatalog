@@ -5,6 +5,7 @@
 package org.tbbtalent.server.util.filesystem;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -18,6 +19,9 @@ import lombok.ToString;
 @ToString
 public abstract class FileSystemBaseEntity {
     private String name;
+    
+    @NonNull
     private String id;
+    
     private String url;
 }

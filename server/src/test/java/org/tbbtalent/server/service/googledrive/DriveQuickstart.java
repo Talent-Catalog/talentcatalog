@@ -24,6 +24,8 @@ import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
@@ -85,7 +87,7 @@ public class DriveQuickstart {
                 .setDriveId("0ALMJ566d9WuVUk9PVA")
                 .setIncludeItemsFromAllDrives(true)
                 .setSupportsAllDrives(true)
-                .setFields("nextPageToken, files(driveId,id, name)")
+                .setFields("nextPageToken, files(driveId,id, name,webViewLink)")
                 .execute();
         List<File> files = result.getFiles();
         if (files == null || files.isEmpty()) {
@@ -94,6 +96,7 @@ public class DriveQuickstart {
             System.out.println("Files:");
             for (File f : files) {
                 System.out.printf("%s (%s %s)\n", f.getName(), f.getId(), f.getDriveId());
+                System.out.println(getIdFromUrl(f.getWebViewLink()));
             }
         }
 
@@ -154,10 +157,11 @@ public class DriveQuickstart {
             try {
                 file = service.files().create(fileMetadata)
                         .setSupportsAllDrives(true)
-                        .setFields("id,driveId")
+                        .setFields("id,driveId,webViewLink")
                         .execute();
                 System.out.println("Drive ID: " + file.getDriveId());
                 System.out.println("Folder ID: " + file.getId());
+                System.out.println(getIdFromUrl(file.getWebViewLink()));
             } catch (Exception ex) {
                 System.out.println(ex);
             }
@@ -170,14 +174,29 @@ public class DriveQuickstart {
             fileMetadata.setName("TestIgnore");
             try {
                 file = service.files().create(fileMetadata)
-                        .setFields("id,driveId")
+                        .setFields("id,driveId,webViewLink")
                         .setSupportsAllDrives(true)
                         .execute();
                 System.out.println("Drive ID: " + file.getDriveId());
                 System.out.println("Folder ID: " + file.getId());
+                System.out.println(getIdFromUrl(file.getWebViewLink()));
             } catch (Exception ex) {
                 System.out.println(ex);
             }
+        }
+    }
+
+    public static String getIdFromUrl(String url) {
+        
+        //See https://stackoverflow.com/questions/16840038/easiest-way-to-get-file-id-from-url-on-google-apps-script 
+        String pattern = ".*[^-\\w]([-\\w]{25,})[^-\\w]?.*";
+        Pattern r = Pattern.compile(pattern);
+
+        Matcher m = r.matcher(url);
+        if (m.find() && m.groupCount() == 1) {
+            return m.group(1);
+        } else {
+            return null;
         }
     }
 }

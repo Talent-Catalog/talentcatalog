@@ -35,6 +35,8 @@ import org.tbbtalent.server.service.db.CandidateAttachmentService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.GoogleFileSystemService;
 import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
+import org.tbbtalent.server.util.filesystem.FileSystemFile;
+import org.tbbtalent.server.util.filesystem.FileSystemFolder;
 import org.tbbtalent.server.util.textExtract.TextExtractHelper;
 
 @Service
@@ -121,6 +123,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             attachment.setCv(request.getCv());
 
         } else if (request.getType().equals(AttachmentType.file)) {
+            ////TODO JC This code should never be called now.
             // Prepend the filename with a UUID to ensure an existing file doesn't get overwritten on S3
             String uniqueFilename = UUID.randomUUID() + "_" + request.getName();
             // Source is temporary folder where the file got uploaded, destination is the candidates unique folder
@@ -255,9 +258,12 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             Long candidateId, Boolean cv, MultipartFile file )
             throws IOException, NoSuchObjectException {
 
+        Candidate candidate = candidateRepository.findById(candidateId)
+                .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateId));
+
         //Save to a temporary file
         InputStream is = file.getInputStream();
-        File tempFile = File.createTempFile("tc", ".tmp");
+        File tempFile = File.createTempFile("tbb", ".tmp");
         try (FileOutputStream outputStream = new FileOutputStream(tempFile)) {
             int read;
             byte[] bytes = new byte[1024];
@@ -267,25 +273,55 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             }
         }
 
-        String fileName = file.getName();
-        
-        
-        //todo Need to define the parent folder based on candiadte Id - in this code
-//        FileSystemFile uploadedFile = fileSystemService.uploadFile(parentFolder, fileName, tempFile);
+        //Name of file being uploaded (this is the name it had on the 
+        //originating computer).
+        String fileName = file.getOriginalFilename();
 
-        //Delete tempfile at end
-        tempFile.delete();
+        //Get link to candidate folder if we have one.
+        String folderLink = candidate.getFolderlink();
+        if (folderLink == null) {
+            //No candidate folder recorded, create one.
+            candidate = candidateService.createCandidateFolder(candidateId);
+            folderLink = candidate.getFolderlink();
+        }
+
+        //Create a folder object for the candidate folder (where the attachment 
+        //file will be uploaded to)
+        FileSystemFolder parentFolder = new FileSystemFolder();
+        //Only need the Google folder id, which can be extracted from the 
+        //folder's url.
+        parentFolder.setId(fileSystemService.extractIdFromUrl(folderLink));
         
+        //Upload the file to its folder, with the correct name (not the temp
+        //file name).
+        FileSystemFile uploadedFile = fileSystemService.uploadFile(
+                parentFolder, fileName, tempFile);
+
+        //Delete tempfile
+        if (!tempFile.delete()) {
+            log.error("Failed to delete temporary file " + tempFile);
+        }
+
+        //Now create corresponding CandidateAttachment record.
         CreateCandidateAttachmentRequest req = new CreateCandidateAttachmentRequest();
-        req.setName(fileName);
-        req.setCv(cv);
+        req.setCandidateId(candidateId);
         req.setType(AttachmentType.googlefile);
-//        req.setLocation(uploadedFile.getUrl());
-        //todo What else
+        req.setName(fileName);
+        req.setFileType(getFileExtension((fileName))); 
+        req.setLocation(uploadedFile.getUrl());
+        req.setCv(cv);
         
         CandidateAttachment attachment = 
                 createCandidateAttachment(req, false);
 
         return attachment;
+    }
+
+    private String getFileExtension(String filename) {
+        int lastIndexOf = filename.lastIndexOf(".");
+        if (lastIndexOf == -1) {
+            return ""; // empty extension
+        }
+        return filename.substring(lastIndexOf+1);
     }
 }

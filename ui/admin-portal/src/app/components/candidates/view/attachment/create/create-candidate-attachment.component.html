@@ -43,6 +43,10 @@
 
     <ng-container *ngIf="type === 'file'">
 
+      <div *ngIf="uploading">
+        <i class="fas fa-spinner fa-spin"></i> Uploading...
+      </div>
+
       <div class="alert alert-success" *ngIf="attachments?.length">
         Successfully uploaded {{attachments.length}} attachments
       </div>
@@ -57,9 +61,8 @@
         </div>
       </div>
 
-      <app-file-upload (uploadStarted)="startServerUpload($event)"
-                       (uploadFinished)="saving = false"
-                       (fileUploaded)="handleAttachmentUploaded($event)"></app-file-upload>
+      <app-file-upload *ngIf="!uploading"
+                       (uploadStarted)="startServerUpload($event)"></app-file-upload>
 
 
     </ng-container>
@@ -68,15 +71,15 @@
 
 <div class="modal-footer">
   <button type="button" class="btn btn-primary" *ngIf="type === 'file'"
-          [disabled]="saving"
+          [disabled]="uploading"
           (click)="close()">
     Close
   </button>
 
   <button type="button" class="btn btn-primary" *ngIf="type === 'link'"
-          [disabled]="saving"
+          [disabled]="uploading"
           (click)="save()">
-    <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
+    <i class="fas fa-spinner fa-spin" *ngIf="uploading"></i>
     Save
   </button>
 </div>

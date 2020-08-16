@@ -11,9 +11,8 @@
   <span class="or text-muted">OR</span>
 
   <span>
-    <button class="btn btn-primary" [disabled]="uploading" (click)="input.click()">
-      <ng-container *ngIf="!uploading">Browse Files</ng-container>
-      <ng-container *ngIf="uploading">Uploading...</ng-container>
+    <button class="btn btn-primary" (click)="input.click()">
+      Browse Files
     </button>
   </span>
 
