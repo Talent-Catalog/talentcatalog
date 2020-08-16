@@ -65,6 +65,7 @@ export class CreateCandidateAttachmentComponent implements OnInit {
   }
 
   startServerUpload(files: File[]) {
+    this.error = null;
     this.uploading = true;
     this.attachments = [];
 

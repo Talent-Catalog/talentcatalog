@@ -9,7 +9,11 @@ spring:
     user:
       name: client
       password: client
-  
+  servlet:
+    multipart:
+      max-file-size: ${SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE:10MB}
+      max-request-size: ${SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE:10MB}
+
   elasticsearch:
     rest:
       uris: ${ELASTICSEARCH_URL:http://localhost:9200}
