@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {CandidateService} from '../../../services/candidate.service';
 import {Candidate} from '../../../model/candidate';
 import {ActivatedRoute, Router} from '@angular/router';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {NgbModal, NgbTabChangeEvent} from '@ng-bootstrap/ng-bootstrap';
 import {DeleteCandidateComponent} from './delete/delete-candidate.component';
 import {EditCandidateStatusComponent} from "./status/edit-candidate-status.component";
 import {Title} from "@angular/platform-browser";
@@ -20,6 +20,7 @@ import {SavedListService} from "../../../services/saved-list.service";
 import {CandidateSavedListService} from "../../../services/candidate-saved-list.service";
 import {SavedListCandidateService} from "../../../services/saved-list-candidate.service";
 import {forkJoin} from "rxjs";
+import {LocalStorageService} from "angular-2-local-storage";
 
 @Component({
   selector: 'app-view-candidate',
@@ -28,6 +29,9 @@ import {forkJoin} from "rxjs";
 })
 export class ViewCandidateComponent implements OnInit {
 
+  private lastTabKey: string = 'CandidateLastTab';
+
+  activeTabId: string;
   loading: boolean;
   loadingError: boolean;
   error;
@@ -50,6 +54,7 @@ export class ViewCandidateComponent implements OnInit {
   constructor(private candidateService: CandidateService,
               private savedListService: SavedListService,
               private candidateSavedListService: CandidateSavedListService,
+              private localStorageService: LocalStorageService,
               private savedListCandidateService: SavedListCandidateService,
               private route: ActivatedRoute,
               private router: Router,
@@ -58,6 +63,8 @@ export class ViewCandidateComponent implements OnInit {
               private authService: AuthService) { }
 
   ngOnInit() {
+    this.selectDefaultTab()
+
     this.loadingError = false;
     this.route.paramMap.subscribe(params => {
       const candidateNumber = params.get('candidateNumber');
@@ -83,6 +90,7 @@ export class ViewCandidateComponent implements OnInit {
     this.loggedInUser = this.authService.getLoggedInUser();
 
     console.log(this.loggedInUser);
+
   }
 
   private loadLists() {
@@ -226,5 +234,19 @@ export class ViewCandidateComponent implements OnInit {
             this.error = error;
           }
     );
+  }
+
+  private selectDefaultTab() {
+    const defaultActiveTabID: string = this.localStorageService.get(this.lastTabKey);
+    this.activeTabId = defaultActiveTabID;
+  }
+
+  onTabChanged(event: NgbTabChangeEvent) {
+    this.setActiveTabId(event.nextId);
+  }
+
+  private setActiveTabId(id: string) {
+    this.activeTabId = id;
+    this.localStorageService.set(this.lastTabKey, id);
   }
 }

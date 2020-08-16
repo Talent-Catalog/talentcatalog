@@ -75,7 +75,7 @@
   <div class="row">
     <div class="col-sm-{{mainColWidth}}">
       <!-- TABS -->
-      <ngb-tabset>
+      <ngb-tabset [activeId]="activeTabId" (tabChange)="onTabChanged($event)">
 
         <!-- GENERAL -->
         <ngb-tab [title]="'General'">
