@@ -23,5 +23,6 @@
   [candidate]="candidate"
   [editable]="editable"
   [loggedInUser]="loggedInUser"
+  (candidateChanged)="onCandidateChanged()"
   *ngIf="loggedInUser.role === 'admin' || loggedInUser.role === 'sourcepartneradmin'">
 </app-view-candidate-attachment>

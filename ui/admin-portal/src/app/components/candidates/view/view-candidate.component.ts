@@ -63,8 +63,15 @@ export class ViewCandidateComponent implements OnInit {
               private authService: AuthService) { }
 
   ngOnInit() {
-    this.selectDefaultTab()
+    this.refreshCandidateInfo();
 
+    this.loggedInUser = this.authService.getLoggedInUser();
+    console.log(this.loggedInUser);
+
+    this.selectDefaultTab()
+  }
+
+  refreshCandidateInfo() {
     this.loadingError = false;
     this.route.paramMap.subscribe(params => {
       const candidateNumber = params.get('candidateNumber');
@@ -86,11 +93,6 @@ export class ViewCandidateComponent implements OnInit {
         this.loading = false;
       });
     });
-
-    this.loggedInUser = this.authService.getLoggedInUser();
-
-    console.log(this.loggedInUser);
-
   }
 
   private loadLists() {
@@ -248,5 +250,9 @@ export class ViewCandidateComponent implements OnInit {
   private setActiveTabId(id: string) {
     this.activeTabId = id;
     this.localStorageService.set(this.lastTabKey, id);
+  }
+
+  onCandidateChanged() {
+    this.refreshCandidateInfo();
   }
 }
