@@ -7,10 +7,9 @@ package org.tbbtalent.server.configuration;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
-import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Collection;
 import java.util.Collections;
@@ -78,6 +77,9 @@ public class GoogleDriveConfiguration {
     }
 
     private GoogleCredential computeCredential(NetHttpTransport HTTP_TRANSPORT) throws IOException {
+        //Convert to proper newlines. 
+        // See https://stackoverflow.com/questions/18865393/java-replaceall-not-working-for-n-characters
+        privateKey = privateKey.replaceAll("\\\\n", "\n");
         PrivateKey privateKeyFromPkcs8 = privateKeyFromPkcs8(privateKey);
 
         Collection<String> emptyScopes = Collections.emptyList();
@@ -109,14 +111,12 @@ public class GoogleDriveConfiguration {
         }
         byte[] bytes = section.getBase64DecodedBytes();
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(bytes);
-        Exception unexpectedException = null;
+        Exception unexpectedException;
         try {
             KeyFactory keyFactory = SecurityUtils.getRsaKeyFactory();
             PrivateKey privateKey = keyFactory.generatePrivate(keySpec);
             return privateKey;
-        } catch (NoSuchAlgorithmException exception) {
-            unexpectedException = exception;
-        } catch (InvalidKeySpecException exception) {
+        } catch (GeneralSecurityException exception) {
             unexpectedException = exception;
         }
         throw new IOException("Unexpected exception reading PKCS data", unexpectedException);
