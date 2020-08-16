@@ -191,13 +191,32 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         // Delete the record from the database
         candidateAttachmentRepository.delete(candidateAttachment);
 
-        // Delete the object on S3
-        String folder = BooleanUtils.isTrue(candidateAttachment.isMigrated()) ? "migrated" : candidate.getCandidateNumber();
-        s3ResourceHelper.deleteFile("candidate/" + folder + "/" + candidateAttachment.getName());
-
         // Update the candidate audit fields
         candidate.setAuditFields(candidate.getUser());
         candidateService.save(candidate, true);
+        
+        //Try and delete associated file on file system
+        AttachmentType attachmentType = candidateAttachment.getType();
+        if (attachmentType != null) {
+            switch (attachmentType) {
+                case file:
+                    String folder = BooleanUtils.isTrue(
+                            candidateAttachment.isMigrated()) ? "migrated"
+                            : candidate.getCandidateNumber();
+                    s3ResourceHelper.deleteFile("candidate/" + folder
+                            + "/" + candidateAttachment.getName());
+                    break;
+                case googlefile:
+                    FileSystemFile fsf = new FileSystemFile();
+                    fsf.setUrl(candidateAttachment.getLocation());
+                    try {
+                        fileSystemService.deleteFile(fsf);
+                    } catch (IOException e) {
+                        log.error("Could not delete attachment from Google Drive: " + fsf, e);
+                    }
+                    break;
+            }
+        }
     }
 
     @Override
@@ -279,7 +298,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
         //Get link to candidate folder if we have one.
         String folderLink = candidate.getFolderlink();
-        if (folderLink == null) {
+        if (folderLink == null || !folderLink.startsWith("http")) {
             //No candidate folder recorded, create one.
             candidate = candidateService.createCandidateFolder(candidateId);
             folderLink = candidate.getFolderlink();
@@ -318,6 +337,9 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     }
 
     private String getFileExtension(String filename) {
+        if (filename == null) {
+            return "";
+        }
         int lastIndexOf = filename.lastIndexOf(".");
         if (lastIndexOf == -1) {
             return ""; // empty extension

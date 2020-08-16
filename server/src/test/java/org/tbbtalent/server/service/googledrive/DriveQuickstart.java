@@ -64,7 +64,7 @@ public class DriveQuickstart {
         }
         GoogleCredential credential = GoogleCredential.fromStream(in)
                 .createScoped(Collections.singleton(DriveScopes.DRIVE))
-                .createDelegated("jcameron@talentbeyondboundaries.org");
+                .createDelegated("candidates@talentbeyondboundaries.org");
         return credential;
     }
 
@@ -84,7 +84,7 @@ public class DriveQuickstart {
         FileList result = service.files().list()
                 .setPageSize(50)
                 .setCorpora("drive")
-                .setDriveId("0ALMJ566d9WuVUk9PVA")
+                .setDriveId("0AHvd4Bs-dSp4Uk9PVA")
                 .setIncludeItemsFromAllDrives(true)
                 .setSupportsAllDrives(true)
                 .setFields("nextPageToken, files(driveId,id, name,webViewLink)")
@@ -102,8 +102,8 @@ public class DriveQuickstart {
 
         // Upload file.
         fileMetadata = new File();
-        fileMetadata.setDriveId("0ALMJ566d9WuVUk9PVA");
-        fileMetadata.setParents(Collections.singletonList("0ALMJ566d9WuVUk9PVA"));
+        fileMetadata.setDriveId("0AHvd4Bs-dSp4Uk9PVA");
+        fileMetadata.setParents(Collections.singletonList("0AHvd4Bs-dSp4Uk9PVA"));
         fileMetadata.setName("EnglishTxt.txt");
 
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
@@ -113,6 +113,10 @@ public class DriveQuickstart {
                 .setSupportsAllDrives(true)
                 .setFields("id")
                 .execute();
+        System.out.println("File ID: " + file.getId());
+
+        //Delete file.
+        service.files().delete(file.getId()).setSupportsAllDrives(true).execute();
         System.out.println("File ID: " + file.getId());
 
         
@@ -150,8 +154,8 @@ public class DriveQuickstart {
 
         if (createFolder) {
             fileMetadata = new File();
-            fileMetadata.setDriveId("0ALMJ566d9WuVUk9PVA");
-            fileMetadata.setParents(Collections.singletonList("0ALMJ566d9WuVUk9PVA"));
+            fileMetadata.setDriveId("0AHvd4Bs-dSp4Uk9PVA");
+            fileMetadata.setParents(Collections.singletonList("0AHvd4Bs-dSp4Uk9PVA"));
             fileMetadata.setName("201345");
             fileMetadata.setMimeType("application/vnd.google-apps.folder");
             try {
@@ -169,7 +173,7 @@ public class DriveQuickstart {
 
         if (createFile) {
             fileMetadata = new File();
-            fileMetadata.setDriveId("0ALMJ566d9WuVUk9PVA");
+            fileMetadata.setDriveId("0AHvd4Bs-dSp4Uk9PVA");
             fileMetadata.setParents(Collections.singletonList("1itPPs_Nxs86Ozj-ET4Jyq-pTJJbdjUew"));
             fileMetadata.setName("TestIgnore");
             try {

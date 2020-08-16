@@ -95,6 +95,21 @@ public class GoogleFileSystemServiceImpl implements GoogleFileSystemService {
     }
 
     @Override
+    public void deleteFile(FileSystemFile file) throws IOException {
+        String id = file.getId();
+        if (id == null) {
+            id = extractIdFromUrl(file.getUrl());
+        }
+        if (id == null) {
+            throw new IOException("Could not find id to delete file " + file);
+        }
+        
+        googleDriveService.files().delete(id)
+                .setSupportsAllDrives(true)
+                .execute();
+    }
+
+    @Override
     public @NonNull FileSystemFile uploadFile(
             @Nullable FileSystemFolder parentFolder, 
             String fileName, java.io.File file) 
@@ -132,7 +147,10 @@ public class GoogleFileSystemServiceImpl implements GoogleFileSystemService {
     }
 
     public String extractIdFromUrl(String url) {
-
+        if (url == null) {
+            return null;
+        }
+        
         //See https://stackoverflow.com/questions/16840038/easiest-way-to-get-file-id-from-url-on-google-apps-script 
         String pattern = ".*[^-\\w]([-\\w]{25,})[^-\\w]?.*";
         Pattern r = Pattern.compile(pattern);

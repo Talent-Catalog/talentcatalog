@@ -41,6 +41,13 @@ public interface FileSystemService {
      */
     @NonNull
     FileSystemFolder createFolder(String folderName) throws IOException;
+
+    /**
+     * Deletes the given file
+     * @param file Describes file to be deleted
+     * @throws IOException If there was a problem deleting the file
+     */
+    void deleteFile(FileSystemFile file) throws IOException;
     
     /**
      * Uploads the given local file.

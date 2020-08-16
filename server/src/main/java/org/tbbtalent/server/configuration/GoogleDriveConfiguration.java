@@ -63,8 +63,8 @@ public class GoogleDriveConfiguration {
                     GoogleNetHttpTransport.newTrustedTransport();
             Credential credential = computeCredential(HTTP_TRANSPORT)
                     .createScoped(Collections.singleton(DriveScopes.DRIVE))
-                    .createDelegated("jcameron@talentbeyondboundaries.org");
-
+                    .createDelegated("candidates@talentbeyondboundaries.org");
+            
             Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
                     .setApplicationName(APPLICATION_NAME)
                     .build();
