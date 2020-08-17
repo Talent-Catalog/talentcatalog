@@ -3,8 +3,10 @@ package org.tbbtalent.server.util.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,13 +15,19 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.ServiceException;
+import org.tbbtalent.server.service.db.email.EmailHelper;
 
 
 @ControllerAdvice
 public class ErrorHandler {
 
     private static final Logger log = LoggerFactory.getLogger(ErrorHandler.class);
+    private final EmailHelper emailHelper;
 
+    @Autowired
+    public ErrorHandler(EmailHelper emailHelper){
+        this.emailHelper = emailHelper;
+    }
 
     @ExceptionHandler(ServiceException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -44,7 +52,21 @@ public class ErrorHandler {
     public ErrorDTO processNoHandlerFoundException(NoHandlerFoundException ex) {
         log.error("Processing NoHandlerFoundException: " + ex);
         return new ErrorDTO("handler_not_found", ex.getMessage());
-    }    
+    }
+
+    @ExceptionHandler(NullPointerException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorDTO processNullException(NullPointerException ex) {
+        final String code = "null_exception";
+        log.error(code, ex);
+        try{
+            emailHelper.sendAlert(code, ex);
+        } catch (Exception e) {
+            log.error("Error sending null exception email", e);
+        }
+        return new ErrorDTO(code, ex.toString());
+    }
     
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -53,7 +75,7 @@ public class ErrorHandler {
         final String code = "unexpected_exception";
         log.error(code, ex);
         return new ErrorDTO(code, ex.toString());
-    }    
+    }
 
     //-------------------------------------------------------------------------
 
