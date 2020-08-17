@@ -39,5 +39,10 @@ public class CreateCandidateAttachmentRequest {
      */
     private String folder;
 
+    /**
+     * Used for Google files where the text extraction is done earlier.
+     */
+    private String textExtract;
+
 }
 

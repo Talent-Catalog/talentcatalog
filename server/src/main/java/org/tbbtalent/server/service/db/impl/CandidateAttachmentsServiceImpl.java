@@ -121,9 +121,9 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             attachment.setType(AttachmentType.googlefile);
             attachment.setFileType(request.getFileType());
             attachment.setCv(request.getCv());
+            attachment.setTextExtract(request.getTextExtract());
 
         } else if (request.getType().equals(AttachmentType.file)) {
-            ////TODO JC This code should never be called now.
             // Prepend the filename with a UUID to ensure an existing file doesn't get overwritten on S3
             String uniqueFilename = UUID.randomUUID() + "_" + request.getName();
             // Source is temporary folder where the file got uploaded, destination is the candidates unique folder
@@ -226,38 +226,47 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         CandidateAttachment candidateAttachment = candidateAttachmentRepository.findByIdLoadCandidate(request.getId())
                 .orElseThrow(() -> new NoSuchObjectException(CandidateAttachment.class, request.getId()));
 
+        final AttachmentType attachmentType = candidateAttachment.getType();
+        
         // Update the name
         if (!candidateAttachment.getName().equals(request.getName())) {
             candidateAttachment.setName(request.getName());
-            FileSystemFile fsf = new FileSystemFile();
-            fsf.setName(request.getName());
-            fsf.setUrl(candidateAttachment.getLocation());
-            fileSystemService.renameFile(fsf);
+            if (attachmentType == AttachmentType.googlefile) {
+                //For Google files we also rename the uploaded file 
+                FileSystemFile fsf = new FileSystemFile();
+                fsf.setName(request.getName());
+                fsf.setUrl(candidateAttachment.getLocation());
+                fileSystemService.renameFile(fsf);
+            }
         }
 
-        // Run text extraction if attachment changed from not CV to a CV or remove if changed from CV to not CV.
-        if(request.getCv() && !candidateAttachment.isCv()) {
-            try {
-                String uniqueFilename = candidateAttachment.getLocation();
-                String destination;
-                if(candidateAttachment.isMigrated()){
-                    destination = "candidate/migrated/" + uniqueFilename;
-                } else {
-                    destination = "candidate/" + candidateAttachment.getCandidate().getCandidateNumber() + "/" + uniqueFilename;
+        //Only AWS/S3 files support this CV to not CV and vice versa
+        //for CV to non CV and vice versa only applies to AWS/S3 files
+        if (attachmentType == AttachmentType.file) {
+            // Run text extraction if attachment changed from not CV to a CV or remove if changed from CV to not CV.
+            if (request.getCv() && !candidateAttachment.isCv()) {
+                try {
+                    String uniqueFilename = candidateAttachment.getLocation();
+                    String destination;
+                    if (candidateAttachment.isMigrated()) {
+                        destination = "candidate/migrated/" + uniqueFilename;
+                    } else {
+                        destination = "candidate/" + candidateAttachment.getCandidate().getCandidateNumber() + "/" + uniqueFilename;
+                    }
+                    File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
+                    String extractedText = textExtractHelper.getTextExtractFromFile(srcFile, candidateAttachment.getFileType());
+                    if (StringUtils.isNotBlank(extractedText)) {
+                        candidateAttachment.setTextExtract(extractedText);
+                        candidateAttachmentRepository.save(candidateAttachment);
+                    }
+                } catch (Exception e) {
+                    log.error("Unable to extract text from file " + candidateAttachment.getLocation(), e.getMessage());
+                    candidateAttachment.setTextExtract(null);
                 }
-                File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
-                String extractedText = textExtractHelper.getTextExtractFromFile(srcFile, candidateAttachment.getFileType());
-                if (StringUtils.isNotBlank(extractedText)) {
-                    candidateAttachment.setTextExtract(extractedText);
-                    candidateAttachmentRepository.save(candidateAttachment);
-                }
-            } catch (Exception e) {
-                log.error("Unable to extract text from file " + candidateAttachment.getLocation(), e.getMessage());
+            } else if (!request.getCv() && candidateAttachment.isCv()) {
                 candidateAttachment.setTextExtract(null);
+                candidateAttachmentRepository.save(candidateAttachment);
             }
-        } else if (!request.getCv() && candidateAttachment.isCv()){
-            candidateAttachment.setTextExtract(null);
-            candidateAttachmentRepository.save(candidateAttachment);
         }
 
         // Update the fields related to the file type
@@ -297,6 +306,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                 outputStream.write(bytes, 0, read);
             }
         }
+       
 
         //Name of file being uploaded (this is the name it had on the 
         //originating computer).
@@ -322,6 +332,19 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         FileSystemFile uploadedFile = fileSystemService.uploadFile(
                 parentFolder, fileName, tempFile);
 
+        final String fileType = getFileExtension((fileName));
+        
+        //Do text extraction if CV - otherwise leave as null.
+        String textExtract = null;
+        if(cv) {
+            try {
+                textExtract = textExtractHelper
+                        .getTextExtractFromFile(tempFile, fileType);
+            } catch (Exception e) {
+                log.error("Could not extract text from uploaded cv file", e);
+            }
+        }
+        
         //Delete tempfile
         if (!tempFile.delete()) {
             log.error("Failed to delete temporary file " + tempFile);
@@ -332,9 +355,12 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         req.setCandidateId(candidateId);
         req.setType(AttachmentType.googlefile);
         req.setName(fileName);
-        req.setFileType(getFileExtension((fileName))); 
+        req.setFileType(fileType); 
         req.setLocation(uploadedFile.getUrl());
         req.setCv(cv);
+        if(StringUtils.isNotBlank(textExtract)) {
+            req.setTextExtract(textExtract);
+        }
         
         CandidateAttachment attachment = 
                 createCandidateAttachment(req, false);
