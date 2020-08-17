@@ -48,6 +48,13 @@ public interface FileSystemService {
      * @throws IOException If there was a problem deleting the file
      */
     void deleteFile(FileSystemFile file) throws IOException;
+
+    /**
+     * Renames the given file 
+     * @param file Description of file, including id or url, plus its new name
+     * @throws IOException If there was a problem renaming the file
+     */
+    void renameFile(@NonNull FileSystemFile file) throws IOException;
     
     /**
      * Uploads the given local file.

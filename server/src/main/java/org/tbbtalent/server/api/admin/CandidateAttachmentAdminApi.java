@@ -86,8 +86,11 @@ public class CandidateAttachmentAdminApi {
     }
 
     @PutMapping()
-    public Map<String, Object> update(@RequestBody UpdateCandidateAttachmentRequest request) {
-        CandidateAttachment candidateAttachment = this.candidateAttachmentService.updateCandidateAttachment(request);
+    public Map<String, Object> update(
+            @RequestBody UpdateCandidateAttachmentRequest request) 
+            throws IOException {
+        CandidateAttachment candidateAttachment = 
+                this.candidateAttachmentService.updateCandidateAttachment(request);
         return candidateAttachmentDto().build(candidateAttachment);
     }
 

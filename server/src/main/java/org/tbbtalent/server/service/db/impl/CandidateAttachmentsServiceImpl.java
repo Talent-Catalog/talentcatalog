@@ -220,14 +220,20 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     }
 
     @Override
-    public CandidateAttachment updateCandidateAttachment(UpdateCandidateAttachmentRequest request) {
+    public CandidateAttachment updateCandidateAttachment(UpdateCandidateAttachmentRequest request) throws IOException {
         User user = userContext.getLoggedInUser();
 
         CandidateAttachment candidateAttachment = candidateAttachmentRepository.findByIdLoadCandidate(request.getId())
                 .orElseThrow(() -> new NoSuchObjectException(CandidateAttachment.class, request.getId()));
 
         // Update the name
-        candidateAttachment.setName(request.getName());
+        if (!candidateAttachment.getName().equals(request.getName())) {
+            candidateAttachment.setName(request.getName());
+            FileSystemFile fsf = new FileSystemFile();
+            fsf.setName(request.getName());
+            fsf.setUrl(candidateAttachment.getLocation());
+            fileSystemService.renameFile(fsf);
+        }
 
         // Run text extraction if attachment changed from not CV to a CV or remove if changed from CV to not CV.
         if(request.getCv() && !candidateAttachment.isCv()) {

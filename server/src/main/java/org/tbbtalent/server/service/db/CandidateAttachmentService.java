@@ -29,7 +29,8 @@ public interface CandidateAttachmentService {
 
     void deleteCandidateAttachment(Long id);
 
-    CandidateAttachment updateCandidateAttachment(UpdateCandidateAttachmentRequest request);
+    CandidateAttachment updateCandidateAttachment(
+            UpdateCandidateAttachmentRequest request) throws IOException;
 
     /**
      * Uploads a file attachment for the given candidate to Google Drive.

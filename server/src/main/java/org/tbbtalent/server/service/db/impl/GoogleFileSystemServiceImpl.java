@@ -110,6 +110,25 @@ public class GoogleFileSystemServiceImpl implements GoogleFileSystemService {
     }
 
     @Override
+    public void renameFile(@NonNull FileSystemFile file) 
+            throws IOException {
+        String id = file.getId();
+        if (id == null) {
+            id = extractIdFromUrl(file.getUrl());
+        }
+        if (id == null) {
+            throw new IOException("Could not find id to delete file " + file);
+        }
+
+        File targetFile = new File();
+        targetFile.setName(file.getName());
+        googleDriveService.files().update(id, targetFile)
+                .setSupportsAllDrives(true)
+                .setFields("id,name")
+                .execute();
+    }
+
+    @Override
     public @NonNull FileSystemFile uploadFile(
             @Nullable FileSystemFolder parentFolder, 
             String fileName, java.io.File file) 

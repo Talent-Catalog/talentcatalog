@@ -113,7 +113,17 @@ public class DriveQuickstart {
                 .setSupportsAllDrives(true)
                 .setFields("id")
                 .execute();
-        System.out.println("File ID: " + file.getId());
+        String uploadedFileId = file.getId();
+        System.out.println("Uploaded file ID: " + uploadedFileId);
+        
+        //Rename file
+        File targetFile = new File();
+        targetFile.setName("Peanuts.txt");
+        File updatedFile = service.files().update(uploadedFileId, targetFile)
+                .setSupportsAllDrives(true)
+                .setFields("id,name")
+                .execute();
+        
 
         //Delete file.
         service.files().delete(file.getId()).setSupportsAllDrives(true).execute();
