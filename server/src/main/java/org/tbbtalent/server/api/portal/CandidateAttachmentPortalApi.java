@@ -1,5 +1,6 @@
 package org.tbbtalent.server.api.portal;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -12,7 +13,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.model.db.CandidateAttachment;
 import org.tbbtalent.server.request.PagedSearchRequest;
 import org.tbbtalent.server.request.attachment.CreateCandidateAttachmentRequest;
@@ -53,6 +56,27 @@ public class CandidateAttachmentPortalApi {
         candidateAttachmentService.deleteCandidateAttachment(id);
         return ResponseEntity.ok().build();
     }
+    
+    /**
+     * Upload an attachment associated with the currently logged in candidate and
+     * creates a CandidateAttachment record on the database.
+     * <p/>
+     * Processes uploaded file and then uploads it again to Google Drive.
+     * This replaces the old {@link #createCandidateAttachment}
+     * @param cv True if the attachment is a CV (in which case its text is 
+     *           extracted for keywords).
+     * @param file Attachment file           
+     * @return Candidate attachment
+     */
+    @PostMapping("upload")
+    public Map<String, Object> uploadAttachment(@RequestParam("cv") Boolean cv,
+            @RequestParam("file") MultipartFile file )
+            throws IOException {
+        CandidateAttachment candidateAttachment =
+                candidateAttachmentService.uploadAttachment(cv, file);
+        return candidateAttachmentDto().build(candidateAttachment);
+    }
+    
 
     private DtoBuilder candidateAttachmentDto() {
         return new DtoBuilder()

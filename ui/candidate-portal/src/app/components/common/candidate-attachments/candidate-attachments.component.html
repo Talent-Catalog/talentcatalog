@@ -50,7 +50,7 @@
 
 <app-error [error]="error"></app-error>
 
-<app-file-upload *ngIf="!preview && !loading" (fileUploaded)="handleAttachmentUploaded($event)"></app-file-upload>
+<app-file-upload *ngIf="!preview && !loading" [uploading]="uploading" (uploadStarted)="startServerUpload($event)"></app-file-upload>
 
 
 

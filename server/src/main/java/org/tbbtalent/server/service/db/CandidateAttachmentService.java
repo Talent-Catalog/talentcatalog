@@ -33,7 +33,26 @@ public interface CandidateAttachmentService {
             UpdateCandidateAttachmentRequest request) throws IOException;
 
     /**
+     * Uploads a file attachment for the currently logged in candidate to 
+     * Google Drive.
+     * <p/>
+     * Called from the candidate portal.
+     * 
+     * @param cv True if this attachment is a CV
+     * @param file Uploaded file attachment
+     * @return CandidateAttachment containing link to the file in 
+     * {@link CandidateAttachment#getLocation()} 
+     * @throws NoSuchObjectException if logged in user is not a candidate
+     * @throws IOException           if there is a problem uploading the file.
+     */
+    @NonNull 
+    CandidateAttachment uploadAttachment(Boolean cv, MultipartFile file) 
+            throws IOException, NoSuchObjectException;
+
+    /**
      * Uploads a file attachment for the given candidate to Google Drive.
+     * <p/>
+     * Called from the admin portal.
      * 
      * @param candidateId Id of candidate associated with attachment
      * @param cv True if this attachment is a CV
@@ -45,6 +64,6 @@ public interface CandidateAttachmentService {
      */
     @NonNull 
     CandidateAttachment uploadAttachment(
-            Long candidateId, Boolean cv, MultipartFile file) 
+            @NonNull Long candidateId, Boolean cv, MultipartFile file) 
             throws IOException, NoSuchObjectException;
 }

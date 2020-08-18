@@ -289,12 +289,12 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     @Override
     @NonNull
     public CandidateAttachment uploadAttachment( 
-            Long candidateId, Boolean cv, MultipartFile file )
+            @NonNull Long candidateId, Boolean cv, MultipartFile file )
             throws IOException, NoSuchObjectException {
 
         Candidate candidate = candidateRepository.findById(candidateId)
-                .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateId));
-
+                    .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateId));
+        
         //Save to a temporary file
         InputStream is = file.getInputStream();
         File tempFile = File.createTempFile("tbb", ".tmp");
@@ -366,6 +366,18 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                 createCandidateAttachment(req, false);
 
         return attachment;
+    }
+
+    @Override
+    @NonNull
+    public CandidateAttachment uploadAttachment(Boolean cv, MultipartFile file) 
+            throws IOException, NoSuchObjectException {
+        Candidate candidate = userContext.getLoggedInCandidate();
+        if (candidate == null) {
+            throw new NoSuchObjectException(Candidate.class, "");
+        }
+        
+        return uploadAttachment(candidate.getId(), cv, file);
     }
 
     private String getFileExtension(String filename) {

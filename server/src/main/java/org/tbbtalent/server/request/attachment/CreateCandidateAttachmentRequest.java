@@ -12,6 +12,9 @@ import lombok.Setter;
 @Setter
 public class CreateCandidateAttachmentRequest {
 
+    /**
+     * Only populated by requests from Admin portal
+     */
     private Long candidateId;
 
     @Enumerated(EnumType.STRING)
