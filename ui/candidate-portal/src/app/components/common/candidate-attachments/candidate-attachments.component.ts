@@ -1,10 +1,13 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {CandidateAttachmentService} from "../../../services/candidate-attachment.service";
-import {AttachmentType, CandidateAttachment} from "../../../model/candidate-attachment";
+import {
+  AttachmentType,
+  CandidateAttachment
+} from "../../../model/candidate-attachment";
 import {FormBuilder, FormGroup} from "@angular/forms";
-import {S3UploadParams} from "../../../model/s3-upload-params";
 import {environment} from "../../../../environments/environment";
 import {CandidateService} from "../../../services/candidate.service";
+import {forkJoin, Observable} from "rxjs";
 
 @Component({
   selector: 'app-candidate-attachments',
@@ -22,6 +25,7 @@ export class CandidateAttachmentsComponent implements OnInit {
     attachments: true
   };
   deleting: boolean;
+  uploading: boolean;
 
   s3BucketUrl: string = environment.s3BucketUrl;
   form: FormGroup;
@@ -34,6 +38,8 @@ export class CandidateAttachmentsComponent implements OnInit {
               private candidateAttachmentService: CandidateAttachmentService) { }
 
   ngOnInit() {
+    this._loading.candidate = true;
+
     this.candidateService.getCandidateNumber().subscribe(
       (response) => {
         this.candidateNumber = response.candidateNumber;
@@ -43,10 +49,15 @@ export class CandidateAttachmentsComponent implements OnInit {
         this.error = error;
         this._loading.candidate = false;
       });
+    this.refreshAttachments();
+  }
+
+  private refreshAttachments() {
+    this._loading.attachments = true;
     this.candidateAttachmentService.listCandidateAttachments().subscribe(
       (response) => {
-        if(!this.preview){
-          this.attachments = response.filter(att => att.cv == this.cv);
+        if (!this.preview){
+          this.attachments = response.filter(att => att.cv === this.cv);
         } else {
           this.attachments = response;
         }
@@ -61,31 +72,6 @@ export class CandidateAttachmentsComponent implements OnInit {
   get loading() {
     const l = this._loading;
     return l.attachments || l.candidate;
-  }
-
-  handleAttachmentUploaded(attachment: {s3Params: S3UploadParams, file: File}) {
-    const request = {
-      type: 'file',
-      name: attachment.file.name,
-      fileType: this.getFileType(attachment.file.name),
-      folder: attachment.s3Params.objectKey,
-      cv: this.cv
-    };
-    this.candidateAttachmentService.createAttachment(request).subscribe(
-      (response) => {
-        this.attachments.push(response)
-      },
-      (error) => {
-        this.error = error
-      });
-  }
-
-  getFileType(name: string) {
-    const fragments = name.split(".");
-    if (fragments.length > 1) {
-      return fragments[fragments.length - 1];
-    }
-    return '';
   }
 
   getAttachmentUrl(att: CandidateAttachment) {
@@ -106,5 +92,32 @@ export class CandidateAttachmentsComponent implements OnInit {
         this.error = error;
         this.deleting = false;
       });
+  }
+
+  startServerUpload(files: File[]) {
+    this.error = null;
+    this.uploading = true;
+    this.attachments = [];
+
+    const uploads: Observable<CandidateAttachment>[] = [];
+    for (const file of files) {
+      const formData: FormData = new FormData();
+      formData.append('file', file);
+
+      uploads.push(this.candidateAttachmentService
+        .uploadAttachment(this.cv, formData));
+    }
+
+    forkJoin(...uploads).subscribe(
+      (results: CandidateAttachment[]) => {
+        this.uploading = false;
+        this.refreshAttachments();
+      },
+      error => {
+        this.error = error;
+        this.uploading = false;
+      }
+    );
+
   }
 }
