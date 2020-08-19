@@ -23,6 +23,7 @@ public class ErrorHandler {
 
     private static final Logger log = LoggerFactory.getLogger(ErrorHandler.class);
     private final EmailHelper emailHelper;
+    private boolean beenSent = false;
 
     @Autowired
     public ErrorHandler(EmailHelper emailHelper){
@@ -60,10 +61,13 @@ public class ErrorHandler {
     public ErrorDTO processNullException(NullPointerException ex) {
         final String code = "null_exception";
         log.error(code, ex);
-        try{
-            emailHelper.sendAlert(code, ex);
-        } catch (Exception e) {
-            log.error("Error sending null exception email", e);
+        if(!beenSent) {
+            try{
+                emailHelper.sendAlert(code, ex);
+                beenSent = true;
+            } catch (Exception e) {
+                log.error("Error sending null exception email", e);
+            }
         }
         return new ErrorDTO(code, ex.toString());
     }
