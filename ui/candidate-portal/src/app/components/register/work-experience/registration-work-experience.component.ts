@@ -170,6 +170,7 @@ export class RegistrationWorkExperienceComponent implements OnInit, OnDestroy {
   handleCancelled(exp: CandidateJobExperience) {
     this.experienceFormOpen = false;
     this.occupation = null;
+    this.experience = null;
   }
 
   handleSave(exp: CandidateJobExperience) {
@@ -184,6 +185,7 @@ export class RegistrationWorkExperienceComponent implements OnInit, OnDestroy {
       this.candidateJobExperiences.push(exp);
     }
     this.populateExperienceMap();
+    this.experience = null
     this.experienceFormOpen = false;
   }
 
