@@ -33,10 +33,8 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.lang.Long.parseLong;
-import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+// @SpringBootTest
 public class MigrateDriveTest {
 
     private static final Logger log = LoggerFactory.getLogger(MigrateDriveTest.class);
@@ -62,9 +60,9 @@ public class MigrateDriveTest {
     private List<File> folders;
     private Candidate candidate;
 
-    @Transactional
-    @Test
-    @BeforeEach
+//    @Transactional
+//    @Test
+//    @BeforeEach
     void getSampleGoogleFolders() throws IOException {
         FileList result = googleDriveService.files().list()
                 .setQ("'" + candidateRootFolderId + "' in parents" +
@@ -78,7 +76,7 @@ public class MigrateDriveTest {
         folders = result.getFiles();
     }
 
-    @Test
+//    @Test
     void loopFoldersGetLocation() {
         for(File folder: folders) {
             setCandidateFolderLink(folder);
