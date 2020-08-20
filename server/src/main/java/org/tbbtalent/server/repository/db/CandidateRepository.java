@@ -215,6 +215,8 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     List<Candidate> findByCountryId(@Param("countryId") Long countryId);
 
 
+    Candidate findByCandidateNumber(String candidateNumber);
+
     /**
      * ADMIN PORTAL INFOGRAPHICS METHODS: includes source country restrictions.
      */
