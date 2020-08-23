@@ -69,7 +69,7 @@ dependencies {
     implementation 'org.springframework.data:spring-data-elasticsearch'
 
     implementation 'com.google.guava:guava:23.5-jre'
-    implementation("io.jsonwebtoken:jjwt:0.9.1")
+    implementation("io.jsonwebtoken:jjwt-api:0.11.2")
     implementation("org.flywaydb:flyway-core")
     implementation("org.apache.commons:commons-lang3")
     implementation('com.amazonaws:aws-java-sdk-s3:1.11.656')
@@ -81,6 +81,7 @@ dependencies {
     implementation('org.xhtmlrenderer:flying-saucer-core:9.1.6')
     implementation('org.xhtmlrenderer:flying-saucer-pdf-itext5:9.1.6')
     implementation('net.sf.jtidy:jtidy:r938')
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2", "io.jsonwebtoken:jjwt-jackson:0.11.2")
     runtimeOnly('org.postgresql:postgresql')
     runtimeOnly('mysql:mysql-connector-java')
     runtimeOnly('com.h2database:h2')

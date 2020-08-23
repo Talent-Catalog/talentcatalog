@@ -9,7 +9,10 @@ spring:
     user:
       name: client
       password: client
-  
+
+  salesforce:
+    privatekey: ${SALESFORCE_PRIVATEKEY:johnwashere}
+
   elasticsearch:
     rest:
       uris: ${ELASTICSEARCH_URL:http://localhost:9200}
@@ -72,7 +75,7 @@ management:
 
 
 jwt:
-  secret: JWTSuperSecretKey
+  secret: ${JWT_SECRET:RX4bokONoSrrNLM6CMTij9iG9jHFG5VfsN1zIi9UqDGK3pQXASG7xMEga2VrAj3P1SNmywqnWRoTXnltuJ5l+A==}
   expirationInMs: 604800000
 
 server:
