@@ -44,6 +44,7 @@ import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -113,10 +114,12 @@ import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.CandidateNoteService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.CountryService;
+import org.tbbtalent.server.service.db.GoogleFileSystemService;
 import org.tbbtalent.server.service.db.NationalityService;
 import org.tbbtalent.server.service.db.SavedSearchService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.service.db.util.PdfHelper;
+import org.tbbtalent.server.util.filesystem.FileSystemFolder;
 
 import com.opencsv.CSVWriter;
 
@@ -131,6 +134,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final CandidateRepository candidateRepository;
     private final CandidateEsRepository candidateEsRepository;
     private final ElasticsearchOperations elasticsearchOperations;
+    private final GoogleFileSystemService fileSystemService;
     private final CountryRepository countryRepository;
     private final CountryService countryService;
     private final EducationLevelRepository educationLevelRepository;
@@ -151,6 +155,7 @@ public class CandidateServiceImpl implements CandidateService {
                                 CandidateRepository candidateRepository,
                                 CandidateEsRepository candidateEsRepository,
                                 ElasticsearchOperations elasticsearchOperations,
+                                GoogleFileSystemService fileSystemService,
                                 CountryRepository countryRepository,
                                 CountryService countryService,
                                 EducationLevelRepository educationLevelRepository,
@@ -180,6 +185,7 @@ public class CandidateServiceImpl implements CandidateService {
         this.surveyTypeRepository = surveyTypeRepository;
         this.emailHelper = emailHelper;
         this.pdfHelper = pdfHelper;
+        this.fileSystemService = fileSystemService;
     }
 
     @Transactional
@@ -730,7 +736,7 @@ public class CandidateServiceImpl implements CandidateService {
 
 
     @Override
-    public Candidate getCandidate(long id) throws NoSuchObjectException {
+    public @NonNull Candidate getCandidate(long id) throws NoSuchObjectException {
         return this.candidateRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
     }
@@ -1627,6 +1633,23 @@ public class CandidateServiceImpl implements CandidateService {
             candidate.setTextSearchId(textSearchId);
             candidate = candidateRepository.save(candidate);
         }
+        return candidate;
+    }
+    
+    @Override
+    public Candidate createCandidateFolder(long id) 
+            throws NoSuchObjectException, IOException {
+        Candidate candidate = getCandidate(id);
+        
+        String candidateNumber = candidate.getCandidateNumber();
+        
+        FileSystemFolder folder = fileSystemService.findAFolder(candidateNumber);
+        
+        if (folder == null) {
+            folder = fileSystemService.createFolder(candidateNumber);
+        }
+        candidate.setFolderlink(folder.getUrl());
+        save(candidate, false);
         return candidate;
     }
 }

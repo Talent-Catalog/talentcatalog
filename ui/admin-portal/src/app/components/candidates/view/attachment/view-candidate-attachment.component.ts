@@ -1,8 +1,19 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from "../../../../model/candidate";
 import {FormBuilder, FormGroup} from "@angular/forms";
-import {AttachmentType, CandidateAttachment} from "../../../../model/candidate-attachment";
+import {
+  AttachmentType,
+  CandidateAttachment
+} from "../../../../model/candidate-attachment";
 import {CandidateAttachmentService} from "../../../../services/candidate-attachment.service";
 import {environment} from "../../../../../environments/environment";
 import {CreateCandidateAttachmentComponent} from "./create/create-candidate-attachment.component";
@@ -20,6 +31,7 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
   @Input() candidate: Candidate;
   @Input() editable: boolean;
   @Input() loggedInUser: User;
+  @Output() candidateChanged = new EventEmitter();
 
   loading: boolean;
   error: any;
@@ -66,7 +78,7 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
           this.attachments.push(...results.content);
         }
 
-        this.hasMore = results.totalPages > results.number+1;
+        this.hasMore = results.totalPages > results.number + 1;
         this.loading = false;
       },
       error => {
@@ -78,7 +90,7 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
   }
 
   loadMore() {
-    this.attachmentForm.controls['pageNumber'].patchValue(this.attachmentForm.value.pageNumber+1);
+    this.attachmentForm.controls['pageNumber'].patchValue(this.attachmentForm.value.pageNumber + 1);
     this.doSearch();
   }
 
@@ -99,7 +111,7 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
 
     editCandidateAttachmentModal.result
       .then((updated) => {
-        const index = this.attachments.findIndex(attachment => attachment.id == updated.id);
+        const index = this.attachments.findIndex(attachment => attachment.id === updated.id);
         if (index >= 0) {
           /* DEBUG */
           // console.log('index', index);
@@ -124,7 +136,12 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
     createCandidateAttachmentModal.componentInstance.type = type || 'link';
 
     createCandidateAttachmentModal.result
-      .then(() => this.doSearch(true))
+      .then(() => {
+        this.doSearch(true);
+        //Adding attachment should add a folder link if there was not one
+        //there before. So emit a candidateChanged event.
+        this.candidateChanged.emit();
+      })
       .catch(() => { /* Isn't possible */ });
   }
 

@@ -1,6 +1,10 @@
-import {Component, EventEmitter, HostListener, OnInit, Output} from '@angular/core';
-import {S3HelperService} from "../../../services/s3-helper.service";
-import {S3UploadParams} from "../../../model/s3-upload-params";
+import {
+  Component,
+  EventEmitter,
+  HostListener,
+  OnInit,
+  Output
+} from '@angular/core';
 
 @Component({
   selector: 'app-file-upload',
@@ -28,87 +32,32 @@ export class FileUploadComponent implements OnInit {
     evt.preventDefault();
     evt.stopPropagation();
     this.hover = false;
-    if (!this.uploading) {
-      const fileChangeEvent = {target: {files: evt.dataTransfer.files}};
-      this.handleFileChanged(fileChangeEvent);
-    }
+    const fileChangeEvent = {target: {files: evt.dataTransfer.files}};
+    this.handleFileChanged(fileChangeEvent);
   }
 
   @Output() uploadStarted = new EventEmitter();
-  @Output() uploadFinished = new EventEmitter();
-  @Output() fileUploaded = new EventEmitter<any>();
 
   error: any;
-  loading: boolean;
-  uploading: boolean;
   hover: boolean;
-  files: File[];
-
-  s3Params: S3UploadParams;
-
-  constructor(private s3HelperService: S3HelperService) { }
 
   ngOnInit() {
-    this.loading = true;
-    const folder = (new Date()).getTime().toString();
-    this.s3HelperService.getUploadPolicy(folder).subscribe(
-      (response) => {
-        this.s3Params = response;
-        this.s3Params.objectKey = folder;
-        this.loading = false;
-      },
-      (error) => {
-        this.error = error;
-        this.loading = false;
-      });
   }
 
   handleFileChanged(event: any) {
-    if (this.uploading) {
-      return;
-    }
-    this.files = [...event.target.files];
+    const files: File[] = [...event.target.files];
 
-    if (!!this.files && this.files.length) {
-      this.uploading = true;
-      this.uploadStarted.emit();
-      this.uploadFilesToS3();
-    }
-  }
+    if (!!files && files.length) {
 
-  uploadFilesToS3() {
-    this.error = null;
+      this.error = null;
 
-    /* Extract the first element from the file array */
-    const file = this.files.splice(0, 1)[0];
-
-    /* Validate the file */
-    if (!this.validFile(file)) {
-      console.log(file);
-      this.uploading = false;
-      return;
-    }
-
-    /* Upload file */
-    this.s3HelperService.uploadFileToTempFolder(this.s3Params, file)
-      .then(() => {
-        this.fileUploaded.emit({
-          s3Params: this.s3Params,
-          file: file
-        });
-
-        // Are there more files to upload?
-        if (this.files.length) {
-          this.uploadFilesToS3(); // Call recursively
-        } else {
-          this.uploadFinished.emit();
-          this.uploading = false;
+      for (const file of files) {
+        if (!this.validFile(file)) {
+          return;
         }
-      })
-      .catch((error) => {
-        this.error = error;
-        this.uploading = false;
-      });
+      }
+      this.uploadStarted.emit(files);
+    }
   }
 
   validFile(file) {

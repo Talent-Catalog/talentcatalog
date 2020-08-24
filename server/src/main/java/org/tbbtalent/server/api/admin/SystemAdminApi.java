@@ -1,27 +1,7 @@
 package org.tbbtalent.server.api.admin;
 
-import java.io.File;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.model.FileList;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,20 +11,27 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.tbbtalent.server.model.db.AttachmentType;
-import org.tbbtalent.server.model.db.CandidateAttachment;
-import org.tbbtalent.server.model.db.CandidateStatus;
-import org.tbbtalent.server.model.db.EducationType;
-import org.tbbtalent.server.model.db.Gender;
-import org.tbbtalent.server.model.db.NoteType;
-import org.tbbtalent.server.model.db.Status;
-import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
+import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.DataSharingService;
 import org.tbbtalent.server.service.db.PopulateElasticsearchService;
 import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
 import org.tbbtalent.server.util.textExtract.TextExtractHelper;
+
+import java.io.File;
+import java.io.IOException;
+import java.sql.Date;
+import java.sql.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/api/admin/system")
@@ -58,12 +45,15 @@ public class SystemAdminApi {
     private final DataSharingService dataSharingService;
 
     private final CandidateAttachmentRepository candidateAttachmentRepository;
+    private final CandidateRepository candidateRepository;
     private final PopulateElasticsearchService populateElasticsearchService;
     private final S3ResourceHelper s3ResourceHelper;
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     private final Map<Integer, Integer> countryForGeneralCountry;
+
+    private Drive googleDriveService;
 
     @Value("${spring.datasource.url}")
     private String targetJdbcUrl;
@@ -73,28 +63,101 @@ public class SystemAdminApi {
     
     @Value("${spring.datasource.password}")
     private String targetPwd;
+
+    @Value("${google.drive.candidateDataDriveId}")
+    private String candidateDataDriveId;
+
+    @Value("${google.drive.candidateRootFolderId}")
+    private String candidateRootFolderId;
     
     @Autowired
     public SystemAdminApi(
             DataSharingService dataSharingService,
             UserContext userContext,
             CandidateAttachmentRepository candidateAttachmentRepository,
+            CandidateRepository candidateRepository,
+            Drive googleDriveService,
             PopulateElasticsearchService populateElasticsearchService, 
             S3ResourceHelper s3ResourceHelper) {
         this.dataSharingService = dataSharingService;
         this.userContext = userContext;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
+        this.googleDriveService = googleDriveService;
+        this.candidateRepository = candidateRepository;
         this.populateElasticsearchService = populateElasticsearchService;
         this.s3ResourceHelper = s3ResourceHelper;
         countryForGeneralCountry = getExtraCountryMappings();
     }
 
     public static void main(String[] args) {
-        SystemAdminApi api = new SystemAdminApi(null, null, null, null, null);
+        SystemAdminApi api = new SystemAdminApi(null, null, null, null, null, null, null);
         api.setTargetJdbcUrl("jdbc:postgresql://localhost:5432/tbbtalent");
         api.setTargetUser("tbbtalent");
         api.setTargetPwd("tbbtalent");
         api.migrate();
+    }
+
+    @GetMapping("google")
+    public String migrateGoogleDriveFolders() throws IOException {
+        log.info("Starting google folder re-linking. About to get folders.");
+        String nextPageToken = null;
+        int count = 0;
+        do {
+            // Getting folders
+            FileList result = googleDriveService.files().list()
+                    .setQ("'" + candidateRootFolderId + "' in parents" +
+                            " and mimeType='application/vnd.google-apps.folder'")
+                    .setSupportsAllDrives(true)
+                    .setIncludeItemsFromAllDrives(true)
+                    .setCorpora("drive")
+                    .setDriveId(candidateDataDriveId)
+                    .setPageToken(nextPageToken)
+                    .setPageSize(100)
+                    .setFields("nextPageToken, files(id,name,webViewLink)")
+                    .execute();
+            List<com.google.api.services.drive.model.File> folders = result.getFiles();
+            nextPageToken = result.getNextPageToken();
+            // Looping over folders
+            int size = folders.size();
+            log.info("Got " + size + " folders. About to loop through.");
+            for(com.google.api.services.drive.model.File folder: folders) {
+                setCandidateFolderLink(folder);
+                if (count%100 == 0) {
+                    log.info("Folders processed:" + count);
+                }
+                count++;
+            }
+        } while(
+           nextPageToken != null
+        );
+
+        log.info("Completed processing. Total: " + count);
+        return "done";
+    }
+
+    void setCandidateFolderLink(com.google.api.services.drive.model.File folder) {
+        // Get candidate number from folder name
+        String cn = checkForCN(folder.getName());
+        // Find candidate with that candidate number
+        if(cn != null){
+            Candidate candidate = candidateRepository.findByCandidateNumber(cn);
+            if(candidate != null){
+                candidate.setFolderlink(folder.getWebViewLink());
+                candidateRepository.save(candidate);
+            } else {
+                log.error("Can't find candidate with candidate number: " + cn + " " + folder.getName());
+            }
+        }
+    }
+
+    String checkForCN(String folderName) {
+        Pattern p = Pattern.compile("\\d+");
+        Matcher m = p.matcher(folderName);
+        if (m.find()) {
+            return m.group();
+        } else {
+            return "";
+        }
     }
 
     @GetMapping("dbcopy")

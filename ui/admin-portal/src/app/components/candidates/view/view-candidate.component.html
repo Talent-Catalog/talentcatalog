@@ -75,10 +75,10 @@
   <div class="row">
     <div class="col-sm-{{mainColWidth}}">
       <!-- TABS -->
-      <ngb-tabset>
+      <ngb-tabset [activeId]="activeTabId" (tabChange)="onTabChanged($event)">
 
         <!-- GENERAL -->
-        <ngb-tab [title]="'General'">
+        <ngb-tab id="General" [title]="'General'">
           <ng-template ngbTabContent>
             <app-candidate-general-tab
               [candidate]="candidate"
@@ -89,7 +89,7 @@
         </ngb-tab>
 
         <!-- EXPERIENCE -->
-        <ngb-tab [title]="'Experience'">
+        <ngb-tab id="Experience" [title]="'Experience'">
           <ng-template ngbTabContent>
             <app-candidate-experience-tab
               [candidate]="candidate"
@@ -100,7 +100,7 @@
         </ngb-tab>
 
         <!-- Education -->
-        <ngb-tab [title]="'Education'">
+        <ngb-tab id="Education" [title]="'Education'">
           <ng-template ngbTabContent>
             <app-candidate-education-tab
               [candidate]="candidate"
@@ -111,12 +111,14 @@
         </ngb-tab>
 
         <!-- Additional Info -->
-        <ngb-tab [title]="'Additional Info'">
+        <ngb-tab id="Additional" [title]="'Additional Info'">
           <ng-template ngbTabContent>
             <app-candidate-additional-info-tab
               [candidate]="candidate"
               [editable]="!loggedInUser.readOnly"
-              [loggedInUser]="loggedInUser">
+              [loggedInUser]="loggedInUser"
+              (candidateChanged)="onCandidateChanged()"
+            >
               >
             </app-candidate-additional-info-tab>
           </ng-template>

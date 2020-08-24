@@ -1,9 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormBuilder, FormGroup} from "@angular/forms";
-import {S3UploadParams} from "../../../../../model/s3-upload-params";
 import {CandidateAttachmentService} from "../../../../../services/candidate-attachment.service";
-import {CandidateAttachment} from "../../../../../model/candidate-attachment";
+import {
+  CandidateAttachment,
+  CandidateAttachmentRequest
+} from "../../../../../model/candidate-attachment";
+import {forkJoin, Observable} from "rxjs";
 
 @Component({
   selector: 'app-create-candidate-attachment',
@@ -13,20 +16,21 @@ import {CandidateAttachment} from "../../../../../model/candidate-attachment";
 export class CreateCandidateAttachmentComponent implements OnInit {
 
   error: any;
-  saving: boolean;
+  uploading: boolean;
 
   // Set in the parent component, by referencing the component instance
   candidateId: number;
   type: string;
+  attachments: CandidateAttachment[];
 
   form: FormGroup;
-  attachments: CandidateAttachment[];
 
   constructor(private modal: NgbActiveModal,
               private candidateAttachmentService: CandidateAttachmentService,
               private fb: FormBuilder) { }
 
   ngOnInit() {
+
     this.attachments = [];
 
     this.form = this.fb.group({
@@ -46,36 +50,46 @@ export class CreateCandidateAttachmentComponent implements OnInit {
     this.modal.close();
   }
 
-  // For file attachment
-  handleAttachmentUploaded(attachment: {s3Params: S3UploadParams, file: File}) {
-    const request = {
-      candidateId: this.candidateId,
-      type: 'file',
-      name: attachment.file.name,
-      fileType: this.getFileType(attachment.file.name),
-      folder: attachment.s3Params.objectKey,
-      cv: this.form.value.cv,
-    };
-    this.candidateAttachmentService.createAttachment(request).subscribe(
-      (response) => this.attachments.push(response),
-      (error) => this.error = error
-    );
-  }
-
-  getFileType(name: string) {
-    const fragments = name.split(".");
-    if (fragments.length > 1) {
-      return fragments[fragments.length - 1];
-    }
-    return '';
-  }
-
   // For link attachment
   save() {
-    this.candidateAttachmentService.createAttachment(this.form.value).subscribe(
+    const request: CandidateAttachmentRequest = new CandidateAttachmentRequest();
+    request.candidateId = this.candidateId;
+    request.type = this.form.value.type;
+    request.name = this.form.value.name;
+    request.location = this.form.value.location;
+    request.cv = false;
+    this.candidateAttachmentService.createAttachment(request).subscribe(
       (response) => this.modal.close(),
       (error) => this.error = error
     );
   }
 
+  startServerUpload(files: File[]) {
+    this.error = null;
+    this.uploading = true;
+    this.attachments = [];
+
+    const cv: boolean = this.form.value.cv;
+
+    const uploads: Observable<CandidateAttachment>[] = [];
+    for (const file of files) {
+      const formData: FormData = new FormData();
+      formData.append('file', file);
+
+      uploads.push(this.candidateAttachmentService
+        .uploadAttachment(this.candidateId, cv, formData));
+    }
+
+    forkJoin(...uploads).subscribe(
+      (results: CandidateAttachment[]) => {
+        this.attachments.push(...results);
+        this.uploading = false;
+      },
+      error => {
+        this.error = error;
+        this.uploading = false;
+      }
+    );
+
+  }
 }
