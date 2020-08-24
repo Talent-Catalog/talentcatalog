@@ -112,7 +112,7 @@ public class SystemAdminApi {
 
     @GetMapping("google")
     public String migrateGoogleDriveFolders() throws IOException {
-        log.info("Starting google folder re-linking");
+        log.info("Starting google folder re-linking. About to get folders.");
         // Getting folders
         FileList result = googleDriveService.files().list()
                 .setQ("'" + candidateRootFolderId + "' in parents" +
@@ -125,10 +125,17 @@ public class SystemAdminApi {
                 .execute();
         List<com.google.api.services.drive.model.File> folders = result.getFiles();
         // Looping over folders
+        int count = 0;
+        int size = folders.size();
+        log.info("Got " + size + " folders. About to loop through.");
         for(com.google.api.services.drive.model.File folder: folders) {
             setCandidateFolderLink(folder);
+            if (count%100 == 0) {
+                log.info("Folders processed:" + count);
+            }
+            count++;
         }
-
+        log.info("Completed processing.");
         return "done";
     }
 
