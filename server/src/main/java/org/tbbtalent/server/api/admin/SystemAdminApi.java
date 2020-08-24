@@ -1,33 +1,7 @@
 package org.tbbtalent.server.api.admin;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.FileList;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +19,19 @@ import org.tbbtalent.server.service.db.DataSharingService;
 import org.tbbtalent.server.service.db.PopulateElasticsearchService;
 import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
 import org.tbbtalent.server.util.textExtract.TextExtractHelper;
+
+import java.io.File;
+import java.io.IOException;
+import java.sql.Date;
+import java.sql.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/api/admin/system")
@@ -113,29 +100,38 @@ public class SystemAdminApi {
     @GetMapping("google")
     public String migrateGoogleDriveFolders() throws IOException {
         log.info("Starting google folder re-linking. About to get folders.");
-        // Getting folders
-        FileList result = googleDriveService.files().list()
-                .setQ("'" + candidateRootFolderId + "' in parents" +
-                        " and mimeType='application/vnd.google-apps.folder'")
-                .setSupportsAllDrives(true)
-                .setIncludeItemsFromAllDrives(true)
-                .setCorpora("drive")
-                .setDriveId(candidateDataDriveId)
-                .setFields("nextPageToken, files(id,name,webViewLink)")
-                .execute();
-        List<com.google.api.services.drive.model.File> folders = result.getFiles();
-        // Looping over folders
+        String nextPageToken = null;
         int count = 0;
-        int size = folders.size();
-        log.info("Got " + size + " folders. About to loop through.");
-        for(com.google.api.services.drive.model.File folder: folders) {
-            setCandidateFolderLink(folder);
-            if (count%100 == 0) {
-                log.info("Folders processed:" + count);
+        do {
+            // Getting folders
+            FileList result = googleDriveService.files().list()
+                    .setQ("'" + candidateRootFolderId + "' in parents" +
+                            " and mimeType='application/vnd.google-apps.folder'")
+                    .setSupportsAllDrives(true)
+                    .setIncludeItemsFromAllDrives(true)
+                    .setCorpora("drive")
+                    .setDriveId(candidateDataDriveId)
+                    .setPageToken(nextPageToken)
+                    .setPageSize(100)
+                    .setFields("nextPageToken, files(id,name,webViewLink)")
+                    .execute();
+            List<com.google.api.services.drive.model.File> folders = result.getFiles();
+            nextPageToken = result.getNextPageToken();
+            // Looping over folders
+            int size = folders.size();
+            log.info("Got " + size + " folders. About to loop through.");
+            for(com.google.api.services.drive.model.File folder: folders) {
+                setCandidateFolderLink(folder);
+                if (count%100 == 0) {
+                    log.info("Folders processed:" + count);
+                }
+                count++;
             }
-            count++;
-        }
-        log.info("Completed processing.");
+        } while(
+           nextPageToken != null
+        );
+
+        log.info("Completed processing. Total: " + count);
         return "done";
     }
 
