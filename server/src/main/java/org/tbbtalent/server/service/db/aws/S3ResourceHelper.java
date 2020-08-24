@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import com.amazonaws.services.s3.model.*;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,11 +22,6 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.CopyObjectRequest;
-import com.amazonaws.services.s3.model.ListObjectsRequest;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.transfer.Download;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
@@ -282,5 +278,13 @@ public class S3ResourceHelper {
 
     public boolean doesBucketExist(String bucket) {
         return amazonS3.doesBucketExist(s3Bucket + "bucket");
+    }
+
+    public void getObjectsListed() {
+        ObjectListing buckets = amazonS3.listObjects("dev.files.tbbtalent.org", "candidate/");
+        for(S3ObjectSummary summary : buckets.getObjectSummaries()){
+            System.out.println(summary.getKey());
+        }
+
     }
 }
