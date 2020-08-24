@@ -29,4 +29,10 @@ export class CandidateAttachmentService {
   deleteAttachment(id: number) {
     return this.http.delete<CandidateAttachment>(`${this.apiUrl}/${id}`);
   }
+
+  uploadAttachment(cv: boolean, formData: FormData): Observable<CandidateAttachment> {
+    return this.http.post<CandidateAttachment>(
+      `${this.apiUrl}/upload?cv=${cv}`, formData);
+  }
+
 }

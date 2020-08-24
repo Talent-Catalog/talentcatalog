@@ -249,10 +249,14 @@ public class UserServiceImpl implements UserService {
                         loggedInName = exists.getUsername();
                     }
                 } catch (Exception ex) {
-                  //Just continue if we couldn't find user for email
+                    //Log details to check for nature of brute force attacks.
+                    log.info("Invalid credentials for user: " + request + ". Exception " + ex);
+                    //Exception if there is more than one user associated with email.
                     throw new InvalidCredentialsException("Sorry, that email is not unique. Log in with your username.");
                 }
+                //Just continue if we couldn't find user for email
             }
+
 
             Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     loggedInName, request.getPassword()
@@ -271,6 +275,8 @@ public class UserServiceImpl implements UserService {
             return new JwtAuthenticationResponse(jwt, user);
 
         } catch (BadCredentialsException e) {
+            //Log details to check for nature of brute force attacks.
+            log.info("Invalid credentials for user: " + request);
             // map spring exception to a service exception for better handling
             throw new InvalidCredentialsException("Invalid credentials for user");
         } catch (LockedException e) {

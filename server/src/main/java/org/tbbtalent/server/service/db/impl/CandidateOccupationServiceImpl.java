@@ -246,6 +246,8 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
 //        candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(candidateOccupation.getCandidate().getId(),
 //                candidateOccupation.getOccupation().getName() +" verification status set to "+request.isVerified(), request.getComment()));
 
+        candidateService.save(candidateOccupation.getCandidate(), true);
+        
         return candidateOccupationRepository.save(candidateOccupation);
 
     }

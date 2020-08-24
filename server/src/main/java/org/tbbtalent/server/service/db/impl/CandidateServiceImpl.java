@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.index.query.SimpleQueryStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
@@ -42,8 +44,8 @@ import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -112,10 +114,12 @@ import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.CandidateNoteService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.CountryService;
+import org.tbbtalent.server.service.db.GoogleFileSystemService;
 import org.tbbtalent.server.service.db.NationalityService;
 import org.tbbtalent.server.service.db.SavedSearchService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.service.db.util.PdfHelper;
+import org.tbbtalent.server.util.filesystem.FileSystemFolder;
 
 import com.opencsv.CSVWriter;
 
@@ -130,6 +134,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final CandidateRepository candidateRepository;
     private final CandidateEsRepository candidateEsRepository;
     private final ElasticsearchOperations elasticsearchOperations;
+    private final GoogleFileSystemService fileSystemService;
     private final CountryRepository countryRepository;
     private final CountryService countryService;
     private final EducationLevelRepository educationLevelRepository;
@@ -150,6 +155,7 @@ public class CandidateServiceImpl implements CandidateService {
                                 CandidateRepository candidateRepository,
                                 CandidateEsRepository candidateEsRepository,
                                 ElasticsearchOperations elasticsearchOperations,
+                                GoogleFileSystemService fileSystemService,
                                 CountryRepository countryRepository,
                                 CountryService countryService,
                                 EducationLevelRepository educationLevelRepository,
@@ -179,44 +185,42 @@ public class CandidateServiceImpl implements CandidateService {
         this.surveyTypeRepository = surveyTypeRepository;
         this.emailHelper = emailHelper;
         this.pdfHelper = pdfHelper;
+        this.fileSystemService = fileSystemService;
     }
 
     @Transactional
-    @Async
     @Override
-    public void populateElasticCandidates(boolean deleteExisting) {
-        CandidateEs ces;
-        if (deleteExisting) {
-            log.info("Replace all candidates in Elasticsearch - deleting old candidates");
-            candidateEsRepository.deleteAll();
-            log.info("Old candidates deleted.");
+    public int populateElasticCandidates(
+            Pageable pageable, boolean logTotal, boolean createElastic) {
+        Page<Candidate> candidates = candidateRepository.findCandidatesWhereStatusNotDeleted(pageable);
+        if (logTotal) {
+            log.info(candidates.getTotalElements() + " candidates to be processed.");
         }
-        List<Candidate> candidates = candidateRepository.findAllNonElasticLoadText();
-        log.info(candidates.size() + " candidates to be added.");
+
         int count = 0;
         for (Candidate candidate : candidates) {
             try {
-                //Remove any existing textSearchId's - because they will be
-                //invalid because we just deleted all existing candidates from
-                //Elasticsearch. This avoids a bunch of warnings being logged.
-                candidate.setTextSearchId(null);
-                ces = new CandidateEs(candidate);
-                ces = candidateEsRepository.save(ces);
+                if (createElastic) {
+                    CandidateEs ces = new CandidateEs(candidate);
+                    ces = candidateEsRepository.save(ces);
 
-                //Update textSearchId on candidate.
-                String textSearchId = ces.getId();
-                candidate.setTextSearchId(textSearchId);
-                save(candidate, false);
+                    //Update textSearchId on candidate.
+                    String textSearchId = ces.getId();
+                    candidate.setTextSearchId(textSearchId);
+                    save(candidate, false);
+                } else {
+                    //This also handles all the awkward cases - such as
+                    //links to non existent proxies - creating them as needed.
+                    updateElasticProxy(candidate);
+                }
 
                 count++;
-                if (count % 100 == 0) {
-                    log.info(count + " candidates added to Elasticsearch");
-                }
             } catch (Exception ex) {
                 log.warn("Could not load candidate " + candidate.getId(), ex);
             }
         }
-        log.info("Done: " + count + " candidates added to Elasticsearch");
+
+        return count;
     }
 
     @Override
@@ -312,7 +316,8 @@ public class CandidateServiceImpl implements CandidateService {
         searchCandidateRequest.setStatuses(getStatusListFromString(savedSearch.getStatuses()));
         searchCandidateRequest.setGender(savedSearch.getGender());
         searchCandidateRequest.setOccupationIds(getIdsFromString(savedSearch.getOccupationIds()));
-        searchCandidateRequest.setOrProfileKeyword(savedSearch.getOrProfileKeyword());
+        searchCandidateRequest.setMinYrs(savedSearch.getMinYrs());
+        searchCandidateRequest.setMaxYrs(savedSearch.getMaxYrs());
         searchCandidateRequest.setVerifiedOccupationIds(getIdsFromString(savedSearch.getVerifiedOccupationIds()));
         searchCandidateRequest.setVerifiedOccupationSearchType(savedSearch.getVerifiedOccupationSearchType());
         searchCandidateRequest.setNationalityIds(getIdsFromString(savedSearch.getNationalityIds()));
@@ -375,6 +380,25 @@ public class CandidateServiceImpl implements CandidateService {
             
             //Support sorting 
             PageRequest req = CandidateEs.convertToElasticSortField(request);
+
+            /*
+               Constructing a filtered simple query that looks like this:
+               
+               GET /candidates/_search
+                {
+                  "query": {
+                    "bool": {
+                      "must": [
+                        { "simple_query_string": {"query":"the +jet+ engine"}}
+                      ],
+                      "filter": [
+                        { "term":  { "status": "pending" }},
+                        { "range":  { "minEnglishSpokenLevel": {"gte": 2}}}
+                      ]
+                    }
+                  }
+                }
+             */
             
             //Create a simple query string builder from the given string 
             SimpleQueryStringBuilder simpleQueryStringBuilder = 
@@ -386,11 +410,29 @@ public class CandidateServiceImpl implements CandidateService {
                     QueryBuilders.boolQuery().must(simpleQueryStringBuilder);
 
             //Add filters - each filter must return true for a hit
+            //(Note: Filters are different from "Must" entries only in that
+            //they don't affect the Elasticsearch score)
             
             //Add a TermsQuery filter for each multiselect request - eg
             //countries and nationalities. A match against any one of the 
             //multiselected values will result in the filter returning true.
             //There is also a TermQuery which takes only one value.
+
+            //English levels
+            Integer minSpokenLevel = request.getEnglishMinSpokenLevel();
+            if (minSpokenLevel != null) {
+                boolQueryBuilder =
+                        addElasticRangeFilter(boolQueryBuilder,
+                                "minEnglishSpokenLevel", 
+                                minSpokenLevel, null);
+            }
+            Integer minWrittenLevel = request.getEnglishMinWrittenLevel();
+            if (minWrittenLevel != null) {
+                boolQueryBuilder =
+                        addElasticRangeFilter(boolQueryBuilder,
+                                "minEnglishWrittenLevel",
+                                minWrittenLevel, null);
+            }
             
             //Countries
             final List<Long> countryIds = request.getCountryIds();
@@ -402,7 +444,7 @@ public class CandidateServiceImpl implements CandidateService {
                     reqCountries.add(country.getName());
                 }
                 boolQueryBuilder = 
-                        addElasticFilter(boolQueryBuilder,
+                        addElasticTermFilter(boolQueryBuilder,
                                 null,"country", reqCountries);
             }
             
@@ -415,7 +457,7 @@ public class CandidateServiceImpl implements CandidateService {
                     final Nationality nationality = nationalityService.getNationality(id);
                     reqNationalities.add(nationality.getName());
                 }
-                boolQueryBuilder = addElasticFilter(boolQueryBuilder, 
+                boolQueryBuilder = addElasticTermFilter(boolQueryBuilder, 
                         request.getNationalitySearchType(), 
                         "nationality", reqNationalities);
             }
@@ -437,7 +479,7 @@ public class CandidateServiceImpl implements CandidateService {
                     reqStatuses.add(status.name());
                 }
                 boolQueryBuilder =
-                        addElasticFilter(boolQueryBuilder,
+                        addElasticTermFilter(boolQueryBuilder,
                                 null,"status", reqStatuses);
             }
 
@@ -499,13 +541,24 @@ public class CandidateServiceImpl implements CandidateService {
         return candidates;
     }
 
-    private BoolQueryBuilder addElasticFilter(
+    private BoolQueryBuilder addElasticRangeFilter(
+            BoolQueryBuilder builder, String field, 
+            @Nullable Object min, @Nullable Object max) {
+        if (min != null || max != null) {
+            RangeQueryBuilder rangeQueryBuilder = 
+                    QueryBuilders.rangeQuery(field).from(min).to(max);
+            builder = builder.filter(rangeQueryBuilder);
+        } 
+        return builder;
+    }
+
+    private BoolQueryBuilder addElasticTermFilter(
             BoolQueryBuilder builder, @Nullable SearchType searchType, String field, 
             List<String> values) {
-        final int nCountries = values.size();
-        if (nCountries > 0) {
+        final int nValues = values.size();
+        if (nValues > 0) {
             QueryBuilder queryBuilder;
-            if (nCountries == 1) {
+            if (nValues == 1) {
                 queryBuilder = QueryBuilders.termQuery(field, values.get(0));
             } else {
                 queryBuilder = QueryBuilders.termsQuery(field, values.toArray());
@@ -683,7 +736,7 @@ public class CandidateServiceImpl implements CandidateService {
 
 
     @Override
-    public Candidate getCandidate(long id) throws NoSuchObjectException {
+    public @NonNull Candidate getCandidate(long id) throws NoSuchObjectException {
         return this.candidateRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
     }
@@ -1524,39 +1577,79 @@ public class CandidateServiceImpl implements CandidateService {
         candidate = candidateRepository.save(candidate);
         
         if (updateCandidateEs) {
-            //Find/create Elasticsearch twin candidate
-            CandidateEs twin;
-            //Get textSearchId, if any
-            String textSearchId = candidate.getTextSearchId();
-            if (textSearchId == null) {
-                //No twin - create one
+            candidate = updateElasticProxy(candidate);
+        }
+        return candidate;
+    }
+
+    /**
+     * Does whatever is needed to bring the Elastic proxy into sync with 
+     * its parent candidate on the normal database.
+     * <p>
+     *     Handles the following cases:
+     * </p>
+     * <ul>
+     *     <li>Normal case: updates proxy indicated by textSearchId of master</li>
+     *     <li>Master has no linked proxy (no textSearchId) - create one </li>
+     *     <li>Master has a textSearchId, but no such proxy is found, 
+     *     log warning but create a proxy</li>
+     * </ul>
+     * @param candidate Candidate entity (the master) from thr normal database
+     * @return Potentially modified candidate entity (with latest textSearchId)
+     */
+    private Candidate updateElasticProxy(Candidate candidate) {
+        //Find/create Elasticsearch twin candidate
+        CandidateEs twin;
+        //Get textSearchId, if any
+        String textSearchId = candidate.getTextSearchId();
+        String originalTextSearchId = textSearchId;
+        if (textSearchId == null) {
+            //No twin - create one
+            twin = new CandidateEs(candidate);
+        } else {
+            //Get twin
+            twin = candidateEsRepository.findById(textSearchId)
+                    .orElse(null);
+            if (twin == null) {
+                //Candidate is referring to non existent twin.
+                //Create new twin
                 twin = new CandidateEs(candidate);
+
+                //Shouldn't really happen (except during a complete reload) 
+                // so log warning
+                log.warn("Candidate " + candidate.getId() +
+                        " refers to non existent Elasticsearch id "
+                        + textSearchId + ". Creating new twin.");
             } else {
-                //Get twin
-                twin = candidateEsRepository.findById(textSearchId)
-                        .orElse(null);
-                if (twin == null) {
-                    //Candidate is referring to non existent twin.
-                    //Create new twin
-                    twin = new CandidateEs(candidate);
-
-                    //Shouldn't really happen (except during a complete reload) 
-                    // so log warning
-                    log.warn("Candidate " + candidate.getId() +
-                            " refers to non existent Elasticsearch id "
-                            + textSearchId + ". Creating new twin.");
-                } else {
-                    //Update twin from candidate
-                    twin.copy(candidate);
-                }
+                //Update twin from candidate
+                twin.copy(candidate);
             }
-            twin = candidateEsRepository.save(twin);
-            textSearchId = twin.getId();
+        }
+        twin = candidateEsRepository.save(twin);
+        textSearchId = twin.getId();
 
-            //Update textSearchId on candidate.
+        //Update textSearchId on candidate if necessary
+        if (!textSearchId.equals(originalTextSearchId)) {
             candidate.setTextSearchId(textSearchId);
             candidate = candidateRepository.save(candidate);
         }
+        return candidate;
+    }
+    
+    @Override
+    public Candidate createCandidateFolder(long id) 
+            throws NoSuchObjectException, IOException {
+        Candidate candidate = getCandidate(id);
+        
+        String candidateNumber = candidate.getCandidateNumber();
+        
+        FileSystemFolder folder = fileSystemService.findAFolder(candidateNumber);
+        
+        if (folder == null) {
+            folder = fileSystemService.createFolder(candidateNumber);
+        }
+        candidate.setFolderlink(folder.getUrl());
+        save(candidate, false);
         return candidate;
     }
 }

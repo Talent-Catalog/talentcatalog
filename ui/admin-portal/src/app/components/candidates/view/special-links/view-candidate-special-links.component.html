@@ -1,9 +1,18 @@
-<div class="card">
+<div class="alert alert-danger" *ngIf="error">
+  {{error}}
+</div>
 
-  <div class="card-header">Special links
+<div class="card">
+  <div class="card-header">
+    Special links
     <div class="float-right" *ngIf="editable">
+      <button *ngIf="!candidate.folderlink" class="btn btn-outline-secondary"
+              (click)="createCandidateFolder()">
+        <i class="fab fa-google-drive"></i> Create Google Docs Folder
+      </button>
       <button class="btn btn-sm btn-outline-secondary" (click)="editSpecialLinks()">
-        <i class="fas fa-edit"></i></button>
+        <i class="fas fa-edit"></i>
+      </button>
     </div>
   </div>
 

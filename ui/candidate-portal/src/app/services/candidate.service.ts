@@ -37,7 +37,7 @@ export class CandidateService {
     return this.http.get<Candidate>(`${this.apiUrl}/education`);
   }
 
-  updateCandidateEducation(request): Observable<Candidate> {
+  updateCandidateEducationLevel(request): Observable<Candidate> {
     return this.http.post<Candidate>(`${this.apiUrl}/education`, request);
   }
 
@@ -73,6 +73,10 @@ export class CandidateService {
 
   getCandidateCertifications(): Observable<Candidate> {
     return this.http.get<Candidate>(`${this.apiUrl}/certifications`);
+  }
+
+  updateCandidateCertification(request): Observable<Candidate> {
+    return this.http.post<Candidate>(`${this.apiUrl}/certifications`, request);
   }
 
   getStatus() {

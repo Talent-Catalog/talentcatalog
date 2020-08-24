@@ -96,4 +96,14 @@ export class SelectListComponent implements OnInit {
     }
     this.activeModal.close(selection);
   }
+
+  disableNew() {
+    this.form.controls['newList'].disable();
+  }
+
+  enableNew() {
+    this.form.controls['newList'].enable();
+    this.form.controls['savedList'].patchValue(null);
+  }
+
 }

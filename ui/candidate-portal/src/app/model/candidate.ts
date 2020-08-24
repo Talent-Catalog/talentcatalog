@@ -59,3 +59,15 @@ export class RegisterCandidateRequest extends BaseCandidateContactRequest {
   passwordConfirmation: string;
   reCaptchaV3Token: string;
 }
+
+export class LoginRequest {
+  username: string;
+  password: string;
+  reCaptchaV3Token: string;
+}
+
+export class SendResetPasswordEmailRequest {
+  email: string;
+  reCaptchaV3Token: string;
+}
+

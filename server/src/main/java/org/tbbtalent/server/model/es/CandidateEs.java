@@ -4,6 +4,7 @@
 
 package org.tbbtalent.server.model.es;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EnumType;
@@ -16,9 +17,12 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateAttachment;
+import org.tbbtalent.server.model.db.CandidateCertification;
 import org.tbbtalent.server.model.db.CandidateEducation;
 import org.tbbtalent.server.model.db.CandidateJobExperience;
+import org.tbbtalent.server.model.db.CandidateLanguage;
 import org.tbbtalent.server.model.db.CandidateOccupation;
+import org.tbbtalent.server.model.db.CandidateSkill;
 import org.tbbtalent.server.model.db.CandidateStatus;
 import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.request.PagedSearchRequest;
@@ -26,6 +30,12 @@ import org.tbbtalent.server.request.PagedSearchRequest;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * This defines the fields which are stored in Elasticsearch "documents"
+ * corresponding to these Candidate "entities".
+ * All these candidate records comprise the "candidates" index - roughly
+ * comparable to a candidate table in a traditional database.
+ */
 @Getter
 @Setter
 @Document(indexName = "candidates")
@@ -38,20 +48,27 @@ public class CandidateEs {
             "firstName",
             "lastName",
             "nationality",
-            "status"
+            "status",
+            "updated"
     }; 
    
     @Id
     private String id;
 
+    @Field(type = FieldType.Text)
+    private String additionalInfo;
+
+    @Field(type = FieldType.Text)
+    private List<String> certifications;
+
     @Field(type = FieldType.Keyword)
     private String country;
 
     @Field(type = FieldType.Text)
-    private String cvs;
+    private List<String> cvs;
 
     @Field(type = FieldType.Text)
-    private String educations;
+    private List<String> educations;
 
     @Field(type = FieldType.Keyword)
     @Enumerated(EnumType.STRING)
@@ -61,10 +78,19 @@ public class CandidateEs {
     private String firstName;
 
     @Field(type = FieldType.Text)
-    private String jobExperiences;
+    private List<String> jobExperiences;
 
     @Field(type = FieldType.Keyword)
     private String lastName;
+
+    @Field(type = FieldType.Keyword)
+    private Integer minEnglishSpokenLevel;
+
+    @Field(type = FieldType.Keyword)
+    private Integer minEnglishWrittenLevel;
+
+    @Field(type = FieldType.Keyword)
+    private Long updated;
 
     /**
      * Id of matching Candidate record in database
@@ -75,18 +101,14 @@ public class CandidateEs {
     private String nationality;
 
     @Field(type = FieldType.Text)
-    private String occupations;
+    private List<String> occupations;
+
+    @Field(type = FieldType.Text)
+    private List<String> skills;
 
     @Field(type = FieldType.Keyword)
     @Enumerated(EnumType.STRING)
     private CandidateStatus status;
-
-
-    //todo add extra text fields and fields needed for sorting
-//    private String additionalInfo;
-//    private String candidateMessage;
-//    private List<CandidateCertification> candidateCertifications;
-//    private List<CandidateSkill> candidateSkills;
 
     public CandidateEs() {
     }
@@ -97,11 +119,8 @@ public class CandidateEs {
     }
     
     public void copy(Candidate candidate) {
-//        this.additionalInfo = candidate.getAdditionalInfo();
-//        this.candidateMessage = candidate.getCandidateMessage();
-//        this.candidateCertifications = candidate.getCandidateCertifications();
-//        this.candidateSkills = candidate.getCandidateSkills();
 
+        this.additionalInfo = candidate.getAdditionalInfo();
         this.firstName = candidate.getUser() == null ? null 
                 : candidate.getUser().getFirstName();
         this.gender = candidate.getGender();
@@ -110,56 +129,108 @@ public class CandidateEs {
         this.lastName = candidate.getUser() == null ? null 
                 : candidate.getUser().getLastName();
         this.masterId = candidate.getId();
+        this.updated = candidate.getUpdatedDate().toInstant().toEpochMilli();
         this.nationality = candidate.getNationality() == null ? null
                 : candidate.getNationality().getName();
         this.status = candidate.getStatus();
 
-        this.cvs = "";
+        this.minEnglishSpokenLevel = null;
+        this.minEnglishWrittenLevel = null;
+        List<CandidateLanguage> proficiencies = candidate.getCandidateLanguages();
+        if (proficiencies != null) {
+            for (CandidateLanguage proficiency : proficiencies) {
+                //Protect against bad data
+                if (proficiency.getLanguage() != null) {
+                    if ("english".equals(proficiency.getLanguage().getName().toLowerCase())) {
+                        if (proficiency.getSpokenLevel() != null) {
+                            this.minEnglishSpokenLevel = proficiency.getSpokenLevel().getLevel();
+                        }
+                        if (proficiency.getWrittenLevel() != null) {
+                            this.minEnglishWrittenLevel = proficiency.getWrittenLevel().getLevel();
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        
+        this.certifications = new ArrayList<>();
+        List<CandidateCertification> certifications = candidate.getCandidateCertifications();
+        if (certifications != null) {
+            for (CandidateCertification certification : certifications) {
+                final String text = certification.getName();
+                if (text != null) {
+                    this.certifications.add(text);
+                }
+            }
+        }
+
+        this.cvs = new ArrayList<>();
         List<CandidateAttachment> candidateAttachments = candidate.getCandidateAttachments();
         if (candidateAttachments != null) {
             for (CandidateAttachment attachment : candidateAttachments) {
                 final String textExtract = attachment.getTextExtract();
                 if (textExtract != null) {
-                    this.cvs += textExtract + " ";
+                    this.cvs.add(textExtract);
                 }
             }
         }
 
-        this.educations = "";
+        this.educations = new ArrayList<>();
         List<CandidateEducation> educations = candidate.getCandidateEducations();
         if (educations != null) {
             for (CandidateEducation education : educations) {
                 final String text = education.getCourseName();
                 if (text != null) {
-                    this.educations += text + " ";
+                    this.educations.add(text);
                 }
             }
         }
         
-        this.jobExperiences = "";
+        this.jobExperiences = new ArrayList<>();
         List<CandidateJobExperience> jobs = candidate.getCandidateJobExperiences();
         if (jobs != null) {
             for (CandidateJobExperience job : jobs) {
-                String text = job.getRole();
-                if (text != null) {
-                    this.jobExperiences += text + " ";
+                String role = job.getRole();
+                String description = job.getDescription();
+
+                String text = null;
+                if (role == null) {
+                    if (description != null) {
+                        text = description;
+                    }
+                } else {
+                    text = role;
+                    if (description != null) {
+                        text += " " + description;
+                    }
                 }
-                text = job.getDescription();
+                
                 if (text != null) {
-                    this.jobExperiences += text + " ";
+                    this.jobExperiences.add(text);
                 }
             }
         }
         
-        this.occupations = "";
+        this.occupations = new ArrayList<>();
         List<CandidateOccupation> occupations = candidate.getCandidateOccupations();
         if (occupations != null) {
             for (CandidateOccupation occupation : occupations) {
                 if (occupation != null && occupation.getOccupation() != null) {
                     String text = occupation.getOccupation().getName();
                     if (text != null) {
-                        this.occupations += text + " ";
+                        this.occupations.add(text);
                     }
+                }
+            }
+        }
+
+        this.skills = new ArrayList<>();
+        List<CandidateSkill> skills = candidate.getCandidateSkills();
+        if (skills != null) {
+            for (CandidateSkill skill : skills) {
+                if (skill != null && skill.getSkill() != null) {
+                    this.skills.add(skill.getSkill());
                 }
             }
         }

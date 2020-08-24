@@ -5,7 +5,7 @@
 package org.tbbtalent.server.model.db;
 
 public enum AttachmentType {
-
+    googlefile,
     file,
     link
 }

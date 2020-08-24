@@ -19,28 +19,32 @@
   </div>
 
   <form [formGroup]="form">
-    <div class="form-group" >
-      <div class="form-inline"  *ngIf="!newList">
+    <div class="form-group">
+      <div>
         <label>Existing list</label>
         <ng-multiselect-dropdown formControlName="savedList"
-          id="savedLists"
-          [settings]="dropdownSettings"
-          [data]="lists"
+                                 id="savedLists"
+                                 [settings]="dropdownSettings"
+                                 [data]="lists"
+                                 (onSelect)="disableNew()"
+                                 (onDeSelect)="enableNew()"
         >
         </ng-multiselect-dropdown>
+        <div class="form-inline">
+          <label>Replace existing list contents?</label>
+          <input type="checkbox" class="form-control" formControlName="replace">
+        </div>
       </div>
+
       <div class="form-inline">
         <label>New list?</label>
-        <input type="checkbox" class="form-control" formControlName="newList">
+        <input type="checkbox" class="form-control" formControlName="newList" >
       </div>
       <div *ngIf="newList">
         <label>Name</label>
-        <input type="text" class="form-control" formControlName="newListName">
+        <input type="text" class="form-control" formControlName="newListName" [readOnly]="loading">
       </div>
-      <div class="form-inline">
-        <label>Replace existing list contents?</label>
-        <input type="checkbox" class="form-control" formControlName="replace">
-      </div>
+
     </div>
   </form>
 </div>

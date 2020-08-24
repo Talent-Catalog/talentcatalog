@@ -41,11 +41,13 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 import static org.thymeleaf.templatemode.TemplateMode.HTML;
 
 /**
- * This is a JUnit test which will generate a PDF using Flying Saucer
- * and Thymeleaf templates. The PDF will display a letter styled with
- * CSS. The letter has two pages and will contain text and images.
+ * Service for generating PDFs using Flying Saucer and Thymeleaf templates. 
+ * The PDF will display a letter styled with CSS.
+ * <p/> 
+ * There is also a main method which will generate a letter. 
+ * The letter has two pages and will contain text and images.
  * <p>
- * Simply run this test to generate the PDF. The file is called:
+ * Run main to generate the PDF. The file is called:
  * <p>
  * /test.pdf
  */

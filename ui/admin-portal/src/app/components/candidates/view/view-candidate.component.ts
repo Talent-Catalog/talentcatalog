@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {CandidateService} from '../../../services/candidate.service';
 import {Candidate} from '../../../model/candidate';
 import {ActivatedRoute, Router} from '@angular/router';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {NgbModal, NgbTabChangeEvent} from '@ng-bootstrap/ng-bootstrap';
 import {DeleteCandidateComponent} from './delete/delete-candidate.component';
 import {EditCandidateStatusComponent} from "./status/edit-candidate-status.component";
 import {Title} from "@angular/platform-browser";
@@ -20,10 +20,7 @@ import {SavedListService} from "../../../services/saved-list.service";
 import {CandidateSavedListService} from "../../../services/candidate-saved-list.service";
 import {SavedListCandidateService} from "../../../services/saved-list-candidate.service";
 import {forkJoin} from "rxjs";
-import {CandidateAttachmentService} from '../../../services/candidate-attachment.service';
-import {AttachmentType, CandidateAttachment} from '../../../model/candidate-attachment';
-import {FormBuilder, FormGroup} from '@angular/forms';
-import {environment} from '../../../../environments/environment';
+import {LocalStorageService} from "angular-2-local-storage";
 
 @Component({
   selector: 'app-view-candidate',
@@ -32,6 +29,9 @@ import {environment} from '../../../../environments/environment';
 })
 export class ViewCandidateComponent implements OnInit {
 
+  private lastTabKey: string = 'CandidateLastTab';
+
+  activeTabId: string;
   loading: boolean;
   loadingError: boolean;
   error;
@@ -42,11 +42,6 @@ export class ViewCandidateComponent implements OnInit {
 
   selectedLists: SavedList[] = [];
   lists: SavedList[] = [];
-  attachmentForm: FormGroup;
-  attachments: CandidateAttachment[];
-  cvs: CandidateAttachment[];
-  s3BucketUrl = environment.s3BucketUrl;
-
   /* MULTI SELECT */
   dropdownSettings: IDropdownSettings = {
     idField: 'id',
@@ -59,16 +54,24 @@ export class ViewCandidateComponent implements OnInit {
   constructor(private candidateService: CandidateService,
               private savedListService: SavedListService,
               private candidateSavedListService: CandidateSavedListService,
+              private localStorageService: LocalStorageService,
               private savedListCandidateService: SavedListCandidateService,
-              private candidateAttachmentService: CandidateAttachmentService,
               private route: ActivatedRoute,
               private router: Router,
               private modalService: NgbModal,
               private titleService: Title,
-              private authService: AuthService,
-              private fb: FormBuilder) { }
+              private authService: AuthService) { }
 
   ngOnInit() {
+    this.refreshCandidateInfo();
+
+    this.loggedInUser = this.authService.getLoggedInUser();
+    console.log(this.loggedInUser);
+
+    this.selectDefaultTab()
+  }
+
+  refreshCandidateInfo() {
     this.loadingError = false;
     this.route.paramMap.subscribe(params => {
       const candidateNumber = params.get('candidateNumber');
@@ -83,7 +86,6 @@ export class ViewCandidateComponent implements OnInit {
         } else {
           this.setCandidate(candidate);
           this.loadLists();
-          this.getAttachments();
         }
       }, error => {
         this.loadingError = true;
@@ -91,12 +93,6 @@ export class ViewCandidateComponent implements OnInit {
         this.loading = false;
       });
     });
-
-    this.loggedInUser = this.authService.getLoggedInUser();
-
-
-
-    console.log(this.loggedInUser);
   }
 
   private loadLists() {
@@ -122,47 +118,6 @@ export class ViewCandidateComponent implements OnInit {
         this.loading = false;
       }
     );
-  }
-
-  getAttachments() {
-    this.attachments = [];
-
-    this.attachmentForm = this.fb.group({
-      candidateId: [this.candidate.id],
-      pageSize: 10,
-      pageNumber: 0,
-      sortDirection: 'DESC',
-      sortFields: [['createdDate']]
-    });
-
-    this.loading = true;
-    this.candidateAttachmentService.search(this.attachmentForm.value).subscribe(
-      results => {
-        this.attachments = results.content;
-        this.cvs = results.content.filter(attachment => attachment.cv === true)
-        this.loading = false;
-      },
-      error => {
-        this.error = error;
-        this.loading = false;
-      })
-    ;
-
-  }
-
-  getAttachmentUrl(att: CandidateAttachment) {
-    if (att.type === AttachmentType.file) {
-      return this.s3BucketUrl + '/candidate/' + (att.migrated ? 'migrated' : this.candidate.candidateNumber) + '/' + att.location;
-    }
-    return att.location;
-  }
-
-  openCVs() {
-    for (let i = 0; i < this.cvs.length; i++) {
-      const newTab = window.open();
-      const url = this.getAttachmentUrl(this.cvs[i]);
-      newTab.location.href = url;
-    }
   }
 
   deleteCandidate() {
@@ -281,5 +236,23 @@ export class ViewCandidateComponent implements OnInit {
             this.error = error;
           }
     );
+  }
+
+  private selectDefaultTab() {
+    const defaultActiveTabID: string = this.localStorageService.get(this.lastTabKey);
+    this.activeTabId = defaultActiveTabID;
+  }
+
+  onTabChanged(event: NgbTabChangeEvent) {
+    this.setActiveTabId(event.nextId);
+  }
+
+  private setActiveTabId(id: string) {
+    this.activeTabId = id;
+    this.localStorageService.set(this.lastTabKey, id);
+  }
+
+  onCandidateChanged() {
+    this.refreshCandidateInfo();
   }
 }

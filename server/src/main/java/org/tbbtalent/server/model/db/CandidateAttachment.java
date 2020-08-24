@@ -27,10 +27,23 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long>  {
 
     private String name;
 
+    /**
+     * For links {@link AttachmentType#link} and Google docs 
+     * {@link AttachmentType#googlefile}, the associated url.
+     * 
+     * For S3 files {@link AttachmentType#file}, it is the unique filename
+     * generated on S3.
+     */
     private String location;
 
     private boolean adminOnly;
+
+    /**
+     * This is recorded just as the suffix of the attachment filename 
+     * (ie name attribute) - eg pdf, doc, jpg etc
+     */
     private String fileType;
+    
     private boolean migrated;
     private boolean cv;
     private String textExtract;

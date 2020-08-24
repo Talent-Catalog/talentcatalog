@@ -13,8 +13,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.Country;
 
@@ -129,22 +131,16 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             + " where c.id in (:ids) ")
     List<Candidate> findByIds(@Param("ids") Iterable<Long> ids);
 
-    @Query(" select distinct c from Candidate c "
-            + " left join c.candidateOccupations occ "
-            + " left join c.candidateJobExperiences exp "
-            + " left join exp.candidateOccupation expOcc "
-            + " left join exp.country co "
-            + " left join c.candidateEducations edu "
-            + " left join edu.educationMajor maj "
-            + " left join c.candidateCertifications cert "
-            + " left join c.candidateAttachments catt "
-            + " left join c.candidateLanguages clang "
-            + " left join clang.language lang "
+    @Query(" select c from Candidate c "
             + " where c.status <> 'deleted'"
-            + " and c.textSearchId is null"
     )
-    List<Candidate> findAllNonElasticLoadText();
+    Page<Candidate> findCandidatesWhereStatusNotDeleted(Pageable pageable);
 
+    @Transactional
+    @Modifying
+    @Query("update Candidate c set c.textSearchId = null")
+    void clearAllCandidateTextSearchIds();
+    
     /**
      * ADMIN PORTAL DISPLAY CANDIDATE METHODS: includes source country restrictions.
      */
@@ -218,6 +214,8 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             + " where c.country.id = :countryId ")
     List<Candidate> findByCountryId(@Param("countryId") Long countryId);
 
+
+    Candidate findByCandidateNumber(String candidateNumber);
 
     /**
      * ADMIN PORTAL INFOGRAPHICS METHODS: includes source country restrictions.

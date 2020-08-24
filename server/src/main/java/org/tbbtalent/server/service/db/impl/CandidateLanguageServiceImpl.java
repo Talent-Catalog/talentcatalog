@@ -102,8 +102,13 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
         candidateLanguage.setSpokenLevel(spokenLevel);
         candidateLanguage.setWrittenLevel(writtenLevel);
 
-        // Save the candidateOccupation
-        return candidateLanguageRepository.save(candidateLanguage);
+        candidateLanguage = candidateLanguageRepository.save(candidateLanguage);
+        
+        Candidate candidate = candidateLanguage.getCandidate();
+        candidate.setAuditFields(candidate.getUser());
+        candidateService.save(candidate, true);
+
+        return candidateLanguage;
     }
 
     @Override

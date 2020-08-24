@@ -75,5 +75,8 @@ export class CandidateService {
     }));
   }
 
-
+  createCandidateFolder(candidateId: number): Observable<Candidate> {
+    return this.http.put<Candidate>(
+      `${this.apiUrl}/${candidateId}/create-folder`, null);
+  }
 }
