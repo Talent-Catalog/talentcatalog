@@ -145,7 +145,7 @@ public class SystemAdminApi {
                 candidate.setFolderlink(folder.getWebViewLink());
                 candidateRepository.save(candidate);
             } else {
-                log.error("Can't find candidate with candidate number: " + cn);
+                log.error("Can't find candidate with candidate number: " + cn + " " + folder.getName());
             }
         }
     }
