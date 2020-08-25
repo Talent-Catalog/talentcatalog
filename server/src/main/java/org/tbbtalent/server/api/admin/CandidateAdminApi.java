@@ -175,4 +175,11 @@ public class CandidateAdminApi {
         return builder.build(candidate);
     }
 
+    @PutMapping("{id}/create-sflink")
+    public Map<String, Object> createSalesforceLink(@PathVariable("id") long id) throws IOException {
+        Candidate candidate = this.candidateService.createSalesforceLink(id);
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.build(candidate);
+    }
+
 }

@@ -215,4 +215,19 @@ public interface CandidateService {
     Candidate createCandidateFolder(long id)
             throws NoSuchObjectException, IOException;
 
+    /**
+     * Creates a link to a Contact record on Salesforce for the given candidate.
+     * <p/>
+     * If no Contact record exists, one is created.
+     *
+     * @param id ID of candidate
+     * @return Updated candidate object, containing link to corresponding 
+     * Salesforce Contact record (created or
+     * existing) in {@link Candidate#getSflink()}
+     * @throws NoSuchObjectException if no candidate is found with that id
+     * @throws IOException           if there is a problem accessing Salesforce.
+     */
+    Candidate createSalesforceLink(long id)
+            throws NoSuchObjectException, IOException;
+        
 }

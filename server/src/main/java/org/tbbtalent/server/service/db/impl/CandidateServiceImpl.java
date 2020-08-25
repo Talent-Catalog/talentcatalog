@@ -54,6 +54,7 @@ import org.tbbtalent.server.exception.CountryRestrictionException;
 import org.tbbtalent.server.exception.ExportFailedException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.exception.NotImplementedException;
 import org.tbbtalent.server.exception.PasswordMatchException;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.db.Candidate;
@@ -1651,5 +1652,11 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setFolderlink(folder.getUrl());
         save(candidate, false);
         return candidate;
+    }
+
+    @Override
+    public Candidate createSalesforceLink(long id) throws NoSuchObjectException, IOException {
+        //TODO JC createSalesforceLink not implemented in CandidateServiceImpl
+        throw new NotImplementedException("CandidateServiceImpl", "createSalesforceLink");
     }
 }
