@@ -5,6 +5,7 @@ import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -30,7 +31,7 @@ import io.jsonwebtoken.security.SignatureException;
  * a Base64 secret key suitable for putting in the configuration.
  */
 @Component
-public class JwtTokenProvider {
+public class JwtTokenProvider implements InitializingBean {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
 
@@ -40,9 +41,12 @@ public class JwtTokenProvider {
     @Value("${jwt.expirationInMs}")
     private int jwtExpirationInMs;
 
-    private final Key jwtSecret;
+    private Key jwtSecret;
 
-    public JwtTokenProvider() {
+    @Override
+    public void afterPropertiesSet() {
+        //Once the properties have been set from the config file, convert the
+        //String version of the key into a Key object.
         this.jwtSecret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecretBase64));
     }
 
