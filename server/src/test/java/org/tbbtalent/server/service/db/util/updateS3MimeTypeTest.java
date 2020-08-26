@@ -1,15 +1,9 @@
 package org.tbbtalent.server.service.db.util;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.*;
+import com.amazonaws.services.s3.model.ListObjectsRequest;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.transfer.TransferManager;
-import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -44,12 +40,28 @@ public class updateS3MimeTypeTest {
 
     @Test
     void regexForPrefix() {
-        String test = "candidate/9";
+        String test = "candidate/10000/2307d091-1822-43a3-bbda-584526174f6d_ahmadtest.pdf";
+        Pattern p = Pattern.compile("\\w+\\/\\d+\\/");
+        Matcher m = p.matcher(test);
+        if (m.find()) {
+            assertNotNull(m.group());
+        } else {
+            assertNull(m.group());
+        }
     }
 
     @Test
     void listBuckets() {
         s3ResourceHelper.getObjectsListed();
+    }
+
+    @Test
+    void getFileExtension() {
+        String test = "candidate/migrate/2307d091-1822-43a3-bbda-584526174f6d_ahmadtest.pdf";
+        // Checks that a . exists and that it isn't at the start of the filename (indication there is no file name just a file type e.g. ".pdf"
+        if(test.lastIndexOf(".") != -1 && test.lastIndexOf(".") != 0) {
+            assertEquals("pdf", test.substring(test.lastIndexOf(".") + 1));
+        }
     }
 
     //@Test

@@ -1,12 +1,13 @@
 package org.tbbtalent.server.service.db.aws;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.internal.Mimetypes;
 import com.amazonaws.services.s3.model.*;
+import com.amazonaws.services.s3.transfer.*;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,16 +18,15 @@ import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.FileDownloadException;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.transfer.Download;
-import com.amazonaws.services.s3.transfer.TransferManager;
-import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
-import com.amazonaws.services.s3.transfer.TransferManagerConfiguration;
-import com.amazonaws.services.s3.transfer.Upload;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class S3ResourceHelper {
     private static final Logger log = LoggerFactory.getLogger(S3ResourceHelper.class);
@@ -281,10 +281,56 @@ public class S3ResourceHelper {
     }
 
     public void getObjectsListed() {
-        ObjectListing buckets = amazonS3.listObjects("dev.files.tbbtalent.org", "candidate/");
-        for(S3ObjectSummary summary : buckets.getObjectSummaries()){
-            System.out.println(summary.getKey());
+        List<S3ObjectSummary> objectSummaries = new ArrayList<S3ObjectSummary>();
+        ObjectListing objects = amazonS3.listObjects
+                ("dev.files.tbbtalent.org", "candidate/");
+        objectSummaries.addAll(objects.getObjectSummaries());
+        while (objects.isTruncated()) {
+            objects = amazonS3.listNextBatchOfObjects(objects);
+            objectSummaries.addAll(objects.getObjectSummaries());
         }
+        System.out.println("Got all objects");
+        List<S3ObjectSummary> filteredBucket = objectSummaries.stream().filter(s -> !s.getKey().contains("/migrated/"))
+                .collect(Collectors.toList());
+//        for(S3ObjectSummary summary : buckets ) {
+//            if (summary.getKey().contains("/migrated/")){
+//                buckets.remove(summary);
+//            }
+//        }
+        System.out.println("filtered out migrated");
+        for(S3ObjectSummary s : filteredBucket) {
+            //if (regexForPrefix(s.getKey())) {
+            try {
+                ObjectMetadata metadata = new ObjectMetadata();
+                Mimetypes mimetypes = Mimetypes.getInstance();
+                metadata.setContentType(mimetypes.getMimetype(s.getKey()));
+                final CopyObjectRequest request = new CopyObjectRequest(s.getBucketName(), s.getKey(), s.getBucketName(), s.getKey())
+                        .withSourceBucketName(s.getBucketName())
+                        .withSourceKey(s.getKey())
+                        .withNewObjectMetadata(metadata);
+                amazonS3.copyObject(request);
+            } catch (Exception e) {
+                System.out.println("Error with object: " + s.getKey());
+            }
 
+            //}
+        }
+    }
+
+    private static String getFileExtension(String fileName) {
+        // Checks that a . exists and that it isn't at the start of the filename (indication there is no file name just a file type e.g. ".pdf"
+        if(fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
+            return fileName.substring(fileName.lastIndexOf(".")+1);
+        else return "";
+    }
+
+    private boolean regexForPrefix(String location) {
+        Pattern p = Pattern.compile("\\w+\\/\\d+\\/");
+        Matcher m = p.matcher(location);
+        if (m.find()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
