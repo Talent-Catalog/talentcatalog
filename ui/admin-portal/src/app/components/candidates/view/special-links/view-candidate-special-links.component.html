@@ -6,10 +6,11 @@
   <div class="card-header">
     Special links
     <div class="float-right" *ngIf="editable">
-      <button *ngIf="!candidate.sflink" class="btn btn-outline-secondary"
-              (click)="createSalesforceLink()">
-        <i class="fab fa-salesforce"></i> Create Salesforce Link
-      </button>
+<!--      todo Comment this out until the create Contact code is working-->
+<!--      <button *ngIf="!candidate.sflink" class="btn btn-outline-secondary"-->
+<!--              (click)="createSalesforceLink()">-->
+<!--        <i class="fab fa-salesforce"></i> Create Salesforce Link-->
+<!--      </button>-->
       <button *ngIf="!candidate.folderlink" class="btn btn-outline-secondary"
               (click)="createCandidateFolder()">
         <i class="fab fa-google-drive"></i> Create Google Docs Folder
