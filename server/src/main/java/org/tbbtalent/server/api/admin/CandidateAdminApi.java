@@ -2,6 +2,7 @@ package org.tbbtalent.server.api.admin;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.GeneralSecurityException;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -19,7 +20,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.exception.ExportFailedException;
+import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
@@ -169,14 +172,31 @@ public class CandidateAdminApi {
     }
 
     @PutMapping("{id}/create-folder")
-    public Map<String, Object> createCandidateFolder(@PathVariable("id") long id) throws IOException {
+    public Map<String, Object> createCandidateFolder(@PathVariable("id") long id) 
+            throws IOException {
         Candidate candidate = this.candidateService.createCandidateFolder(id);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
     }
 
+    /**
+     * Creates a link to a Contact record on Salesforce for the given candidate.
+     * <p/>
+     * If no Contact record exists, one is created.
+     *
+     * @param id ID of candidate
+     * @return Updated candidate object, containing link to corresponding 
+     * Salesforce Contact record (created or
+     * existing) in {@link Candidate#getSflink()}
+     * @throws NoSuchObjectException if no candidate is found with that id
+     * @throws GeneralSecurityException If there are errors relating to keys
+     * and digital signing.
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     */
     @PutMapping("{id}/create-sflink")
-    public Map<String, Object> createSalesforceLink(@PathVariable("id") long id) throws IOException {
+    public Map<String, Object> createSalesforceLink(@PathVariable("id") long id)
+            throws NoSuchObjectException, GeneralSecurityException,
+            WebClientException {
         Candidate candidate = this.candidateService.createSalesforceLink(id);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);

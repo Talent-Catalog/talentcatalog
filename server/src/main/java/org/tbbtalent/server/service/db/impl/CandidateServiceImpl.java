@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.security.GeneralSecurityException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -49,12 +50,12 @@ import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.exception.CircularReferencedException;
 import org.tbbtalent.server.exception.CountryRestrictionException;
 import org.tbbtalent.server.exception.ExportFailedException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.exception.NotImplementedException;
 import org.tbbtalent.server.exception.PasswordMatchException;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.db.Candidate;
@@ -76,6 +77,7 @@ import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.SurveyType;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.es.CandidateEs;
+import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.CandidateSpecification;
 import org.tbbtalent.server.repository.db.CountryRepository;
@@ -117,6 +119,7 @@ import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.CountryService;
 import org.tbbtalent.server.service.db.GoogleFileSystemService;
 import org.tbbtalent.server.service.db.NationalityService;
+import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.SavedSearchService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.service.db.util.PdfHelper;
@@ -136,6 +139,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final CandidateEsRepository candidateEsRepository;
     private final ElasticsearchOperations elasticsearchOperations;
     private final GoogleFileSystemService fileSystemService;
+    private final SalesforceService salesforceService;
     private final CountryRepository countryRepository;
     private final CountryService countryService;
     private final EducationLevelRepository educationLevelRepository;
@@ -157,6 +161,7 @@ public class CandidateServiceImpl implements CandidateService {
                                 CandidateEsRepository candidateEsRepository,
                                 ElasticsearchOperations elasticsearchOperations,
                                 GoogleFileSystemService fileSystemService,
+                                SalesforceService salesforceService,
                                 CountryRepository countryRepository,
                                 CountryService countryService,
                                 EducationLevelRepository educationLevelRepository,
@@ -187,6 +192,7 @@ public class CandidateServiceImpl implements CandidateService {
         this.emailHelper = emailHelper;
         this.pdfHelper = pdfHelper;
         this.fileSystemService = fileSystemService;
+        this.salesforceService = salesforceService;
     }
 
     @Transactional
@@ -1655,8 +1661,19 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Candidate createSalesforceLink(long id) throws NoSuchObjectException, IOException {
-        //TODO JC createSalesforceLink not implemented in CandidateServiceImpl
-        throw new NotImplementedException("CandidateServiceImpl", "createSalesforceLink");
+    public Candidate createSalesforceLink(long id) 
+            throws NoSuchObjectException, GeneralSecurityException, 
+            WebClientException {
+        Candidate candidate = getCandidate(id);
+
+        String candidateNumber = candidate.getCandidateNumber();
+
+        Contact candidateSf = salesforceService.findContact(candidateNumber);
+        if (candidateSf == null) {
+            candidateSf = salesforceService.createContact(candidateNumber);
+        }
+        candidate.setSflink(candidateSf.getUrl());
+        save(candidate, false);
+        return candidate;
     }
 }

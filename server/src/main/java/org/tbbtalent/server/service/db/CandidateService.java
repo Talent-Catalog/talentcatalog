@@ -6,11 +6,13 @@ package org.tbbtalent.server.service.db;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.security.GeneralSecurityException;
 import java.util.List;
 
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.exception.ExportFailedException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.UsernameTakenException;
@@ -225,9 +227,12 @@ public interface CandidateService {
      * Salesforce Contact record (created or
      * existing) in {@link Candidate#getSflink()}
      * @throws NoSuchObjectException if no candidate is found with that id
-     * @throws IOException           if there is a problem accessing Salesforce.
+     * @throws GeneralSecurityException If there are errors relating to keys
+     * and digital signing.
+     * @throws WebClientException if there is a problem connecting to Salesforce
      */
     Candidate createSalesforceLink(long id)
-            throws NoSuchObjectException, IOException;
+            throws NoSuchObjectException, GeneralSecurityException,
+            WebClientException;
         
 }
