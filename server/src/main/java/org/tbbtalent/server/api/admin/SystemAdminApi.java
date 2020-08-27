@@ -1,7 +1,31 @@
 package org.tbbtalent.server.api.admin;
 
-import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.model.FileList;
+import java.io.File;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,27 +35,27 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.model.db.AttachmentType;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateAttachment;
+import org.tbbtalent.server.model.db.CandidateStatus;
+import org.tbbtalent.server.model.db.EducationType;
+import org.tbbtalent.server.model.db.Gender;
+import org.tbbtalent.server.model.db.NoteType;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.DataSharingService;
 import org.tbbtalent.server.service.db.PopulateElasticsearchService;
+import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
 import org.tbbtalent.server.util.textExtract.TextExtractHelper;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.Date;
-import java.sql.*;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.model.FileList;
 
 @RestController
 @RequestMapping("/api/admin/system")
@@ -47,6 +71,7 @@ public class SystemAdminApi {
     private final CandidateAttachmentRepository candidateAttachmentRepository;
     private final CandidateRepository candidateRepository;
     private final PopulateElasticsearchService populateElasticsearchService;
+    private final SalesforceService salesforceService;
     private final S3ResourceHelper s3ResourceHelper;
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -77,7 +102,8 @@ public class SystemAdminApi {
             CandidateAttachmentRepository candidateAttachmentRepository,
             CandidateRepository candidateRepository,
             Drive googleDriveService,
-            PopulateElasticsearchService populateElasticsearchService, 
+            PopulateElasticsearchService populateElasticsearchService,
+            SalesforceService salesforceService,
             S3ResourceHelper s3ResourceHelper) {
         this.dataSharingService = dataSharingService;
         this.userContext = userContext;
@@ -85,18 +111,45 @@ public class SystemAdminApi {
         this.googleDriveService = googleDriveService;
         this.candidateRepository = candidateRepository;
         this.populateElasticsearchService = populateElasticsearchService;
+        this.salesforceService = salesforceService;
         this.s3ResourceHelper = s3ResourceHelper;
         countryForGeneralCountry = getExtraCountryMappings();
     }
 
     public static void main(String[] args) {
-        SystemAdminApi api = new SystemAdminApi(null, null, null, null, null, null, null);
+        SystemAdminApi api = new SystemAdminApi(null, null, null, null, null, null, null, null);
         api.setTargetJdbcUrl("jdbc:postgresql://localhost:5432/tbbtalent");
         api.setTargetUser("tbbtalent");
         api.setTargetPwd("tbbtalent");
         api.migrate();
     }
 
+    @GetMapping("salesforce")
+    public String updateCandidateSalesforceLinks() throws GeneralSecurityException {
+        log.info("Searching Salesforce for candidate contact records");
+        List<Contact> contacts = salesforceService.findCandidateContacts();
+        log.info("Updating " + contacts.size() + " candidates");
+        int count = 0;
+        for (Contact contact : contacts) {
+            final String candidateNumber = contact.getTBBid__c().toString();
+            Candidate candidate = candidateRepository.findByCandidateNumber(candidateNumber);
+            if (candidate == null) {
+                log.warn("No candidate found for TBBid " + candidateNumber
+                + " SF link " + contact.getUrl());
+            } else {
+                candidate.setSflink(contact.getUrl());
+                candidateRepository.save(candidate);
+            }
+            count++;
+            if (count%20 == 0) {
+                log.info("Processed " + count);
+            }
+        }
+        log.info("Done. Processed " + count);
+
+        return "done";
+    } 
+    
     @GetMapping("google")
     public String migrateGoogleDriveFolders() throws IOException {
         log.info("Starting google folder re-linking. About to get folders.");

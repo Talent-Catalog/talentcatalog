@@ -90,10 +90,13 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     @Nullable
     public Contact findContact(@NonNull String tbbId) 
             throws GeneralSecurityException, WebClientException {
+        
+        findCandidateContacts();
+        
         //Note that the fields requested in the query should match the fields
         //in the Contact record.
         String query = 
-                "SELECT+Name,Id,TBBId__c+FROM+Contact+WHERE+TBBId__c=" + tbbId;
+                "SELECT Name,Id,TBBId__c FROM Contact WHERE TBBId__c=" + tbbId;
         
         ClientResponse response = executeQuery(query);
         ContactQueryResult contacts = response.bodyToMono(ContactQueryResult.class).block();
@@ -121,6 +124,23 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         }
         
         return contact;
+    }
+
+    @Override
+    public List<Contact> findCandidateContacts() throws GeneralSecurityException, WebClientException {
+        String query =
+                "SELECT Name,Id,TBBId__c FROM Contact WHERE TBBid__c > 0";
+
+        ClientResponse response = executeQuery(query);
+        ContactQueryResult result = response.bodyToMono(ContactQueryResult.class).block();
+
+        //Retrieve the contact from the response 
+        List<Contact> contacts = null;
+        if (result != null) {
+            contacts = result.records;
+        }
+        
+        return contacts;
     }
 
     /**

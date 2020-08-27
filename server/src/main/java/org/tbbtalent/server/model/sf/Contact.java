@@ -22,6 +22,9 @@ public class Contact {
     
     private Attributes attributes; 
     
+    //todo Not sure why these have to be public, but if they aren't WebClient
+    //does not populate them from returned Json.
+    //Try populating straight from Json using Jackson
     public String Name;
     
     public String Id;

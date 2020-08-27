@@ -5,6 +5,7 @@
 package org.tbbtalent.server.service.db;
 
 import java.security.GeneralSecurityException;
+import java.util.List;
 
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -17,6 +18,17 @@ import org.tbbtalent.server.model.sf.Contact;
  * @author John Cameron
  */
 public interface SalesforceService {
+
+    /**
+     * Searches Salesforce for all Contact records relating to a TBB 
+     * candidate.
+     * @return List of Salesforce Contact records
+     * @throws GeneralSecurityException If there are errors relating to keys
+     * and digital signing.
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     */
+    List<Contact> findCandidateContacts()
+            throws GeneralSecurityException, WebClientException;
 
     /**
      * Searches for a Salesforce Contact record corresponding to the candidate
