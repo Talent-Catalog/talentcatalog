@@ -1,11 +1,5 @@
 package org.tbbtalent.server.service.db.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +7,7 @@ import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateOccupation;
-import org.tbbtalent.server.model.db.Occupation;
-import org.tbbtalent.server.model.db.Role;
-import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.repository.db.CandidateJobExperienceRepository;
 import org.tbbtalent.server.repository.db.CandidateOccupationRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
@@ -30,6 +20,13 @@ import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.CandidateNoteService;
 import org.tbbtalent.server.service.db.CandidateOccupationService;
 import org.tbbtalent.server.service.db.CandidateService;
+import org.tbbtalent.server.service.db.email.EmailHelper;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class CandidateOccupationServiceImpl implements CandidateOccupationService {
@@ -43,6 +40,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
     private final UserContext userContext;
+    private final EmailHelper emailHelper;
 
     @Autowired
     public CandidateOccupationServiceImpl(CandidateOccupationRepository candidateOccupationRepository,
@@ -50,7 +48,9 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
                                           OccupationRepository occupationRepository,
                                           CandidateRepository candidateRepository,
                                           CandidateService candidateService,
-                                          CandidateNoteService candidateNoteService, UserContext userContext) {
+                                          CandidateNoteService candidateNoteService,
+                                          UserContext userContext,
+                                          EmailHelper emailHelper) {
         this.candidateOccupationRepository = candidateOccupationRepository;
         this.candidateJobExperienceRepository = candidateJobExperienceRepository;
         this.candidateRepository = candidateRepository;
@@ -58,6 +58,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         this.occupationRepository = occupationRepository;
         this.candidateNoteService = candidateNoteService;
         this.userContext = userContext;
+        this.emailHelper = emailHelper;
     }
 
 
@@ -174,14 +175,22 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
             /* Check if candidate occupation has been previously saved */
             CandidateOccupation candidateOccupation = update.getId() != null ? map.get(update.getId()) : null;
             if (candidateOccupation != null){
-                /* Check if the occupation has changed on existing candidate occupation and update */
-                if (!update.getOccupationId().equals(candidateOccupation.getOccupation().getId())){
-                    Occupation occupation = occupationRepository.findById(update.getOccupationId())
-                            .orElseThrow(() -> new NoSuchObjectException(Occupation.class, update.getOccupationId()));
-                    candidateOccupation.setOccupation(occupation);
-                    log.info("Set new Occupation to on existing candidate occupation " + occupation.getName());
+                if(update.getOccupationId() == null) {
+                    log.warn("NULL-AVOID: update.getOccupationId. Updating " + update.getId() + ", for candidate id: " + candidate.getId());
+                    emailHelper.sendAlert("Avoided Null Pointer exception, check logs for warning. Search NULL-AVOID to find.");
+                } else if (candidateOccupation.getOccupation() == null) {
+                    log.warn("NULL-AVOID: candidateOccupation.getOccupation. Updating " + update.getId() + ", for candidate id: " + candidate.getId());
+                    emailHelper.sendAlert("Avoided Null Pointer exception, check logs for warning. Search NULL-AVOID to find.");
+                } else {
+                    /* Check if the occupation has changed on existing candidate occupation and update */
+                    if (!update.getOccupationId().equals(candidateOccupation.getOccupation().getId())) {
+                        Occupation occupation = occupationRepository.findById(update.getOccupationId())
+                                .orElseThrow(() -> new NoSuchObjectException(Occupation.class, update.getOccupationId()));
+                        candidateOccupation.setOccupation(occupation);
+                        log.info("Set new Occupation to on existing candidate occupation " + occupation.getName());
+                    }
+                    candidateOccupation.setYearsExperience(update.getYearsExperience());
                 }
-                candidateOccupation.setYearsExperience(update.getYearsExperience());
             } else {
                 /* Check if candidate already has same occupation, if so update candidateOccupation, else create new. */
                 candidateOccupation = candidateOccupationRepository.findByCandidateIdAAndOccupationId(candidate.getId(),
@@ -202,7 +211,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
 
             }
             updatedOccupations.add(candidateOccupationRepository.save(candidateOccupation));
-            log.info("Saved candidate occupation" + candidateOccupation.getOccupation().getName());
+            log.info("Saved candidate " + candidate.getId() + " occupation " + candidateOccupation.getOccupation().getName());
             updatedOccupationIds.add(candidateOccupation.getId());
         }
 
