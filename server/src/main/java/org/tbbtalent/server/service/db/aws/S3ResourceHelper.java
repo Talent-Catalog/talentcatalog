@@ -282,6 +282,7 @@ public class S3ResourceHelper {
 
     public void getObjectsListed() {
         List<S3ObjectSummary> objectSummaries = new ArrayList<S3ObjectSummary>();
+//        todo Change bucket name to prod for system admin api call
         ObjectListing objects = amazonS3.listObjects
                 ("dev.files.tbbtalent.org", "candidate/");
         objectSummaries.addAll(objects.getObjectSummaries());
@@ -292,14 +293,8 @@ public class S3ResourceHelper {
         System.out.println("Got all objects");
         List<S3ObjectSummary> filteredBucket = objectSummaries.stream().filter(s -> !s.getKey().contains("/migrated/"))
                 .collect(Collectors.toList());
-//        for(S3ObjectSummary summary : buckets ) {
-//            if (summary.getKey().contains("/migrated/")){
-//                buckets.remove(summary);
-//            }
-//        }
         System.out.println("filtered out migrated");
         for(S3ObjectSummary s : filteredBucket) {
-            //if (regexForPrefix(s.getKey())) {
             try {
                 ObjectMetadata metadata = new ObjectMetadata();
                 Mimetypes mimetypes = Mimetypes.getInstance();
@@ -312,8 +307,6 @@ public class S3ResourceHelper {
             } catch (Exception e) {
                 System.out.println("Error with object: " + s.getKey());
             }
-
-            //}
         }
     }
 
