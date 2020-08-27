@@ -130,20 +130,11 @@ export class ViewCandidateComponent implements OnInit {
 
   getAttachments() {
     this.attachments = [];
-
-    this.attachmentForm = this.fb.group({
-      candidateId: [this.candidate.id],
-      pageSize: 10,
-      pageNumber: 0,
-      sortDirection: 'DESC',
-      sortFields: [['createdDate']]
-    });
-
     this.loading = true;
-    this.candidateAttachmentService.search(this.attachmentForm.value).subscribe(
+    this.candidateAttachmentService.list(this.candidate.id).subscribe(
       results => {
-        this.attachments = results.content;
-        this.cvs = results.content.filter(attachment => attachment.cv === true)
+        this.attachments = results;
+        this.cvs = results.filter(attachment => attachment.cv === true)
         this.loading = false;
       },
       error => {

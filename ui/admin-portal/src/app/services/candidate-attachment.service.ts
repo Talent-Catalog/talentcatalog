@@ -3,10 +3,7 @@ import {Observable} from 'rxjs/index';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
-import {
-  CandidateAttachment,
-  CandidateAttachmentRequest
-} from "../model/candidate-attachment";
+import {CandidateAttachment, CandidateAttachmentRequest} from '../model/candidate-attachment';
 
 @Injectable({providedIn: 'root'})
 export class CandidateAttachmentService {
@@ -17,6 +14,10 @@ export class CandidateAttachmentService {
 
   search(request): Observable<SearchResults<CandidateAttachment>> {
     return this.http.post<SearchResults<CandidateAttachment>>(`${this.apiUrl}/search`, request);
+  }
+
+  list(id: number): Observable<CandidateAttachment[]> {
+    return this.http.get<CandidateAttachment[]>(`${this.apiUrl}/${id}/list`);
   }
 
   createAttachment(details: CandidateAttachmentRequest): Observable<CandidateAttachment>  {
