@@ -14,7 +14,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import static org.springframework.data.elasticsearch.annotations.FieldType.Keyword;
 
 /**
- * TODO JC Doc
+ * TODO Get rid of this and the other demo stuff
  *
  * @author John Cameron
  */
