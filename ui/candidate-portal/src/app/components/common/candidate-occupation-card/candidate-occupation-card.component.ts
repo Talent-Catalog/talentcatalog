@@ -30,6 +30,9 @@ export class CandidateOccupationCardComponent implements OnChanges {
   constructor() { }
 
   ngOnChanges() {
+    this.candidateOccupation = Object.assign(this.candidateOccupation, {
+      occupationId: this.candidateOccupation.occupation ? this.candidateOccupation.occupation.id : null,
+    });
   }
 
   /* This method removes the occupations from the dropdown that are already selected as a candidate occupation to avoid duplication
