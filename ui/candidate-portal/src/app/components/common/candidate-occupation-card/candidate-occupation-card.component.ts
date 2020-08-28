@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnChanges, Output} from '@angular/core';
-import {CandidateOccupation} from "../../../model/candidate-occupation";
-import {Occupation} from "../../../model/occupation";
+import {CandidateOccupation} from '../../../model/candidate-occupation';
+import {Occupation} from '../../../model/occupation';
 
 @Component({
   selector: 'app-candidate-occupation-card',
@@ -30,11 +30,6 @@ export class CandidateOccupationCardComponent implements OnChanges {
   constructor() { }
 
   ngOnChanges() {
-    if (!this.candidateOccupation.occupationId) {
-      this.candidateOccupation = Object.assign(this.candidateOccupation, {
-        occupationId: this.candidateOccupation.occupation ? this.candidateOccupation.occupation.id : null
-      });
-    }
   }
 
   /* This method removes the occupations from the dropdown that are already selected as a candidate occupation to avoid duplication
@@ -45,11 +40,11 @@ export class CandidateOccupationCardComponent implements OnChanges {
     } else if (!this.candidateOccupations || !this.occupations.length) {
       return this.occupations;
     } else {
-      let existingIds = this.candidateOccupations.map(candidateOcc => candidateOcc.occupation
-        ? candidateOcc.occupation.id.toString()
-        : candidateOcc.occupationId.toString()
-      );
-      existingIds = existingIds.filter(id => id !== this.candidateOccupation.occupationId.toString());
+      let existingIds = this.candidateOccupations.map(candidateOcc => candidateOcc.occupation.id.toString());
+      existingIds = existingIds.filter(id => id !== this.candidateOccupation.occupation.id.toString());
+      if (this.candidateOccupation.occupation.id !== 0) {
+        existingIds.push('0');
+      }
       return this.occupations.filter(occ => !existingIds.includes(occ.id.toString()));
     }
   }

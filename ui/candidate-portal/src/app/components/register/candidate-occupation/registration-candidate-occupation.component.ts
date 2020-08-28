@@ -69,7 +69,7 @@ export class RegistrationCandidateOccupationComponent implements OnInit, OnDestr
         this.candidateOccupations = candidate.candidateOccupations.map(occ => {
           return {
             id: occ.id,
-            occupationId: occ.occupation.id,
+            occupation: occ.occupation,
             yearsExperience: occ.yearsExperience,
             migrationOccupation: occ.migrationOccupation,
           };
