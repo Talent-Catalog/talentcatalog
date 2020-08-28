@@ -193,11 +193,11 @@ public class CandidateAdminApi {
      * and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
      */
-    @PutMapping("{id}/create-sflink")
-    public Map<String, Object> createSalesforceLink(@PathVariable("id") long id)
+    @PutMapping("{id}/update-sf")
+    public Map<String, Object> createUpdateSalesforce(@PathVariable("id") long id)
             throws NoSuchObjectException, GeneralSecurityException,
             WebClientException {
-        Candidate candidate = this.candidateService.createSalesforceLink(id);
+        Candidate candidate = this.candidateService.createUpdateSalesforce(id);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
     }

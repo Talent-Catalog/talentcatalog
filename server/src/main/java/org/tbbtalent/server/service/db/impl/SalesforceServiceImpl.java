@@ -12,7 +12,9 @@ import java.security.Signature;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.text.MessageFormat;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,13 +30,20 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientException;
-import org.tbbtalent.server.exception.NotImplementedException;
+import org.tbbtalent.server.exception.InvalidRequestException;
+import org.tbbtalent.server.exception.SalesforceException;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import reactor.core.publisher.Mono;
 
 /**
  * Standard implementation of Salesforce service
@@ -45,7 +54,11 @@ import io.jsonwebtoken.io.Encoders;
 public class SalesforceServiceImpl implements SalesforceService, InitializingBean {
     private static final Logger log = LoggerFactory.getLogger(SalesforceServiceImpl.class);
 
-    private boolean alertedDuplicateSFRecord = false; 
+    private boolean alertedDuplicateSFRecord = false;
+
+    private final Map<Class<?>,String> classSfpathMap = new HashMap<>();
+
+    private final String contactRetrievalFields = "Id,TBBId__c";
     
     private final EmailHelper emailHelper;
 
@@ -53,6 +66,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     private String privateKeyStr;
     
     private PrivateKey privateKey;
+
+    @Value("${salesforce.tbb.jordanAccount}")
+    private String tbbJordanAccountId;
+
+    @Value("${salesforce.tbb.lebanonAccount}")
+    private String tbbLebanonAccountId;
 
     private final WebClient webClient;
     
@@ -72,6 +91,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     public SalesforceServiceImpl(EmailHelper emailHelper) {
         this.emailHelper = emailHelper;
         
+        classSfpathMap.put(ContactRequest.class, "Contact");
+        
         WebClient.Builder builder = 
                 WebClient.builder()
                 .baseUrl("https://talentbeyondboundaries.my.salesforce.com/services/data/v49.0")
@@ -87,16 +108,49 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     }
 
     @Override
+    @NonNull
+    public Contact createContact(@NonNull Candidate candidate)
+            throws GeneralSecurityException, WebClientException,
+            SalesforceException {
+
+        //Create a contact request using data from the candidate
+        ContactRequest contactRequest = new ContactRequest(candidate);
+
+        //Execute a create request
+        ClientResponse response = executeCreate(contactRequest);
+
+        //And decode the response
+        CreateRecordResult result = response.bodyToMono(CreateRecordResult.class).block();
+
+        assert result != null;
+        if (!result.success) {
+            StringBuilder builder = new StringBuilder();
+            for (String error : result.errors) {
+                builder.append(error);
+                builder.append('\n');
+            }
+            throw new SalesforceException(builder.toString());
+        }
+
+
+        Contact contact = new Contact(candidate);
+        contact.setId(result.id);
+
+        return contact;
+    }
+
+    @Override
     @Nullable
-    public Contact findContact(@NonNull String tbbId) 
+    public Contact findContact(@NonNull Candidate candidate) 
             throws GeneralSecurityException, WebClientException {
-        
-        findCandidateContacts();
+
+        String candidateNumber = candidate.getCandidateNumber();
         
         //Note that the fields requested in the query should match the fields
         //in the Contact record.
         String query = 
-                "SELECT Name,Id,TBBId__c FROM Contact WHERE TBBId__c=" + tbbId;
+                "SELECT " + contactRetrievalFields + 
+                        " FROM Contact WHERE TBBId__c=" + candidateNumber;
         
         ClientResponse response = executeQuery(query);
         ContactQueryResult contacts = response.bodyToMono(ContactQueryResult.class).block();
@@ -111,7 +165,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                     if (nContacts > 1) {
                         //We have multiple contacts in Salesforce for the same 
                         //TBB candidate. There should only be one.
-                        final String msg = "Candidate number " + tbbId + 
+                        final String msg = "Candidate number " + candidateNumber + 
                                 " has more than one Contact record on Salesforce";
                         log.warn(msg);
                         if (!alertedDuplicateSFRecord) {
@@ -127,12 +181,21 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     }
 
     @Override
-    public List<Contact> findCandidateContacts() throws GeneralSecurityException, WebClientException {
+    public List<Contact> findCandidateContacts() 
+            throws GeneralSecurityException, WebClientException {
+        return findContacts("TBBid__c > 0");
+    }
+
+    @Override
+    public List<Contact> findContacts(String condition) 
+            throws GeneralSecurityException, WebClientException {
         String query =
-                "SELECT Name,Id,TBBId__c FROM Contact WHERE TBBid__c > 0";
+                "SELECT " + contactRetrievalFields + 
+                        " FROM Contact WHERE " + condition;
 
         ClientResponse response = executeQuery(query);
-        ContactQueryResult result = response.bodyToMono(ContactQueryResult.class).block();
+        ContactQueryResult result = 
+                response.bodyToMono(ContactQueryResult.class).block();
 
         //Retrieve the contact from the response 
         List<Contact> contacts = null;
@@ -141,6 +204,91 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         }
         
         return contacts;
+    }
+
+    @Override
+    public void updateContact(Candidate candidate) 
+            throws GeneralSecurityException {
+        //Create a contact request using data from the candidate
+        ContactRequest contactRequest = new ContactRequest(candidate);
+
+        String salesforceId = candidate.getSfId();
+        if (salesforceId == null) {
+            throw new SalesforceException(
+                    "Could not find candidate " + 
+                            candidate.getCandidateNumber() + 
+                            " on Salesforce from sflink " + 
+                            candidate.getSflink());             
+        }
+        
+        //Execute the update request
+        executeUpdate(salesforceId, contactRequest);
+    }
+
+    /**
+     * Execute general purpose Salesforce create.
+     * <p/>
+     * For details on Salesforce create, see 
+     * https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_sobject_create.htm     
+     * @param obj Object supplying data used to create corresponding Salesforce
+     *            record.
+     * @return ClientResponse - can use bodyToMono method to extract into an object.
+     * @throws GeneralSecurityException If there are errors relating to keys
+     * and digital signing.
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     */
+    private ClientResponse executeCreate(Object obj)
+            throws GeneralSecurityException, WebClientException {
+
+        Class<?> cl = obj.getClass();
+        String path = classSfpathMap.get(cl);
+        if (path == null) {
+            throw new InvalidRequestException(
+                    "No mapping to Salesforce for objects of class " + cl.getSimpleName());
+        }
+
+        WebClient.RequestHeadersSpec<?> spec = webClient.post()
+                .uri("/sobjects/" + path)
+                .body(Mono.just(obj), cl);
+
+        return executeWithRetry(spec);
+    }
+
+    /**
+     * Execute general purpose Salesforce update.
+     * <p/>
+     * For details on Salesforce update, see
+     * https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_update_fields.htm
+     * <p/>
+     * Note that there is no body in the response - so this method just returns void
+     * @param id Salesforce id for the record
+     * @param obj Object supplying data used to update the Salesforce record.
+     * @throws GeneralSecurityException If there are errors relating to keys
+     * and digital signing.
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     */
+    private void executeUpdate(String id, Object obj)
+            throws GeneralSecurityException, WebClientException {
+
+        Class<?> cl = obj.getClass();
+        String path = classSfpathMap.get(cl);
+        if (path == null) {
+            throw new InvalidRequestException(
+                    "No mapping to Salesforce for objects of class " + cl.getSimpleName());
+        }
+
+        WebClient.RequestHeadersSpec<?> spec = webClient.patch()
+                .uri("/sobjects/" + path + "/" + id)
+                .body(Mono.just(obj), cl);
+
+        ClientResponse response = executeWithRetry(spec);
+        
+        //Only a 204 response is expected - and no body.
+        if (response.rawStatusCode() != 204) {
+            WebClientException ex = response.createException().block();
+            assert ex != null;
+            throw ex;
+        }
     }
 
     /**
@@ -174,12 +322,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
      * @throws WebClientException if there is a problem connecting to Salesforce
      */
     private ClientResponse executeWithRetry(WebClient.RequestHeadersSpec<?> spec) 
-            throws GeneralSecurityException, WebClientException {
+            throws GeneralSecurityException, SalesforceException {
         if (accessToken == null) {
             accessToken = requestAccessToken();
-            spec.headers(headers -> headers.put("Authorization",
-                        Collections.singletonList("Bearer " + accessToken)));
         }
+        spec.headers(headers -> headers.put("Authorization",
+                Collections.singletonList("Bearer " + accessToken)));
         ClientResponse clientResponse = spec.exchange().block();
         if (clientResponse == null ||  clientResponse.statusCode() == HttpStatus.UNAUTHORIZED) {
             //Get new token and try again
@@ -187,22 +335,29 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             spec.headers(headers -> headers.put("Authorization",
                     Collections.singletonList("Bearer " + accessToken)));
             clientResponse = spec.exchange().block();
-            if (clientResponse == null) {
-                throw new RuntimeException("Null client response to Salesforce request");
-            } else if (clientResponse.rawStatusCode() >= 400) {
-                WebClientException ex = clientResponse.createException().block();
-                assert ex != null;
-                throw ex;
-            }
+        }
+
+        if (clientResponse == null) {
+            throw new RuntimeException("Null client response to Salesforce request");
+        } else if (clientResponse.rawStatusCode() == 300 || 
+                clientResponse.rawStatusCode() == 400) {
+            //Pull out the extra info on the error provided by Salesforce.
+            //See https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/errorcodes.htm
+            String errorInfo = clientResponse.bodyToMono(String.class).block();
+            //Create an exception and use their message. The exception by itself
+            //is no use because it doesn't decode the above Salesforce error
+            //info from the body of the response.
+            WebClientException ex = clientResponse.createException().block();
+            assert ex != null;
+            
+            //Create our own exception with the extra info.
+            throw new SalesforceException(ex.getMessage() + ": " + errorInfo);
+        } else if (clientResponse.rawStatusCode() > 300) {
+            WebClientException ex = clientResponse.createException().block();
+            assert ex != null;
+            throw ex;
         }
         return clientResponse;
-    }
-
-    @Override
-    @NonNull
-    public Contact createContact(@NonNull String tbbId) {
-        //TODO JC createContact not implemented in SalesforceServiceImpl
-        throw new NotImplementedException("SalesforceServiceImpl", "createContact");
     }
 
     /**
@@ -346,6 +501,45 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         public boolean done;
         public List<Contact> records;
         
+    }
+
+    public static class CreateRecordResult {
+        public String id;
+        public boolean success;
+        public List<String> errors;
+    }
+
+    @Getter
+    @Setter
+    @ToString
+    public class ContactRequest {
+        public String AccountId;
+        public String FirstName;
+        public String LastName;
+        public String MailingCountry;
+        public String Id;
+        public Long TBBid__c;
+
+        public ContactRequest(Candidate candidate) {
+            final String country = candidate.getCountry().getName();
+            this.MailingCountry = country;
+
+            //Set account id based on candidate's country 
+            switch (country) {
+                case "Jordan":
+                    AccountId = tbbJordanAccountId;
+                    break;
+                case "Lebanon":
+                    AccountId = tbbLebanonAccountId;
+                    break;
+            }
+
+            User user = candidate.getUser();
+            this.FirstName = user.getFirstName();
+            this.LastName = user.getLastName();
+
+            this.TBBid__c = Long.valueOf(candidate.getCandidateNumber());
+        }
     }
     
 }

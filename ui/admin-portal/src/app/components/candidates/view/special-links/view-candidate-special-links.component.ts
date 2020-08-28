@@ -67,9 +67,9 @@ export class ViewCandidateSpecialLinksComponent implements OnInit, OnChanges {
       });
   }
 
-  createSalesforceLink() {
+  createUpdateSalesforce() {
     this.error = null;
-    this.candidateService.createSalesforceLink(this.candidate.id).subscribe(
+    this.candidateService.createUpdateSalesforce(this.candidate.id).subscribe(
       candidate => {
         this.candidate = candidate;
       },

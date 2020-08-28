@@ -1661,18 +1661,23 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Candidate createSalesforceLink(long id) 
+    public Candidate createUpdateSalesforce(long id) 
             throws NoSuchObjectException, GeneralSecurityException, 
             WebClientException {
         Candidate candidate = getCandidate(id);
-
-        String candidateNumber = candidate.getCandidateNumber();
-
-        Contact candidateSf = salesforceService.findContact(candidateNumber);
+        
+        Contact candidateSf;
+        candidateSf = salesforceService.findContact(candidate);
         if (candidateSf == null) {
-            candidateSf = salesforceService.createContact(candidateNumber);
+            candidateSf = salesforceService.createContact(candidate);
+            candidate.setSflink(candidateSf.getUrl());
+        } else {
+            //We already have SF entry. Update it with the latest candidate
+            //data.
+            candidate.setSflink(candidateSf.getUrl());
+            salesforceService.updateContact(candidate);
         }
-        candidate.setSflink(candidateSf.getUrl());
+
         save(candidate, false);
         return candidate;
     }

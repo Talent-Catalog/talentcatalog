@@ -218,9 +218,12 @@ public interface CandidateService {
             throws NoSuchObjectException, IOException;
 
     /**
-     * Creates a link to a Contact record on Salesforce for the given candidate.
+     * Creates/updates a Contact record on Salesforce for the given candidate.
      * <p/>
      * If no Contact record exists, one is created.
+     * If a record exists, it is updated to match the candidate details.
+     * <p/>
+     * The link to Salesforce record (sflink) is established and stored.
      *
      * @param id ID of candidate
      * @return Updated candidate object, containing link to corresponding 
@@ -231,7 +234,7 @@ public interface CandidateService {
      * and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
      */
-    Candidate createSalesforceLink(long id)
+    Candidate createUpdateSalesforce(long id)
             throws NoSuchObjectException, GeneralSecurityException,
             WebClientException;
         

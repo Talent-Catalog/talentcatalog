@@ -80,8 +80,8 @@ export class CandidateService {
       `${this.apiUrl}/${candidateId}/create-folder`, null);
   }
 
-  createSalesforceLink(candidateId: number): Observable<Candidate> {
+  createUpdateSalesforce(candidateId: number): Observable<Candidate> {
     return this.http.put<Candidate>(
-      `${this.apiUrl}/${candidateId}/create-sflink`, null);
+      `${this.apiUrl}/${candidateId}/update-sf`, null);
   }
 }

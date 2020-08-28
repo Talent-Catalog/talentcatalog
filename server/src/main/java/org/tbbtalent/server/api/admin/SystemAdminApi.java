@@ -148,8 +148,44 @@ public class SystemAdminApi {
         log.info("Done. Processed " + count);
 
         return "done";
-    } 
-    
+    }
+
+    @GetMapping("sfcontactsupdate")
+    public String updateContactsMatchingCondition(@RequestParam String q) throws GeneralSecurityException {
+        log.info("Searching Salesforce for contact records matching condition " + q);
+        List<Contact> contacts = salesforceService.findContacts(q);
+        log.info("Updating " + contacts.size() + " candidates");
+        int count = 0;
+        for (Contact contact : contacts) {
+
+            final Long sfTbbId = contact.getTBBid__c();
+            if (sfTbbId == null) {
+                log.warn("Contact is not a TBB candidate: " + contact.getUrl());
+            } else {
+                final String candidateNumber = sfTbbId.toString();
+                Candidate candidate = candidateRepository.findByCandidateNumber(candidateNumber);
+                if (candidate == null) {
+                    log.warn("No candidate found for TBBid " + candidateNumber
+                            + " SF link " + contact.getUrl());
+                } else {
+                    try {
+                        salesforceService.updateContact(candidate);
+                    } catch (Exception ex) {
+                        log.warn("Problem updating candidate " 
+                                + candidateNumber + ": " + ex.getMessage());
+                    }
+                }
+            }
+            count++;
+            if (count%20 == 0) {
+                log.info("Processed " + count);
+            }
+        }
+        log.info("Done. Processed " + count);
+
+        return "done";
+    }
+
     @GetMapping("google")
     public String migrateGoogleDriveFolders() throws IOException {
         log.info("Starting google folder re-linking. About to get folders.");
