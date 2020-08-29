@@ -124,7 +124,7 @@ public class SystemAdminApi {
         api.migrate();
     }
 
-    @GetMapping("salesforce")
+    @GetMapping("updatesflinks")
     public String updateCandidateSalesforceLinks() throws GeneralSecurityException {
         log.info("Searching Salesforce for candidate contact records");
         List<Contact> contacts = salesforceService.findCandidateContacts();

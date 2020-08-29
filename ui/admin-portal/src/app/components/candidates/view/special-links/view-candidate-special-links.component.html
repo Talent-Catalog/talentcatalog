@@ -5,6 +5,9 @@
 <div class="card">
   <div class="card-header">
     Special links
+    <span *ngIf="loading">
+        <i class="fas fa-spinner fa-spin"></i>
+    </span>
     <div class="float-right" *ngIf="editable">
       <button class="btn btn-outline-secondary"
               (click)="createUpdateSalesforce()">
