@@ -11,6 +11,7 @@
                                      [candidateOccupations]="candidateOccupations"
                                      [occupations]="occupations"
                                      [disabled]="saving || loading"
+                                     (candidateOccupationChange)="updateCandidateOccupations($event)"
                                      (onDelete)="deleteOccupation(i, occupation.occupationId)">
       </app-candidate-occupation-card>
 

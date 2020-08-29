@@ -70,6 +70,7 @@ export class RegistrationCandidateOccupationComponent implements OnInit, OnDestr
           return {
             id: occ.id,
             occupation: occ.occupation,
+            occupationId: occ.occupation?.id,
             yearsExperience: occ.yearsExperience,
             migrationOccupation: occ.migrationOccupation,
           };
@@ -195,14 +196,12 @@ export class RegistrationCandidateOccupationComponent implements OnInit, OnDestr
     } else if (!this.candidateOccupations || !this.occupations.length) {
       return this.occupations;
     } else {
-      const existingIds = this.candidateOccupations.map(candidateOcc => candidateOcc.occupation
-        ? candidateOcc.occupation.id.toString()
-        : candidateOcc.occupationId.toString()
+      const existingIds = this.candidateOccupations.map(candidateOcc => candidateOcc.occupationId
+        ? candidateOcc.occupationId.toString()
+        : candidateOcc.occupation.id.toString()
       );
-      const unknown = this.candidateOccupations.find(occ => occ.id === 0);
-      if (unknown !== null) {
-        existingIds.push('0');
-      }
+      // Remove the Unknown occupation from the occupations (only show if an existing id)
+      existingIds.push('0');
       return this.occupations.filter(occ => !existingIds.includes(occ.id.toString()));
     }
   }
