@@ -26,6 +26,7 @@ public class Contact {
     static final String urlSuffix = "/view";
     
     private Attributes attributes;
+    public String AccountId;
     public String Id;
     public Long TBBid__c;
 

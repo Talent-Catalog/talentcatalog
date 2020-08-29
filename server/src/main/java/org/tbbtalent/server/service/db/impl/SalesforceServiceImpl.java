@@ -58,7 +58,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     private final Map<Class<?>,String> classSfpathMap = new HashMap<>();
 
-    private final String contactRetrievalFields = "Id,TBBId__c";
+    private final String contactRetrievalFields = "Id,AccountId,TBBId__c";
     
     private final EmailHelper emailHelper;
 
@@ -72,6 +72,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     @Value("${salesforce.tbb.lebanonAccount}")
     private String tbbLebanonAccountId;
+
+    @Value("${salesforce.tbb.otherAccount}")
+    private String tbbOtherAccountId;
+
+    @Value("${salesforce.tbb.tbbAccount}")
+    private String tbbAccountId;
 
     private final WebClient webClient;
     
