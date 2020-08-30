@@ -53,12 +53,15 @@ import reactor.core.publisher.Mono;
 @Service
 public class SalesforceServiceImpl implements SalesforceService, InitializingBean {
     private static final Logger log = LoggerFactory.getLogger(SalesforceServiceImpl.class);
-
+    private static final String candidateNumberSFFieldName = "TBBid__c";
+    
     private boolean alertedDuplicateSFRecord = false;
 
     private final Map<Class<?>,String> classSfpathMap = new HashMap<>();
 
-    private final String contactRetrievalFields = "Id,AccountId,TBBId__c";
+    private final String contactRetrievalFields = 
+            "Id,AccountId," + candidateNumberSFFieldName;
+     
     
     private final EmailHelper emailHelper;
 
@@ -122,11 +125,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         //Create a contact request using data from the candidate
         ContactRequest contactRequest = new ContactRequest(candidate);
 
-        //Execute a create request
-        ClientResponse response = executeCreate(contactRequest);
-
         //And decode the response
-        CreateRecordResult result = response.bodyToMono(CreateRecordResult.class).block();
+        CreateRecordResult result = executeCreate(contactRequest);
 
         assert result != null;
         if (!result.success) {
@@ -146,6 +146,39 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     }
 
     @Override
+    @NonNull
+    public Contact createOrUpdateContact(@NonNull Candidate candidate)
+            throws GeneralSecurityException, WebClientException,
+            SalesforceException {
+
+        //Create a contact request using data from the candidate
+        ContactRequest contactRequest = new ContactRequest(candidate);
+        
+        //Upsert request bodies should not include the TBBid 
+        //(it is specified as part of the PATCH uri).
+        contactRequest.setTBBid__c(null);
+
+        //And decode the response
+        CreateRecordResult result = executeUpsert(candidateNumberSFFieldName, 
+                candidate.getCandidateNumber(), contactRequest);
+
+        assert result != null;
+        if (!result.success) {
+            StringBuilder builder = new StringBuilder();
+            for (String error : result.errors) {
+                builder.append(error);
+                builder.append('\n');
+            }
+            throw new SalesforceException(builder.toString());
+        }
+
+        Contact contact = new Contact(candidate);
+        contact.setId(result.id);
+
+        return contact;
+    }
+
+    @Override
     @Nullable
     public Contact findContact(@NonNull Candidate candidate) 
             throws GeneralSecurityException, WebClientException {
@@ -156,7 +189,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         //in the Contact record.
         String query = 
                 "SELECT " + contactRetrievalFields + 
-                        " FROM Contact WHERE TBBId__c=" + candidateNumber;
+                        " FROM Contact WHERE " + 
+                        candidateNumberSFFieldName + "=" + candidateNumber;
         
         ClientResponse response = executeQuery(query);
         ContactQueryResult contacts = response.bodyToMono(ContactQueryResult.class).block();
@@ -238,12 +272,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
      * https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_sobject_create.htm     
      * @param obj Object supplying data used to create corresponding Salesforce
      *            record.
-     * @return ClientResponse - can use bodyToMono method to extract into an object.
+     * @return CreateRecordResult - contains SF id of created record.
      * @throws GeneralSecurityException If there are errors relating to keys
      * and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
      */
-    private ClientResponse executeCreate(Object obj)
+    private CreateRecordResult executeCreate(Object obj)
             throws GeneralSecurityException, WebClientException {
 
         Class<?> cl = obj.getClass();
@@ -257,7 +291,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 .uri("/sobjects/" + path)
                 .body(Mono.just(obj), cl);
 
-        return executeWithRetry(spec);
+        ClientResponse response = executeWithRetry(spec);
+        CreateRecordResult result = response.bodyToMono(CreateRecordResult.class).block();
+        return result;
     }
 
     /**
@@ -295,6 +331,50 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             assert ex != null;
             throw ex;
         }
+    }
+
+    /**
+     * Execute general purpose Salesforce upsert (insert - ie create - 
+     * if it doesn't exist, otherwise update if it does) based on a unique
+     * external id. For example TBBid__c, passing in a candidate's 
+     * candidateNumber as the id.
+     * <p/>
+     * For details on Salesforce upsert, see
+     * https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_upsert.htm
+     * <p/>
+     * In recent versions of API (since 46.0) you always get a response with
+     * a body containing the SF id.
+     * <ul>
+     *     <li>create - HTTP status 201 (Created)</li>
+     *     <li>update - HTTP status 200 (OK) </li>
+     * </ul>
+     * @param externalIdName Name of SF field containing an unique id used to 
+     *       identify SF records. For example the SF TBBid__c field on Contact
+     *       records which we populate with candidate's candidateNumber.*                       
+     * @param id Value of the externalID 
+     * @param obj Object supplying data used to update the Salesforce record.
+     * @return ClientResponse  
+     * @throws GeneralSecurityException If there are errors relating to keys
+     * and digital signing.
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     */
+    private UpsertResult executeUpsert(String externalIdName, String id, Object obj)
+            throws GeneralSecurityException, WebClientException {
+
+        Class<?> cl = obj.getClass();
+        String path = classSfpathMap.get(cl);
+        if (path == null) {
+            throw new InvalidRequestException(
+                    "No mapping to Salesforce for objects of class " + cl.getSimpleName());
+        }
+
+        WebClient.RequestHeadersSpec<?> spec = webClient.patch()
+                .uri("/sobjects/" + path + "/" + externalIdName + "/" + id)
+                .body(Mono.just(obj), cl);
+
+        ClientResponse response = executeWithRetry(spec);
+        UpsertResult result = response.bodyToMono(UpsertResult.class).block();
+        return result;
     }
 
     /**
@@ -513,6 +593,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         public String id;
         public boolean success;
         public List<String> errors;
+    }
+
+    public static class UpsertResult extends CreateRecordResult {
+        public boolean created;
     }
 
     @Getter

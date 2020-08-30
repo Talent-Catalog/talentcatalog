@@ -1666,17 +1666,8 @@ public class CandidateServiceImpl implements CandidateService {
             WebClientException {
         Candidate candidate = getCandidate(id);
         
-        Contact candidateSf;
-        candidateSf = salesforceService.findContact(candidate);
-        if (candidateSf == null) {
-            candidateSf = salesforceService.createContact(candidate);
-            candidate.setSflink(candidateSf.getUrl());
-        } else {
-            //We already have SF entry. Update it with the latest candidate
-            //data.
-            candidate.setSflink(candidateSf.getUrl());
-            salesforceService.updateContact(candidate);
-        }
+        Contact candidateSf = salesforceService.createOrUpdateContact(candidate);
+        candidate.setSflink(candidateSf.getUrl());
 
         save(candidate, false);
         return candidate;
