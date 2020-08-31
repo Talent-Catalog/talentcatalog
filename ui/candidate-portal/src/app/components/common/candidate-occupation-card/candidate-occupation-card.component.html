@@ -16,12 +16,13 @@
     </p>
   </div>
 
-  <div class="form-group" *ngIf="candidateOccupation.occupationId == 0 && candidateOccupation.migrationOccupation">
-    <label>Other Occupation: </label>
+  <div class="form-group mb-0" *ngIf="candidateOccupation.occupationId == 0 && candidateOccupation.migrationOccupation">
+    <label>{{ 'REGISTRATION.OCCUPATION.LABEL.MIGRATED_OCCUPATION' | translate }}: </label>
     <span> {{candidateOccupation.migrationOccupation}}</span>
-    <p class="text-danger">
-      Note you have an occupation which needs to be classified into our list of occupations above. Please select the most
-      accurate occupation and update your profile. This will help you appear in more relevant job searches.
+  </div>
+  <div>
+    <p class="text-danger" *ngIf="candidateOccupation.occupationId == 0">
+      {{ 'ERROR.UNKNOWN_OCCUPATION' | translate }}
     </p>
   </div>
 

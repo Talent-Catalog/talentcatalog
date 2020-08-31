@@ -8,17 +8,17 @@
 
       <div class="card occupation-card">
         <div class="card occupation-heading">
-          <h5>{{occupation.occupation | translation : 'occupation'}}</h5>
-            <p class="text-danger warning-width mb-0" *ngIf="occupation.occupation.id === 0">
-              You have an occupation that is unknown, please update your occupation to be seen in job searches.
-            </p>
+          <h5>{{occupation.occupation | translation : 'occupation'}}
+            <span *ngIf="occupation.occupation.id == 0 && occupation.migrationOccupation"> : {{occupation.migrationOccupation}}</span>
+          </h5>
+          <p class="text-danger warning-width mb-0" *ngIf="occupation.occupation.id === 0">
+            {{ 'ERROR.UNKNOWN_OCCUPATION' | translate }}
+          </p>
           <button class="btn btn-outline-primary d-none d-md-block"
                   (click)="addExperience(occupation)">
             {{ 'REGISTRATION.EXPERIENCE.BUTTON.ADD' | translate }} *
           </button>
         </div>
-
-
 
         <div class="card alert alert-danger" *ngIf="experiencesByCandidateOccupation[occupation.id]?.length===0">
           {{ 'ERROR.MISSING_WORK_EXPERIENCE' | translate }}
