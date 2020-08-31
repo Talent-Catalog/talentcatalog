@@ -453,11 +453,18 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         savedList.getCandidates().remove(this);
     }
 
-    private String extractIdFromUrl(String url) {
+    public static String extractIdFromUrl(String url) {
         if (url == null) {
             return null;
         }
-
+        
+        //Pick the id out from the url by looking for an unbroken sequence
+        //or 15 or more "word" chararacters - ie no punctuation.
+        //The problem is that talentbeyondboundaries will be in the url and
+        //it is more than 15 characters long, so can match.
+        //So start by pulling "talentbeyondboundaries" out of the string.
+        url = url.replace("talentbeyondboundaries", "");
+        
         //https://salesforce.stackexchange.com/questions/1653/what-are-salesforce-ids-composed-of
         String pattern = ".*[^\\w]([\\w]{15,})[^\\w]?.*";
         Pattern r = Pattern.compile(pattern);
