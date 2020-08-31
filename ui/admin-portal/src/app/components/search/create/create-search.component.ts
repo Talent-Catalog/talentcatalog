@@ -64,7 +64,7 @@ export class CreateSearchComponent implements OnInit {
       name: [null, Validators.required],
       savedSearchType: [null, Validators.required],
       savedSearchSubtype: [null, this.subtypeRequiredValidator()],
-      reviewable: [true, Validators.required],
+      reviewable: [false, Validators.required],
     });
 
     if (this.savedSearch) {
