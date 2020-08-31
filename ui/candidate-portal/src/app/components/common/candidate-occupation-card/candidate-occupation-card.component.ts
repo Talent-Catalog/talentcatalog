@@ -46,10 +46,7 @@ export class CandidateOccupationCardComponent implements OnChanges {
     } else if (!this.candidateOccupations || !this.occupations.length) {
       return this.occupations;
     } else {
-      let existingIds = this.candidateOccupations.map(candidateOcc => candidateOcc.occupationId.toString()
-        // ? candidateOcc.occupationId.toString()
-        // : candidateOcc.occupation.id.toString()
-      );
+      let existingIds = this.candidateOccupations.map(candidateOcc => candidateOcc.occupationId.toString());
       // Remove the current occupation from the list so it appears in the dropdown to display.
       existingIds = existingIds.filter(id => id !== this.candidateOccupation.occupationId.toString());
       // Remove the Unknown occupation from the results if it isn't the current occupation input
