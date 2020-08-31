@@ -5,6 +5,7 @@
 package org.tbbtalent.server.api.admin;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -101,6 +103,13 @@ public class SavedListCandidateAdminApi implements IManyToManyApi<SavedListGetRe
         response.setHeader("Content-Disposition", "attachment; filename=\"" + "candidates.csv\"");
         response.setContentType("text/csv; charset=utf-8");
         candidateService.exportToCsv(savedListId, request, response.getWriter());
+    }
+
+    @PutMapping(value = "{id}/update-sf")
+    public void createUpdateSalesforce(
+            @PathVariable("id") long savedListId) 
+            throws NoSuchObjectException, GeneralSecurityException {
+        savedListService.createUpdateSalesforce(savedListId);
     }
     
 }

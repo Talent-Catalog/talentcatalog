@@ -99,6 +99,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   loading: boolean;
   searching: boolean;
   exporting: boolean;
+  updating: boolean;
   savingSelection: boolean;
   searchForm: FormGroup;
 
@@ -515,6 +516,10 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       ? this.candidateSource.reviewable : false;
   }
 
+  isSalesforceUpdatable(): boolean {
+    return !isSavedSearch(this.candidateSource);
+  }
+
   isSelectable(): boolean {
     return isSavedSearch(this.candidateSource);
   }
@@ -724,5 +729,21 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     const candidate: Candidate = $event.item;
     this.addCandidateToList(candidate);
 
+  }
+
+  createUpdateSalesforce() {
+    this.error = null;
+    this.updating = true;
+    this.candidateSourceCandidateService.createUpdateSalesforce(
+      this.candidateSource).subscribe(
+      result => {
+        this.doSearch(true);
+        this.updating = false;
+      },
+      err => {
+        this.error = err;
+        this.updating = false;
+      }
+    );
   }
 }

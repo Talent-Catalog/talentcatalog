@@ -33,4 +33,10 @@ export class CandidateSourceCandidateService {
       `${apiUrl}/${source.id}/export/csv`, request, {responseType: 'blob'});
   }
 
+  createUpdateSalesforce(source: CandidateSource): Observable<void> {
+    const apiUrl = isSavedSearch(source) ?
+      this.savedSearchApiUrl : this.savedListApiUrl;
+
+    return this.http.put<void>(`${apiUrl}/${source.id}/update-sf`, null);
+  }
 }

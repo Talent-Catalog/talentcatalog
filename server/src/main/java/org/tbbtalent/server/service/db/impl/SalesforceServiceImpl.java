@@ -11,6 +11,7 @@ import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -57,7 +58,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     
     private boolean alertedDuplicateSFRecord = false;
 
-    private final Map<Class<?>,String> classSfpathMap = new HashMap<>();
+    private final Map<Class<?>,String> classSfPathMap = new HashMap<>();
+    private final Map<Class<?>,String> classSfCompositePathMap = new HashMap<>();
 
     private final String contactRetrievalFields = 
             "Id,AccountId," + candidateNumberSFFieldName;
@@ -100,7 +102,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     public SalesforceServiceImpl(EmailHelper emailHelper) {
         this.emailHelper = emailHelper;
         
-        classSfpathMap.put(ContactRequest.class, "Contact");
+        classSfPathMap.put(ContactRequest.class, "Contact");
+        classSfCompositePathMap.put(ContactRequestComposite.class, "Contact");
         
         WebClient.Builder builder = 
                 WebClient.builder()
@@ -130,12 +133,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
         assert result != null;
         if (!result.success) {
-            StringBuilder builder = new StringBuilder();
-            for (String error : result.errors) {
-                builder.append(error);
-                builder.append('\n');
-            }
-            throw new SalesforceException(builder.toString());
+            throw new SalesforceException("Create failed for candidate "
+                    + candidate.getCandidateNumber()
+                    + ": " + result.getErrorMessage());
         }
 
 
@@ -158,24 +158,67 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         //(it is specified as part of the PATCH uri).
         contactRequest.setTBBid__c(null);
 
-        //And decode the response
-        CreateRecordResult result = executeUpsert(candidateNumberSFFieldName, 
+        //Execute and decode the response
+        UpsertResult result = executeUpsert(candidateNumberSFFieldName, 
                 candidate.getCandidateNumber(), contactRequest);
 
         assert result != null;
-        if (!result.success) {
-            StringBuilder builder = new StringBuilder();
-            for (String error : result.errors) {
-                builder.append(error);
-                builder.append('\n');
-            }
-            throw new SalesforceException(builder.toString());
+        if (!result.isSuccess()) {
+            throw new SalesforceException("Update failed for candidate " 
+                    + candidate.getCandidateNumber() 
+                    + ": " + result.getErrorMessage());
         }
 
         Contact contact = new Contact(candidate);
-        contact.setId(result.id);
+        contact.setId(result.getId());
 
         return contact;
+    }
+
+    @Override
+    @NonNull
+    public List<Contact> createOrUpdateContacts(@NonNull List<Candidate> candidates) 
+            throws GeneralSecurityException, WebClientException, SalesforceException {
+        List<ContactRecordComposite> contactRequests = new ArrayList<>();
+        for (Candidate candidate : candidates) {
+            //Create a contact request using data from the candidate
+            ContactRecordComposite contactRequest = new ContactRecordComposite(candidate);
+            contactRequests.add(contactRequest);
+        }
+        ContactRequestComposite req = new ContactRequestComposite();
+        req.setRecords(contactRequests);
+        
+        //Execute and decode the response
+        UpsertResult[] results = 
+                executeUpserts(candidateNumberSFFieldName, req);
+
+        if (results.length != candidates.size()) {
+            //This is a fatal error because if the numbers don't match we don't 
+            //know how to match results to candidates.
+            throw new SalesforceException(
+                    "Number of results (" + results.length 
+                            + ") did not match number of candidates (" 
+                            + candidates.size() + ")");
+        }
+        
+        //Extract the contacts from the returned results.
+        //Failed results will not have the Salesforce id set.
+        List<Contact> contacts = new ArrayList<>();
+        int count = 0;
+        for (Candidate candidate : candidates) {
+            Contact contact = new Contact(candidate);
+            UpsertResult result = results[count++];
+            if (result.isSuccess()) {
+                contact.setId(result.getId());
+            } else {
+                log.error("Update failed for candidate "
+                        + candidate.getCandidateNumber()
+                        + ": " + result.getErrorMessage());
+            }
+            contacts.add(contact);
+        }
+        
+        return contacts;
     }
 
     @Override
@@ -281,7 +324,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             throws GeneralSecurityException, WebClientException {
 
         Class<?> cl = obj.getClass();
-        String path = classSfpathMap.get(cl);
+        String path = classSfPathMap.get(cl);
         if (path == null) {
             throw new InvalidRequestException(
                     "No mapping to Salesforce for objects of class " + cl.getSimpleName());
@@ -313,7 +356,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             throws GeneralSecurityException, WebClientException {
 
         Class<?> cl = obj.getClass();
-        String path = classSfpathMap.get(cl);
+        String path = classSfPathMap.get(cl);
         if (path == null) {
             throw new InvalidRequestException(
                     "No mapping to Salesforce for objects of class " + cl.getSimpleName());
@@ -362,7 +405,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             throws GeneralSecurityException, WebClientException {
 
         Class<?> cl = obj.getClass();
-        String path = classSfpathMap.get(cl);
+        String path = classSfPathMap.get(cl);
         if (path == null) {
             throw new InvalidRequestException(
                     "No mapping to Salesforce for objects of class " + cl.getSimpleName());
@@ -375,6 +418,32 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         ClientResponse response = executeWithRetry(spec);
         UpsertResult result = response.bodyToMono(UpsertResult.class).block();
         return result;
+    }
+
+    private UpsertResult[] executeUpserts(String externalIdName, HasSize obj) 
+            throws GeneralSecurityException {
+        
+        Class<?> cl = obj.getClass();
+        String path = classSfCompositePathMap.get(cl);
+        if (path == null) {
+            throw new InvalidRequestException(
+                    "No mapping to Salesforce for objects of class " + cl.getSimpleName());
+        }
+
+        if (obj.checkSize() > 200) {
+            throw new InvalidRequestException(
+                    "Too many records (" + obj.checkSize() 
+                            + ") to update in one go. Maximum = 200." );
+        }
+
+        WebClient.RequestHeadersSpec<?> spec = webClient.patch()
+                .uri("/composite/sobjects/" + path + "/" + externalIdName)
+                .body(Mono.just(obj), cl);
+
+        ClientResponse response = executeWithRetry(spec);
+        UpsertResult[] results = response.bodyToMono(UpsertResult[].class).block();
+        
+        return results;
     }
 
     /**
@@ -574,7 +643,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         return privateKey;
     }
 
-    public static class BearerTokenResponse {
+    static class BearerTokenResponse {
         public String access_token;
         public String scope;
         public String instance_url;
@@ -582,27 +651,46 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         public String token_type;
     }
 
-    public static class ContactQueryResult {
+    static class ContactQueryResult {
         public int totalSize;
         public boolean done;
         public List<Contact> records;
         
     }
 
-    public static class CreateRecordResult {
+    @Getter
+    static class CreateRecordResult {
         public String id;
         public boolean success;
-        public List<String> errors;
+        public List<ErrorRecord> errors;
+
+        public String getErrorMessage() {
+            StringBuilder builder = new StringBuilder();
+            for (ErrorRecord error : getErrors()) {
+                builder.append(error).append('\n');
+            }
+            return builder.toString();
+        }
     }
 
-    public static class UpsertResult extends CreateRecordResult {
+    @Getter
+    static class UpsertResult extends CreateRecordResult {
         public boolean created;
     }
 
     @Getter
     @Setter
     @ToString
-    public class ContactRequest {
+    static class ErrorRecord {
+        public String statusCode;
+        public String message;
+        public List<String> fields;
+    }
+    
+    @Getter
+    @Setter
+    @ToString
+    class ContactRequest {
         public String AccountId;
         public String FirstName;
         public String LastName;
@@ -622,6 +710,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 case "Lebanon":
                     AccountId = tbbLebanonAccountId;
                     break;
+                default:
+                    AccountId = tbbOtherAccountId;
             }
 
             User user = candidate.getUser();
@@ -629,6 +719,50 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             this.LastName = user.getLastName();
 
             this.TBBid__c = Long.valueOf(candidate.getCandidateNumber());
+        }
+    }
+
+    @Getter
+    @Setter
+    @ToString
+    class ContactRequestComposite implements HasSize {
+        public boolean allOrNone = false;
+        public List<ContactRecordComposite> records = new ArrayList<>();
+
+        @Override
+        public int checkSize() {
+            return records.size();
+        }
+    }
+    
+    interface HasSize {
+        /**
+         * Note that it is not getSize, so that it doesn't look like an
+         * attribute when the body is being extracted.
+         * @return size
+         */
+        int checkSize();
+    }
+    
+    @Getter
+    @Setter
+    @ToString(callSuper = true)
+    class ContactRecordComposite extends ContactRequest {
+        public CompositeAttributes attributes;
+
+        public ContactRecordComposite(Candidate candidate) {
+            super(candidate);
+            attributes = new CompositeAttributes("Contact");
+        }
+    }
+
+    @Getter
+    @Setter
+    static class CompositeAttributes {
+        public String type;
+
+        public CompositeAttributes(String type) {
+            this.type = type;
         }
     }
     

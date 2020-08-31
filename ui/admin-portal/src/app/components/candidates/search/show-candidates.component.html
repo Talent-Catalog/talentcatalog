@@ -87,6 +87,13 @@
         <i class="fas fa-file-excel"></i> Export
       </button>
 
+      <button *ngIf="isSalesforceUpdatable()" class="btn btn-outline-secondary"
+              (click)="createUpdateSalesforce()">
+        <i class="fas fa-spinner fa-spin" *ngIf=updating></i>
+        <i class="fab fa-salesforce"></i> Create/update Salesforce
+      </button>
+
+
       <div *ngIf="isContentModifiable()" class="form-group">
         <input id="quickNumberOrNameSearch"
                type="text" class="form-control" #input

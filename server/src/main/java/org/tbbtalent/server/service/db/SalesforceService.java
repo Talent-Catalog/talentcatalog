@@ -84,6 +84,21 @@ public interface SalesforceService {
             throws GeneralSecurityException, WebClientException, SalesforceException;
 
     /**
+     * Creates or updates the Salesforce Contact records corresponding to the 
+     * given candidates.
+     * @param candidates Candidates - candidate number maps to TBBId__c in Salesforce
+     * @return Created/updated Salesforce contacts (containing the SF id unless
+     * there were problems in which case the id is null).
+     * @throws GeneralSecurityException If there are errors relating to keys
+     * and digital signing.
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     * @throws SalesforceException if Salesforce had a problem with the data
+     */
+    @NonNull
+    List<Contact> createOrUpdateContacts(@NonNull List<Candidate> candidates)
+            throws GeneralSecurityException, WebClientException, SalesforceException;
+
+    /**
      * Updates the Salesforce Contact record corresponding to the given candidate.
      * @param candidate Candidate - candidate number maps to TBBid in Salesforce
      * @throws GeneralSecurityException If there are errors relating to keys
