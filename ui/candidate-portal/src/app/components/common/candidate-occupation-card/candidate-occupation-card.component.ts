@@ -1,6 +1,6 @@
-import {Component, EventEmitter, Input, OnChanges, Output} from '@angular/core';
-import {CandidateOccupation} from "../../../model/candidate-occupation";
-import {Occupation} from "../../../model/occupation";
+import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
+import {CandidateOccupation} from '../../../model/candidate-occupation';
+import {Occupation} from '../../../model/occupation';
 
 @Component({
   selector: 'app-candidate-occupation-card',
@@ -12,7 +12,7 @@ export class CandidateOccupationCardComponent implements OnChanges {
   /*  PURPOSE: The purpose of this component is to display a candidate occupation object (occupation & years experience) and
   depending on the preview input allows for editing */
 
-  // The currently selected candidate occupation to display
+  // The currently selected candidate occupation to display. If it comes from the server it will have an occupation object, if it comes from the form it will only have an occupation Id.
   @Input() candidateOccupation: CandidateOccupation;
   // The two way binding for the candidate occupation change
   @Output() candidateOccupationChange = new EventEmitter<CandidateOccupation>();
@@ -29,10 +29,11 @@ export class CandidateOccupationCardComponent implements OnChanges {
 
   constructor() { }
 
-  ngOnChanges() {
-    if (!this.candidateOccupation.occupationId) {
+  ngOnChanges(changes: SimpleChanges) {
+    // If the candidate occupation comes from the server it will have an occupation object, we need to extract the Id.
+    if (this.candidateOccupation.occupation) {
       this.candidateOccupation = Object.assign(this.candidateOccupation, {
-        occupationId: this.candidateOccupation.occupation ? this.candidateOccupation.occupation.id : null
+        occupationId: this.candidateOccupation.occupation ? this.candidateOccupation.occupation.id : null,
       });
     }
   }
@@ -45,11 +46,13 @@ export class CandidateOccupationCardComponent implements OnChanges {
     } else if (!this.candidateOccupations || !this.occupations.length) {
       return this.occupations;
     } else {
-      let existingIds = this.candidateOccupations.map(candidateOcc => candidateOcc.occupation
-        ? candidateOcc.occupation.id.toString()
-        : candidateOcc.occupationId.toString()
-      );
+      let existingIds = this.candidateOccupations.map(candidateOcc => candidateOcc.occupationId.toString());
+      // Remove the current occupation from the list so it appears in the dropdown to display.
       existingIds = existingIds.filter(id => id !== this.candidateOccupation.occupationId.toString());
+      // Remove the Unknown occupation from the results if it isn't the current occupation input
+      if (this.candidateOccupation.occupationId !== 0) {
+        existingIds.push('0');
+      }
       return this.occupations.filter(occ => !existingIds.includes(occ.id.toString()));
     }
   }
