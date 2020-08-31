@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {TranslationService} from "../../../../services/translation.service";
-import {User} from "../../../../model/user";
+import {TranslationService} from '../../../../services/translation.service';
+import {User} from '../../../../model/user';
 
 @Component({
   selector: 'app-general-translations',
@@ -224,7 +224,8 @@ const ALL_FIELDS = {
         "LABEL": {
           "OCCUPATION": null,
           "YEARSEXPERIENCE": null,
-          "DISCLAIMER": null
+          "DISCLAIMER": null,
+          "MIGRATED_OCCUPATION": null
         },
         "BUTTON": {
           "ADD": null
@@ -456,6 +457,7 @@ const ALL_FIELDS = {
       "INVALID_PASSWORD_FORMAT": null,
       "FILE_DOWNLOAD_FAILED": null,
       "EXPIRED_PASSWORD_TOKEN": null,
-      "ENTITY_REFERENCED": null
+      "ENTITY_REFERENCED": null,
+      "UNKNOWN_OCCUPATION": null
     },
   };

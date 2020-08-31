@@ -58,12 +58,29 @@ export class ViewCandidateSpecialLinksComponent implements OnInit, OnChanges {
 
   createCandidateFolder() {
     this.error = null;
+    this.loading = true;
     this.candidateService.createCandidateFolder(this.candidate.id).subscribe(
       candidate => {
         this.candidate = candidate;
+        this.loading = false;
       },
       error => {
         this.error = error;
+        this.loading = false;
+      });
+  }
+
+  createUpdateSalesforce() {
+    this.error = null;
+    this.loading = true;
+    this.candidateService.createUpdateSalesforce(this.candidate.id).subscribe(
+      candidate => {
+        this.candidate = candidate;
+        this.loading = false;
+      },
+      error => {
+        this.error = error;
+        this.loading = false;
       });
   }
 }

@@ -6,11 +6,13 @@ package org.tbbtalent.server.service.db;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.security.GeneralSecurityException;
 import java.util.List;
 
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.exception.ExportFailedException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.UsernameTakenException;
@@ -215,4 +217,25 @@ public interface CandidateService {
     Candidate createCandidateFolder(long id)
             throws NoSuchObjectException, IOException;
 
+    /**
+     * Creates/updates a Contact record on Salesforce for the given candidate.
+     * <p/>
+     * If no Contact record exists, one is created.
+     * If a record exists, it is updated to match the candidate details.
+     * <p/>
+     * The link to Salesforce record (sflink) is established and stored.
+     *
+     * @param id ID of candidate
+     * @return Updated candidate object, containing link to corresponding 
+     * Salesforce Contact record (created or
+     * existing) in {@link Candidate#getSflink()}
+     * @throws NoSuchObjectException if no candidate is found with that id
+     * @throws GeneralSecurityException If there are errors relating to keys
+     * and digital signing.
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     */
+    Candidate createUpdateSalesforce(long id)
+            throws NoSuchObjectException, GeneralSecurityException,
+            WebClientException;
+        
 }

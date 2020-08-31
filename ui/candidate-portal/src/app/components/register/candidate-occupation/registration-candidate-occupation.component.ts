@@ -1,23 +1,16 @@
-import {
-  Component,
-  EventEmitter,
-  Input, OnChanges,
-  OnDestroy,
-  OnInit,
-  Output, SimpleChanges
-} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {Router} from "@angular/router";
-import {CandidateService} from "../../../services/candidate.service";
-import {CandidateOccupationService} from "../../../services/candidate-occupation.service";
-import {CandidateOccupation} from "../../../model/candidate-occupation";
-import {Occupation} from "../../../model/occupation";
-import {OccupationService} from "../../../services/occupation.service";
-import {RegistrationService} from "../../../services/registration.service";
-import {LangChangeEvent, TranslateService} from "@ngx-translate/core";
-import {DeleteOccupationComponent} from "./delete/delete-occupation.component";
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {CandidateJobExperience} from "../../../model/candidate-job-experience";
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {Router} from '@angular/router';
+import {CandidateService} from '../../../services/candidate.service';
+import {CandidateOccupationService} from '../../../services/candidate-occupation.service';
+import {CandidateOccupation} from '../../../model/candidate-occupation';
+import {Occupation} from '../../../model/occupation';
+import {OccupationService} from '../../../services/occupation.service';
+import {RegistrationService} from '../../../services/registration.service';
+import {LangChangeEvent, TranslateService} from '@ngx-translate/core';
+import {DeleteOccupationComponent} from './delete/delete-occupation.component';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {CandidateJobExperience} from '../../../model/candidate-job-experience';
 
 @Component({
   selector: 'app-registration-candidate-occupation',
@@ -76,8 +69,10 @@ export class RegistrationCandidateOccupationComponent implements OnInit, OnDestr
         this.candidateOccupations = candidate.candidateOccupations.map(occ => {
           return {
             id: occ.id,
-            occupationId: occ.occupation.id,
-            yearsExperience: occ.yearsExperience
+            occupation: occ.occupation,
+            occupationId: occ.occupation?.id,
+            yearsExperience: occ.yearsExperience,
+            migrationOccupation: occ.migrationOccupation,
           };
         });
         this._loading.candidate = false;
@@ -201,10 +196,12 @@ export class RegistrationCandidateOccupationComponent implements OnInit, OnDestr
     } else if (!this.candidateOccupations || !this.occupations.length) {
       return this.occupations;
     } else {
-      const existingIds = this.candidateOccupations.map(candidateOcc => candidateOcc.occupation
-        ? candidateOcc.occupation.id.toString()
-        : candidateOcc.occupationId.toString()
+      const existingIds = this.candidateOccupations.map(candidateOcc => candidateOcc.occupationId
+        ? candidateOcc.occupationId.toString()
+        : candidateOcc.occupation.id.toString()
       );
+      // Remove the Unknown occupation from the occupations (only show if an existing id)
+      existingIds.push('0');
       return this.occupations.filter(occ => !existingIds.includes(occ.id.toString()));
     }
   }

@@ -9,6 +9,7 @@ spring:
     user:
       name: client
       password: client
+
   servlet:
     multipart:
       max-file-size: ${SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE:10MB}
@@ -76,8 +77,16 @@ management:
 
 
 jwt:
-  secret: JWTSuperSecretKey
+  secret: ${JWT_SECRET:RX4bokONoSrrNLM6CMTij9iG9jHFG5VfsN1zIi9UqDGK3pQXASG7xMEga2VrAj3P1SNmywqnWRoTXnltuJ5l+A==}
   expirationInMs: 604800000
+
+salesforce:
+  privatekey: ${SALESFORCE_PRIVATEKEY:-----BEGIN PRIVATE KEY-----MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAMrBTtv5Yh0gn0MWufbANxrprRWlYaiS8aDVlT61F1pShyLysqeEjEYczwxQeCaBzDxYxdSRjnn0oQLI8bZSM6W1VGEpA2jXsoXoNyJRNTy0VvsgFijrv2DP+kmO5H9EFSlRC9rzllyRMyeu0WMWSvb1A5y6yQoomoKOvkv6G8xnAgMBAAECgYEAnVLJgd5LxxYc/c2QlmonV/ahmv4sfMUoQAf6OiIB8M/Ak9mFzn4G6hBIh+GYmSh19Q1c08ftqaurk6GgDDxUXYphrHHDIZZcilDtFuyd+zVgegXrrW4pthlqNBLIvJ9p4uuckhpPAbzxzKwTGFcMXwd/22E4ZKB/Sf4XJN1aWyECQQDpNZh+Ylf5s0OAf9RbAwwTeMTczCyvTMhz7k6MqGAP4ah1f5Et3RkBOytE5FDNT1wwVtWc4FEzDkMOHjPj5gorAkEA3pHPwe39834ZHf95z6tvVnvoI854EY94WKmLQ6fL9RRhUNPi4OxKXm8wJ/V3ZtJ0WQdhE/FFeEG1f18EWaHUtQJAQl86k12x5CMc5wl6ipyHZ1NL0/tYDFwyAKymNmoFTP/QTgCMdR0j7LHGUskYJhacCjXsfcVp1roMY4w9AHOMGQJABdyVOihIbec+Rhn6XUvIjOCKhpbjdqLuqnccodWDe5rjzTsnWIEgnEgVXpgKYvzb75RQLDRIfhhM7WPVO38VmQJBAKaPn7//eafJZMpvsfAiIgaeV5Is3SwBhTWtmZaC+DJx3GOPin7fQzXXvQz19+haQdhMGE16gb0l/65SHf4O8FM=-----END PRIVATE KEY-----}
+  tbb:
+    jordanAccount: 0013l00002Jm1rRAAR
+    lebanonAccount: 0013l00002Jm2sqAAB
+  
+    
 
 server:
   tomcat:

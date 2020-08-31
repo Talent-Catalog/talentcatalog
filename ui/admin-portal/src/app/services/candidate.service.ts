@@ -79,4 +79,9 @@ export class CandidateService {
     return this.http.put<Candidate>(
       `${this.apiUrl}/${candidateId}/create-folder`, null);
   }
+
+  createUpdateSalesforce(candidateId: number): Observable<Candidate> {
+    return this.http.put<Candidate>(
+      `${this.apiUrl}/${candidateId}/update-sf`, null);
+  }
 }

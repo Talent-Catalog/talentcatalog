@@ -8,6 +8,8 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -408,6 +410,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.sflink = sflink;
     }
 
+    public String getSfId() {
+        return extractIdFromUrl(sflink);
+    }
+    
     public String getVideolink() {
         return videolink;
     }
@@ -446,4 +452,22 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         savedLists.remove(savedList);
         savedList.getCandidates().remove(this);
     }
+
+    private String extractIdFromUrl(String url) {
+        if (url == null) {
+            return null;
+        }
+
+        //https://salesforce.stackexchange.com/questions/1653/what-are-salesforce-ids-composed-of
+        String pattern = ".*[^\\w]([\\w]{15,})[^\\w]?.*";
+        Pattern r = Pattern.compile(pattern);
+
+        Matcher m = r.matcher(url);
+        if (m.find() && m.groupCount() == 1) {
+            return m.group(1);
+        } else {
+            return null;
+        }
+    }
+
 }
