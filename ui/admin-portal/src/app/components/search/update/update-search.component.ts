@@ -18,6 +18,7 @@ import {
   ValidatorFn,
   Validators
 } from "@angular/forms";
+import {salesforceUrlPattern} from "../../../model/base";
 
 @Component({
   selector: 'app-update-search',
@@ -36,6 +37,7 @@ export class UpdateSearchComponent implements OnInit {
   form: FormGroup;
 
   get name() { return this.form.get('name'); }
+  get sfJoblink() { return this.form.get('sfJoblink'); }
   get savedSearchType() { return this.form.get('savedSearchType'); }
   get savedSearchSubtype() { return this.form.get('savedSearchSubtype'); }
 
@@ -48,6 +50,7 @@ export class UpdateSearchComponent implements OnInit {
   ngOnInit() {
     this.form = this.fb.group({
       name: [this.savedSearch.name, Validators.required],
+      sfJoblink: [this.savedSearch.sfJoblink, Validators.pattern(salesforceUrlPattern)],
       savedSearchType: [this.savedSearch.savedSearchType, Validators.required],
       savedSearchSubtype: [this.savedSearch.savedSearchSubtype
         , this.subtypeRequiredValidator()
@@ -79,6 +82,7 @@ export class UpdateSearchComponent implements OnInit {
 
     const formValues = this.form.value;
     this.savedSearch.name = formValues.name;
+    this.savedSearch.sfJoblink = formValues.sfJoblink;
     this.savedSearch.reviewable = formValues.reviewable;
     this.savedSearch.fixed = false;
 

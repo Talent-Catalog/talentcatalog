@@ -180,6 +180,7 @@ export function convertToSavedSearchRequest
   savedSearchRequest.id = savedSearch.id;
   savedSearchRequest.name = savedSearch.name;
   savedSearchRequest.fixed = savedSearch.fixed;
+  savedSearchRequest.sfJoblink = savedSearch.sfJoblink;
   savedSearchRequest.reviewable = savedSearch.reviewable;
   savedSearchRequest.savedSearchType = savedSearch.savedSearchType;
   savedSearchRequest.savedSearchSubtype = savedSearch.savedSearchSubtype;

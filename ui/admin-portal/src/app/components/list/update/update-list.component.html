@@ -21,7 +21,7 @@
   <form [formGroup]="form">
     <div class="form-group" >
       <label for="name">Name *</label>
-      <input type="text" class="form-control" id="name" formControlName="name" required>
+      <input class="form-control" id="name" formControlName="name">
       <div *ngIf="name.invalid && (name.dirty || name.touched)"
            class="alert alert-danger">
         <div *ngIf="name.errors.required">
@@ -31,6 +31,17 @@
       <div class="form-inline">
         <label>Fixed?</label>
         <input type="checkbox" class="form-control" formControlName="fixed">
+      </div>
+      <div>
+        <label>Link to Salesforce Job Opportunity</label>
+        <input type="text" class="form-control" formControlName="sfJoblink">
+      </div>
+      <div *ngIf="sfJoblink.invalid && (sfJoblink.dirty || sfJoblink.touched)"
+           class="alert alert-danger">
+        <div *ngIf="sfJoblink.errors">
+          Doesn't look like a TBB Salesforce Job opportunity link to me!
+          Copy and paste from Salesforce.
+        </div>
       </div>
     </div>
     <hr/>

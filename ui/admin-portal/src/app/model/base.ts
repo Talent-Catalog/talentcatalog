@@ -20,6 +20,10 @@ export enum SearchBy {
   watched
 }
 
+export const salesforceUrlPattern: string =
+  'https://talentbeyondboundaries.lightning.force.com/' +
+  '.*[^\\w]([\\w]{15,})[^\\w]?.*';
+
 export const defaultReviewStatusFilter: string[] = [
   ReviewedStatus[ReviewedStatus.pending],
   ReviewedStatus[ReviewedStatus.verified]
@@ -36,7 +40,7 @@ export interface Auditable {
 export interface CandidateSource extends Auditable {
   name: string;
   fixed: boolean;
-  sfJoblink: string;
+  sfJoblink?: string;
   users?: User[];
   watcherUserIds?: number[];
 }
