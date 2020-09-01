@@ -1,31 +1,8 @@
 package org.tbbtalent.server.api.admin;
 
-import java.io.File;
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.model.FileList;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,15 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.tbbtalent.server.model.db.AttachmentType;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateAttachment;
-import org.tbbtalent.server.model.db.CandidateStatus;
-import org.tbbtalent.server.model.db.EducationType;
-import org.tbbtalent.server.model.db.Gender;
-import org.tbbtalent.server.model.db.NoteType;
-import org.tbbtalent.server.model.db.Status;
-import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
@@ -54,8 +23,19 @@ import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
 import org.tbbtalent.server.util.textExtract.TextExtractHelper;
 
-import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.model.FileList;
+import java.io.File;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.sql.Date;
+import java.sql.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/api/admin/system")
@@ -183,6 +163,30 @@ public class SystemAdminApi {
         }
         log.info("Done. Processed " + count);
 
+        return "done";
+    }
+
+    @GetMapping("awsmetadata")
+    public String updateAwsFileTypes() {
+        List<S3ObjectSummary> objectSummaries = s3ResourceHelper.getObjectSummaries();
+        log.info("Got the object summaries. There is a total of: " + objectSummaries.size());
+        List<S3ObjectSummary> filteredSummaries = s3ResourceHelper.filterMigratedObjects(objectSummaries);
+        log.info("Filtered out the migrated objects. There is a total of: " + filteredSummaries.size());
+        int count = 0;
+        int success = 0;
+        for(S3ObjectSummary summary : filteredSummaries) {
+            try {
+                s3ResourceHelper.addObjectMetadata(summary);
+                success++;
+            } catch (Exception e) {
+                System.out.println("Error with object: " + summary.getKey());
+            }
+            count++;
+            if (count%10 == 0) {
+                log.info("Processed " + count);
+            }
+        }
+        log.info("Finished processing. Success total of: " + success);
         return "done";
     }
 

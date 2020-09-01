@@ -17,7 +17,7 @@ import {CandidateSavedListService} from '../../../services/candidate-saved-list.
 import {SavedListCandidateService} from '../../../services/saved-list-candidate.service';
 import {forkJoin} from 'rxjs';
 import {CandidateAttachmentService} from '../../../services/candidate-attachment.service';
-import {AttachmentType, CandidateAttachment, SearchCandidateAttachmentsRequest} from '../../../model/candidate-attachment';
+import {CandidateAttachment} from '../../../model/candidate-attachment';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {environment} from '../../../../environments/environment';
 import {LocalStorageService} from 'angular-2-local-storage';
@@ -90,7 +90,6 @@ export class ViewCandidateComponent implements OnInit {
         } else {
           this.setCandidate(candidate);
           this.loadLists();
-          this.getAttachments();
         }
       }, error => {
         this.loadingError = true;
@@ -125,40 +124,7 @@ export class ViewCandidateComponent implements OnInit {
     );
   }
 
-  getAttachments() {
-    this.cvs = [];
-    this.loading = true;
-    const request: SearchCandidateAttachmentsRequest = {
-      candidateId: this.candidate.id,
-      cvOnly: true
-    }
-    this.candidateAttachmentService.search(request).subscribe(
-      results => {
-        this.cvs = results;
-        this.loading = false;
-      },
-      error => {
-        this.error = error;
-        this.loading = false;
-      })
-    ;
 
-  }
-
-  getAttachmentUrl(att: CandidateAttachment) {
-    if (att.type === AttachmentType.file) {
-      return this.s3BucketUrl + '/candidate/' + (att.migrated ? 'migrated' : this.candidate.candidateNumber) + '/' + att.location;
-    }
-    return att.location;
-  }
-
-  openCVs() {
-    for (let i = 0; i < this.cvs.length; i++) {
-      const newTab = window.open();
-      const url = this.getAttachmentUrl(this.cvs[i]);
-      newTab.location.href = url;
-    }
-  }
 
   deleteCandidate() {
     const modal = this.modalService.open(DeleteCandidateComponent);

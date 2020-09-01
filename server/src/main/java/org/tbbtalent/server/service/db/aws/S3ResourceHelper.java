@@ -24,8 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class S3ResourceHelper {
@@ -280,7 +278,7 @@ public class S3ResourceHelper {
         return amazonS3.doesBucketExist(s3Bucket + "bucket");
     }
 
-    public void getObjectsListed() {
+    public List<S3ObjectSummary> getObjectSummaries() {
         List<S3ObjectSummary> objectSummaries = new ArrayList<S3ObjectSummary>();
 //        todo Change bucket name to prod for system admin api call
         ObjectListing objects = amazonS3.listObjects
@@ -291,39 +289,58 @@ public class S3ResourceHelper {
             objectSummaries.addAll(objects.getObjectSummaries());
         }
         System.out.println("Got all objects");
-        List<S3ObjectSummary> filteredBucket = objectSummaries.stream().filter(s -> !s.getKey().contains("/migrated/"))
+        return objectSummaries;
+    }
+
+    public List<S3ObjectSummary> filterMigratedObjects(List<S3ObjectSummary> objectSummaries) {
+        List<S3ObjectSummary> filteredSummaries = objectSummaries.stream().filter(s -> !s.getKey().contains("/migrated/"))
                 .collect(Collectors.toList());
         System.out.println("filtered out migrated");
-        for(S3ObjectSummary s : filteredBucket) {
-            try {
-                ObjectMetadata metadata = new ObjectMetadata();
-                Mimetypes mimetypes = Mimetypes.getInstance();
-                metadata.setContentType(mimetypes.getMimetype(s.getKey()));
-                final CopyObjectRequest request = new CopyObjectRequest(s.getBucketName(), s.getKey(), s.getBucketName(), s.getKey())
-                        .withSourceBucketName(s.getBucketName())
-                        .withSourceKey(s.getKey())
-                        .withNewObjectMetadata(metadata);
-                amazonS3.copyObject(request);
-            } catch (Exception e) {
-                System.out.println("Error with object: " + s.getKey());
-            }
-        }
+        return filteredSummaries;
     }
 
-    private static String getFileExtension(String fileName) {
-        // Checks that a . exists and that it isn't at the start of the filename (indication there is no file name just a file type e.g. ".pdf"
-        if(fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
-            return fileName.substring(fileName.lastIndexOf(".")+1);
-        else return "";
+    public void addObjectMetadata(S3ObjectSummary objectSummary) {
+        ObjectMetadata metadata = new ObjectMetadata();
+        Mimetypes mimetypes = Mimetypes.getInstance();
+        metadata.setContentType(mimetypes.getMimetype(objectSummary.getKey()));
+        final CopyObjectRequest request = new CopyObjectRequest(objectSummary.getBucketName(), objectSummary.getKey(), objectSummary.getBucketName(), objectSummary.getKey())
+                .withSourceBucketName(objectSummary.getBucketName())
+                .withSourceKey(objectSummary.getKey())
+                .withNewObjectMetadata(metadata);
+        amazonS3.copyObject(request);
     }
 
-    private boolean regexForPrefix(String location) {
-        Pattern p = Pattern.compile("\\w+\\/\\d+\\/");
-        Matcher m = p.matcher(location);
-        if (m.find()) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+//    public void addObjectMetadata(List<S3ObjectSummary> filteredObjectSummaries) {
+//        for(S3ObjectSummary s : filteredObjectSummaries) {
+//            try {
+//                ObjectMetadata metadata = new ObjectMetadata();
+//                Mimetypes mimetypes = Mimetypes.getInstance();
+//                metadata.setContentType(mimetypes.getMimetype(s.getKey()));
+//                final CopyObjectRequest request = new CopyObjectRequest(s.getBucketName(), s.getKey(), s.getBucketName(), s.getKey())
+//                        .withSourceBucketName(s.getBucketName())
+//                        .withSourceKey(s.getKey())
+//                        .withNewObjectMetadata(metadata);
+//                amazonS3.copyObject(request);
+//            } catch (Exception e) {
+//                System.out.println("Error with object: " + s.getKey());
+//            }
+//        }
+//    }
+
+//    private static String getFileExtension(String fileName) {
+//        // Checks that a . exists and that it isn't at the start of the filename (indication there is no file name just a file type e.g. ".pdf"
+//        if(fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
+//            return fileName.substring(fileName.lastIndexOf(".")+1);
+//        else return "";
+//    }
+//
+//    private boolean regexForPrefix(String location) {
+//        Pattern p = Pattern.compile("\\w+\\/\\d+\\/");
+//        Matcher m = p.matcher(location);
+//        if (m.find()) {
+//            return true;
+//        } else {
+//            return false;
+//        }
+//    }
 }
