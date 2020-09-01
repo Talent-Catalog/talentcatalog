@@ -261,6 +261,7 @@ public class SavedSearchAdminApi implements
                 .add("fixed")
                 .add("reviewable")
                 .add("defaultSearch")
+                .add("sfJoblink")
                 .add("watcherUserIds")
                 .add("createdBy", userDto())
                 .add("users", userDto())

@@ -26,6 +26,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.springframework.lang.Nullable;
 import org.tbbtalent.server.api.admin.SavedSearchAdminApi;
 import org.tbbtalent.server.model.es.CandidateEs;
 
@@ -121,10 +122,22 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     private String migrationNationality;
 
+    /**
+     * Url link to corresponding candidate folder on Google Drive, if one exists. 
+     */
+    @Nullable
     private String folderlink;
 
+    /**
+     * Url link to corresponding Salesforce Contact record, if one exists. 
+     */
+    @Nullable
     private String sflink;
 
+    /**
+     * Url Link to candidate video if any.
+     */
+    @Nullable
     private String videolink;
 
     /**

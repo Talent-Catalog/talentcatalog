@@ -55,6 +55,13 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
     private Boolean global = false;
 
     /**
+     * Url link to Salesforce EmployerJob opportunity, if one exists, associated 
+     * with this source of candidates. 
+     */
+    @Nullable
+    private String sfJoblink;
+
+    /**
      * Stored as comma separated list of watching user ids 
      */
     private String watcherIds;
@@ -89,6 +96,15 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
         if (global != null) {
             this.global = global;
         }
+    }
+
+    @Nullable
+    public String getSfJoblink() {
+        return sfJoblink;
+    }
+
+    public void setSfJoblink(@Nullable String sfJoblink) {
+        this.sfJoblink = sfJoblink;
     }
 
     public Status getStatus() {

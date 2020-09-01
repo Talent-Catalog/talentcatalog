@@ -141,6 +141,7 @@ export interface SavedSearchRequest {
   name?: string;
   fixed?: boolean;
   reviewable?: boolean;
+  sfJoblink?: string;
   savedSearchType?: SavedSearchType;
   savedSearchSubtype?: SavedSearchSubtype;
 

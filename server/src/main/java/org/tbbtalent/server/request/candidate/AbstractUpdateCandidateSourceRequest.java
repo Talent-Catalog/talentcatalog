@@ -25,9 +25,11 @@ public abstract class AbstractUpdateCandidateSourceRequest {
     @NotBlank
     private String name;
     private Boolean fixed;
+    private String sfJoblink;
 
     public void populateFromRequest(AbstractCandidateSource candidateSource) {
         candidateSource.setName(name);
         candidateSource.setFixed(fixed);
+        candidateSource.setSfJoblink(sfJoblink);
     }
 }

@@ -36,6 +36,7 @@ export interface Auditable {
 export interface CandidateSource extends Auditable {
   name: string;
   fixed: boolean;
+  sfJoblink: string;
   users?: User[];
   watcherUserIds?: number[];
 }

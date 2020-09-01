@@ -25,6 +25,7 @@ public class SavedListBuilderSelector {
                 .add("status")
                 .add("name")
                 .add("fixed")
+                .add("sfJoblink")
                 .add("createdBy", userDto())
                 .add("createdDate")
                 .add("updatedBy", userDto())

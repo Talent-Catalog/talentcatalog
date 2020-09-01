@@ -27,10 +27,14 @@ export function indexOfSavedList(savedListID: number, savedLists: SavedList[]): 
   return -1;
 }
 
-export interface CreateSavedListRequest {
+export interface CreateSavedListRequest extends UpdateSavedListInfoRequest {
+  candidateIds?: number[];
+}
+
+export interface UpdateSavedListInfoRequest {
   name: string;
   fixed?: boolean;
-  candidateIds?: number[];
+  sfJoblink?: string;
 }
 
 export interface IHasSetOfSavedLists {
@@ -43,11 +47,6 @@ export interface IHasSetOfCandidates {
 
 export class SearchSavedListRequest extends SearchCandidateSourcesRequest {
 
-}
-
-export interface UpdateSavedListInfoRequest {
-  name: string;
-  fixed?: boolean;
 }
 
 export class SavedListGetRequest extends PagedSearchRequest {

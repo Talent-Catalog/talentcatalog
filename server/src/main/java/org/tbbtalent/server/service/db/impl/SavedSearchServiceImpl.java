@@ -218,6 +218,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setName(request.getName());
             savedSearch.setFixed(request.getFixed());
             savedSearch.setReviewable(request.getReviewable());
+            savedSearch.setSfJoblink(request.getSfJoblink());
             savedSearch.setType(request.getSavedSearchType(), request.getSavedSearchSubtype());
             return savedSearchRepository.save(savedSearch);
         }
@@ -423,6 +424,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         savedSearch.setFixed(request.getFixed());
         savedSearch.setDefaultSearch(request.getDefaultSearch());
         savedSearch.setReviewable(request.getReviewable());
+        savedSearch.setSfJoblink(request.getSfJoblink());
         savedSearch.setType(request.getSavedSearchType(), request.getSavedSearchSubtype());
 
         final SearchCandidateRequest searchCandidateRequest = request.getSearchCandidateRequest();
