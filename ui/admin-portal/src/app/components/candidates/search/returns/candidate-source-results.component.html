@@ -87,6 +87,7 @@
           <a *ngIf="candidate.videolink" [href]="candidate.videolink" target="_blank">
             <i class="fas fa-video" title="Show candidate's one way video"></i>
           </a>
+          <app-cv-icon [candidate]="candidate"></app-cv-icon>
         </td>
         <td *ngIf="isCandidateNameViewable()">{{candidate.user.firstName}} {{candidate.user.lastName}}</td>
         <td *ngIf="isCountryViewable()">{{candidate.nationality?.name}}</td>
