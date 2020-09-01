@@ -26,7 +26,7 @@ public interface CandidateAttachmentService {
 
     List<CandidateAttachment> listCandidateAttachmentsForLoggedInCandidate();
 
-    List<CandidateAttachment> listCandidateCvs(SearchByIdCandidateAttachmentRequest request);
+    List<CandidateAttachment> listCandidateAttachmentsAdmin(SearchByIdCandidateAttachmentRequest request);
 
     CandidateAttachment createCandidateAttachment(CreateCandidateAttachmentRequest request, Boolean adminOnly);
 

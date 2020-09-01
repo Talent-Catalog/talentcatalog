@@ -25,7 +25,7 @@ public interface CandidateAttachmentRepository extends JpaRepository<CandidateAt
 
     Page<CandidateAttachment> findByCandidateId(Long candidateId, Pageable request);
 
-    List<CandidateAttachment> findByCandidateIdAndCV(Long candidateId);
+    List<CandidateAttachment> findByCandidateIdAndCv(Long candidateId, boolean cv);
 
     @Query(" select distinct a from CandidateAttachment a "
             + " left join a.candidate c "

@@ -7,6 +7,8 @@ public class SearchByIdCandidateAttachmentRequest {
     @NotNull
     private Long candidateId;
 
+    private boolean cvOnly;
+
     public Long getCandidateId() {
         return candidateId;
     }
@@ -15,4 +17,7 @@ public class SearchByIdCandidateAttachmentRequest {
         this.candidateId = candidateId;
     }
 
+    public boolean isCvOnly() { return cvOnly; }
+
+    public void setCvOnly(boolean cvOnly) { this.cvOnly = cvOnly; }
 }

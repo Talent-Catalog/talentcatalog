@@ -17,7 +17,7 @@ import {CandidateSavedListService} from '../../../services/candidate-saved-list.
 import {SavedListCandidateService} from '../../../services/saved-list-candidate.service';
 import {forkJoin} from 'rxjs';
 import {CandidateAttachmentService} from '../../../services/candidate-attachment.service';
-import {AttachmentType, CandidateAttachment} from '../../../model/candidate-attachment';
+import {AttachmentType, CandidateAttachment, SearchCandidateAttachmentsRequest} from '../../../model/candidate-attachment';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {environment} from '../../../../environments/environment';
 import {LocalStorageService} from 'angular-2-local-storage';
@@ -71,10 +71,7 @@ export class ViewCandidateComponent implements OnInit {
 
   ngOnInit() {
     this.refreshCandidateInfo();
-
     this.loggedInUser = this.authService.getLoggedInUser();
-    console.log(this.loggedInUser);
-
     this.selectDefaultTab()
   }
 
@@ -129,12 +126,15 @@ export class ViewCandidateComponent implements OnInit {
   }
 
   getAttachments() {
-    this.attachments = [];
+    this.cvs = [];
     this.loading = true;
-    this.candidateAttachmentService.list(this.candidate.id).subscribe(
+    const request: SearchCandidateAttachmentsRequest = {
+      candidateId: this.candidate.id,
+      cvOnly: true
+    }
+    this.candidateAttachmentService.search(request).subscribe(
       results => {
-        this.attachments = results;
-        this.cvs = results.filter(attachment => attachment.cv === true)
+        this.cvs = results;
         this.loading = false;
       },
       error => {

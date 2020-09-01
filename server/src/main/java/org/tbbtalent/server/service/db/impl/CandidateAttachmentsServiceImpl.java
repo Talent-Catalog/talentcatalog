@@ -85,10 +85,14 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     }
 
     @Override
-    public List<CandidateAttachment> listCandidateCvs(SearchByIdCandidateAttachmentRequest request) {
+    public List<CandidateAttachment> listCandidateAttachmentsAdmin(SearchByIdCandidateAttachmentRequest request) {
         Candidate candidate = candidateRepository.findById(request.getCandidateId())
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, request.getCandidateId()));
-        return candidateAttachmentRepository.findByCandidateIdAndCV(candidate.getId());
+        if (request.isCvOnly()){
+            return candidateAttachmentRepository.findByCandidateIdAndCv(candidate.getId(), true);
+        } else {
+            return null;
+        }
     }
 
     @Override

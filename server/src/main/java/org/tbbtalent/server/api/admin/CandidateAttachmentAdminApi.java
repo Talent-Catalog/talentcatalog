@@ -36,9 +36,9 @@ public class CandidateAttachmentAdminApi {
         this.userContext = userContext;
     }
 
-    @GetMapping("search")
+    @PostMapping("search")
     public List<Map<String, Object>> search(@RequestBody SearchByIdCandidateAttachmentRequest request) {
-        List<CandidateAttachment> candidateAttachments = this.candidateAttachmentService.listCandidateCvs(request);
+        List<CandidateAttachment> candidateAttachments = this.candidateAttachmentService.listCandidateAttachmentsAdmin(request);
         return candidateAttachmentDto().buildList(candidateAttachments);
     }
 

@@ -12,12 +12,12 @@ export class CandidateAttachmentService {
 
   constructor(private http: HttpClient) {}
 
-  search(request): Observable<SearchResults<CandidateAttachment>> {
-    return this.http.post<SearchResults<CandidateAttachment>>(`${this.apiUrl}/search`, request);
+  search(request): Observable<CandidateAttachment[]> {
+    return this.http.post<CandidateAttachment[]>(`${this.apiUrl}/search`, request);
   }
 
-  list(id: number): Observable<CandidateAttachment[]> {
-    return this.http.get<CandidateAttachment[]>(`${this.apiUrl}/${id}/list`);
+  searchPaged(request): Observable<SearchResults<CandidateAttachment>> {
+    return this.http.post<SearchResults<CandidateAttachment>>(`${this.apiUrl}/search-paged`, request);
   }
 
   createAttachment(details: CandidateAttachmentRequest): Observable<CandidateAttachment>  {
