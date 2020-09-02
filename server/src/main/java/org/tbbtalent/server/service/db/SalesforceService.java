@@ -22,8 +22,8 @@ import org.tbbtalent.server.model.sf.Contact;
 public interface SalesforceService {
 
     /**
-     * Searches Salesforce for all Contact records relating to a TBB 
-     * candidate.
+     * Searches Salesforce for all Contact records relating to TBB 
+     * candidates.
      * @return List of Salesforce Contact records
      * @throws GeneralSecurityException If there are errors relating to keys
      * and digital signing.
