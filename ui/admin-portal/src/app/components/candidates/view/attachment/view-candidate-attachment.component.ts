@@ -1,25 +1,14 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {Candidate} from "../../../../model/candidate";
-import {FormBuilder, FormGroup} from "@angular/forms";
-import {
-  AttachmentType,
-  CandidateAttachment
-} from "../../../../model/candidate-attachment";
-import {CandidateAttachmentService} from "../../../../services/candidate-attachment.service";
-import {environment} from "../../../../../environments/environment";
-import {CreateCandidateAttachmentComponent} from "./create/create-candidate-attachment.component";
-import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
-import {EditCandidateAttachmentComponent} from "./edit/edit-candidate-attachment.component";
-import {User} from "../../../../model/user";
+import {Candidate} from '../../../../model/candidate';
+import {FormBuilder, FormGroup} from '@angular/forms';
+import {AttachmentType, CandidateAttachment} from '../../../../model/candidate-attachment';
+import {CandidateAttachmentService} from '../../../../services/candidate-attachment.service';
+import {environment} from '../../../../../environments/environment';
+import {CreateCandidateAttachmentComponent} from './create/create-candidate-attachment.component';
+import {ConfirmationComponent} from '../../../util/confirm/confirmation.component';
+import {EditCandidateAttachmentComponent} from './edit/edit-candidate-attachment.component';
+import {User} from '../../../../model/user';
 
 @Component({
   selector: 'app-view-candidate-attachment',
@@ -70,7 +59,7 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
 
   doSearch(refresh?: boolean) {
     this.loading = true;
-    this.candidateAttachmentService.search(this.attachmentForm.value).subscribe(
+    this.candidateAttachmentService.searchPaged(this.attachmentForm.value).subscribe(
       results => {
         if (refresh) {
           this.attachments = results.content;

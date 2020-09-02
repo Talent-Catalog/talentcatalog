@@ -1,11 +1,13 @@
 package org.tbbtalent.server.service.db.aws;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.internal.Mimetypes;
+import com.amazonaws.services.s3.model.*;
+import com.amazonaws.services.s3.transfer.*;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,21 +18,13 @@ import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.FileDownloadException;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.CopyObjectRequest;
-import com.amazonaws.services.s3.model.ListObjectsRequest;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.amazonaws.services.s3.transfer.Download;
-import com.amazonaws.services.s3.transfer.TransferManager;
-import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
-import com.amazonaws.services.s3.transfer.TransferManagerConfiguration;
-import com.amazonaws.services.s3.transfer.Upload;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class S3ResourceHelper {
     private static final Logger log = LoggerFactory.getLogger(S3ResourceHelper.class);
@@ -282,5 +276,34 @@ public class S3ResourceHelper {
 
     public boolean doesBucketExist(String bucket) {
         return amazonS3.doesBucketExist(s3Bucket + "bucket");
+    }
+
+    public List<S3ObjectSummary> getObjectSummaries() {
+        List<S3ObjectSummary> objectSummaries = new ArrayList<S3ObjectSummary>();
+        ObjectListing objects = amazonS3.listObjects
+                (s3Bucket, "candidate/");
+        objectSummaries.addAll(objects.getObjectSummaries());
+        while (objects.isTruncated()) {
+            objects = amazonS3.listNextBatchOfObjects(objects);
+            objectSummaries.addAll(objects.getObjectSummaries());
+        }
+        return objectSummaries;
+    }
+
+    public List<S3ObjectSummary> filterMigratedObjects(List<S3ObjectSummary> objectSummaries) {
+        List<S3ObjectSummary> filteredSummaries = objectSummaries.stream().filter(s -> !s.getKey().contains("/migrated/"))
+                .collect(Collectors.toList());
+        return filteredSummaries;
+    }
+
+    public void addObjectMetadata(S3ObjectSummary objectSummary) {
+        ObjectMetadata metadata = new ObjectMetadata();
+        Mimetypes mimetypes = Mimetypes.getInstance();
+        metadata.setContentType(mimetypes.getMimetype(objectSummary.getKey()));
+        final CopyObjectRequest request = new CopyObjectRequest(objectSummary.getBucketName(), objectSummary.getKey(), objectSummary.getBucketName(), objectSummary.getKey())
+                .withSourceBucketName(objectSummary.getBucketName())
+                .withSourceKey(objectSummary.getKey())
+                .withNewObjectMetadata(metadata);
+        amazonS3.copyObject(request);
     }
 }

@@ -92,10 +92,14 @@ ng-multiselect-dropdown div.multiselect-dropdown {
 
 /* FONT AWESOME */
 label,a > i.fas,i.fab,i.far {
-  margin-right: 2px;
+  margin-right: 5px;
 }
 
-.fa-file-download {
+a > i.is-link {
   color: $color-primary;
+  cursor: pointer;
+  @include hover() {
+    color: $color-primary-dark;
+  }
 }
 

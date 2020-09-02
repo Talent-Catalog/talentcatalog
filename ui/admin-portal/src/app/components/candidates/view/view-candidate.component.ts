@@ -4,23 +4,23 @@ import {Candidate} from '../../../model/candidate';
 import {ActivatedRoute, Router} from '@angular/router';
 import {NgbModal, NgbTabChangeEvent} from '@ng-bootstrap/ng-bootstrap';
 import {DeleteCandidateComponent} from './delete/delete-candidate.component';
-import {EditCandidateStatusComponent} from "./status/edit-candidate-status.component";
-import {Title} from "@angular/platform-browser";
-import {AuthService} from "../../../services/auth.service";
-import {User} from "../../../model/user";
-import {IDropdownSettings} from "ng-multiselect-dropdown";
-import {ListItem} from "ng-multiselect-dropdown/multiselect.model";
-import {CreateListComponent} from "../../list/create/create-list.component";
-import {
-  IHasSetOfCandidates,
-  SavedList,
-  SearchSavedListRequest
-} from "../../../model/saved-list";
-import {SavedListService} from "../../../services/saved-list.service";
-import {CandidateSavedListService} from "../../../services/candidate-saved-list.service";
-import {SavedListCandidateService} from "../../../services/saved-list-candidate.service";
-import {forkJoin} from "rxjs";
-import {LocalStorageService} from "angular-2-local-storage";
+import {EditCandidateStatusComponent} from './status/edit-candidate-status.component';
+import {Title} from '@angular/platform-browser';
+import {AuthService} from '../../../services/auth.service';
+import {User} from '../../../model/user';
+import {IDropdownSettings} from 'ng-multiselect-dropdown';
+import {ListItem} from 'ng-multiselect-dropdown/multiselect.model';
+import {CreateListComponent} from '../../list/create/create-list.component';
+import {IHasSetOfCandidates, SavedList, SearchSavedListRequest} from '../../../model/saved-list';
+import {SavedListService} from '../../../services/saved-list.service';
+import {CandidateSavedListService} from '../../../services/candidate-saved-list.service';
+import {SavedListCandidateService} from '../../../services/saved-list-candidate.service';
+import {forkJoin} from 'rxjs';
+import {CandidateAttachmentService} from '../../../services/candidate-attachment.service';
+import {CandidateAttachment} from '../../../model/candidate-attachment';
+import {FormBuilder, FormGroup} from '@angular/forms';
+import {environment} from '../../../../environments/environment';
+import {LocalStorageService} from 'angular-2-local-storage';
 
 @Component({
   selector: 'app-view-candidate',
@@ -42,6 +42,11 @@ export class ViewCandidateComponent implements OnInit {
 
   selectedLists: SavedList[] = [];
   lists: SavedList[] = [];
+  attachmentForm: FormGroup;
+  attachments: CandidateAttachment[];
+  cvs: CandidateAttachment[];
+  s3BucketUrl = environment.s3BucketUrl;
+
   /* MULTI SELECT */
   dropdownSettings: IDropdownSettings = {
     idField: 'id',
@@ -56,18 +61,17 @@ export class ViewCandidateComponent implements OnInit {
               private candidateSavedListService: CandidateSavedListService,
               private localStorageService: LocalStorageService,
               private savedListCandidateService: SavedListCandidateService,
+              private candidateAttachmentService: CandidateAttachmentService,
               private route: ActivatedRoute,
               private router: Router,
               private modalService: NgbModal,
               private titleService: Title,
-              private authService: AuthService) { }
+              private authService: AuthService,
+              private fb: FormBuilder) { }
 
   ngOnInit() {
     this.refreshCandidateInfo();
-
     this.loggedInUser = this.authService.getLoggedInUser();
-    console.log(this.loggedInUser);
-
     this.selectDefaultTab()
   }
 
@@ -119,6 +123,8 @@ export class ViewCandidateComponent implements OnInit {
       }
     );
   }
+
+
 
   deleteCandidate() {
     const modal = this.modalService.open(DeleteCandidateComponent);

@@ -1,4 +1,4 @@
-import {User} from "./user";
+import {User} from './user';
 
 export enum AttachmentType {
   googlefile = 'googlefile',
@@ -27,4 +27,9 @@ export class CandidateAttachmentRequest {
   cv: boolean;
   fileType?: string; //Not needed for links
   folder?: string; //Only used by S3. Not needed for links or Google
+}
+
+export interface SearchCandidateAttachmentsRequest {
+  candidateId: number;
+  cvOnly: boolean;
 }

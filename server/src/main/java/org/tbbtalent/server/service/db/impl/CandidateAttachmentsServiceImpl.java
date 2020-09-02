@@ -1,12 +1,5 @@
 package org.tbbtalent.server.service.db.impl;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.UUID;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -19,11 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.AttachmentType;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateAttachment;
-import org.tbbtalent.server.model.db.Role;
-import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.request.PagedSearchRequest;
@@ -38,6 +27,13 @@ import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
 import org.tbbtalent.server.util.filesystem.FileSystemFile;
 import org.tbbtalent.server.util.filesystem.FileSystemFolder;
 import org.tbbtalent.server.util.textExtract.TextExtractHelper;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class CandidateAttachmentsServiceImpl implements CandidateAttachmentService {
@@ -85,6 +81,20 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     public List<CandidateAttachment> listCandidateAttachmentsForLoggedInCandidate() {
         Candidate candidate = userContext.getLoggedInCandidate();
         return candidateAttachmentRepository.findByCandidateIdLoadAudit(candidate.getId());
+    }
+
+    @Override
+    public List<CandidateAttachment> listCandidateCvs(Long candidateId) {
+        Candidate candidate = candidateRepository.findById(candidateId)
+                .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateId));
+        return candidateAttachmentRepository.findByCandidateIdAndCv(candidate.getId(), true);
+    }
+
+    @Override
+    public List<CandidateAttachment> listCandidateAttachments(Long candidateId) {
+        Candidate candidate = candidateRepository.findById(candidateId)
+                .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateId));
+        return candidateAttachmentRepository.findByCandidateId(candidate.getId());
     }
 
     @Override

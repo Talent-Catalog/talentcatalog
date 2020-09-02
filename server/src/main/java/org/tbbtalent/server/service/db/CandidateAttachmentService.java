@@ -4,9 +4,6 @@
 
 package org.tbbtalent.server.service.db;
 
-import java.io.IOException;
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +14,9 @@ import org.tbbtalent.server.request.attachment.CreateCandidateAttachmentRequest;
 import org.tbbtalent.server.request.attachment.SearchCandidateAttachmentsRequest;
 import org.tbbtalent.server.request.attachment.UpdateCandidateAttachmentRequest;
 
+import java.io.IOException;
+import java.util.List;
+
 public interface CandidateAttachmentService {
 
     Page<CandidateAttachment> searchCandidateAttachments(SearchCandidateAttachmentsRequest request);
@@ -24,6 +24,10 @@ public interface CandidateAttachmentService {
     Page<CandidateAttachment> searchCandidateAttachmentsForLoggedInCandidate(PagedSearchRequest request);
 
     List<CandidateAttachment> listCandidateAttachmentsForLoggedInCandidate();
+
+    List<CandidateAttachment> listCandidateCvs(Long candidateId);
+
+    List<CandidateAttachment> listCandidateAttachments(Long candidateId);
 
     CandidateAttachment createCandidateAttachment(CreateCandidateAttachmentRequest request, Boolean adminOnly);
 
