@@ -11,7 +11,6 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.CandidateAttachment;
 import org.tbbtalent.server.request.PagedSearchRequest;
 import org.tbbtalent.server.request.attachment.CreateCandidateAttachmentRequest;
-import org.tbbtalent.server.request.attachment.SearchByIdCandidateAttachmentRequest;
 import org.tbbtalent.server.request.attachment.SearchCandidateAttachmentsRequest;
 import org.tbbtalent.server.request.attachment.UpdateCandidateAttachmentRequest;
 
@@ -26,7 +25,9 @@ public interface CandidateAttachmentService {
 
     List<CandidateAttachment> listCandidateAttachmentsForLoggedInCandidate();
 
-    List<CandidateAttachment> listCandidateAttachmentsAdmin(SearchByIdCandidateAttachmentRequest request);
+    List<CandidateAttachment> listCandidateCvs(Long candidateId);
+
+    List<CandidateAttachment> listCandidateAttachments(Long candidateId);
 
     CandidateAttachment createCandidateAttachment(CreateCandidateAttachmentRequest request, Boolean adminOnly);
 

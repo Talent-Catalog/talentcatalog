@@ -179,14 +179,14 @@ public class SystemAdminApi {
                 s3ResourceHelper.addObjectMetadata(summary);
                 success++;
             } catch (Exception e) {
-                System.out.println("Error with object: " + summary.getKey());
+                log.warn("Error adding metadata to object with key: " + summary.getKey(), e);
             }
             count++;
-            if (count%10 == 0) {
+            if (count%100 == 0) {
                 log.info("Processed " + count);
             }
         }
-        log.info("Finished processing. Success total of: " + success);
+        log.info("Finished processing. Success total of: " + success + " out of " + count);
         return "done";
     }
 

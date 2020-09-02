@@ -38,7 +38,12 @@ public class CandidateAttachmentAdminApi {
 
     @PostMapping("search")
     public List<Map<String, Object>> search(@RequestBody SearchByIdCandidateAttachmentRequest request) {
-        List<CandidateAttachment> candidateAttachments = this.candidateAttachmentService.listCandidateAttachmentsAdmin(request);
+        List<CandidateAttachment> candidateAttachments;
+        if (request.isCvOnly()) {
+            candidateAttachments = this.candidateAttachmentService.listCandidateCvs(request.getCandidateId());
+        } else {
+            candidateAttachments = this.candidateAttachmentService.listCandidateAttachments(request.getCandidateId());
+        }
         return candidateAttachmentDto().buildList(candidateAttachments);
     }
 

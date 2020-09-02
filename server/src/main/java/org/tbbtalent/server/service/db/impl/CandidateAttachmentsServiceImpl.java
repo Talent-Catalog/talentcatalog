@@ -17,7 +17,6 @@ import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.request.PagedSearchRequest;
 import org.tbbtalent.server.request.attachment.CreateCandidateAttachmentRequest;
-import org.tbbtalent.server.request.attachment.SearchByIdCandidateAttachmentRequest;
 import org.tbbtalent.server.request.attachment.SearchCandidateAttachmentsRequest;
 import org.tbbtalent.server.request.attachment.UpdateCandidateAttachmentRequest;
 import org.tbbtalent.server.security.UserContext;
@@ -85,14 +84,17 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     }
 
     @Override
-    public List<CandidateAttachment> listCandidateAttachmentsAdmin(SearchByIdCandidateAttachmentRequest request) {
-        Candidate candidate = candidateRepository.findById(request.getCandidateId())
-                .orElseThrow(() -> new NoSuchObjectException(Candidate.class, request.getCandidateId()));
-        if (request.isCvOnly()){
-            return candidateAttachmentRepository.findByCandidateIdAndCv(candidate.getId(), true);
-        } else {
-            return null;
-        }
+    public List<CandidateAttachment> listCandidateCvs(Long candidateId) {
+        Candidate candidate = candidateRepository.findById(candidateId)
+                .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateId));
+        return candidateAttachmentRepository.findByCandidateIdAndCv(candidate.getId(), true);
+    }
+
+    @Override
+    public List<CandidateAttachment> listCandidateAttachments(Long candidateId) {
+        Candidate candidate = candidateRepository.findById(candidateId)
+                .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateId));
+        return candidateAttachmentRepository.findByCandidateId(candidate.getId());
     }
 
     @Override

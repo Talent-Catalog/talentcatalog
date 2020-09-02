@@ -280,22 +280,19 @@ public class S3ResourceHelper {
 
     public List<S3ObjectSummary> getObjectSummaries() {
         List<S3ObjectSummary> objectSummaries = new ArrayList<S3ObjectSummary>();
-//        todo Change bucket name to prod for system admin api call
         ObjectListing objects = amazonS3.listObjects
-                ("dev.files.tbbtalent.org", "candidate/");
+                (s3Bucket, "candidate/");
         objectSummaries.addAll(objects.getObjectSummaries());
         while (objects.isTruncated()) {
             objects = amazonS3.listNextBatchOfObjects(objects);
             objectSummaries.addAll(objects.getObjectSummaries());
         }
-        System.out.println("Got all objects");
         return objectSummaries;
     }
 
     public List<S3ObjectSummary> filterMigratedObjects(List<S3ObjectSummary> objectSummaries) {
         List<S3ObjectSummary> filteredSummaries = objectSummaries.stream().filter(s -> !s.getKey().contains("/migrated/"))
                 .collect(Collectors.toList());
-        System.out.println("filtered out migrated");
         return filteredSummaries;
     }
 
@@ -309,38 +306,4 @@ public class S3ResourceHelper {
                 .withNewObjectMetadata(metadata);
         amazonS3.copyObject(request);
     }
-
-//    public void addObjectMetadata(List<S3ObjectSummary> filteredObjectSummaries) {
-//        for(S3ObjectSummary s : filteredObjectSummaries) {
-//            try {
-//                ObjectMetadata metadata = new ObjectMetadata();
-//                Mimetypes mimetypes = Mimetypes.getInstance();
-//                metadata.setContentType(mimetypes.getMimetype(s.getKey()));
-//                final CopyObjectRequest request = new CopyObjectRequest(s.getBucketName(), s.getKey(), s.getBucketName(), s.getKey())
-//                        .withSourceBucketName(s.getBucketName())
-//                        .withSourceKey(s.getKey())
-//                        .withNewObjectMetadata(metadata);
-//                amazonS3.copyObject(request);
-//            } catch (Exception e) {
-//                System.out.println("Error with object: " + s.getKey());
-//            }
-//        }
-//    }
-
-//    private static String getFileExtension(String fileName) {
-//        // Checks that a . exists and that it isn't at the start of the filename (indication there is no file name just a file type e.g. ".pdf"
-//        if(fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
-//            return fileName.substring(fileName.lastIndexOf(".")+1);
-//        else return "";
-//    }
-//
-//    private boolean regexForPrefix(String location) {
-//        Pattern p = Pattern.compile("\\w+\\/\\d+\\/");
-//        Matcher m = p.matcher(location);
-//        if (m.find()) {
-//            return true;
-//        } else {
-//            return false;
-//        }
-//    }
 }
