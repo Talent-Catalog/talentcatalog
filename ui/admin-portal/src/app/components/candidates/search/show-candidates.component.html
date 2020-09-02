@@ -35,11 +35,15 @@
                       (pageChange)="doSearch(true)">
       </ngb-pagination>
 
-      <button class="btn" *ngIf="timestamp" (click)="doSearch(true)">
-        <i class="fas fa-sync" title="Refresh search"></i>
-      </button>
       <button class="btn" (click)="doCopyLink()">
         <i class="fas fa-link" title="Get shareable link"></i>
+      </button>
+      <a *ngIf="candidateSource.sfJoblink" target="_blank"
+         [href]="candidateSource.sfJoblink">
+        <i class="fab fa-salesforce" title="Associated Job Opportunity"></i>
+      </a>
+      <button class="btn" *ngIf="timestamp" (click)="doSearch(true)">
+        <i class="fas fa-sync" title="Refresh search"></i>
       </button>
       {{results?.totalElements}} candidates. Timestamp {{timestamp | date: 'yyyy-MM-dd HH:mm:ss'}}
 

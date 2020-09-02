@@ -90,6 +90,9 @@ public class SavedListServiceImpl implements SavedListService {
             targetList = savedListRepository.findByIdLoadCandidates(targetId)
                     .orElseThrow(() -> new NoSuchObjectException(SavedList.class, targetId));
         }
+        
+        //Preserve any associated Salesforce Job Opportunity
+        targetList.setSfJoblink(sourceList.getSfJoblink());
 
         //Get candidates in source list
         final Set<Candidate> candidates = sourceList.getCandidates();

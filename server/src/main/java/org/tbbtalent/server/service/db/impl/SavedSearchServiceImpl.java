@@ -370,7 +370,23 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedList.setCreatedBy(user);
             savedList.setCreatedDate(OffsetDateTime.now());
             savedList.setName(constructSelectionListName(user, savedSearch));
+            savedList.setSfJoblink(savedSearch.getSfJoblink());
             savedList = savedListRepository.save(savedList);
+        } else {
+            //Keep SavedSearch sfJobLink in sync with its selection list.
+            if (savedSearch.getSfJoblink() == null) {
+                //If not both null
+                if (savedList.getSfJoblink() != null) {
+                    savedList.setSfJoblink(null);
+                    savedList = savedListRepository.save(savedList);
+                }
+            } else {
+                //If different
+                if (!savedSearch.getSfJoblink().equals(savedList.getSfJoblink())) {
+                    savedList.setSfJoblink(savedSearch.getSfJoblink());
+                    savedList = savedListRepository.save(savedList);
+                }
+            }
         }
         
         return savedList;
