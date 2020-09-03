@@ -232,34 +232,90 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             List<Candidate> candidates, String sfJoblink) 
             throws GeneralSecurityException, WebClientException, SalesforceException {
         
+        //Get id job opportunity.  
         String jobOpportunityId = extractIdFromSfUrl(sfJoblink);
-        
-        JobOppResult result = findRecordFieldsFromId(
-                "Opportunity", jobOpportunityId, 
-                "Name,AccountId", JobOppResult.class);
-        String jobOpportunityName = result == null ? null : result.getName();
-        if (jobOpportunityName == null) {
-            throw new SalesforceException(
-                    "Could not find name for job opportunity " + sfJoblink); 
-        }
-        
-        String jobAccountId = result.getAccountId(); 
 
-        List<OpportunityRecordComposite> opportunityRequests = new ArrayList<>();
+        //We only want to create opportunities where they have not already been
+        //created. We don't want to update existing opportunities because the
+        //opportunity Stage is a required field but we don't want to override
+        //existing Stages.
+        //
+        //We figure out which candidates have opportunities still to be
+        //created by first creating a map of candidates indexed by their unique
+        //opportunity id. 
+        Map<String,Candidate> idCandidateMap = new HashMap<>();
         for (Candidate candidate : candidates) {
-            //Create a request using data from the candidate
-            OpportunityRecordComposite opportunityRequest = 
-                    new OpportunityRecordComposite(
-                            candidate, jobOpportunityName, jobOpportunityId, 
-                            jobAccountId);
-            opportunityRequests.add(opportunityRequest);
+            String id = makeExternalId(candidate.getCandidateNumber(), 
+                    jobOpportunityId);
+            idCandidateMap.put(id, candidate);
         }
-        OpportunityRequestComposite req = new OpportunityRequestComposite();
-        req.setRecords(opportunityRequests);
 
-        //Execute and decode the response
-        UpsertResult[] results =
-                executeUpserts(candidateOpportunitySFFieldName, req);
+        //Now find all ids for existing candidate opportunities for this job.
+        //Then remove candidates from the map with those ids (because there
+        //is no need to create an opp for them - they have one)
+        List<String> externalIds = findCandidateOpportunities(jobOpportunityId);
+        for (String externalId : externalIds) {
+            idCandidateMap.remove(externalId); 
+        }
+
+        //If the map is empty, that means that all candidate alreday have their 
+        //opp for this job. So nothing to do.
+        if (idCandidateMap.size() > 0) {
+            
+            //Now we just need to create opps for those candidates still in the 
+            //map.
+            
+            //First get some more info about the job: its name and its 
+            //associated account.
+            JobOppResult jobOppResult = findRecordFieldsFromId(
+                    "Opportunity", jobOpportunityId,
+                    "Name,AccountId", JobOppResult.class);
+            String jobOpportunityName = jobOppResult == null ? null : jobOppResult.getName();
+            if (jobOpportunityName == null) {
+                throw new SalesforceException(
+                        "Could not find name for job opportunity " + sfJoblink);
+            }
+            String jobAccountId = jobOppResult.getAccountId();
+            
+            
+            //Now build requests of candidate opportunities we want to create
+            List<OpportunityRecordComposite> opportunityRequests = new ArrayList<>();
+            
+            for (Candidate candidate : idCandidateMap.values()) {
+                //Create a request using data from the candidate
+                OpportunityRecordComposite opportunityRequest =
+                        new OpportunityRecordComposite(
+                                candidate, jobOpportunityName, jobOpportunityId,
+                                jobAccountId);
+                opportunityRequests.add(opportunityRequest);
+            }
+            OpportunityRequestComposite req = new OpportunityRequestComposite();
+            req.setRecords(opportunityRequests);
+
+            //Execute and decode the response
+            UpsertResult[] results =
+                    executeUpserts(candidateOpportunitySFFieldName, req);
+
+            if (results.length != opportunityRequests.size()) {
+                //This is a fatal error because if the numbers don't match we don't 
+                //know how to match results to requests.
+                throw new SalesforceException(
+                        "Number of results (" + results.length
+                                + ") did not match number of requests ("
+                                + opportunityRequests.size() + ")");
+            }
+
+            //Log any failures
+            int count = 0;
+            for (OpportunityRecordComposite request : opportunityRequests) {
+                UpsertResult result = results[count++];
+                if (!result.isSuccess()) {
+                    log.error("Update failed for opportunity "
+                            + request.getName()
+                            + ": " + result.getErrorMessage());
+                }
+            }
+        }
     }
 
     /**
@@ -359,8 +415,42 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         
         return contacts;
     }
-    
-    //todo findOpportunities
+
+    static class ContactQueryResult extends QueryResult {
+        public List<Contact> records;
+    }
+
+
+    private List<String> findCandidateOpportunities(String jobOpportunityId) 
+            throws GeneralSecurityException {
+        String query =
+                "SELECT " + candidateOpportunitySFFieldName +
+                        " FROM Opportunity WHERE Parent_Opportunity__c='" +
+                        jobOpportunityId + "'";
+
+        ClientResponse response = executeQuery(query);
+
+        OpportunityQueryResult result =
+                response.bodyToMono(OpportunityQueryResult.class).block();
+        
+        //Retrieve the contact from the response 
+        List<String> ids = new ArrayList<>();
+        if (result != null) {
+            for (OpportunityQueryResult.Opp record : result.records) {
+                ids.add(record.TBBCandidateExternalId__c);
+            }
+        }
+
+        return ids;
+    }
+
+    static class OpportunityQueryResult extends QueryResult {
+        public List<Opp> records;
+
+        static class Opp {
+            public String TBBCandidateExternalId__c;
+        }
+    }
 
     @Nullable
     public <T> T findRecordFieldsFromId(
@@ -745,6 +835,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         PrivateKey privateKey = keyFactory.generatePrivate(keySpec);
         return privateKey;
     }
+    
+    static String makeExternalId(String candidateNumber, String jobId) {
+        return candidateNumber + "-" + jobId;
+    }
 
     static class BearerTokenResponse {
         public String access_token;
@@ -754,11 +848,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         public String token_type;
     }
 
-    static class ContactQueryResult {
+    static abstract class QueryResult {
         public int totalSize;
         public boolean done;
-        public List<Contact> records;
-        
     }
 
     @Getter
@@ -885,9 +977,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
          */
         public String StageName;
         
-        //todo Use query to get all candidate ops by unique id. candidate-job
-        //Then remove them from given candidates, and just create the rest, if any.
-        //Otherwise we keep resetting Stage to Prospect
+        /**
+         * This is the unique external id that defines all the candidate 
+         * job opportunities that we are going to "upsert". 
+         * It is constructed from the candidate id and the job opportunity
+         * id.
+         */
         public String TBBCandidateExternalId__c;
 
         public OpportunityRequest(Candidate candidate, 
@@ -901,7 +996,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                     "(" + candidateNumber + ")-" + jobOpportunityName;
 
             TBBCandidateExternalId__c = 
-                    candidateNumber + "-" + jobOpportunityId;
+                    makeExternalId(candidateNumber, jobOpportunityId); 
 
             AccountId = jobAccountId;
             Candidate_Contact__c = candidate.getSfId();
