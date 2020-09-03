@@ -1,13 +1,13 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CandidateAttachmentService} from "../../../services/candidate-attachment.service";
-import {
-  AttachmentType,
-  CandidateAttachment
-} from "../../../model/candidate-attachment";
-import {FormBuilder, FormGroup} from "@angular/forms";
-import {environment} from "../../../../environments/environment";
-import {CandidateService} from "../../../services/candidate.service";
-import {forkJoin, Observable} from "rxjs";
+import {CandidateAttachmentService} from '../../../services/candidate-attachment.service';
+import {AttachmentType, CandidateAttachment} from '../../../model/candidate-attachment';
+import {FormBuilder, FormGroup} from '@angular/forms';
+import {environment} from '../../../../environments/environment';
+import {CandidateService} from '../../../services/candidate.service';
+import {forkJoin, Observable} from 'rxjs';
+import {Candidate} from '../../../model/candidate';
+import {UserService} from '../../../services/user.service';
+import {User} from '../../../model/user';
 
 @Component({
   selector: 'app-candidate-attachments',
@@ -18,11 +18,13 @@ export class CandidateAttachmentsComponent implements OnInit {
 
   @Input() preview: boolean = false;
   @Input() cv: boolean;
+  @Input() candidate: Candidate;
 
   error: any;
   _loading = {
     candidate: true,
-    attachments: true
+    attachments: true,
+    user: true
   };
   deleting: boolean;
   uploading: boolean;
@@ -32,13 +34,16 @@ export class CandidateAttachmentsComponent implements OnInit {
 
   attachments: CandidateAttachment[] = [];
   candidateNumber: string;
+  user: User;
 
   constructor(private fb: FormBuilder,
               private candidateService: CandidateService,
-              private candidateAttachmentService: CandidateAttachmentService) { }
+              private candidateAttachmentService: CandidateAttachmentService,
+              private userService: UserService) { }
 
   ngOnInit() {
     this._loading.candidate = true;
+    this._loading.user = true;
 
     this.candidateService.getCandidateNumber().subscribe(
       (response) => {
@@ -49,7 +54,18 @@ export class CandidateAttachmentsComponent implements OnInit {
         this.error = error;
         this._loading.candidate = false;
       });
+    this.userService.getMyUser().subscribe(
+      (response) => {
+        this.user = response;
+        this._loading.user = false;
+      },
+      (error) => {
+        this.error = error;
+        this._loading.user = false;
+      }
+    )
     this.refreshAttachments();
+
   }
 
   private refreshAttachments() {
