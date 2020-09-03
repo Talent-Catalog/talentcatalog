@@ -219,16 +219,16 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                     String folder = BooleanUtils.isTrue(
                             candidateAttachment.isMigrated()) ? "migrated"
                             : candidate.getCandidateNumber();
-                    s3ResourceHelper.deleteFile("candidate/" + folder
-                            + "/" + candidateAttachment.getName());
+                    s3ResourceHelper.deleteFile("candidate/" + folder + "/" + candidateAttachment.getLocation());
                     break;
                 case googlefile:
                     FileSystemFile fsf = new FileSystemFile();
+                    fsf.setName("RemovedByCandidate_" + candidateAttachment.getName());
                     fsf.setUrl(candidateAttachment.getLocation());
                     try {
-                        fileSystemService.deleteFile(fsf);
+                        fileSystemService.renameFile(fsf);
                     } catch (IOException e) {
-                        log.error("Could not delete attachment from Google Drive: " + fsf, e);
+                        log.error("Could not rename attachment in Google Drive: " + candidateAttachment.getName(), e);
                     }
                     break;
             }
