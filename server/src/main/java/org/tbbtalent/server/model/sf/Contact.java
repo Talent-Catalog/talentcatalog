@@ -25,7 +25,6 @@ public class Contact {
     static final String urlRoot = "https://talentbeyondboundaries.lightning.force.com/lightning/r/Contact/";
     static final String urlSuffix = "/view";
     
-    private Attributes attributes;
     public String AccountId;
     public String Id;
     public Long TBBid__c;
@@ -43,10 +42,5 @@ public class Contact {
             url = urlRoot + Id + urlSuffix;
         }
         return url; 
-    }
-    
-    public static class Attributes {
-        public String type;
-        public String url;
     }
 }

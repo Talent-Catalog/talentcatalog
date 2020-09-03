@@ -323,6 +323,7 @@ public class SavedListServiceImpl implements SavedListService {
         List<Contact> contacts = 
                 salesforceService.createOrUpdateContacts(candidates);
 
+        //Update the sfLink in all candidate records.
         int nCandidates = candidates.size();
         for (int i = 0; i < nCandidates; i++) {
             Contact contact = contacts.get(i);
@@ -331,6 +332,12 @@ public class SavedListServiceImpl implements SavedListService {
                 candidate.setSflink(contact.getUrl());
                 candidateRepository.save(candidate);
             }
+        }
+        
+        String sfJoblink = savedList.getSfJoblink();
+        if (sfJoblink != null && sfJoblink.length() > 0) {
+            salesforceService.createOrUpdateJobOpportunities(
+                    candidates, sfJoblink);
         }
     }
 

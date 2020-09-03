@@ -11,11 +11,15 @@ import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +59,7 @@ import reactor.core.publisher.Mono;
 public class SalesforceServiceImpl implements SalesforceService, InitializingBean {
     private static final Logger log = LoggerFactory.getLogger(SalesforceServiceImpl.class);
     private static final String candidateNumberSFFieldName = "TBBid__c";
+    private static final String candidateOpportunitySFFieldName = "TBBCandidateExternalId__c";
     
     private boolean alertedDuplicateSFRecord = false;
 
@@ -104,6 +109,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         
         classSfPathMap.put(ContactRequest.class, "Contact");
         classSfCompositePathMap.put(ContactRequestComposite.class, "Contact");
+        classSfCompositePathMap.put(OpportunityRequestComposite.class, "Opportunity");
         
         WebClient.Builder builder = 
                 WebClient.builder()
@@ -222,6 +228,71 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     }
 
     @Override
+    public void createOrUpdateJobOpportunities(
+            List<Candidate> candidates, String sfJoblink) 
+            throws GeneralSecurityException, WebClientException, SalesforceException {
+        
+        String jobOpportunityId = extractIdFromSfUrl(sfJoblink);
+        
+        JobOppResult result = findRecordFieldsFromId(
+                "Opportunity", jobOpportunityId, 
+                "Name,AccountId", JobOppResult.class);
+        String jobOpportunityName = result == null ? null : result.getName();
+        if (jobOpportunityName == null) {
+            throw new SalesforceException(
+                    "Could not find name for job opportunity " + sfJoblink); 
+        }
+        
+        String jobAccountId = result.getAccountId(); 
+
+        List<OpportunityRecordComposite> opportunityRequests = new ArrayList<>();
+        for (Candidate candidate : candidates) {
+            //Create a request using data from the candidate
+            OpportunityRecordComposite opportunityRequest = 
+                    new OpportunityRecordComposite(
+                            candidate, jobOpportunityName, jobOpportunityId, 
+                            jobAccountId);
+            opportunityRequests.add(opportunityRequest);
+        }
+        OpportunityRequestComposite req = new OpportunityRequestComposite();
+        req.setRecords(opportunityRequests);
+
+        //Execute and decode the response
+        UpsertResult[] results =
+                executeUpserts(candidateOpportunitySFFieldName, req);
+    }
+
+    /**
+     * Extracts the Salesforce record id from the Salesforce url of a record.
+     * @param url Url of a Salesforce record
+     * @return Salesforce id or null if the url wasn't a valid record url 
+     */
+    public static String extractIdFromSfUrl(String url) {
+        if (url == null) {
+            return null;
+        }
+
+        //https://salesforce.stackexchange.com/questions/1653/what-are-salesforce-ids-composed-of
+        String pattern =
+                //This is the standard prefix for our Salesforce.        
+                "https://talentbeyondboundaries.lightning.force.com/" +
+
+                        //This part just checks for 15 or more "word" characters with
+                        //no "punctuation" - eg . or /.
+                        //That will be the Salesforce id.        
+                        ".*[^\\w]([\\w]{15,})[^\\w]?.*";
+
+        Pattern r = Pattern.compile(pattern);
+
+        Matcher m = r.matcher(url);
+        if (m.find() && m.groupCount() == 1) {
+            return m.group(1);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
     @Nullable
     public Contact findContact(@NonNull Candidate candidate) 
             throws GeneralSecurityException, WebClientException {
@@ -287,6 +358,17 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         }
         
         return contacts;
+    }
+    
+    //todo findOpportunities
+
+    @Nullable
+    public <T> T findRecordFieldsFromId(
+            String objectType, String id, String fields, Class<T> cl) 
+            throws GeneralSecurityException, WebClientException {
+        ClientResponse response = executeRecordFieldsGet(objectType, id, fields);
+        T result = response.bodyToMono(cl).block();
+        return result;
     }
 
     @Override
@@ -464,6 +546,27 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 .uri(uriBuilder -> uriBuilder.path("/query")
                         .queryParam("q", query).build());
         
+        return executeWithRetry(spec);
+    }
+
+    /**
+     * General purpose Get fields from a record of a given type
+     * See https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_get_field_values.htm
+     * @param objectType Type of record
+     * @param id ID of record
+     * @param fields Fields requested
+     * @return ClientResponse resulting from Get
+     * @throws GeneralSecurityException if there is a problem with our keys
+     * and digital signing.
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     */
+    private ClientResponse executeRecordFieldsGet(
+            String objectType, String id, String fields) 
+            throws GeneralSecurityException, WebClientException {
+        WebClient.RequestHeadersSpec<?> spec = webClient.get()
+                .uri("/sobjects/" + objectType + "/" + id + 
+                        "/?fields=" + fields);
+
         return executeWithRetry(spec);
     }
 
@@ -735,15 +838,6 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         }
     }
     
-    interface HasSize {
-        /**
-         * Note that it is not getSize, so that it doesn't look like an
-         * attribute when the body is being extracted.
-         * @return size
-         */
-        int checkSize();
-    }
-    
     @Getter
     @Setter
     @ToString(callSuper = true)
@@ -758,6 +852,98 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     @Getter
     @Setter
+    @ToString
+    class OpportunityRequest {
+
+        /**
+         * Id of associated Account.
+         */
+        public String AccountId;
+        
+        /**
+         * Id of associated Candidate contact record
+         */
+        public String Candidate_Contact__c;
+
+        /**
+         * Required field for creating opportunity - set to a year from now
+         */
+        public String CloseDate;
+
+        /**
+         * Name of candidate job opportunity
+         */
+        public String Name;
+
+        /**
+         * Id of associated Job opportunity record
+         */
+        public String Parent_Opportunity__c;
+
+        /**
+         * Set to first stage - ie "Prospect"
+         */
+        public String StageName;
+        
+        //todo Use query to get all candidate ops by unique id. candidate-job
+        //Then remove them from given candidates, and just create the rest, if any.
+        //Otherwise we keep resetting Stage to Prospect
+        public String TBBCandidateExternalId__c;
+
+        public OpportunityRequest(Candidate candidate, 
+                                  String jobOpportunityName, 
+                                  String jobOpportunityId,
+                                  String jobAccountId) {
+            User user = candidate.getUser();
+            String candidateNumber = candidate.getCandidateNumber();
+            
+            Name = user.getFirstName() + 
+                    "(" + candidateNumber + ")-" + jobOpportunityName;
+
+            TBBCandidateExternalId__c = 
+                    candidateNumber + "-" + jobOpportunityId;
+
+            AccountId = jobAccountId;
+            Candidate_Contact__c = candidate.getSfId();
+            Parent_Opportunity__c = jobOpportunityId;
+            
+            LocalDateTime close = LocalDateTime.now().plusYears(1);
+            CloseDate = close.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            
+            StageName = "Prospect";
+        }
+    }
+
+    @Getter
+    @Setter
+    @ToString
+    class OpportunityRequestComposite implements HasSize {
+        public boolean allOrNone = false;
+        public List<OpportunityRecordComposite> records = new ArrayList<>();
+
+        @Override
+        public int checkSize() {
+            return records.size();
+        }
+    }
+    
+    @Getter
+    @Setter
+    @ToString(callSuper = true)
+    class OpportunityRecordComposite extends OpportunityRequest {
+        public CompositeAttributes attributes;
+
+        public OpportunityRecordComposite(Candidate candidate,
+                                          String jobOpportunityName,
+                                          String jobOpportunityId,
+                                          String jobAccountId) {
+            super(candidate, jobOpportunityName, jobOpportunityId, jobAccountId);
+            attributes = new CompositeAttributes("Opportunity");
+        }
+    }
+
+    @Getter
+    @Setter
     static class CompositeAttributes {
         public String type;
 
@@ -765,5 +951,23 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             this.type = type;
         }
     }
+
+    interface HasSize {
+        /**
+         * Note that it is not getSize, so that it doesn't look like an
+         * attribute when the body is being extracted.
+         * @return size
+         */
+        int checkSize();
+    }
+
+    @Getter
+    @Setter
+    @ToString
+    static class JobOppResult {
+        public String Name;
+        public String AccountId;
+    }
+    
     
 }

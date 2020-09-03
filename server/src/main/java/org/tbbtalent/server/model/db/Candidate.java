@@ -8,8 +8,6 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -29,6 +27,7 @@ import javax.persistence.Transient;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.api.admin.SavedSearchAdminApi;
 import org.tbbtalent.server.model.es.CandidateEs;
+import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
 
 @Entity
 @Table(name = "candidate")
@@ -399,11 +398,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.migrationNationality = migrationNationality;
     }
 
+    @Nullable
     public String getFolderlink() {
         return folderlink;
     }
 
-    public void setFolderlink(String folderlink) {
+    public void setFolderlink(@Nullable String folderlink) {
         this.folderlink = folderlink;
     }
 
@@ -415,23 +415,26 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.selected = selected;
     }
 
+    @Nullable
     public String getSflink() {
         return sflink;
     }
 
-    public void setSflink(String sflink) {
+    public void setSflink(@Nullable String sflink) {
         this.sflink = sflink;
     }
 
+    @Nullable
     public String getSfId() {
-        return extractIdFromUrl(sflink);
+        return SalesforceServiceImpl.extractIdFromSfUrl(sflink);
     }
     
+    @Nullable
     public String getVideolink() {
         return videolink;
     }
 
-    public void setVideolink(String videolink) {
+    public void setVideolink(@Nullable String videolink) {
         this.videolink = videolink;
     }
 
@@ -465,30 +468,4 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         savedLists.remove(savedList);
         savedList.getCandidates().remove(this);
     }
-
-    public static String extractIdFromUrl(String url) {
-        if (url == null) {
-            return null;
-        }
-        
-        //https://salesforce.stackexchange.com/questions/1653/what-are-salesforce-ids-composed-of
-        String pattern =
-                //This is the standard prefix for our Salesforce.        
-                "https://talentbeyondboundaries.lightning.force.com/" +
-                        
-                //This part just checks for 15 or more "word" characters with
-                //no "punctuation" - eg . or /.
-                //That will be the Salesforce id.        
-                ".*[^\\w]([\\w]{15,})[^\\w]?.*";
-        
-        Pattern r = Pattern.compile(pattern);
-
-        Matcher m = r.matcher(url);
-        if (m.find() && m.groupCount() == 1) {
-            return m.group(1);
-        } else {
-            return null;
-        }
-    }
-
 }
