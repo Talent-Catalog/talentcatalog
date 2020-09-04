@@ -12,6 +12,7 @@ import {Candidate} from '../../../model/candidate';
 export class CvIconComponent implements OnInit {
 
   @Input() candidate: Candidate;
+  @Input() attachment: CandidateAttachment;
 
   cvs: CandidateAttachment[];
   loading: boolean;
@@ -27,21 +28,26 @@ export class CvIconComponent implements OnInit {
   getAttachments() {
     this.cvs = [];
     this.loading = true;
-    const request: SearchCandidateAttachmentsRequest = {
-      candidateId: this.candidate.id,
-      cvOnly: true
+    // If there is a single attachment passed down
+    if (this.attachment) {
+      this.cvs.push(this.attachment)
+    } else {
+      // Otherwise get all attachments
+      const request: SearchCandidateAttachmentsRequest = {
+        candidateId: this.candidate.id,
+        cvOnly: true
+      }
+      this.candidateAttachmentService.search(request).subscribe(
+        results => {
+          this.cvs = results;
+          this.loading = false;
+        },
+        error => {
+          this.error = error;
+          this.loading = false;
+        })
+      ;
     }
-    this.candidateAttachmentService.search(request).subscribe(
-      results => {
-        this.cvs = results;
-        this.loading = false;
-      },
-      error => {
-        this.error = error;
-        this.loading = false;
-      })
-    ;
-
   }
 
   getAttachmentUrl(att: CandidateAttachment) {

@@ -54,7 +54,13 @@
             {{attachment.name}}
           </a>
           <span class="small text-dark"> - {{attachment.type}}</span>
-          <span *ngIf="attachment.cv" class="small text-red"> - CV</span>
+          <div class="d-inline" *ngIf="attachment.cv">
+            <span class="small text-red mr-2"> - CV</span>
+            <app-cv-icon
+              [candidate]="candidate"
+              [attachment]="attachment">
+            </app-cv-icon>
+          </div>
         </div>
 
         <!-- AUDIT DATA -->
