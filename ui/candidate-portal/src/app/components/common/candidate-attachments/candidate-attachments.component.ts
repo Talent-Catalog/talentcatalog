@@ -5,7 +5,6 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 import {environment} from '../../../../environments/environment';
 import {CandidateService} from '../../../services/candidate.service';
 import {forkJoin, Observable} from 'rxjs';
-import {Candidate} from '../../../model/candidate';
 import {UserService} from '../../../services/user.service';
 import {User} from '../../../model/user';
 
@@ -18,7 +17,6 @@ export class CandidateAttachmentsComponent implements OnInit {
 
   @Input() preview: boolean = false;
   @Input() cv: boolean;
-  @Input() candidate: Candidate;
 
   error: any;
   _loading = {

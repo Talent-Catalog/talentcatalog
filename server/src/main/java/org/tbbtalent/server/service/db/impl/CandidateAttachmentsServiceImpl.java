@@ -223,12 +223,21 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                     break;
                 case googlefile:
                     FileSystemFile fsf = new FileSystemFile();
-                    fsf.setName("RemovedByCandidate_" + candidateAttachment.getName());
                     fsf.setUrl(candidateAttachment.getLocation());
-                    try {
-                        fileSystemService.renameFile(fsf);
-                    } catch (IOException e) {
-                        log.error("Could not rename attachment in Google Drive: " + candidateAttachment.getName(), e);
+                    if (!user.getRole().equals(Role.admin)) {
+                        fsf.setName("RemovedByCandidate_" + candidateAttachment.getName());
+                        try {
+                            fileSystemService.renameFile(fsf);
+                        } catch (IOException e) {
+                            log.error("Could not rename attachment in Google Drive: " + candidateAttachment.getName(), e);
+                        }
+                    } else {
+                        try {
+                            fileSystemService.deleteFile(fsf);
+                        } catch (IOException e) {
+                            log.error("Could not delete attachment from Google Drive: " + fsf, e);
+                        }
+
                     }
                     break;
             }

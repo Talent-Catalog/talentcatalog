@@ -5,7 +5,7 @@
 <div class="attachments">
   <div class="mb-3" *ngFor="let attachment of attachments; let i = index;" [class.card]="!preview">
 
-    <div class="text-right" *ngIf="!preview && attachment.createdBy.id == user.id">
+    <div class="text-right" *ngIf="!preview && attachment.createdBy.id == user?.id">
       <button class="btn btn-danger btn-card"
               [disabled]="deleting"
               (click)="deleteAttachment(attachment)">&times;</button>
