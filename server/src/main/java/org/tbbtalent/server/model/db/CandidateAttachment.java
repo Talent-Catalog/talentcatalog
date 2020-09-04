@@ -4,14 +4,7 @@
 
 package org.tbbtalent.server.model.db;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "candidate_attachment")
@@ -35,8 +28,6 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long>  {
      * generated on S3.
      */
     private String location;
-
-    private boolean adminOnly;
 
     /**
      * This is recorded just as the suffix of the attachment filename 
@@ -81,14 +72,6 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long>  {
 
     public void setLocation(String location) {
         this.location = location;
-    }
-
-    public boolean isAdminOnly() {
-        return adminOnly;
-    }
-
-    public void setAdminOnly(boolean adminOnly) {
-        this.adminOnly = adminOnly;
     }
 
     public String getFileType() {

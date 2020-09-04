@@ -65,7 +65,7 @@ public class CandidateAttachmentAdminApi {
      */
     @PostMapping()
     public Map<String, Object> createCandidateAttachment(@RequestBody CreateCandidateAttachmentRequest request) {
-        CandidateAttachment candidateAttachment = candidateAttachmentService.createCandidateAttachment(request, true);
+        CandidateAttachment candidateAttachment = candidateAttachmentService.createCandidateAttachment(request);
         return candidateAttachmentDto().build(candidateAttachment);
     }
 
@@ -114,7 +114,6 @@ public class CandidateAttachmentAdminApi {
                 .add("name")
                 .add("location")
                 .add("fileType")
-                .add("adminOnly")
                 .add("migrated")
                 .add("cv")
                 .add("createdBy", userDto())

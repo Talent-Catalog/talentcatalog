@@ -29,7 +29,7 @@ public interface CandidateAttachmentService {
 
     List<CandidateAttachment> listCandidateAttachments(Long candidateId);
 
-    CandidateAttachment createCandidateAttachment(CreateCandidateAttachmentRequest request, Boolean adminOnly);
+    CandidateAttachment createCandidateAttachment(CreateCandidateAttachmentRequest request);
 
     void deleteCandidateAttachment(Long id);
 
