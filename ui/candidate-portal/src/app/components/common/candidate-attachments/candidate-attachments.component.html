@@ -26,7 +26,8 @@
 
         <div class="form-group m-md-0">
           <label>{{ 'REGISTRATION.ATTACHMENTS.LABEL.CREATEDBY' | translate }}</label>
-          <p *ngIf="attachment.createdBy">{{attachment.createdBy.firstName}} {{attachment.createdBy.lastName}}</p>
+          <p *ngIf="attachment.createdBy && attachment.createdBy.id == user?.id">{{attachment.createdBy.firstName}} {{attachment.createdBy.lastName}}</p>
+          <p *ngIf="attachment.createdBy && attachment.createdBy.id !== user?.id">Admin</p>
           <p *ngIf="!attachment.createdBy">Unknown</p>
         </div>
 
