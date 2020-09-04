@@ -38,7 +38,7 @@
       <button class="btn" (click)="doCopyLink()">
         <i class="fas fa-link" title="Get shareable link"></i>
       </button>
-      <a *ngIf="candidateSource.sfJoblink" target="_blank"
+      <a *ngIf="candidateSource?.sfJoblink" target="_blank"
          [href]="candidateSource.sfJoblink">
         <i class="fab fa-salesforce" title="Associated Job Opportunity"></i>
       </a>
