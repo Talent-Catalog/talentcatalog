@@ -11,6 +11,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
+import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
@@ -187,11 +188,16 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
         Candidate candidate;
 
+        // If coming from candidate portal check delete logic
         if (!user.getRole().equals(Role.admin)) {
              candidate = userContext.getLoggedInCandidate();
-            // Check that the user is deleting their own attachment
+            // Check that the candidate is deleting an attachment related to themselves
             if (!candidate.getId().equals(candidateAttachment.getCandidate().getId())) {
                 throw new InvalidCredentialsException("You do not have permission to perform that action");
+            }
+            // Check that candidate is only deleting their own uploads
+            if (!candidate.getUser().getId().equals(candidateAttachment.getCreatedBy().getId())) {
+                throw new InvalidRequestException("You can only delete your own uploads.");
             }
         } else {
             candidate = candidateRepository.findById(candidateAttachment.getCandidate().getId())
@@ -213,16 +219,25 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                     String folder = BooleanUtils.isTrue(
                             candidateAttachment.isMigrated()) ? "migrated"
                             : candidate.getCandidateNumber();
-                    s3ResourceHelper.deleteFile("candidate/" + folder
-                            + "/" + candidateAttachment.getName());
+                    s3ResourceHelper.deleteFile("candidate/" + folder + "/" + candidateAttachment.getLocation());
                     break;
                 case googlefile:
                     FileSystemFile fsf = new FileSystemFile();
                     fsf.setUrl(candidateAttachment.getLocation());
-                    try {
-                        fileSystemService.deleteFile(fsf);
-                    } catch (IOException e) {
-                        log.error("Could not delete attachment from Google Drive: " + fsf, e);
+                    if (!user.getRole().equals(Role.admin)) {
+                        fsf.setName("RemovedByCandidate_" + candidateAttachment.getName());
+                        try {
+                            fileSystemService.renameFile(fsf);
+                        } catch (IOException e) {
+                            log.error("Could not rename attachment in Google Drive: " + candidateAttachment.getName(), e);
+                        }
+                    } else {
+                        try {
+                            fileSystemService.deleteFile(fsf);
+                        } catch (IOException e) {
+                            log.error("Could not delete attachment from Google Drive: " + fsf, e);
+                        }
+
                     }
                     break;
             }
