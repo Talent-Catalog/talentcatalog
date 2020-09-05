@@ -10,12 +10,19 @@ import java.util.Map;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.StatReport;
 import org.tbbtalent.server.model.db.Translatable;
 
+/**
+ * Converts objects to a Map of Strings to values, where the values can
+ * be Strings or other Maps - ie Map<String, String|Map>
+ * This hierarchical structure maps well on to Json which is used to
+ * return responses over HTTP.
+ */
 public class DtoBuilder {
 
-    private List<MappedProperty> mappedProperties;
+    private final List<MappedProperty> mappedProperties;
     private Boolean skipTranslation  = false;
 
 
@@ -44,7 +51,8 @@ public class DtoBuilder {
         return this;
     }
 
-    public List<Map<String, Object>> buildList(Collection<?> sourceList) {
+    public @Nullable List<Map<String, Object>> buildList(
+            @Nullable Collection<?> sourceList) {
         if (sourceList != null) {
             List<Map<String, Object>> results = new ArrayList<>();
             for (Object source : sourceList) {
@@ -56,7 +64,7 @@ public class DtoBuilder {
         }
     }
 
-    public Map<String, Object> buildPage(Page<?> page) {
+    public @Nullable Map<String, Object> buildPage(@Nullable Page<?> page) {
         if (page != null) {
             Map<String, Object> result = new HashMap<>();
             result.put("totalElements", page.getTotalElements());
@@ -72,7 +80,8 @@ public class DtoBuilder {
         }
     }
 
-    public Map<String, Object> buildReport(StatReport statReport) {
+    public @Nullable Map<String, Object> buildReport(
+            @Nullable StatReport statReport) {
         if (statReport != null) {
             Map<String, Object> result = new HashMap<>();
             result.put("name", statReport.getName());
@@ -84,7 +93,15 @@ public class DtoBuilder {
         }
     }
 
-    public Map<String, Object> build(Object source) {
+    /**
+     * Converts object to a Map of Strings to values, where the values can
+     * be Strings or other Maps.
+     * This hierarchical structure maps well on to Json which is used to
+     * return responses over HTTP.
+     * @param source Object to be converted to a JSon style Map<String, String|Map>
+     * @return Null if source is null
+     */
+    public @Nullable Map<String, Object> build(@Nullable Object source) {
 
         if (source == null) {
             return null;
@@ -107,7 +124,7 @@ public class DtoBuilder {
                 propertyName = translationContainingTranslation;
             }
             
-            Object value = null;
+            Object value;
             try {
                 value = PropertyUtils.getProperty(source, propertyName);
             } catch (IllegalAccessException e) {
