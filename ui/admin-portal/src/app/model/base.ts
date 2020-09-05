@@ -20,9 +20,19 @@ export enum SearchBy {
   watched
 }
 
+/**
+ * Defines what TBB Salesforce url should look like.
+ * <p/>
+ * Basically it starts with TBB's Salesforce url. It also contains a
+ * Salesforce record ID which is a string 15 or more of "word" characters
+ * preceeded by a record type delimited by "/".
+ * eg /Opportunity/...id...
+ */
 export const salesforceUrlPattern: string =
   'https://talentbeyondboundaries.lightning.force.com/' +
-  '.*[^\\w]([\\w]{15,})[^\\w]?.*';
+  '.*/[\\w]+/[\\w]{15,}[^\\w]?.*';
+
+export const salesforceUrlRegExp: RegExp = new RegExp(salesforceUrlPattern);
 
 export const defaultReviewStatusFilter: string[] = [
   ReviewedStatus[ReviewedStatus.pending],
@@ -43,6 +53,10 @@ export interface CandidateSource extends Auditable {
   sfJoblink?: string;
   users?: User[];
   watcherUserIds?: number[];
+}
+
+export interface Opportunity {
+  name: string;
 }
 
 export class PagedSearchRequest {

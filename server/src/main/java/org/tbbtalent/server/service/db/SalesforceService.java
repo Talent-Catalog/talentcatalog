@@ -13,6 +13,7 @@ import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.sf.Contact;
+import org.tbbtalent.server.model.sf.Opportunity;
 
 /**
  * Access to Salesforce.
@@ -55,6 +56,19 @@ public interface SalesforceService {
      */
     @Nullable
     Contact findContact(@NonNull Candidate candidate) 
+            throws GeneralSecurityException, WebClientException;
+
+    /**
+     * Searches for a Salesforce Opportunity record corresponding to the given 
+     * Salesforce id
+     * @param sfId Salesforce id
+     * @return Salesforce opportunity, null if none
+     * @throws GeneralSecurityException If there are errors relating to keys
+     * and digital signing.
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     */
+    @Nullable
+    Opportunity findOpportunity(String sfId)
             throws GeneralSecurityException, WebClientException;
 
     /**

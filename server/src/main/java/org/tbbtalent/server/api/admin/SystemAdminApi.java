@@ -1,19 +1,53 @@
 package org.tbbtalent.server.api.admin;
 
-import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.model.FileList;
+import java.io.File;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.tbbtalent.server.model.db.*;
+import org.springframework.web.reactive.function.client.WebClientException;
+import org.tbbtalent.server.model.db.AttachmentType;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateAttachment;
+import org.tbbtalent.server.model.db.CandidateStatus;
+import org.tbbtalent.server.model.db.EducationType;
+import org.tbbtalent.server.model.db.Gender;
+import org.tbbtalent.server.model.db.NoteType;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.sf.Contact;
+import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.security.UserContext;
@@ -21,21 +55,13 @@ import org.tbbtalent.server.service.db.DataSharingService;
 import org.tbbtalent.server.service.db.PopulateElasticsearchService;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
+import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
+import org.tbbtalent.server.util.dto.DtoBuilder;
 import org.tbbtalent.server.util.textExtract.TextExtractHelper;
 
-import java.io.File;
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.sql.Date;
-import java.sql.*;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.model.FileList;
 
 @RestController
 @RequestMapping("/api/admin/system")
@@ -102,6 +128,41 @@ public class SystemAdminApi {
         api.setTargetUser("tbbtalent");
         api.setTargetPwd("tbbtalent");
         api.migrate();
+    }
+
+    /**
+     * Returns info (including "name") about the Salesforce opportunity 
+     * corresponding to the given url - or null if the url does not refer
+     * to a Salesforce opportunity.
+     * @param sfUrl A url
+     * @return Map containing "name" attribute, or null if not an opportunity.
+     * @throws GeneralSecurityException If there are errors relating to keys
+     * and digital signing.
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     */
+    @GetMapping("sfjobname")
+    @Nullable
+    public Map<String, Object> findSfJobName(
+            @RequestParam(value = "url") String sfUrl) 
+            throws GeneralSecurityException {
+
+        Opportunity opp = null;
+
+        //Make sure that it is referring to a Salesforce Opportunity record
+        String objectType = SalesforceServiceImpl.extractObjectTypeFromSfUrl(sfUrl);
+        if ("Opportunity".equals(objectType)) {
+            String sfId = SalesforceServiceImpl.extractIdFromSfUrl(sfUrl);
+            if (sfId != null) {
+                opp = salesforceService.findOpportunity(sfId);
+            }
+        }
+        return opportunityDto().build(opp);
+    }
+
+    private DtoBuilder opportunityDto() {
+        return new DtoBuilder()
+                .add("name")
+                ;
     }
 
     @GetMapping("updatesflinks")

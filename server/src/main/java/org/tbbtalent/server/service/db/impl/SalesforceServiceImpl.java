@@ -40,6 +40,7 @@ import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.sf.Contact;
+import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 
@@ -267,15 +268,13 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             
             //First get some more info about the job: its name and its 
             //associated account.
-            JobOppResult jobOppResult = findRecordFieldsFromId(
-                    "Opportunity", jobOpportunityId,
-                    "Name,AccountId", JobOppResult.class);
-            String jobOpportunityName = jobOppResult == null ? null : jobOppResult.getName();
+            Opportunity opportunity = findOpportunity(jobOpportunityId);
+            String jobOpportunityName = opportunity == null ? null : opportunity.getName();
             if (jobOpportunityName == null) {
                 throw new SalesforceException(
                         "Could not find name for job opportunity " + sfJoblink);
             }
-            String jobAccountId = jobOppResult.getAccountId();
+            String jobAccountId = opportunity.getAccountId();
             
             
             //Now build requests of candidate opportunities we want to create
@@ -475,6 +474,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         }
     }
 
+    @Override
     @Nullable
     public <T> T findRecordFieldsFromId(
             String objectType, String id, String fields, Class<T> cl) 
@@ -482,6 +482,19 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         ClientResponse response = executeRecordFieldsGet(objectType, id, fields);
         T result = response.bodyToMono(cl).block();
         return result;
+    }
+
+    @Override
+    @Nullable
+    public Opportunity findOpportunity(String sfId)
+            throws GeneralSecurityException, WebClientException {
+        Opportunity opportunity = null;
+        if (sfId != null) {
+            opportunity = findRecordFieldsFromId(
+                    "Opportunity", sfId,
+                    "Name,AccountId", Opportunity.class);
+        }
+        return opportunity;
     }
 
     @Override
@@ -1078,14 +1091,4 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
          */
         int checkSize();
     }
-
-    @Getter
-    @Setter
-    @ToString
-    static class JobOppResult {
-        public String Name;
-        public String AccountId;
-    }
-    
-    
 }

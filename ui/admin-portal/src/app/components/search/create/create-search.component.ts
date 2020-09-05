@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {
   AbstractControl,
+  AsyncValidatorFn,
   FormBuilder,
   FormGroup,
   ValidationErrors,
@@ -18,6 +19,10 @@ import {
   SavedSearch
 } from "../../../model/saved-search";
 import {SearchCandidateRequest} from "../../../model/search-candidate-request";
+import {salesforceUrlPattern} from "../../../model/base";
+import {Observable, of} from "rxjs";
+import {SalesforceService} from "../../../services/salesforce.service";
+import {catchError, map, tap} from "rxjs/operators";
 
 @Component({
   selector: 'app-create-search',
@@ -27,8 +32,9 @@ import {SearchCandidateRequest} from "../../../model/search-candidate-request";
 
 export class CreateSearchComponent implements OnInit {
 
-  form: FormGroup;
   error;
+  form: FormGroup;
+  jobName: string;
   saving: boolean;
   savedSearch: SavedSearch;
   searchCandidateRequest: SearchCandidateRequest;
@@ -39,6 +45,7 @@ export class CreateSearchComponent implements OnInit {
   get nameControl(): AbstractControl {
     return this.form.get('name')
   }
+  get sfJoblink() { return this.form.get('sfJoblink'); }
 
   get savedSearchType(): number {
     const val = this.form.get('savedSearchType').value;
@@ -54,7 +61,8 @@ export class CreateSearchComponent implements OnInit {
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
-              private savedSearchService: SavedSearchService) {
+              private savedSearchService: SavedSearchService,
+              private salesforceService: SalesforceService) {
     this.savedSearchTypeInfos = savedSearchService.getSavedSearchTypeInfos();
   }
 
@@ -62,6 +70,10 @@ export class CreateSearchComponent implements OnInit {
 
     this.form = this.fb.group({
       name: [null, Validators.required],
+      sfJoblink: [this.savedSearch?.sfJoblink,
+        [Validators.pattern(salesforceUrlPattern)], //Sync validators
+        [this.sfJoblinkValidator()] //Async validators
+      ],
       savedSearchType: [null, Validators.required],
       savedSearchSubtype: [null, this.subtypeRequiredValidator()],
       reviewable: [false, Validators.required],
@@ -72,6 +84,42 @@ export class CreateSearchComponent implements OnInit {
       //(Otherwise we just see the unmodified search values)
       this.savedSearch = Object.assign(this.savedSearch, this.searchCandidateRequest);
     }
+  }
+
+  private sfJoblinkValidator(): AsyncValidatorFn {
+    return (control: AbstractControl): Observable<ValidationErrors | null> => {
+      const url: string = control.value;
+      let retval;
+
+      this.error = null;
+
+      if (url == null || url.length === 0) {
+        //Empty url always validates
+        retval = of(null)
+      } else {
+        this.jobName = null;
+
+        //See if we have name for a job corresponding to this url
+        retval = this.salesforceService.findSfJobName(url).pipe(
+
+          //As side effect populate the job name
+          tap(opportunity =>
+            this.jobName = opportunity === null ? null : opportunity.name),
+
+          //Null names turn into validation error - otherwise no error
+          map(opportunity => opportunity === null ? {'invalidSfJoblink': true} : null),
+
+          //Problems connecting to server will be displayed but we won't
+          //treat it as a validation error
+          catchError(err => {
+            this.error = err;
+            return of(null);
+          })
+        );
+      }
+
+      return retval;
+    };
   }
 
   private subtypeRequiredValidator(): ValidatorFn {
