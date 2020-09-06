@@ -33,19 +33,10 @@
         </label>
       </div>
 
-      <div>
-        <label>Link to Salesforce Job Opportunity</label>
-        <input type="text" class="form-control" formControlName="sfJoblink">
-      </div>
-      <div *ngIf="sfJoblink.invalid && (sfJoblink.dirty || sfJoblink.touched)"
-           class="alert alert-danger">
-          Doesn't look like a TBB Salesforce Job opportunity link to me!
-        <br/>
-          Copy and paste from Salesforce.
-      </div>
-      <div *ngIf="sfJoblink.pending">
-        <i class="fas fa-spinner fa-spin"></i>Waiting validation from Salesforce...
-      </div>
+      <app-joblink [candidateSource]="savedSearch"
+                   (updateError)="error=$event"
+                   (joblinkValidation)="onJoblinkValidation($event)"
+      ></app-joblink>
 
       <div *ngIf="jobName">
         {{jobName}}
