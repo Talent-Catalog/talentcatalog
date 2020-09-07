@@ -30,7 +30,7 @@ import {
 import {SearchSavedListRequest} from "../../../../model/saved-list";
 import {CandidateSourceService} from "../../../../services/candidate-source.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {UpdateListComponent} from "../../../list/update/update-list.component";
+import {CreateUpdateListComponent} from "../../../list/create-update/create-update-list.component";
 import {
   SelectListComponent,
   TargetListSelection
@@ -299,7 +299,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
         .catch(() => { /* Isn't possible */
         });
     } else {
-      const editModal = this.modalService.open(UpdateListComponent);
+      const editModal = this.modalService.open(CreateUpdateListComponent);
 
       editModal.componentInstance.savedList = source;
 

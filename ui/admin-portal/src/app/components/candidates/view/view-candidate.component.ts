@@ -24,7 +24,7 @@ import {CandidateAttachment} from '../../../model/candidate-attachment';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {environment} from '../../../../environments/environment';
 import {LocalStorageService} from 'angular-2-local-storage';
-import {UpdateListComponent} from "../../list/update/update-list.component";
+import {CreateUpdateListComponent} from "../../list/create-update/create-update-list.component";
 
 @Component({
   selector: 'app-view-candidate',
@@ -193,7 +193,7 @@ export class ViewCandidateComponent implements OnInit {
   }
 
   onNewList() {
-    const modal = this.modalService.open(UpdateListComponent);
+    const modal = this.modalService.open(CreateUpdateListComponent);
     modal.result
       .then((savedList: SavedList) => {
         this.addCandidateToList(savedList.id, true);

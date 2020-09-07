@@ -117,7 +117,7 @@ import {NgxWigModule} from 'ngx-wig';
 import {ViewCandidateSurveyComponent} from './components/candidates/view/survey/view-candidate-survey.component';
 import {EditCandidateAdditionalInfoComponent} from './components/candidates/view/additional-info/edit/edit-candidate-additional-info.component';
 import {EditCandidateSurveyComponent} from './components/candidates/view/survey/edit/edit-candidate-survey.component';
-import {UpdateListComponent} from './components/list/update/update-list.component';
+import {CreateUpdateListComponent} from './components/list/create-update/create-update-list.component';
 import {SelectListComponent} from './components/list/select/select-list.component';
 import {CandidatesSearchComponent} from './components/candidates/candidates-search/candidates-search.component';
 import {CandidatesListComponent} from './components/candidates/candidates-list/candidates-list.component';
@@ -228,7 +228,7 @@ import {JoblinkComponent} from './components/util/joblink/joblink.component';
     ViewCandidateSurveyComponent,
     EditCandidateAdditionalInfoComponent,
     EditCandidateSurveyComponent,
-    UpdateListComponent,
+    CreateUpdateListComponent,
     SelectListComponent,
     BrowseCandidateSourcesComponent,
     CandidatesSearchComponent,
@@ -236,7 +236,7 @@ import {JoblinkComponent} from './components/util/joblink/joblink.component';
     CandidateSourceResultsComponent,
     CreateCandidateOccupationComponent,
     ShowCandidatesComponent,
-    UpdateListComponent,
+    CreateUpdateListComponent,
     CreateCandidateOccupationComponent,
     CvIconComponent,
     JoblinkComponent

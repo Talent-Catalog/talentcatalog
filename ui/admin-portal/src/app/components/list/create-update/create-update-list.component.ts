@@ -14,11 +14,11 @@ import {SavedListService} from "../../../services/saved-list.service";
 import {JoblinkValidationEvent} from "../../util/joblink/joblink.component";
 
 @Component({
-  selector: 'app-update-list',
-  templateUrl: './update-list.component.html',
-  styleUrls: ['./update-list.component.scss']
+  selector: 'app-create-update-list',
+  templateUrl: './create-update-list.component.html',
+  styleUrls: ['./create-update-list.component.scss']
 })
-export class UpdateListComponent implements OnInit {
+export class CreateUpdateListComponent implements OnInit {
   error = null;
   form: FormGroup;
   jobName: string;

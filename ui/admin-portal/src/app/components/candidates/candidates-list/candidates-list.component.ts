@@ -5,7 +5,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {SavedListService} from "../../../services/saved-list.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {getCandidateSourceNavigation} from "../../../model/saved-search";
-import {UpdateListComponent} from "../../list/update/update-list.component";
+import {CreateUpdateListComponent} from "../../list/create-update/create-update-list.component";
 
 @Component({
   selector: 'app-candidates-list',
@@ -64,7 +64,7 @@ export class CandidatesListComponent implements OnInit {
   }
 
   private createNewList() {
-    const modal = this.modalService.open(UpdateListComponent);
+    const modal = this.modalService.open(CreateUpdateListComponent);
     modal.result
       .then((savedList: SavedList) => {
         const urlCommands = getCandidateSourceNavigation(savedList);

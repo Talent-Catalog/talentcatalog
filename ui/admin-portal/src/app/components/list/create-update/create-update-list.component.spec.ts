@@ -4,21 +4,21 @@
 
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {UpdateListComponent} from './update-list.component';
+import {CreateUpdateListComponent} from './create-update-list.component';
 
 describe('UpdateListComponent', () => {
-  let component: UpdateListComponent;
-  let fixture: ComponentFixture<UpdateListComponent>;
+  let component: CreateUpdateListComponent;
+  let fixture: ComponentFixture<CreateUpdateListComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ UpdateListComponent ]
+      declarations: [ CreateUpdateListComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(UpdateListComponent);
+    fixture = TestBed.createComponent(CreateUpdateListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
