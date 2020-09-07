@@ -4,7 +4,7 @@
 
 <div class="modal-header">
 
-  <h4 class="modal-title">Update Saved List</h4>
+  <h4 class="modal-title">{{title}}</h4>
 
   <button type="button" class="close" aria-label="Close" (click)="dismiss()">
     <span aria-hidden="true">&times;</span>
@@ -22,9 +22,9 @@
     <div class="form-group" >
       <label for="name">Name *</label>
       <input class="form-control" id="name" formControlName="name">
-      <div *ngIf="name.invalid && (name.dirty || name.touched)"
+      <div *ngIf="nameControl.invalid && (nameControl.dirty || nameControl.touched)"
            class="alert alert-danger">
-        <div *ngIf="name.errors.required">
+        <div *ngIf="nameControl.errors.required">
           Name is required.
         </div>
       </div>
@@ -32,17 +32,16 @@
         <label>Fixed?</label>
         <input type="checkbox" class="form-control" formControlName="fixed">
       </div>
-      <div>
-        <label>Link to Salesforce Job Opportunity</label>
-        <input type="text" class="form-control" formControlName="sfJoblink">
+
+      <app-joblink [candidateSource]="savedList"
+                   (updateError)="error=$event"
+                   (joblinkValidation)="onJoblinkValidation($event)"
+      ></app-joblink>
+
+      <div *ngIf="jobName">
+        {{jobName}}
       </div>
-      <div *ngIf="sfJoblink.invalid && (sfJoblink.dirty || sfJoblink.touched)"
-           class="alert alert-danger">
-        <div *ngIf="sfJoblink.errors">
-          Doesn't look like a TBB Salesforce Job opportunity link to me!
-          Copy and paste from Salesforce.
-        </div>
-      </div>
+
     </div>
     <hr/>
     <div *ngIf="savedList">

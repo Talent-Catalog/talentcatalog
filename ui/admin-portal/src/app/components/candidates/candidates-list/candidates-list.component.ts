@@ -3,9 +3,9 @@ import {SavedList} from "../../../model/saved-list";
 import {Location} from "@angular/common"
 import {ActivatedRoute, Router} from "@angular/router";
 import {SavedListService} from "../../../services/saved-list.service";
-import {CreateListComponent} from "../../list/create/create-list.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {getCandidateSourceNavigation} from "../../../model/saved-search";
+import {UpdateListComponent} from "../../list/update/update-list.component";
 
 @Component({
   selector: 'app-candidates-list',
@@ -47,7 +47,7 @@ export class CandidatesListComponent implements OnInit {
       this.id = +params.get('id');
       if (this.id) {
 
-        //Load saved search to get name and type to display
+        //Load saved list to get name and type to display
         this.savedListService.get(this.id).subscribe(result => {
           this.savedList = result;
           this.loading = false;
@@ -56,6 +56,7 @@ export class CandidatesListComponent implements OnInit {
           this.loading = false;
         });
       } else {
+        //This is the list url with no id specified.
         this.createNewList();
         this.loading = false;
       }
@@ -63,7 +64,7 @@ export class CandidatesListComponent implements OnInit {
   }
 
   private createNewList() {
-    const modal = this.modalService.open(CreateListComponent);
+    const modal = this.modalService.open(UpdateListComponent);
     modal.result
       .then((savedList: SavedList) => {
         const urlCommands = getCandidateSourceNavigation(savedList);

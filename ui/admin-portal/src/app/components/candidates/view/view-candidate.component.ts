@@ -10,8 +10,11 @@ import {AuthService} from '../../../services/auth.service';
 import {User} from '../../../model/user';
 import {IDropdownSettings} from 'ng-multiselect-dropdown';
 import {ListItem} from 'ng-multiselect-dropdown/multiselect.model';
-import {CreateListComponent} from '../../list/create/create-list.component';
-import {IHasSetOfCandidates, SavedList, SearchSavedListRequest} from '../../../model/saved-list';
+import {
+  IHasSetOfCandidates,
+  SavedList,
+  SearchSavedListRequest
+} from '../../../model/saved-list';
 import {SavedListService} from '../../../services/saved-list.service';
 import {CandidateSavedListService} from '../../../services/candidate-saved-list.service';
 import {SavedListCandidateService} from '../../../services/saved-list-candidate.service';
@@ -21,6 +24,7 @@ import {CandidateAttachment} from '../../../model/candidate-attachment';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {environment} from '../../../../environments/environment';
 import {LocalStorageService} from 'angular-2-local-storage';
+import {UpdateListComponent} from "../../list/update/update-list.component";
 
 @Component({
   selector: 'app-view-candidate',
@@ -189,7 +193,7 @@ export class ViewCandidateComponent implements OnInit {
   }
 
   onNewList() {
-    const modal = this.modalService.open(CreateListComponent);
+    const modal = this.modalService.open(UpdateListComponent);
     modal.result
       .then((savedList: SavedList) => {
         this.addCandidateToList(savedList.id, true);
