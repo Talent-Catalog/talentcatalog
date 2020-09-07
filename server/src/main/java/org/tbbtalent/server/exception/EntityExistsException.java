@@ -1,9 +1,9 @@
 package org.tbbtalent.server.exception;
 
-public class EntityExistsException extends RuntimeException {
+public class EntityExistsException extends ServiceException {
 
     public EntityExistsException(String type) {
-        super("A " + type + " with this name already exists");
+        super("entity_exists", "A " + type + " with this name already exists");
     }
 }
 
