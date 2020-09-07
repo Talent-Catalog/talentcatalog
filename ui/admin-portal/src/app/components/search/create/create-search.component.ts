@@ -15,7 +15,8 @@ import {
 } from "../../../services/saved-search.service";
 import {
   convertToSavedSearchRequest,
-  SavedSearch
+  SavedSearch,
+  SavedSearchType
 } from "../../../model/saved-search";
 import {SearchCandidateRequest} from "../../../model/search-candidate-request";
 import {SalesforceService} from "../../../services/salesforce.service";
@@ -29,7 +30,7 @@ import {JoblinkValidationEvent} from "../../util/joblink/joblink.component";
 
 export class CreateSearchComponent implements OnInit {
 
-  error;
+  error = null;
   form: FormGroup;
   jobName: string;
   saving: boolean;
@@ -42,6 +43,10 @@ export class CreateSearchComponent implements OnInit {
 
   get nameControl(): AbstractControl {
     return this.form.get('name')
+  }
+
+  get savedSearchTypeControl(): AbstractControl {
+    return this.form.get('savedSearchType');
   }
 
   get savedSearchType(): number {
@@ -146,6 +151,12 @@ export class CreateSearchComponent implements OnInit {
     if (jobOpportunity.valid) {
       this.sfJoblink = jobOpportunity.sfJoblink;
       this.jobName = jobOpportunity.jobname;
+
+      //If existing name and search type control are empty, auto copy into them
+      if (!this.nameControl.value) {
+        this.nameControl.patchValue(this.jobName);
+        this.savedSearchTypeControl.patchValue(SavedSearchType.job);
+      }
     } else {
       this.sfJoblink = null;
       this.jobName = null;
