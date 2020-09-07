@@ -34,7 +34,7 @@
         </label>
       </div>
 
-      <app-joblink [candidateSource]="savedSearch"
+      <app-joblink [joblink]="savedSearch?.sfJoblink"
                    (updateError)="error=$event"
                    (joblinkValidation)="onJoblinkValidation($event)"
       ></app-joblink>

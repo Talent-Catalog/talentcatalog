@@ -7,7 +7,7 @@ import {
   ValidationErrors,
   Validators
 } from "@angular/forms";
-import {CandidateSource, salesforceUrlPattern} from "../../../model/base";
+import {salesforceUrlPattern} from "../../../model/base";
 import {Observable, of} from "rxjs";
 import {catchError, map, tap} from "rxjs/operators";
 import {SalesforceService} from "../../../services/salesforce.service";
@@ -19,7 +19,7 @@ import {SalesforceService} from "../../../services/salesforce.service";
 })
 export class JoblinkComponent implements OnInit {
   form: FormGroup;
-  @Input() candidateSource: CandidateSource;
+  @Input() joblink: string;
   @Output() updateError =  new EventEmitter();
   @Output() joblinkValidation =  new EventEmitter();
 
@@ -31,7 +31,7 @@ export class JoblinkComponent implements OnInit {
   ngOnInit(): void {
 
     this.form = this.fb.group({
-      sfJoblink: [this.candidateSource?.sfJoblink,
+      sfJoblink: [this.joblink,
         [Validators.pattern(salesforceUrlPattern)], //Sync validators
         [this.sfJoblinkValidator()] //Async validators
       ],

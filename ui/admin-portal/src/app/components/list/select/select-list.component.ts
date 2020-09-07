@@ -4,6 +4,7 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {SavedList, SearchSavedListRequest} from "../../../model/saved-list";
 import {IDropdownSettings} from "ng-multiselect-dropdown";
 import {SavedListService} from "../../../services/saved-list.service";
+import {JoblinkValidationEvent} from "../../util/joblink/joblink.component";
 
 
 export interface TargetListSelection {
@@ -28,8 +29,10 @@ export class SelectListComponent implements OnInit {
 
   error: string;
   form: FormGroup;
+  jobName: string;
   loading: boolean;
   saving: boolean;
+  sfJoblink: string;
   action: string = "Save";
   title: string = "Select List";
 
@@ -58,6 +61,7 @@ export class SelectListComponent implements OnInit {
     this.loadLists();
   }
 
+  get newListNameControl() { return this.form.get('newListName'); }
   get newListName(): string { return this.form.value.newListName; }
   get newList(): boolean { return this.form.value.newList; }
   get replace(): boolean { return this.form.value.replace; }
@@ -106,4 +110,19 @@ export class SelectListComponent implements OnInit {
     this.form.controls['savedList'].patchValue(null);
   }
 
+
+  onJoblinkValidation(jobOpportunity: JoblinkValidationEvent) {
+    if (jobOpportunity.valid) {
+      this.sfJoblink = jobOpportunity.sfJoblink;
+      this.jobName = jobOpportunity.jobname;
+
+      //If existing name is empty, auto copy into them
+      if (!this.newListNameControl.value) {
+        this.newListNameControl.patchValue(this.jobName);
+      }
+    } else {
+      this.sfJoblink = null;
+      this.jobName = null;
+    }
+  }
 }

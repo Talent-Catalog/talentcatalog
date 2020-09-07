@@ -33,7 +33,7 @@
         <input type="checkbox" class="form-control" formControlName="fixed">
       </div>
 
-      <app-joblink [candidateSource]="savedList"
+      <app-joblink [joblink]="savedList?.sfJoblink"
                    (updateError)="error=$event"
                    (joblinkValidation)="onJoblinkValidation($event)"
       ></app-joblink>
