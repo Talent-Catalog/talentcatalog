@@ -29,35 +29,25 @@ import {JoblinkValidationEvent} from "../../util/joblink/joblink.component";
 
 export class CreateUpdateSearchComponent implements OnInit {
 
-  /**
-   * Indicates whether component is being used to create a new object or
-   * update an existing one.
-   */
-  private create: boolean;
-
   error = null;
   form: FormGroup;
   jobName: string;
   saving: boolean;
-  private _savedSearch: SavedSearch;
+  savedSearch: SavedSearch;
   searchCandidateRequest: SearchCandidateRequest;
   savedSearchTypeInfos: SavedSearchTypeInfo[];
   savedSearchTypeSubInfos: SavedSearchTypeSubInfo[];
   sfJoblink: string;
 
-  //Control access to savedSearch so that we can keep track of the object we
-  //are working on. See code in set method which determines whether or not
-  //we are in create mode.
-  get savedSearch(): SavedSearch {
-    return this._savedSearch;
-  }
 
-  set savedSearch(savedSearch: SavedSearch) {
-    this._savedSearch = savedSearch;
-
+  /**
+   * Indicates whether component is being used to create a new object or
+   * update an existing one.
+   */
+  get create(): boolean {
     //If we are working on a default search or one with a 0 id, we are in
     //create mode.
-    this.create = savedSearch.defaultSearch || savedSearch.id === 0;
+    return this.savedSearch?.defaultSearch || this.savedSearch?.id === 0
   }
 
   get title(): string {
