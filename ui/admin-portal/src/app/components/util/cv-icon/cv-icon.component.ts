@@ -10,8 +10,9 @@ import {Candidate} from '../../../model/candidate';
   styleUrls: ['./cv-icon.component.scss']
 })
 export class CvIconComponent implements OnInit {
-
+  // Required Input
   @Input() candidate: Candidate;
+  // Optional Input - if a candidate attachment is passed in, this will only open the single attachment.
   @Input() attachment: CandidateAttachment;
 
   cvs: CandidateAttachment[];
