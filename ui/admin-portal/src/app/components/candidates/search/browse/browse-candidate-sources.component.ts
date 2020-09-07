@@ -36,7 +36,7 @@ import {
   TargetListSelection
 } from "../../../list/select/select-list.component";
 import {CandidateSourceResultsCacheService} from "../../../../services/candidate-source-results-cache.service";
-import {CreateSearchComponent} from "../../../search/create/create-search.component";
+import {CreateUpdateSearchComponent} from "../../../search/create-update/create-update-search.component";
 
 @Component({
   selector: 'app-browse-candidate-sources',
@@ -287,7 +287,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
 
   onEditSource(source: CandidateSource) {
     if (isSavedSearch(source)) {
-      const editModal = this.modalService.open(CreateSearchComponent);
+      const editModal = this.modalService.open(CreateUpdateSearchComponent);
 
       editModal.componentInstance.savedSearch = source;
 

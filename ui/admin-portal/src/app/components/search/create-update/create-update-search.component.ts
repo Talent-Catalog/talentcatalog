@@ -22,12 +22,12 @@ import {SearchCandidateRequest} from "../../../model/search-candidate-request";
 import {JoblinkValidationEvent} from "../../util/joblink/joblink.component";
 
 @Component({
-  selector: 'app-create-search',
-  templateUrl: './create-search.component.html',
-  styleUrls: ['./create-search.component.scss']
+  selector: 'app-create-update-search',
+  templateUrl: './create-update-search.component.html',
+  styleUrls: ['./create-update-search.component.scss']
 })
 
-export class CreateSearchComponent implements OnInit {
+export class CreateUpdateSearchComponent implements OnInit {
 
   /**
    * Indicates whether component is being used to create a new object or

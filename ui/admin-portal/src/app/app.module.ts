@@ -34,7 +34,7 @@ import {SearchLanguagesComponent} from './components/settings/languages/search-l
 import {CreateLanguageComponent} from './components/settings/languages/create/create-language.component';
 import {EditLanguageComponent} from './components/settings/languages/edit/edit-language.component';
 import {SearchSavedSearchesComponent} from './components/search/load-search/search-saved-searches.component';
-import {CreateSearchComponent} from './components/search/create/create-search.component';
+import {CreateUpdateSearchComponent} from './components/search/create-update/create-update-search.component';
 import {CandidateSearchCardComponent} from './components/util/candidate-search-card/candidate-search-card.component';
 import {CandidateGeneralTabComponent} from './components/candidates/view/tab/candidate-general-tab/candidate-general-tab.component';
 import {CandidateExperienceTabComponent} from './components/candidates/view/tab/candidate-experience-tab/candidate-experience-tab.component';
@@ -149,7 +149,7 @@ import {JoblinkComponent} from './components/util/joblink/joblink.component';
     EditLanguageComponent,
     CreateNationalityComponent,
     SearchSavedSearchesComponent,
-    CreateSearchComponent,
+    CreateUpdateSearchComponent,
     CandidateSearchCardComponent,
     CandidateGeneralTabComponent,
     CandidateExperienceTabComponent,

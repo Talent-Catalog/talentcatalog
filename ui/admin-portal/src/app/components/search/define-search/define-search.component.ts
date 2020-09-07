@@ -22,7 +22,7 @@ import {SearchResults} from '../../../model/search-results';
 import {NgbDate, NgbDateStruct, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormArray, FormBuilder, FormGroup} from "@angular/forms";
 import {SearchSavedSearchesComponent} from "../load-search/search-saved-searches.component";
-import {CreateSearchComponent} from "../create/create-search.component";
+import {CreateUpdateSearchComponent} from "../create-update/create-update-search.component";
 import {SavedSearchService} from "../../../services/saved-search.service";
 import {IDropdownSettings} from 'ng-multiselect-dropdown';
 import {forkJoin, Subscription} from "rxjs";
@@ -410,7 +410,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   openSavedSearchModal(create: boolean) {
-    const showSaveModal = this.modalService.open(CreateSearchComponent);
+    const showSaveModal = this.modalService.open(CreateUpdateSearchComponent);
     showSaveModal.componentInstance.savedSearch = this.savedSearch;
 
     // Convert ids as we do for searches
