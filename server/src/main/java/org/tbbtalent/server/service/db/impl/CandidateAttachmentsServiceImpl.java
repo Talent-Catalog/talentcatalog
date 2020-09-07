@@ -99,7 +99,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     }
 
     @Override
-    public CandidateAttachment createCandidateAttachment(CreateCandidateAttachmentRequest request, Boolean adminOnly) {
+    public CandidateAttachment createCandidateAttachment(CreateCandidateAttachmentRequest request) {
         User user = userContext.getLoggedInUser();
         Candidate candidate;
         String textExtract;
@@ -117,7 +117,6 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
         attachment.setCandidate(candidate);
         attachment.setMigrated(false);
-        attachment.setAdminOnly(adminOnly);
         attachment.setAuditFields(user);
 
         if (request.getType().equals(AttachmentType.link)) {
@@ -388,7 +387,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         }
         
         CandidateAttachment attachment = 
-                createCandidateAttachment(req, false);
+                createCandidateAttachment(req);
 
         return attachment;
     }

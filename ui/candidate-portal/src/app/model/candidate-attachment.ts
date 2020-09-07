@@ -1,5 +1,5 @@
-import {Candidate} from "./candidate";
-import {User} from "./user";
+import {Candidate} from './candidate';
+import {User} from './user';
 
 export enum AttachmentType {
   file = 'file',
@@ -14,7 +14,6 @@ export interface CandidateAttachment {
   type: AttachmentType;
   migrated: boolean;
   cv: boolean;
-  adminOnly: boolean;
   candidate?: Candidate;
   createdBy: User;
   createdDate: string;

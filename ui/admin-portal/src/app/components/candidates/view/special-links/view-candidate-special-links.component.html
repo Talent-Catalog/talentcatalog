@@ -9,11 +9,11 @@
         <i class="fas fa-spinner fa-spin"></i>
     </span>
     <div class="float-right" *ngIf="editable">
-      <button class="btn btn-outline-secondary"
+      <button class="btn btn-outline-secondary mr-2"
               (click)="createUpdateSalesforce()">
         <i class="fab fa-salesforce"></i> Create/update Salesforce
       </button>
-      <button *ngIf="!candidate.folderlink" class="btn btn-outline-secondary"
+      <button *ngIf="!candidate.folderlink" class="btn btn-outline-secondary mr-2"
               (click)="createCandidateFolder()">
         <i class="fab fa-google-drive"></i> Create Google Docs Folder
       </button>
