@@ -1,7 +1,8 @@
 import {
   Component,
   EventEmitter,
-  Input, OnChanges,
+  Input,
+  OnChanges,
   OnInit,
   Output,
   SimpleChanges
@@ -69,9 +70,16 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges (changes: SimpleChanges){
-    // WHEN candidateSource changes IF showAll fetch the savedSearch object which has the multi select Names to display (not just Ids).
-    if (this.seeMore && changes && changes.candidateSource && changes.candidateSource.previousValue !== changes.candidateSource.currentValue){
-      this.getSavedSearch(this.candidateSource.id);
+    // WHEN candidateSource changes IF showAll fetch the savedSearch object
+    // which has the multi select Names to display (not just Ids).
+    if (this.seeMore && changes && changes.candidateSource
+      && changes.candidateSource.previousValue !== changes.candidateSource.currentValue) {
+
+      //Only fetch if we have an id - otherwise changes will just be local
+      //modifications of a candidate source which has not been created yet.
+      if (this.candidateSource.id) {
+        this.getSavedSearch(this.candidateSource.id);
+      }
     }
   }
 
