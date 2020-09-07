@@ -106,7 +106,6 @@ import {ChartsModule} from 'ng2-charts';
 import {InfographicComponent} from './components/infograhics/infographic.component';
 import {ChartComponent} from './components/infograhics/chart/chart.component';
 import {MonthPickerComponent} from './components/util/month-picker/month-picker.component';
-import {UpdateSearchComponent} from './components/search/update/update-search.component';
 import {CandidateSourceResultsComponent} from './components/candidates/search/returns/candidate-source-results.component';
 import {DefineSearchComponent} from './components/search/define-search/define-search.component';
 import {NotFoundComponent} from './not-found/not-found.component';
@@ -151,7 +150,6 @@ import {JoblinkComponent} from './components/util/joblink/joblink.component';
     CreateNationalityComponent,
     SearchSavedSearchesComponent,
     CreateSearchComponent,
-    UpdateSearchComponent,
     CandidateSearchCardComponent,
     CandidateGeneralTabComponent,
     CandidateExperienceTabComponent,
