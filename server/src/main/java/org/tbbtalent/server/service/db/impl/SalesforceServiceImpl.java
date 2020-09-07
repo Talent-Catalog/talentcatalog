@@ -323,7 +323,26 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
      * @param url Url of a Salesforce record
      * @return Salesforce id or null if the url wasn't a valid record url 
      */
-    public static String extractIdFromSfUrl(String url) {
+    public static @Nullable String extractIdFromSfUrl(String url) {
+        return extractFieldFromSfUrl(url, 2);
+    }
+
+    /**
+     * Extracts the Salesforce object type (ag Account, Contact, Opportunity) 
+     * from the Salesforce url of a record.
+     * @param url Url of a Salesforce record
+     * @return Salesforce object type or null if the url wasn't a valid record url 
+     */
+    public static @Nullable String extractObjectTypeFromSfUrl(String url) {
+        return extractFieldFromSfUrl(url, 1);
+    }
+
+    /**
+     * Extracts the Salesforce record id from the Salesforce url of a record.
+     * @param url Url of a Salesforce record
+     * @return Salesforce id or null if the url wasn't a valid record url 
+     */
+    private static @Nullable String extractFieldFromSfUrl(String url, int fieldNum) {
         if (url == null) {
             return null;
         }
@@ -335,14 +354,18 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
                         //This part just checks for 15 or more "word" characters with
                         //no "punctuation" - eg . or /.
-                        //That will be the Salesforce id.        
-                        ".*[^\\w]([\\w]{15,})[^\\w]?.*";
+                        //That will be the Salesforce id.
+                        //It should be preceeded by the record type surrounded
+                        //by "/".
+                        ".*/([\\w]+)/([\\w]{15,})[^\\w]?.*";
 
         Pattern r = Pattern.compile(pattern);
 
         Matcher m = r.matcher(url);
-        if (m.find() && m.groupCount() == 1) {
-            return m.group(1);
+
+        final int groupCount = m.groupCount();
+        if (m.find() && groupCount == 2) {
+            return m.group(fieldNum);
         } else {
             return null;
         }
