@@ -1,8 +1,9 @@
 <div class="modal-header">
 
-  <h4 class="modal-title">Make New Saved Search</h4>
+  <h4 class="modal-title">{{title}}</h4>
 
-  <button type="button" class="close" aria-label="Close" (click)="dismiss()">
+  <button type="button" class="close" aria-label="Close"
+          [disabled]="saving" (click)="cancel()">
     <span aria-hidden="true">&times;</span>
   </button>
 
@@ -45,7 +46,7 @@
       <div>
         <label for="savedSearchType">Type *</label>
         <select class="form-control" id="savedSearchType" formControlName="savedSearchType"
-                (change)="onSavedSearchTypeChange($event)">
+                (change)="onSavedSearchTypeChange()">
           <option *ngFor="let typeInfo of savedSearchTypeInfos"
                   [value]="typeInfo.savedSearchType">{{typeInfo.title}}</option>
         </select>

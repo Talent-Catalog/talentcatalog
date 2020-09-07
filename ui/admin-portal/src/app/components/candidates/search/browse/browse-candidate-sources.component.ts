@@ -29,7 +29,6 @@ import {
 } from "../../../../model/base";
 import {SearchSavedListRequest} from "../../../../model/saved-list";
 import {CandidateSourceService} from "../../../../services/candidate-source.service";
-import {UpdateSearchComponent} from "../../../search/update/update-search.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {UpdateListComponent} from "../../../list/update/update-list.component";
 import {
@@ -37,6 +36,7 @@ import {
   TargetListSelection
 } from "../../../list/select/select-list.component";
 import {CandidateSourceResultsCacheService} from "../../../../services/candidate-source-results-cache.service";
+import {CreateSearchComponent} from "../../../search/create/create-search.component";
 
 @Component({
   selector: 'app-browse-candidate-sources',
@@ -287,7 +287,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
 
   onEditSource(source: CandidateSource) {
     if (isSavedSearch(source)) {
-      const editModal = this.modalService.open(UpdateSearchComponent);
+      const editModal = this.modalService.open(CreateSearchComponent);
 
       editModal.componentInstance.savedSearch = source;
 

@@ -19,7 +19,6 @@ import {
   SavedSearchType
 } from "../../../model/saved-search";
 import {SearchCandidateRequest} from "../../../model/search-candidate-request";
-import {SalesforceService} from "../../../services/salesforce.service";
 import {JoblinkValidationEvent} from "../../util/joblink/joblink.component";
 
 @Component({
@@ -30,16 +29,41 @@ import {JoblinkValidationEvent} from "../../util/joblink/joblink.component";
 
 export class CreateSearchComponent implements OnInit {
 
+  /**
+   * Indicates whether component is being used to create a new object or
+   * update an existing one.
+   */
+  private create: boolean;
+
   error = null;
   form: FormGroup;
   jobName: string;
   saving: boolean;
-  savedSearch: SavedSearch;
+  private _savedSearch: SavedSearch;
   searchCandidateRequest: SearchCandidateRequest;
   savedSearchTypeInfos: SavedSearchTypeInfo[];
   savedSearchTypeSubInfos: SavedSearchTypeSubInfo[];
-  sfJoblink; string
-  update;
+  sfJoblink: string;
+
+  //Control access to savedSearch so that we can keep track of the object we
+  //are working on. See code in set method which determines whether or not
+  //we are in create mode.
+  get savedSearch(): SavedSearch {
+    return this._savedSearch;
+  }
+
+  set savedSearch(savedSearch: SavedSearch) {
+    this._savedSearch = savedSearch;
+
+    //If we are working on a default search or one with a 0 id, we are in
+    //create mode.
+    this.create = savedSearch.defaultSearch || savedSearch.id === 0;
+  }
+
+  get title(): string {
+    return this.create ? "Make New Saved Search"
+      : "Update Existing Saved Search";
+  }
 
   get nameControl(): AbstractControl {
     return this.form.get('name')
@@ -63,24 +87,29 @@ export class CreateSearchComponent implements OnInit {
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
-              private savedSearchService: SavedSearchService,
-              private salesforceService: SalesforceService) {
+              private savedSearchService: SavedSearchService) {
     this.savedSearchTypeInfos = savedSearchService.getSavedSearchTypeInfos();
   }
 
   ngOnInit() {
 
     this.form = this.fb.group({
-      name: [null, Validators.required],
-      savedSearchType: [null, Validators.required],
-      savedSearchSubtype: [null, this.subtypeRequiredValidator()],
-      reviewable: [false, Validators.required],
+      name: [this.savedSearch.defaultSearch ? null : this.savedSearch.name,
+        Validators.required],
+      savedSearchType: [this.savedSearch.defaultSearch ? null
+        : this.savedSearch.savedSearchType, Validators.required],
+      savedSearchSubtype: [this.savedSearch.defaultSearch ? null
+        : this.savedSearch.savedSearchSubtype, this.subtypeRequiredValidator()],
+      reviewable: [this.savedSearch?.reviewable,
+        Validators.required],
     });
 
     if (this.savedSearch) {
       //Copy the form values in so that they can be displayed in any summary
       //(Otherwise we just see the unmodified search values)
       this.savedSearch = Object.assign(this.savedSearch, this.searchCandidateRequest);
+
+      this.onSavedSearchTypeChange();
     }
   }
 
@@ -94,10 +123,21 @@ export class CreateSearchComponent implements OnInit {
     };
   };
 
+  cancel() {
+    this.activeModal.dismiss(false);
+  }
+
   save() {
     this.saving = true;
 
-    //Update the saved search with the name and value from the form.
+    if (this.create) {
+      this.doCreate()
+    } else {
+      this.doUpdate();
+    }
+  }
+
+  doCreate() {
     const formValues = this.form.value;
     this.savedSearch = {
       id: 0,
@@ -115,7 +155,7 @@ export class CreateSearchComponent implements OnInit {
       convertToSavedSearchRequest(this.savedSearch, this.searchCandidateRequest)
     ).subscribe(
       (savedSearch) => {
-        this.closeModal(savedSearch);
+        this.activeModal.close(savedSearch);
         this.saving = false;
       },
       (error) => {
@@ -124,19 +164,33 @@ export class CreateSearchComponent implements OnInit {
       });
   }
 
+  doUpdate() {
+    const formValues = this.form.value;
+    this.savedSearch.name = this.nameControl.value;
+    this.savedSearch.savedSearchType = this.savedSearchType;
+    this.savedSearch.savedSearchSubtype = this.savedSearchSubtype;
+    this.savedSearch.sfJoblink = this.sfJoblink;
+    this.savedSearch.fixed = false;
+    this.savedSearch.reviewable = formValues.reviewable;
 
-  closeModal(savedSearch: SavedSearch) {
-    this.activeModal.close(savedSearch);
+    //Create a SavedSearchRequest from the SavedSearch and the search request
+    this.savedSearchService.update(
+      convertToSavedSearchRequest(this.savedSearch, this.searchCandidateRequest)
+    ).subscribe(
+      (savedSearch) => {
+        this.saving = false;
+        this.activeModal.close(savedSearch);
+      },
+      (error) => {
+        this.error = error;
+        this.saving = false;
+      });
   }
 
-  dismiss() {
-    this.activeModal.dismiss(false);
-  }
-
-  onSavedSearchTypeChange($event: Event) {
+  onSavedSearchTypeChange() {
     const formValues = this.form.value;
     const selectedSavedSearchType = formValues.savedSearchType;
-    if (selectedSavedSearchType === undefined) {
+    if (selectedSavedSearchType == null) {
       this.savedSearchTypeSubInfos = null;
     } else {
       this.savedSearchTypeSubInfos =

@@ -45,7 +45,6 @@ import {LanguageLevelFormControlComponent} from "../../util/form/language-profic
 import {ActivatedRoute, Router} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
 import {LocalStorageService} from "angular-2-local-storage";
-import {UpdateSearchComponent} from "../update/update-search.component";
 import {
   getCandidateSourceNavigation,
   getSavedSearchBreadcrumb,
@@ -403,8 +402,15 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   createNewSavedSearchModal() {
-    const showSaveModal = this.modalService.open(CreateSearchComponent);
+    this.openSavedSearchModal(true);
+  }
 
+  updateSavedSearchModal() {
+    this.openSavedSearchModal(false);
+  }
+
+  openSavedSearchModal(create: boolean) {
+    const showSaveModal = this.modalService.open(CreateSearchComponent);
     showSaveModal.componentInstance.savedSearch = this.savedSearch;
 
     // Convert ids as we do for searches
@@ -415,8 +421,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
 
     showSaveModal.result
       .then((savedSearch) => {
-        const urlCommands = getCandidateSourceNavigation(savedSearch);
-        this.router.navigate(urlCommands);
+        if (create) {
+          const urlCommands = getCandidateSourceNavigation(savedSearch);
+          this.router.navigate(urlCommands);
+        }
       })
       .catch(() => {
       });
@@ -446,19 +454,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
         }
       })
       .catch(() => { });
-  }
-
-  updateSavedSearchModal() {
-    const showSaveModal = this.modalService.open(UpdateSearchComponent);
-
-    showSaveModal.componentInstance.savedSearch = this.savedSearch;
-    showSaveModal.componentInstance.searchCandidateRequest = this.searchForm.value;
-
-    showSaveModal.result
-      .then(() => {
-      })
-      .catch(() => { /* Isn't possible */
-      });
   }
 
   populateFormWithSavedSearch(request) {
