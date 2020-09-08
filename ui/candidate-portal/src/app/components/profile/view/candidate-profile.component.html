@@ -5,11 +5,13 @@
   <app-loading [loading]="loading"></app-loading>
 
   <ng-container *ngIf="!loading">
+      <div>
+        <app-download-cv></app-download-cv>
+      </div>
 
-    <div class="text-center">
-      <h5>TBB-{{candidate?.candidateNumber}}</h5>
-      <app-download-cv></app-download-cv>
-    </div>
+      <div class="text-center">
+        <h5>TBB-{{candidate?.candidateNumber}}</h5>
+      </div>
 
     <!-- CONTACT -->
     <section>
