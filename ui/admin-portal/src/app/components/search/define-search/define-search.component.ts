@@ -430,6 +430,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       });
   }
 
+  editSource() {
+    this.openSavedSearchModal(this.savedSearch.defaultSearch);
+  }
+
   deleteSavedSearchModal() {
     const deleteSavedSearchModal = this.modalService.open(ConfirmationComponent, {
       centered: true,

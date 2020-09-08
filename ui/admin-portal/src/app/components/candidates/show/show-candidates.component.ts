@@ -93,7 +93,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   @Input() pageNumber: number;
   @Input() pageSize: number;
   @Input() searchRequest: SearchCandidateRequestPaged;
-  @Output() candidateSelection =  new EventEmitter();
+  @Output() candidateSelection = new EventEmitter();
+  @Output() editSource = new EventEmitter();
 
   error: any;
   loading: boolean;
@@ -745,5 +746,9 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         this.updating = false;
       }
     );
+  }
+
+  doEditSource() {
+    this.editSource.emit(this.candidateSource);
   }
 }

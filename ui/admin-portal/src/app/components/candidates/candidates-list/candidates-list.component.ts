@@ -46,20 +46,23 @@ export class CandidatesListComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       this.id = +params.get('id');
       if (this.id) {
-
-        //Load saved list to get name and type to display
-        this.savedListService.get(this.id).subscribe(result => {
-          this.savedList = result;
-          this.loading = false;
-        }, err => {
-          this.error = err;
-          this.loading = false;
-        });
+        this.loadSavedList(this.id);
       } else {
         //This is the list url with no id specified.
         this.createNewList();
         this.loading = false;
       }
+    });
+  }
+
+  private loadSavedList(id: number) {
+    //Load saved list to get name and type to display
+    this.savedListService.get(this.id).subscribe(result => {
+      this.savedList = result;
+      this.loading = false;
+    }, err => {
+      this.error = err;
+      this.loading = false;
     });
   }
 
@@ -72,6 +75,19 @@ export class CandidatesListComponent implements OnInit {
       })
       .catch(() => {
         this.location.back();
+      });
+  }
+
+  editSource() {
+    const editModal = this.modalService.open(CreateUpdateListComponent);
+
+    editModal.componentInstance.savedList = this.savedList;
+
+    editModal.result
+      .then(() => {
+        this.loadSavedList(this.savedList.id);
+      })
+      .catch(() => { /* Isn't possible */
       });
   }
 }

@@ -712,12 +712,29 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         }
         spec.headers(headers -> headers.put("Authorization",
                 Collections.singletonList("Bearer " + accessToken)));
-        ClientResponse clientResponse = spec.exchange().block();
+        
+        //Catch below connection reset exception that has been seen
+        //reactor.core.Exceptions$ReactiveException: java.io.IOException: Connection reset by peer
+        ClientResponse clientResponse;
+        try {
+            clientResponse = spec.exchange().block();
+        } catch (Exception ex ){
+            //Do one automatic retry after a wait.
+            log.warn("Problem with Salesforce connection" + ex);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                log.warn("Interrupted wait for Salesforce retry", ex);
+            }
+            clientResponse = spec.exchange().block();
+        }
         if (clientResponse == null ||  clientResponse.statusCode() == HttpStatus.UNAUTHORIZED) {
+            log.info("Getting new token from Salesforce");
             //Get new token and try again
             accessToken = requestAccessToken();
             spec.headers(headers -> headers.put("Authorization",
                     Collections.singletonList("Bearer " + accessToken)));
+            log.info("Connecting to Salesforce with new token");
             clientResponse = spec.exchange().block();
         }
 
