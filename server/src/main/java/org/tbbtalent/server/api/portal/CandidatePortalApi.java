@@ -1,13 +1,18 @@
 package org.tbbtalent.server.api.portal;
 
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 
 @RestController()
@@ -121,6 +126,22 @@ public class CandidatePortalApi {
     public Map<String, Object> getCandidateNumber() {
         Candidate candidate = this.candidateService.getLoggedInCandidate();
         return candidateNumberDto().build(candidate);
+    }
+
+    @GetMapping(value = "cv.pdf")
+    public void getCandidateCV(HttpServletResponse response)
+            throws IOException {
+
+        Candidate candidate = candidateService.getLoggedInCandidate();
+        String name = candidate.getUser().getDisplayName()+"-"+ "CV";
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=" + name + ".pdf");
+
+        Resource report = candidateService.generateCv(candidate);
+        try (InputStream reportStream = report.getInputStream()) {
+            IOUtils.copy(reportStream, response.getOutputStream());
+            response.flushBuffer();
+        }
     }
 
     private DtoBuilder candidateNumberDto() {

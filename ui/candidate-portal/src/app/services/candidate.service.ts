@@ -3,6 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {environment} from '../../environments/environment';
 import {Observable} from 'rxjs';
 import {Candidate} from '../model/candidate';
+import {map} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -89,5 +90,11 @@ export class CandidateService {
 
   getCandidateNumber() {
     return this.http.get<Candidate>(`${this.apiUrl}/candidate-number`);
+  }
+
+  downloadCv() {
+    return this.http.get(`${this.apiUrl}/cv.pdf`, {responseType: 'blob'}).pipe(map(res => {
+      return new Blob([res], { type: 'application/pdf', });
+    }));
   }
 }
