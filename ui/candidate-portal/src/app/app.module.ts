@@ -3,18 +3,9 @@ import {NgModule} from '@angular/core';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './components/app.component';
 import {LandingComponent} from './components/landing/landing.component';
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {
-  HTTP_INTERCEPTORS,
-  HttpClient,
-  HttpClientModule
-} from "@angular/common/http";
-import {
-  NgbDateAdapter,
-  NgbDateParserFormatter,
-  NgbDatepickerConfig,
-  NgbModule
-} from "@ng-bootstrap/ng-bootstrap";
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from '@angular/common/http';
+import {NgbDateAdapter, NgbDateParserFormatter, NgbDatepickerConfig, NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha';
 
@@ -28,15 +19,15 @@ import {CandidateEducationFormComponent} from './components/common/candidate-edu
 import {RegistrationLanguageComponent} from './components/register/language/registration-language.component';
 import {RegistrationCertificationsComponent} from './components/register/certifications/registration-certifications.component';
 import {RegistrationAdditionalInfoComponent} from './components/register/additional-info/registration-additional-info.component';
-import {LocalStorageModule} from "angular-2-local-storage";
-import {JwtInterceptor} from "./services/jwt.interceptor";
-import {LanguageInterceptor} from "./services/language.interceptor";
-import {LoginComponent} from "./components/account/login/login.component";
-import {HomeComponent} from "./components/home/home.component";
-import {ErrorInterceptor} from "./services/error.interceptor";
+import {LocalStorageModule} from 'angular-2-local-storage';
+import {JwtInterceptor} from './services/jwt.interceptor';
+import {LanguageInterceptor} from './services/language.interceptor';
+import {LoginComponent} from './components/account/login/login.component';
+import {HomeComponent} from './components/home/home.component';
+import {ErrorInterceptor} from './services/error.interceptor';
 import {ResetPasswordComponent} from './components/account/reset-password/reset-password.component';
 import {ChangePasswordComponent} from './components/account/change-password/change-password.component';
-import {HeaderComponent} from "./components/header/header.component";
+import {HeaderComponent} from './components/header/header.component';
 import {RegisterComponent} from './components/register/register.component';
 import {RegistrationFooterComponent} from './components/register/registration-footer/registration-footer.component';
 import {CandidateJobExperienceFormComponent} from './components/common/candidate-job-experience-form/candidate-job-experience-form.component';
@@ -44,7 +35,7 @@ import {CandidateJobExperienceCardComponent} from './components/common/candidate
 import {ErrorComponent} from './components/common/error/error.component';
 import {LoadingComponent} from './components/common/loading/loading.component';
 import {CandidateProfileComponent} from './components/profile/view/candidate-profile.component';
-import {FormControlErrorComponent} from "./components/common/form-control-error/form-control-error.component";
+import {FormControlErrorComponent} from './components/common/form-control-error/form-control-error.component';
 import {CandidateCertificationCardComponent} from './components/common/candidate-certification-card/candidate-certification-card.component';
 import {EditCandidateComponent} from './components/profile/edit/edit-candidate.component';
 import {CandidateOccupationCardComponent} from './components/common/candidate-occupation-card/candidate-occupation-card.component';
@@ -53,23 +44,18 @@ import {CandidateLanguageCardComponent} from './components/common/candidate-lang
 import {CandidateAttachmentsComponent} from './components/common/candidate-attachments/candidate-attachments.component';
 import {FileUploadComponent} from './components/common/file-upload/file-upload.component';
 import {InputFilterDirective} from './directives/input-filter.directive';
-import {
-  CustomDateAdapter,
-  CustomDateParserFormatter
-} from "./util/date-adapter/ngb-date-adapter";
+import {CustomDateAdapter, CustomDateParserFormatter} from './util/date-adapter/ngb-date-adapter';
 import {UserPipe} from './pipes/user.pipe';
 import {TrimPipe} from './pipes/trim.pipe';
 import {MonthPickerComponent} from './components/common/month-picker/month-picker.component';
-import {TranslationPipe} from "./pipes/translation.pipe";
-import {
-  FaIconLibrary,
-  FontAwesomeModule
-} from "@fortawesome/angular-fontawesome";
-import {faEdit} from "@fortawesome/free-solid-svg-icons";
-import {Observable} from "rxjs";
-import {environment} from "../environments/environment";
+import {TranslationPipe} from './pipes/translation.pipe';
+import {FaIconLibrary, FontAwesomeModule} from '@fortawesome/angular-fontawesome';
+import {faEdit} from '@fortawesome/free-solid-svg-icons';
+import {Observable} from 'rxjs';
+import {environment} from '../environments/environment';
 import {DeleteOccupationComponent} from './components/register/candidate-occupation/delete/delete-occupation.component';
-import { CandidateCertificationFormComponent } from './components/common/candidate-certification-form/candidate-certification-form.component';
+import {CandidateCertificationFormComponent} from './components/common/candidate-certification-form/candidate-certification-form.component';
+import {DownloadCvComponent} from './components/common/download-cv/download-cv.component';
 
 export function createTranslateLoader(http: HttpClient) {
   return {
@@ -119,7 +105,8 @@ export function createTranslateLoader(http: HttpClient) {
     TranslationPipe,
     MonthPickerComponent,
     DeleteOccupationComponent,
-    CandidateCertificationFormComponent
+    CandidateCertificationFormComponent,
+    DownloadCvComponent
   ],
   imports: [
     BrowserModule,
