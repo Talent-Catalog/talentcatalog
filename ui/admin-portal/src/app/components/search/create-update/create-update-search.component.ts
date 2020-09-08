@@ -168,8 +168,8 @@ export class CreateUpdateSearchComponent implements OnInit {
       convertToSavedSearchRequest(this.savedSearch, this.searchCandidateRequest)
     ).subscribe(
       (savedSearch) => {
-        this.saving = false;
         this.activeModal.close(savedSearch);
+        this.saving = false;
       },
       (error) => {
         this.error = error;

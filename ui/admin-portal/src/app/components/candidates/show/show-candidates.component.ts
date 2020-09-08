@@ -571,6 +571,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     const modal = this.modalService.open(SelectListComponent);
     modal.componentInstance.action = "Save";
     modal.componentInstance.title = "Save Selection to List";
+    modal.componentInstance.sfJoblink = this.candidateSource.sfJoblink;
 
     modal.result
       .then((selection: TargetListSelection) => {

@@ -44,7 +44,7 @@
         <label>Name</label>
         <input type="text" class="form-control" formControlName="newListName" [readOnly]="loading">
 
-        <app-joblink [joblink]="null"
+        <app-joblink [joblink]="sfJoblink"
                      (updateError)="error=$event"
                      (joblinkValidation)="onJoblinkValidation($event)"
         ></app-joblink>
