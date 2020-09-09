@@ -20,11 +20,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.tbbtalent.server.security.CandidateUserDetailsService;
-import org.tbbtalent.server.security.JwtAuthenticationEntryPoint;
-import org.tbbtalent.server.security.JwtAuthenticationFilter;
-import org.tbbtalent.server.security.LanguageFilter;
-import org.tbbtalent.server.security.TbbAuthenticationProvider;
+import org.tbbtalent.server.security.*;
 
 @Configuration
 @EnableWebSecurity
@@ -70,6 +66,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
                 // DELETE: DELETE LIST
                 .antMatchers(HttpMethod.DELETE, "/api/admin/saved-list/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // DELETE: DELETE ATTACHMENT
+                .antMatchers(HttpMethod.DELETE, "/api/admin/candidate-attachment/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED")
 
                 // ADMIN ONLY RESTRICTIONS
                     // All OTHER DELETE end points
