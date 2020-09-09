@@ -8,12 +8,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.model.sf.Contact;
+import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.security.UserContext;
@@ -21,6 +24,8 @@ import org.tbbtalent.server.service.db.DataSharingService;
 import org.tbbtalent.server.service.db.PopulateElasticsearchService;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
+import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
+import org.tbbtalent.server.util.dto.DtoBuilder;
 import org.tbbtalent.server.util.textExtract.TextExtractHelper;
 
 import java.io.File;
@@ -102,6 +107,41 @@ public class SystemAdminApi {
         api.setTargetUser("tbbtalent");
         api.setTargetPwd("tbbtalent");
         api.migrate();
+    }
+
+    /**
+     * Returns info (including "name") about the Salesforce opportunity 
+     * corresponding to the given url - or null if the url does not refer
+     * to a Salesforce opportunity.
+     * @param sfUrl A url
+     * @return Map containing "name" attribute, or null if not an opportunity.
+     * @throws GeneralSecurityException If there are errors relating to keys
+     * and digital signing.
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     */
+    @GetMapping("sfjobname")
+    @Nullable
+    public Map<String, Object> findSfJobName(
+            @RequestParam(value = "url") String sfUrl) 
+            throws GeneralSecurityException {
+
+        Opportunity opp = null;
+
+        //Make sure that it is referring to a Salesforce Opportunity record
+        String objectType = SalesforceServiceImpl.extractObjectTypeFromSfUrl(sfUrl);
+        if ("Opportunity".equals(objectType)) {
+            String sfId = SalesforceServiceImpl.extractIdFromSfUrl(sfUrl);
+            if (sfId != null) {
+                opp = salesforceService.findOpportunity(sfId);
+            }
+        }
+        return opportunityDto().build(opp);
+    }
+
+    private DtoBuilder opportunityDto() {
+        return new DtoBuilder()
+                .add("name")
+                ;
     }
 
     @GetMapping("updatesflinks")

@@ -1,11 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import {SavedList} from "../../../model/saved-list";
-import {Location} from "@angular/common"
-import {ActivatedRoute, Router} from "@angular/router";
-import {SavedListService} from "../../../services/saved-list.service";
-import {CreateListComponent} from "../../list/create/create-list.component";
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {getCandidateSourceNavigation} from "../../../model/saved-search";
+import {SavedList} from '../../../model/saved-list';
+import {Location} from '@angular/common';
+import {ActivatedRoute, Router} from '@angular/router';
+import {SavedListService} from '../../../services/saved-list.service';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {getCandidateSourceNavigation} from '../../../model/saved-search';
+import {CreateUpdateListComponent} from '../../list/create-update/create-update-list.component';
 
 @Component({
   selector: 'app-candidates-list',
@@ -46,24 +46,28 @@ export class CandidatesListComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       this.id = +params.get('id');
       if (this.id) {
-
-        //Load saved search to get name and type to display
-        this.savedListService.get(this.id).subscribe(result => {
-          this.savedList = result;
-          this.loading = false;
-        }, err => {
-          this.error = err;
-          this.loading = false;
-        });
+        this.loadSavedList(this.id);
       } else {
+        //This is the list url with no id specified.
         this.createNewList();
         this.loading = false;
       }
     });
   }
 
+  private loadSavedList(id: number) {
+    //Load saved list to get name and type to display
+    this.savedListService.get(this.id).subscribe(result => {
+      this.savedList = result;
+      this.loading = false;
+    }, err => {
+      this.error = err;
+      this.loading = false;
+    });
+  }
+
   private createNewList() {
-    const modal = this.modalService.open(CreateListComponent);
+    const modal = this.modalService.open(CreateUpdateListComponent);
     modal.result
       .then((savedList: SavedList) => {
         const urlCommands = getCandidateSourceNavigation(savedList);
@@ -71,6 +75,19 @@ export class CandidatesListComponent implements OnInit {
       })
       .catch(() => {
         this.location.back();
+      });
+  }
+
+  editSource() {
+    const editModal = this.modalService.open(CreateUpdateListComponent);
+
+    editModal.componentInstance.savedList = this.savedList;
+
+    editModal.result
+      .then(() => {
+        this.loadSavedList(this.savedList.id);
+      })
+      .catch(() => { /* Isn't possible */
       });
   }
 }

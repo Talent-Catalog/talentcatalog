@@ -4,23 +4,11 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
-import java.security.KeyFactory;
-import java.security.PrivateKey;
-import java.security.Signature;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.text.MessageFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.io.Encoders;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -40,15 +28,23 @@ import org.tbbtalent.server.exception.SalesforceException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.sf.Contact;
+import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
-
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.io.Encoders;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 import reactor.core.publisher.Mono;
+
+import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.Signature;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Standard implementation of Salesforce service
@@ -267,15 +263,13 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             
             //First get some more info about the job: its name and its 
             //associated account.
-            JobOppResult jobOppResult = findRecordFieldsFromId(
-                    "Opportunity", jobOpportunityId,
-                    "Name,AccountId", JobOppResult.class);
-            String jobOpportunityName = jobOppResult == null ? null : jobOppResult.getName();
+            Opportunity opportunity = findOpportunity(jobOpportunityId);
+            String jobOpportunityName = opportunity == null ? null : opportunity.getName();
             if (jobOpportunityName == null) {
                 throw new SalesforceException(
                         "Could not find name for job opportunity " + sfJoblink);
             }
-            String jobAccountId = jobOppResult.getAccountId();
+            String jobAccountId = opportunity.getAccountId();
             
             
             //Now build requests of candidate opportunities we want to create
@@ -475,6 +469,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         }
     }
 
+    @Override
     @Nullable
     public <T> T findRecordFieldsFromId(
             String objectType, String id, String fields, Class<T> cl) 
@@ -482,6 +477,19 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         ClientResponse response = executeRecordFieldsGet(objectType, id, fields);
         T result = response.bodyToMono(cl).block();
         return result;
+    }
+
+    @Override
+    @Nullable
+    public Opportunity findOpportunity(String sfId)
+            throws GeneralSecurityException, WebClientException {
+        Opportunity opportunity = null;
+        if (sfId != null) {
+            opportunity = findRecordFieldsFromId(
+                    "Opportunity", sfId,
+                    "Name,AccountId", Opportunity.class);
+        }
+        return opportunity;
     }
 
     @Override
@@ -699,12 +707,29 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         }
         spec.headers(headers -> headers.put("Authorization",
                 Collections.singletonList("Bearer " + accessToken)));
-        ClientResponse clientResponse = spec.exchange().block();
+        
+        //Catch below connection reset exception that has been seen
+        //reactor.core.Exceptions$ReactiveException: java.io.IOException: Connection reset by peer
+        ClientResponse clientResponse;
+        try {
+            clientResponse = spec.exchange().block();
+        } catch (Exception ex ){
+            //Do one automatic retry after a wait.
+            log.warn("Problem with Salesforce connection" + ex);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                log.warn("Interrupted wait for Salesforce retry", ex);
+            }
+            clientResponse = spec.exchange().block();
+        }
         if (clientResponse == null ||  clientResponse.statusCode() == HttpStatus.UNAUTHORIZED) {
+            log.info("Getting new token from Salesforce");
             //Get new token and try again
             accessToken = requestAccessToken();
             spec.headers(headers -> headers.put("Authorization",
                     Collections.singletonList("Bearer " + accessToken)));
+            log.info("Connecting to Salesforce with new token");
             clientResponse = spec.exchange().block();
         }
 
@@ -1078,14 +1103,4 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
          */
         int checkSize();
     }
-
-    @Getter
-    @Setter
-    @ToString
-    static class JobOppResult {
-        public String Name;
-        public String AccountId;
-    }
-    
-    
 }

@@ -1,23 +1,13 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  Output,
-  SimpleChanges,
-  ViewChild
-} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 
 import {Candidate} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
 import {SearchResults} from '../../../model/search-results';
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {SavedSearchService} from "../../../services/saved-search.service";
-import {Observable, of, Subscription} from "rxjs";
-import {CandidateReviewStatusItem} from "../../../model/candidate-review-status-item";
-import {HttpClient} from "@angular/common/http";
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {SavedSearchService} from '../../../services/saved-search.service';
+import {Observable, of, Subscription} from 'rxjs';
+import {CandidateReviewStatusItem} from '../../../model/candidate-review-status-item';
+import {HttpClient} from '@angular/common/http';
 import {
   ClearSelectionRequest,
   getCandidateSourceBreadcrumb,
@@ -29,47 +19,25 @@ import {
   SaveSelectionRequest,
   SearchCandidateRequestPaged,
   SelectCandidateInSearchRequest
-} from "../../../model/saved-search";
-import {
-  CandidateSource,
-  defaultReviewStatusFilter,
-  isMine,
-  isSharedWithMe,
-  ReviewedStatus
-} from "../../../model/base";
-import {
-  CachedSourceResults,
-  CandidateSourceResultsCacheService
-} from "../../../services/candidate-source-results-cache.service";
-import {FormBuilder, FormGroup} from "@angular/forms";
-import {IDropdownSettings} from "ng-multiselect-dropdown";
-import {User} from "../../../model/user";
-import {AuthService} from "../../../services/auth.service";
-import {UserService} from "../../../services/user.service";
-import {
-  SelectListComponent,
-  TargetListSelection
-} from "../../list/select/select-list.component";
-import {
-  IHasSetOfCandidates,
-  SavedListGetRequest
-} from "../../../model/saved-list";
-import {CandidateSourceCandidateService} from "../../../services/candidate-source-candidate.service";
-import {LocalStorageService} from "angular-2-local-storage";
-import {EditCandidateReviewStatusItemComponent} from "../../util/candidate-review/edit/edit-candidate-review-status-item.component";
-import {Router} from "@angular/router";
-import {CandidateSourceService} from "../../../services/candidate-source.service";
-import {SavedListCandidateService} from "../../../services/saved-list-candidate.service";
-import {
-  catchError,
-  debounceTime,
-  distinctUntilChanged,
-  map,
-  switchMap,
-  tap
-} from "rxjs/operators";
-import {Location} from "@angular/common";
-import {copyToClipboard} from "../../../util/clipboard";
+} from '../../../model/saved-search';
+import {CandidateSource, defaultReviewStatusFilter, isMine, isSharedWithMe, ReviewedStatus} from '../../../model/base';
+import {CachedSourceResults, CandidateSourceResultsCacheService} from '../../../services/candidate-source-results-cache.service';
+import {FormBuilder, FormGroup} from '@angular/forms';
+import {IDropdownSettings} from 'ng-multiselect-dropdown';
+import {User} from '../../../model/user';
+import {AuthService} from '../../../services/auth.service';
+import {UserService} from '../../../services/user.service';
+import {SelectListComponent, TargetListSelection} from '../../list/select/select-list.component';
+import {IHasSetOfCandidates, SavedListGetRequest} from '../../../model/saved-list';
+import {CandidateSourceCandidateService} from '../../../services/candidate-source-candidate.service';
+import {LocalStorageService} from 'angular-2-local-storage';
+import {EditCandidateReviewStatusItemComponent} from '../../util/candidate-review/edit/edit-candidate-review-status-item.component';
+import {Router} from '@angular/router';
+import {CandidateSourceService} from '../../../services/candidate-source.service';
+import {SavedListCandidateService} from '../../../services/saved-list-candidate.service';
+import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from 'rxjs/operators';
+import {Location} from '@angular/common';
+import {copyToClipboard} from '../../../util/clipboard';
 
 interface CachedTargetList {
   searchID: number;
@@ -93,7 +61,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   @Input() pageNumber: number;
   @Input() pageSize: number;
   @Input() searchRequest: SearchCandidateRequestPaged;
-  @Output() candidateSelection =  new EventEmitter();
+  @Output() candidateSelection = new EventEmitter();
+  @Output() editSource = new EventEmitter();
 
   error: any;
   loading: boolean;
@@ -570,6 +539,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     const modal = this.modalService.open(SelectListComponent);
     modal.componentInstance.action = "Save";
     modal.componentInstance.title = "Save Selection to List";
+    modal.componentInstance.sfJoblink = this.candidateSource.sfJoblink;
 
     modal.result
       .then((selection: TargetListSelection) => {
@@ -745,5 +715,9 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         this.updating = false;
       }
     );
+  }
+
+  doEditSource() {
+    this.editSource.emit(this.candidateSource);
   }
 }

@@ -8,7 +8,7 @@ import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './components/app.component';
 import {HeaderComponent} from './components/header/header.component';
-import {ShowCandidatesComponent} from './components/candidates/search/show-candidates.component';
+import {ShowCandidatesComponent} from './components/candidates/show/show-candidates.component';
 import {HomeComponent} from './components/candidates/home.component';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -34,7 +34,7 @@ import {SearchLanguagesComponent} from './components/settings/languages/search-l
 import {CreateLanguageComponent} from './components/settings/languages/create/create-language.component';
 import {EditLanguageComponent} from './components/settings/languages/edit/edit-language.component';
 import {SearchSavedSearchesComponent} from './components/search/load-search/search-saved-searches.component';
-import {CreateSearchComponent} from './components/search/create/create-search.component';
+import {CreateUpdateSearchComponent} from './components/search/create-update/create-update-search.component';
 import {CandidateSearchCardComponent} from './components/util/candidate-search-card/candidate-search-card.component';
 import {CandidateGeneralTabComponent} from './components/candidates/view/tab/candidate-general-tab/candidate-general-tab.component';
 import {CandidateExperienceTabComponent} from './components/candidates/view/tab/candidate-experience-tab/candidate-experience-tab.component';
@@ -101,13 +101,12 @@ import {FileUploadComponent} from './components/util/file-upload/file-upload.com
 import {CandidateAdditionalInfoTabComponent} from './components/candidates/view/tab/candidate-additional-info-tab/candidate-additional-info-tab.component';
 import {ViewCandidateAdditionalInfoComponent} from './components/candidates/view/additional-info/view-candidate-additional-info.component';
 import {ViewCandidateSkillComponent} from './components/candidates/view/skill/view-candidate-skill.component';
-import {BrowseCandidateSourcesComponent} from './components/candidates/search/browse/browse-candidate-sources.component';
+import {BrowseCandidateSourcesComponent} from './components/candidates/show/browse/browse-candidate-sources.component';
 import {ChartsModule} from 'ng2-charts';
 import {InfographicComponent} from './components/infograhics/infographic.component';
 import {ChartComponent} from './components/infograhics/chart/chart.component';
 import {MonthPickerComponent} from './components/util/month-picker/month-picker.component';
-import {UpdateSearchComponent} from './components/search/update/update-search.component';
-import {CandidateSourceResultsComponent} from './components/candidates/search/returns/candidate-source-results.component';
+import {CandidateSourceResultsComponent} from './components/candidates/show/returns/candidate-source-results.component';
 import {DefineSearchComponent} from './components/search/define-search/define-search.component';
 import {NotFoundComponent} from './not-found/not-found.component';
 import {GeneralTranslationsComponent} from './components/settings/translations/general/general-translations.component';
@@ -118,13 +117,13 @@ import {NgxWigModule} from 'ngx-wig';
 import {ViewCandidateSurveyComponent} from './components/candidates/view/survey/view-candidate-survey.component';
 import {EditCandidateAdditionalInfoComponent} from './components/candidates/view/additional-info/edit/edit-candidate-additional-info.component';
 import {EditCandidateSurveyComponent} from './components/candidates/view/survey/edit/edit-candidate-survey.component';
-import {CreateListComponent} from './components/list/create/create-list.component';
-import {UpdateListComponent} from './components/list/update/update-list.component';
+import {CreateUpdateListComponent} from './components/list/create-update/create-update-list.component';
 import {SelectListComponent} from './components/list/select/select-list.component';
 import {CandidatesSearchComponent} from './components/candidates/candidates-search/candidates-search.component';
 import {CandidatesListComponent} from './components/candidates/candidates-list/candidates-list.component';
 import {CreateCandidateOccupationComponent} from './components/candidates/view/occupation/create/create-candidate-occupation.component';
 import {CvIconComponent} from './components/util/cv-icon/cv-icon.component';
+import {JoblinkComponent} from './components/util/joblink/joblink.component';
 
 @NgModule({
   declarations: [
@@ -149,8 +148,7 @@ import {CvIconComponent} from './components/util/cv-icon/cv-icon.component';
     EditLanguageComponent,
     CreateNationalityComponent,
     SearchSavedSearchesComponent,
-    CreateSearchComponent,
-    UpdateSearchComponent,
+    CreateUpdateSearchComponent,
     CandidateSearchCardComponent,
     CandidateGeneralTabComponent,
     CandidateExperienceTabComponent,
@@ -230,8 +228,7 @@ import {CvIconComponent} from './components/util/cv-icon/cv-icon.component';
     ViewCandidateSurveyComponent,
     EditCandidateAdditionalInfoComponent,
     EditCandidateSurveyComponent,
-    CreateListComponent,
-    UpdateListComponent,
+    CreateUpdateListComponent,
     SelectListComponent,
     BrowseCandidateSourcesComponent,
     CandidatesSearchComponent,
@@ -239,9 +236,10 @@ import {CvIconComponent} from './components/util/cv-icon/cv-icon.component';
     CandidateSourceResultsComponent,
     CreateCandidateOccupationComponent,
     ShowCandidatesComponent,
-    UpdateListComponent,
+    CreateUpdateListComponent,
     CreateCandidateOccupationComponent,
-    CvIconComponent
+    CvIconComponent,
+    JoblinkComponent
   ],
   imports: [
     BrowserModule,
@@ -259,66 +257,6 @@ import {CvIconComponent} from './components/util/cv-icon/cv-icon.component';
       prefix: 'tbb-admin',
       storageType: 'localStorage'
     })
-  ],
-  entryComponents: [
-    DeleteCandidateComponent,
-    SearchNationalitiesComponent,
-    CreateNationalityComponent,
-    EditNationalityComponent,
-    CreateCountryComponent,
-    EditCountryComponent,
-    SearchCountriesComponent,
-    SearchLanguagesComponent,
-    CreateLanguageComponent,
-    EditLanguageComponent,
-    SearchOccupationsComponent,
-    CreateOccupationComponent,
-    EditOccupationComponent,
-    SearchIndustriesComponent,
-    CreateIndustryComponent,
-    EditIndustryComponent,
-    SearchLanguageLevelsComponent,
-    CreateLanguageLevelComponent,
-    EditLanguageLevelComponent,
-    SearchEducationLevelsComponent,
-    CreateEducationLevelComponent,
-    EditEducationLevelComponent,
-    SearchEducationMajorsComponent,
-    CreateEducationMajorComponent,
-    EditEducationMajorComponent,
-    EditUserComponent,
-    CreateUserComponent,
-    ConfirmationComponent,
-    CreateSearchComponent,
-    UpdateSearchComponent,
-    EditCandidateContactComponent,
-    CreateCandidateNoteComponent,
-    EditCandidateNoteComponent,
-    CreateCandidateEducationComponent,
-    EditCandidateEducationComponent,
-    CreateCandidateCertificationComponent,
-    EditCandidateCertificationComponent,
-    DropdownTranslationsComponent,
-    EditCandidateCertificationComponent,
-    EditCandidateReviewStatusItemComponent,
-    CreateCandidateJobExperienceComponent,
-    EditCandidateJobExperienceComponent,
-    EditCandidateOccupationComponent,
-    EditCandidateLanguageComponent,
-    ChangePasswordComponent,
-    ChangeUsernameComponent,
-    CreateCandidateAttachmentComponent,
-    EditCandidateAttachmentComponent,
-    CreateCandidateAttachmentComponent,
-    SearchSavedSearchesComponent,
-    EditCandidateSpecialLinksComponent,
-    EditCandidateStatusComponent,
-    EditCandidateAdditionalInfoComponent,
-    EditCandidateSurveyComponent,
-    CreateListComponent,
-    SelectListComponent,
-    UpdateListComponent,
-    CreateCandidateOccupationComponent
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},

@@ -24,11 +24,11 @@ import {
 } from '../../../../model/base';
 import {SearchSavedListRequest} from '../../../../model/saved-list';
 import {CandidateSourceService} from '../../../../services/candidate-source.service';
-import {UpdateSearchComponent} from '../../../search/update/update-search.component';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {UpdateListComponent} from '../../../list/update/update-list.component';
+import {CreateUpdateListComponent} from '../../../list/create-update/create-update-list.component';
 import {SelectListComponent, TargetListSelection} from '../../../list/select/select-list.component';
 import {CandidateSourceResultsCacheService} from '../../../../services/candidate-source-results-cache.service';
+import {CreateUpdateSearchComponent} from '../../../search/create-update/create-update-search.component';
 import {ConfirmationComponent} from '../../../util/confirm/confirmation.component';
 
 @Component({
@@ -262,7 +262,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
 
   onEditSource(source: CandidateSource) {
     if (isSavedSearch(source)) {
-      const editModal = this.modalService.open(UpdateSearchComponent);
+      const editModal = this.modalService.open(CreateUpdateSearchComponent);
 
       editModal.componentInstance.savedSearch = source;
 
@@ -274,7 +274,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
         .catch(() => { /* Isn't possible */
         });
     } else {
-      const editModal = this.modalService.open(UpdateListComponent);
+      const editModal = this.modalService.open(CreateUpdateListComponent);
 
       editModal.componentInstance.savedList = source;
 

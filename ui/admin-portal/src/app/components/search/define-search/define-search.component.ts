@@ -1,60 +1,50 @@
-import {
-  Component,
-  ElementRef,
-  Input,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  SimpleChanges,
-  ViewChild
-} from '@angular/core';
+import {Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 
 import {Candidate} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
 import {Country} from '../../../model/country';
-import {CountryService} from "../../../services/country.service";
-import {Nationality} from "../../../model/nationality";
-import {NationalityService} from "../../../services/nationality.service";
-import {Language} from "../../../model/language";
-import {LanguageService} from "../../../services/language.service";
+import {CountryService} from '../../../services/country.service';
+import {Nationality} from '../../../model/nationality';
+import {NationalityService} from '../../../services/nationality.service';
+import {Language} from '../../../model/language';
+import {LanguageService} from '../../../services/language.service';
 import {SearchResults} from '../../../model/search-results';
 
-import {NgbDate, NgbDateStruct, NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {FormArray, FormBuilder, FormGroup} from "@angular/forms";
-import {SearchSavedSearchesComponent} from "../load-search/search-saved-searches.component";
-import {CreateSearchComponent} from "../create/create-search.component";
-import {SavedSearchService} from "../../../services/saved-search.service";
+import {NgbDate, NgbDateStruct, NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
+import {SearchSavedSearchesComponent} from '../load-search/search-saved-searches.component';
+import {CreateUpdateSearchComponent} from '../create-update/create-update-search.component';
+import {SavedSearchService} from '../../../services/saved-search.service';
 import {IDropdownSettings} from 'ng-multiselect-dropdown';
-import {forkJoin, Subscription} from "rxjs";
-import {JoinSavedSearchComponent} from "../join-search/join-saved-search.component";
-import {EducationLevel} from "../../../model/education-level";
-import {EducationLevelService} from "../../../services/education-level.service";
-import {EducationMajor} from "../../../model/education-major";
-import {EducationMajorService} from "../../../services/education-major.service";
-import {Occupation} from "../../../model/occupation";
-import {CandidateOccupationService} from "../../../services/candidate-occupation.service";
+import {forkJoin, Subscription} from 'rxjs';
+import {JoinSavedSearchComponent} from '../join-search/join-saved-search.component';
+import {EducationLevel} from '../../../model/education-level';
+import {EducationLevelService} from '../../../services/education-level.service';
+import {EducationMajor} from '../../../model/education-major';
+import {EducationMajorService} from '../../../services/education-major.service';
+import {Occupation} from '../../../model/occupation';
+import {CandidateOccupationService} from '../../../services/candidate-occupation.service';
 import {
   emptyLanguageLevelFormControlModel,
   LanguageLevelFormControlModel
-} from "../../util/form/language-proficiency/language-level-form-control-model";
+} from '../../util/form/language-proficiency/language-level-form-control-model';
 import * as moment from 'moment-timezone';
-import {LanguageLevel} from "../../../model/language-level";
+import {LanguageLevel} from '../../../model/language-level';
 import {LanguageLevelService} from '../../../services/language-level.service';
-import {DateRangePickerComponent} from "../../util/form/date-range-picker/date-range-picker.component";
-import {LanguageLevelFormControlComponent} from "../../util/form/language-proficiency/language-level-form-control.component";
-import {ActivatedRoute, Router} from "@angular/router";
-import {HttpClient} from "@angular/common/http";
-import {LocalStorageService} from "angular-2-local-storage";
-import {UpdateSearchComponent} from "../update/update-search.component";
+import {DateRangePickerComponent} from '../../util/form/date-range-picker/date-range-picker.component';
+import {LanguageLevelFormControlComponent} from '../../util/form/language-proficiency/language-level-form-control.component';
+import {ActivatedRoute, Router} from '@angular/router';
+import {HttpClient} from '@angular/common/http';
+import {LocalStorageService} from 'angular-2-local-storage';
 import {
   getCandidateSourceNavigation,
   getSavedSearchBreadcrumb,
   SavedSearch,
   SearchCandidateRequestPaged
-} from "../../../model/saved-search";
-import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
-import {User} from "../../../model/user";
-import {AuthService} from "../../../services/auth.service";
+} from '../../../model/saved-search';
+import {ConfirmationComponent} from '../../util/confirm/confirmation.component';
+import {User} from '../../../model/user';
+import {AuthService} from '../../../services/auth.service';
 
 
 @Component({
@@ -403,8 +393,15 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   createNewSavedSearchModal() {
-    const showSaveModal = this.modalService.open(CreateSearchComponent);
+    this.openSavedSearchModal(true);
+  }
 
+  updateSavedSearchModal() {
+    this.openSavedSearchModal(false);
+  }
+
+  openSavedSearchModal(create: boolean) {
+    const showSaveModal = this.modalService.open(CreateUpdateSearchComponent);
     showSaveModal.componentInstance.savedSearch = this.savedSearch;
 
     // Convert ids as we do for searches
@@ -415,11 +412,17 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
 
     showSaveModal.result
       .then((savedSearch) => {
-        const urlCommands = getCandidateSourceNavigation(savedSearch);
-        this.router.navigate(urlCommands);
+        if (create) {
+          const urlCommands = getCandidateSourceNavigation(savedSearch);
+          this.router.navigate(urlCommands);
+        }
       })
       .catch(() => {
       });
+  }
+
+  editSource() {
+    this.openSavedSearchModal(this.savedSearch.defaultSearch);
   }
 
   deleteSavedSearchModal() {
@@ -446,19 +449,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
         }
       })
       .catch(() => { });
-  }
-
-  updateSavedSearchModal() {
-    const showSaveModal = this.modalService.open(UpdateSearchComponent);
-
-    showSaveModal.componentInstance.savedSearch = this.savedSearch;
-    showSaveModal.componentInstance.searchCandidateRequest = this.searchForm.value;
-
-    showSaveModal.result
-      .then(() => {
-      })
-      .catch(() => { /* Isn't possible */
-      });
   }
 
   populateFormWithSavedSearch(request) {

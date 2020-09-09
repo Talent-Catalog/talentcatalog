@@ -129,9 +129,6 @@ export function createTranslateLoader(http: HttpClient) {
     }),
     FontAwesomeModule
   ],
-  entryComponents: [
-    DeleteOccupationComponent
-  ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: LanguageInterceptor, multi: true},

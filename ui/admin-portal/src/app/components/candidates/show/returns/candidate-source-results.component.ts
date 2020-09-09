@@ -1,36 +1,17 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
-import {
-  getCandidateSourceNavigation,
-  isSavedSearch,
-  SavedSearchGetRequest
-} from "../../../../model/saved-search";
-import {Subscription} from "rxjs";
-import {CandidateService} from "../../../../services/candidate.service";
-import {Candidate} from "../../../../model/candidate";
-import {SearchResults} from "../../../../model/search-results";
-import {SavedSearchService} from "../../../../services/saved-search.service";
-import {Router} from "@angular/router";
-import {
-  CachedSourceResults,
-  CandidateSourceResultsCacheService
-} from "../../../../services/candidate-source-results-cache.service";
-import {
-  CandidateSource,
-  defaultReviewStatusFilter
-} from "../../../../model/base";
-import {CandidateSourceCandidateService} from "../../../../services/candidate-source-candidate.service";
-import {SavedListGetRequest} from "../../../../model/saved-list";
-import {AuthService} from "../../../../services/auth.service";
-import {CandidateSourceService} from "../../../../services/candidate-source.service";
+import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
+import {getCandidateSourceNavigation, isSavedSearch, SavedSearchGetRequest} from '../../../../model/saved-search';
+import {Subscription} from 'rxjs';
+import {CandidateService} from '../../../../services/candidate.service';
+import {Candidate} from '../../../../model/candidate';
+import {SearchResults} from '../../../../model/search-results';
+import {SavedSearchService} from '../../../../services/saved-search.service';
+import {Router} from '@angular/router';
+import {CachedSourceResults, CandidateSourceResultsCacheService} from '../../../../services/candidate-source-results-cache.service';
+import {CandidateSource, defaultReviewStatusFilter} from '../../../../model/base';
+import {CandidateSourceCandidateService} from '../../../../services/candidate-source-candidate.service';
+import {SavedListGetRequest} from '../../../../model/saved-list';
+import {AuthService} from '../../../../services/auth.service';
+import {CandidateSourceService} from '../../../../services/candidate-source.service';
 import {User} from '../../../../model/user';
 
 @Component({
