@@ -1,23 +1,12 @@
-import {
-  Component,
-  EventEmitter,
-  Input, OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
-import {
-  getCandidateSourceExternalHref,
-  isSavedSearch,
-  SavedSearch
-} from "../../../model/saved-search";
-import {SavedSearchService} from "../../../services/saved-search.service";
-import {AuthService} from "../../../services/auth.service";
-import {User} from "../../../model/user";
-import {CandidateSource, isMine} from "../../../model/base";
-import {Router} from "@angular/router";
-import {Location} from "@angular/common";
-import {copyToClipboard} from "../../../util/clipboard";
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {getCandidateSourceExternalHref, isSavedSearch, SavedSearch} from '../../../model/saved-search';
+import {SavedSearchService} from '../../../services/saved-search.service';
+import {AuthService} from '../../../services/auth.service';
+import {User} from '../../../model/user';
+import {CandidateSource, isMine} from '../../../model/base';
+import {Router} from '@angular/router';
+import {Location} from '@angular/common';
+import {copyToClipboard} from '../../../util/clipboard';
 
 @Component({
   selector: 'app-candidate-source',
@@ -133,6 +122,15 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
 
   isEditable() {
     return isMine(this.candidateSource, this.authService);
+  }
+
+  isRemovable() {
+    // Can't delete global searches
+    if (isSavedSearch(this.candidateSource)){
+      return !this.candidateSource.global;
+    } else {
+      return true;
+    }
   }
 
   getSavedSearch(savedSearchId: number) {

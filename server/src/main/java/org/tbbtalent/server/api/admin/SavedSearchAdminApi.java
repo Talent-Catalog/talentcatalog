@@ -1,18 +1,8 @@
 package org.tbbtalent.server.api.admin;
 
-import java.util.Map;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.InvalidRequestException;
@@ -22,17 +12,15 @@ import org.tbbtalent.server.model.db.SavedSearch;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.list.HasSetOfCandidatesImpl;
 import org.tbbtalent.server.request.list.IHasSetOfCandidates;
-import org.tbbtalent.server.request.search.ClearSelectionRequest;
-import org.tbbtalent.server.request.search.SaveSelectionRequest;
-import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
-import org.tbbtalent.server.request.search.SelectCandidateInSearchRequest;
-import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
-import org.tbbtalent.server.request.search.UpdateSharingRequest;
-import org.tbbtalent.server.request.search.UpdateWatchingRequest;
+import org.tbbtalent.server.request.search.*;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.service.db.SavedSearchService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/saved-search")
@@ -260,6 +248,7 @@ public class SavedSearchAdminApi implements
                 .add("unRegistered")
                 .add("fixed")
                 .add("reviewable")
+                .add("global")
                 .add("defaultSearch")
                 .add("sfJoblink")
                 .add("watcherUserIds")

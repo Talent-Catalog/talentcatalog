@@ -1,15 +1,10 @@
-import {SearchCandidateRequest} from "./search-candidate-request";
-import {SavedSearchTypeInfo} from "../services/saved-search.service";
-import {
-  Auditable,
-  CandidateSource,
-  PagedSearchRequest,
-  SearchCandidateSourcesRequest
-} from "./base";
-import {Router} from "@angular/router";
-import {Location} from "@angular/common";
-import {TargetListSelection} from "../components/list/select/select-list.component";
-import {getExternalHref} from "../util/url";
+import {SearchCandidateRequest} from './search-candidate-request';
+import {SavedSearchTypeInfo} from '../services/saved-search.service';
+import {Auditable, CandidateSource, PagedSearchRequest, SearchCandidateSourcesRequest} from './base';
+import {Router} from '@angular/router';
+import {Location} from '@angular/common';
+import {TargetListSelection} from '../components/list/select/select-list.component';
+import {getExternalHref} from '../util/url';
 
 export enum SavedSearchType {
   profession,
@@ -58,6 +53,7 @@ export interface SavedSearchJoin {
 export interface SavedSearch extends CandidateSource, SearchCandidateRequest {
   defaultSearch: boolean;
   reviewable: boolean;
+  global: boolean;
   savedSearchType: SavedSearchType;
   savedSearchSubtype: SavedSearchSubtype;
 }

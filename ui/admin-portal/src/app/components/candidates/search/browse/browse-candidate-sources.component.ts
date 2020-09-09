@@ -1,10 +1,4 @@
-import {
-  Component,
-  Input,
-  OnChanges,
-  OnInit,
-  SimpleChanges
-} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {SearchResults} from '../../../../model/search-results';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
@@ -17,26 +11,25 @@ import {
 } from '../../../../model/saved-search';
 import {SavedSearchService} from '../../../../services/saved-search.service';
 import {Router} from '@angular/router';
-import {LocalStorageService} from "angular-2-local-storage";
-import {AuthService} from "../../../../services/auth.service";
-import {User} from "../../../../model/user";
+import {LocalStorageService} from 'angular-2-local-storage';
+import {AuthService} from '../../../../services/auth.service';
+import {User} from '../../../../model/user';
 import {
   CandidateSource,
   CandidateSourceType,
+  isMine,
   isSharedWithMe,
   SearchBy,
   SearchCandidateSourcesRequest
-} from "../../../../model/base";
-import {SearchSavedListRequest} from "../../../../model/saved-list";
-import {CandidateSourceService} from "../../../../services/candidate-source.service";
-import {UpdateSearchComponent} from "../../../search/update/update-search.component";
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {UpdateListComponent} from "../../../list/update/update-list.component";
-import {
-  SelectListComponent,
-  TargetListSelection
-} from "../../../list/select/select-list.component";
-import {CandidateSourceResultsCacheService} from "../../../../services/candidate-source-results-cache.service";
+} from '../../../../model/base';
+import {SearchSavedListRequest} from '../../../../model/saved-list';
+import {CandidateSourceService} from '../../../../services/candidate-source.service';
+import {UpdateSearchComponent} from '../../../search/update/update-search.component';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {UpdateListComponent} from '../../../list/update/update-list.component';
+import {SelectListComponent, TargetListSelection} from '../../../list/select/select-list.component';
+import {CandidateSourceResultsCacheService} from '../../../../services/candidate-source-results-cache.service';
+import {ConfirmationComponent} from '../../../util/confirm/confirmation.component';
 
 @Component({
   selector: 'app-browse-candidate-sources',
@@ -253,35 +246,17 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   }
 
   onDeleteSource(source: CandidateSource) {
-    //If shared just remove from my shares, otherwise delete
     this.loading = true;
+    //If shared remove from my shared searches/lists
     if (isSharedWithMe(source, this.authService)) {
-      //Remove from sharing
-      const loggedInUser = this.authService.getLoggedInUser();
-
-      this.candidateSourceService.removeSharedUser(
-        source, {userId: loggedInUser.id}).subscribe(
-        () => {
-          //Refresh display which will remove source if displayed.
-          this.search();
-          this.loading = false;
-        },
-        error => {
-          this.error = error;
-          this.loading = false;
-        }
-      )
+      this.removeFromShared(source);
+      // Else if it's mine I can delete it from the database
+    } else if (isMine(source, this.authService)) {
+      this.deleteOwnedSource(source)
+      // If it's not shared or it's not mine (e.g. it's global) it cannot be deleted from the TC. No delete icon, but security.
     } else {
-      this.candidateSourceService.delete(source).subscribe(
-          () => {
-            //Refresh display which will remove source if displayed.
-            this.search();
-            this.loading = false;
-          },
-          (error) => {
-            this.error = error;
-            this.loading = false;
-          });
+      this.error = 'You can not delete this saved search/list.';
+      this.loading = false;
     }
   }
 
@@ -355,5 +330,62 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
     if (this.selectedIndex === index) {
       this.selectedSource = source;
     }
+  }
+
+  private removeFromShared(source: CandidateSource) {
+    const loggedInUser = this.authService.getLoggedInUser();
+
+    const removeCandidateSourceModal = this.modalService.open(ConfirmationComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    removeCandidateSourceModal.componentInstance.message =
+      'Are you sure you want to remove "' + source.name + '" from your shared searches or lists?';
+
+    removeCandidateSourceModal.result
+      .then((result) => {
+        if (result === true) {
+          this.candidateSourceService.removeSharedUser(
+            source, {userId: loggedInUser.id}).subscribe(
+            () => {
+              //Refresh display which will remove source if displayed.
+              this.search();
+              this.loading = false;
+            },
+            error => {
+              this.error = error;
+              this.loading = false;
+            })
+        }
+      })
+      .catch(() => { });
+  }
+
+  private deleteOwnedSource(source: CandidateSource) {
+    const deleteCandidateSourceModal = this.modalService.open(ConfirmationComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    deleteCandidateSourceModal.componentInstance.message =
+      'Are you sure you want to delete "' + source.name + '"?';
+
+    deleteCandidateSourceModal.result
+      .then((result) => {
+        if (result === true) {
+          this.candidateSourceService.delete(source).subscribe(
+            () => {
+              //Refresh display which will remove source if displayed.
+              this.search();
+              this.loading = false;
+            },
+            (error) => {
+              this.error = error;
+              this.loading = false;
+            });
+        }
+      })
+      .catch(() => { });
   }
 }
