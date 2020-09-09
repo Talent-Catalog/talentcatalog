@@ -342,7 +342,8 @@ const ALL_FIELDS = {
         "ADDITIONALINFO": null
       },
       "BUTTON": {
-        "EDIT": null
+        "EDIT": null,
+        "CV": null
       }
     },
     "EDIT": {
@@ -458,6 +459,7 @@ const ALL_FIELDS = {
       "FILE_DOWNLOAD_FAILED": null,
       "EXPIRED_PASSWORD_TOKEN": null,
       "ENTITY_REFERENCED": null,
-      "UNKNOWN_OCCUPATION": null
+      "UNKNOWN_OCCUPATION": null,
+      "ALLOW_POPUPS": null,
     },
   };

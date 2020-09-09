@@ -1,6 +1,7 @@
 <a class="btn btn-primary text-white" (click)="downloadCV()">
-  <span *ngIf="!loading">Generate My CV</span>
-  <span *ngIf="loading">Loading...</span>
+  <span *ngIf="!loading">{{ 'PROFILE.BUTTON.CV' | translate }}</span>
+  <span *ngIf="loading">{{ 'LOADING' | translate }}</span>
 </a>
+<p class="small text-muted">{{ 'ERROR.ALLOW_POPUPS' | translate }}</p>
 
 
