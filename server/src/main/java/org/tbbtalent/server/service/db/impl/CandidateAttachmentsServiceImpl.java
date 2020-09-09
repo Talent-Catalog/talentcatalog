@@ -188,7 +188,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         Candidate candidate;
 
         // If coming from candidate portal check delete logic
-        if (!user.getRole().equals(Role.admin)) {
+        if (user.getRole().equals(Role.user)) {
              candidate = userContext.getLoggedInCandidate();
             // Check that the candidate is deleting an attachment related to themselves
             if (!candidate.getId().equals(candidateAttachment.getCandidate().getId())) {
