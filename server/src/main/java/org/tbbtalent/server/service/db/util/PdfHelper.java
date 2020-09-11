@@ -66,14 +66,7 @@ public class PdfHelper {
 
             ITextRenderer renderer = new ITextRenderer();
 
-            String baseUrl = FileSystems
-                    .getDefault()
-                    .getPath("server","src","main","resources", "pdf")
-                    .toUri()
-                    .toURL()
-                    .toString();
-            log.info(baseUrl);
-            renderer.setDocumentFromString(xHtml, baseUrl);
+            renderer.setDocumentFromString(xHtml, "classpath:pdf/");
             renderer.layout();
 
             // And finally, we create the PDF:
