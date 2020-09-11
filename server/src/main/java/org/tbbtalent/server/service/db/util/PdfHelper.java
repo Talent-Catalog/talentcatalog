@@ -1,6 +1,8 @@
 package org.tbbtalent.server.service.db.util;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -40,6 +42,8 @@ import static org.thymeleaf.templatemode.TemplateMode.HTML;
 @Service
 public class PdfHelper {
 
+    private static final Logger log = LoggerFactory.getLogger(PdfHelper.class);
+
     @Value("${server.url}")
     private String serverUrl;
 
@@ -68,7 +72,7 @@ public class PdfHelper {
                     .toUri()
                     .toURL()
                     .toString();
-
+            log.info(baseUrl);
             renderer.setDocumentFromString(xHtml, baseUrl);
             renderer.layout();
 
