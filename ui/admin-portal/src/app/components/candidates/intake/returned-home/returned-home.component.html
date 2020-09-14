@@ -1,0 +1,32 @@
+<div *ngIf="saving">
+  <i class="fas fa-spinner fa-spin"></i> saving...
+</div>
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+  <div class="form-group">
+    <label for="returnedHome">Returned Home</label>
+    <select class="form-control"
+            id="returnedHome" [formControlName]="'returnedHome'">
+      <option value=""></option>
+      <option value="true">Has returned home</option>
+      <option value="false">Has not returned home</option>
+    </select>
+  </div>
+
+  <div *ngIf="returnedHome">
+    <div class="form-group">
+      <label for="returnedHomeReason">Returned Home Reason</label>
+      <textarea type="text" class="md-textarea-auto form-control" rows="8"
+                id="returnedHomeReason" [formControlName]="'returnedHomeReason'"
+                placeholder="" ></textarea>
+    </div>
+    <div class="form-group">
+      <label for="returnedHomeNotes">Returned Home Notes</label>
+      <textarea type="text" class="md-textarea-auto form-control" rows="8"
+                id="returnedHomeNotes" [formControlName]="'returnedHomeNotes'"
+                placeholder="" ></textarea>
+    </div>
+  </div>
+</form>

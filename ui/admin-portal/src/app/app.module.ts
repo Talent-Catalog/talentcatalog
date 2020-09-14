@@ -124,6 +124,8 @@ import {CandidatesListComponent} from './components/candidates/candidates-list/c
 import {CreateCandidateOccupationComponent} from './components/candidates/view/occupation/create/create-candidate-occupation.component';
 import {CvIconComponent} from './components/util/cv-icon/cv-icon.component';
 import {JoblinkComponent} from './components/util/joblink/joblink.component';
+import {ReturnedHomeComponent} from './components/candidates/intake/returned-home/returned-home.component';
+import {CandidateIntakeTabComponent} from './components/candidates/view/tab/candidate-intake-tab/candidate-intake-tab.component';
 
 @NgModule({
   declarations: [
@@ -239,7 +241,9 @@ import {JoblinkComponent} from './components/util/joblink/joblink.component';
     CreateUpdateListComponent,
     CreateCandidateOccupationComponent,
     CvIconComponent,
-    JoblinkComponent
+    JoblinkComponent,
+    ReturnedHomeComponent,
+    CandidateIntakeTabComponent
   ],
   imports: [
     BrowserModule,

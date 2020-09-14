@@ -40,6 +40,12 @@ export interface Candidate {
   updatedDate: number;
 }
 
+export interface CandidateIntakeData {
+  returnedHome?: boolean;
+  returnedHomeNotes?: string;
+  returnedHomeReason?: string;
+}
+
 export function getCandidateNavigation(candidate: Candidate): any[] {
   return ['candidate', candidate.candidateNumber];
 }

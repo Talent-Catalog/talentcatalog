@@ -46,7 +46,6 @@
       </span>
     </h1>
 
-<!--    <todo>Comment the below back in when Lists are ready for viewing</todo>-->
     <div class="d-flex align-items-center justify-content-end">
       <div class="flex-grow-1">
         <p class="small text-muted mb-0">Add candidate to a list</p>
@@ -95,7 +94,6 @@
             <app-candidate-experience-tab
               [candidate]="candidate"
               [editable]="!loggedInUser.readOnly">
-              >
             </app-candidate-experience-tab>
           </ng-template>
         </ngb-tab>
@@ -106,7 +104,6 @@
             <app-candidate-education-tab
               [candidate]="candidate"
               [editable]="!loggedInUser.readOnly">
-              >
             </app-candidate-education-tab>
           </ng-template>
         </ngb-tab>
@@ -120,8 +117,17 @@
               [loggedInUser]="loggedInUser"
               (candidateChanged)="onCandidateChanged()"
             >
-              >
             </app-candidate-additional-info-tab>
+          </ng-template>
+        </ngb-tab>
+
+        <!-- Intake -->
+        <ngb-tab id="Intake" [title]="'Intake'">
+          <ng-template ngbTabContent>
+            <app-candidate-intake-tab
+              [candidate]="candidate"
+              >
+            </app-candidate-intake-tab>
           </ng-template>
         </ngb-tab>
 

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Candidate} from '../model/candidate';
+import {Candidate, CandidateIntakeData} from '../model/candidate';
 import {Observable} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
@@ -83,5 +83,9 @@ export class CandidateService {
   createUpdateSalesforce(candidateId: number): Observable<Candidate> {
     return this.http.put<Candidate>(
       `${this.apiUrl}/${candidateId}/update-sf`, null);
+  }
+
+  updateIntakeData(id: number, data: CandidateIntakeData): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}/intake`, data);
   }
 }
