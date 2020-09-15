@@ -22,6 +22,7 @@ import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
+import org.tbbtalent.server.request.candidate.CandidateIntakeData;
 import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tbbtalent.server.request.candidate.CandidatePhoneSearchRequest;
 import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
@@ -237,5 +238,14 @@ public interface CandidateService {
     Candidate createUpdateSalesforce(long id)
             throws NoSuchObjectException, GeneralSecurityException,
             WebClientException;
-        
+
+    /**
+     * Updates the intake data associated with the given candidate.
+     * @param id ID of candidate
+     * @param data Partially populated CandidateIntakeData record. Null data
+     *             fields are ignored. Only non null fields are updated.
+     * @throws NoSuchObjectException if no candidate is found with that id
+     */
+    void updateIntakeData(long id, CandidateIntakeData data)
+        throws NoSuchObjectException;
 }

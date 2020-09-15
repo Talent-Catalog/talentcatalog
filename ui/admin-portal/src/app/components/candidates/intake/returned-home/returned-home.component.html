@@ -1,12 +1,12 @@
-<div *ngIf="saving">
-  <i class="fas fa-spinner fa-spin"></i> saving...
-</div>
 <div *ngIf="error">
   {{error}}
 </div>
 <form [formGroup]="form">
   <div class="form-group">
     <label for="returnedHome">Returned Home</label>
+    <span *ngIf="saving">
+      <i class="fas fa-spinner fa-spin"></i> saving...
+    </span>
     <select class="form-control"
             id="returnedHome" [formControlName]="'returnedHome'">
       <option value=""></option>

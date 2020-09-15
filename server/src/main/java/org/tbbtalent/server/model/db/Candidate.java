@@ -27,6 +27,7 @@ import javax.persistence.Transient;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.api.admin.SavedSearchAdminApi;
 import org.tbbtalent.server.model.es.CandidateEs;
+import org.tbbtalent.server.request.candidate.CandidateIntakeData;
 import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
 
 @Entity
@@ -148,7 +149,15 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Transient
     private boolean selected = false;
 
+    @Nullable
+    private Boolean returnedHome;
 
+    @Nullable
+    private String returnedHomeNotes;
+
+    @Nullable
+    private String returnedHomeReason;
+    
 
     public Candidate() {
     }
@@ -407,6 +416,33 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.folderlink = folderlink;
     }
 
+    @Nullable
+    public Boolean getReturnedHome() {
+        return returnedHome;
+    }
+
+    public void setReturnedHome(@Nullable Boolean returnedHome) {
+        this.returnedHome = returnedHome;
+    }
+
+    @Nullable
+    public String getReturnedHomeNotes() {
+        return returnedHomeNotes;
+    }
+
+    public void setReturnedHomeNotes(@Nullable String returnedHomeNotes) {
+        this.returnedHomeNotes = returnedHomeNotes;
+    }
+
+    @Nullable
+    public String getReturnedHomeReason() {
+        return returnedHomeReason;
+    }
+
+    public void setReturnedHomeReason(@Nullable String returnedHomeReason) {
+        this.returnedHomeReason = returnedHomeReason;
+    }
+
     public boolean isSelected() {
         return selected;
     }
@@ -467,5 +503,17 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void removeSavedList(SavedList savedList) {
         savedLists.remove(savedList);
         savedList.getCandidates().remove(this);
+    }
+
+    public void populateIntakeData(CandidateIntakeData data) {
+        if (data.getReturnedHome() != null) {
+            setReturnedHome(data.getReturnedHome());
+        }
+        if (data.getReturnedHomeNotes() != null) {
+            setReturnedHomeNotes(data.getReturnedHomeNotes());
+        }
+        if (data.getReturnedHomeReason() != null) {
+            setReturnedHomeReason(data.getReturnedHomeReason());
+        }
     }
 }

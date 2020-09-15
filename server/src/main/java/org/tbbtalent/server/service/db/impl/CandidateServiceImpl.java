@@ -92,6 +92,7 @@ import org.tbbtalent.server.repository.es.CandidateEsRepository;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.candidate.BaseCandidateContactRequest;
 import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
+import org.tbbtalent.server.request.candidate.CandidateIntakeData;
 import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tbbtalent.server.request.candidate.CandidatePhoneSearchRequest;
 import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
@@ -1671,5 +1672,13 @@ public class CandidateServiceImpl implements CandidateService {
 
         save(candidate, false);
         return candidate;
+    }
+
+    @Override
+    public void updateIntakeData(long id, CandidateIntakeData data) 
+            throws NoSuchObjectException {
+        Candidate candidate = getCandidate(id);
+        candidate.populateIntakeData(data);
+        save(candidate, true);
     }
 }
