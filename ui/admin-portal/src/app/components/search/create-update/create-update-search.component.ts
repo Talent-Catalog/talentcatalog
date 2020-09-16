@@ -148,7 +148,6 @@ export class CreateUpdateSearchComponent implements OnInit {
     this.savedSearch.savedSearchType = this.savedSearchType;
     this.savedSearch.savedSearchSubtype = this.savedSearchSubtype;
     this.savedSearch.sfJoblink = this.sfJoblink;
-    this.savedSearch.fixed = false;
     this.savedSearch.reviewable = formValues.reviewable;
 
     //Create a SavedSearchRequest from the SavedSearch and the search request

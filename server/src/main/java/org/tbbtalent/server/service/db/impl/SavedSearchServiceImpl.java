@@ -190,7 +190,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             SavedSearch savedSearch = savedSearchRepository.findById(id)
                     .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
             // If a saved search isn't global and belongs to loggedInUser, allow changes
-            if (savedSearch.getGlobal() && savedSearch.getCreatedBy().getId() == loggedInUser.getId()) {
+            if (!savedSearch.getFixed() || savedSearch.getCreatedBy().getId() == loggedInUser.getId()) {
                 savedSearch.setName(request.getName());
                 savedSearch.setFixed(request.getFixed());
                 savedSearch.setReviewable(request.getReviewable());

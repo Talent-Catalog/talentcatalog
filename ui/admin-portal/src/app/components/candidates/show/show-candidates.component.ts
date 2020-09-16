@@ -498,12 +498,10 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
     //Is shareable with me if it is not fixed or created by me.
     if (this.candidateSource) {
-      if (!this.candidateSource.fixed) {
         //was it created by me?
         if (!isMine(this.candidateSource, this.authService)) {
           shareable = true;
         }
-      }
     }
     return shareable;
   }
