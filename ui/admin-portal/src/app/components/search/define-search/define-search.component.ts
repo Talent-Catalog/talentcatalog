@@ -42,6 +42,7 @@ import {
   SavedSearch,
   SearchCandidateRequestPaged
 } from '../../../model/saved-search';
+import {canEditSource} from '../../../model/base';
 import {ConfirmationComponent} from '../../util/confirm/confirmation.component';
 import {User} from '../../../model/user';
 import {AuthService} from '../../../services/auth.service';
@@ -396,6 +397,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     this.openSavedSearchModal(true);
   }
 
+  // Update coming from this define search component
   updateSavedSearchModal() {
     this.openSavedSearchModal(false);
   }
@@ -404,11 +406,13 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     const showSaveModal = this.modalService.open(CreateUpdateSearchComponent);
     showSaveModal.componentInstance.savedSearch = this.savedSearch;
 
-    // Convert ids as we do for searches
-    const request = this.searchForm.value;
-    showSaveModal.componentInstance.searchCandidateRequest =
-      this.getIdsMultiSelect(request);
-
+    // If create, need to send up the search request details. If update does not need search details (only saved search data).
+    if (create) {
+      // Convert ids as we do for searches
+      const request = this.searchForm.value;
+      showSaveModal.componentInstance.searchCandidateRequest =
+        this.getIdsMultiSelect(request);
+    }
 
     showSaveModal.result
       .then((savedSearch) => {
@@ -419,10 +423,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       })
       .catch(() => {
       });
-  }
-
-  editSource() {
-    this.openSavedSearchModal(this.savedSearch.defaultSearch);
   }
 
   deleteSavedSearchModal() {
@@ -624,20 +624,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   canChangeSearchRequest(): boolean {
-    //We can change the search request if we own the savedSearch or if it
-    //not fixed.
-    let changeable: boolean = false;
-    if (this.savedSearch) {
-      if (!this.savedSearch.fixed) {
-        changeable = true;
-      } else {
-        //Only can change the request associated with a saved search if we
-        //own that search.
-        if (this.loggedInUser && this.savedSearch.createdBy) {
-          changeable = this.savedSearch.createdBy.id === this.loggedInUser.id;
-        }
-      }
-    }
-    return changeable;
+    return canEditSource(this.savedSearch, this.authService)
   }
 }

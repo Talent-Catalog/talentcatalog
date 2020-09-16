@@ -20,7 +20,7 @@ import {
   SearchCandidateRequestPaged,
   SelectCandidateInSearchRequest
 } from '../../../model/saved-search';
-import {CandidateSource, defaultReviewStatusFilter, isMine, isSharedWithMe, ReviewedStatus} from '../../../model/base';
+import {CandidateSource, canEditSource, defaultReviewStatusFilter, isMine, isSharedWithMe, ReviewedStatus} from '../../../model/base';
 import {CachedSourceResults, CandidateSourceResultsCacheService} from '../../../services/candidate-source-results-cache.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {IDropdownSettings} from 'ng-multiselect-dropdown';
@@ -512,6 +512,10 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     return isSharedWithMe(this.candidateSource, this.authService);
   }
 
+  isEditable(): boolean {
+    return canEditSource(this.candidateSource, this.authService);
+  }
+
   onSelectionChange(candidate: Candidate, selected: boolean) {
 
     //Record change
@@ -719,5 +723,13 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   doEditSource() {
     this.editSource.emit(this.candidateSource);
+  }
+
+  isDefaultSavedSearch(): boolean {
+    if (isSavedSearch(this.candidateSource)) {
+      return this.candidateSource.defaultSearch;
+    } else {
+     return false;
+    }
   }
 }

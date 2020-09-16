@@ -49,14 +49,16 @@ export class CreateUpdateSearchComponent implements OnInit {
   }
 
   get savedSearchType(): number {
-    const val = this.form.get('savedSearchType').value;
-    //Convert value to number - or null if not populated
+    const val = this.form.get('savedSearchType').value?.toString();
+    //Convert string value to number - or null if not populated.
+    //Note: Int 0 (profession) is null so returns null, by converting to a string it is no longer null.
+    //todo look at other way to avoid int 0 null
     return val ? +val : null;
   }
 
   get savedSearchSubtype(): number {
-    const val = this.form.get('savedSearchSubtype').value;
-    //Convert value to number - or null if not populated
+    const val = this.form.get('savedSearchSubtype').value?.toString();
+    //Convert value to number - or null if not populated. Same as above.
     return val ? +val : null;
   }
 
