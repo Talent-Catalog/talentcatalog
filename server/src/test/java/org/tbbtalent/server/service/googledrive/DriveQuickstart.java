@@ -18,9 +18,11 @@ package org.tbbtalent.server.service.googledrive;
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
@@ -115,6 +117,15 @@ public class DriveQuickstart {
                 .execute();
         String uploadedFileId = file.getId();
         System.out.println("Uploaded file ID: " + uploadedFileId);
+
+        // Download file.
+        String fileId = uploadedFileId;
+        OutputStream outputStream = new ByteArrayOutputStream();
+        service.files().get(fileId)
+                .setSupportsAllDrives(true)
+                .executeMediaAndDownloadTo(outputStream);
+        
+        System.out.println("Created outputstream: " + outputStream.toString());
         
         //Rename file
         File targetFile = new File();
