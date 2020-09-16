@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {
   AttachmentType,
   CandidateAttachment,
@@ -17,8 +17,12 @@ import {saveBlob} from "../../../util/file";
 export class CvIconComponent implements OnInit {
   // Required Input
   @Input() candidate: Candidate;
-  // Optional Input - if a candidate attachment is passed in, this will only open the single attachment.
+  //Optional Input - if a candidate attachment is passed in, this will only
+  //open the single attachment.
   @Input() attachment: CandidateAttachment;
+
+  //Used to indicate loading status.
+  @Output() loadingStatus = new EventEmitter<boolean>();
 
   cvs: CandidateAttachment[];
   s3BucketUrl = environment.s3BucketUrl;
@@ -53,7 +57,8 @@ export class CvIconComponent implements OnInit {
 
   getAttachmentUrl(att: CandidateAttachment) {
     if (att.type === AttachmentType.file) {
-      return this.s3BucketUrl + '/candidate/' + (att.migrated ? 'migrated' : this.candidate.candidateNumber) + '/' + att.location;
+      return this.s3BucketUrl + '/candidate/' + (att.migrated ? 'migrated' :
+        this.candidate.candidateNumber) + '/' + att.location;
     }
     return att.location;
   }
@@ -72,12 +77,15 @@ export class CvIconComponent implements OnInit {
   }
 
   downloadCandidateAttachment(attachment: CandidateAttachment) {
+    this.loadingStatus.emit(true);
     this.candidateAttachmentService.downloadAttachment(attachment.id).subscribe(
       (resp: Blob) => {
         saveBlob(resp, attachment.name);
+        this.loadingStatus.emit(false);
       },
       (error) => {
         console.log(error);
+        this.loadingStatus.emit(false);
       });
   }
 

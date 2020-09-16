@@ -73,7 +73,9 @@
           <div class="d-inline ml-2" *ngIf="attachment.cv">
             <app-cv-icon
               [candidate]="candidate"
-              [attachment]="attachment">
+              [attachment]="attachment"
+              (loadingStatus)="loading = $event"
+            >
             </app-cv-icon>
           </div>
         </div>
