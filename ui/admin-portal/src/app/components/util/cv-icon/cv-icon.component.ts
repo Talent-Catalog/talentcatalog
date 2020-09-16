@@ -1,8 +1,13 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {AttachmentType, CandidateAttachment, SearchCandidateAttachmentsRequest} from '../../../model/candidate-attachment';
+import {
+  AttachmentType,
+  CandidateAttachment,
+  SearchCandidateAttachmentsRequest
+} from '../../../model/candidate-attachment';
 import {environment} from '../../../../environments/environment';
 import {CandidateAttachmentService} from '../../../services/candidate-attachment.service';
 import {Candidate} from '../../../model/candidate';
+import {saveBlob} from "../../../util/file";
 
 @Component({
   selector: 'app-cv-icon',
@@ -16,8 +21,6 @@ export class CvIconComponent implements OnInit {
   @Input() attachment: CandidateAttachment;
 
   cvs: CandidateAttachment[];
-  loading: boolean;
-  error;
   s3BucketUrl = environment.s3BucketUrl;
 
   constructor(private candidateAttachmentService: CandidateAttachmentService) { }
@@ -28,7 +31,6 @@ export class CvIconComponent implements OnInit {
 
   getAttachments() {
     this.cvs = [];
-    this.loading = true;
     // If there is a single attachment passed down
     if (this.attachment) {
       this.cvs.push(this.attachment)
@@ -41,11 +43,9 @@ export class CvIconComponent implements OnInit {
       this.candidateAttachmentService.search(request).subscribe(
         results => {
           this.cvs = results;
-          this.loading = false;
         },
         error => {
-          this.error = error;
-          this.loading = false;
+          console.log(error);
         })
       ;
     }
@@ -60,10 +60,25 @@ export class CvIconComponent implements OnInit {
 
   openCVs() {
     for (let i = 0; i < this.cvs.length; i++) {
-      const newTab = window.open();
-      const url = this.getAttachmentUrl(this.cvs[i]);
-      newTab.location.href = url;
+      const cv = this.cvs[i];
+      if (cv.type === AttachmentType.googlefile) {
+        this.downloadCandidateAttachment(cv)
+      } else {
+        const newTab = window.open();
+        const url = this.getAttachmentUrl(cv);
+        newTab.location.href = url;
+      }
     }
+  }
+
+  downloadCandidateAttachment(attachment: CandidateAttachment) {
+    this.candidateAttachmentService.downloadAttachment(attachment.id).subscribe(
+      (resp: Blob) => {
+        saveBlob(resp, attachment.name);
+      },
+      (error) => {
+        console.log(error);
+      });
   }
 
 }
