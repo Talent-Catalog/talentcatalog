@@ -120,6 +120,8 @@ public class GoogleFileSystemServiceImpl implements GoogleFileSystemService {
         if (id == null) {
             throw new IOException("Could not find id to delete file " + file);
         }
+
+        //See https://developers.google.com/drive/api/v3/manage-downloads
         googleDriveService.files().get(id)
                 .setSupportsAllDrives(true)
                 .executeMediaAndDownloadTo(out);
