@@ -3,7 +3,7 @@ import {getCandidateSourceExternalHref, isSavedSearch, SavedSearch} from '../../
 import {SavedSearchService} from '../../../services/saved-search.service';
 import {AuthService} from '../../../services/auth.service';
 import {User} from '../../../model/user';
-import {CandidateSource, isMine} from '../../../model/base';
+import {CandidateSource, canEditSource, isMine} from '../../../model/base';
 import {Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {copyToClipboard} from '../../../util/clipboard';
@@ -128,7 +128,7 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
   }
 
   isEditable() {
-    return isMine(this.candidateSource, this.authService);
+    return canEditSource(this.candidateSource, this.authService);
   }
 
   isRemovable() {
