@@ -25,7 +25,10 @@ import com.google.common.cache.LoadingCache;
 
 /**
  * Captcha service implementation
- *
+ * <p/>
+ * See https://developers.google.com/recaptcha/docs/v3
+ * and
+ * https://www.baeldung.com/spring-security-registration-captcha
  * @author John Cameron
  */
 @Service
@@ -70,7 +73,7 @@ public class CaptchaServiceImpl implements CaptchaService {
                         "No reCaptcha validation response received from Google");
             }
             
-            log.debug("Google's response: {} ", googleRecaptchaResponse.toString());
+            log.info("Google's response: {} ", googleRecaptchaResponse.toString());
 
             if (!googleRecaptchaResponse.isSuccess() || 
                     !googleRecaptchaResponse.getAction().equals(action) || 
