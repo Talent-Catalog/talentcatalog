@@ -70,9 +70,14 @@ export class CandidateService {
   }
 
   downloadCv(candidateId: number) {
-    return this.http.get(`${this.apiUrl}/${candidateId}/cv.pdf`, {responseType: 'blob'}).pipe(map(res => {
-      return new Blob([res], { type: 'application/pdf', });
-    }));
+    return this.http.get(
+      `${this.apiUrl}/${candidateId}/cv.pdf`,
+      {responseType: 'blob'})
+      .pipe(
+        map(res => {
+          return new Blob([res], { type: 'application/pdf', });
+        })
+      );
   }
 
   createCandidateFolder(candidateId: number): Observable<Candidate> {

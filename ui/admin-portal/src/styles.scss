@@ -95,7 +95,7 @@ label,a > i.fas,i.fab,i.far {
   margin-right: 5px;
 }
 
-a > i.is-link {
+a.is-link, a > i.is-link {
   color: $color-primary;
   cursor: pointer;
   @include hover() {

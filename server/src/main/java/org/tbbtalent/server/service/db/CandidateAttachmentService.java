@@ -4,6 +4,10 @@
 
 package org.tbbtalent.server.service.db;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,9 +17,6 @@ import org.tbbtalent.server.request.PagedSearchRequest;
 import org.tbbtalent.server.request.attachment.CreateCandidateAttachmentRequest;
 import org.tbbtalent.server.request.attachment.SearchCandidateAttachmentsRequest;
 import org.tbbtalent.server.request.attachment.UpdateCandidateAttachmentRequest;
-
-import java.io.IOException;
-import java.util.List;
 
 public interface CandidateAttachmentService {
 
@@ -32,6 +33,43 @@ public interface CandidateAttachmentService {
     CandidateAttachment createCandidateAttachment(CreateCandidateAttachmentRequest request);
 
     void deleteCandidateAttachment(Long id);
+
+    /**
+     * Downloads the given attachment, returning an InputStream from which the
+     * attachment contents can be read.
+     * <p/>
+     * Note: Currently only works for Google attachments
+     * @param id ID of requested attachment
+     * @param out OutputStream which will receive attachment contents           
+     * @throws IOException if there is a problem retrieving the attachment.
+     * @throws NoSuchObjectException if no attachment with that id exists
+     */
+    void downloadCandidateAttachment(Long id, OutputStream out) 
+            throws IOException, NoSuchObjectException;
+
+    /**
+     * Downloads the given attachment, returning an InputStream from which the
+     * attachment contents can be read.
+     * <p/>
+     * Note: Currently only works for Google attachments
+     * @param attachment CandidateAttachment providing details of requested
+     *                   attachment
+     * @param out OutputStream which will receive attachment contents           
+     * @throws IOException if there is a problem retrieving the attachment.
+     */
+    void downloadCandidateAttachment(
+            CandidateAttachment attachment, OutputStream out) throws IOException;
+
+    /**
+     * Retrieves details on the given attachment. 
+     * @param id ID of requested attachment
+     * @return CandidateAttachment containing link to the file in 
+     * {@link CandidateAttachment#getLocation()}
+     * @throws NoSuchObjectException if no attachment with that id exists
+     * @throws IOException if there is a problem retrieving the attachment.
+     */
+    CandidateAttachment getCandidateAttachment(Long id)
+            throws IOException, NoSuchObjectException;
 
     CandidateAttachment updateCandidateAttachment(
             UpdateCandidateAttachmentRequest request) throws IOException;

@@ -6,6 +6,7 @@ package org.tbbtalent.server.service.db;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -50,6 +51,15 @@ public interface FileSystemService {
     void deleteFile(FileSystemFile file) throws IOException;
 
     /**
+     * Downloads the given file into the given OutputStream
+     * @param file Describes file to be downloaded
+     * @param out Stream to write the contents of the file to
+     * @throws IOException If there was a problem uploading the file.
+     */
+    void downloadFile(@NonNull FileSystemFile file, @NonNull OutputStream out)
+            throws IOException;
+
+    /**
      * Renames the given file 
      * @param file Description of file, including id or url, plus its new name
      * @throws IOException If there was a problem renaming the file
@@ -58,7 +68,7 @@ public interface FileSystemService {
     
     /**
      * Uploads the given local file.
-     * @param parentFolder Folder tha file should be uploaded to. If null, 
+     * @param parentFolder Folder that file should be uploaded to. If null, 
      *                     file is uploaded to root.
      * @param fileName Name assigned to uploaded file
      * @param file Local file to be uploaded

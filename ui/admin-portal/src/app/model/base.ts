@@ -99,3 +99,20 @@ export function isSharedWithMe(source: CandidateSource, auth: AuthService) {
   return sharedWithMe;
 }
 
+export function canEditSource(source: CandidateSource, auth: AuthService) {
+  //We can change the source if we own the savedSearch or if it not fixed.
+  let changeable: boolean = false;
+  const me: User = auth.getLoggedInUser();
+  if (source) {
+    // If source is NOT FIXED anyone can edit it
+    if (!source.fixed) {
+      changeable = true;
+      // If source is FIXED but it belongs to me, I can change it. If it doesn't belong to me I can't.
+    } else {
+      //Only can edit source if we own that source.
+      changeable = isMine(source, auth);
+    }
+  }
+  return changeable;
+}
+

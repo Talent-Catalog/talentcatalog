@@ -2,6 +2,7 @@ import {Candidate} from './candidate';
 import {User} from './user';
 
 export enum AttachmentType {
+  googlefile = 'googlefile',
   file = 'file',
   link = 'link'
 }

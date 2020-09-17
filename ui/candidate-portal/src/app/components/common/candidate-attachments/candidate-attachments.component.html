@@ -16,8 +16,28 @@
       <div class="col-12">
 
         <div class="form-group">
-          <label>{{ 'REGISTRATION.ATTACHMENTS.LABEL.NAME' | translate }}</label>
-          <p><a [href]="getAttachmentUrl(attachment)" target="_blank">{{attachment.name}}</a></p>
+          <label>{{ 'REGISTRATION.ATTACHMENTS.LABEL.NAME' | translate }}
+            <span *ngIf="downloading">
+                ...
+            </span>
+          </label>
+          <p>
+            <!-- Non Google files - ie links and AWS files -
+             we can just follow their urls-->
+            <a *ngIf="attachment.type!==AttachmentType.googlefile"
+               target="_blank" [href]="getAttachmentUrl(attachment)">
+              {{attachment.name}}
+            </a>
+            <!-- With Google files we can't link to the Google Shared Drive
+             because Google's security prevents that.
+             So instead, we download a copy of the file to the browser computer
+             and show that-->
+            <a *ngIf="attachment.type===AttachmentType.googlefile"
+               (click)="downloadCandidateAttachment(attachment)"
+               target="_blank" class="is-link">
+              {{attachment.name}}
+            </a>
+          </p>
         </div>
 
       </div>

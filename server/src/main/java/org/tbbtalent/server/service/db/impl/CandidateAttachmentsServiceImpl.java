@@ -1,5 +1,13 @@
 package org.tbbtalent.server.service.db.impl;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
+import java.util.UUID;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -13,7 +21,11 @@ import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.model.db.AttachmentType;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateAttachment;
+import org.tbbtalent.server.model.db.Role;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.request.PagedSearchRequest;
@@ -28,13 +40,6 @@ import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
 import org.tbbtalent.server.util.filesystem.FileSystemFile;
 import org.tbbtalent.server.util.filesystem.FileSystemFolder;
 import org.tbbtalent.server.util.textExtract.TextExtractHelper;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.UUID;
 
 @Service
 public class CandidateAttachmentsServiceImpl implements CandidateAttachmentService {
@@ -244,11 +249,47 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     }
 
     @Override
-    public CandidateAttachment updateCandidateAttachment(UpdateCandidateAttachmentRequest request) throws IOException {
+    public void downloadCandidateAttachment(Long id, OutputStream out) 
+            throws IOException, NoSuchObjectException {
+        CandidateAttachment attachment = getCandidateAttachment(id);
+        downloadCandidateAttachment(attachment, out);
+    }
+
+    @Override
+    public void downloadCandidateAttachment(
+            CandidateAttachment attachment, OutputStream out) throws IOException {
+        if (attachment.getType() == AttachmentType.googlefile) {
+            FileSystemFile file = new FileSystemFile();
+            file.setUrl(attachment.getLocation());
+            fileSystemService.downloadFile(file, out);
+        } else {
+            //We only handle Google attachments for now because that is all
+            //we need.
+            //We can access link and AWS attachments simply using their urls.
+            //We can do that with Google attachments because of security 
+            //restrictions with the Google Shared Drive.
+            //To get around that, we actually download a copy of the Google
+            //file and return that copy to the user's browser.
+        }
+    }
+
+    @Override
+    public CandidateAttachment getCandidateAttachment(Long id) 
+            throws IOException, NoSuchObjectException {
+        CandidateAttachment candidateAttachment = 
+                candidateAttachmentRepository.findByIdLoadCandidate(id)
+                .orElseThrow(() -> 
+                        new NoSuchObjectException(CandidateAttachment.class, id));
+        return candidateAttachment;
+    }
+
+    @Override
+    public CandidateAttachment updateCandidateAttachment(
+            UpdateCandidateAttachmentRequest request) throws IOException {
         User user = userContext.getLoggedInUser();
 
-        CandidateAttachment candidateAttachment = candidateAttachmentRepository.findByIdLoadCandidate(request.getId())
-                .orElseThrow(() -> new NoSuchObjectException(CandidateAttachment.class, request.getId()));
+        CandidateAttachment candidateAttachment = 
+                getCandidateAttachment(request.getId()); 
 
         final AttachmentType attachmentType = candidateAttachment.getType();
         

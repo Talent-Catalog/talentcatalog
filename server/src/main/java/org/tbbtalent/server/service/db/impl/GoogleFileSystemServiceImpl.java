@@ -5,6 +5,7 @@
 package org.tbbtalent.server.service.db.impl;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -107,6 +108,23 @@ public class GoogleFileSystemServiceImpl implements GoogleFileSystemService {
         googleDriveService.files().delete(id)
                 .setSupportsAllDrives(true)
                 .execute();
+    }
+
+    @Override
+    public void downloadFile(@NonNull FileSystemFile file, 
+                             @NonNull OutputStream out) throws IOException {
+        String id = file.getId();
+        if (id == null) {
+            id = extractIdFromUrl(file.getUrl());
+        }
+        if (id == null) {
+            throw new IOException("Could not find id to delete file " + file);
+        }
+
+        //See https://developers.google.com/drive/api/v3/manage-downloads
+        googleDriveService.files().get(id)
+                .setSupportsAllDrives(true)
+                .executeMediaAndDownloadTo(out);
     }
 
     @Override
