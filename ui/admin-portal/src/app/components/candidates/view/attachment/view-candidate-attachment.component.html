@@ -64,11 +64,11 @@
            because Google's security prevents that.
            So instead, we download a copy of the file to the browser computer
            and show that-->
-          <button *ngIf="attachment.type===AttachmentType.googlefile"
-                  class="btn btn-sm btn-outline-primary"
-                  (click)="downloadCandidateAttachment(attachment)">
+          <a *ngIf="attachment.type===AttachmentType.googlefile"
+                  (click)="downloadCandidateAttachment(attachment)"
+          target="_blank" class="is-link">
             {{attachment.name}}
-          </button>
+          </a>
           <span class="small text-dark"> - {{attachment.type}}</span>
           <div class="d-inline ml-2" *ngIf="attachment.cv">
             <app-cv-icon
