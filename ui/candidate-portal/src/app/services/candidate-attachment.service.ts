@@ -30,6 +30,11 @@ export class CandidateAttachmentService {
     return this.http.delete<CandidateAttachment>(`${this.apiUrl}/${id}`);
   }
 
+  downloadAttachment(id: number) {
+    return this.http.get(`${this.apiUrl}/${id}/download`,
+      { responseType: 'blob' });
+  }
+
   uploadAttachment(cv: boolean, formData: FormData): Observable<CandidateAttachment> {
     return this.http.post<CandidateAttachment>(
       `${this.apiUrl}/upload?cv=${cv}`, formData);

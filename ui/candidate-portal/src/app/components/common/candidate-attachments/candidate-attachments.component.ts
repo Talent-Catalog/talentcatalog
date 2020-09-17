@@ -1,12 +1,16 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {CandidateAttachmentService} from '../../../services/candidate-attachment.service';
-import {AttachmentType, CandidateAttachment} from '../../../model/candidate-attachment';
+import {
+  AttachmentType,
+  CandidateAttachment
+} from '../../../model/candidate-attachment';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {environment} from '../../../../environments/environment';
 import {CandidateService} from '../../../services/candidate.service';
 import {forkJoin, Observable} from 'rxjs';
 import {UserService} from '../../../services/user.service';
 import {User} from '../../../model/user';
+import {saveBlob} from "../../../util/file";
 
 @Component({
   selector: 'app-candidate-attachments',
@@ -18,6 +22,7 @@ export class CandidateAttachmentsComponent implements OnInit {
   @Input() preview: boolean = false;
   @Input() cv: boolean;
 
+  downloading: boolean;
   error: any;
   _loading = {
     candidate: true,
@@ -38,6 +43,10 @@ export class CandidateAttachmentsComponent implements OnInit {
               private candidateService: CandidateService,
               private candidateAttachmentService: CandidateAttachmentService,
               private userService: UserService) { }
+
+  get AttachmentType() {
+    return AttachmentType;
+  }
 
   ngOnInit() {
     this._loading.candidate = true;
@@ -132,6 +141,21 @@ export class CandidateAttachmentsComponent implements OnInit {
         this.uploading = false;
       }
     );
+
+  }
+
+  downloadCandidateAttachment(attachment: CandidateAttachment) {
+    this.error = null;
+    this.downloading = true;
+    this.candidateAttachmentService.downloadAttachment(attachment.id).subscribe(
+      (resp: Blob) => {
+        saveBlob(resp, attachment.name);
+        this.downloading = false;
+      },
+      (error) => {
+        this.error = error;
+        this.downloading = false;
+      });
 
   }
 }
