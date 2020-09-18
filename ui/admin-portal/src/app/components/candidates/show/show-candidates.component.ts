@@ -28,7 +28,7 @@ import {User} from '../../../model/user';
 import {AuthService} from '../../../services/auth.service';
 import {UserService} from '../../../services/user.service';
 import {SelectListComponent, TargetListSelection} from '../../list/select/select-list.component';
-import {IHasSetOfCandidates, SavedListGetRequest} from '../../../model/saved-list';
+import {CreateSavedListRequest, IHasSetOfCandidates, SavedListGetRequest} from '../../../model/saved-list';
 import {CandidateSourceCandidateService} from '../../../services/candidate-source-candidate.service';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {EditCandidateReviewStatusItemComponent} from '../../util/candidate-review/edit/edit-candidate-review-status-item.component';
@@ -38,6 +38,7 @@ import {SavedListCandidateService} from '../../../services/saved-list-candidate.
 import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from 'rxjs/operators';
 import {Location} from '@angular/common';
 import {copyToClipboard} from '../../../util/clipboard';
+import {SavedListService} from '../../../services/saved-list.service';
 
 interface CachedTargetList {
   searchID: number;
@@ -96,6 +97,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   };
 
   selectedCandidate: Candidate;
+  selectedCandidates: number[];
   loggedInUser: User;
   targetListName: string;
   targetListId: number;
@@ -112,6 +114,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
               private userService: UserService,
               private savedSearchService: SavedSearchService,
               private savedListCandidateService: SavedListCandidateService,
+              private savedListService: SavedListService,
               private modalService: NgbModal,
               private localStorageService: LocalStorageService,
               private location: Location,
@@ -171,6 +174,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         if (this.candidateSource) {
           this.restoreTargetListFromCache();
           this.doSearch(false);
+          this.selectedCandidates = this.results.content.filter(candidate => candidate.selected === true).map(candidate => candidate.id);
         }
       }
     } else {
@@ -490,6 +494,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isSelectable(): boolean {
+    return true;
     return isSavedSearch(this.candidateSource);
   }
 
@@ -521,19 +526,31 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     //Update cache
     this.cacheResults();
 
-    //Record change on server
-    //Candidate is added/removed from this users selection list for this saved search
-    const request: SelectCandidateInSearchRequest = {
+    if (isSavedSearch(this.candidateSource)) {
+      //Record change on server
+      //Candidate is added/removed from this users selection list for this saved search
+      const request: SelectCandidateInSearchRequest = {
         userId: this.loggedInUser.id,
         candidateId: candidate.id,
         selected: selected
       };
-    this.savedSearchService.selectCandidate(this.candidateSource.id, request).subscribe(
-      () => {},
-      err => {
-        this.error = err;
+      this.savedSearchService.selectCandidate(this.candidateSource.id, request).subscribe(
+        () => {},
+        err => {
+          this.error = err;
+        }
+      );
+    } else {
+      // If selections coming from a list, create a list of the candidateIds selected
+      if (selected) {
+        this.selectedCandidates.push(candidate.id);
+        console.log(this.selectedCandidates)
+      } else {
+        this.selectedCandidates = this.selectedCandidates.filter(id => id !== candidate.id);
+        console.log(this.selectedCandidates)
       }
-    );
+
+    }
   }
 
   saveSelection() {
@@ -566,27 +583,62 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   private doSaveSelection(request: SaveSelectionRequest) {
     //Save selection as specified in request
     this.savingSelection = true;
-    this.savedSearchService.saveSelection(this.candidateSource.id, request).subscribe(
-      savedListResult => {
-        this.savingSelection = false;
+    if (isSavedSearch(this.candidateSource)) {
+      this.savedSearchService.saveSelection(this.candidateSource.id, request).subscribe(
+        savedListResult => {
+          this.savingSelection = false;
 
-        //Save the target list
-        this.targetListId = savedListResult.id;
-        this.targetListName = savedListResult.name;
-        this.targetListReplace = request.replace;
+          //Save the target list
+          this.targetListId = savedListResult.id;
+          this.targetListName = savedListResult.name;
+          this.targetListReplace = request.replace;
 
-        //Cache the target list
-        this.cacheTargetList();
+          //Cache the target list
+          this.cacheTargetList();
 
-        //Invalidate the cache for this list (so that user does not need
-        //to refresh in order to see latest list contents)
-        this.candidateSourceResultsCacheService.removeFromCache(savedListResult);
+          //Invalidate the cache for this list (so that user does not need
+          //to refresh in order to see latest list contents)
+          this.candidateSourceResultsCacheService.removeFromCache(savedListResult);
 
-      },
-      err => {
-        this.error = err;
-        this.savingSelection = false;
-      });
+        },
+        err => {
+          this.error = err;
+          this.savingSelection = false;
+        });
+    } else {
+      // If a list send the array of candidate ids
+      if (request.replace) {
+        // update saved list
+
+      } else {
+        // create new saved list
+        const createSavedListRequest: CreateSavedListRequest = {
+          candidateIds: this.selectedCandidates,
+          fixed: null,
+          name: request.newListName,
+          sfJoblink: null,
+        }
+        this.savedListService.create(createSavedListRequest).subscribe(
+          savedListResult => {
+            this.savingSelection = false;
+            //Save the target list
+            this.targetListId = savedListResult.id;
+            this.targetListName = savedListResult.name;
+            this.targetListReplace = request.replace;
+
+            //Cache the target list
+            this.cacheTargetList();
+
+            //Invalidate the cache for this list (so that user does not need
+            //to refresh in order to see latest list contents)
+            this.candidateSourceResultsCacheService.removeFromCache(savedListResult);
+            this.doSearch(true);
+          }
+        )
+      }
+
+    }
+
   }
 
   clearSelection() {
