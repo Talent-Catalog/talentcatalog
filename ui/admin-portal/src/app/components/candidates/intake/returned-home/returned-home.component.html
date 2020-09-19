@@ -9,9 +9,9 @@
     </span>
     <select class="form-control"
             id="returnedHome" [formControlName]="'returnedHome'">
-      <option value=""></option>
-      <option value="true">Has returned home</option>
-      <option value="false">Has not returned home</option>
+      <option [ngValue]="null"></option>
+      <option [ngValue]="true">Has returned home</option>
+      <option [ngValue]="false">Has not returned home</option>
     </select>
   </div>
 

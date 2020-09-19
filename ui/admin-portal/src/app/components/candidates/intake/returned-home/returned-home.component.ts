@@ -23,7 +23,6 @@ export class ReturnedHomeComponent extends IntakeComponentBase implements OnInit
   }
 
   get returnedHome(): boolean {
-    const val: string = this.form.value?.returnedHome;
-    return val === null ? false : val === 'true';
+    return this.form.value?.returnedHome;
   }
 }

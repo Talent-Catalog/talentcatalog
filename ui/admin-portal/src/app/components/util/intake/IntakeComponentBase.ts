@@ -16,7 +16,7 @@ import {CandidateService} from "../../../services/candidate.service";
  * <ul>
  *   <li>Implements autosave of form data after x seconds of inactivity</li>
  *   <li>Declares standard component @Inputs</li>
- *   <li>Provides standard error and saving attributes for display to user</li>
+ *   <li>Provides standard "error" and "saving" attributes for display to user</li>
  *   <li>Provides FormGroup form variable for subclass to create and populate.
  *   The form should be created in the subclass's onInit method
  *   </li>
@@ -82,6 +82,7 @@ export abstract class IntakeComponentBase implements AfterViewInit, OnDestroy, O
    * It sets up the autosave.
    */
   ngAfterViewInit(): void {
+    //3 second timeout
     this.setupAutosave(3000);
   }
 
@@ -99,6 +100,11 @@ export abstract class IntakeComponentBase implements AfterViewInit, OnDestroy, O
 
       //Do a save of the received form values.
       switchMap(formValue => {
+          //Update the candidateIntakeData to keep it in sync with the server
+          //saved version.
+          //Object assign just copies the formValue fields across, leaving any
+          //other fields in candidateIntakeData unchanged.
+          Object.assign(this.candidateIntakeData, formValue);
           this.error = null;
           this.saving = true;
           return this.candidateService.updateIntakeData(this.candidate.id, formValue);

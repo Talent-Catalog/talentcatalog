@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Candidate, CandidateIntakeData} from "../../../../../model/candidate";
+import {CandidateService} from "../../../../../services/candidate.service";
 
 @Component({
   selector: 'app-candidate-intake-tab',
@@ -9,11 +10,24 @@ import {Candidate, CandidateIntakeData} from "../../../../../model/candidate";
 export class CandidateIntakeTabComponent implements OnInit {
   @Input() candidate: Candidate;
   candidateIntakeData: CandidateIntakeData;
+  error: string;
+  loading: boolean;
 
-  constructor() { }
+  constructor(private candidateService: CandidateService) { }
 
   ngOnInit(): void {
-    //todo could load existing candidateIntakeData
+    //Load existing candidateIntakeData
+    this.error = null;
+    this.loading = true;
+    this.candidateService.getIntakeData(this.candidate.id).subscribe(
+      intakeData => {
+        this.candidateIntakeData = intakeData;
+        this.loading = false;
+      },
+      error => {
+        this.error = error;
+        this.loading = false;
+      });
   }
 
 }

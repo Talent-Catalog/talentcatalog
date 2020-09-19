@@ -46,12 +46,14 @@ public class CandidateAdminApi {
 
     private final CandidateService candidateService;
     private final CandidateBuilderSelector builderSelector;
+    private final CandidateIntakeDataBuilderSelector intakeDataBuilderSelector;
 
     @Autowired
     public CandidateAdminApi(CandidateService candidateService,
                              UserContext userContext) {
         this.candidateService = candidateService;
         builderSelector = new CandidateBuilderSelector(userContext);
+        intakeDataBuilderSelector = new CandidateIntakeDataBuilderSelector(userContext);
     }
 
     @PostMapping("search")
@@ -93,6 +95,13 @@ public class CandidateAdminApi {
     public Map<String, Object> get(@PathVariable("id") long id) {
         Candidate candidate = this.candidateService.getCandidate(id);
         DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.build(candidate);
+    }
+
+    @GetMapping("{id}/intake")
+    public Map<String, Object> getIntakeData(@PathVariable("id") long id) {
+        Candidate candidate = this.candidateService.getCandidate(id);
+        DtoBuilder builder = intakeDataBuilderSelector.selectBuilder();
         return builder.build(candidate);
     }
     
