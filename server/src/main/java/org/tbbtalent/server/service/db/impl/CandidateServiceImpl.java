@@ -62,6 +62,7 @@ import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateEducation;
 import org.tbbtalent.server.model.db.CandidateLanguage;
 import org.tbbtalent.server.model.db.CandidateOccupation;
+import org.tbbtalent.server.model.db.CandidateSavedList;
 import org.tbbtalent.server.model.db.CandidateStatus;
 import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.model.db.DataRow;
@@ -79,6 +80,7 @@ import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.repository.db.CandidateRepository;
+import org.tbbtalent.server.repository.db.CandidateSavedListRepository;
 import org.tbbtalent.server.repository.db.CandidateSpecification;
 import org.tbbtalent.server.repository.db.CountryRepository;
 import org.tbbtalent.server.repository.db.EducationLevelRepository;
@@ -137,6 +139,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final SavedSearchRepository savedSearchRepository;
     private final CandidateRepository candidateRepository;
     private final CandidateEsRepository candidateEsRepository;
+    private final CandidateSavedListRepository candidateSavedListRepository;
     private final ElasticsearchOperations elasticsearchOperations;
     private final GoogleFileSystemService fileSystemService;
     private final SalesforceService salesforceService;
@@ -159,6 +162,7 @@ public class CandidateServiceImpl implements CandidateService {
                                 SavedSearchRepository savedSearchRepository,
                                 CandidateRepository candidateRepository,
                                 CandidateEsRepository candidateEsRepository,
+                                CandidateSavedListRepository candidateSavedListRepository,
                                 ElasticsearchOperations elasticsearchOperations,
                                 GoogleFileSystemService fileSystemService,
                                 SalesforceService salesforceService,
@@ -178,6 +182,7 @@ public class CandidateServiceImpl implements CandidateService {
         this.savedSearchRepository = savedSearchRepository;
         this.candidateRepository = candidateRepository;
         this.candidateEsRepository = candidateEsRepository;
+        this.candidateSavedListRepository = candidateSavedListRepository;
         this.elasticsearchOperations = elasticsearchOperations;
         this.countryRepository = countryRepository;
         this.countryService = countryService;
@@ -240,48 +245,53 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public boolean mergeCandidateSavedLists(long candidateId, IHasSetOfSavedLists request) {
-        Candidate candidate = candidateRepository.findByIdLoadSavedLists(candidateId);
+        Candidate candidate = candidateRepository.findById(candidateId).orElse(null);
         
         boolean done = true;
         if (candidate == null) {
             done = false;
         } else {
             Set<SavedList> savedLists = fetchSavedLists(request);
-            candidate.addSavedLists(savedLists);
-
-            saveIt(candidate);
+            for (SavedList savedList : savedLists) {
+                CandidateSavedList csl = new CandidateSavedList(candidate, savedList);
+                candidateSavedListRepository.save(csl);
+            }
         }
         return done;
     }
 
     @Override
     public boolean removeFromCandidateSavedLists(long candidateId, IHasSetOfSavedLists request) {
-        Candidate candidate = candidateRepository.findByIdLoadSavedLists(candidateId);
+        Candidate candidate = candidateRepository.findById(candidateId).orElse(null);
 
         boolean done = true;
         if (candidate == null) {
             done = false;
         } else {
             Set<SavedList> savedLists = fetchSavedLists(request);
-            candidate.removeSavedLists(savedLists);
-
-            saveIt(candidate);
+            for (SavedList savedList : savedLists) {
+                CandidateSavedList csl = new CandidateSavedList(candidate, savedList);
+                candidateSavedListRepository.delete(csl);
+            }
         }
         return done;
     }
 
     @Override
     public boolean replaceCandidateSavedLists(long candidateId, IHasSetOfSavedLists request) {
-        Candidate candidate = candidateRepository.findByIdLoadSavedLists(candidateId);
+        Candidate candidate = candidateRepository.findById(candidateId).orElse(null);
 
         boolean done = true;
         if (candidate == null) {
             done = false;
         } else {
+            Set<CandidateSavedList> existing = candidate.getCandidateSavedLists();
+            candidateSavedListRepository.deleteAll(existing);
             Set<SavedList> savedLists = fetchSavedLists(request);
-            candidate.setSavedLists(savedLists);
-
-            saveIt(candidate);
+            for (SavedList savedList : savedLists) {
+                CandidateSavedList csl = new CandidateSavedList(candidate, savedList);
+                candidateSavedListRepository.save(csl);
+            }
         }
         return done;
     }

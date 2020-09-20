@@ -15,8 +15,6 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -63,16 +61,20 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
      */
     private String textSearchId;
 
+    //todo This is removed - replaced by a special getSavedLists
     //Note use of Set rather than List as strongly recommended for Many to Many
     //relationships here:
     // https://thoughts-on-java.org/best-practices-for-many-to-many-associations-with-hibernate-and-jpa/
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    @JoinTable(
-            name = "candidate_saved_list",
-            joinColumns = @JoinColumn(name = "candidate_id"),
-            inverseJoinColumns = @JoinColumn(name = "saved_list_id")
-    )
-    private Set<SavedList> savedLists = new HashSet<>();
+//    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+//    @JoinTable(
+//            name = "candidate_saved_list",
+//            joinColumns = @JoinColumn(name = "candidate_id"),
+//            inverseJoinColumns = @JoinColumn(name = "saved_list_id")
+//    )
+//    private Set<SavedList> savedLists = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    private Set<CandidateSavedList> candidateSavedLists = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "max_education_level_id")
@@ -438,34 +440,54 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.videolink = videolink;
     }
 
+    public Set<CandidateSavedList> getCandidateSavedLists() {
+        return candidateSavedLists;
+    }
+
+    public void setCandidateSavedLists(Set<CandidateSavedList> candidateSavedLists) {
+        this.candidateSavedLists = candidateSavedLists;
+    }
+
     public Set<SavedList> getSavedLists() {
+        Set<SavedList> savedLists = new HashSet<>();
+        for (CandidateSavedList candidateSavedList : candidateSavedLists) {
+            savedLists.add(candidateSavedList.getSavedList());
+        }
         return savedLists;
     }
-
-    public void setSavedLists(Set<SavedList> savedLists) {
-        this.savedLists.clear();
-        addSavedLists(savedLists);
-    }
-
-    public void addSavedLists(Set<SavedList> savedLists) {
-        for (SavedList savedList : savedLists) {
-            addSavedList(savedList);
-        }
-    }
     
-    public void addSavedList(SavedList savedList) {
-        savedLists.add(savedList);
-        savedList.getCandidates().add(this);
-    }
 
-    public void removeSavedLists(Set<SavedList> savedLists) {
-        for (SavedList savedList : savedLists) {
-            removeSavedList(savedList);
-        }
-    }
-
-    public void removeSavedList(SavedList savedList) {
-        savedLists.remove(savedList);
-        savedList.getCandidates().remove(this);
-    }
+//    public Set<SavedList> getSavedLists() {
+//        return savedLists;
+//    }
+//
+//    public void setSavedLists(Set<SavedList> savedLists) {
+//        this.savedLists.clear();
+//        addSavedLists(savedLists);
+//    }
+//
+//    public void addSavedLists(Set<SavedList> savedLists) {
+//        for (SavedList savedList : savedLists) {
+//            addSavedList(savedList);
+//        }
+//    }
+//    
+//    public void addSavedList(SavedList savedList) {
+//        CandidateSavedList csl = new CandidateSavedList();
+//        csl.setCandidate(this);
+//        csl.setSavedList(savedList);
+//        candidateSavedLists.add(csl);
+//        savedList.getCandidates().add(this);
+//    }
+//
+//    public void removeSavedLists(Set<SavedList> savedLists) {
+//        for (SavedList savedList : savedLists) {
+//            removeSavedList(savedList);
+//        }
+//    }
+//
+//    public void removeSavedList(SavedList savedList) {
+//        savedLists.remove(savedList);
+//        savedList.getCandidates().remove(this);
+//    }
 }
