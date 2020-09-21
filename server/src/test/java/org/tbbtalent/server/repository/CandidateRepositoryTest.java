@@ -18,13 +18,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateSavedList;
 import org.tbbtalent.server.model.db.Nationality;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.repository.db.CandidateRepository;
-import org.tbbtalent.server.repository.db.CandidateSavedListRepository;
 import org.tbbtalent.server.repository.db.GetSavedListCandidatesQuery;
 import org.tbbtalent.server.repository.db.NationalityRepository;
 import org.tbbtalent.server.repository.db.SavedListRepository;
@@ -47,9 +45,6 @@ class CandidateRepositoryTest {
     
     @Autowired
     private CandidateRepository candidateRepository;
-
-    @Autowired
-    private CandidateSavedListRepository candidateSavedListRepository;
     
     @Autowired
     private SavedListRepository savedListRepository;
@@ -133,10 +128,7 @@ class CandidateRepositoryTest {
 
         int totalCandidates = 10;
         Set<Candidate> candidates = createNCandidates(totalCandidates);
-        for (Candidate candidate : candidates) {
-            final CandidateSavedList csl = new CandidateSavedList(candidate, savedList);
-            candidateSavedListRepository.save(csl);
-        }
+        savedList.setCandidates(candidates);
         savedListRepository.save(savedList);
 
         SavedListGetRequest request;

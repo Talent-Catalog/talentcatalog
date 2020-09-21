@@ -17,12 +17,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateSavedList;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.repository.db.CandidateRepository;
-import org.tbbtalent.server.repository.db.CandidateSavedListRepository;
 import org.tbbtalent.server.repository.db.GetSavedListCandidatesQuery;
 import org.tbbtalent.server.repository.db.NationalityRepository;
 import org.tbbtalent.server.repository.db.SavedListRepository;
@@ -42,9 +40,6 @@ class CandidateRepositoryEndToEndTest {
     
     @Autowired
     private CandidateRepository candidateRepository;
-
-    @Autowired
-    private CandidateSavedListRepository candidateSavedListRepository;
     
     @Autowired
     private SavedListRepository savedListRepository;
@@ -85,7 +80,7 @@ class CandidateRepositoryEndToEndTest {
 
             savedListRepository.save(savedList);
         } else {
-            savedList = savedListRepository.findById(savedList.getId())
+            savedList = savedListRepository.findByIdLoadCandidates(savedList.getId())
             .orElse(null);
         }
         assertNotNull(savedList);
@@ -97,10 +92,8 @@ class CandidateRepositoryEndToEndTest {
         Set<Candidate> candidates = fetchTestCandidates(20);
         assertThat(candidates).isNotNull();
         int totalCandidates = candidates.size();
-
-        for (Candidate candidate : candidates) {
-            candidateSavedListRepository.save(new CandidateSavedList(candidate, savedList));
-        }
+        
+        savedList.setCandidates(candidates);
         
         savedListRepository.save(savedList);
 
@@ -136,7 +129,7 @@ class CandidateRepositoryEndToEndTest {
             Candidate candidate;
             candidate = candidates.get(i);
             
-            candidate = candidateRepository.findById(candidate.getId()).orElse(null);
+            candidate = candidateRepository.findByIdLoadSavedLists(candidate.getId());
             candidateSet.add(candidate);
         }
         return candidateSet;

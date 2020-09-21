@@ -4,6 +4,7 @@
 
 package org.tbbtalent.server.repository;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -16,12 +17,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.TestPropertySource;
 import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateSavedList;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.repository.db.CandidateRepository;
-import org.tbbtalent.server.repository.db.CandidateSavedListRepository;
 import org.tbbtalent.server.repository.db.GetSavedListsQuery;
 import org.tbbtalent.server.repository.db.SavedListRepository;
 import org.tbbtalent.server.repository.db.UserRepository;
@@ -44,9 +43,6 @@ class SavedListRepositoryTest {
     private CandidateRepository candidateRepository;
     
     @Autowired
-    private CandidateSavedListRepository candidateSavedListRepository;
-    
-    @Autowired
     private SavedListRepository savedListRepository;
 
     @Autowired
@@ -57,8 +53,6 @@ class SavedListRepositoryTest {
 
     @BeforeEach
     void setUpListAndOwningUser() {
-        assertNotNull(candidateRepository);
-        assertNotNull(candidateSavedListRepository);
         assertNotNull(savedListRepository);
         assertNotNull(userRepository);
 
@@ -251,7 +245,7 @@ class SavedListRepositoryTest {
         Set<Candidate> candidates;
 
         //Retrieve list from database
-        SavedList listFromId = savedListRepository.findById(savedList.getId())
+        SavedList listFromId = savedListRepository.findByIdLoadCandidates(savedList.getId())
                 .orElse(null);
         assertNotNull(listFromId);
         assertNotNull(listFromId.getCandidates());
@@ -260,19 +254,18 @@ class SavedListRepositoryTest {
         assertEquals(0, listFromId.getCandidates().size());
 
         //Add some candidates to the list
-        candidateSavedListRepository.save(new CandidateSavedList(candidate1, savedList));
-        candidateSavedListRepository.save(new CandidateSavedList(candidate2, savedList));
-        
-        candidateSavedListRepository.flush();
-        
+        candidates = new HashSet<>();
+        candidates.add(candidate1);
+        candidates.add(candidate2);
+        savedList.addCandidates(candidates);
         //Retrieve list from database
-        listFromId = savedListRepository.findById(savedList.getId())
+        listFromId = savedListRepository.findByIdLoadCandidates(savedList.getId())
                 .orElse(null);
                 
         assertNotNull(listFromId);
-        assertNotNull(listFromId.getCandidateSavedLists());
+        assertNotNull(listFromId.getCandidates());
         //Check both candidates are in there.
-        assertEquals(2, listFromId.getCandidateSavedLists().size());
+        assertEquals(2, listFromId.getCandidates().size());
         
         assertTrue(listFromId.getCandidates().contains(candidate1));
         assertTrue(candidate1.getSavedLists().contains(listFromId));
@@ -284,19 +277,16 @@ class SavedListRepositoryTest {
         assertFalse(candidate3.getSavedLists().contains(listFromId));
         
         //Set candidates in the list - replacing any existing content
-        Set<CandidateSavedList> existing = savedList.getCandidateSavedLists();
-        candidateSavedListRepository.deleteAll(existing);
-        candidateSavedListRepository.save(new CandidateSavedList(candidate2, savedList));
-        candidateSavedListRepository.save(new CandidateSavedList(candidate3, savedList));
+        candidates = new HashSet<>();
+        candidates.add(candidate2);
+        candidates.add(candidate3);
+        savedList.setCandidates(candidates);
 
         //Retrieve list from database
-        listFromId = savedListRepository.findByIdLoadCandidateSavedLists(savedList.getId())
+        listFromId = savedListRepository.findByIdLoadCandidates(savedList.getId())
                 .orElse(null);
                 
         assertNotNull(listFromId);
-        assertNotNull(listFromId.getCandidateSavedLists());
-        //Check only 2 candidates are in there. Previous contents replaced.
-        assertEquals(2, listFromId.getCandidateSavedLists().size());
         assertNotNull(listFromId.getCandidates());
         //Check only 2 candidates are in there. Previous contents replaced.
         assertEquals(2, listFromId.getCandidates().size());
@@ -312,13 +302,13 @@ class SavedListRepositoryTest {
         
         //Check that candidate entities have list (or not) in its savedLists
         //Retrieve candidates from database
-        Candidate candidate1FromID = candidateRepository.findById(candidate1.getId()).orElse(null);
+        Candidate candidate1FromID = candidateRepository.findByIdLoadSavedLists(candidate1.getId());
         assertNotNull(candidate1FromID);
         assertNotNull(candidate1FromID.getSavedLists());
-        Candidate candidate2FromID = candidateRepository.findById(candidate2.getId()).orElse(null);
+        Candidate candidate2FromID = candidateRepository.findByIdLoadSavedLists(candidate2.getId());
         assertNotNull(candidate2FromID);
         assertNotNull(candidate2FromID.getSavedLists());
-        Candidate candidate3FromID = candidateRepository.findById(candidate3.getId()).orElse(null);
+        Candidate candidate3FromID = candidateRepository.findByIdLoadSavedLists(candidate3.getId());
         assertNotNull(candidate3FromID);
         assertNotNull(candidate3FromID.getSavedLists());
 
@@ -328,8 +318,8 @@ class SavedListRepositoryTest {
         assertTrue(candidate3FromID.getSavedLists().contains(savedList));
 
         //Add candidate again - shouldn't make any difference.
-        candidateSavedListRepository.save(new CandidateSavedList(candidate2, savedList));
-        listFromId = savedListRepository.findById(savedList.getId())
+        savedList.addCandidate(candidate2);
+        listFromId = savedListRepository.findByIdLoadCandidates(savedList.getId())
                 .orElse(null);
                 
         assertNotNull(listFromId);
@@ -339,8 +329,8 @@ class SavedListRepositoryTest {
         
         
         //Remove a candidate from the list
-        candidateSavedListRepository.delete(new CandidateSavedList(candidate3, savedList));
-        listFromId = savedListRepository.findById(savedList.getId())
+        savedList.removeCandidate(candidate3);
+        listFromId = savedListRepository.findByIdLoadCandidates(savedList.getId())
                 .orElse(null);
         assertNotNull(listFromId);
         assertNotNull(listFromId.getCandidates());
@@ -348,6 +338,23 @@ class SavedListRepositoryTest {
         assertEquals(1, listFromId.getCandidates().size());
         assertFalse(listFromId.getCandidates().contains(candidate3));
         assertTrue(listFromId.getCandidates().contains(candidate2));
+
+        //List has just candidate2 in there.
+        //Test clearing the list by passing null into setCandidates
+        savedList.setCandidates(null);
+        assertTrue(savedList.getCandidates().isEmpty());
+        assertFalse(candidate2.getSavedLists().contains(savedList));
+        
+        
+        //Check adding and removing through candidate methods
+        candidate1.addSavedList(savedList);
+        candidate2.addSavedList(savedList);
+        assertTrue(savedList.getCandidates().contains(candidate1));
+        assertTrue(savedList.getCandidates().contains(candidate2));
+        
+        candidate1.removeSavedList(savedList);
+        candidate2.removeSavedList(savedList);
+        assertTrue(savedList.getCandidates().isEmpty());
     }
 
     @Test

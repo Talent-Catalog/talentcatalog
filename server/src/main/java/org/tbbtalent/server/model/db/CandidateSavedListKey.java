@@ -15,9 +15,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * Primary key for {@link CandidateSavedList}
- * <p/>
- * See https://www.baeldung.com/jpa-many-to-many 
+ * Primary key for {@link CandidateSavedList}. 
+ * See doc for that class.
  *
  * @author John Cameron
  */

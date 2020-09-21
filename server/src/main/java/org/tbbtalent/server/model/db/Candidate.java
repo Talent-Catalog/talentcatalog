@@ -60,20 +60,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
      * @see CandidateEs#getId() 
      */
     private String textSearchId;
-
-    //todo This is removed - replaced by a special getSavedLists
-    //Note use of Set rather than List as strongly recommended for Many to Many
-    //relationships here:
-    // https://thoughts-on-java.org/best-practices-for-many-to-many-associations-with-hibernate-and-jpa/
-//    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-//    @JoinTable(
-//            name = "candidate_saved_list",
-//            joinColumns = @JoinColumn(name = "candidate_id"),
-//            inverseJoinColumns = @JoinColumn(name = "saved_list_id")
-//    )
-//    private Set<SavedList> savedLists = new HashSet<>();
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE, orphanRemoval = true)
     private Set<CandidateSavedList> candidateSavedLists = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -448,6 +436,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.candidateSavedLists = candidateSavedLists;
     }
 
+    @Transient
     public Set<SavedList> getSavedLists() {
         Set<SavedList> savedLists = new HashSet<>();
         for (CandidateSavedList candidateSavedList : candidateSavedLists) {
@@ -455,39 +444,47 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         return savedLists;
     }
-    
 
-//    public Set<SavedList> getSavedLists() {
-//        return savedLists;
-//    }
-//
-//    public void setSavedLists(Set<SavedList> savedLists) {
-//        this.savedLists.clear();
-//        addSavedLists(savedLists);
-//    }
-//
-//    public void addSavedLists(Set<SavedList> savedLists) {
-//        for (SavedList savedList : savedLists) {
-//            addSavedList(savedList);
-//        }
-//    }
-//    
-//    public void addSavedList(SavedList savedList) {
-//        CandidateSavedList csl = new CandidateSavedList();
-//        csl.setCandidate(this);
-//        csl.setSavedList(savedList);
-//        candidateSavedLists.add(csl);
-//        savedList.getCandidates().add(this);
-//    }
-//
-//    public void removeSavedLists(Set<SavedList> savedLists) {
-//        for (SavedList savedList : savedLists) {
-//            removeSavedList(savedList);
-//        }
-//    }
-//
-//    public void removeSavedList(SavedList savedList) {
-//        savedLists.remove(savedList);
-//        savedList.getCandidates().remove(this);
-//    }
+    /**
+     * Removes all lists associated with candidate
+     */
+    private void clear() {
+        //Remove me each of my lists
+        for (CandidateSavedList csl : candidateSavedLists) {
+            csl.getSavedList().getCandidateSavedLists().remove(csl);
+        }
+        //And clear my own links to those lists
+        candidateSavedLists.clear();
+    }
+
+    public void setSavedLists(Set<SavedList> savedLists) {
+        clear();
+        addSavedLists(savedLists);
+    }
+
+    public void addSavedLists(Set<SavedList> savedLists) {
+        for (SavedList savedList : savedLists) {
+            addSavedList(savedList);
+        }
+    }
+
+    public void addSavedList(SavedList savedList) {
+        final CandidateSavedList csl = 
+                new CandidateSavedList(this, savedList);
+        candidateSavedLists.add(csl);
+        savedList.getCandidateSavedLists().add(csl);
+    }
+
+    public void removeSavedLists(Set<SavedList> savedLists) {
+        for (SavedList savedList : savedLists) {
+            removeSavedList(savedList);
+        }
+    }
+
+    public void removeSavedList(SavedList savedList) {
+        final CandidateSavedList csl =
+                new CandidateSavedList(this, savedList);
+        candidateSavedLists.remove(csl);
+        savedList.getCandidateSavedLists().remove(csl);
+    }
 }
