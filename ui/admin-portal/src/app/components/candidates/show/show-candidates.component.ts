@@ -174,7 +174,13 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         if (this.candidateSource) {
           this.restoreTargetListFromCache();
           this.doSearch(false);
-          this.selectedCandidates = this.results.content.filter(candidate => candidate.selected === true).map(candidate => candidate.id);
+          if (changes.candidateSource.firstChange) {
+            // If selected candidates are cached, add them to the selected candidates array (on first change).
+            this.selectedCandidates = this.results.content.filter(candidate => candidate.selected === true).map(candidate => candidate.id);
+          } else {
+            // If not first change, and going from one list to the next then clear the array as no cached selected candidates.
+            this.selectedCandidates = []
+          }
         }
       }
     } else {
@@ -544,10 +550,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       // If selections coming from a list, create a list of the candidateIds selected
       if (selected) {
         this.selectedCandidates.push(candidate.id);
-        console.log(this.selectedCandidates)
       } else {
         this.selectedCandidates = this.selectedCandidates.filter(id => id !== candidate.id);
-        console.log(this.selectedCandidates)
       }
 
     }
@@ -606,52 +610,108 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
           this.savingSelection = false;
         });
     } else {
-      // If a list send the array of candidate ids
-      if (request.replace) {
-        // update saved list
-
+      // LIST
+      // If request has a savedListId, merge or replace. Otherwise create a new list.
+      if (request.savedListId > 0) {
+        const  ids: IHasSetOfCandidates = {
+          candidateIds: this.selectedCandidates
+        };
+        this.replaceOrMergeList(request.savedListId, ids, request.replace);
       } else {
         // create new saved list
-        const createSavedListRequest: CreateSavedListRequest = {
-          candidateIds: this.selectedCandidates,
-          fixed: null,
-          name: request.newListName,
-          sfJoblink: null,
-        }
-        this.savedListService.create(createSavedListRequest).subscribe(
-          savedListResult => {
-            this.savingSelection = false;
-            //Save the target list
-            this.targetListId = savedListResult.id;
-            this.targetListName = savedListResult.name;
-            this.targetListReplace = request.replace;
-
-            //Cache the target list
-            this.cacheTargetList();
-
-            //Invalidate the cache for this list (so that user does not need
-            //to refresh in order to see latest list contents)
-            this.candidateSourceResultsCacheService.removeFromCache(savedListResult);
-            this.doSearch(true);
-          }
-        )
+        this.createList(request.newListName, request.replace);
       }
-
+      this.savingSelection = false;
     }
+  }
 
+  // private handleListSelection(savedListId: number, replace: boolean, newListName: string) {
+  //   if (savedListId > 0) {
+  //     const  ids: IHasSetOfCandidates = {
+  //     candidateIds: this.selectedCandidates
+  //     };
+  //     this.replaceOrMergeList(savedListId, ids, replace);
+  //   } else {
+  //   // create new saved list
+  //     this.createList(newListName, replace);
+  //   }
+  // }
+
+  private replaceOrMergeList(savedListId: number, ids: IHasSetOfCandidates, replace: boolean) {
+    if (replace) {
+      this.savedListCandidateService.replace(savedListId, ids).subscribe(
+        () => {
+          //Save the target list
+          this.targetListId = savedListId;
+          this.targetListName = "test";
+          this.targetListReplace = true;
+          //Invalidate the cache for this list (so that user does not need
+          //to refresh in order to see latest list contents)
+          this.candidateSourceResultsCacheService.removeFromCache(this.candidateSource);
+
+        },
+        (error) => {
+          this.error = error;
+        }
+      );
+    } else {
+      // merge
+      this.savedListCandidateService.merge(savedListId, ids).subscribe(
+        () => {
+          //Save the target list
+          this.targetListId = savedListId;
+          this.targetListName = "test";
+          this.targetListReplace = false;
+
+        },
+        (error) => {
+          this.error = error;
+        }
+      );
+    }
+  }
+
+  private createList(newListName: string, replace: boolean) {
+    const createSavedListRequest: CreateSavedListRequest = {
+      candidateIds: this.selectedCandidates,
+      fixed: null,
+      name: newListName,
+      sfJoblink: this.candidateSource.sfJoblink,
+    }
+    this.savedListService.create(createSavedListRequest).subscribe(
+      savedListResult => {
+        this.savingSelection = false;
+        //Save the target list
+        this.targetListId = savedListResult.id;
+        this.targetListName = savedListResult.name;
+        this.targetListReplace = replace;
+
+        //Cache the target list
+        this.cacheTargetList();
+
+        //Invalidate the cache for this list (so that user does not need
+        //to refresh in order to see latest list contents)
+        this.candidateSourceResultsCacheService.removeFromCache(savedListResult);
+      })
   }
 
   clearSelection() {
     const request: ClearSelectionRequest = {
       userId: this.loggedInUser.id,
     };
-    this.savedSearchService.clearSelection(this.candidateSource.id, request).subscribe(
-      () => {
-        this.doSearch(true);
-      },
-      err => {
-        this.error = err;
-      });
+    if (isSavedSearch(this.candidateSource)) {
+      this.savedSearchService.clearSelection(this.candidateSource.id, request).subscribe(
+        () => {
+          this.doSearch(true);
+        },
+        err => {
+          this.error = err;
+        });
+    } else {
+      this.selectedCandidates = [];
+      this.doSearch(true);
+    }
+
   }
 
   private cacheTargetList() {
