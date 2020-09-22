@@ -131,6 +131,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit() {
     this.setSelectedCandidate(null);
     this.loggedInUser = this.authService.getLoggedInUser();
+    this.selectedCandidates = [];
 
     this.statuses = [];
     for (const key in ReviewedStatus) {
@@ -169,17 +170,15 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     //change in preference to the request change because the source change
     //in that case will be a saved search and it will load a new search request
     //anyway - being the search request associated with the saved search.
+
     if (changes.candidateSource) {
       if (changes.candidateSource.previousValue !== changes.candidateSource.currentValue) {
         if (this.candidateSource) {
           this.restoreTargetListFromCache();
-          this.doSearch(false);
+          this.doSearch(true);
           if (changes.candidateSource.firstChange) {
             // If selected candidates are cached, add them to the selected candidates array (on first change).
-            this.selectedCandidates = this.results.content.filter(candidate => candidate.selected === true).map(candidate => candidate.id);
-          } else {
-            // If not first change, and going from one list to the next then clear the array as no cached selected candidates.
-            this.selectedCandidates = []
+            this.selectedCandidates = this.results?.content.filter(candidate => candidate.selected === true).map(candidate => candidate.id);
           }
         }
       }
@@ -625,25 +624,18 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  // private handleListSelection(savedListId: number, replace: boolean, newListName: string) {
-  //   if (savedListId > 0) {
-  //     const  ids: IHasSetOfCandidates = {
-  //     candidateIds: this.selectedCandidates
-  //     };
-  //     this.replaceOrMergeList(savedListId, ids, replace);
-  //   } else {
-  //   // create new saved list
-  //     this.createList(newListName, replace);
-  //   }
-  // }
-
   private replaceOrMergeList(savedListId: number, ids: IHasSetOfCandidates, replace: boolean) {
+    //Get saved list
+    this.savedListService.get(savedListId).subscribe(
+      (savedList) => {
+        this.targetListName = savedList.name;
+      }
+    )
     if (replace) {
       this.savedListCandidateService.replace(savedListId, ids).subscribe(
         () => {
           //Save the target list
           this.targetListId = savedListId;
-          this.targetListName = "test";
           this.targetListReplace = true;
           //Invalidate the cache for this list (so that user does not need
           //to refresh in order to see latest list contents)
@@ -655,12 +647,10 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         }
       );
     } else {
-      // merge
       this.savedListCandidateService.merge(savedListId, ids).subscribe(
         () => {
           //Save the target list
           this.targetListId = savedListId;
-          this.targetListName = "test";
           this.targetListReplace = false;
 
         },
@@ -727,15 +717,12 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private restoreTargetListFromCache() {
-    if (isSavedSearch(this.candidateSource)) {
-      const cachedTargetList: CachedTargetList =
-         this.localStorageService.get(this.savedTargetListKey());
-      if (cachedTargetList) {
-        this.targetListId = cachedTargetList.listID;
-        this.targetListName = cachedTargetList.name;
-        this.targetListReplace = cachedTargetList.replace;
-      }
-    }
+    const cachedTargetList: CachedTargetList =
+       this.localStorageService.get(this.savedTargetListKey());
+    this.targetListId = cachedTargetList ? cachedTargetList.listID : null;
+    this.targetListName = cachedTargetList ? cachedTargetList.name : null;
+    this.targetListReplace = cachedTargetList ? cachedTargetList.replace : null;
+
   }
 
   private savedTargetListKey(): string {
