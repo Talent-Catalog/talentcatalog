@@ -21,6 +21,7 @@ import javax.persistence.Transient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
+import org.tbbtalent.server.service.db.CandidateSavedListService;
 
 @Entity
 @Table(name = "saved_list")
@@ -33,7 +34,23 @@ public class SavedList extends AbstractCandidateSource {
     @JoinColumn(name = "saved_search_id")
     private SavedSearch savedSearch;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "savedList", cascade = CascadeType.ALL, orphanRemoval = true)
+    /**
+     * Even though we would prefer CascadeType.ALL with 'orphanRemoval' so that 
+     * removing from the candidateSavedLists collection would automatically
+     * cascade down to delete the corresponding entry in the 
+     * candidate_saved_list table.
+     * However we get Hibernate errors with that set up which it seems can only 
+     * be fixed by setting CascadeType.MERGE.
+     * <p/>
+     * See
+     * https://stackoverflow.com/questions/16246675/hibernate-error-a-different-object-with-the-same-identifier-value-was-already-a
+     * <p/>
+     * This means that we have to manually manage all deletions. That has been
+     * moved into {@link CandidateSavedListService} which is used to manage all
+     * those deletions, also making sure that the corresponding 
+     * candidateSavedLists collections are kept up to date.
+     */
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "savedList", cascade = CascadeType.MERGE)
     private Set<CandidateSavedList> candidateSavedLists = new HashSet<>();
     
     //Note use of Set rather than List as strongly recommended for Many to Many
@@ -69,37 +86,9 @@ public class SavedList extends AbstractCandidateSource {
     }
 
     /**
-     * Clears all candidates from SavedList
-     */
-    private void clear() {
-        //Remove this list from all candidate entities
-        for (CandidateSavedList csl : this.candidateSavedLists) {
-            csl.getCandidate().getCandidateSavedLists().remove(csl);
-        }
-        //Clear set of candidates
-        this.candidateSavedLists.clear();
-    }
-
-    /**
-     * Replaces any existing candidates with the given set of candidates
-     * or sets contents of list to empty if set is empty or null.
-     * <p/>
-     * See also {@link #addCandidates}
-     * @param candidates New set of candidates belonging to this SavedList. 
-     */
-    public void setCandidates(@Nullable Set<Candidate> candidates) {
-        clear();
-        if (candidates != null) {
-            addCandidates(candidates);
-        }
-    }
-
-    /**
      * Add the given candidates to this SavedList - merging them in with any
      * existing candidates in the list (no duplicates - if a candidate is
      * already present it will still only appear once).
-     * <p/>
-     * See also {@link #setCandidates}
      * @param candidates Candidates to add to this SavedList.
      */
     public void addCandidates(Set<Candidate> candidates) {
@@ -120,26 +109,6 @@ public class SavedList extends AbstractCandidateSource {
         //Also update other side of many to many relationship, adding this 
         //list to the candidate's collection of lists that they belong to.
         candidate.getCandidateSavedLists().add(csl);
-    }
-
-    public void removeCandidates(Set<Candidate> candidates) {
-        for (Candidate candidate : candidates) {
-            removeCandidate(candidate);
-        }
-    }
-
-    /**
-     * Remove the given candidate from this list
-     * @param candidate Candidate to remove
-     */
-    public void removeCandidate(Candidate candidate) {
-        final CandidateSavedList csl =
-                new CandidateSavedList(candidate, this);
-        //Add candidate to the collection of candidates in this list
-        getCandidateSavedLists().remove(csl);
-        //Also update other side of many to many relationship, adding this 
-        //list to the candidate's collection of lists that they belong to.
-        candidate.getCandidateSavedLists().remove(csl);
     }
 
     @Override

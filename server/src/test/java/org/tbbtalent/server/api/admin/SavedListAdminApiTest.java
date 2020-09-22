@@ -48,7 +48,7 @@ class SavedListAdminApiTest {
         when(userContext.getLoggedInUser()).thenReturn(testUser);
         
         SavedListService savedListService = new SavedListServiceImpl(
-                candidateRepository, savedListRepository, null, userRepository, 
+                candidateRepository, savedListRepository, null, null, userRepository, 
                 userContext);
         savedListAdminApi = new SavedListAdminApi(savedListService);
     }

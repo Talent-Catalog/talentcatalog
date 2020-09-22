@@ -25,6 +25,7 @@ import javax.persistence.Transient;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.api.admin.SavedSearchAdminApi;
 import org.tbbtalent.server.model.es.CandidateEs;
+import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
 
 @Entity
@@ -60,8 +61,24 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
      * @see CandidateEs#getId() 
      */
     private String textSearchId;
-    
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE, orphanRemoval = true)
+
+    /**
+     * Even though we would prefer CascadeType.ALL with 'orphanRemoval' so that 
+     * removing from the candidateSavedLists collection would automatically
+     * cascade down to delete the corresponding entry in the 
+     * candidate_saved_list table.
+     * However we get Hibernate errors with that set up which it seems can only 
+     * be fixed by setting CascadeType.MERGE.
+     * <p/>
+     * See
+     * https://stackoverflow.com/questions/16246675/hibernate-error-a-different-object-with-the-same-identifier-value-was-already-a
+     * <p/>
+     * This means that we have to manually manage all deletions. That has been
+     * moved into {@link CandidateSavedListService} which is used to manage all
+     * those deletions, also making sure that the corresponding 
+     * candidateSavedLists collections are kept up to date.
+     */
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     private Set<CandidateSavedList> candidateSavedLists = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -445,23 +462,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         return savedLists;
     }
 
-    /**
-     * Removes all lists associated with candidate
-     */
-    private void clear() {
-        //Remove me each of my lists
-        for (CandidateSavedList csl : candidateSavedLists) {
-            csl.getSavedList().getCandidateSavedLists().remove(csl);
-        }
-        //And clear my own links to those lists
-        candidateSavedLists.clear();
-    }
-
-    public void setSavedLists(Set<SavedList> savedLists) {
-        clear();
-        addSavedLists(savedLists);
-    }
-
     public void addSavedLists(Set<SavedList> savedLists) {
         for (SavedList savedList : savedLists) {
             addSavedList(savedList);
@@ -473,18 +473,5 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
                 new CandidateSavedList(this, savedList);
         candidateSavedLists.add(csl);
         savedList.getCandidateSavedLists().add(csl);
-    }
-
-    public void removeSavedLists(Set<SavedList> savedLists) {
-        for (SavedList savedList : savedLists) {
-            removeSavedList(savedList);
-        }
-    }
-
-    public void removeSavedList(SavedList savedList) {
-        final CandidateSavedList csl =
-                new CandidateSavedList(this, savedList);
-        candidateSavedLists.remove(csl);
-        savedList.getCandidateSavedLists().remove(csl);
     }
 }

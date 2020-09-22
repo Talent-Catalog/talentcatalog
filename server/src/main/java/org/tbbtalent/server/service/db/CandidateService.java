@@ -83,6 +83,13 @@ public interface CandidateService {
     Page<Candidate> getSavedListCandidates(long id, SavedListGetRequest request);
 
     /**
+     * Remove the given candidate from all its lists
+     * @param candidateId ID of candidate
+     * @return False if no candidate with that id was found, otherwise true.
+     */
+    boolean clearCandidateSavedLists(long candidateId);
+
+    /**
      * Merge the saved lists indicated in the request into the given candidate's
      * existing lists.
      *
@@ -102,16 +109,6 @@ public interface CandidateService {
      * @return False if no candidate with that id was found, otherwise true.
      */
     boolean removeFromCandidateSavedLists(long candidateId, IHasSetOfSavedLists request);
-
-    /**
-     * Replace given candidate's existing lists with the saved lists indicated
-     * in the request.
-     *
-     * @param candidateId ID of candidate to be updated
-     * @param request     Request containing the new saved lists
-     * @return False if no candidate with that id was found, otherwise true.
-     */
-    boolean replaceCandidateSavedLists(long candidateId, IHasSetOfSavedLists request);
 
     Candidate getCandidate(long id) throws NoSuchObjectException;
 
@@ -237,5 +234,4 @@ public interface CandidateService {
     Candidate createUpdateSalesforce(long id)
             throws NoSuchObjectException, GeneralSecurityException,
             WebClientException;
-        
 }

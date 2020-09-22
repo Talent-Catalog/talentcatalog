@@ -93,7 +93,7 @@ class CandidateRepositoryEndToEndTest {
         assertThat(candidates).isNotNull();
         int totalCandidates = candidates.size();
         
-        savedList.setCandidates(candidates);
+        savedList.addCandidates(candidates);
         
         savedListRepository.save(savedList);
 

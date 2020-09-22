@@ -115,6 +115,7 @@ import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.security.PasswordHelper;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.CandidateNoteService;
+import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.CountryService;
 import org.tbbtalent.server.service.db.GoogleFileSystemService;
@@ -137,6 +138,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final SavedSearchRepository savedSearchRepository;
     private final CandidateRepository candidateRepository;
     private final CandidateEsRepository candidateEsRepository;
+    private final CandidateSavedListService candidateSavedListService;
     private final ElasticsearchOperations elasticsearchOperations;
     private final GoogleFileSystemService fileSystemService;
     private final SalesforceService salesforceService;
@@ -159,6 +161,7 @@ public class CandidateServiceImpl implements CandidateService {
                                 SavedSearchRepository savedSearchRepository,
                                 CandidateRepository candidateRepository,
                                 CandidateEsRepository candidateEsRepository,
+                                CandidateSavedListService candidateSavedListService, 
                                 ElasticsearchOperations elasticsearchOperations,
                                 GoogleFileSystemService fileSystemService,
                                 SalesforceService salesforceService,
@@ -178,6 +181,7 @@ public class CandidateServiceImpl implements CandidateService {
         this.savedSearchRepository = savedSearchRepository;
         this.candidateRepository = candidateRepository;
         this.candidateEsRepository = candidateEsRepository;
+        this.candidateSavedListService = candidateSavedListService;
         this.elasticsearchOperations = elasticsearchOperations;
         this.countryRepository = countryRepository;
         this.countryService = countryService;
@@ -231,6 +235,19 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    public boolean clearCandidateSavedLists(long candidateId) {
+        Candidate candidate = candidateRepository.findByIdLoadSavedLists(candidateId);
+
+        boolean done = true;
+        if (candidate == null) {
+            done = false;
+        } else {
+            candidateSavedListService.clearCandidateSavedLists(candidate);
+        }
+        return done;
+    }
+
+    @Override
     public Page<Candidate> getSavedListCandidates(long id, SavedListGetRequest request) {
         Page<Candidate> candidatesPage = candidateRepository.findAll(
                 new GetSavedListCandidatesQuery(id, request), request.getPageRequestWithoutSort());
@@ -263,25 +280,9 @@ public class CandidateServiceImpl implements CandidateService {
             done = false;
         } else {
             Set<SavedList> savedLists = fetchSavedLists(request);
-            candidate.removeSavedLists(savedLists);
-
-            saveIt(candidate);
-        }
-        return done;
-    }
-
-    @Override
-    public boolean replaceCandidateSavedLists(long candidateId, IHasSetOfSavedLists request) {
-        Candidate candidate = candidateRepository.findByIdLoadSavedLists(candidateId);
-
-        boolean done = true;
-        if (candidate == null) {
-            done = false;
-        } else {
-            Set<SavedList> savedLists = fetchSavedLists(request);
-            candidate.setSavedLists(savedLists);
-
-            saveIt(candidate);
+            for (SavedList savedList : savedLists) {
+                candidateSavedListService.removeFromSavedList(candidate, savedList);
+            }
         }
         return done;
     }

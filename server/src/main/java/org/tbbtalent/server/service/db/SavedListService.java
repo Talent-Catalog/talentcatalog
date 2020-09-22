@@ -28,6 +28,13 @@ import org.tbbtalent.server.request.search.UpdateSharingRequest;
 public interface SavedListService {
 
     /**
+     * Clear the contents of the SavedList with the given ID
+     * @param savedListId ID of SavedList to clear
+     * @return False if no saved list with that id was found, otherwise true.
+     */
+    boolean clearSavedList(long savedListId) throws InvalidRequestException;
+
+    /**
      * Copies the given list to the list specified in the given request (which
      * may be a requested new list).
      * @param id ID of list to be copied
@@ -107,15 +114,6 @@ public interface SavedListService {
      * @return False if no saved list with that id was found, otherwise true.
      */
     boolean removeFromSavedList(long savedListId, IHasSetOfCandidates request); 
-
-    /**
-     * Replace the contents of the SavedList with the given id with the 
-     * candidates indicated in the given request
-     * @param savedListId ID of saved list to be updated
-     * @param request Request containing the new list contents
-     * @return False if no saved list with that id was found, otherwise true.
-     */
-    boolean replaceSavedList(long savedListId, IHasSetOfCandidates request); 
 
     /**
      * Return a page of SavedList's that match the given request, ordered by
