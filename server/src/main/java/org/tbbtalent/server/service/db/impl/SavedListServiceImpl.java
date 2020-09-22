@@ -39,6 +39,7 @@ import org.tbbtalent.server.request.list.TargetListSelection;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.SavedListService;
 
@@ -54,6 +55,7 @@ public class SavedListServiceImpl implements SavedListService {
 
     private final CandidateRepository candidateRepository;
     private final SavedListRepository savedListRepository;
+    private final CandidateSavedListService candidateSavedListService;
     private final SalesforceService salesforceService;
     private final UserRepository userRepository;
     private final UserContext userContext;
@@ -62,14 +64,30 @@ public class SavedListServiceImpl implements SavedListService {
     public SavedListServiceImpl(
             CandidateRepository candidateRepository,
             SavedListRepository savedListRepository,
+            CandidateSavedListService candidateSavedListService, 
             SalesforceService salesforceService, UserRepository userRepository,
             UserContext userContext
     ) {
         this.candidateRepository = candidateRepository;
         this.savedListRepository = savedListRepository;
+        this.candidateSavedListService = candidateSavedListService;
         this.salesforceService = salesforceService;
         this.userRepository = userRepository;
         this.userContext = userContext;
+    }
+
+    @Override
+    public boolean clearSavedList(long savedListId) throws InvalidRequestException {
+        SavedList savedList = savedListRepository.findByIdLoadCandidates(savedListId)
+                .orElse(null);
+
+        boolean done = true;
+        if (savedList == null) {
+            done = false;
+        } else {
+            candidateSavedListService.clearSavedListCandidates(savedList);
+        }
+        return done;
     }
 
     @Override
@@ -99,10 +117,10 @@ public class SavedListServiceImpl implements SavedListService {
 
         //Add or replace them to target as requested.
         if (request.isReplace()) {
-            targetList.setCandidates(candidates);
-        } else {
-            targetList.addCandidates(candidates);
+            clearSavedList(targetList.getId());
         }
+        targetList.addCandidates(candidates);
+
         saveIt(targetList);
 
         return targetList;
@@ -140,7 +158,7 @@ public class SavedListServiceImpl implements SavedListService {
                 //Need to clear out many to many relationships before deleting
                 //the list otherwise we will have other entities pointing to 
                 //this list.
-                savedList.setCandidates(null);
+                clearSavedList(savedList.getId());
                 savedList.setWatcherIds(null);
                 savedList.setUsers(null);
                 
@@ -191,27 +209,9 @@ public class SavedListServiceImpl implements SavedListService {
             done = false;
         } else {
             Set<Candidate> candidates = fetchCandidates(request);
-            savedList.removeCandidates(candidates);
-
-            saveIt(savedList);
-        }
-        return done;
-    }
-
-    @Override
-    public boolean replaceSavedList(long savedListId, 
-                                    IHasSetOfCandidates request) {
-        SavedList savedList = savedListRepository.findByIdLoadCandidates(savedListId)
-                .orElse(null);
-
-        boolean done = true;
-        if (savedList == null) {
-            done = false;
-        } else {
-            Set<Candidate> candidates = fetchCandidates(request);
-            savedList.setCandidates(candidates);
-
-            saveIt(savedList);
+            for (Candidate candidate : candidates) {
+                candidateSavedListService.removeFromSavedList(candidate, savedList);
+            }
         }
         return done;
     }

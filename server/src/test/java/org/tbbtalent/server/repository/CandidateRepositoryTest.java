@@ -128,7 +128,7 @@ class CandidateRepositoryTest {
 
         int totalCandidates = 10;
         Set<Candidate> candidates = createNCandidates(totalCandidates);
-        savedList.setCandidates(candidates);
+        savedList.addCandidates(candidates);
         savedListRepository.save(savedList);
 
         SavedListGetRequest request;
