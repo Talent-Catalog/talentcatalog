@@ -177,7 +177,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
           this.restoreTargetListFromCache();
           this.doSearch(true);
           if (changes.candidateSource.firstChange) {
-            // If selected candidates are cached, add them to the selected candidates array (on first change).
+            // If selected candidates are cached (Saved search), add them to the selected candidates array (on first change).
             this.selectedCandidates = this.results?.content.filter(candidate => candidate.selected === true).map(candidate => candidate.id);
           }
         }
@@ -652,6 +652,9 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
           //Save the target list
           this.targetListId = savedListId;
           this.targetListReplace = false;
+          //Invalidate the cache for this list (so that user does not need
+          //to refresh in order to see latest list contents)
+          this.candidateSourceResultsCacheService.removeFromCache(this.candidateSource);
 
         },
         (error) => {
