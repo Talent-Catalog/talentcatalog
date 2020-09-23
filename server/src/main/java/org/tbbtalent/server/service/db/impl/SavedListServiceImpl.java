@@ -136,6 +136,8 @@ public class SavedListServiceImpl implements SavedListService {
         }
         SavedList savedList = new SavedList();
         request.populateFromRequest(savedList);
+        
+        savedList = saveIt(savedList);
 
         Set<Candidate> candidates = fetchCandidates(request);
         savedList.addCandidates(candidates);
