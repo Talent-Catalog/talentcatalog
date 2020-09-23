@@ -92,6 +92,13 @@ public class SavedListCandidateAdminApi implements IManyToManyApi<SavedListGetRe
             throws NoSuchObjectException {
         Page<Candidate> candidates = this.candidateService
                 .getSavedListCandidates(savedListId, request);
+//TODO JC Need to do the same in the SavedSearch searchPaged.
+        //Mark the Candidate objects with the saved list context.
+        //This means that context fields (ie ContextNote) associated with that 
+        //list will be returned through the DtoBuilder if present.
+        for (Candidate candidate : candidates) {
+            candidate.setContextSavedListId(savedListId);
+        }
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.buildPage(candidates);
     }

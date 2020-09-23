@@ -34,6 +34,10 @@ import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
 public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     private String candidateNumber;
+    
+    @Transient
+    private Long contextSavedListId; 
+    
     private String phone;
     private String whatsapp;
     @Enumerated(EnumType.STRING)
@@ -176,6 +180,45 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setCandidateNumber(String candidateNumber) {
         this.candidateNumber = candidateNumber;
+    }
+
+    /**
+     * Returns this candidate's contextNote, associated with the current
+     * SavedList context - if any.
+     * <p/>
+     * See {@link #setContextSavedListId(Long)}
+     * @return ContextNote associated with current context. Returns null
+     * if there is one, or no context has been set.
+     */
+    @Transient
+    @Nullable
+    public String getContextNote() {
+        String contextNote = null;
+        if (contextSavedListId != null) {
+            for (CandidateSavedList csl : candidateSavedLists) {
+                if (contextSavedListId.equals(csl.getSavedList().getId())) {
+                    contextNote = csl.getContextNote();
+                    break;
+                }
+            }
+        }
+        return contextNote;
+    }
+
+    /**
+     * Candidates can have special values associated with a particular 
+     * savedList.
+     * These values are stored in {@link CandidateSavedList}.
+     * Setting this value to refer to a particular SavedList will result in
+     * this Candidate object returning attritbutes correspondint that list.
+     * <p/>
+     * For example, see {@link #getContextNote()}
+     * 
+     * @param contextSavedListId The id of the SavedList whose context we want
+     */
+    @Transient
+    public void setContextSavedListId(@Nullable Long contextSavedListId) {
+        this.contextSavedListId = contextSavedListId; 
     }
 
     public String getPhone() {
