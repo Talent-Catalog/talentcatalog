@@ -17,6 +17,8 @@ export interface TargetListSelection {
   //If true any existing contents of target list should be replaced, otherwise
   //contents are added (merged).
   replace: boolean;
+
+  sfJoblink?: string;
 }
 
 
@@ -96,7 +98,8 @@ export class SelectListComponent implements OnInit {
     const selection: TargetListSelection = {
       savedListId: this.savedList === null ? 0 : this.savedList[0].id,
       newListName: this.newList ? this.newListName : null,
-      replace: this.replace
+      replace: this.replace,
+      sfJoblink: this.sfJoblink ? this.sfJoblink : null
     }
     this.activeModal.close(selection);
   }

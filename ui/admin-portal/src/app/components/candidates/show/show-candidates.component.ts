@@ -97,7 +97,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   };
 
   selectedCandidate: Candidate;
-  selectedCandidates: number[];
+  selectedListCandidates: number[];
   loggedInUser: User;
   targetListName: string;
   targetListId: number;
@@ -131,7 +131,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit() {
     this.setSelectedCandidate(null);
     this.loggedInUser = this.authService.getLoggedInUser();
-    this.selectedCandidates = [];
+    this.selectedListCandidates = [];
 
     this.statuses = [];
     for (const key in ReviewedStatus) {
@@ -176,10 +176,9 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         if (this.candidateSource) {
           this.restoreTargetListFromCache();
           this.doSearch(true);
-          if (changes.candidateSource.firstChange) {
-            // If selected candidates are cached (Saved search), add them to the selected candidates array (on first change).
-            this.selectedCandidates = this.results?.content.filter(candidate => candidate.selected === true).map(candidate => candidate.id);
-          }
+          // Set the selected candidates (List only) to null when changing candidate source.
+          this.selectedListCandidates = [];
+
         }
       }
     } else {
@@ -548,9 +547,9 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       // If selections coming from a list, create a list of the candidateIds selected
       if (selected) {
-        this.selectedCandidates.push(candidate.id);
+        this.selectedListCandidates.push(candidate.id);
       } else {
-        this.selectedCandidates = this.selectedCandidates.filter(id => id !== candidate.id);
+        this.selectedListCandidates = this.selectedListCandidates.filter(id => id !== candidate.id);
       }
 
     }
@@ -613,12 +612,12 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       // If request has a savedListId, merge or replace. Otherwise create a new list.
       if (request.savedListId > 0) {
         const  ids: IHasSetOfCandidates = {
-          candidateIds: this.selectedCandidates
+          candidateIds: this.selectedListCandidates
         };
         this.replaceOrMergeList(request.savedListId, ids, request.replace);
       } else {
         // create new saved list
-        this.createList(request.newListName, request.replace);
+        this.createList(request.newListName, request.replace, request.sfJoblink);
       }
       this.savingSelection = false;
     }
@@ -664,12 +663,12 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  private createList(newListName: string, replace: boolean) {
+  private createList(newListName: string, replace: boolean, sfJobLink: string) {
     const createSavedListRequest: CreateSavedListRequest = {
-      candidateIds: this.selectedCandidates,
+      candidateIds: this.selectedListCandidates,
       fixed: null,
       name: newListName,
-      sfJoblink: this.candidateSource.sfJoblink,
+      sfJoblink: sfJobLink,
     }
     this.savedListService.create(createSavedListRequest).subscribe(
       savedListResult => {
@@ -701,7 +700,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
           this.error = err;
         });
     } else {
-      this.selectedCandidates = [];
+      this.selectedListCandidates = [];
       this.doSearch(true);
     }
 

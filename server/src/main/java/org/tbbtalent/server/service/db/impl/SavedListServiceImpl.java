@@ -4,14 +4,6 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.validation.constraints.NotNull;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,21 +19,20 @@ import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.sf.Contact;
-import org.tbbtalent.server.repository.db.CandidateRepository;
-import org.tbbtalent.server.repository.db.GetCandidateSavedListsQuery;
-import org.tbbtalent.server.repository.db.GetSavedListsQuery;
-import org.tbbtalent.server.repository.db.SavedListRepository;
-import org.tbbtalent.server.repository.db.UserRepository;
-import org.tbbtalent.server.request.list.CreateSavedListRequest;
-import org.tbbtalent.server.request.list.IHasSetOfCandidates;
-import org.tbbtalent.server.request.list.SearchSavedListRequest;
-import org.tbbtalent.server.request.list.TargetListSelection;
-import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
+import org.tbbtalent.server.repository.db.*;
+import org.tbbtalent.server.request.list.*;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.SavedListService;
+
+import javax.validation.constraints.NotNull;
+import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.springframework.data.jpa.domain.Specification.where;
 
@@ -108,9 +99,12 @@ public class SavedListServiceImpl implements SavedListService {
             targetList = savedListRepository.findByIdLoadCandidates(targetId)
                     .orElseThrow(() -> new NoSuchObjectException(SavedList.class, targetId));
         }
-        
+
+
         //Preserve any associated Salesforce Job Opportunity
-        targetList.setSfJoblink(sourceList.getSfJoblink());
+        if (request.getSfJoblink() != null) {
+            targetList.setSfJoblink(request.getSfJoblink());
+        }
 
         //Get candidates in source list
         final Set<Candidate> candidates = sourceList.getCandidates();
