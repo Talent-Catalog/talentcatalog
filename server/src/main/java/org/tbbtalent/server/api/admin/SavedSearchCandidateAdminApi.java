@@ -6,6 +6,7 @@ package org.tbbtalent.server.api.admin;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -24,6 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.ExportFailedException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.candidate.SavedSearchGetRequest;
 import org.tbbtalent.server.request.list.HasSetOfCandidatesImpl;
 import org.tbbtalent.server.security.UserContext;
@@ -43,6 +46,7 @@ public class SavedSearchCandidateAdminApi implements IManyToManyApi<SavedSearchG
 
     private final CandidateService candidateService;
     private final SavedSearchService savedSearchService;
+    private final UserContext userContext;
     private final CandidateBuilderSelector builderSelector;
 
     private static final Logger log = LoggerFactory.getLogger(SavedSearchCandidateAdminApi.class);
@@ -54,6 +58,7 @@ public class SavedSearchCandidateAdminApi implements IManyToManyApi<SavedSearchG
             UserContext userContext) {
         this.savedSearchService = savedSearchService;
         this.candidateService = candidateService;
+        this.userContext = userContext;
         builderSelector = new CandidateBuilderSelector(userContext);
     }
 
@@ -61,10 +66,40 @@ public class SavedSearchCandidateAdminApi implements IManyToManyApi<SavedSearchG
     public @NotNull Map<String, Object> searchPaged(
             long savedSearchId, @Valid SavedSearchGetRequest request) 
             throws NoSuchObjectException {
+        
         Page<Candidate> candidates =
-                this.candidateService.searchCandidates(savedSearchId, request);
+                candidateService.searchCandidates(savedSearchId, request);
+
+        setCandidateContext(savedSearchId, candidates);
+        
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.buildPage(candidates);
+    }
+
+    /**
+     * Mark the Candidate objects with any context associated with the 
+     * selection list of the saved search.
+     * This means that context fields (ie ContextNote) associated with the 
+     * saved search will be returned through the DtoBuilder if present.
+     */
+    private void setCandidateContext(long savedSearchId, Iterable<Candidate> candidates) {
+        User user = userContext.getLoggedInUser();
+        SavedList selectionList = null;
+        if (user != null) {
+            selectionList = savedSearchService
+                    .getSelectionList(savedSearchId, user.getId());
+        }
+        if (selectionList != null) {
+            //Only set context of selected candidates
+            Set<Candidate> selectedCandidates = selectionList.getCandidates();
+            //Loop through candidates we are considering
+            for (Candidate candidate : candidates) {
+                //Only selected candidates
+                if (selectedCandidates.contains(candidate)) {
+                    candidate.setContextSavedListId(selectionList.getId());
+                }
+            }
+        }
     }
 
     @PostMapping(value = "{id}/export/csv", produces = MediaType.TEXT_PLAIN_VALUE)
