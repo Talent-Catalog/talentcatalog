@@ -497,9 +497,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     return !isSavedSearch(this.candidateSource);
   }
 
-  isSelectable(): boolean {
-    return true;
-    return isSavedSearch(this.candidateSource);
+  sourceType(): string {
+    return isSavedSearch(this.candidateSource) ? 'savedSearch' : 'list';
   }
 
   isShareable(): boolean {

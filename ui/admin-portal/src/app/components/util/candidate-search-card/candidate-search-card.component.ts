@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-import {Candidate} from "../../../model/candidate";
-import {User} from "../../../model/user";
+import {Candidate} from '../../../model/candidate';
+import {User} from '../../../model/user';
+import {FormBuilder, FormGroup} from '@angular/forms';
 
 @Component({
   selector: 'app-candidate-search-card',
@@ -11,13 +12,19 @@ export class CandidateSearchCardComponent implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
   @Input() loggedInUser: User;
+  @Input() sourceType: string;
+  @Input() sourceName: string;
 
   @Output() onClose = new EventEmitter();
 
-  constructor() { }
+  form: FormGroup;
+
+  constructor(private fb: FormBuilder) { }
 
   ngOnInit() {
-
+    this.form = this.fb.group({
+      contextNotes: [''],
+    });
   }
 
   ngOnChanges(changes: SimpleChanges) {
