@@ -6,10 +6,11 @@ package org.tbbtalent.server.repository.db;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.tbbtalent.server.model.db.CandidateSavedList;
+import org.tbbtalent.server.model.db.CandidateSavedListKey;
 
 /**
  * See doc for {@link CandidateSavedList}
  */
 public interface CandidateSavedListRepository extends 
-        JpaRepository<CandidateSavedList, Long> {
+        JpaRepository<CandidateSavedList, CandidateSavedListKey> {
 }

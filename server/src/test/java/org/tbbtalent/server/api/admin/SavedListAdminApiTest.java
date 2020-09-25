@@ -50,7 +50,7 @@ class SavedListAdminApiTest {
         SavedListService savedListService = new SavedListServiceImpl(
                 candidateRepository, savedListRepository, null, null, userRepository, 
                 userContext);
-        savedListAdminApi = new SavedListAdminApi(savedListService);
+        savedListAdminApi = new SavedListAdminApi(savedListService, null);
     }
 
     @Transactional

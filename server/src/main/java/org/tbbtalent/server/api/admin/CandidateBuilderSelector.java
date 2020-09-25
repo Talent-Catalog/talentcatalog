@@ -66,6 +66,7 @@ public class CandidateBuilderSelector {
                 .add("selected")
                 .add("createdDate")
                 .add("updatedDate")
+                .add("contextNote")
                 .add("surveyType", surveyTypeDto())
                 .add("country", countryDto())
                 .add("nationality", nationalityDto())
