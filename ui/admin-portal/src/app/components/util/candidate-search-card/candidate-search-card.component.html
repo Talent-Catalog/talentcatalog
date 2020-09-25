@@ -1,18 +1,11 @@
 <div class="candidate-card" *ngIf="!!candidate">
 
   <ng-container *ngIf="sourceType === 'list'">
-    <form [formGroup]="form">
-
-      <div class="form-group">
-        <label class="h6" for="contextNotes">
-          Notes for {{candidate.user.firstName}} in list '{{sourceName}}'.
-        </label>
-        <textarea id="contextNotes" class="md-textarea-auto form-control" rows="3"
-                  [formControlName]="'contextNotes'"></textarea>
-      </div>
-
-    </form>
-    <hr>
+    <app-candidate-context-note
+      [candidate]="candidate"
+      [sourceName]="sourceName"
+      [sourceType]="sourceType">
+    </app-candidate-context-note>
   </ng-container>
 
   <!-- HEADER -->
