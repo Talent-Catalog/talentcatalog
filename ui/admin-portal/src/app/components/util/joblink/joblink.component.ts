@@ -43,6 +43,7 @@ export class JoblinkComponent implements OnInit {
       if (url == null || url.length === 0) {
         //Empty url always validates
         retval = of(null)
+        this.joblinkValidation.emit("");
       } else {
         //See if we have name for a job corresponding to this url
         retval = this.salesforceService.findSfJobName(url).pipe(
