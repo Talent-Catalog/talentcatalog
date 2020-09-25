@@ -1,9 +1,10 @@
 import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {Candidate} from '../../../model/candidate';
-import {debounceTime, switchMap} from 'rxjs/operators';
-import {CandidateService} from '../../../services/candidate.service';
+import {catchError, debounceTime, switchMap, takeUntil} from 'rxjs/operators';
 import {Observable} from 'rxjs';
+import {CandidateSource, UpdateCandidateContextNoteRequest} from '../../../model/base';
+import {CandidateSourceService} from '../../../services/candidate-source.service';
 
 @Component({
   selector: 'app-candidate-context-note',
@@ -13,15 +14,18 @@ import {Observable} from 'rxjs';
 export class CandidateContextNoteComponent implements OnInit, AfterViewInit {
 
   @Input() candidate: Candidate;
-  @Input() sourceType: string;
-  @Input() sourceName: string;
+  @Input() candidateSource: CandidateSource;
 
   data: Observable<any>;
 
   form: FormGroup;
 
+  unsubscribe;
+  error;
+  saving;
+
   constructor(private fb: FormBuilder,
-              private candidateService: CandidateService) { }
+              private candidateSourceService: CandidateSourceService) { }
 
   ngOnInit() {
     this.form = this.fb.group({
@@ -29,55 +33,59 @@ export class CandidateContextNoteComponent implements OnInit, AfterViewInit {
     });
   }
 
+  // ngOnChanges(changes: SimpleChanges): void {
+  //   if (!changes.candidate.firstChange) {
+  //     if (changes.candidate.previousValue !== changes.candidate.currentValue) {
+  //       this.form.controls.contextNotes.value
+  //     }
+  //   }
+  // }
+
   ngAfterViewInit() {
     //3 second timeout
-    this.form.valueChanges.pipe(debounceTime(3000), switchMap(formValue => (debounceTime(10)))).subscribe(formValue => {
-      console.log(formValue)
-    })
+    this.autoSaveNote(3000);
   }
 
-  // private autoSaveNote(timeout: number) {
-  //   this.form.valueChanges.pipe(
-  //
-  //     //Only pass values on if there has been inactivity for the given timeout
-  //     debounceTime(timeout),
-  //
-  //     //Do a save of the received form values.
-  //     switchMap(formValue => {
-  //         //Update the candidateIntakeData to keep it in sync with the server
-  //         //saved version.
-  //         //Object assign just copies the formValue fields across, leaving any
-  //         //other fields in candidateIntakeData unchanged.
-  //         //Object.assign(this.candidateIntakeData, formValue);
-  //         // this.error = null;
-  //         // this.saving = true;
-  //         console.log(formValue)
-  //         return formValue
-  //         //return this.candidateService.updateIntakeData(this.candidate.id, formValue);
-  //       }
-  //     ),
-  //
-  //     //We catch errors, copying them to this.error, but then just continuing
-  //     catchError((error, caught) => {
-  //       // this.saving = false;
-  //       // this.error = error;
-  //       return caught;
-  //     }),
-  //
-  //     //Subscription will continue until the given Observable emits.
-  //     //See ngOnDestroy
-  //     takeUntil(this.unsubscribe)
-  //   ).subscribe(
-  //
-  //     //Save has completed successfully
-  //     () => this.saving = false,
-  //
-  //     //Theoretically never get here because we catch errors in the pipe
-  //     (error) => {
-  //       this.saving = false;
-  //       this.error = error;
-  //     }
-  //   )
-  // }
+  private autoSaveNote(timeout: number) {
+    this.form.valueChanges.pipe(
+
+      //Only pass values on if there has been inactivity for the given timeout
+      debounceTime(timeout),
+
+      //Do a save of the received form values.
+      switchMap(formValue => {
+
+          const request: UpdateCandidateContextNoteRequest = {
+            candidateId: this.candidate.id,
+            contextNote: formValue
+          }
+          this.error = null;
+          this.saving = true;
+          return this.candidateSourceService.updateContextNote(this.candidateSource, request);
+        }
+      ),
+
+      //We catch errors, copying them to this.error, but then just continuing
+      catchError((error, caught) => {
+        // this.saving = false;
+        // this.error = error;
+        return caught;
+      }),
+
+      //Subscription will continue until the given Observable emits.
+      //See ngOnDestroy
+      takeUntil(this.unsubscribe)
+    ).subscribe(
+
+      //Save has completed successfully
+      () => this.saving = false,
+
+      //Theoretically never get here because we catch errors in the pipe
+      (error) => {
+        this.saving = false;
+        this.error = error;
+      }
+    )
+  }
 
 }

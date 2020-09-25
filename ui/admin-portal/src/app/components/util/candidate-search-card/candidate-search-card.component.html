@@ -1,10 +1,9 @@
 <div class="candidate-card" *ngIf="!!candidate">
 
-  <ng-container *ngIf="sourceType === 'list'">
+  <ng-container>
     <app-candidate-context-note
       [candidate]="candidate"
-      [sourceName]="sourceName"
-      [sourceType]="sourceType">
+      [candidateSource]="candidateSource">
     </app-candidate-context-note>
   </ng-container>
 

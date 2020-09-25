@@ -2,6 +2,7 @@ import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges
 import {Candidate} from '../../../model/candidate';
 import {User} from '../../../model/user';
 import {FormBuilder, FormGroup} from '@angular/forms';
+import {CandidateSource} from '../../../model/base';
 
 @Component({
   selector: 'app-candidate-search-card',
@@ -12,8 +13,7 @@ export class CandidateSearchCardComponent implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
   @Input() loggedInUser: User;
-  @Input() sourceType: string;
-  @Input() sourceName: string;
+  @Input() candidateSource: CandidateSource;
 
   @Output() onClose = new EventEmitter();
 
