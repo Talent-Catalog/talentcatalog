@@ -6,6 +6,7 @@ package org.tbbtalent.server.service.db;
 
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
 
 /**
  * Handle anything to do with deletion of candidate savedList relationships.
@@ -34,5 +35,7 @@ public interface CandidateSavedListService {
      * @param savedList SavedList to remove from
      */
     void removeFromSavedList(Candidate candidate, SavedList savedList);
-    
+
+    //TODO JC Doc
+    void updateCandidateContextNote(long savedListId, UpdateCandidateContextNoteRequest request);
 }

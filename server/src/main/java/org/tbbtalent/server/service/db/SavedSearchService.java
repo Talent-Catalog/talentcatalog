@@ -12,6 +12,7 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.SavedSearch;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
@@ -83,4 +84,7 @@ public interface SavedSearchService {
      */
     @NotNull SavedList getSelectionList(long id, Long userId) 
             throws NoSuchObjectException;
+
+    //TODO JC Doc
+    void updateCandidateContextNote(long id, UpdateCandidateContextNoteRequest request);
 }

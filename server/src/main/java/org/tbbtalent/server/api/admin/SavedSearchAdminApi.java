@@ -20,6 +20,7 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.SavedSearch;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
 import org.tbbtalent.server.request.list.HasSetOfCandidatesImpl;
 import org.tbbtalent.server.request.search.ClearSelectionRequest;
 import org.tbbtalent.server.request.search.SaveSelectionRequest;
@@ -215,6 +216,11 @@ public class SavedSearchAdminApi implements
         return savedSearchDtoExtended().build(savedSearch);
     }
 
+    @PutMapping("/context/{id}")
+    public void updateContextNote(@PathVariable("id") long id,
+                                  @RequestBody UpdateCandidateContextNoteRequest request) {
+        savedSearchService.updateCandidateContextNote(id, request);
+    }
 
     private DtoBuilder savedSearchNameDto() {
         return new DtoBuilder()

@@ -1,5 +1,17 @@
 package org.tbbtalent.server.service.db.impl;
 
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.validation.constraints.NotNull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,22 +25,39 @@ import org.tbbtalent.server.exception.CountryRestrictionException;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.*;
-import org.tbbtalent.server.repository.db.*;
+import org.tbbtalent.server.exception.NotImplementedException;
+import org.tbbtalent.server.model.db.CandidateStatus;
+import org.tbbtalent.server.model.db.Country;
+import org.tbbtalent.server.model.db.EducationLevel;
+import org.tbbtalent.server.model.db.Language;
+import org.tbbtalent.server.model.db.LanguageLevel;
+import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.SavedSearch;
+import org.tbbtalent.server.model.db.SavedSearchType;
+import org.tbbtalent.server.model.db.SearchJoin;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.repository.db.CountryRepository;
+import org.tbbtalent.server.repository.db.EducationLevelRepository;
+import org.tbbtalent.server.repository.db.EducationMajorRepository;
+import org.tbbtalent.server.repository.db.LanguageLevelRepository;
+import org.tbbtalent.server.repository.db.LanguageRepository;
+import org.tbbtalent.server.repository.db.NationalityRepository;
+import org.tbbtalent.server.repository.db.OccupationRepository;
+import org.tbbtalent.server.repository.db.SavedListRepository;
+import org.tbbtalent.server.repository.db.SavedSearchRepository;
+import org.tbbtalent.server.repository.db.SavedSearchSpecification;
+import org.tbbtalent.server.repository.db.SearchJoinRepository;
+import org.tbbtalent.server.repository.db.UserRepository;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.candidate.SearchJoinRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.request.search.UpdateWatchingRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.SavedSearchService;
-
-import javax.validation.constraints.NotNull;
-import java.time.OffsetDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class SavedSearchServiceImpl implements SavedSearchService {
@@ -190,7 +219,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             SavedSearch savedSearch = savedSearchRepository.findById(id)
                     .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
             // If a saved search isn't global and belongs to loggedInUser, allow changes
-            if (!savedSearch.getFixed() || savedSearch.getCreatedBy().getId() == loggedInUser.getId()) {
+            if (!savedSearch.getFixed() || savedSearch.getCreatedBy().getId().equals(loggedInUser.getId())) {
                 savedSearch.setName(request.getName());
                 savedSearch.setFixed(request.getFixed());
                 savedSearch.setReviewable(request.getReviewable());
@@ -370,6 +399,12 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
         
         return savedList;
+    }
+
+    @Override
+    public void updateCandidateContextNote(long id, UpdateCandidateContextNoteRequest request) {
+        //TODO JC updateCandidateContextNote not implemented in SavedSearchServiceImpl
+        throw new NotImplementedException("SavedSearchServiceImpl", "updateCandidateContextNote");
     }
 
     private static String constructDefaultSearchName(User user) {
