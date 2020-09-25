@@ -29,8 +29,12 @@ export class CandidateContextNoteComponent implements OnInit, AfterViewInit, OnD
 
   ngOnInit() {
     this.form = this.fb.group({
-      contextNotes: [''],
+      contextNotes: [this.candidate.contextNote],
     });
+  }
+
+  get contextNotes(): boolean {
+    return this.form.value?.contextNotes;
   }
 
   // ngOnChanges(changes: SimpleChanges): void {
