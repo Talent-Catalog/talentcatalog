@@ -217,8 +217,9 @@ public class SavedSearchAdminApi implements
     }
 
     @PutMapping("/context/{id}")
-    public void updateContextNote(@PathVariable("id") long id,
-                                  @RequestBody UpdateCandidateContextNoteRequest request) {
+    public void updateContextNote(
+            @PathVariable("id") long id,
+            @RequestBody UpdateCandidateContextNoteRequest request) {
         savedSearchService.updateCandidateContextNote(id, request);
     }
 

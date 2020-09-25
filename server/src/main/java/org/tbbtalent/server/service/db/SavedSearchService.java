@@ -85,6 +85,15 @@ public interface SavedSearchService {
     @NotNull SavedList getSelectionList(long id, Long userId) 
             throws NoSuchObjectException;
 
-    //TODO JC Doc
-    void updateCandidateContextNote(long id, UpdateCandidateContextNoteRequest request);
+    /**
+     * Updates a candidate context note associated with the given saved search.
+     * (Actually associated with the selection list of the given saved search).
+     * If the candidate (specified in the request) is not currently selected
+     * into the saved search, does nothing.
+     * @param id Id of saved search
+     * @param request Request containing the candidate id and the context note 
+     *                text
+     */ 
+    void updateCandidateContextNote(
+            long id, UpdateCandidateContextNoteRequest request);
 }
