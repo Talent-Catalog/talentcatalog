@@ -1,3 +1,7 @@
+<div class="alert alert-danger" *ngIf="error">
+  {{error}}
+</div>
+
 <form [formGroup]="form">
 
   <div class="form-group">
@@ -5,7 +9,7 @@
       Notes for {{candidate.user.firstName}} in list '{{candidateSource.name}}'.
     </label>
     <textarea id="contextNotes" class="md-textarea-auto form-control" rows="3"
-              [formControlName]="'contextNotes'"></textarea>
+              [formControlName]="'contextNote'"></textarea>
   </div>
 
 </form>

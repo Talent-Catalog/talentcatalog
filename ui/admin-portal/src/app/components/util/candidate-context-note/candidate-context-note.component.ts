@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {Candidate} from '../../../model/candidate';
 import {catchError, debounceTime, switchMap, takeUntil} from 'rxjs/operators';
@@ -11,7 +11,7 @@ import {CandidateSourceService} from '../../../services/candidate-source.service
   templateUrl: './candidate-context-note.component.html',
   styleUrls: ['./candidate-context-note.component.scss']
 })
-export class CandidateContextNoteComponent implements OnInit, AfterViewInit, OnDestroy {
+export class CandidateContextNoteComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
 
   @Input() candidate: Candidate;
   @Input() candidateSource: CandidateSource;
@@ -29,21 +29,21 @@ export class CandidateContextNoteComponent implements OnInit, AfterViewInit, OnD
 
   ngOnInit() {
     this.form = this.fb.group({
-      contextNotes: [this.candidate.contextNote],
+      contextNote: [this.candidate.contextNote],
     });
   }
 
-  get contextNotes(): boolean {
-    return this.form.value?.contextNotes;
+  get contextNote(): string {
+    return this.form.value?.contextNote;
   }
 
-  // ngOnChanges(changes: SimpleChanges): void {
-  //   if (!changes.candidate.firstChange) {
-  //     if (changes.candidate.previousValue !== changes.candidate.currentValue) {
-  //       this.form.controls.contextNotes.value
-  //     }
-  //   }
-  // }
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.candidate) {
+      if (changes.candidate.previousValue !== changes.candidate.currentValue) {
+        this.form.controls['contextNote'].patchValue(this.candidate.contextNote);
+      }
+    }
+  }
 
   ngAfterViewInit() {
     //3 second timeout
@@ -61,7 +61,7 @@ export class CandidateContextNoteComponent implements OnInit, AfterViewInit, OnD
 
           const request: UpdateCandidateContextNoteRequest = {
             candidateId: this.candidate.id,
-            contextNote: formValue
+            contextNote: formValue.contextNote
           }
           this.error = null;
           this.saving = true;

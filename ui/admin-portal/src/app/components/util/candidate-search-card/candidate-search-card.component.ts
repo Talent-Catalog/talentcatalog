@@ -1,7 +1,6 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {Candidate} from '../../../model/candidate';
 import {User} from '../../../model/user';
-import {FormBuilder, FormGroup} from '@angular/forms';
 import {CandidateSource} from '../../../model/base';
 
 @Component({
@@ -17,14 +16,10 @@ export class CandidateSearchCardComponent implements OnInit, OnChanges {
 
   @Output() onClose = new EventEmitter();
 
-  form: FormGroup;
 
-  constructor(private fb: FormBuilder) { }
+  constructor() { }
 
   ngOnInit() {
-    this.form = this.fb.group({
-      contextNotes: [''],
-    });
   }
 
   ngOnChanges(changes: SimpleChanges) {
