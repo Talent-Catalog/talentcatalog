@@ -75,6 +75,11 @@ export class SearchCandidateSourcesRequest extends PagedSearchRequest {
   watched?: boolean;
 }
 
+export class UpdateCandidateContextNoteRequest {
+  candidateId: number;
+  contextNote: string;
+}
+
 export class LoginRequest {
   username: string;
   password: string;

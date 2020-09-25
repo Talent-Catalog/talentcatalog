@@ -3,7 +3,11 @@ import {Observable} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from "../model/search-results";
-import {CandidateSource, SearchCandidateSourcesRequest} from "../model/base";
+import {
+  CandidateSource,
+  SearchCandidateSourcesRequest,
+  UpdateCandidateContextNoteRequest
+} from "../model/base";
 import {isSavedSearch, SearchSavedSearchRequest} from "../model/saved-search";
 import {map} from "rxjs/operators";
 import {SavedSearchService} from "./saved-search.service";
@@ -82,4 +86,12 @@ export class CandidateSourceService {
     }
     return results;
   };
+
+  updateContextNote(source: CandidateSource,
+                    request: UpdateCandidateContextNoteRequest): Observable<void> {
+    const apiUrl = isSavedSearch(source) ?
+      this.savedSearchApiUrl : this.savedListApiUrl;
+    return this.http.put<void>(`${apiUrl}/context/${source.id}`, request);
+
+  }
 }
