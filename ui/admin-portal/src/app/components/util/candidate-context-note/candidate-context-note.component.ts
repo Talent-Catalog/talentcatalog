@@ -1,8 +1,8 @@
-import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {Candidate} from '../../../model/candidate';
 import {catchError, debounceTime, switchMap, takeUntil} from 'rxjs/operators';
-import {Observable} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {CandidateSource, UpdateCandidateContextNoteRequest} from '../../../model/base';
 import {CandidateSourceService} from '../../../services/candidate-source.service';
 
@@ -11,7 +11,7 @@ import {CandidateSourceService} from '../../../services/candidate-source.service
   templateUrl: './candidate-context-note.component.html',
   styleUrls: ['./candidate-context-note.component.scss']
 })
-export class CandidateContextNoteComponent implements OnInit, AfterViewInit {
+export class CandidateContextNoteComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Input() candidate: Candidate;
   @Input() candidateSource: CandidateSource;
@@ -20,7 +20,7 @@ export class CandidateContextNoteComponent implements OnInit, AfterViewInit {
 
   form: FormGroup;
 
-  unsubscribe;
+  private unsubscribe = new Subject<void>()
   error;
   saving;
 
@@ -67,8 +67,8 @@ export class CandidateContextNoteComponent implements OnInit, AfterViewInit {
 
       //We catch errors, copying them to this.error, but then just continuing
       catchError((error, caught) => {
-        // this.saving = false;
-        // this.error = error;
+        this.saving = false;
+        this.error = error;
         return caught;
       }),
 
@@ -88,4 +88,9 @@ export class CandidateContextNoteComponent implements OnInit, AfterViewInit {
     )
   }
 
+  ngOnDestroy(): void {
+    //Stop subscribing by emitting a value from the Unsubscribe Observable
+    //See takeUntil in the above pipe.
+    this.unsubscribe.next();
+  }
 }
