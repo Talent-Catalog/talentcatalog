@@ -38,7 +38,7 @@ export class CandidateContextNoteComponent implements OnInit, AfterViewInit, OnC
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.candidate) {
+    if (!changes.candidate.firstChange) {
       if (changes.candidate.previousValue !== changes.candidate.currentValue) {
         this.form.controls['contextNote'].patchValue(this.candidate.contextNote);
       }
