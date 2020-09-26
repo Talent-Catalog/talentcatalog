@@ -1,4 +1,14 @@
-import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Output,
+  SimpleChanges,
+  ViewChild
+} from '@angular/core';
 
 import {Candidate} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
@@ -20,22 +30,46 @@ import {
   SearchCandidateRequestPaged,
   SelectCandidateInSearchRequest
 } from '../../../model/saved-search';
-import {CandidateSource, canEditSource, defaultReviewStatusFilter, isMine, isSharedWithMe, ReviewedStatus} from '../../../model/base';
-import {CachedSourceResults, CandidateSourceResultsCacheService} from '../../../services/candidate-source-results-cache.service';
+import {
+  CandidateSource,
+  canEditSource,
+  defaultReviewStatusFilter,
+  isMine,
+  isSharedWithMe,
+  ReviewedStatus
+} from '../../../model/base';
+import {
+  CachedSourceResults,
+  CandidateSourceResultsCacheService
+} from '../../../services/candidate-source-results-cache.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {IDropdownSettings} from 'ng-multiselect-dropdown';
 import {User} from '../../../model/user';
 import {AuthService} from '../../../services/auth.service';
 import {UserService} from '../../../services/user.service';
-import {SelectListComponent, TargetListSelection} from '../../list/select/select-list.component';
-import {CreateSavedListRequest, IHasSetOfCandidates, SavedListGetRequest} from '../../../model/saved-list';
+import {
+  SelectListComponent,
+  TargetListSelection
+} from '../../list/select/select-list.component';
+import {
+  CreateSavedListRequest,
+  IHasSetOfCandidates,
+  SavedListGetRequest
+} from '../../../model/saved-list';
 import {CandidateSourceCandidateService} from '../../../services/candidate-source-candidate.service';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {EditCandidateReviewStatusItemComponent} from '../../util/candidate-review/edit/edit-candidate-review-status-item.component';
 import {Router} from '@angular/router';
 import {CandidateSourceService} from '../../../services/candidate-source.service';
 import {SavedListCandidateService} from '../../../services/saved-list-candidate.service';
-import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from 'rxjs/operators';
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  switchMap,
+  tap
+} from 'rxjs/operators';
 import {Location} from '@angular/common';
 import {copyToClipboard} from '../../../util/clipboard';
 import {SavedListService} from '../../../services/saved-list.service';
@@ -608,15 +642,17 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         });
     } else {
       // LIST
+      //Pick up ids info - including source list id
+      const ids: IHasSetOfCandidates = {
+        sourceListId: this.candidateSource.id,
+        candidateIds: this.selectedListCandidates
+      };
       // If request has a savedListId, merge or replace. Otherwise create a new list.
       if (request.savedListId > 0) {
-        const  ids: IHasSetOfCandidates = {
-          candidateIds: this.selectedListCandidates
-        };
         this.replaceOrMergeList(request.savedListId, ids, request.replace);
       } else {
         // create new saved list
-        this.createList(request.newListName, request.replace, request.sfJoblink);
+        this.createList(request.newListName, ids, request.replace, request.sfJoblink);
       }
       this.savingSelection = false;
     }
@@ -662,9 +698,11 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  private createList(newListName: string, replace: boolean, sfJobLink: string) {
+  private createList(newListName: string, ids: IHasSetOfCandidates,
+                     replace: boolean, sfJobLink: string) {
     const createSavedListRequest: CreateSavedListRequest = {
-      candidateIds: this.selectedListCandidates,
+      sourceListId: ids.sourceListId,
+      candidateIds: ids.candidateIds,
       fixed: null,
       name: newListName,
       sfJoblink: sfJobLink,
