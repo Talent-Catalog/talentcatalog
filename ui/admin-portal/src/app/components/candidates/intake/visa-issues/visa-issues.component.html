@@ -1,0 +1,27 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+  <div class="form-group">
+    <label for="visaIssues">Is there anything about your background that could
+      be of concern in the visa process?</label>
+    <span *ngIf="saving">
+      <i class="fas fa-spinner fa-spin"></i> saving...
+    </span>
+    <select class="form-control"
+            id="visaIssues" [formControlName]="'visaIssues'">
+      <option *ngFor="let opt of visaIssueOptions" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+  </div>
+
+  <div *ngIf="haveIssues">
+    <div class="form-group">
+      <label for="visaIssueNotes">Notes</label>
+      <textarea type="text" class="md-textarea-auto form-control" rows="8"
+                id="visaIssueNotes" [formControlName]="'visaIssueNotes'"
+                placeholder="" ></textarea>
+    </div>
+  </div>
+</form>
