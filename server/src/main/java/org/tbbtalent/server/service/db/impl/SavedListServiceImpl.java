@@ -4,10 +4,19 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.validation.constraints.NotNull;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientException;
@@ -19,20 +28,21 @@ import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.sf.Contact;
-import org.tbbtalent.server.repository.db.*;
-import org.tbbtalent.server.request.list.*;
+import org.tbbtalent.server.repository.db.CandidateRepository;
+import org.tbbtalent.server.repository.db.GetCandidateSavedListsQuery;
+import org.tbbtalent.server.repository.db.GetSavedListsQuery;
+import org.tbbtalent.server.repository.db.SavedListRepository;
+import org.tbbtalent.server.repository.db.UserRepository;
+import org.tbbtalent.server.request.list.CreateSavedListRequest;
+import org.tbbtalent.server.request.list.IHasSetOfCandidates;
+import org.tbbtalent.server.request.list.SearchSavedListRequest;
+import org.tbbtalent.server.request.list.TargetListSelection;
+import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.SavedListService;
-
-import javax.validation.constraints.NotNull;
-import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import static org.springframework.data.jpa.domain.Specification.where;
 
@@ -113,7 +123,7 @@ public class SavedListServiceImpl implements SavedListService {
         if (request.isReplace()) {
             clearSavedList(targetList.getId());
         }
-        targetList.addCandidates(candidates);
+        targetList.addCandidates(candidates, sourceList);
 
         saveIt(targetList);
 
@@ -131,10 +141,18 @@ public class SavedListServiceImpl implements SavedListService {
         SavedList savedList = new SavedList();
         request.populateFromRequest(savedList);
         
+        //Save created list so that we get its id from the database
         savedList = saveIt(savedList);
 
+        //Retrieve source list, if any
+        SavedList sourceList = fetchSourceList(request);
+
+        //Retrieve candidates
         Set<Candidate> candidates = fetchCandidates(request);
-        savedList.addCandidates(candidates);
+
+        //Add candidates to created list, together with any context if source 
+        //list was supplied.
+        savedList.addCandidates(candidates, sourceList);
 
         return saveIt(savedList);
     }
@@ -186,8 +204,9 @@ public class SavedListServiceImpl implements SavedListService {
         if (savedList == null) {
             done = false;
         } else {
+            SavedList sourceList = fetchSourceList(request);
             Set<Candidate> candidates = fetchCandidates(request);
-            savedList.addCandidates(candidates);
+            savedList.addCandidates(candidates, sourceList);
 
             saveIt(savedList);
         }
@@ -366,6 +385,18 @@ public class SavedListServiceImpl implements SavedListService {
         }
 
         return candidates;
+    }
+
+    @Nullable
+    private SavedList fetchSourceList(IHasSetOfCandidates request) 
+            throws NoSuchObjectException {
+        SavedList sourceList = null;
+        Long sourceListId = request.getSourceListId();
+        if (sourceListId != null) {
+            sourceList = savedListRepository.findByIdLoadCandidates(sourceListId)
+                    .orElseThrow(() -> new NoSuchObjectException(SavedList.class, sourceListId));
+        }
+        return sourceList;
     }
 
     /**

@@ -89,26 +89,65 @@ public class SavedList extends AbstractCandidateSource {
      * Add the given candidates to this SavedList - merging them in with any
      * existing candidates in the list (no duplicates - if a candidate is
      * already present it will still only appear once).
+     * <p/>
+     * If a source list is supplied, the original candidate context will be
+     * copied across (eg contextNote).
      * @param candidates Candidates to add to this SavedList.
+     * @param sourceList If not null, refers to the list where candidates came
+     *                   from, so that context can be copied across.
      */
-    public void addCandidates(Set<Candidate> candidates) {
+    public void addCandidates(
+            Set<Candidate> candidates, @Nullable SavedList sourceList) {
         for (Candidate candidate : candidates) {
-            addCandidate(candidate);
+            addCandidate(candidate, sourceList);
         }
+    }
+
+    public void addCandidates(Set<Candidate> candidates) {
+        addCandidates(candidates, null);
     }
 
     /**
      * Add the given candidate to this list
      * @param candidate Candidate to add
+     * @param sourceList If not null, refers to the list where candidate came
+     *                   from, so that context can be copied across.
      */
-    public void addCandidate(Candidate candidate) {
+    public void addCandidate(
+            Candidate candidate, @Nullable SavedList sourceList) {
+        String contextNote = null;
+        if (sourceList != null) {
+            //Need to copy the context across from the source list.
+            //Contract csl we are looking for
+            CandidateSavedList targetCsl = 
+                    new CandidateSavedList(candidate, sourceList);
+            Set<CandidateSavedList> sourceCsls = 
+                    candidate.getCandidateSavedLists();
+            for (CandidateSavedList sourceCsl : sourceCsls) {
+                if (sourceCsl.equals(targetCsl)) {
+                    contextNote = sourceCsl.getContextNote();
+                    break;
+                }
+            }
+        }
+        
+        //Create new candidate/list link
         final CandidateSavedList csl = 
                 new CandidateSavedList(candidate, this);
+        //Copy across context
+        if (contextNote != null) {
+            csl.setContextNote(contextNote);
+        }
+        
         //Add candidate to the collection of candidates in this list
         getCandidateSavedLists().add(csl);
         //Also update other side of many to many relationship, adding this 
         //list to the candidate's collection of lists that they belong to.
         candidate.getCandidateSavedLists().add(csl);
+    }
+    
+    public void addCandidate(Candidate candidate) {
+        addCandidate(candidate, null);
     }
 
     @Override

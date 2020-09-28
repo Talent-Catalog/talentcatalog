@@ -26,6 +26,8 @@ public class CreateSavedListRequest extends AbstractUpdateCandidateSourceRequest
     
     private Set<Long> candidateIds;
 
+    private Long sourceListId;
+    
     public void populateFromRequest(SavedList savedList) {
         super.populateFromRequest(savedList);
     }

@@ -25,7 +25,6 @@ import org.tbbtalent.server.exception.CountryRestrictionException;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.exception.NotImplementedException;
 import org.tbbtalent.server.model.db.CandidateStatus;
 import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.model.db.EducationLevel;
@@ -57,6 +56,7 @@ import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.request.search.UpdateWatchingRequest;
 import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.SavedSearchService;
 
 @Service
@@ -64,6 +64,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     private static final Logger log = LoggerFactory.getLogger(SavedSearchServiceImpl.class);
 
+    private final CandidateSavedListService candidateSavedListService;
     private final UserRepository userRepository;
     private final SavedListRepository savedListRepository;
     private final SavedSearchRepository savedSearchRepository;
@@ -79,6 +80,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     @Autowired
     public SavedSearchServiceImpl(
+            CandidateSavedListService candidateSavedListService, 
             UserRepository userRepository,
             SavedListRepository savedListRepository,
             SavedSearchRepository savedSearchRepository,
@@ -91,6 +93,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             EducationMajorRepository educationMajorRepository,
             EducationLevelRepository educationLevelRepository,
             UserContext userContext) {
+        this.candidateSavedListService = candidateSavedListService;
         this.userRepository = userRepository;
         this.savedListRepository = savedListRepository;
         this.savedSearchRepository = savedSearchRepository;
@@ -403,8 +406,16 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     @Override
     public void updateCandidateContextNote(long id, UpdateCandidateContextNoteRequest request) {
-        //TODO JC updateCandidateContextNote not implemented in SavedSearchServiceImpl
-        throw new NotImplementedException("SavedSearchServiceImpl", "updateCandidateContextNote");
+        final User loggedInUser = userContext.getLoggedInUser();
+        if (loggedInUser != null) {
+            SavedList savedList = savedListRepository
+                    .findSelectionList(id, loggedInUser.getId())
+                    .orElse(null);
+            if (savedList != null) {
+                candidateSavedListService
+                        .updateCandidateContextNote(savedList.getId(), request); 
+            }
+        }
     }
 
     private static String constructDefaultSearchName(User user) {

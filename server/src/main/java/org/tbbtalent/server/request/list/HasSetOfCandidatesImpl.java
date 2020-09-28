@@ -19,6 +19,8 @@ import lombok.ToString;
 @ToString
 public class HasSetOfCandidatesImpl implements IHasSetOfCandidates {
     private Set<Long> candidateIds;
+
+    private Long sourceListId;
     
     public void addCandidateId(Long id) {
         if (candidateIds == null) {

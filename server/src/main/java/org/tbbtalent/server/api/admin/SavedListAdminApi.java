@@ -174,8 +174,9 @@ public class SavedListAdminApi implements
     }
 
     @PutMapping("/context/{id}")
-    public void updateContextNote(@PathVariable("id") long id,
-                                  @RequestBody UpdateCandidateContextNoteRequest request) {
+    public void updateContextNote(
+            @PathVariable("id") long id,
+            @RequestBody UpdateCandidateContextNoteRequest request) {
         candidateSavedListService.updateCandidateContextNote(id, request);
     }
     

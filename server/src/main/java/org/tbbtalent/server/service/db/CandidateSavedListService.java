@@ -36,6 +36,12 @@ public interface CandidateSavedListService {
      */
     void removeFromSavedList(Candidate candidate, SavedList savedList);
 
-    //TODO JC Doc
-    void updateCandidateContextNote(long savedListId, UpdateCandidateContextNoteRequest request);
+    /**
+     * Updates a candidate context note associated with the given saved list.
+     * @param savedListId Id of saved list
+     * @param request Request containing the candidate id and the context note 
+     *                text
+     */
+    void updateCandidateContextNote(
+            long savedListId, UpdateCandidateContextNoteRequest request);
 }
