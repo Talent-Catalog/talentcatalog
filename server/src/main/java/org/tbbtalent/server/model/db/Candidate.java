@@ -149,8 +149,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Transient
     private boolean selected = false;
 
+    @Enumerated(EnumType.STRING)
     @Nullable
-    private Boolean returnedHome;
+    private ReturnedHome returnedHome;
 
     @Nullable
     private String returnedHomeNotes;
@@ -417,11 +418,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     }
 
     @Nullable
-    public Boolean getReturnedHome() {
+    public ReturnedHome getReturnedHome() {
         return returnedHome;
     }
 
-    public void setReturnedHome(@Nullable Boolean returnedHome) {
+    public void setReturnedHome(@Nullable ReturnedHome returnedHome) {
         this.returnedHome = returnedHome;
     }
 

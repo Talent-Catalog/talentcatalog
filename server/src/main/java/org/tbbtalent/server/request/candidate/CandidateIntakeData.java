@@ -4,6 +4,8 @@
 
 package org.tbbtalent.server.request.candidate;
 
+import org.tbbtalent.server.model.db.ReturnedHome;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -19,7 +21,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class CandidateIntakeData {
-    private Boolean returnedHome;
+    private ReturnedHome returnedHome;
     private String returnedHomeNotes; 
     private String returnedHomeReason; 
 }

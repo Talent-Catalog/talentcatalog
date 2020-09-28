@@ -82,8 +82,8 @@ export abstract class IntakeComponentBase implements AfterViewInit, OnDestroy, O
    * It sets up the autosave.
    */
   ngAfterViewInit(): void {
-    //3 second timeout
-    this.setupAutosave(3000);
+    //1 second timeout
+    this.setupAutosave(1000);
   }
 
   /**

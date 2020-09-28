@@ -41,9 +41,25 @@ export interface Candidate {
 }
 
 export interface CandidateIntakeData {
-  returnedHome?: boolean;
+  returnedHome?: ReturnedHome;
   returnedHomeNotes?: string;
   returnedHomeReason?: string;
+}
+
+/*
+  Enumerations. These should match equivalent enumerations on the server (Java)
+  side.
+
+  The string associated each enumerated value can be anything. It is what is
+  displayed to the user in corresponding drop down selections. It is only
+  used on the front end and can be changed any time without needing to change
+  anything on the server.
+*/
+
+export enum ReturnedHome {
+  NoResponse = "No response",
+  Returned = "Returned home",
+  NotReturned = "Has not returned home"
 }
 
 export function getCandidateNavigation(candidate: Candidate): any[] {

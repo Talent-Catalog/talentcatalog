@@ -9,13 +9,13 @@
     </span>
     <select class="form-control"
             id="returnedHome" [formControlName]="'returnedHome'">
-      <option [ngValue]="null"></option>
-      <option [ngValue]="true">Has returned home</option>
-      <option [ngValue]="false">Has not returned home</option>
+      <option *ngFor="let opt of returnedHomeOptions" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
     </select>
   </div>
 
-  <div *ngIf="returnedHome">
+  <div *ngIf="returnedHome === 'Returned'">
     <div class="form-group">
       <label for="returnedHomeReason">Returned Home Reason</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="8"
