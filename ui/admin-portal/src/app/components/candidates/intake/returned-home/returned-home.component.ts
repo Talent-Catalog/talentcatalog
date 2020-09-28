@@ -12,11 +12,11 @@ import {ReturnedHome} from "../../../../model/candidate";
 })
 export class ReturnedHomeComponent extends IntakeComponentBase implements OnInit {
 
+  public returnedHomeOptions = enumOptions(ReturnedHome);
+
   constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
   }
-
-  public returnedHomeOptions = enumOptions(ReturnedHome);
 
   ngOnInit(): void {
     this.form = this.fb.group({
