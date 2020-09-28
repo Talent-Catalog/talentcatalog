@@ -37,7 +37,17 @@ export class CandidateContextNoteComponent implements OnInit, AfterViewInit, OnC
     return this.form.value?.contextNote;
   }
 
+  get isCandidateSelected(): boolean {
+    return this.candidate.selected;
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
+    // if (changes) {
+    //   // TODO switch to general tab?
+    //   if (!this.isCandidateSelected) {
+    //     console.log('unselect')
+    //   }
+    // }
     if (!changes.candidate.firstChange) {
       if (changes.candidate.previousValue !== changes.candidate.currentValue) {
         this.form.controls['contextNote'].patchValue(this.candidate.contextNote);
