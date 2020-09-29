@@ -15,6 +15,7 @@ export class CandidateContextNoteComponent implements OnInit, AfterViewInit, OnC
 
   @Input() candidate: Candidate;
   @Input() candidateSource: CandidateSource;
+  @Input() sourceType: String;
 
   data: Observable<any>;
 

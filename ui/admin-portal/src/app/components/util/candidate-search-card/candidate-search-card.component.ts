@@ -13,6 +13,7 @@ export class CandidateSearchCardComponent implements OnInit, OnChanges {
   @Input() candidate: Candidate;
   @Input() loggedInUser: User;
   @Input() candidateSource: CandidateSource;
+  @Input() sourceType: String;
 
   @Output() onClose = new EventEmitter();
 

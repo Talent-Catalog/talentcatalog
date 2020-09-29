@@ -1,4 +1,4 @@
-<div *ngIf="isCandidateSelected">
+<div *ngIf="isCandidateSelected && sourceType === 'savedSearch' || sourceType === 'list'">
   <div class="alert alert-danger" *ngIf="error">
     {{error}}
   </div>
