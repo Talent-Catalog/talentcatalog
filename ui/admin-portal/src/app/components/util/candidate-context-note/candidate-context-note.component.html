@@ -8,11 +8,12 @@
     <div class="form-group">
       <label class="h6" for="contextNotes">
         Notes for {{candidate.user.firstName}} in '{{candidateSource.name}}'.
+        <span *ngIf="saving">
+        <i class="fas fa-spinner fa-spin"></i>
+      </span>
       </label>
 
-      <span *ngIf="saving">
-    <i class="fas fa-spinner fa-spin"></i>
-    </span>
+
       <textarea id="contextNotes" class="md-textarea-auto form-control" rows="3"
                 [formControlName]="'contextNote'"></textarea>
     </div>

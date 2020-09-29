@@ -42,12 +42,7 @@ export class CandidateContextNoteComponent implements OnInit, AfterViewInit, OnC
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    // if (changes) {
-    //   // TODO switch to general tab?
-    //   if (!this.isCandidateSelected) {
-    //     console.log('unselect')
-    //   }
-    // }
+    // Replace the form value with the new candidates context notes when changing from one candidate to the next.
     if (!changes.candidate.firstChange) {
       if (changes.candidate.previousValue !== changes.candidate.currentValue) {
         this.form.controls['contextNote'].patchValue(this.candidate.contextNote);
@@ -92,10 +87,12 @@ export class CandidateContextNoteComponent implements OnInit, AfterViewInit, OnC
     ).subscribe(
 
       //Save has completed successfully
-      () => this.saving = false,
-
-      //Theoretically never get here because we catch errors in the pipe
-      (error) => {
+      () => {
+        this.saving = false
+        this.candidate.contextNote = this.contextNote;
+        },
+          //Theoretically never get here because we catch errors in the pipe
+          (error) => {
         this.saving = false;
         this.error = error;
       }
