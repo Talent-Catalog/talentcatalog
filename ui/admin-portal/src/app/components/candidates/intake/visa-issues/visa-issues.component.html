@@ -8,12 +8,12 @@
     <span *ngIf="saving">
       <i class="fas fa-spinner fa-spin"></i> saving...
     </span>
-    <select class="form-control"
-            id="visaIssues" [formControlName]="'visaIssues'">
-      <option *ngFor="let opt of visaIssueOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <ng-multiselect-dropdown
+      id="visaIssues"
+      [settings]="dropdownSettings"
+      [data]="visaIssueOptions"
+      formControlName="visaIssues">
+    </ng-multiselect-dropdown>
   </div>
 
   <div *ngIf="haveIssues">

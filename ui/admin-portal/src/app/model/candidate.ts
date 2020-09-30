@@ -45,7 +45,7 @@ export interface CandidateIntakeData {
   returnedHomeNotes?: string;
   returnedHomeReason?: string;
 
-  visaIssues?; //todo multiselect type
+  visaIssues?: VisaIssue[];
   visaIssueNotes?: string;
 }
 
@@ -65,7 +65,7 @@ export enum ReturnedHome {
   NotReturned = "Has not returned home"
 }
 
-export enum PotentialVisaIssues {
+export enum VisaIssue {
   Health = "Health issues",
   Military = "Military service",
   GovtWork = "Work for foreign government",

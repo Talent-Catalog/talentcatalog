@@ -2,8 +2,13 @@ import {Component, OnInit} from '@angular/core';
 import {IntakeComponentBase} from "../../../util/intake/IntakeComponentBase";
 import {FormBuilder} from "@angular/forms";
 import {CandidateService} from "../../../../services/candidate.service";
-import {enumOptions} from "../../../../util/enum";
-import {PotentialVisaIssues} from "../../../../model/candidate";
+import {
+  enumMultiSelectSettings,
+  EnumOption,
+  enumOptions
+} from "../../../../util/enum";
+import {VisaIssue} from "../../../../model/candidate";
+import {IDropdownSettings} from "ng-multiselect-dropdown";
 
 @Component({
   selector: 'app-visa-issues',
@@ -12,7 +17,8 @@ import {PotentialVisaIssues} from "../../../../model/candidate";
 })
 export class VisaIssuesComponent extends IntakeComponentBase implements OnInit {
 
-  public visaIssueOptions = enumOptions(PotentialVisaIssues);
+  public dropdownSettings: IDropdownSettings = enumMultiSelectSettings;
+  public visaIssueOptions: EnumOption[] = enumOptions(VisaIssue);
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService)
@@ -26,6 +32,6 @@ export class VisaIssuesComponent extends IntakeComponentBase implements OnInit {
   }
 
   get haveIssues(): boolean {
-    return true; //todo
+    return this.form.value.visaIssues?.length > 0;
   }
 }

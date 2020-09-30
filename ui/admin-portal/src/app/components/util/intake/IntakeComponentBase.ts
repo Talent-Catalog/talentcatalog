@@ -3,7 +3,13 @@
  */
 
 import {AfterViewInit, Input, OnDestroy, OnInit} from "@angular/core";
-import {catchError, debounceTime, switchMap, takeUntil} from "rxjs/operators";
+import {
+  catchError,
+  debounceTime,
+  map,
+  switchMap,
+  takeUntil
+} from "rxjs/operators";
 import {Subject} from "rxjs";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {Candidate, CandidateIntakeData} from "../../../model/candidate";
@@ -98,6 +104,9 @@ export abstract class IntakeComponentBase implements AfterViewInit, OnDestroy, O
       //Only pass values on if there has been inactivity for the given timeout
       debounceTime(timeout),
 
+      //Convert any possible multiselected enums
+      map(formValue => IntakeComponentBase.convertEnumOptions(formValue)),
+
       //Do a save of the received form values.
       switchMap(formValue => {
           //Update the candidateIntakeData to keep it in sync with the server
@@ -132,6 +141,52 @@ export abstract class IntakeComponentBase implements AfterViewInit, OnDestroy, O
         this.error = error;
       }
     )
+  }
+
+  /**
+   * Converts the data returned by multiselected enums to a simple array of
+   * enum names suitable for sending to the server.
+   * <p/>
+   * We use ng-multiselect-dropdown for multiselect dropdowns, and given the
+   * way that we have configured it for selecting enums, that component returns
+   * arrays of EnumOption objects. This method converts that data to arrays of
+   * strings corresponding to the enums.
+   * <p/>
+   * Note that the normal single select dropdown - where we use a standard
+   * html <select> and options - returns a single string corresponding to the
+   * selected enum - so not a problem there.
+   * @param formValue Values returned from a form.
+   * @private
+   */
+  private static convertEnumOptions(formValue: Object): Object {
+    //Look through all the formValue object properties looking for a
+    //property with a EnumOption array as a value.
+    for (const [key, value] of Object.entries(formValue)) {
+      if (IntakeComponentBase.isEnumOptionArray(value)) {
+        //Convert EnumOption array to a simple string array.
+        const enums: string[] = [];
+        for (const item of value) {
+          enums.push(item.value);
+        }
+        formValue[key] = enums;
+      }
+    }
+    return formValue;
+  }
+
+  private static isEnumOptionArray(value: Object): boolean {
+    let gotOne: boolean = false;
+    //Needs to be an array
+    if (Array.isArray(value)) {
+      //With something in it
+      if (value.length > 0) {
+        //Look at first item in array and check its type
+        const item = value[0];
+        //EnumOption objects have a value and a displayText property.
+        gotOne = ("value" in item && "displayText" in item);
+      }
+    }
+    return gotOne;
   }
 
   /**
