@@ -162,6 +162,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // PUT: UPDATE SAVED LIST
                 .antMatchers(HttpMethod.PUT, "/api/admin/saved-list/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
+                // PUT: UPDATE CONTEXT NOTES
+                .antMatchers(HttpMethod.PUT, "/api/admin/saved-list/context/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
                 // PUT: ADD SHARED LIST
                 .antMatchers(HttpMethod.PUT, "/api/admin/saved-list/shared-add/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 

@@ -261,4 +261,9 @@ export class ViewCandidateComponent implements OnInit {
   onCandidateChanged() {
     this.refreshCandidateInfo();
   }
+
+  isCVViewable(): boolean {
+    const role = this.loggedInUser ? this.loggedInUser.role : null;
+    return role !== 'semilimited' && role !== 'limited';
+  }
 }

@@ -207,7 +207,10 @@
               <a *ngIf="candidate.videolink" [href]="candidate.videolink" target="_blank">
                 <i class="fas fa-video" title="Show candidate's one way video"></i>
               </a>
-              <app-cv-icon [candidate]="candidate"></app-cv-icon>
+              <app-cv-icon
+                *ngIf="isCandidateNameViewable()"
+                [candidate]="candidate">
+              </app-cv-icon>
             </td>
             <td>
               <input type="checkbox" class="custom-checkbox" id="selected"
