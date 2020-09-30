@@ -4,7 +4,10 @@
 
 package org.tbbtalent.server.request.candidate;
 
+import java.util.List;
+
 import org.tbbtalent.server.model.db.ReturnedHome;
+import org.tbbtalent.server.model.db.VisaIssue;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,5 +26,8 @@ import lombok.ToString;
 public class CandidateIntakeData {
     private ReturnedHome returnedHome;
     private String returnedHomeNotes; 
-    private String returnedHomeReason; 
+    private String returnedHomeReason;
+    
+    private List<VisaIssue> visaIssues;
+    private String visaIssuesNotes;
 }

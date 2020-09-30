@@ -39,6 +39,9 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("returnedHome")
                 .add("returnedHomeNotes")
                 .add("returnedHomeReason")
+
+                .add("visaIssues")
+                .add("visaIssuesNotes")
                 ;
     }
 

@@ -27,7 +27,7 @@ export class VisaIssuesComponent extends IntakeComponentBase implements OnInit {
   ngOnInit(): void {
     this.form = this.fb.group({
       visaIssues: [this.candidateIntakeData?.visaIssues],
-      visaIssueNotes: [this.candidateIntakeData?.visaIssueNotes],
+      visaIssuesNotes: [this.candidateIntakeData?.visaIssuesNotes],
     });
   }
 

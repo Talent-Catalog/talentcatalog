@@ -46,7 +46,7 @@ export interface CandidateIntakeData {
   returnedHomeReason?: string;
 
   visaIssues?: VisaIssue[];
-  visaIssueNotes?: string;
+  visaIssuesNotes?: string;
 }
 
 /*

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -149,6 +150,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Transient
     private boolean selected = false;
 
+    /*
+              Intake Fields    
+     */
+    
     @Enumerated(EnumType.STRING)
     @Nullable
     private ReturnedHome returnedHome;
@@ -158,6 +163,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Nullable
     private String returnedHomeReason;
+    
+    @Convert(converter = VisaIssuesConverter.class)
+    @Nullable
+    private List<VisaIssue> visaIssues;
+    
+    @Nullable
+    private String visaIssuesNotes;
     
 
     public Candidate() {
@@ -444,6 +456,24 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.returnedHomeReason = returnedHomeReason;
     }
 
+    @Nullable
+    public List<VisaIssue> getVisaIssues() {
+        return visaIssues;
+    }
+
+    public void setVisaIssues(@Nullable List<VisaIssue> visaIssues) {
+        this.visaIssues = visaIssues;
+    }
+
+    @Nullable
+    public String getVisaIssuesNotes() {
+        return visaIssuesNotes;
+    }
+
+    public void setVisaIssuesNotes(@Nullable String visaIssuesNotes) {
+        this.visaIssuesNotes = visaIssuesNotes;
+    }
+
     public boolean isSelected() {
         return selected;
     }
@@ -515,6 +545,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getReturnedHomeReason() != null) {
             setReturnedHomeReason(data.getReturnedHomeReason());
+        }
+
+        if (data.getVisaIssues() != null) {
+            setVisaIssues(data.getVisaIssues());
+        }
+        if (data.getVisaIssuesNotes() != null) {
+            setVisaIssuesNotes(data.getVisaIssuesNotes());
         }
     }
 }
