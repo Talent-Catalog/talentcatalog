@@ -254,7 +254,8 @@
       <app-candidate-search-card class="profile"
                                  *ngIf="selectedCandidate"
                                  [candidateSource]="candidateSource"
-                                 [sourceType]="sourceType()"
+                                 [sourceType]="pluralType"
+                                 [defaultSearch]="isDefaultSavedSearch()"
                                  [candidate]="selectedCandidate"
                                  [loggedInUser]="loggedInUser"
                                  (onClose)="setSelectedCandidate(null)">

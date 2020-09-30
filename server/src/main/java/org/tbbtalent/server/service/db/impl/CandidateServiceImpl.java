@@ -1,34 +1,11 @@
 package org.tbbtalent.server.service.db.impl;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.security.GeneralSecurityException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.validation.constraints.NotNull;
-
+import com.opencsv.CSVWriter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.RangeQueryBuilder;
-import org.elasticsearch.index.query.SimpleQueryStringBuilder;
+import org.elasticsearch.index.query.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,82 +28,36 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientException;
-import org.tbbtalent.server.exception.CircularReferencedException;
-import org.tbbtalent.server.exception.CountryRestrictionException;
-import org.tbbtalent.server.exception.ExportFailedException;
-import org.tbbtalent.server.exception.InvalidRequestException;
-import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.exception.PasswordMatchException;
-import org.tbbtalent.server.exception.UsernameTakenException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateEducation;
-import org.tbbtalent.server.model.db.CandidateLanguage;
-import org.tbbtalent.server.model.db.CandidateOccupation;
-import org.tbbtalent.server.model.db.CandidateStatus;
-import org.tbbtalent.server.model.db.Country;
-import org.tbbtalent.server.model.db.DataRow;
-import org.tbbtalent.server.model.db.EducationLevel;
-import org.tbbtalent.server.model.db.Gender;
-import org.tbbtalent.server.model.db.Nationality;
-import org.tbbtalent.server.model.db.Role;
-import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.model.db.SavedSearch;
-import org.tbbtalent.server.model.db.SearchJoin;
-import org.tbbtalent.server.model.db.SearchType;
-import org.tbbtalent.server.model.db.Status;
-import org.tbbtalent.server.model.db.SurveyType;
-import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.exception.*;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.model.sf.Contact;
-import org.tbbtalent.server.repository.db.CandidateRepository;
-import org.tbbtalent.server.repository.db.CandidateSpecification;
-import org.tbbtalent.server.repository.db.CountryRepository;
-import org.tbbtalent.server.repository.db.EducationLevelRepository;
-import org.tbbtalent.server.repository.db.GetSavedListCandidatesQuery;
-import org.tbbtalent.server.repository.db.NationalityRepository;
-import org.tbbtalent.server.repository.db.SavedListRepository;
-import org.tbbtalent.server.repository.db.SavedSearchRepository;
-import org.tbbtalent.server.repository.db.SurveyTypeRepository;
-import org.tbbtalent.server.repository.db.UserRepository;
+import org.tbbtalent.server.repository.db.*;
 import org.tbbtalent.server.repository.es.CandidateEsRepository;
 import org.tbbtalent.server.request.LoginRequest;
-import org.tbbtalent.server.request.candidate.BaseCandidateContactRequest;
-import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
-import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
-import org.tbbtalent.server.request.candidate.CandidatePhoneSearchRequest;
-import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
-import org.tbbtalent.server.request.candidate.IHasSetOfSavedLists;
-import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
-import org.tbbtalent.server.request.candidate.SavedListGetRequest;
-import org.tbbtalent.server.request.candidate.SavedSearchGetRequest;
-import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
-import org.tbbtalent.server.request.candidate.SearchJoinRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateContactRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateEducationRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateLinksRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
+import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.request.candidate.stat.CandidateStatDateRequest;
 import org.tbbtalent.server.request.note.CreateCandidateNoteRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.security.PasswordHelper;
 import org.tbbtalent.server.security.UserContext;
-import org.tbbtalent.server.service.db.CandidateNoteService;
-import org.tbbtalent.server.service.db.CandidateSavedListService;
-import org.tbbtalent.server.service.db.CandidateService;
-import org.tbbtalent.server.service.db.CountryService;
-import org.tbbtalent.server.service.db.GoogleFileSystemService;
-import org.tbbtalent.server.service.db.NationalityService;
-import org.tbbtalent.server.service.db.SalesforceService;
-import org.tbbtalent.server.service.db.SavedSearchService;
+import org.tbbtalent.server.service.db.*;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.service.db.util.PdfHelper;
 import org.tbbtalent.server.util.filesystem.FileSystemFolder;
 
-import com.opencsv.CSVWriter;
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.security.GeneralSecurityException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class CandidateServiceImpl implements CandidateService {
@@ -1292,6 +1223,7 @@ public class CandidateServiceImpl implements CandidateService {
        return pdfHelper.generatePdf(candidate);
     }
 
+    // List export
     @Override
     public void exportToCsv(
             long savedListId, SavedListGetRequest request, PrintWriter writer) 
@@ -1305,6 +1237,7 @@ public class CandidateServiceImpl implements CandidateService {
             while (hasMore) {
                 Page<Candidate> result = getSavedListCandidates(savedListId, request);
                 for (Candidate candidate : result.getContent()) {
+                    candidate.setContextSavedListId(savedListId);
                     csvWriter.writeNext(getExportCandidateStrings(candidate));
                 }
 
@@ -1319,6 +1252,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
+    // Search export
     @Override
     public void exportToCsv(
             long savedSearchId, SavedSearchGetRequest request, PrintWriter writer) 
@@ -1343,6 +1277,7 @@ public class CandidateServiceImpl implements CandidateService {
             boolean hasMore = true;
             while (hasMore) {
                 Page<Candidate> result = doSearchCandidates(request);
+                setCandidateContext(request.getSavedSearchId(), result);
                 for (Candidate candidate : result.getContent()) {
                     csvWriter.writeNext(getExportCandidateStrings(candidate));
                 }
@@ -1358,22 +1293,49 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
+    /**
+     * Mark the Candidate objects with any context associated with the
+     * selection list of the saved search.
+     * This means that context fields (ie ContextNote) associated with the
+     * saved search will be returned through the DtoBuilder if present.
+     */
+    @Override
+    public void setCandidateContext(long savedSearchId, Iterable<Candidate> candidates) {
+        User user = userContext.getLoggedInUser();
+        SavedList selectionList = null;
+        if (user != null) {
+            selectionList = savedSearchService
+                    .getSelectionList(savedSearchId, user.getId());
+        }
+        if (selectionList != null) {
+            //Only set context of selected candidates
+            Set<Candidate> selectedCandidates = selectionList.getCandidates();
+            //Loop through candidates we are considering
+            for (Candidate candidate : candidates) {
+                //Only selected candidates
+                if (selectedCandidates.contains(candidate)) {
+                    candidate.setContextSavedListId(selectionList.getId());
+                }
+            }
+        }
+    }
+
     private String[] getExportTitles() {
         Role role = userContext.getLoggedInUser().getRole();
         if(role == Role.semilimited){
             return new String[]{
                     "Candidate Number", "Gender", "Country Residing", "Nationality",
-                    "Dob", "Max Education Level", "Education Major", "English Spoken Level", "Occupation", "Link"
+                    "Dob", "Max Education Level", "Education Major", "English Spoken Level", "Occupation", "Context Note", "Link"
             };
         }else if(role == Role.limited){
             return new String[]{
                     "Candidate Number", "Gender", "Dob", "Max Education Level", "Education Major",
-                    "English Spoken Level", "Occupation", "Link"
+                    "English Spoken Level", "Occupation", "Context Note", "Link"
             };
         } else {
             return new String[]{
                     "Candidate Number", "Candidate First Name", "Candidate Last Name", "Gender", "Country Residing", "Nationality",
-                    "Dob", "Email", "Max Education Level", "Education Major", "English Spoken Level", "Occupation", "Link"
+                    "Dob", "Email", "Max Education Level", "Education Major", "English Spoken Level", "Occupation", "Context Note", "Link"
             };
         }
     }
@@ -1391,6 +1353,7 @@ public class CandidateServiceImpl implements CandidateService {
                     formatCandidateMajor(candidate.getCandidateEducations()),
                     getEnglishSpokenProficiency(candidate.getCandidateLanguages()),
                     formatCandidateOccupation(candidate.getCandidateOccupations()),
+                    candidate.getContextNote() != null ? candidate.getContextNote() : null,
                     getCandidateExternalHref(candidate.getCandidateNumber())
             };
         }else if(role == Role.limited){
@@ -1402,6 +1365,7 @@ public class CandidateServiceImpl implements CandidateService {
                     formatCandidateMajor(candidate.getCandidateEducations()),
                     getEnglishSpokenProficiency(candidate.getCandidateLanguages()),
                     formatCandidateOccupation(candidate.getCandidateOccupations()),
+                    candidate.getContextNote() != null ? candidate.getContextNote() : null,
                     getCandidateExternalHref(candidate.getCandidateNumber())
             };
         }else{
@@ -1418,6 +1382,7 @@ public class CandidateServiceImpl implements CandidateService {
                     formatCandidateMajor(candidate.getCandidateEducations()),
                     getEnglishSpokenProficiency(candidate.getCandidateLanguages()),
                     formatCandidateOccupation(candidate.getCandidateOccupations()),
+                    candidate.getContextNote() != null ? candidate.getContextNote() : null,
                     getCandidateExternalHref(candidate.getCandidateNumber())
             };
         }

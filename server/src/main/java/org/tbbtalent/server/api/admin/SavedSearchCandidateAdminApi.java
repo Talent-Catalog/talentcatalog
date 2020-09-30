@@ -4,35 +4,27 @@
 
 package org.tbbtalent.server.api.admin;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.exception.ExportFailedException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.candidate.SavedSearchGetRequest;
 import org.tbbtalent.server.request.list.HasSetOfCandidatesImpl;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.SavedSearchService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * Web API for retrieving the candidates resulting from a SavedSearch.
@@ -70,36 +62,10 @@ public class SavedSearchCandidateAdminApi implements IManyToManyApi<SavedSearchG
         Page<Candidate> candidates =
                 candidateService.searchCandidates(savedSearchId, request);
 
-        setCandidateContext(savedSearchId, candidates);
+        candidateService.setCandidateContext(savedSearchId, candidates);
         
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.buildPage(candidates);
-    }
-
-    /**
-     * Mark the Candidate objects with any context associated with the 
-     * selection list of the saved search.
-     * This means that context fields (ie ContextNote) associated with the 
-     * saved search will be returned through the DtoBuilder if present.
-     */
-    private void setCandidateContext(long savedSearchId, Iterable<Candidate> candidates) {
-        User user = userContext.getLoggedInUser();
-        SavedList selectionList = null;
-        if (user != null) {
-            selectionList = savedSearchService
-                    .getSelectionList(savedSearchId, user.getId());
-        }
-        if (selectionList != null) {
-            //Only set context of selected candidates
-            Set<Candidate> selectedCandidates = selectionList.getCandidates();
-            //Loop through candidates we are considering
-            for (Candidate candidate : candidates) {
-                //Only selected candidates
-                if (selectedCandidates.contains(candidate)) {
-                    candidate.setContextSavedListId(selectionList.getId());
-                }
-            }
-        }
     }
 
     @PostMapping(value = "{id}/export/csv", produces = MediaType.TEXT_PLAIN_VALUE)

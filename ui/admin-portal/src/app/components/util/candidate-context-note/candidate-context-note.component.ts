@@ -16,6 +16,7 @@ export class CandidateContextNoteComponent implements OnInit, AfterViewInit, OnC
   @Input() candidate: Candidate;
   @Input() candidateSource: CandidateSource;
   @Input() sourceType: String;
+  @Input() defaultSearch: boolean;
 
   data: Observable<any>;
 
@@ -53,7 +54,7 @@ export class CandidateContextNoteComponent implements OnInit, AfterViewInit, OnC
 
   ngAfterViewInit() {
     //3 second timeout
-    this.autoSaveNote(3000);
+    this.autoSaveNote(1000);
   }
 
   private autoSaveNote(timeout: number) {
