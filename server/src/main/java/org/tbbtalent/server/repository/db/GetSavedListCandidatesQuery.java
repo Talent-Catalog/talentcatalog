@@ -4,12 +4,10 @@
 
 package org.tbbtalent.server.repository.db;
 
-import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -21,7 +19,7 @@ import javax.persistence.criteria.Subquery;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.CandidateSavedList;
 import org.tbbtalent.server.request.candidate.SavedListGetRequest;
 
 import lombok.RequiredArgsConstructor;
@@ -79,24 +77,16 @@ public class GetSavedListCandidatesQuery implements Specification<Candidate> {
         }
 
         //Now construct the actual query
-        //Guided by https://stackoverflow.com/questions/31841471/spring-data-jpa-specification-for-a-manytomany-unidirectional-relationship
-            /*
-            select candidate from candidate 
-            where exists 
-                (select savedList from savedList 
-                    where savedList.id = savedListID
-                    and
-                    candidate in savedList.candidates)  
-             */
-        Subquery<SavedList> savedListSubquery = query.subquery(SavedList.class);
-        Root<SavedList> savedList = savedListSubquery.from(SavedList.class);
-        Expression<Collection<Candidate>> savedListCandidates =
-                savedList.get("candidates");
-        savedListSubquery.select(savedList);
-        savedListSubquery.where(
-                cb.equal(savedList.get("id"), savedListId),
-                cb.isMember(candidate, savedListCandidates)
-        );
-        return cb.exists(savedListSubquery);
+        /*
+        select candidate from candidate 
+        where candidate in  
+            (select candidate from candidateSavedList 
+                where savedList.id = savedListID)  
+         */
+        Subquery<Candidate> sq = query.subquery(Candidate.class);
+        Root<CandidateSavedList> csl = sq.from(CandidateSavedList.class);
+        sq.select(csl.get("candidate")).where(cb.equal(csl.get("savedList").get("id"), savedListId));
+        
+        return cb.in(candidate).value(sq);
     }
 }

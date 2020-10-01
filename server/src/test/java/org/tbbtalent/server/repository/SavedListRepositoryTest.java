@@ -21,10 +21,13 @@ import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.repository.db.CandidateRepository;
+import org.tbbtalent.server.repository.db.CandidateSavedListRepository;
 import org.tbbtalent.server.repository.db.GetSavedListsQuery;
 import org.tbbtalent.server.repository.db.SavedListRepository;
 import org.tbbtalent.server.repository.db.UserRepository;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
+import org.tbbtalent.server.service.db.CandidateSavedListService;
+import org.tbbtalent.server.service.db.impl.CandidateSavedListServiceImpl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -41,6 +44,11 @@ class SavedListRepositoryTest {
     
     @Autowired
     private CandidateRepository candidateRepository;
+    
+    @Autowired
+    private CandidateSavedListRepository candidateSavedListRepository;
+    
+    private CandidateSavedListService candidateSavedListService;
     
     @Autowired
     private SavedListRepository savedListRepository;
@@ -71,6 +79,9 @@ class SavedListRepositoryTest {
 
         savedListRepository.save(savedList);
         assertNotNull(savedList);
+        
+        candidateSavedListService = 
+                new CandidateSavedListServiceImpl(candidateSavedListRepository);
     }
 
     private Candidate createTestCandidate(String username, String firstName, String lastName, String email) {
@@ -280,7 +291,8 @@ class SavedListRepositoryTest {
         candidates = new HashSet<>();
         candidates.add(candidate2);
         candidates.add(candidate3);
-        savedList.setCandidates(candidates);
+        candidateSavedListService.clearSavedListCandidates(savedList);
+        savedList.addCandidates(candidates);
 
         //Retrieve list from database
         listFromId = savedListRepository.findByIdLoadCandidates(savedList.getId())
@@ -329,7 +341,7 @@ class SavedListRepositoryTest {
         
         
         //Remove a candidate from the list
-        savedList.removeCandidate(candidate3);
+        candidateSavedListService.removeFromSavedList(candidate3, savedList);
         listFromId = savedListRepository.findByIdLoadCandidates(savedList.getId())
                 .orElse(null);
         assertNotNull(listFromId);
@@ -340,8 +352,8 @@ class SavedListRepositoryTest {
         assertTrue(listFromId.getCandidates().contains(candidate2));
 
         //List has just candidate2 in there.
-        //Test clearing the list by passing null into setCandidates
-        savedList.setCandidates(null);
+        //Test clearing the list
+        candidateSavedListService.clearSavedListCandidates(savedList);
         assertTrue(savedList.getCandidates().isEmpty());
         assertFalse(candidate2.getSavedLists().contains(savedList));
         
@@ -351,9 +363,9 @@ class SavedListRepositoryTest {
         candidate2.addSavedList(savedList);
         assertTrue(savedList.getCandidates().contains(candidate1));
         assertTrue(savedList.getCandidates().contains(candidate2));
-        
-        candidate1.removeSavedList(savedList);
-        candidate2.removeSavedList(savedList);
+
+        candidateSavedListService.removeFromSavedList(candidate1, savedList);
+        candidateSavedListService.removeFromSavedList(candidate2, savedList);
         assertTrue(savedList.getCandidates().isEmpty());
     }
 

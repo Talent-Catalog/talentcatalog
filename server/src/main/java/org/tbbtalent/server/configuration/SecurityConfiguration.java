@@ -114,6 +114,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // PUT: UPDATE SAVED SEARCHES
                 .antMatchers(HttpMethod.PUT, "/api/admin/saved-search/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
+                // PUT: UPDATE CONTEXT NOTES
+                .antMatchers(HttpMethod.PUT, "/api/admin/saved-search/context/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
                 // GET: LOAD SAVE SEARCHES
                 .antMatchers(HttpMethod.GET, "/api/admin/saved-search/*/load").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
@@ -161,6 +164,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
                 // PUT: UPDATE SAVED LIST
                 .antMatchers(HttpMethod.PUT, "/api/admin/saved-list/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // PUT: UPDATE CONTEXT NOTES
+                .antMatchers(HttpMethod.PUT, "/api/admin/saved-list/context/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // PUT: ADD SHARED LIST
                 .antMatchers(HttpMethod.PUT, "/api/admin/saved-list/shared-add/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")

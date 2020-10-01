@@ -12,6 +12,7 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.SavedSearch;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
@@ -83,4 +84,16 @@ public interface SavedSearchService {
      */
     @NotNull SavedList getSelectionList(long id, Long userId) 
             throws NoSuchObjectException;
+
+    /**
+     * Updates a candidate context note associated with the given saved search.
+     * (Actually associated with the selection list of the given saved search).
+     * If the candidate (specified in the request) is not currently selected
+     * into the saved search, does nothing.
+     * @param id Id of saved search
+     * @param request Request containing the candidate id and the context note 
+     *                text
+     */ 
+    void updateCandidateContextNote(
+            long id, UpdateCandidateContextNoteRequest request);
 }

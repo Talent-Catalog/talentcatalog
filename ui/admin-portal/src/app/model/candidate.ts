@@ -38,6 +38,7 @@ export interface Candidate {
   selected: boolean;
   createdDate: number;
   updatedDate: number;
+  contextNote: string;
 }
 
 export interface CandidateIntakeData {

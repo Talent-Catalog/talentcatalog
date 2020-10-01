@@ -26,4 +26,6 @@ public class TargetListSelection {
     //If true any existing contents of target list should be replaced, otherwise
     //contents are added (merged).
     boolean replace;
+
+    String sfJoblink;
 }

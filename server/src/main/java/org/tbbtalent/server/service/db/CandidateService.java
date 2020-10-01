@@ -4,11 +4,6 @@
 
 package org.tbbtalent.server.service.db;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.security.GeneralSecurityException;
-import java.util.List;
-
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +16,7 @@ import org.tbbtalent.server.model.db.DataRow;
 import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.request.LoginRequest;
+import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
 import org.tbbtalent.server.request.candidate.CandidateIntakeData;
 import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
@@ -40,6 +36,11 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tbbtalent.server.request.candidate.stat.CandidateStatDateRequest;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.security.GeneralSecurityException;
+import java.util.List;
 
 public interface CandidateService {
 
@@ -84,6 +85,13 @@ public interface CandidateService {
     Page<Candidate> getSavedListCandidates(long id, SavedListGetRequest request);
 
     /**
+     * Remove the given candidate from all its lists
+     * @param candidateId ID of candidate
+     * @return False if no candidate with that id was found, otherwise true.
+     */
+    boolean clearCandidateSavedLists(long candidateId);
+
+    /**
      * Merge the saved lists indicated in the request into the given candidate's
      * existing lists.
      *
@@ -103,16 +111,6 @@ public interface CandidateService {
      * @return False if no candidate with that id was found, otherwise true.
      */
     boolean removeFromCandidateSavedLists(long candidateId, IHasSetOfSavedLists request);
-
-    /**
-     * Replace given candidate's existing lists with the saved lists indicated
-     * in the request.
-     *
-     * @param candidateId ID of candidate to be updated
-     * @param request     Request containing the new saved lists
-     * @return False if no candidate with that id was found, otherwise true.
-     */
-    boolean replaceCandidateSavedLists(long candidateId, IHasSetOfSavedLists request);
 
     Candidate getCandidate(long id) throws NoSuchObjectException;
 
@@ -166,6 +164,8 @@ public interface CandidateService {
 
     void exportToCsv(SearchCandidateRequest request, PrintWriter writer)
             throws ExportFailedException;
+
+    public void setCandidateContext(long savedSearchId, Iterable<Candidate> candidates);
 
     List<DataRow> getGenderStats(CandidateStatDateRequest request);
 

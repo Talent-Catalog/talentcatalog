@@ -1,4 +1,14 @@
-import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Output,
+  SimpleChanges,
+  ViewChild
+} from '@angular/core';
 
 import {Candidate} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
@@ -20,24 +30,49 @@ import {
   SearchCandidateRequestPaged,
   SelectCandidateInSearchRequest
 } from '../../../model/saved-search';
-import {CandidateSource, canEditSource, defaultReviewStatusFilter, isMine, isSharedWithMe, ReviewedStatus} from '../../../model/base';
-import {CachedSourceResults, CandidateSourceResultsCacheService} from '../../../services/candidate-source-results-cache.service';
+import {
+  CandidateSource,
+  canEditSource,
+  defaultReviewStatusFilter,
+  isMine,
+  isSharedWithMe,
+  ReviewedStatus
+} from '../../../model/base';
+import {
+  CachedSourceResults,
+  CandidateSourceResultsCacheService
+} from '../../../services/candidate-source-results-cache.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {IDropdownSettings} from 'ng-multiselect-dropdown';
 import {User} from '../../../model/user';
 import {AuthService} from '../../../services/auth.service';
 import {UserService} from '../../../services/user.service';
-import {SelectListComponent, TargetListSelection} from '../../list/select/select-list.component';
-import {IHasSetOfCandidates, SavedListGetRequest} from '../../../model/saved-list';
+import {
+  SelectListComponent,
+  TargetListSelection
+} from '../../list/select/select-list.component';
+import {
+  CreateSavedListRequest,
+  IHasSetOfCandidates,
+  SavedListGetRequest
+} from '../../../model/saved-list';
 import {CandidateSourceCandidateService} from '../../../services/candidate-source-candidate.service';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {EditCandidateReviewStatusItemComponent} from '../../util/candidate-review/edit/edit-candidate-review-status-item.component';
 import {Router} from '@angular/router';
 import {CandidateSourceService} from '../../../services/candidate-source.service';
 import {SavedListCandidateService} from '../../../services/saved-list-candidate.service';
-import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from 'rxjs/operators';
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  switchMap,
+  tap
+} from 'rxjs/operators';
 import {Location} from '@angular/common';
 import {copyToClipboard} from '../../../util/clipboard';
+import {SavedListService} from '../../../services/saved-list.service';
 
 interface CachedTargetList {
   searchID: number;
@@ -96,6 +131,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   };
 
   selectedCandidate: Candidate;
+  selectedListCandidates: number[];
   loggedInUser: User;
   targetListName: string;
   targetListId: number;
@@ -112,6 +148,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
               private userService: UserService,
               private savedSearchService: SavedSearchService,
               private savedListCandidateService: SavedListCandidateService,
+              private savedListService: SavedListService,
               private modalService: NgbModal,
               private localStorageService: LocalStorageService,
               private location: Location,
@@ -128,6 +165,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit() {
     this.setSelectedCandidate(null);
     this.loggedInUser = this.authService.getLoggedInUser();
+    this.selectedListCandidates = [];
 
     this.statuses = [];
     for (const key in ReviewedStatus) {
@@ -166,11 +204,15 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     //change in preference to the request change because the source change
     //in that case will be a saved search and it will load a new search request
     //anyway - being the search request associated with the saved search.
+
     if (changes.candidateSource) {
       if (changes.candidateSource.previousValue !== changes.candidateSource.currentValue) {
         if (this.candidateSource) {
           this.restoreTargetListFromCache();
-          this.doSearch(false);
+          this.doSearch(true);
+          // Set the selected candidates (List only) to null when changing candidate source.
+          this.selectedListCandidates = [];
+
         }
       }
     } else {
@@ -489,8 +531,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     return !isSavedSearch(this.candidateSource);
   }
 
-  isSelectable(): boolean {
-    return isSavedSearch(this.candidateSource);
+  sourceType(): string {
+    return isSavedSearch(this.candidateSource) ? 'savedSearch' : 'list';
   }
 
   isShareable(): boolean {
@@ -521,19 +563,29 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     //Update cache
     this.cacheResults();
 
-    //Record change on server
-    //Candidate is added/removed from this users selection list for this saved search
-    const request: SelectCandidateInSearchRequest = {
+    if (isSavedSearch(this.candidateSource)) {
+      //Record change on server
+      //Candidate is added/removed from this users selection list for this saved search
+      const request: SelectCandidateInSearchRequest = {
         userId: this.loggedInUser.id,
         candidateId: candidate.id,
         selected: selected
       };
-    this.savedSearchService.selectCandidate(this.candidateSource.id, request).subscribe(
-      () => {},
-      err => {
-        this.error = err;
+      this.savedSearchService.selectCandidate(this.candidateSource.id, request).subscribe(
+        () => {},
+        err => {
+          this.error = err;
+        }
+      );
+    } else {
+      // If selections coming from a list, create a list of the candidateIds selected
+      if (selected) {
+        this.selectedListCandidates.push(candidate.id);
+      } else {
+        this.selectedListCandidates = this.selectedListCandidates.filter(id => id !== candidate.id);
       }
-    );
+
+    }
   }
 
   saveSelection() {
@@ -566,14 +618,102 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   private doSaveSelection(request: SaveSelectionRequest) {
     //Save selection as specified in request
     this.savingSelection = true;
-    this.savedSearchService.saveSelection(this.candidateSource.id, request).subscribe(
+    if (isSavedSearch(this.candidateSource)) {
+      this.savedSearchService.saveSelection(this.candidateSource.id, request).subscribe(
+        savedListResult => {
+          this.savingSelection = false;
+
+          //Save the target list
+          this.targetListId = savedListResult.id;
+          this.targetListName = savedListResult.name;
+          this.targetListReplace = request.replace;
+
+          //Cache the target list
+          this.cacheTargetList();
+
+          //Invalidate the cache for this list (so that user does not need
+          //to refresh in order to see latest list contents)
+          this.candidateSourceResultsCacheService.removeFromCache(savedListResult);
+
+        },
+        err => {
+          this.error = err;
+          this.savingSelection = false;
+        });
+    } else {
+      // LIST
+      //Pick up ids info - including source list id
+      const ids: IHasSetOfCandidates = {
+        sourceListId: this.candidateSource.id,
+        candidateIds: this.selectedListCandidates
+      };
+      // If request has a savedListId, merge or replace. Otherwise create a new list.
+      if (request.savedListId > 0) {
+        this.replaceOrMergeList(request.savedListId, ids, request.replace);
+      } else {
+        // create new saved list
+        this.createList(request.newListName, ids, request.replace, request.sfJoblink);
+      }
+      this.savingSelection = false;
+    }
+  }
+
+  private replaceOrMergeList(savedListId: number, ids: IHasSetOfCandidates, replace: boolean) {
+    //Get saved list
+    this.savedListService.get(savedListId).subscribe(
+      (savedList) => {
+        this.targetListName = savedList.name;
+      }
+    )
+    if (replace) {
+      this.savedListCandidateService.replace(savedListId, ids).subscribe(
+        () => {
+          //Save the target list
+          this.targetListId = savedListId;
+          this.targetListReplace = true;
+          //Invalidate the cache for this list (so that user does not need
+          //to refresh in order to see latest list contents)
+          this.candidateSourceResultsCacheService.removeFromCache(this.candidateSource);
+
+        },
+        (error) => {
+          this.error = error;
+        }
+      );
+    } else {
+      this.savedListCandidateService.merge(savedListId, ids).subscribe(
+        () => {
+          //Save the target list
+          this.targetListId = savedListId;
+          this.targetListReplace = false;
+          //Invalidate the cache for this list (so that user does not need
+          //to refresh in order to see latest list contents)
+          this.candidateSourceResultsCacheService.removeFromCache(this.candidateSource);
+
+        },
+        (error) => {
+          this.error = error;
+        }
+      );
+    }
+  }
+
+  private createList(newListName: string, ids: IHasSetOfCandidates,
+                     replace: boolean, sfJobLink: string) {
+    const createSavedListRequest: CreateSavedListRequest = {
+      sourceListId: ids.sourceListId,
+      candidateIds: ids.candidateIds,
+      fixed: null,
+      name: newListName,
+      sfJoblink: sfJobLink,
+    }
+    this.savedListService.create(createSavedListRequest).subscribe(
       savedListResult => {
         this.savingSelection = false;
-
         //Save the target list
         this.targetListId = savedListResult.id;
         this.targetListName = savedListResult.name;
-        this.targetListReplace = request.replace;
+        this.targetListReplace = replace;
 
         //Cache the target list
         this.cacheTargetList();
@@ -581,25 +721,26 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         //Invalidate the cache for this list (so that user does not need
         //to refresh in order to see latest list contents)
         this.candidateSourceResultsCacheService.removeFromCache(savedListResult);
-
-      },
-      err => {
-        this.error = err;
-        this.savingSelection = false;
-      });
+      })
   }
 
   clearSelection() {
     const request: ClearSelectionRequest = {
       userId: this.loggedInUser.id,
     };
-    this.savedSearchService.clearSelection(this.candidateSource.id, request).subscribe(
-      () => {
-        this.doSearch(true);
-      },
-      err => {
-        this.error = err;
-      });
+    if (isSavedSearch(this.candidateSource)) {
+      this.savedSearchService.clearSelection(this.candidateSource.id, request).subscribe(
+        () => {
+          this.doSearch(true);
+        },
+        err => {
+          this.error = err;
+        });
+    } else {
+      this.selectedListCandidates = [];
+      this.doSearch(true);
+    }
+
   }
 
   private cacheTargetList() {
@@ -615,15 +756,12 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private restoreTargetListFromCache() {
-    if (isSavedSearch(this.candidateSource)) {
-      const cachedTargetList: CachedTargetList =
-         this.localStorageService.get(this.savedTargetListKey());
-      if (cachedTargetList) {
-        this.targetListId = cachedTargetList.listID;
-        this.targetListName = cachedTargetList.name;
-        this.targetListReplace = cachedTargetList.replace;
-      }
-    }
+    const cachedTargetList: CachedTargetList =
+       this.localStorageService.get(this.savedTargetListKey());
+    this.targetListId = cachedTargetList ? cachedTargetList.listID : null;
+    this.targetListName = cachedTargetList ? cachedTargetList.name : null;
+    this.targetListReplace = cachedTargetList ? cachedTargetList.replace : null;
+
   }
 
   private savedTargetListKey(): string {

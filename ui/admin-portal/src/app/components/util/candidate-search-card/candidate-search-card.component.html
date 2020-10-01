@@ -1,5 +1,14 @@
 <div class="candidate-card" *ngIf="!!candidate">
 
+  <ng-container>
+    <app-candidate-context-note
+      [candidate]="candidate"
+      [candidateSource]="candidateSource"
+      [sourceType]="sourceType"
+      [defaultSearch]="defaultSearch">
+    </app-candidate-context-note>
+  </ng-container>
+
   <!-- HEADER -->
   <div class="candidate-header">
 

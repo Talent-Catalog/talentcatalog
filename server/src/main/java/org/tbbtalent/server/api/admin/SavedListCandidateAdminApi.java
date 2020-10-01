@@ -82,7 +82,8 @@ public class SavedListCandidateAdminApi implements IManyToManyApi<SavedListGetRe
     @Override
     public void replace(long savedListId, @Valid HasSetOfCandidatesImpl request) 
             throws NoSuchObjectException {
-        savedListService.replaceSavedList(savedListId, request);
+        savedListService.clearSavedList(savedListId);
+        savedListService.mergeSavedList(savedListId, request);
     }
 
     @Override
@@ -91,8 +92,22 @@ public class SavedListCandidateAdminApi implements IManyToManyApi<SavedListGetRe
             throws NoSuchObjectException {
         Page<Candidate> candidates = this.candidateService
                 .getSavedListCandidates(savedListId, request);
+        
+        setCandidateContext(savedListId, candidates);
+
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.buildPage(candidates);
+    }
+
+    /**
+     * Mark the Candidate objects with the list context.
+     * This means that context fields (ie ContextNote) associated with the 
+     * list will be returned through the DtoBuilder if present.
+     */
+    private void setCandidateContext(long savedListId, Iterable<Candidate> candidates) {
+        for (Candidate candidate : candidates) {
+            candidate.setContextSavedListId(savedListId);
+        }
     }
 
     @PostMapping(value = "{id}/export/csv", produces = MediaType.TEXT_PLAIN_VALUE)

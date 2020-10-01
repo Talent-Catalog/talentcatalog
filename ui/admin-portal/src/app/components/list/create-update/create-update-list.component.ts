@@ -71,7 +71,7 @@ export class CreateUpdateListComponent implements OnInit {
       const request: UpdateSavedListInfoRequest = {
         name: this.name,
         fixed: this.fixed,
-        sfJoblink: this.sfJoblink
+        sfJoblink: this.sfJoblink ? this.sfJoblink : null
       };
       this.savedListService.update(this.savedList.id, request).subscribe(
         (savedList) => {

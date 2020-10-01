@@ -28,6 +28,7 @@ export function indexOfSavedList(savedListID: number, savedLists: SavedList[]): 
 }
 
 export interface CreateSavedListRequest extends UpdateSavedListInfoRequest {
+  sourceListId?: number;
   candidateIds?: number[];
 }
 
@@ -42,6 +43,7 @@ export interface IHasSetOfSavedLists {
 }
 
 export interface IHasSetOfCandidates {
+  sourceListId?: number;
   candidateIds: number[];
 }
 

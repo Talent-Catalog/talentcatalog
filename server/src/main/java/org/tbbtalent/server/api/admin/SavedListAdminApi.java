@@ -17,11 +17,13 @@ import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
 import org.tbbtalent.server.request.list.CreateSavedListRequest;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
 import org.tbbtalent.server.request.list.TargetListSelection;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
+import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -31,11 +33,13 @@ public class SavedListAdminApi implements
         ITableApi<SearchSavedListRequest, CreateSavedListRequest, UpdateSavedListInfoRequest> {
 
     private final SavedListService savedListService;
+    private final CandidateSavedListService candidateSavedListService;
     private final SavedListBuilderSelector builderSelector = new SavedListBuilderSelector();
 
     @Autowired
-    public SavedListAdminApi(SavedListService savedListService) {
+    public SavedListAdminApi(SavedListService savedListService, CandidateSavedListService candidateSavedListService) {
         this.savedListService = savedListService;
+        this.candidateSavedListService = candidateSavedListService;
     }
 
     /*
@@ -167,6 +171,13 @@ public class SavedListAdminApi implements
         SavedList savedList = this.savedListService.removeSharedUser(id, request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(savedList);
+    }
+
+    @PutMapping("/context/{id}")
+    public void updateContextNote(
+            @PathVariable("id") long id,
+            @RequestBody UpdateCandidateContextNoteRequest request) {
+        candidateSavedListService.updateCandidateContextNote(id, request);
     }
     
 }

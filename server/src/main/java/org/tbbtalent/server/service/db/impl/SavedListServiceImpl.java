@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientException;
@@ -39,6 +40,7 @@ import org.tbbtalent.server.request.list.TargetListSelection;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.SavedListService;
 
@@ -54,6 +56,7 @@ public class SavedListServiceImpl implements SavedListService {
 
     private final CandidateRepository candidateRepository;
     private final SavedListRepository savedListRepository;
+    private final CandidateSavedListService candidateSavedListService;
     private final SalesforceService salesforceService;
     private final UserRepository userRepository;
     private final UserContext userContext;
@@ -62,14 +65,30 @@ public class SavedListServiceImpl implements SavedListService {
     public SavedListServiceImpl(
             CandidateRepository candidateRepository,
             SavedListRepository savedListRepository,
+            CandidateSavedListService candidateSavedListService, 
             SalesforceService salesforceService, UserRepository userRepository,
             UserContext userContext
     ) {
         this.candidateRepository = candidateRepository;
         this.savedListRepository = savedListRepository;
+        this.candidateSavedListService = candidateSavedListService;
         this.salesforceService = salesforceService;
         this.userRepository = userRepository;
         this.userContext = userContext;
+    }
+
+    @Override
+    public boolean clearSavedList(long savedListId) throws InvalidRequestException {
+        SavedList savedList = savedListRepository.findByIdLoadCandidates(savedListId)
+                .orElse(null);
+
+        boolean done = true;
+        if (savedList == null) {
+            done = false;
+        } else {
+            candidateSavedListService.clearSavedListCandidates(savedList);
+        }
+        return done;
     }
 
     @Override
@@ -90,19 +109,22 @@ public class SavedListServiceImpl implements SavedListService {
             targetList = savedListRepository.findByIdLoadCandidates(targetId)
                     .orElseThrow(() -> new NoSuchObjectException(SavedList.class, targetId));
         }
-        
+
+
         //Preserve any associated Salesforce Job Opportunity
-        targetList.setSfJoblink(sourceList.getSfJoblink());
+        if (request.getSfJoblink() != null) {
+            targetList.setSfJoblink(request.getSfJoblink());
+        }
 
         //Get candidates in source list
         final Set<Candidate> candidates = sourceList.getCandidates();
 
         //Add or replace them to target as requested.
         if (request.isReplace()) {
-            targetList.setCandidates(candidates);
-        } else {
-            targetList.addCandidates(candidates);
+            clearSavedList(targetList.getId());
         }
+        targetList.addCandidates(candidates, sourceList);
+
         saveIt(targetList);
 
         return targetList;
@@ -118,9 +140,19 @@ public class SavedListServiceImpl implements SavedListService {
         }
         SavedList savedList = new SavedList();
         request.populateFromRequest(savedList);
+        
+        //Save created list so that we get its id from the database
+        savedList = saveIt(savedList);
 
+        //Retrieve source list, if any
+        SavedList sourceList = fetchSourceList(request);
+
+        //Retrieve candidates
         Set<Candidate> candidates = fetchCandidates(request);
-        savedList.addCandidates(candidates);
+
+        //Add candidates to created list, together with any context if source 
+        //list was supplied.
+        savedList.addCandidates(candidates, sourceList);
 
         return saveIt(savedList);
     }
@@ -140,7 +172,7 @@ public class SavedListServiceImpl implements SavedListService {
                 //Need to clear out many to many relationships before deleting
                 //the list otherwise we will have other entities pointing to 
                 //this list.
-                savedList.setCandidates(null);
+                clearSavedList(savedList.getId());
                 savedList.setWatcherIds(null);
                 savedList.setUsers(null);
                 
@@ -172,8 +204,9 @@ public class SavedListServiceImpl implements SavedListService {
         if (savedList == null) {
             done = false;
         } else {
+            SavedList sourceList = fetchSourceList(request);
             Set<Candidate> candidates = fetchCandidates(request);
-            savedList.addCandidates(candidates);
+            savedList.addCandidates(candidates, sourceList);
 
             saveIt(savedList);
         }
@@ -191,27 +224,9 @@ public class SavedListServiceImpl implements SavedListService {
             done = false;
         } else {
             Set<Candidate> candidates = fetchCandidates(request);
-            savedList.removeCandidates(candidates);
-
-            saveIt(savedList);
-        }
-        return done;
-    }
-
-    @Override
-    public boolean replaceSavedList(long savedListId, 
-                                    IHasSetOfCandidates request) {
-        SavedList savedList = savedListRepository.findByIdLoadCandidates(savedListId)
-                .orElse(null);
-
-        boolean done = true;
-        if (savedList == null) {
-            done = false;
-        } else {
-            Set<Candidate> candidates = fetchCandidates(request);
-            savedList.setCandidates(candidates);
-
-            saveIt(savedList);
+            for (Candidate candidate : candidates) {
+                candidateSavedListService.removeFromSavedList(candidate, savedList);
+            }
         }
         return done;
     }
@@ -370,6 +385,18 @@ public class SavedListServiceImpl implements SavedListService {
         }
 
         return candidates;
+    }
+
+    @Nullable
+    private SavedList fetchSourceList(IHasSetOfCandidates request) 
+            throws NoSuchObjectException {
+        SavedList sourceList = null;
+        Long sourceListId = request.getSourceListId();
+        if (sourceListId != null) {
+            sourceList = savedListRepository.findByIdLoadCandidates(sourceListId)
+                    .orElseThrow(() -> new NoSuchObjectException(SavedList.class, sourceListId));
+        }
+        return sourceList;
     }
 
     /**

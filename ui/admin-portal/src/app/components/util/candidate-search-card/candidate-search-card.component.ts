@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-import {Candidate} from "../../../model/candidate";
-import {User} from "../../../model/user";
+import {Candidate} from '../../../model/candidate';
+import {User} from '../../../model/user';
+import {CandidateSource} from '../../../model/base';
 
 @Component({
   selector: 'app-candidate-search-card',
@@ -11,13 +12,16 @@ export class CandidateSearchCardComponent implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
   @Input() loggedInUser: User;
+  @Input() candidateSource: CandidateSource;
+  @Input() sourceType: String;
+  @Input() defaultSearch: boolean;
 
   @Output() onClose = new EventEmitter();
+
 
   constructor() { }
 
   ngOnInit() {
-
   }
 
   ngOnChanges(changes: SimpleChanges) {

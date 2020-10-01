@@ -1,0 +1,24 @@
+<div *ngIf="isCandidateSelected && sourceType === 'searches' || sourceType === 'lists'">
+  <div class="alert alert-danger" *ngIf="error">
+    {{error}}
+  </div>
+
+  <form [formGroup]="form">
+
+    <div class="form-group">
+      <label class="h6" for="contextNotes">
+        <span *ngIf="defaultSearch">Notes for {{candidate.user.firstName}} in selection.</span>
+        <span *ngIf="!defaultSearch">Notes for {{candidate.user.firstName}} in '{{candidateSource.name}}'.</span>
+        <span *ngIf="saving">
+        <i class="fas fa-spinner fa-spin"></i>
+      </span>
+      </label>
+
+
+      <textarea id="contextNotes" class="md-textarea-auto form-control" rows="3"
+                [formControlName]="'contextNote'"></textarea>
+    </div>
+
+  </form>
+  <hr>
+</div>

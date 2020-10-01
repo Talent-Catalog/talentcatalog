@@ -16,8 +16,6 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -29,6 +27,7 @@ import org.springframework.lang.Nullable;
 import org.tbbtalent.server.api.admin.SavedSearchAdminApi;
 import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.request.candidate.CandidateIntakeData;
+import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
 
 @Entity
@@ -37,6 +36,10 @@ import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
 public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     private String candidateNumber;
+    
+    @Transient
+    private Long contextSavedListId; 
+    
     private String phone;
     private String whatsapp;
     @Enumerated(EnumType.STRING)
@@ -65,16 +68,24 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
      */
     private String textSearchId;
 
-    //Note use of Set rather than List as strongly recommended for Many to Many
-    //relationships here:
-    // https://thoughts-on-java.org/best-practices-for-many-to-many-associations-with-hibernate-and-jpa/
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    @JoinTable(
-            name = "candidate_saved_list",
-            joinColumns = @JoinColumn(name = "candidate_id"),
-            inverseJoinColumns = @JoinColumn(name = "saved_list_id")
-    )
-    private Set<SavedList> savedLists = new HashSet<>();
+    /**
+     * Even though we would prefer CascadeType.ALL with 'orphanRemoval' so that 
+     * removing from the candidateSavedLists collection would automatically
+     * cascade down to delete the corresponding entry in the 
+     * candidate_saved_list table.
+     * However we get Hibernate errors with that set up which it seems can only 
+     * be fixed by setting CascadeType.MERGE.
+     * <p/>
+     * See
+     * https://stackoverflow.com/questions/16246675/hibernate-error-a-different-object-with-the-same-identifier-value-was-already-a
+     * <p/>
+     * This means that we have to manually manage all deletions. That has been
+     * moved into {@link CandidateSavedListService} which is used to manage all
+     * those deletions, also making sure that the corresponding 
+     * candidateSavedLists collections are kept up to date.
+     */
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    private Set<CandidateSavedList> candidateSavedLists = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "max_education_level_id")
@@ -191,6 +202,45 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setCandidateNumber(String candidateNumber) {
         this.candidateNumber = candidateNumber;
+    }
+
+    /**
+     * Returns this candidate's contextNote, associated with the current
+     * SavedList context - if any.
+     * <p/>
+     * See {@link #setContextSavedListId(Long)}
+     * @return ContextNote associated with current context. Returns null
+     * if there is one, or no context has been set.
+     */
+    @Transient
+    @Nullable
+    public String getContextNote() {
+        String contextNote = null;
+        if (contextSavedListId != null) {
+            for (CandidateSavedList csl : candidateSavedLists) {
+                if (contextSavedListId.equals(csl.getSavedList().getId())) {
+                    contextNote = csl.getContextNote();
+                    break;
+                }
+            }
+        }
+        return contextNote;
+    }
+
+    /**
+     * Candidates can have special values associated with a particular 
+     * savedList.
+     * These values are stored in {@link CandidateSavedList}.
+     * Setting this value to refer to a particular SavedList will result in
+     * this Candidate object returning attritbutes correspondint that list.
+     * <p/>
+     * For example, see {@link #getContextNote()}
+     * 
+     * @param contextSavedListId The id of the SavedList whose context we want
+     */
+    @Transient
+    public void setContextSavedListId(@Nullable Long contextSavedListId) {
+        this.contextSavedListId = contextSavedListId; 
     }
 
     public String getPhone() {
@@ -505,13 +555,21 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.videolink = videolink;
     }
 
-    public Set<SavedList> getSavedLists() {
-        return savedLists;
+    public Set<CandidateSavedList> getCandidateSavedLists() {
+        return candidateSavedLists;
     }
 
-    public void setSavedLists(Set<SavedList> savedLists) {
-        this.savedLists.clear();
-        addSavedLists(savedLists);
+    public void setCandidateSavedLists(Set<CandidateSavedList> candidateSavedLists) {
+        this.candidateSavedLists = candidateSavedLists;
+    }
+
+    @Transient
+    public Set<SavedList> getSavedLists() {
+        Set<SavedList> savedLists = new HashSet<>();
+        for (CandidateSavedList candidateSavedList : candidateSavedLists) {
+            savedLists.add(candidateSavedList.getSavedList());
+        }
+        return savedLists;
     }
 
     public void addSavedLists(Set<SavedList> savedLists) {
@@ -519,21 +577,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
             addSavedList(savedList);
         }
     }
-    
+
     public void addSavedList(SavedList savedList) {
-        savedLists.add(savedList);
-        savedList.getCandidates().add(this);
-    }
-
-    public void removeSavedLists(Set<SavedList> savedLists) {
-        for (SavedList savedList : savedLists) {
-            removeSavedList(savedList);
-        }
-    }
-
-    public void removeSavedList(SavedList savedList) {
-        savedLists.remove(savedList);
-        savedList.getCandidates().remove(this);
+        final CandidateSavedList csl = 
+                new CandidateSavedList(this, savedList);
+        candidateSavedLists.add(csl);
+        savedList.getCandidateSavedLists().add(csl);
     }
 
     public void populateIntakeData(CandidateIntakeData data) {

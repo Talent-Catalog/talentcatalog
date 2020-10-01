@@ -59,7 +59,8 @@ public class CandidateSavedListAdminApi implements IManyToManyApi<SearchSavedLis
     @Override
     public void replace(long candidateId, @Valid HasSetOfSavedListsImpl request) 
             throws NoSuchObjectException {
-        candidateService.replaceCandidateSavedLists(candidateId, request);
+        candidateService.clearCandidateSavedLists(candidateId);
+        candidateService.mergeCandidateSavedLists(candidateId, request);
     }
 
     @Override

@@ -4,13 +4,13 @@
 
 package org.tbbtalent.server.api.admin;
 
-import javax.validation.constraints.NotNull;
-
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.util.dto.DtoBuilder;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * Utility for selecting the right DTO build based on the currently logged in
@@ -66,6 +66,7 @@ public class CandidateBuilderSelector {
                 .add("selected")
                 .add("createdDate")
                 .add("updatedDate")
+                .add("contextNote")
                 .add("surveyType", surveyTypeDto())
                 .add("country", countryDto())
                 .add("nationality", nationalityDto())
@@ -91,6 +92,7 @@ public class CandidateBuilderSelector {
                 .add("selected")
                 .add("createdDate")
                 .add("updatedDate")
+                .add("contextNote")
                 .add("country", countryDto())
                 .add("user",userSemiLimitedDto())
                 .add("nationality", nationalityDto())
@@ -113,6 +115,7 @@ public class CandidateBuilderSelector {
                 .add("selected")
                 .add("createdDate")
                 .add("updatedDate")
+                .add("contextNote")
                 .add("user",userSemiLimitedDto())
                 .add("candidateReviewStatusItems", reviewDto())
                 ;

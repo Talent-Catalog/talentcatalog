@@ -63,7 +63,7 @@
 
     <div class="filter-results text-muted" *ngIf="!searching">
 
-      <button *ngIf="isSelectable()" class="btn btn-outline-secondary" (click)="clearSelection()">
+      <button class="btn btn-outline-secondary" (click)="clearSelection()">
         Clear Selection
       </button>
 
@@ -83,7 +83,7 @@
         </button>
       </div>
 
-      <button *ngIf="isSelectable()" class="btn btn-outline-secondary"
+      <button class="btn btn-outline-secondary"
               (click)="saveSelection()">
         <i class="fas fa-spinner fa-spin" *ngIf=savingSelection></i>
         Save Selection
@@ -146,7 +146,7 @@
               <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
               Candidate #
             </th>
-            <th *ngIf="isSelectable()">
+            <th>
               <i class="far fa-hand-pointer"></i>
             </th>
             <th *ngIf="isCandidateNameViewable()" (click)="toggleSort('user.firstName')">
@@ -207,9 +207,12 @@
               <a *ngIf="candidate.videolink" [href]="candidate.videolink" target="_blank">
                 <i class="fas fa-video" title="Show candidate's one way video"></i>
               </a>
-              <app-cv-icon [candidate]="candidate"></app-cv-icon>
+              <app-cv-icon
+                *ngIf="isCandidateNameViewable()"
+                [candidate]="candidate">
+              </app-cv-icon>
             </td>
-            <td *ngIf="isSelectable()">
+            <td>
               <input type="checkbox" class="custom-checkbox" id="selected"
                      (ngModelChange)="onSelectionChange(candidate, $event)" [ngModel]="candidate.selected" >
             </td>
@@ -253,6 +256,9 @@
 
       <app-candidate-search-card class="profile"
                                  *ngIf="selectedCandidate"
+                                 [candidateSource]="candidateSource"
+                                 [sourceType]="pluralType"
+                                 [defaultSearch]="isDefaultSavedSearch()"
                                  [candidate]="selectedCandidate"
                                  [loggedInUser]="loggedInUser"
                                  (onClose)="setSelectedCandidate(null)">

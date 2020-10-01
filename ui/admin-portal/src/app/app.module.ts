@@ -124,6 +124,7 @@ import {CandidatesListComponent} from './components/candidates/candidates-list/c
 import {CreateCandidateOccupationComponent} from './components/candidates/view/occupation/create/create-candidate-occupation.component';
 import {CvIconComponent} from './components/util/cv-icon/cv-icon.component';
 import {JoblinkComponent} from './components/util/joblink/joblink.component';
+import {CandidateContextNoteComponent} from './components/util/candidate-context-note/candidate-context-note.component';
 import {ReturnedHomeComponent} from './components/candidates/intake/returned-home/returned-home.component';
 import {CandidateIntakeTabComponent} from './components/candidates/view/tab/candidate-intake-tab/candidate-intake-tab.component';
 import {VisaIssuesComponent} from './components/candidates/intake/visa-issues/visa-issues.component';
@@ -242,6 +243,8 @@ import {VisaIssuesComponent} from './components/candidates/intake/visa-issues/vi
     CreateUpdateListComponent,
     CreateCandidateOccupationComponent,
     CvIconComponent,
+    JoblinkComponent,
+    CandidateContextNoteComponent
     JoblinkComponent,
     ReturnedHomeComponent,
     CandidateIntakeTabComponent,
