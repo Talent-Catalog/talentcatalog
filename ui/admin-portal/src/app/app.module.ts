@@ -244,8 +244,7 @@ import {VisaIssuesComponent} from './components/candidates/intake/visa-issues/vi
     CreateCandidateOccupationComponent,
     CvIconComponent,
     JoblinkComponent,
-    CandidateContextNoteComponent
-    JoblinkComponent,
+    CandidateContextNoteComponent,
     ReturnedHomeComponent,
     CandidateIntakeTabComponent,
     VisaIssuesComponent
