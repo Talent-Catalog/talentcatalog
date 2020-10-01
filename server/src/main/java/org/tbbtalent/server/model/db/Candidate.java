@@ -4,10 +4,12 @@
 
 package org.tbbtalent.server.model.db;
 
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import org.springframework.lang.Nullable;
+import org.tbbtalent.server.api.admin.SavedSearchAdminApi;
+import org.tbbtalent.server.model.es.CandidateEs;
+import org.tbbtalent.server.request.candidate.CandidateIntakeData;
+import org.tbbtalent.server.service.db.CandidateSavedListService;
+import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Convert;
@@ -22,13 +24,10 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import org.springframework.lang.Nullable;
-import org.tbbtalent.server.api.admin.SavedSearchAdminApi;
-import org.tbbtalent.server.model.es.CandidateEs;
-import org.tbbtalent.server.request.candidate.CandidateIntakeData;
-import org.tbbtalent.server.service.db.CandidateSavedListService;
-import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "candidate")
@@ -181,7 +180,17 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     
     @Nullable
     private String visaIssuesNotes;
-    
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private AvailImmediate availImmediate;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private AvailImmediateReason availImmediateReason;
+
+    @Nullable
+    private String availImmediateNotes;
 
     public Candidate() {
     }
@@ -484,9 +493,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         return returnedHome;
     }
 
-    public void setReturnedHome(@Nullable ReturnedHome returnedHome) {
-        this.returnedHome = returnedHome;
-    }
+    public void setReturnedHome(@Nullable ReturnedHome returnedHome) { this.returnedHome = returnedHome; }
 
     @Nullable
     public String getReturnedHomeNotes() {
@@ -523,6 +530,21 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setVisaIssuesNotes(@Nullable String visaIssuesNotes) {
         this.visaIssuesNotes = visaIssuesNotes;
     }
+
+    @Nullable
+    public AvailImmediate getAvailImmediate() { return availImmediate; }
+
+    public void setAvailImmediate(@Nullable AvailImmediate availImmediate) { this.availImmediate = availImmediate; }
+
+    @Nullable
+    public String getAvailImmediateNotes() { return availImmediateNotes; }
+
+    public void setAvailImmediateNotes(@Nullable String availImmediateNotes) { this.availImmediateNotes = availImmediateNotes; }
+
+    @Nullable
+    public AvailImmediateReason getAvailImmediateReason() { return availImmediateReason; }
+
+    public void setAvailImmediateReason(@Nullable AvailImmediateReason availImmediateReason) { this.availImmediateReason = availImmediateReason; }
 
     public boolean isSelected() {
         return selected;
@@ -601,6 +623,16 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getVisaIssuesNotes() != null) {
             setVisaIssuesNotes(data.getVisaIssuesNotes());
+        }
+
+        if (data.getAvailImmediate() != null) {
+            setAvailImmediate(data.getAvailImmediate());
+        }
+        if (data.getAvailImmediateReason() != null) {
+            setAvailImmediateReason(data.getAvailImmediateReason());
+        }
+        if (data.getAvailImmediateNotes() != null) {
+            setAvailImmediateNotes(data.getAvailImmediateNotes());
         }
     }
 }

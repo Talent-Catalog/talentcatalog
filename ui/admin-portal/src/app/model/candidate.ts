@@ -48,6 +48,10 @@ export interface CandidateIntakeData {
 
   visaIssues?: VisaIssue[];
   visaIssuesNotes?: string;
+
+  availImmediate?: AvailImmediate;
+  availImmediateReason?: AvailImmediateReason;
+  availImmediateNotes?: string;
 }
 
 /*
@@ -72,6 +76,20 @@ export enum VisaIssue {
   GovtWork = "Work for foreign government",
   Criminal = "Criminal record",
   VisaRejections = "Visa rejections",
+  Other = "Other"
+}
+
+export enum AvailImmediate {
+  Yes = "Yes",
+  No = "No",
+  Unsure = "Unsure"
+}
+
+export enum AvailImmediateReason {
+  Family = "Family",
+  Health = "Health",
+  CurrentWork = "Current Work",
+  Studies = "Studies",
   Other = "Other"
 }
 
