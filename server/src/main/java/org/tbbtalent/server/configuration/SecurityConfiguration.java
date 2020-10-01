@@ -114,6 +114,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // PUT: UPDATE SAVED SEARCHES
                 .antMatchers(HttpMethod.PUT, "/api/admin/saved-search/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
+                // PUT: UPDATE CONTEXT NOTES
+                .antMatchers(HttpMethod.PUT, "/api/admin/saved-search/context/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
                 // GET: LOAD SAVE SEARCHES
                 .antMatchers(HttpMethod.GET, "/api/admin/saved-search/*/load").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
