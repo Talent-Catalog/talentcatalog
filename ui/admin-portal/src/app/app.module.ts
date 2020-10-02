@@ -129,6 +129,7 @@ import {ReturnedHomeComponent} from './components/candidates/intake/returned-hom
 import {CandidateIntakeTabComponent} from './components/candidates/view/tab/candidate-intake-tab/candidate-intake-tab.component';
 import {VisaIssuesComponent} from './components/candidates/intake/visa-issues/visa-issues.component';
 import {AvailImmediateComponent} from './components/candidates/intake/avail-immediate/avail-immediate.component';
+import {FamilyComponent} from './components/candidates/intake/family/family.component';
 
 @NgModule({
     declarations: [
@@ -249,7 +250,8 @@ import {AvailImmediateComponent} from './components/candidates/intake/avail-imme
         ReturnedHomeComponent,
         CandidateIntakeTabComponent,
         VisaIssuesComponent,
-        AvailImmediateComponent
+        AvailImmediateComponent,
+        FamilyComponent
     ],
   imports: [
     BrowserModule,

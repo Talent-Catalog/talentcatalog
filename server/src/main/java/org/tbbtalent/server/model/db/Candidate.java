@@ -11,19 +11,7 @@ import org.tbbtalent.server.request.candidate.CandidateIntakeData;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
@@ -166,7 +154,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     
     @Enumerated(EnumType.STRING)
     @Nullable
-    private ReturnedHome returnedHome;
+    private YesNoUnsure returnedHome;
 
     @Nullable
     private String returnedHomeNotes;
@@ -183,7 +171,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Enumerated(EnumType.STRING)
     @Nullable
-    private AvailImmediate availImmediate;
+    private YesNoUnsure availImmediate;
 
     @Enumerated(EnumType.STRING)
     @Nullable
@@ -191,6 +179,20 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Nullable
     private String availImmediateNotes;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNo familyMove;
+
+    @Nullable
+    private String familyMoveNotes;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNo familyHealthConcern;
+
+    @Nullable
+    private String familyHealthConcernNotes;
 
     public Candidate() {
     }
@@ -489,11 +491,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     }
 
     @Nullable
-    public ReturnedHome getReturnedHome() {
+    public YesNoUnsure getReturnedHome() {
         return returnedHome;
     }
 
-    public void setReturnedHome(@Nullable ReturnedHome returnedHome) { this.returnedHome = returnedHome; }
+    public void setReturnedHome(@Nullable YesNoUnsure returnedHome) { this.returnedHome = returnedHome; }
 
     @Nullable
     public String getReturnedHomeNotes() {
@@ -532,9 +534,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     }
 
     @Nullable
-    public AvailImmediate getAvailImmediate() { return availImmediate; }
+    public YesNoUnsure getAvailImmediate() { return availImmediate; }
 
-    public void setAvailImmediate(@Nullable AvailImmediate availImmediate) { this.availImmediate = availImmediate; }
+    public void setAvailImmediate(@Nullable YesNoUnsure availImmediate) { this.availImmediate = availImmediate; }
 
     @Nullable
     public String getAvailImmediateNotes() { return availImmediateNotes; }
@@ -545,6 +547,26 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public AvailImmediateReason getAvailImmediateReason() { return availImmediateReason; }
 
     public void setAvailImmediateReason(@Nullable AvailImmediateReason availImmediateReason) { this.availImmediateReason = availImmediateReason; }
+
+    @Nullable
+    public YesNo getFamilyMove() { return familyMove; }
+
+    public void setFamilyMove(@Nullable YesNo familyMove) { this.familyMove = familyMove; }
+
+    @Nullable
+    public String getFamilyMoveNotes() { return familyMoveNotes; }
+
+    public void setFamilyMoveNotes(@Nullable String familyMoveNotes) { this.familyMoveNotes = familyMoveNotes; }
+
+    @Nullable
+    public YesNo getFamilyHealthConcern() { return familyHealthConcern; }
+
+    public void setFamilyHealthConcern(@Nullable YesNo familyHealthConcern) { this.familyHealthConcern = familyHealthConcern; }
+
+    @Nullable
+    public String getFamilyHealthConcernNotes() { return familyHealthConcernNotes; }
+
+    public void setFamilyHealthConcernNotes(@Nullable String familyHealthConcernNotes) { this.familyHealthConcernNotes = familyHealthConcernNotes; }
 
     public boolean isSelected() {
         return selected;
@@ -633,6 +655,19 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getAvailImmediateNotes() != null) {
             setAvailImmediateNotes(data.getAvailImmediateNotes());
+        }
+
+        if (data.getFamilyMove() != null) {
+            setFamilyMove(data.getFamilyMove());
+        }
+        if (data.getFamilyMoveNotes() != null) {
+            setFamilyMoveNotes(data.getFamilyMoveNotes());
+        }
+        if (data.getFamilyHealthConcern() != null) {
+            setFamilyHealthConcern(data.getFamilyHealthConcern());
+        }
+        if (data.getFamilyHealthConcernNotes() != null) {
+            setFamilyHealthConcernNotes(data.getFamilyHealthConcernNotes());
         }
     }
 }

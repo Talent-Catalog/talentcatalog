@@ -1,38 +1,46 @@
-<div *ngIf="error">
-  {{error}}
-</div>
-<form [formGroup]="form">
-  <div class="form-group">
-    <label for="availImmediate">Available in immediate future for international work?</label>
-    <span *ngIf="saving">
-      <i class="fas fa-spinner fa-spin"></i> saving...
-    </span>
-    <select class="form-control"
-            id="availImmediate" [formControlName]="'availImmediate'">
-      <option *ngFor="let opt of availImmediateOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
+<div class="card">
+  <div *ngIf="error">
+    {{error}}
   </div>
+  <div class="card-header">
+    Immediate Availability
+  </div>
+  <div class="card-body">
+    <form [formGroup]="form">
+      <div class="form-group">
+        <label for="availImmediate">Available in immediate future for international work?</label>
+        <span *ngIf="saving">
+        <i class="fas fa-spinner fa-spin"></i> saving...
+      </span>
+        <select class="form-control"
+                id="availImmediate" [formControlName]="'availImmediate'">
+          <option *ngFor="let opt of availImmediateOptions" [value]="opt.value">
+            {{opt.displayText}}
+          </option>
+        </select>
+      </div>
 
-  <div *ngIf="availImmediate === 'No'|| availImmediate == 'Unsure'">
-    <div class="form-group">
-      <label for="availImmediateReason">Factors preventing immediate availability for international work.</label>
-      <span *ngIf="saving">
-      <i class="fas fa-spinner fa-spin"></i> saving...
-    </span>
-      <select class="form-control"
-              id="availImmediateReason" [formControlName]="'availImmediateReason'">
-        <option *ngFor="let opt of availImmediateReasonOptions" [value]="opt.value">
-          {{opt.displayText}}
-        </option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="availImmediateNotes">If Other, or if you have additional notes please describe here.</label>
-      <textarea type="text" class="md-textarea-auto form-control" rows="8"
-                id="availImmediateNotes" [formControlName]="'availImmediateNotes'"
-                placeholder="" ></textarea>
-    </div>
+      <div *ngIf="availImmediate === 'No'|| availImmediate == 'Unsure'">
+        <div class="form-group">
+          <label for="availImmediateReason">Factors preventing immediate availability for international work.</label>
+          <span *ngIf="saving">
+        <i class="fas fa-spinner fa-spin"></i> saving...
+      </span>
+          <select class="form-control"
+                  id="availImmediateReason" [formControlName]="'availImmediateReason'">
+            <option *ngFor="let opt of availImmediateReasonOptions" [value]="opt.value">
+              {{opt.displayText}}
+            </option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="availImmediateNotes">If Other, or if you have additional notes please describe here.</label>
+          <textarea type="text" class="md-textarea-auto form-control" rows="6"
+                    id="availImmediateNotes" [formControlName]="'availImmediateNotes'"
+                    placeholder="" ></textarea>
+        </div>
+      </div>
+    </form>
   </div>
-</form>
+</div>
+

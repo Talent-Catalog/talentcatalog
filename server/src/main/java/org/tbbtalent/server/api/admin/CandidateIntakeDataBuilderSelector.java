@@ -37,8 +37,8 @@ public class CandidateIntakeDataBuilderSelector {
     private DtoBuilder candidateIntakeDto() {
         return new DtoBuilder()
                 .add("returnedHome")
-                .add("returnedHomeNotes")
                 .add("returnedHomeReason")
+                .add("returnedHomeNotes")
 
                 .add("visaIssues")
                 .add("visaIssuesNotes")
@@ -46,6 +46,11 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("availImmediate")
                 .add("availImmediateReason")
                 .add("availImmediateNotes")
+
+                .add("familyMove")
+                .add("familyMoveNotes")
+                .add("familyHealthConcern")
+                .add("familyHealthConcernNotes")
                 ;
     }
 

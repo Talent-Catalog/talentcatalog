@@ -1,13 +1,13 @@
-import {User} from "./user";
-import {Country} from "./country";
-import {Nationality} from "./nationality";
-import {CandidateReviewStatusItem} from "./candidate-review-status-item";
-import {EducationMajor} from "./education-major";
-import {EducationLevel} from "./education-level";
-import {SurveyType} from "./survey-type";
-import {Router} from "@angular/router";
-import {Location} from "@angular/common";
-import {getExternalHref} from "../util/url";
+import {User} from './user';
+import {Country} from './country';
+import {Nationality} from './nationality';
+import {CandidateReviewStatusItem} from './candidate-review-status-item';
+import {EducationMajor} from './education-major';
+import {EducationLevel} from './education-level';
+import {SurveyType} from './survey-type';
+import {Router} from '@angular/router';
+import {Location} from '@angular/common';
+import {getExternalHref} from '../util/url';
 
 export interface Candidate {
   id: number;
@@ -52,6 +52,11 @@ export interface CandidateIntakeData {
   availImmediate?: AvailImmediate;
   availImmediateReason?: AvailImmediateReason;
   availImmediateNotes?: string;
+
+  familyMove?: FamilyMove;
+  familyMoveNotes?: string;
+  familyHealth?: FamilyHealth;
+  familyHealthNotes?: string;
 }
 
 /*
@@ -64,12 +69,6 @@ export interface CandidateIntakeData {
   anything on the server.
 */
 
-export enum ReturnedHome {
-  NoResponse = "No response",
-  Returned = "Returned home",
-  NotReturned = "Has not returned home"
-}
-
 export enum VisaIssue {
   Health = "Health issues",
   Military = "Military service",
@@ -79,18 +78,25 @@ export enum VisaIssue {
   Other = "Other"
 }
 
-export enum AvailImmediate {
-  Yes = "Yes",
-  No = "No",
-  Unsure = "Unsure"
-}
-
 export enum AvailImmediateReason {
   Family = "Family",
   Health = "Health",
   CurrentWork = "Current Work",
   Studies = "Studies",
   Other = "Other"
+}
+
+export enum YesNo {
+  NoResponse = "",
+  Yes = "Yes",
+  No = "No",
+}
+
+export enum YesNoUnsure {
+  NoResponse = "",
+  Yes = "Yes",
+  No = "No",
+  Unsure = "Unsure"
 }
 
 export function getCandidateNavigation(candidate: Candidate): any[] {

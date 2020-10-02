@@ -1,7 +1,7 @@
 package org.tbbtalent.server.model.db;
 
-public enum AvailImmediate {
+public enum YesNo {
+    NoResponse,
     Yes,
-    No,
-    Unsure
+    No
 }
