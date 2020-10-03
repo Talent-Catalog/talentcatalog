@@ -129,6 +129,7 @@ import {ReturnedHomeComponent} from './components/candidates/intake/returned-hom
 import {CandidateIntakeTabComponent} from './components/candidates/view/tab/candidate-intake-tab/candidate-intake-tab.component';
 import {VisaIssuesComponent} from './components/candidates/intake/visa-issues/visa-issues.component';
 import {CitizenshipsComponent} from './components/candidates/intake/citizenships/citizenships.component';
+import {CandidateCitizenshipCardComponent} from './components/candidates/intake/citizenships/card/candidate-citizenship-card.component';
 
 @NgModule({
   declarations: [
@@ -249,7 +250,8 @@ import {CitizenshipsComponent} from './components/candidates/intake/citizenships
     ReturnedHomeComponent,
     CandidateIntakeTabComponent,
     VisaIssuesComponent,
-    CitizenshipsComponent
+    CitizenshipsComponent,
+    CandidateCitizenshipCardComponent
   ],
   imports: [
     BrowserModule,

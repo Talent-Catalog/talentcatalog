@@ -1,0 +1,29 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+
+<form class="card" [formGroup]="form">
+
+  <label for="country">Country of citizenship</label>
+  <select class="form-control" id="country"
+          [formControlName]="'citizenNationalityId'">
+    <option *ngFor="let nationality of nationalities" [value]="nationality.id">
+      {{nationality.name}}</option>
+  </select>
+
+  <ng-container *ngIf="hasSelectedNationality">
+    <label for="hasPassport">Passport?</label>
+    <select class="form-control"
+            id="hasPassport" [formControlName]="'citizenHasPassport'">
+      <option *ngFor="let opt of hasPassportOptions" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+    <div class="form-group">
+      <label for="citizenNotes">Notes</label>
+      <textarea type="text" class="md-textarea-auto form-control" rows="4"
+                id="citizenNotes" [formControlName]="'citizenNotes'"
+                placeholder="" ></textarea>
+    </div>
+  </ng-container>
+</form>

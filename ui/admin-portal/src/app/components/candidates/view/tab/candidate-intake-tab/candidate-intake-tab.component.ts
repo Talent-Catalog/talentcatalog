@@ -1,6 +1,14 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Candidate, CandidateIntakeData} from "../../../../../model/candidate";
+import {
+  Candidate,
+  CandidateCitizenship,
+  CandidateIntakeData,
+  HasPassport
+} from "../../../../../model/candidate";
 import {CandidateService} from "../../../../../services/candidate.service";
+import {forkJoin} from "rxjs";
+import {Nationality} from "../../../../../model/nationality";
+import {NationalityService} from "../../../../../services/nationality.service";
 
 @Component({
   selector: 'app-candidate-intake-tab',
@@ -11,23 +19,39 @@ export class CandidateIntakeTabComponent implements OnInit {
   @Input() candidate: Candidate;
   candidateIntakeData: CandidateIntakeData;
   error: string;
+  existingRecords: CandidateCitizenship[];
   loading: boolean;
+  nationalities: Nationality[];
 
-  constructor(private candidateService: CandidateService) { }
+  constructor(
+    private candidateService: CandidateService,
+    private nationalityService: NationalityService
+  ) { }
 
   ngOnInit(): void {
-    //Load existing candidateIntakeData
+    //Load existing candidateIntakeData and other data needed by intake
     this.error = null;
     this.loading = true;
-    this.candidateService.getIntakeData(this.candidate.id).subscribe(
-      intakeData => {
-        this.candidateIntakeData = intakeData;
-        this.loading = false;
-      },
-      error => {
-        this.error = error;
-        this.loading = false;
-      });
+    forkJoin({
+      'nationalities': this.nationalityService.listNationalities(),
+      'intakeData':  this.candidateService.getIntakeData(this.candidate.id),
+    }).subscribe(results => {
+      this.loading = false;
+      this.nationalities = results['nationalities'];
+      this.candidateIntakeData = results['intakeData'];
+    }, error => {
+      this.loading = false;
+      this.error = error;
+    });
+
+    //todo Debug
+    this.existingRecords = [];
+    const test: CandidateCitizenship = {
+      citizenNationalityId: 9292,
+      citizenHasPassport: HasPassport.NoPassport,
+      citizenNotes: "J ohn was here"
+    }
+    this.existingRecords.push( test );
   }
 
 }

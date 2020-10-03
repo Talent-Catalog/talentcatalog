@@ -41,7 +41,17 @@ export interface Candidate {
   contextNote: string;
 }
 
+export interface CandidateCitizenship {
+  citizenNationalityId?: number;
+  citizenHasPassport?: HasPassport;
+  citizenNotes?: string;
+}
+
 export interface CandidateIntakeData {
+  citizenNationalityId?: number;
+  citizenHasPassport?: HasPassport;
+  citizenNotes?: string;
+
   returnedHome?: ReturnedHome;
   returnedHomeNotes?: string;
   returnedHomeReason?: string;
@@ -59,6 +69,13 @@ export interface CandidateIntakeData {
   used on the front end and can be changed any time without needing to change
   anything on the server.
 */
+
+export enum HasPassport {
+  NoResponse = "",
+  ValidPassport = "Has valid passport",
+  InvalidPassport = "Has invalid passport",
+  NoPassport = "No passport"
+}
 
 export enum ReturnedHome {
   NoResponse = "No response",
