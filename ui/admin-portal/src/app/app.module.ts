@@ -128,6 +128,7 @@ import {CandidateContextNoteComponent} from './components/util/candidate-context
 import {ReturnedHomeComponent} from './components/candidates/intake/returned-home/returned-home.component';
 import {CandidateIntakeTabComponent} from './components/candidates/view/tab/candidate-intake-tab/candidate-intake-tab.component';
 import {VisaIssuesComponent} from './components/candidates/intake/visa-issues/visa-issues.component';
+import {CitizenshipsComponent} from './components/candidates/intake/citizenships/citizenships.component';
 
 @NgModule({
   declarations: [
@@ -247,7 +248,8 @@ import {VisaIssuesComponent} from './components/candidates/intake/visa-issues/vi
     CandidateContextNoteComponent,
     ReturnedHomeComponent,
     CandidateIntakeTabComponent,
-    VisaIssuesComponent
+    VisaIssuesComponent,
+    CitizenshipsComponent
   ],
   imports: [
     BrowserModule,
