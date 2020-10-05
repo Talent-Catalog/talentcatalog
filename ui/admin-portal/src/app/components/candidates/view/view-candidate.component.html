@@ -124,6 +124,16 @@
           </ng-template>
         </ngb-tab>
 
+        <!-- Mini Intake -->
+        <ngb-tab id="MiniIntake" [title]="'Mini Intake'">
+          <ng-template ngbTabContent>
+            <app-candidate-mini-intake-tab
+              [candidate]="candidate"
+            >
+            </app-candidate-mini-intake-tab>
+          </ng-template>
+        </ngb-tab>
+
         <!-- Intake -->
         <ngb-tab id="Intake" [title]="'Intake'">
           <ng-template ngbTabContent>

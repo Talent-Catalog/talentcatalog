@@ -52,12 +52,21 @@ export interface CandidateIntakeData {
   citizenHasPassport?: HasPassport;
   citizenNotes?: string;
 
-  returnedHome?: ReturnedHome;
+  returnedHome?: YesNoUnsure;
   returnedHomeNotes?: string;
   returnedHomeReason?: string;
 
   visaIssues?: VisaIssue[];
   visaIssuesNotes?: string;
+
+  availImmediate?: YesNoUnsure;
+  availImmediateReason?: AvailImmediateReason;
+  availImmediateNotes?: string;
+
+  familyMove?: YesNo;
+  familyMoveNotes?: string;
+  familyHealth?: YesNo;
+  familyHealthNotes?: string;
 }
 
 /*
@@ -90,6 +99,27 @@ export enum VisaIssue {
   Criminal = "Criminal record",
   VisaRejections = "Visa rejections",
   Other = "Other"
+}
+
+export enum AvailImmediateReason {
+  Family = "Family",
+  Health = "Health",
+  CurrentWork = "Current Work",
+  Studies = "Studies",
+  Other = "Other"
+}
+
+export enum YesNo {
+  NoResponse = "",
+  Yes = "Yes",
+  No = "No",
+}
+
+export enum YesNoUnsure {
+  NoResponse = "",
+  Yes = "Yes",
+  No = "No",
+  Unsure = "Unsure"
 }
 
 export function getCandidateNavigation(candidate: Candidate): any[] {

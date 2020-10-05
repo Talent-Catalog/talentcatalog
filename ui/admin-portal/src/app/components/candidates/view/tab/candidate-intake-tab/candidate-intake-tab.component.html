@@ -4,6 +4,10 @@
 <div *ngIf="error">
   {{error}}
 </div>
+<div class="h6 py-2 text-right">
+  Date of mini intake: xxxx. Completed by xxxx.
+</div>
+
 <div *ngIf="!loading">
   <app-citizenships
     [candidate]="candidate"
@@ -16,13 +20,28 @@
 
   <app-returned-home
     [candidate]="candidate"
-    [candidateIntakeData]="candidateIntakeData"
-  >
+    [candidateIntakeData]="candidateIntakeData">
   </app-returned-home>
+
+  <hr/>
 
   <app-visa-issues
     [candidate]="candidate"
-    [candidateIntakeData]="candidateIntakeData"
-  >
+    [candidateIntakeData]="candidateIntakeData">
   </app-visa-issues>
+
+  <hr/>
+
+  <app-avail-immediate
+    [candidate]="candidate"
+    [candidateIntakeData]="candidateIntakeData">
+  </app-avail-immediate>
+
+  <hr/>
+
+  <app-family
+    [candidate]="candidate"
+    [candidateIntakeData]="candidateIntakeData">
+  </app-family>
+
 </div>

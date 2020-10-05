@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder} from "@angular/forms";
-import {IntakeComponentBase} from "../../../util/intake/IntakeComponentBase";
-import {CandidateService} from "../../../../services/candidate.service";
-import {EnumOption, enumOptions} from "../../../../util/enum";
-import {ReturnedHome} from "../../../../model/candidate";
+import {FormBuilder} from '@angular/forms';
+import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
+import {CandidateService} from '../../../../services/candidate.service';
+import {EnumOption, enumOptions} from '../../../../util/enum';
+import {YesNoUnsure} from '../../../../model/candidate';
 
 @Component({
   selector: 'app-returned-home',
@@ -12,7 +12,7 @@ import {ReturnedHome} from "../../../../model/candidate";
 })
 export class ReturnedHomeComponent extends IntakeComponentBase implements OnInit {
 
-  public returnedHomeOptions: EnumOption[] = enumOptions(ReturnedHome);
+  public returnedHomeOptions: EnumOption[] = enumOptions(YesNoUnsure);
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
