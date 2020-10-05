@@ -1,17 +1,26 @@
 <!-- EXISTING RECORDS -->
-<div class="card" *ngFor="let citizenship of existingRecords; let i = index;">
-  <app-candidate-citizenship-card
-    [candidate]="candidate"
-    [candidateIntakeData]="candidateIntakeData"
-    [myRecordIndex]="i"
-    [nationalities]="nationalities"
-    [existingRecords]="existingRecords"
-    (delete)="deleteRecord(i)">
-  </app-candidate-citizenship-card>
-</div>
+<div class="card">
+  <div class="card-header">
+    Citizenships
+  </div>
+  <div class="card-body">
+    <div *ngFor="let citizenship of existingRecords; let i = index;" class="citizenship-card">
+      <app-candidate-citizenship-card
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [myRecordIndex]="i"
+        [nationalities]="nationalities"
+        [existingRecords]="existingRecords"
+        (delete)="deleteRecord(i)">
+      </app-candidate-citizenship-card>
+      <hr/>
+    </div>
 
-<div>
-  <button (click)="updateRecord()">
-    Add citizenship
-  </button>
+    <div>
+      <button class="btn btn-outline-primary mt-2" (click)="updateRecord()">
+        Add citizenship
+      </button>
+    </div>
+
+  </div>
 </div>
