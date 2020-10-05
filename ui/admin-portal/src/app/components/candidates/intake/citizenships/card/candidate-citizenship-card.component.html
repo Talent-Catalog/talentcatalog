@@ -4,10 +4,10 @@
 
 <form class="card" [formGroup]="form">
 
-  <label for="country">Country of citizenship</label>
-  <select class="form-control" id="country"
+  <label for="nationality">Nationality</label>
+  <select class="form-control" id="nationality"
           [formControlName]="'citizenNationalityId'">
-    <option *ngFor="let nationality of nationalities" [value]="nationality.id">
+    <option *ngFor="let nationality of filteredNationalities" [value]="nationality.id">
       {{nationality.name}}</option>
   </select>
 

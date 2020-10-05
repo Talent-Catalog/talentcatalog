@@ -1,31 +1,17 @@
-
-<!-- REVIEW EXISTING RECORDS -->
+<!-- EXISTING RECORDS -->
 <div class="card" *ngFor="let citizenship of existingRecords; let i = index;">
   <app-candidate-citizenship-card
     [candidate]="candidate"
     [candidateIntakeData]="candidateIntakeData"
-    [candidateCitizenship]="citizenship"
+    [myRecordIndex]="i"
     [nationalities]="nationalities"
+    [existingRecords]="existingRecords"
     (delete)="deleteRecord(i)">
   </app-candidate-citizenship-card>
 </div>
 
-<!-- CREATE/UPDATE RECORD -->
-<ng-container *ngIf="updatingRecord">
-  <app-candidate-citizenship-card
-    [candidate]="candidate"
-    [candidateIntakeData]="candidateIntakeData"
-    [nationalities]="nationalities"
-  >
-  </app-candidate-citizenship-card>
-  <button (click)="finishUpdatingRecord()">
-    Finish
-  </button>
-</ng-container>
-
 <div>
-  <button *ngIf="!updatingRecord"
-        (click)="updateRecord()">
+  <button (click)="updateRecord()">
     Add citizenship
   </button>
 </div>

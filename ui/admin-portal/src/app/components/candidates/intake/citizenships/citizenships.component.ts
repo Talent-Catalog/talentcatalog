@@ -1,10 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {EnumOption, enumOptions} from "../../../../util/enum";
 import {
   Candidate,
   CandidateCitizenship,
-  CandidateIntakeData,
-  HasPassport
+  CandidateIntakeData
 } from "../../../../model/candidate";
 import {Nationality} from "../../../../model/nationality";
 
@@ -18,8 +16,6 @@ export class CitizenshipsComponent implements OnInit {
   @Input() candidateIntakeData: CandidateIntakeData;
   @Input() existingRecords: CandidateCitizenship[];
   @Input() nationalities: Nationality[];
-  hasPassportOptions: EnumOption[] = enumOptions(HasPassport);
-  updatingRecord: boolean;
 
   constructor(){}
 
@@ -32,12 +28,8 @@ export class CitizenshipsComponent implements OnInit {
   }
 
   updateRecord() {
+    const citizenship: CandidateCitizenship = {};
+    this.existingRecords.push(citizenship)
     //todo
-    this.updatingRecord = true;
-  }
-
-  finishUpdatingRecord() {
-    //todo Refresh existing records
-    this.updatingRecord = false;
   }
 }

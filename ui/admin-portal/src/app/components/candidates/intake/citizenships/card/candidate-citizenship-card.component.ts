@@ -20,8 +20,20 @@ import {Nationality} from "../../../../../model/nationality";
 })
 export class CandidateCitizenshipCardComponent extends IntakeComponentBase implements OnInit {
   @Output() delete = new EventEmitter();
-  @Input() candidateCitizenship: CandidateCitizenship;
+
+  //This shows all records currently in use. It is used to avoid having
+  //duplicate records.
+  @Input() existingRecords: CandidateCitizenship[];
+
+  //Index into the above existingRecords array of the record corresponding to
+  //this component instance.
+  @Input() myRecordIndex: number;
+
+  //All known nationalities - a filtered version of this is used for drop downs
+  //Filtered to remove nationalities already used in existingRecords.
   @Input() nationalities: Nationality[];
+
+  //Drop down values for enumeration
   hasPassportOptions: EnumOption[] = enumOptions(HasPassport);
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
@@ -29,24 +41,49 @@ export class CandidateCitizenshipCardComponent extends IntakeComponentBase imple
   }
 
   ngOnInit(): void {
-    const nationalityId = this.candidateCitizenship ?
-      this.candidateCitizenship.citizenNationalityId :
-      this.candidateIntakeData?.citizenNationalityId;
-    const citizenHasPassport = this.candidateCitizenship ?
-      this.candidateCitizenship.citizenHasPassport :
-      this.candidateIntakeData?.citizenHasPassport;
-    const citizenNotes = this.candidateCitizenship ?
-      this.candidateCitizenship.citizenNotes :
-      this.candidateIntakeData?.citizenNotes;
-
     this.form = this.fb.group({
-      citizenNationalityId: [nationalityId],
-      citizenHasPassport: [citizenHasPassport],
-      citizenNotes: [citizenNotes],
+      citizenNationalityId: [this.myRecord?.citizenNationalityId],
+      citizenHasPassport: [this.myRecord?.citizenHasPassport],
+      citizenNotes: [this.myRecord?.citizenNotes],
     });
+
+    //Subscribe to changes on the id so that we can keep existing records up
+    //to date - used to filter ids on new records so that we don't get
+    //duplicates/
+    this.form.controls['citizenNationalityId'].valueChanges.subscribe(
+      change => {
+        //Update my existingRecord
+        this.myRecord.citizenNationalityId = +change;
+      }
+    );
+  }
+
+  /**
+   * Filters out nationalities already used in existingRecords
+   */
+  get filteredNationalities(): Nationality[] {
+    if (!this.nationalities) {
+      return [];
+    } else if (!this.existingRecords) {
+      return this.nationalities;
+    } else {
+      const existingIds: number[] =
+        this.existingRecords.map(record => record.citizenNationalityId);
+      return this.nationalities.filter(
+        record =>
+          //Include current id associated with this record
+          record.id === this.myRecord?.citizenNationalityId ||
+          //But not any other ids already associated with existing records
+          !existingIds.includes(record.id)
+      );
+    }
   }
 
   get hasSelectedNationality(): boolean {
     return this.form.value?.citizenNationalityId;
+  }
+
+  private get myRecord() {
+    return this.existingRecords[this.myRecordIndex];
   }
 }

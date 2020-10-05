@@ -44,12 +44,12 @@ export class CandidateIntakeTabComponent implements OnInit {
       this.error = error;
     });
 
-    //todo Debug
+    //todo Debug Fake
     this.existingRecords = [];
     const test: CandidateCitizenship = {
       citizenNationalityId: 9292,
       citizenHasPassport: HasPassport.NoPassport,
-      citizenNotes: "J ohn was here"
+      citizenNotes: "***Remove this fake record from candidate-intake-tab.component.ts"
     }
     this.existingRecords.push( test );
   }
