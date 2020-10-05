@@ -86,4 +86,8 @@ export class CandidateCitizenshipCardComponent extends IntakeComponentBase imple
   private get myRecord() {
     return this.existingRecords[this.myRecordIndex];
   }
+
+  doDelete() {
+    this.delete.emit();
+  }
 }

@@ -23,13 +23,11 @@ export class CitizenshipsComponent implements OnInit {
   }
 
   deleteRecord(i: number) {
-    //todo
-    //todo Refresh existing records
+    this.existingRecords.splice(i, 1);
   }
 
   updateRecord() {
     const citizenship: CandidateCitizenship = {};
     this.existingRecords.push(citizenship)
-    //todo
   }
 }

@@ -2,9 +2,16 @@
   {{error}}
 </div>
 
+
 <form class="card" [formGroup]="form">
 
-  <label for="nationality">Nationality</label>
+  <label for="nationality">Nationality
+    <span class="float-right">
+      <button class="btn btn-sm btn-outline-danger" (click)="doDelete()">
+        <i class="fas fa-trash"></i>
+      </button>
+    </span>
+  </label>
   <select class="form-control" id="nationality"
           [formControlName]="'citizenNationalityId'">
     <option *ngFor="let nationality of filteredNationalities" [value]="nationality.id">
