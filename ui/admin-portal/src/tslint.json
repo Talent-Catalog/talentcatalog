@@ -1,7 +1,8 @@
 {
     "extends": "../tslint.json",
     "rules": {
-        "directive-selector": [
+      "directive-class-suffix": false,
+      "directive-selector": [
             true,
             "attribute",
             "app",
