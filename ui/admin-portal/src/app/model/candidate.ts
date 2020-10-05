@@ -42,20 +42,20 @@ export interface Candidate {
 }
 
 export interface CandidateIntakeData {
-  returnedHome?: ReturnedHome;
+  returnedHome?: YesNoUnsure;
   returnedHomeNotes?: string;
   returnedHomeReason?: string;
 
   visaIssues?: VisaIssue[];
   visaIssuesNotes?: string;
 
-  availImmediate?: AvailImmediate;
+  availImmediate?: YesNoUnsure;
   availImmediateReason?: AvailImmediateReason;
   availImmediateNotes?: string;
 
-  familyMove?: FamilyMove;
+  familyMove?: YesNo;
   familyMoveNotes?: string;
-  familyHealth?: FamilyHealth;
+  familyHealth?: YesNo;
   familyHealthNotes?: string;
 }
 
