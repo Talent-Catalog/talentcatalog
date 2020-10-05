@@ -1,0 +1,19 @@
+<div *ngIf="loading">
+  <i class="fas fa-spinner fa-spin"></i> loading...
+</div>
+<div *ngIf="error">
+  {{error}}
+</div>
+<div class="h6 py-2 text-right">
+  Date of mini intake: xxxx. Completed by xxxx.
+</div>
+
+<div *ngIf="!loading">
+  <app-returned-home
+    [candidate]="candidate"
+    [candidateIntakeData]="candidateIntakeData">
+  </app-returned-home>
+
+  <hr/>
+
+</div>

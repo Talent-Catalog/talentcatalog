@@ -130,6 +130,7 @@ import {CandidateIntakeTabComponent} from './components/candidates/view/tab/cand
 import {VisaIssuesComponent} from './components/candidates/intake/visa-issues/visa-issues.component';
 import {AvailImmediateComponent} from './components/candidates/intake/avail-immediate/avail-immediate.component';
 import {FamilyComponent} from './components/candidates/intake/family/family.component';
+import {CandidateMiniIntakeTabComponent} from './components/candidates/view/tab/candidate-mini-intake-tab/candidate-mini-intake-tab.component';
 
 @NgModule({
     declarations: [
@@ -251,7 +252,8 @@ import {FamilyComponent} from './components/candidates/intake/family/family.comp
         CandidateIntakeTabComponent,
         VisaIssuesComponent,
         AvailImmediateComponent,
-        FamilyComponent
+        FamilyComponent,
+        CandidateMiniIntakeTabComponent
     ],
   imports: [
     BrowserModule,
