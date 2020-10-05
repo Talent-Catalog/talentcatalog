@@ -2,18 +2,12 @@
  * Copyright (c) 2020 Talent Beyond Boundaries. All rights reserved.
  */
 
-import {AfterViewInit, Input, OnDestroy, OnInit} from "@angular/core";
-import {
-  catchError,
-  debounceTime,
-  map,
-  switchMap,
-  takeUntil
-} from "rxjs/operators";
-import {Subject} from "rxjs";
-import {FormBuilder, FormGroup} from "@angular/forms";
-import {Candidate, CandidateIntakeData} from "../../../model/candidate";
-import {CandidateService} from "../../../services/candidate.service";
+import {AfterViewInit, Directive, Input, OnDestroy, OnInit} from '@angular/core';
+import {catchError, debounceTime, map, switchMap, takeUntil} from 'rxjs/operators';
+import {Subject} from 'rxjs';
+import {FormBuilder, FormGroup} from '@angular/forms';
+import {Candidate, CandidateIntakeData} from '../../../model/candidate';
+import {CandidateService} from '../../../services/candidate.service';
 
 /**
  * Base class for all candidate intake components.
@@ -29,6 +23,7 @@ import {CandidateService} from "../../../services/candidate.service";
  * </ul>
  * @author John Cameron
  */
+@Directive()
 export abstract class IntakeComponentBase implements AfterViewInit, OnDestroy, OnInit {
   /**
    * This is the candidate whose intake data we are entering
