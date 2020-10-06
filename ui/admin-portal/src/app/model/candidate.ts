@@ -1,13 +1,13 @@
-import {User} from "./user";
-import {Country} from "./country";
-import {Nationality} from "./nationality";
-import {CandidateReviewStatusItem} from "./candidate-review-status-item";
-import {EducationMajor} from "./education-major";
-import {EducationLevel} from "./education-level";
-import {SurveyType} from "./survey-type";
-import {Router} from "@angular/router";
-import {Location} from "@angular/common";
-import {getExternalHref} from "../util/url";
+import {User} from './user';
+import {Country} from './country';
+import {Nationality} from './nationality';
+import {CandidateReviewStatusItem} from './candidate-review-status-item';
+import {EducationMajor} from './education-major';
+import {EducationLevel} from './education-level';
+import {SurveyType} from './survey-type';
+import {Router} from '@angular/router';
+import {Location} from '@angular/common';
+import {getExternalHref} from '../util/url';
 
 export interface Candidate {
   id: number;
@@ -67,6 +67,9 @@ export interface CandidateIntakeData {
 
   visaIssues?: VisaIssue[];
   visaIssuesNotes?: string;
+
+  intRecruitReasons?: IntRecruitReason[];
+  intRecruitRural?: YesNoUnsure;
 }
 
 /*
@@ -100,6 +103,14 @@ export enum VisaIssue {
   GovtWork = "Work for foreign government",
   Criminal = "Criminal record",
   VisaRejections = "Visa rejections",
+  Other = "Other"
+}
+
+export enum IntRecruitReason {
+  CantReturnHome = "I cannot return to my home country",
+  Citizenship = "I am seeking new citizenship",
+  Experience = "I am looking to get experience",
+  Children = "I would like a better future for my children",
   Other = "Other"
 }
 

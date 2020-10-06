@@ -51,6 +51,9 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("familyMoveNotes")
                 .add("familyHealthConcern")
                 .add("familyHealthConcernNotes")
+
+                .add("intRecruitReasons")
+                .add("intRecruitRural")
                 ;
     }
 

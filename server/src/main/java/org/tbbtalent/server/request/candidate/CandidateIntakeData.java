@@ -4,17 +4,12 @@
 
 package org.tbbtalent.server.request.candidate;
 
-import java.util.List;
-
-import org.tbbtalent.server.model.db.AvailImmediateReason;
-import org.tbbtalent.server.model.db.HasPassport;
-import org.tbbtalent.server.model.db.VisaIssue;
-import org.tbbtalent.server.model.db.YesNo;
-import org.tbbtalent.server.model.db.YesNoUnsure;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.tbbtalent.server.model.db.*;
+
+import java.util.List;
 
 /**
  * Holds all candidate intake fields.
@@ -47,4 +42,7 @@ public class CandidateIntakeData {
 
     private List<VisaIssue> visaIssues;
     private String visaIssuesNotes;
+
+    private List<IntRecruitReason> intRecruitReasons;
+    private YesNoUnsure intRecruitRural;
 }

@@ -4,31 +4,18 @@
 
 package org.tbbtalent.server.model.db;
 
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.api.admin.SavedSearchAdminApi;
 import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.request.candidate.CandidateIntakeData;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
+
+import javax.persistence.*;
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "candidate")
@@ -209,6 +196,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Nullable
     private String familyHealthConcernNotes;
+
+    @Convert(converter = IntRecruitReasonConverter.class)
+    @Nullable
+    private List<IntRecruitReason> intRecruitReasons;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNoUnsure intRecruitRural;
 
     public Candidate() {
     }
@@ -592,6 +587,16 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setFamilyHealthConcernNotes(@Nullable String familyHealthConcernNotes) { this.familyHealthConcernNotes = familyHealthConcernNotes; }
 
+    @Nullable
+    public List<IntRecruitReason> getIntRecruitReasons() { return intRecruitReasons; }
+
+    public void setIntRecruitReasons(@Nullable List<IntRecruitReason> intRecruitReasons) { this.intRecruitReasons = intRecruitReasons; }
+
+    @Nullable
+    public YesNoUnsure getIntRecruitRural() { return intRecruitRural; }
+
+    public void setIntRecruitRural(@Nullable YesNoUnsure intRecruitRural) { this.intRecruitRural = intRecruitRural; }
+
     public boolean isSelected() {
         return selected;
     }
@@ -692,6 +697,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getVisaIssuesNotes() != null) {
             setVisaIssuesNotes(data.getVisaIssuesNotes());
+        }
+
+        if (data.getIntRecruitReasons() != null) {
+            setIntRecruitReasons(data.getIntRecruitReasons());
+        }
+        if (data.getIntRecruitRural() != null) {
+            setIntRecruitRural(data.getIntRecruitRural());
         }
     }
 }
