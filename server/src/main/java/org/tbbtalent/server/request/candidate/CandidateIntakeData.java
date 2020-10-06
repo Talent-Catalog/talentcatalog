@@ -4,15 +4,17 @@
 
 package org.tbbtalent.server.request.candidate;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import java.util.List;
+
 import org.tbbtalent.server.model.db.AvailImmediateReason;
+import org.tbbtalent.server.model.db.HasPassport;
 import org.tbbtalent.server.model.db.VisaIssue;
 import org.tbbtalent.server.model.db.YesNo;
 import org.tbbtalent.server.model.db.YesNoUnsure;
 
-import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Holds all candidate intake fields.
@@ -25,19 +27,24 @@ import java.util.List;
 @Setter
 @ToString
 public class CandidateIntakeData {
-    private YesNoUnsure returnedHome;
-    private String returnedHomeNotes; 
-    private String returnedHomeReason;
-    
-    private List<VisaIssue> visaIssues;
-    private String visaIssuesNotes;
 
     private YesNoUnsure availImmediate;
     private AvailImmediateReason availImmediateReason;
     private String availImmediateNotes;
 
+    private Long citizenNationalityId;
+    private HasPassport citizenHasPassport;
+    private String citizenNotes;
+
     private YesNo familyMove;
     private String familyMoveNotes;
     private YesNo familyHealthConcern;
     private String familyHealthConcernNotes;
+
+    private YesNoUnsure returnedHome;
+    private String returnedHomeNotes;
+    private String returnedHomeReason;
+
+    private List<VisaIssue> visaIssues;
+    private String visaIssuesNotes;
 }

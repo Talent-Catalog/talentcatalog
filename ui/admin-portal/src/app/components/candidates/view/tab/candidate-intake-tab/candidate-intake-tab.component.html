@@ -9,6 +9,16 @@
 </div>
 
 <div *ngIf="!loading">
+  <app-citizenships
+    [candidate]="candidate"
+    [candidateIntakeData]="candidateIntakeData"
+    [existingRecords]="existingRecords"
+    [nationalities]="nationalities"
+  >
+  </app-citizenships>
+
+  <hr/>
+
   <app-returned-home
     [candidate]="candidate"
     [candidateIntakeData]="candidateIntakeData">

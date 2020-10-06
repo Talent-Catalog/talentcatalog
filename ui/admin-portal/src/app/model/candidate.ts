@@ -1,13 +1,13 @@
-import {User} from './user';
-import {Country} from './country';
-import {Nationality} from './nationality';
-import {CandidateReviewStatusItem} from './candidate-review-status-item';
-import {EducationMajor} from './education-major';
-import {EducationLevel} from './education-level';
-import {SurveyType} from './survey-type';
-import {Router} from '@angular/router';
-import {Location} from '@angular/common';
-import {getExternalHref} from '../util/url';
+import {User} from "./user";
+import {Country} from "./country";
+import {Nationality} from "./nationality";
+import {CandidateReviewStatusItem} from "./candidate-review-status-item";
+import {EducationMajor} from "./education-major";
+import {EducationLevel} from "./education-level";
+import {SurveyType} from "./survey-type";
+import {Router} from "@angular/router";
+import {Location} from "@angular/common";
+import {getExternalHref} from "../util/url";
 
 export interface Candidate {
   id: number;
@@ -41,22 +41,32 @@ export interface Candidate {
   contextNote: string;
 }
 
+export interface CandidateCitizenship {
+  citizenNationalityId?: number;
+  citizenHasPassport?: HasPassport;
+  citizenNotes?: string;
+}
+
 export interface CandidateIntakeData {
+  availImmediate?: YesNoUnsure;
+  availImmediateReason?: AvailImmediateReason;
+  availImmediateNotes?: string;
+
+  citizenNationalityId?: number;
+  citizenHasPassport?: HasPassport;
+  citizenNotes?: string;
+
+  familyMove?: YesNo;
+  familyMoveNotes?: string;
+  familyHealth?: YesNo;
+  familyHealthNotes?: string;
+
   returnedHome?: YesNoUnsure;
   returnedHomeNotes?: string;
   returnedHomeReason?: string;
 
   visaIssues?: VisaIssue[];
   visaIssuesNotes?: string;
-
-  availImmediate?: YesNoUnsure;
-  availImmediateReason?: AvailImmediateReason;
-  availImmediateNotes?: string;
-
-  familyMove?: YesNo;
-  familyMoveNotes?: string;
-  familyHealth?: YesNo;
-  familyHealthNotes?: string;
 }
 
 /*
@@ -69,20 +79,27 @@ export interface CandidateIntakeData {
   anything on the server.
 */
 
+export enum AvailImmediateReason {
+  Family = "Family",
+  Health = "Health",
+  CurrentWork = "Current Work",
+  Studies = "Studies",
+  Other = "Other"
+}
+
+export enum HasPassport {
+  NoResponse = "",
+  ValidPassport = "Has valid passport",
+  InvalidPassport = "Has invalid passport",
+  NoPassport = "No passport"
+}
+
 export enum VisaIssue {
   Health = "Health issues",
   Military = "Military service",
   GovtWork = "Work for foreign government",
   Criminal = "Criminal record",
   VisaRejections = "Visa rejections",
-  Other = "Other"
-}
-
-export enum AvailImmediateReason {
-  Family = "Family",
-  Health = "Health",
-  CurrentWork = "Current Work",
-  Studies = "Studies",
   Other = "Other"
 }
 
