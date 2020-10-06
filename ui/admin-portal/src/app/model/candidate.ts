@@ -48,9 +48,18 @@ export interface CandidateCitizenship {
 }
 
 export interface CandidateIntakeData {
+  availImmediate?: YesNoUnsure;
+  availImmediateReason?: AvailImmediateReason;
+  availImmediateNotes?: string;
+
   citizenNationalityId?: number;
   citizenHasPassport?: HasPassport;
   citizenNotes?: string;
+
+  familyMove?: YesNo;
+  familyMoveNotes?: string;
+  familyHealth?: YesNo;
+  familyHealthNotes?: string;
 
   returnedHome?: YesNoUnsure;
   returnedHomeNotes?: string;
@@ -58,15 +67,6 @@ export interface CandidateIntakeData {
 
   visaIssues?: VisaIssue[];
   visaIssuesNotes?: string;
-
-  availImmediate?: YesNoUnsure;
-  availImmediateReason?: AvailImmediateReason;
-  availImmediateNotes?: string;
-
-  familyMove?: YesNo;
-  familyMoveNotes?: string;
-  familyHealth?: YesNo;
-  familyHealthNotes?: string;
 }
 
 /*
@@ -79,17 +79,19 @@ export interface CandidateIntakeData {
   anything on the server.
 */
 
+export enum AvailImmediateReason {
+  Family = "Family",
+  Health = "Health",
+  CurrentWork = "Current Work",
+  Studies = "Studies",
+  Other = "Other"
+}
+
 export enum HasPassport {
   NoResponse = "",
   ValidPassport = "Has valid passport",
   InvalidPassport = "Has invalid passport",
   NoPassport = "No passport"
-}
-
-export enum ReturnedHome {
-  NoResponse = "No response",
-  Returned = "Returned home",
-  NotReturned = "Has not returned home"
 }
 
 export enum VisaIssue {
@@ -98,14 +100,6 @@ export enum VisaIssue {
   GovtWork = "Work for foreign government",
   Criminal = "Criminal record",
   VisaRejections = "Visa rejections",
-  Other = "Other"
-}
-
-export enum AvailImmediateReason {
-  Family = "Family",
-  Health = "Health",
-  CurrentWork = "Current Work",
-  Studies = "Studies",
   Other = "Other"
 }
 

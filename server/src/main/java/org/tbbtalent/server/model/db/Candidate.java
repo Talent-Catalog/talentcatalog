@@ -4,18 +4,31 @@
 
 package org.tbbtalent.server.model.db;
 
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.api.admin.SavedSearchAdminApi;
 import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.request.candidate.CandidateIntakeData;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
-
-import javax.persistence.*;
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "candidate")
@@ -151,6 +164,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     /*
               Intake Fields    
      */
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    private List<CandidateCitizenship> candidateCitizenships;
     
     @Enumerated(EnumType.STRING)
     @Nullable
@@ -465,6 +481,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setCandidateAttachments(List<CandidateAttachment> candidateAttachments) { this.candidateAttachments = candidateAttachments; }
 
+    public List<CandidateCitizenship> getCandidateCitizenships() {
+        return candidateCitizenships;
+    }
+
+    public void setCandidateCitizenships(List<CandidateCitizenship> candidateCitizenships) {
+        this.candidateCitizenships = candidateCitizenships;
+    }
+
     public String getMigrationCountry() {
         return migrationNationality;
     }
@@ -630,23 +654,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     }
 
     public void populateIntakeData(CandidateIntakeData data) {
-        if (data.getReturnedHome() != null) {
-            setReturnedHome(data.getReturnedHome());
-        }
-        if (data.getReturnedHomeNotes() != null) {
-            setReturnedHomeNotes(data.getReturnedHomeNotes());
-        }
-        if (data.getReturnedHomeReason() != null) {
-            setReturnedHomeReason(data.getReturnedHomeReason());
-        }
-
-        if (data.getVisaIssues() != null) {
-            setVisaIssues(data.getVisaIssues());
-        }
-        if (data.getVisaIssuesNotes() != null) {
-            setVisaIssuesNotes(data.getVisaIssuesNotes());
-        }
-
         if (data.getAvailImmediate() != null) {
             setAvailImmediate(data.getAvailImmediate());
         }
@@ -668,6 +675,23 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getFamilyHealthConcernNotes() != null) {
             setFamilyHealthConcernNotes(data.getFamilyHealthConcernNotes());
+        }
+
+        if (data.getReturnedHome() != null) {
+            setReturnedHome(data.getReturnedHome());
+        }
+        if (data.getReturnedHomeNotes() != null) {
+            setReturnedHomeNotes(data.getReturnedHomeNotes());
+        }
+        if (data.getReturnedHomeReason() != null) {
+            setReturnedHomeReason(data.getReturnedHomeReason());
+        }
+
+        if (data.getVisaIssues() != null) {
+            setVisaIssues(data.getVisaIssues());
+        }
+        if (data.getVisaIssuesNotes() != null) {
+            setVisaIssuesNotes(data.getVisaIssuesNotes());
         }
     }
 }
