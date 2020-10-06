@@ -2,35 +2,43 @@
   {{error}}
 </div>
 
+<div class="card">
+  <div class="card-body">
 
-<form class="card" [formGroup]="form">
+    <form [formGroup]="form">
+      <div class="form-group">
+        <div class="citizenship d-flex align-items-baseline justify-content-between">
+          <label for="nationality">Nationality</label>
+          <button class="float-right btn btn-sm btn-outline-danger" (click)="doDelete()">
+            <span class="align-top">x</span>
+          </button>
+        </div>
 
-  <label for="nationality">Nationality
-    <span class="float-right">
-      <button class="btn btn-sm btn-outline-danger" (click)="doDelete()">
-        <i class="fas fa-trash"></i>
-      </button>
-    </span>
-  </label>
-  <select class="form-control" id="nationality"
-          [formControlName]="'citizenNationalityId'">
-    <option *ngFor="let nationality of filteredNationalities" [value]="nationality.id">
-      {{nationality.name}}</option>
-  </select>
+        <select class="form-control" id="nationality"
+                [formControlName]="'citizenNationalityId'">
+          <option *ngFor="let nationality of filteredNationalities" [value]="nationality.id">
+            {{nationality.name}}</option>
+        </select>
+      </div>
 
-  <ng-container *ngIf="hasSelectedNationality">
-    <label for="hasPassport">Passport?</label>
-    <select class="form-control"
-            id="hasPassport" [formControlName]="'citizenHasPassport'">
-      <option *ngFor="let opt of hasPassportOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
-    <div class="form-group">
-      <label for="citizenNotes">Notes</label>
-      <textarea type="text" class="md-textarea-auto form-control" rows="4"
-                id="citizenNotes" [formControlName]="'citizenNotes'"
-                placeholder="" ></textarea>
-    </div>
-  </ng-container>
-</form>
+      <ng-container *ngIf="hasSelectedNationality">
+        <div class="form-group">
+          <label for="hasPassport">Passport?</label>
+          <select class="form-control"
+                  id="hasPassport" [formControlName]="'citizenHasPassport'">
+            <option *ngFor="let opt of hasPassportOptions" [value]="opt.value">
+              {{opt.displayText}}
+            </option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="citizenNotes">Notes</label>
+          <textarea type="text" class="md-textarea-auto form-control" rows="4"
+                    id="citizenNotes" [formControlName]="'citizenNotes'"
+                    placeholder="" ></textarea>
+        </div>
+      </ng-container>
+    </form>
+  </div>
+</div>
+
