@@ -23,7 +23,7 @@
         <p class="small mb-0">Note: Explain what is possible with the visa pathway at hand if known, but also explain
           that this will help us determine if other visa pathways are suitable should any opportunities arise.</p>
       </div>
-      <div class="form-group">
+      <div *ngIf="familyMove === 'Yes'" class="form-group">
         <label for="familyMoveNotes">Notes</label>
         <textarea type="text" class="md-textarea-auto form-control" rows="6"
                   id="familyMoveNotes" [formControlName]="'familyMoveNotes'"
@@ -34,9 +34,6 @@
         <label for="familyHealthConcern">
           Do you or any of your dependents/spouse have any serious health concerns?
         </label>
-        <span *ngIf="saving">
-          <i class="fas fa-spinner fa-spin"></i> saving...
-        </span>
         <select class="form-control"
                 id="familyHealthConcern" [formControlName]="'familyHealthConcern'">
           <option *ngFor="let opt of familyHealthConcernOptions" [value]="opt.value">
@@ -44,7 +41,7 @@
           </option>
         </select>
       </div>
-      <div class="form-group">
+      <div *ngIf="familyHealthConcern === 'Yes'" class="form-group">
         <label for="familyHealthConcernNotes">Notes</label>
         <textarea type="text" class="md-textarea-auto form-control" rows="6"
                   id="familyHealthConcernNotes" [formControlName]="'familyHealthConcernNotes'"

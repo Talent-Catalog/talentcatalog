@@ -23,9 +23,6 @@
       <div *ngIf="availImmediate === 'No'|| availImmediate == 'Unsure'">
         <div class="form-group">
           <label for="availImmediateReason">Factors preventing immediate availability for international work.</label>
-          <span *ngIf="saving">
-        <i class="fas fa-spinner fa-spin"></i> saving...
-      </span>
           <select class="form-control"
                   id="availImmediateReason" [formControlName]="'availImmediateReason'">
             <option *ngFor="let opt of availImmediateReasonOptions" [value]="opt.value">

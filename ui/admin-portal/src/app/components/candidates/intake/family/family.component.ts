@@ -28,8 +28,12 @@ export class FamilyComponent extends IntakeComponentBase implements OnInit {
     });
   }
 
-  get returnedHome(): string {
-    return this.form.value?.returnedHome;
+  get familyMove(): string {
+    return this.form.value?.familyMove;
+  }
+
+  get familyHealthConcern(): string {
+    return this.form.value?.familyHealthConcern;
   }
 
 }
