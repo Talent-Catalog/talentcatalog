@@ -8,9 +8,15 @@
     <form [formGroup]="form">
       <div class="form-group">
         <div class="citizenship d-flex align-items-baseline justify-content-between">
-          <label for="nationality">Nationality</label>
-          <button class="float-right btn btn-sm btn-outline-danger" (click)="doDelete()">
-            <span class="align-top">x</span>
+          <label for="nationality">Nationality
+            <span *ngIf="saving">
+              <i class="fas fa-spinner fa-spin"></i> saving...
+            </span>
+          </label>
+          <button class="float-right btn" (click)="doDelete()">
+            <span class="align-top">
+              <i class="fas fa-trash"></i>
+            </span>
           </button>
         </div>
 

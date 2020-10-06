@@ -2,6 +2,11 @@
 <div class="card">
   <div class="card-header">
     Citizenships
+    <div class="float-right">
+      <button type="button" class="btn btn-primary btn-sm" (click)="updateRecord()">
+        <i class="fas fa-plus"></i>
+      </button>
+    </div>
   </div>
   <div class="card-body">
     <div *ngFor="let citizenship of existingRecords; let i = index;" class="citizenship-card">
@@ -15,12 +20,5 @@
       </app-candidate-citizenship-card>
       <hr/>
     </div>
-
-    <div>
-      <button class="btn btn-outline-primary mt-2" (click)="updateRecord()">
-        Add citizenship
-      </button>
-    </div>
-
   </div>
 </div>
