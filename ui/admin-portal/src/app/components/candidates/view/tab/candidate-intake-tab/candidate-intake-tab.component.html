@@ -9,11 +9,22 @@
 </div>
 
 <div *ngIf="!loading">
-  <app-int-recruitment
-    [candidate]="candidate"
-    [candidateIntakeData]="candidateIntakeData"
-  >
-  </app-int-recruitment>
+
+  <div class="card">
+    <div class="card-header">
+      Interest in International Recruitment
+    </div>
+    <div class="card-body">
+      <app-int-recruitment
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-int-recruitment>
+      <app-rural
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-rural>
+    </div>
+  </div>
 
   <hr/>
 
@@ -21,36 +32,67 @@
     [candidate]="candidate"
     [candidateIntakeData]="candidateIntakeData"
     [existingRecords]="existingRecords"
-    [nationalities]="nationalities"
-  >
+    [nationalities]="nationalities">
   </app-citizenships>
 
   <hr/>
 
-  <app-returned-home
-    [candidate]="candidate"
-    [candidateIntakeData]="candidateIntakeData">
-  </app-returned-home>
+  <div class="card">
+    <div class="card-header">
+      Returned Home
+    </div>
+    <div class="card-body">
+      <app-returned-home
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-returned-home>
+    </div>
+  </div>
 
   <hr/>
 
-  <app-visa-issues
-    [candidate]="candidate"
-    [candidateIntakeData]="candidateIntakeData">
-  </app-visa-issues>
+  <div class="card">
+    <div class="card-header">
+      Visa Issues
+    </div>
+    <div class="card-body">
+      <app-visa-issues
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-visa-issues>
+    </div>
+  </div>
 
   <hr/>
 
-  <app-avail-immediate
-    [candidate]="candidate"
-    [candidateIntakeData]="candidateIntakeData">
-  </app-avail-immediate>
+  <div class="card">
+    <div class="card-header">
+      Immediate Availability
+    </div>
+    <div class="card-body">
+      <app-avail-immediate
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-avail-immediate>
+    </div>
+  </div>
 
   <hr/>
 
-  <app-family
-    [candidate]="candidate"
-    [candidateIntakeData]="candidateIntakeData">
-  </app-family>
+  <div class="card">
+    <div class="card-header">
+      Family
+    </div>
+    <div class="card-body">
+      <app-family
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-family>
+      <app-family-health
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-family-health>
+    </div>
+  </div>
 
 </div>

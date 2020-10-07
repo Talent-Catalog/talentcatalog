@@ -1,39 +1,20 @@
-<div class="card">
-  <div class="card-header">
-    Interest in International Recruitment
-  </div>
-  <div class="card-body">
-    <div *ngIf="error">
-      {{error}}
-    </div>
-    <form [formGroup]="form">
-      <div class="form-group">
-        <label for="intRecruitReasons">
-          Why are you interested in international recruitment?
-        </label>
-        <span *ngIf="saving">
-          <i class="fas fa-spinner fa-spin"></i> saving...
-        </span>
-        <ng-multiselect-dropdown
-          id="intRecruitReasons"
-          [settings]="dropdownSettings"
-          [data]="intRecruitReasonOptions"
-          formControlName="intRecruitReasons">
-        </ng-multiselect-dropdown>
-      </div>
-
-      <div class="form-group">
-        <label for="intRecruitRural">
-          Are you willing to consider roles in rural areas?
-        </label>
-        <select class="form-control"
-                id="intRecruitRural" [formControlName]="'intRecruitRural'">
-          <option *ngFor="let opt of intRecruitRuralOptions" [value]="opt.value">
-            {{opt.displayText}}
-          </option>
-        </select>
-      </div>
-    </form>
-  </div>
+<div *ngIf="error">
+  {{error}}
 </div>
+<form [formGroup]="form">
+  <div class="form-group">
+    <label for="intRecruitReasons">
+      Why are you interested in international recruitment?
+    </label>
+    <span *ngIf="saving">
+      <i class="fas fa-spinner fa-spin"></i> saving...
+    </span>
+    <ng-multiselect-dropdown
+      id="intRecruitReasons"
+      [settings]="dropdownSettings"
+      [data]="intRecruitReasonOptions"
+      formControlName="intRecruitReasons">
+    </ng-multiselect-dropdown>
+  </div>
+</form>
 

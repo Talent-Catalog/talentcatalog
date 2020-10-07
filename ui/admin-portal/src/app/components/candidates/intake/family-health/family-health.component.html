@@ -1,0 +1,27 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+
+  <div class="form-group">
+    <label for="familyHealthConcern">
+      Do you or any of your dependents/spouse have any serious health concerns?
+    </label>
+    <span *ngIf="saving">
+      <i class="fas fa-spinner fa-spin"></i> saving...
+    </span>
+    <select class="form-control"
+            id="familyHealthConcern" [formControlName]="'familyHealthConcern'">
+      <option *ngFor="let opt of familyHealthConcernOptions" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+  </div>
+  <div *ngIf="familyHealthConcern === 'Yes'" class="form-group">
+    <label for="familyHealthConcernNotes">Notes</label>
+    <textarea type="text" class="md-textarea-auto form-control" rows="6"
+              id="familyHealthConcernNotes" [formControlName]="'familyHealthConcernNotes'"
+              placeholder="" ></textarea>
+  </div>
+</form>
+

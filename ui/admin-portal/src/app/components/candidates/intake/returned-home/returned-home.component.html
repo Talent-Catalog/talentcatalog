@@ -1,40 +1,34 @@
-<div class="card">
-  <div class="card-header">
-    Returned Home
-  </div>
-  <div class="card-body">
-    <div *ngIf="error">
-      {{error}}
-    </div>
-    <form [formGroup]="form">
-      <div class="form-group">
-        <label for="returnedHome">Have you returned to your home country since entering and claiming asylum?</label>
-        <span *ngIf="saving">
-          <i class="fas fa-spinner fa-spin"></i> saving...
-        </span>
-        <select class="form-control"
-                id="returnedHome" [formControlName]="'returnedHome'">
-          <option *ngFor="let opt of returnedHomeOptions" [value]="opt.value">
-            {{opt.displayText}}
-          </option>
-        </select>
-      </div>
-
-      <div *ngIf="returnedHome === 'Yes'">
-        <div class="form-group">
-          <label for="returnedHomeReason">What was the reason for your return?</label>
-          <textarea type="text" class="md-textarea-auto form-control" rows="6"
-                    id="returnedHomeReason" [formControlName]="'returnedHomeReason'"
-                    placeholder="" ></textarea>
-        </div>
-        <div class="form-group">
-          <label for="returnedHomeNotes">Notes</label>
-          <textarea type="text" class="md-textarea-auto form-control" rows="6"
-                    id="returnedHomeNotes" [formControlName]="'returnedHomeNotes'"
-                    placeholder="" ></textarea>
-        </div>
-      </div>
-    </form>
-  </div>
+<div *ngIf="error">
+  {{error}}
 </div>
+<form [formGroup]="form">
+  <div class="form-group">
+    <label for="returnedHome">Have you returned to your home country since entering and claiming asylum?</label>
+    <span *ngIf="saving">
+      <i class="fas fa-spinner fa-spin"></i> saving...
+    </span>
+    <select class="form-control"
+            id="returnedHome" [formControlName]="'returnedHome'">
+      <option *ngFor="let opt of returnedHomeOptions" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+  </div>
+
+  <div *ngIf="returnedHome === 'Yes'">
+    <div class="form-group">
+      <label for="returnedHomeReason">What was the reason for your return?</label>
+      <textarea type="text" class="md-textarea-auto form-control" rows="6"
+                id="returnedHomeReason" [formControlName]="'returnedHomeReason'"
+                placeholder="" ></textarea>
+    </div>
+    <div class="form-group">
+      <label for="returnedHomeNotes">Notes</label>
+      <textarea type="text" class="md-textarea-auto form-control" rows="6"
+                id="returnedHomeNotes" [formControlName]="'returnedHomeNotes'"
+                placeholder="" ></textarea>
+    </div>
+  </div>
+</form>
+
 

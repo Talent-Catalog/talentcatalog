@@ -1,37 +1,30 @@
-<div class="card">
-  <div class="card-header">
-    Visa Issues
-  </div>
-  <div class="card-body">
-    <div *ngIf="error">
-      {{error}}
-    </div>
-    <form [formGroup]="form">
-      <div class="form-group">
-        <label for="visaIssues">Is there anything about your background that could
-          be of concern in the visa process?</label>
-        <span *ngIf="saving">
-          <i class="fas fa-spinner fa-spin"></i> saving...
-        </span>
-        <ng-multiselect-dropdown
-          id="visaIssues"
-          [settings]="dropdownSettings"
-          [data]="visaIssueOptions"
-          formControlName="visaIssues">
-        </ng-multiselect-dropdown>
-      </div>
-
-      <div *ngIf="haveIssues">
-        <div class="form-group">
-          <label for="visaIssuesNotes">Notes</label>
-          <textarea type="text" class="md-textarea-auto form-control" rows="6"
-                    id="visaIssuesNotes" [formControlName]="'visaIssuesNotes'"
-                    placeholder="" ></textarea>
-        </div>
-      </div>
-    </form>
-  </div>
+<div *ngIf="error">
+  {{error}}
 </div>
+<form [formGroup]="form">
+  <div class="form-group">
+    <label for="visaIssues">Is there anything about your background that could
+      be of concern in the visa process?</label>
+    <span *ngIf="saving">
+      <i class="fas fa-spinner fa-spin"></i> saving...
+    </span>
+    <ng-multiselect-dropdown
+      id="visaIssues"
+      [settings]="dropdownSettings"
+      [data]="visaIssueOptions"
+      formControlName="visaIssues">
+    </ng-multiselect-dropdown>
+  </div>
+
+  <div *ngIf="haveIssues">
+    <div class="form-group">
+      <label for="visaIssuesNotes">Notes</label>
+      <textarea type="text" class="md-textarea-auto form-control" rows="6"
+                id="visaIssuesNotes" [formControlName]="'visaIssuesNotes'"
+                placeholder="" ></textarea>
+    </div>
+  </div>
+</form>
 
 
 
