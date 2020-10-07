@@ -1,0 +1,19 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+  <div class="form-group">
+    <label for="returnHomeSafe">Do you feel it is safe to return to your home country?</label>
+    <span *ngIf="saving">
+      <i class="fas fa-spinner fa-spin"></i> saving...
+    </span>
+    <select class="form-control"
+            id="returnHomeSafe" [formControlName]="'returnHomeSafe'">
+      <option *ngFor="let opt of homeSafeOptions" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+  </div>
+</form>
+
+

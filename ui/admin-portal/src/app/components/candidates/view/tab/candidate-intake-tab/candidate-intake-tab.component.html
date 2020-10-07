@@ -39,13 +39,31 @@
 
   <div class="card">
     <div class="card-header">
-      Returned Home
+      Home Country
     </div>
     <div class="card-body">
       <app-returned-home
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData">
       </app-returned-home>
+      <app-return-home-safe
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-return-home-safe>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="card">
+    <div class="card-header">
+      Work Status
+    </div>
+    <div class="card-body">
+      <app-work-permit
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-work-permit>
     </div>
   </div>
 

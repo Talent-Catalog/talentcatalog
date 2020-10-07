@@ -205,6 +205,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private YesNoUnsure intRecruitRural;
 
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNoUnsure returnHomeSafe;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private WorkPermit workPermit;
+
     public Candidate() {
     }
 
@@ -597,6 +605,16 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setIntRecruitRural(@Nullable YesNoUnsure intRecruitRural) { this.intRecruitRural = intRecruitRural; }
 
+    @Nullable
+    public YesNoUnsure getReturnHomeSafe() { return returnHomeSafe; }
+
+    public void setReturnHomeSafe(@Nullable YesNoUnsure returnHomeSafe) { this.returnHomeSafe = returnHomeSafe; }
+
+    @Nullable
+    public WorkPermit getWorkPermit() { return workPermit; }
+
+    public void setWorkPermit(@Nullable WorkPermit workPermit) { this.workPermit = workPermit; }
+
     public boolean isSelected() {
         return selected;
     }
@@ -704,6 +722,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getIntRecruitRural() != null) {
             setIntRecruitRural(data.getIntRecruitRural());
+        }
+
+        if (data.getReturnHomeSafe() != null) {
+            setReturnHomeSafe(data.getReturnHomeSafe());
+        }
+        if (data.getWorkPermit() != null) {
+            setWorkPermit(data.getWorkPermit());
         }
     }
 }

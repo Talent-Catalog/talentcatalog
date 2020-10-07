@@ -136,6 +136,8 @@ import {CandidateMiniIntakeTabComponent} from './components/candidates/view/tab/
 import {IntRecruitmentComponent} from './components/candidates/intake/int-recruitment/int-recruitment.component';
 import {RuralComponent} from './components/candidates/intake/rural/rural.component';
 import {FamilyHealthComponent} from './components/candidates/intake/family-health/family-health.component';
+import {ReturnHomeSafeComponent} from './components/candidates/intake/return-home-safe/return-home-safe.component';
+import {WorkPermitComponent} from './components/candidates/intake/work-permit/work-permit.component';
 
 @NgModule({
   declarations: [
@@ -263,7 +265,9 @@ import {FamilyHealthComponent} from './components/candidates/intake/family-healt
     CandidateMiniIntakeTabComponent,
     IntRecruitmentComponent,
     RuralComponent,
-    FamilyHealthComponent
+    FamilyHealthComponent,
+    ReturnHomeSafeComponent,
+    WorkPermitComponent
   ],
   imports: [
     BrowserModule,

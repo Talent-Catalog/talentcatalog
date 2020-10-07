@@ -45,4 +45,7 @@ public class CandidateIntakeData {
 
     private List<IntRecruitReason> intRecruitReasons;
     private YesNoUnsure intRecruitRural;
+
+    private YesNoUnsure returnHomeSafe;
+    private WorkPermit workPermit;
 }

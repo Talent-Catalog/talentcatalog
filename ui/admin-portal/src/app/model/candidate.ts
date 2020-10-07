@@ -70,6 +70,9 @@ export interface CandidateIntakeData {
 
   intRecruitReasons?: IntRecruitReason[];
   intRecruitRural?: YesNoUnsure;
+
+  returnHomeSafe?: YesNoUnsure;
+  workPermit?: WorkPermitValidity;
 }
 
 /*
@@ -112,6 +115,13 @@ export enum IntRecruitReason {
   Experience = "I am looking to get experience",
   Children = "I would like a better future for my children",
   Other = "Other"
+}
+
+export enum WorkPermitValidity {
+  NoResponse = "",
+  YesNotDesired = "Yes - a permit to work but not in my desired field",
+  YesDesired = "Yes - a permit to work in my desired field",
+  No = "No - I do not have a work permit",
 }
 
 export enum YesNo {
