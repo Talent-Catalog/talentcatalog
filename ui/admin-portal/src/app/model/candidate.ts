@@ -41,20 +41,12 @@ export interface Candidate {
   contextNote: string;
 }
 
-export interface CandidateCitizenship {
-  citizenNationalityId?: number;
-  citizenHasPassport?: HasPassport;
-  citizenNotes?: string;
-}
-
 export interface CandidateIntakeData {
   availImmediate?: YesNoUnsure;
   availImmediateReason?: AvailImmediateReason;
   availImmediateNotes?: string;
 
-  citizenNationalityId?: number;
-  citizenHasPassport?: HasPassport;
-  citizenNotes?: string;
+  candidateCitizenships?: CandidateCitizenship[];
 
   familyMove?: YesNo;
   familyMoveNotes?: string;
@@ -67,6 +59,13 @@ export interface CandidateIntakeData {
 
   visaIssues?: VisaIssue[];
   visaIssuesNotes?: string;
+}
+
+export interface CandidateCitizenship {
+  id?: number;
+  nationality?: {id};
+  hasPassport?: HasPassport;
+  notes?: string;
 }
 
 /*

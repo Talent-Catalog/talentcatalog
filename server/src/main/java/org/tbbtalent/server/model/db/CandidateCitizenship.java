@@ -14,7 +14,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.springframework.lang.NonNull;
-import org.tbbtalent.server.request.candidate.CandidateIntakeData;
+import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -44,7 +44,7 @@ public class CandidateCitizenship extends AbstractDomainObject<Long> {
 
     public void populateIntakeData(
             @NonNull Candidate candidate, @NonNull Nationality nationality, 
-            CandidateIntakeData data) {
+            CandidateIntakeDataUpdate data) {
         setCandidate(candidate);
         setNationality(nationality);
         if (data.getCitizenNotes() != null) {

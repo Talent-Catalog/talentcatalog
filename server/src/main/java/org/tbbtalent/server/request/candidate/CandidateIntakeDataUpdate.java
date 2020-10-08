@@ -17,21 +17,27 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * Holds all candidate intake fields.
+ * Has fields for all candidate intake fields.
  * <p/>
- * When used for updates, null fields are ignored.
+ * An instance of this class is received from the browser on each update.
+ * Each update will come from a single intake component - comprising one or
+ * a small number of fields. Just values for those fields will be populated 
+ * in the class. All other fields will be null.
+ * <p/>
+ * Null fields are ignored - non null fields update the database.
  *
  * @author John Cameron
  */
 @Getter
 @Setter
 @ToString
-public class CandidateIntakeData {
+public class CandidateIntakeDataUpdate {
 
     private YesNoUnsure availImmediate;
     private AvailImmediateReason availImmediateReason;
     private String availImmediateNotes;
 
+    private Long citizenId;
     private Long citizenNationalityId;
     private HasPassport citizenHasPassport;
     private String citizenNotes;

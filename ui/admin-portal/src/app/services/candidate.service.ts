@@ -94,7 +94,18 @@ export class CandidateService {
       `${this.apiUrl}/${candidateId}/update-sf`, null);
   }
 
-  updateIntakeData(id: number, data: CandidateIntakeData): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${id}/intake`, data);
+  /**
+   * Note that the sent data, formData, is not typed.
+   * The data is copied across using the name of the form fields.
+   * Those names must match field names in CandidateIntakeDataUpdate.java.
+   *
+   * Note that where where CandidateIntakeData has fields which are
+   * arrays of objects, form field names must match the names of those
+   * objects in the array - eg fields in CandidateCitizenship
+   * @param candidateId ID of candidate
+   * @param formData form.value of an intake data form.
+   */
+  updateIntakeData(candidateId: number, formData: Object): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${candidateId}/intake`, formData);
   }
 }

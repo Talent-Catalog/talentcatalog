@@ -1,10 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {
-  Candidate,
-  CandidateCitizenship,
-  CandidateIntakeData,
-  HasPassport
-} from "../../../../../model/candidate";
+import {Candidate, CandidateIntakeData} from "../../../../../model/candidate";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {forkJoin} from "rxjs";
 import {Nationality} from "../../../../../model/nationality";
@@ -19,7 +14,6 @@ export class CandidateIntakeTabComponent implements OnInit {
   @Input() candidate: Candidate;
   candidateIntakeData: CandidateIntakeData;
   error: string;
-  existingRecords: CandidateCitizenship[];
   loading: boolean;
   nationalities: Nationality[];
 
@@ -43,15 +37,6 @@ export class CandidateIntakeTabComponent implements OnInit {
       this.loading = false;
       this.error = error;
     });
-
-    //todo Debug Fake
-    this.existingRecords = [];
-    const test: CandidateCitizenship = {
-      citizenNationalityId: 9292,
-      citizenHasPassport: HasPassport.NoPassport,
-      citizenNotes: "***Remove this fake record from candidate-intake-tab.component.ts"
-    }
-    this.existingRecords.push( test );
   }
 
 }

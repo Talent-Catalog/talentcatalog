@@ -26,7 +26,7 @@ import javax.persistence.Transient;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.api.admin.SavedSearchAdminApi;
 import org.tbbtalent.server.model.es.CandidateEs;
-import org.tbbtalent.server.request.candidate.CandidateIntakeData;
+import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
 
@@ -653,7 +653,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         savedList.getCandidateSavedLists().add(csl);
     }
 
-    public void populateIntakeData(CandidateIntakeData data) {
+    public void populateIntakeData(CandidateIntakeDataUpdate data) {
         if (data.getAvailImmediate() != null) {
             setAvailImmediate(data.getAvailImmediate());
         }

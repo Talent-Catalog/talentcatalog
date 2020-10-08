@@ -5,6 +5,7 @@ import {
   CandidateIntakeData
 } from "../../../../model/candidate";
 import {Nationality} from "../../../../model/nationality";
+import {CandidateCitizenshipService} from "../../../../services/candidate-citizenship.service";
 
 @Component({
   selector: 'app-citizenships',
@@ -14,20 +15,32 @@ import {Nationality} from "../../../../model/nationality";
 export class CitizenshipsComponent implements OnInit {
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
-  @Input() existingRecords: CandidateCitizenship[];
+  error: boolean;
   @Input() nationalities: Nationality[];
+  saving: boolean;
 
-  constructor(){}
+  constructor(
+    private candidateCitizenshipService: CandidateCitizenshipService
+  ) {}
 
   ngOnInit(): void {
   }
 
-  deleteRecord(i: number) {
-    this.existingRecords.splice(i, 1);
+  addRecord() {
+    this.saving = true;
+    const candidateCitizenship: CandidateCitizenship = {};
+    this.candidateCitizenshipService.create(this.candidate.id, candidateCitizenship).subscribe(
+      (citizenship) => {
+        this.candidateIntakeData.candidateCitizenships.push(citizenship)
+        this.saving = false;
+      },
+      (error) => {
+        this.error = error;
+        this.saving = false;
+      });
   }
 
-  updateRecord() {
-    const citizenship: CandidateCitizenship = {};
-    this.existingRecords.push(citizenship)
+  deleteRecord(i: number) {
+    this.candidateIntakeData.candidateCitizenships.splice(i, 1);
   }
 }
