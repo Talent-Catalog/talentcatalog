@@ -16,7 +16,9 @@
              (dateSelect)="form.controls.hostEntryYear.markAsDirty()"
              [autoClose]="true"
              [outsideDays]="'hidden'"
-             [container]="'#hostEntryYear'">
+             [container]="'#hostEntryYear'"
+             [minDate]="{year: 1950, month: 1, day: 1}"
+             [maxDate]="maxDate">
 
       <div class="input-group-append">
         <small class="btn btn-link text-secondary" *ngIf="form.controls.hostEntryYear.value"

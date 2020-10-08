@@ -1,6 +1,6 @@
 import {BrowserModule, Title} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
-import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {NgbDateAdapter, NgbDateParserFormatter, NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {NgMultiSelectDropDownModule} from 'ng-multiselect-dropdown';
 import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha';
 
@@ -141,6 +141,7 @@ import {WorkPermitComponent} from './components/candidates/intake/work-permit/wo
 import {WorkLegallyComponent} from './components/candidates/intake/work-legally/work-legally.component';
 import {WorkStatusComponent} from './components/candidates/intake/work-status/work-status.component';
 import {HostEntryYearComponent} from './components/candidates/intake/host-entry-year/host-entry-year.component';
+import {CustomDateAdapter, CustomDateParserFormatter} from './util/date-adapter/ngb-date-adapter';
 
 @NgModule({
   declarations: [
@@ -296,6 +297,8 @@ import {HostEntryYearComponent} from './components/candidates/intake/host-entry-
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
     {provide: RECAPTCHA_V3_SITE_KEY, useValue: '6Lc_97cZAAAAAIDqR7gT3h_ROGU6P7Jif-wEk9Vu'},
+    {provide: NgbDateAdapter, useClass: CustomDateAdapter},
+    {provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter},
     AuthService,
     RoleGuardService,
     Title],
