@@ -9,10 +9,17 @@
 </div>
 
 <div *ngIf="!loading">
-  <app-returned-home
-    [candidate]="candidate"
-    [candidateIntakeData]="candidateIntakeData">
-  </app-returned-home>
+  <div class="card">
+    <div class="card-header">
+      Home Country
+    </div>
+    <div class="card-body">
+      <app-returned-home
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-returned-home>
+    </div>
+  </div>
 
   <hr/>
 
