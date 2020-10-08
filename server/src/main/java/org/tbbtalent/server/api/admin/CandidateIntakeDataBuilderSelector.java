@@ -56,7 +56,11 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("intRecruitRural")
 
                 .add("returnHomeSafe")
+
                 .add("workPermit")
+                .add("workPermitDesired")
+                .add("workLegally")
+                .add("hostEntryYear")
                 ;
     }
 

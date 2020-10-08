@@ -213,6 +213,17 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private WorkPermit workPermit;
 
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNoUnsure workPermitDesired;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNo workLegally;
+
+    @Nullable
+    private LocalDate hostEntryYear;
+
     public Candidate() {
     }
 
@@ -615,6 +626,21 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setWorkPermit(@Nullable WorkPermit workPermit) { this.workPermit = workPermit; }
 
+    @Nullable
+    public YesNoUnsure getWorkPermitDesired() { return workPermitDesired; }
+
+    public void setWorkPermitDesired(@Nullable YesNoUnsure workPermitDesired) { this.workPermitDesired = workPermitDesired; }
+
+    @Nullable
+    public YesNo getWorkLegally() { return workLegally; }
+
+    public void setWorkLegally(@Nullable YesNo workLegally) { this.workLegally = workLegally; }
+
+    @Nullable
+    public LocalDate getHostEntryYear() { return hostEntryYear; }
+
+    public void setHostEntryYear(LocalDate hostEntryYear) { this.hostEntryYear = hostEntryYear; }
+
     public boolean isSelected() {
         return selected;
     }
@@ -727,8 +753,20 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getReturnHomeSafe() != null) {
             setReturnHomeSafe(data.getReturnHomeSafe());
         }
+
         if (data.getWorkPermit() != null) {
             setWorkPermit(data.getWorkPermit());
+        }
+        if (data.getWorkPermitDesired() != null) {
+            setWorkPermitDesired(data.getWorkPermitDesired());
+        }
+
+        if (data.getWorkLegally() != null) {
+            setWorkLegally(data.getWorkLegally());
+        }
+
+        if (data.getHostEntryYear() != null) {
+            setHostEntryYear(data.getHostEntryYear());
         }
     }
 }

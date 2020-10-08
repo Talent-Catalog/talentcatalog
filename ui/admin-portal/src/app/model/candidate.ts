@@ -73,6 +73,10 @@ export interface CandidateIntakeData {
 
   returnHomeSafe?: YesNoUnsure;
   workPermit?: WorkPermitValidity;
+  workPermitDesired?: YesNoUnsure;
+  workLegally?: YesNo;
+  workDesired?: WorkDesiredField;
+  hostEntryYear?: string;
 }
 
 /*
@@ -122,6 +126,13 @@ export enum WorkPermitValidity {
   YesNotDesired = "Yes - a permit to work but not in my desired field",
   YesDesired = "Yes - a permit to work in my desired field",
   No = "No - I do not have a work permit",
+}
+
+export enum WorkDesiredField {
+  NoResponse = "",
+  Yes = "Yes",
+  No = "No",
+  Unemployed = "I am unemployed",
 }
 
 export enum YesNo {

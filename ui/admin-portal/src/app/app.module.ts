@@ -138,6 +138,9 @@ import {RuralComponent} from './components/candidates/intake/rural/rural.compone
 import {FamilyHealthComponent} from './components/candidates/intake/family-health/family-health.component';
 import {ReturnHomeSafeComponent} from './components/candidates/intake/return-home-safe/return-home-safe.component';
 import {WorkPermitComponent} from './components/candidates/intake/work-permit/work-permit.component';
+import {WorkLegallyComponent} from './components/candidates/intake/work-legally/work-legally.component';
+import {WorkStatusComponent} from './components/candidates/intake/work-status/work-status.component';
+import {HostEntryYearComponent} from './components/candidates/intake/host-entry-year/host-entry-year.component';
 
 @NgModule({
   declarations: [
@@ -267,7 +270,10 @@ import {WorkPermitComponent} from './components/candidates/intake/work-permit/wo
     RuralComponent,
     FamilyHealthComponent,
     ReturnHomeSafeComponent,
-    WorkPermitComponent
+    WorkPermitComponent,
+    WorkLegallyComponent,
+    WorkStatusComponent,
+    HostEntryYearComponent
   ],
   imports: [
     BrowserModule,

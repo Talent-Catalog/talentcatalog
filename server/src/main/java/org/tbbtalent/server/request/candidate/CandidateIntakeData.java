@@ -9,6 +9,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.tbbtalent.server.model.db.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -47,5 +48,9 @@ public class CandidateIntakeData {
     private YesNoUnsure intRecruitRural;
 
     private YesNoUnsure returnHomeSafe;
+
     private WorkPermit workPermit;
+    private YesNoUnsure workPermitDesired;
+    private YesNo workLegally;
+    private LocalDate hostEntryYear;
 }

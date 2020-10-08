@@ -1,0 +1,34 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+  <div class="form-group">
+    <label for="hostEntryYear">
+      What year did you enter {{candidate.country.name}}?
+    </label>
+    <span *ngIf="saving">
+      <i class="fas fa-spinner fa-spin"></i> saving...
+    </span>
+    <div class="input-group">
+      <input id="hostEntryYear" type="text" class="form-control" placeholder="YYYY-MM-DD"
+             ngbDatepicker #picker="ngbDatepicker"
+             [formControlName]="'hostEntryYear'"
+             (dateSelect)="form.controls.hostEntryYear.markAsDirty()"
+             [autoClose]="true"
+             [outsideDays]="'hidden'"
+             [container]="'#hostEntryYear'">
+
+      <div class="input-group-append">
+        <small class="btn btn-link text-secondary" *ngIf="form.controls.hostEntryYear.value"
+               (click)="form.controls.hostEntryYear.patchValue(null); form.controls.hostEntryYear.markAsDirty();">
+          <span>Clear</span>
+        </small>
+
+        <div class="btn btn-link" *ngIf="!form.controls.hostEntryYear.value"
+             (click)="picker.toggle()">
+          <span>Choose</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

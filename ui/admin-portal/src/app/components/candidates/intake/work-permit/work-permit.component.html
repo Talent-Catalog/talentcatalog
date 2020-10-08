@@ -14,6 +14,17 @@
       </option>
     </select>
   </div>
+  <div *ngIf="workPermit === 'YesNotDesired' || workPermit === 'No'">
+    <div class="form-group">
+      <label for="workPermitDesired">Are you legally able to obtain a work permit in your desired field?</label>
+      <select class="form-control"
+              id="workPermitDesired" [formControlName]="'workPermitDesired'">
+        <option *ngFor="let opt of workPermitDesiredOptions" [value]="opt.value">
+          {{opt.displayText}}
+        </option>
+      </select>
+    </div>
+  </div>
 </form>
 
 
