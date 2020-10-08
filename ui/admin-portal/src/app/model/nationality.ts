@@ -1,5 +1,5 @@
 export interface Nationality {
   id: number;
-  name: string;
-  status: string;
+  name?: string;
+  status?: string;
 }

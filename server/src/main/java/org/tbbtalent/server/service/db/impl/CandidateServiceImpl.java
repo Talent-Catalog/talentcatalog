@@ -92,7 +92,7 @@ import org.tbbtalent.server.repository.es.CandidateEsRepository;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.candidate.BaseCandidateContactRequest;
 import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
-import org.tbbtalent.server.request.candidate.CandidateIntakeData;
+import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tbbtalent.server.request.candidate.CandidatePhoneSearchRequest;
 import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
@@ -1714,10 +1714,12 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public void updateIntakeData(long id, CandidateIntakeData data) 
+    public void updateIntakeData(long id, CandidateIntakeDataUpdate data) 
             throws NoSuchObjectException {
         Candidate candidate = getCandidate(id);
 
+        //If there is a non null citizen nationality, that means that this
+        //is a citizenship update.
         final Long citizenNationalityId = data.getCitizenNationalityId();
         if (citizenNationalityId != null) {
             candidateCitizenshipService

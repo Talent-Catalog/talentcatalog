@@ -2,6 +2,9 @@
 <div class="card">
   <div class="card-header">
     Citizenships
+    <span *ngIf="saving">
+          <i class="fas fa-spinner fa-spin"></i>
+    </span>
     <div class="float-right">
       <button type="button" class="btn btn-primary btn-sm" (click)="updateRecord()">
         <i class="fas fa-plus"></i>
@@ -9,13 +12,15 @@
     </div>
   </div>
   <div class="card-body">
-    <div *ngFor="let citizenship of existingRecords; let i = index;" class="citizenship-card">
+    <div *ngIf="error">
+      {{error}}
+    </div>
+    <div *ngFor="let citizenship of candidateIntakeData.candidateCitizenships; let i = index;" class="citizenship-card">
       <app-candidate-citizenship-card
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData"
         [myRecordIndex]="i"
         [nationalities]="nationalities"
-        [existingRecords]="existingRecords"
         (delete)="deleteRecord(i)">
       </app-candidate-citizenship-card>
       <hr/>

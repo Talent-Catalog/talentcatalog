@@ -8,9 +8,9 @@
     <form [formGroup]="form">
       <div class="form-group">
         <div class="citizenship d-flex align-items-baseline justify-content-between">
-          <label for="nationality">Nationality
+          <label [for]="'nationality'+myRecordIndex">Nationality
             <span *ngIf="saving">
-              <i class="fas fa-spinner fa-spin"></i> saving...
+              <i class="fas fa-spinner fa-spin"></i>
             </span>
           </label>
           <button class="float-right btn" (click)="doDelete()">
@@ -20,7 +20,7 @@
           </button>
         </div>
 
-        <select class="form-control" id="nationality"
+        <select class="form-control" [id]="'nationality'+myRecordIndex"
                 [formControlName]="'citizenNationalityId'">
           <option *ngFor="let nationality of filteredNationalities" [value]="nationality.id">
             {{nationality.name}}</option>
@@ -29,18 +29,18 @@
 
       <ng-container *ngIf="hasSelectedNationality">
         <div class="form-group">
-          <label for="hasPassport">Passport?</label>
+          <label [for]="'hasPassport'+myRecordIndex">Passport?</label>
           <select class="form-control"
-                  id="hasPassport" [formControlName]="'citizenHasPassport'">
+                  [id]="'hasPassport'+myRecordIndex" [formControlName]="'citizenHasPassport'">
             <option *ngFor="let opt of hasPassportOptions" [value]="opt.value">
               {{opt.displayText}}
             </option>
           </select>
         </div>
         <div class="form-group">
-          <label for="citizenNotes">Notes</label>
+          <label [for]="'citizenNotes'+myRecordIndex">Notes</label>
           <textarea type="text" class="md-textarea-auto form-control" rows="4"
-                    id="citizenNotes" [formControlName]="'citizenNotes'"
+                    [id]="'citizenNotes'+myRecordIndex" [formControlName]="'citizenNotes'"
                     placeholder="" ></textarea>
         </div>
       </ng-container>

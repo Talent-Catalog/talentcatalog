@@ -26,7 +26,7 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
-import org.tbbtalent.server.request.candidate.CandidateIntakeData;
+import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tbbtalent.server.request.candidate.CandidatePhoneSearchRequest;
 import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
@@ -215,7 +215,7 @@ public class CandidateAdminApi {
 
     @PutMapping("{id}/intake")
     public void updateIntakeData(
-            @PathVariable("id") long id, @RequestBody CandidateIntakeData data) {
+            @PathVariable("id") long id, @RequestBody CandidateIntakeDataUpdate data) {
         candidateService.updateIntakeData(id, data);
     }
 

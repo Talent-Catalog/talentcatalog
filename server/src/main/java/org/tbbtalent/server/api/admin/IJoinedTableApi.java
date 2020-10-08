@@ -41,6 +41,7 @@ public interface IJoinedTableApi<SEARCH, CREATE, UPDATE> extends ITalentCatalogW
 
     /**
      * Creates a new record from the data in the given request. 
+     * @param parentId ID of parent record
      * @param request Request containing details from which the record is created.
      * @return Created record
      * @throws EntityExistsException If an identical record (eg with the same 

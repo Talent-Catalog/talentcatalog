@@ -2,8 +2,20 @@
  * Copyright (c) 2020 Talent Beyond Boundaries. All rights reserved.
  */
 
-import {AfterViewInit, Directive, Input, OnDestroy, OnInit} from '@angular/core';
-import {catchError, debounceTime, map, switchMap, takeUntil} from 'rxjs/operators';
+import {
+  AfterViewInit,
+  Directive,
+  Input,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
+import {
+  catchError,
+  debounceTime,
+  map,
+  switchMap,
+  takeUntil
+} from 'rxjs/operators';
 import {Subject} from 'rxjs';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {Candidate, CandidateIntakeData} from '../../../model/candidate';
@@ -47,6 +59,12 @@ export abstract class IntakeComponentBase implements AfterViewInit, OnDestroy, O
    * This should be created and initialized in the subclass's ngOnInit method.
    */
   form: FormGroup;
+
+  /**
+   * Index into a array member of candidateIntakeData if that is what is
+   * being updated.
+   */
+  @Input() myRecordIndex: number;
 
   /**
    * True when a save is underway. Should be used to show the user when a save
@@ -94,7 +112,7 @@ export abstract class IntakeComponentBase implements AfterViewInit, OnDestroy, O
    * inactivity
    */
   private setupAutosave(timeout: number) {
-    this.form.valueChanges.pipe(
+    this.form.valueChanges?.pipe(
 
       //Only pass values on if there has been inactivity for the given timeout
       debounceTime(timeout),
@@ -104,11 +122,6 @@ export abstract class IntakeComponentBase implements AfterViewInit, OnDestroy, O
 
       //Do a save of the received form values.
       switchMap(formValue => {
-          //Update the candidateIntakeData to keep it in sync with the server
-          //saved version.
-          //Object assign just copies the formValue fields across, leaving any
-          //other fields in candidateIntakeData unchanged.
-          Object.assign(this.candidateIntakeData, formValue);
           this.error = null;
           this.saving = true;
           return this.candidateService.updateIntakeData(this.candidate.id, formValue);
@@ -193,5 +206,4 @@ export abstract class IntakeComponentBase implements AfterViewInit, OnDestroy, O
     //See takeUntil in the above pipe.
     this.unsubscribe.next();
   }
-
 }

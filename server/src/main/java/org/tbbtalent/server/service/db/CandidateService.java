@@ -4,6 +4,11 @@
 
 package org.tbbtalent.server.service.db;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.security.GeneralSecurityException;
+import java.util.List;
+
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,9 +21,8 @@ import org.tbbtalent.server.model.db.DataRow;
 import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.request.LoginRequest;
-import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
-import org.tbbtalent.server.request.candidate.CandidateIntakeData;
+import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tbbtalent.server.request.candidate.CandidatePhoneSearchRequest;
 import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
@@ -36,11 +40,6 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tbbtalent.server.request.candidate.stat.CandidateStatDateRequest;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.security.GeneralSecurityException;
-import java.util.List;
 
 public interface CandidateService {
 
@@ -165,7 +164,7 @@ public interface CandidateService {
     void exportToCsv(SearchCandidateRequest request, PrintWriter writer)
             throws ExportFailedException;
 
-    public void setCandidateContext(long savedSearchId, Iterable<Candidate> candidates);
+    void setCandidateContext(long savedSearchId, Iterable<Candidate> candidates);
 
     List<DataRow> getGenderStats(CandidateStatDateRequest request);
 
@@ -246,6 +245,6 @@ public interface CandidateService {
      *             fields are ignored. Only non null fields are updated.
      * @throws NoSuchObjectException if no candidate is found with that id
      */
-    void updateIntakeData(long id, CandidateIntakeData data)
+    void updateIntakeData(long id, CandidateIntakeDataUpdate data)
         throws NoSuchObjectException;
 }
