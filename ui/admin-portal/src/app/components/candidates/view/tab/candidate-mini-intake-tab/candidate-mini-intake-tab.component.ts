@@ -1,33 +1,19 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {Candidate, CandidateIntakeData} from '../../../../../model/candidate';
+import {Component, OnInit} from '@angular/core';
 import {CandidateService} from '../../../../../services/candidate.service';
+import {IntakeComponentTabBase} from "../../../../util/intake/IntakeComponentTabBase";
+import {NationalityService} from "../../../../../services/nationality.service";
 
 @Component({
   selector: 'app-candidate-mini-intake-tab',
   templateUrl: './candidate-mini-intake-tab.component.html',
   styleUrls: ['./candidate-mini-intake-tab.component.scss']
 })
-export class CandidateMiniIntakeTabComponent implements OnInit {
-  @Input() candidate: Candidate;
-  candidateIntakeData: CandidateIntakeData;
-  error: string;
-  loading: boolean;
+export class CandidateMiniIntakeTabComponent
+  extends IntakeComponentTabBase implements OnInit {
 
-  constructor(private candidateService: CandidateService) { }
-
-  ngOnInit(): void {
-    //Load existing candidateIntakeData
-    this.error = null;
-    this.loading = true;
-    this.candidateService.getIntakeData(this.candidate.id).subscribe(
-      intakeData => {
-        this.candidateIntakeData = intakeData;
-        this.loading = false;
-      },
-      error => {
-        this.error = error;
-        this.loading = false;
-      });
+  constructor(candidateService: CandidateService,
+              nationalityService: NationalityService) {
+    super(candidateService, nationalityService)
   }
 
 }

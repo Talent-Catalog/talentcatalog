@@ -4,11 +4,11 @@ import {NationalityService} from "../../../../../services/nationality.service";
 import {IntakeComponentTabBase} from "../../../../util/intake/IntakeComponentTabBase";
 
 @Component({
-  selector: 'app-candidate-intake-tab',
-  templateUrl: './candidate-intake-tab.component.html',
-  styleUrls: ['./candidate-intake-tab.component.scss']
+  selector: 'app-candidate-visa-tab',
+  templateUrl: './candidate-visa-tab.component.html',
+  styleUrls: ['./candidate-visa-tab.component.scss']
 })
-export class CandidateIntakeTabComponent
+export class CandidateVisaTabComponent
   extends IntakeComponentTabBase implements OnInit {
 
   constructor(candidateService: CandidateService,

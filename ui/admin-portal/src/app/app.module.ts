@@ -1,6 +1,10 @@
 import {BrowserModule, Title} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
-import {NgbDateAdapter, NgbDateParserFormatter, NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {
+  NgbDateAdapter,
+  NgbDateParserFormatter,
+  NgbModule
+} from '@ng-bootstrap/ng-bootstrap';
 import {NgMultiSelectDropDownModule} from 'ng-multiselect-dropdown';
 import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha';
 
@@ -141,7 +145,11 @@ import {WorkPermitComponent} from './components/candidates/intake/work-permit/wo
 import {WorkLegallyComponent} from './components/candidates/intake/work-legally/work-legally.component';
 import {WorkStatusComponent} from './components/candidates/intake/work-status/work-status.component';
 import {HostEntryYearComponent} from './components/candidates/intake/host-entry-year/host-entry-year.component';
-import {CustomDateAdapter, CustomDateParserFormatter} from './util/date-adapter/ngb-date-adapter';
+import {
+  CustomDateAdapter,
+  CustomDateParserFormatter
+} from './util/date-adapter/ngb-date-adapter';
+import {CandidateVisaTabComponent} from './components/candidates/view/tab/candidate-visa-tab/candidate-visa-tab.component';
 
 @NgModule({
   declarations: [
@@ -274,7 +282,8 @@ import {CustomDateAdapter, CustomDateParserFormatter} from './util/date-adapter/
     WorkPermitComponent,
     WorkLegallyComponent,
     WorkStatusComponent,
-    HostEntryYearComponent
+    HostEntryYearComponent,
+    CandidateVisaTabComponent
   ],
   imports: [
     BrowserModule,

@@ -144,6 +144,16 @@
           </ng-template>
         </ngb-tab>
 
+        <!-- Visa eligibility -->
+        <ngb-tab id="Visa" [title]="'Visa'">
+          <ng-template ngbTabContent>
+            <app-candidate-visa-tab
+              [candidate]="candidate"
+              >
+            </app-candidate-visa-tab>
+          </ng-template>
+        </ngb-tab>
+
       </ngb-tabset>
     </div>
     <div class="col-sm-{{sidePanelColWidth}} admin-panel">
