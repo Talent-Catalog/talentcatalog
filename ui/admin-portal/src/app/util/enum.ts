@@ -23,8 +23,18 @@ export const enumMultiSelectSettings: IDropdownSettings = {
  * @param enumeration String enumeration object
  */
 export function enumOptions(enumeration): EnumOption[] {
-  return Object.keys(enumeration)
-    .map(key => ({ value: key, displayText: enumeration[key] }));
+  return enumKeysToEnumOptions(Object.keys(enumeration), enumeration);
+}
+
+/**
+ * Takes an array of strings and interprets them as keys of the given string
+ * enumeration, returning an  array of values and display text suitable for
+ * options in an html <select>.
+ * @param keys Array of strings treated as enumeration keys
+ * @param enumeration String enumeration object
+ */
+export function enumKeysToEnumOptions(keys: string[], enumeration): EnumOption[] {
+  return keys?.map(key => ({ value: key, displayText: enumeration[key] }));
 }
 
 

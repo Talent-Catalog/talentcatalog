@@ -3,6 +3,7 @@ import {IntakeComponentBase} from "../../../util/intake/IntakeComponentBase";
 import {FormBuilder} from "@angular/forms";
 import {CandidateService} from "../../../../services/candidate.service";
 import {
+  enumKeysToEnumOptions,
   enumMultiSelectSettings,
   EnumOption,
   enumOptions
@@ -25,8 +26,10 @@ export class VisaIssuesComponent extends IntakeComponentBase implements OnInit {
   }
 
   ngOnInit(): void {
+    const options: EnumOption[] =
+      enumKeysToEnumOptions(this.candidateIntakeData?.visaIssues, VisaIssue);
     this.form = this.fb.group({
-      visaIssues: [this.candidateIntakeData?.visaIssues],
+      visaIssues: [options],
       visaIssuesNotes: [this.candidateIntakeData?.visaIssuesNotes],
     });
   }
