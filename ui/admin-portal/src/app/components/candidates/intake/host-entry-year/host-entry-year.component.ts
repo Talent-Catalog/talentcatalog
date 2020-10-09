@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
-import {NgbDatepickerConfig, NgbDateStruct} from '@ng-bootstrap/ng-bootstrap';
+import {NgbDateStruct} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-host-entry-year',
@@ -14,10 +14,11 @@ export class HostEntryYearComponent extends IntakeComponentBase implements OnIni
   public maxDate: NgbDateStruct;
   public today: Date;
 
-  constructor(fb: FormBuilder, candidateService: CandidateService, private datepickerConfig: NgbDatepickerConfig) {
+  constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
   }
 
+  // Year is converted to string using the ngb-date-adapter file in the util folder (see app module providers)
   ngOnInit(): void {
     this.today = new Date();
     this.maxDate = {year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate()};
