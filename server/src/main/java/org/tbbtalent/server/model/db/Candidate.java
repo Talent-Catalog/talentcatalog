@@ -224,6 +224,23 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private LocalDate hostEntryYear;
 
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private UnhcrStatus unhcrStatus;
+
+    @Nullable
+    private String unhcrNumber;
+
+    @Nullable
+    private Long unhcrFile;
+
+    @Nullable
+    private String unhcrNotes;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNo unhcrPermission;
+
     public Candidate() {
     }
 
@@ -641,6 +658,31 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setHostEntryYear(LocalDate hostEntryYear) { this.hostEntryYear = hostEntryYear; }
 
+    @Nullable
+    public UnhcrStatus getUnhcrStatus() { return unhcrStatus; }
+
+    public void setUnhcrStatus(@Nullable UnhcrStatus unhcrStatus) { this.unhcrStatus = unhcrStatus; }
+
+    @Nullable
+    public String getUnhcrNumber() { return unhcrNumber; }
+
+    public void setUnhcrNumber(@Nullable String unhcrNumber) { this.unhcrNumber = unhcrNumber; }
+
+    @Nullable
+    public Long getUnhcrFile() { return unhcrFile; }
+
+    public void setUnhcrFile(@Nullable Long unhcrFile) { this.unhcrFile = unhcrFile; }
+
+    @Nullable
+    public String getUnhcrNotes() { return unhcrNotes; }
+
+    public void setUnhcrNotes(@Nullable String unhcrNotes) { this.unhcrNotes = unhcrNotes; }
+
+    @Nullable
+    public YesNo getUnhcrPermission() { return unhcrPermission; }
+
+    public void setUnhcrPermission(@Nullable YesNo unhcrPermission) { this.unhcrPermission = unhcrPermission; }
+
     public boolean isSelected() {
         return selected;
     }
@@ -767,6 +809,22 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
         if (data.getHostEntryYear() != null) {
             setHostEntryYear(data.getHostEntryYear());
+        }
+
+        if (data.getUnhcrStatus() != null) {
+            setUnhcrStatus(data.getUnhcrStatus());
+        }
+        if (data.getUnhcrNumber() != null) {
+            setUnhcrNumber(data.getUnhcrNumber());
+        }
+        if (data.getUnhcrFile() != null) {
+            setUnhcrFile(data.getUnhcrFile());
+        }
+        if (data.getUnhcrNotes() != null) {
+            setUnhcrNotes(data.getUnhcrNotes());
+        }
+        if (data.getUnhcrPermission() != null) {
+            setUnhcrPermission(data.getUnhcrPermission());
         }
     }
 }

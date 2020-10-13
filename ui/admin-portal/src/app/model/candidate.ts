@@ -69,6 +69,11 @@ export interface CandidateIntakeData {
   workLegally?: YesNo;
   workDesired?: WorkDesiredField;
   hostEntryYear?: string;
+  unhcrStatus?: UnhcrStatus;
+  unhcrNumber?: string;
+  unhcrFile?: number;
+  unhcrNotes?: string;
+  unhcrPermission?: YesNo;
 }
 
 export interface CandidateCitizenship {
@@ -118,6 +123,15 @@ export enum IntRecruitReason {
   Experience = "I am looking to get experience",
   Children = "I would like a better future for my children",
   Other = "Other"
+}
+
+export enum UnhcrStatus {
+  NoResponse = "",
+  Assessed = "Assessed by UNHCR as a mandate refugee",
+  RegisteredAsylum = "Registered with UNHCR as asylum seeker",
+  RegisteredStateless = "Registered with UNHCR as stateless",
+  NotRegistered = "Not registered",
+  Unsure = "Unsure"
 }
 
 export enum WorkPermitValidity {

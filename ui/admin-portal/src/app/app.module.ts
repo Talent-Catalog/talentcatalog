@@ -142,6 +142,7 @@ import {WorkLegallyComponent} from './components/candidates/intake/work-legally/
 import {WorkStatusComponent} from './components/candidates/intake/work-status/work-status.component';
 import {HostEntryYearComponent} from './components/candidates/intake/host-entry-year/host-entry-year.component';
 import {CustomDateAdapter, CustomDateParserFormatter} from './util/date-adapter/ngb-date-adapter';
+import {RegistrationUnhcrComponent} from './components/candidates/intake/registration-unhcr/registration-unhcr.component';
 
 @NgModule({
   declarations: [
@@ -274,7 +275,8 @@ import {CustomDateAdapter, CustomDateParserFormatter} from './util/date-adapter/
     WorkPermitComponent,
     WorkLegallyComponent,
     WorkStatusComponent,
-    HostEntryYearComponent
+    HostEntryYearComponent,
+    RegistrationUnhcrComponent
   ],
   imports: [
     BrowserModule,
