@@ -145,6 +145,7 @@ import {CustomDateAdapter, CustomDateParserFormatter} from './util/date-adapter/
 import {RegistrationUnhcrComponent} from './components/candidates/intake/registration-unhcr/registration-unhcr.component';
 import {RegistrationUnrwaComponent} from './components/candidates/intake/registration-unrwa/registration-unrwa.component';
 import {HomeLocationComponent} from './components/candidates/intake/home-location/home-location.component';
+import {AsylumYearComponent} from './components/candidates/intake/asylum-year/asylum-year.component';
 
 @NgModule({
   declarations: [
@@ -280,7 +281,8 @@ import {HomeLocationComponent} from './components/candidates/intake/home-locatio
     HostEntryYearComponent,
     RegistrationUnhcrComponent,
     RegistrationUnrwaComponent,
-    HomeLocationComponent
+    HomeLocationComponent,
+    AsylumYearComponent
   ],
   imports: [
     BrowserModule,

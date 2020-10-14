@@ -262,6 +262,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private String homeLocation;
 
+    @Nullable
+    private LocalDate asylumYear;
+
     public Candidate() {
     }
 
@@ -734,6 +737,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setHomeLocation(@Nullable String homeLocation) { this.homeLocation = homeLocation; }
 
+    @Nullable
+    public LocalDate getAsylumYear() { return asylumYear; }
+
+    public void setAsylumYear(@Nullable LocalDate asylumYear) { this.asylumYear = asylumYear; }
+
     public boolean isSelected() {
         return selected;
     }
@@ -796,6 +804,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     }
 
     public void populateIntakeData(CandidateIntakeDataUpdate data) {
+        if (data.getAsylumYear() != null) {
+            setAsylumYear(data.getAsylumYear());
+        }
         if (data.getAvailImmediate() != null) {
             setAvailImmediate(data.getAvailImmediate());
         }

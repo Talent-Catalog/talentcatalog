@@ -29,6 +29,7 @@ import java.util.List;
 @ToString
 public class CandidateIntakeDataUpdate {
 
+    private LocalDate asylumYear;
     private YesNoUnsure availImmediate;
     private AvailImmediateReason availImmediateReason;
     private String availImmediateNotes;
