@@ -228,6 +228,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private UnhcrStatus unhcrStatus;
 
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private UnhcrStatus unhcrOldStatus;
+
     @Nullable
     private String unhcrNumber;
 
@@ -240,6 +244,23 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Enumerated(EnumType.STRING)
     @Nullable
     private YesNo unhcrPermission;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNoUnsure unrwaRegistered;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNoUnsure unrwaWasRegistered;
+
+    @Nullable
+    private String unrwaNumber;
+
+    @Nullable
+    private String unrwaNotes;
+
+    @Nullable
+    private String homeLocation;
 
     public Candidate() {
     }
@@ -664,6 +685,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setUnhcrStatus(@Nullable UnhcrStatus unhcrStatus) { this.unhcrStatus = unhcrStatus; }
 
     @Nullable
+    public UnhcrStatus getUnhcrOldStatus() { return unhcrOldStatus; }
+
+    public void setUnhcrOldStatus(@Nullable UnhcrStatus unhcrOldStatus) { this.unhcrOldStatus = unhcrOldStatus; }
+
+    @Nullable
     public String getUnhcrNumber() { return unhcrNumber; }
 
     public void setUnhcrNumber(@Nullable String unhcrNumber) { this.unhcrNumber = unhcrNumber; }
@@ -682,6 +708,31 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public YesNo getUnhcrPermission() { return unhcrPermission; }
 
     public void setUnhcrPermission(@Nullable YesNo unhcrPermission) { this.unhcrPermission = unhcrPermission; }
+
+    @Nullable
+    public YesNoUnsure getUnrwaRegistered() { return unrwaRegistered; }
+
+    public void setUnrwaRegistered(@Nullable YesNoUnsure unrwaRegistered) { this.unrwaRegistered = unrwaRegistered; }
+
+    @Nullable
+    public YesNoUnsure getUnrwaWasRegistered() { return unrwaWasRegistered; }
+
+    public void setUnrwaWasRegistered(@Nullable YesNoUnsure unrwaWasRegistered) { this.unrwaWasRegistered = unrwaWasRegistered; }
+
+    @Nullable
+    public String getUnrwaNumber() { return unrwaNumber; }
+
+    public void setUnrwaNumber(@Nullable String unrwaNumber) { this.unrwaNumber = unrwaNumber; }
+
+    @Nullable
+    public String getUnrwaNotes() { return unrwaNotes; }
+
+    public void setUnrwaNotes(@Nullable String unrwaNotes) { this.unrwaNotes = unrwaNotes; }
+
+    @Nullable
+    public String getHomeLocation() { return homeLocation; }
+
+    public void setHomeLocation(@Nullable String homeLocation) { this.homeLocation = homeLocation; }
 
     public boolean isSelected() {
         return selected;
@@ -767,6 +818,18 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getFamilyHealthConcernNotes() != null) {
             setFamilyHealthConcernNotes(data.getFamilyHealthConcernNotes());
         }
+        if (data.getHomeLocation() != null) {
+            setHomeLocation(data.getHomeLocation());
+        }
+        if (data.getHostEntryYear() != null) {
+            setHostEntryYear(data.getHostEntryYear());
+        }
+        if (data.getIntRecruitReasons() != null) {
+            setIntRecruitReasons(data.getIntRecruitReasons());
+        }
+        if (data.getIntRecruitRural() != null) {
+            setIntRecruitRural(data.getIntRecruitRural());
+        }
 
         if (data.getReturnedHome() != null) {
             setReturnedHome(data.getReturnedHome());
@@ -778,41 +841,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
             setReturnedHomeReason(data.getReturnedHomeReason());
         }
 
-        if (data.getVisaIssues() != null) {
-            setVisaIssues(data.getVisaIssues());
-        }
-        if (data.getVisaIssuesNotes() != null) {
-            setVisaIssuesNotes(data.getVisaIssuesNotes());
-        }
-
-        if (data.getIntRecruitReasons() != null) {
-            setIntRecruitReasons(data.getIntRecruitReasons());
-        }
-        if (data.getIntRecruitRural() != null) {
-            setIntRecruitRural(data.getIntRecruitRural());
-        }
-
         if (data.getReturnHomeSafe() != null) {
             setReturnHomeSafe(data.getReturnHomeSafe());
         }
-
-        if (data.getWorkPermit() != null) {
-            setWorkPermit(data.getWorkPermit());
-        }
-        if (data.getWorkPermitDesired() != null) {
-            setWorkPermitDesired(data.getWorkPermitDesired());
-        }
-
-        if (data.getWorkLegally() != null) {
-            setWorkLegally(data.getWorkLegally());
-        }
-
-        if (data.getHostEntryYear() != null) {
-            setHostEntryYear(data.getHostEntryYear());
-        }
-
         if (data.getUnhcrStatus() != null) {
             setUnhcrStatus(data.getUnhcrStatus());
+        }
+        if (data.getUnhcrOldStatus() != null) {
+            setUnhcrOldStatus(data.getUnhcrOldStatus());
         }
         if (data.getUnhcrNumber() != null) {
             setUnhcrNumber(data.getUnhcrNumber());
@@ -826,5 +862,38 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getUnhcrPermission() != null) {
             setUnhcrPermission(data.getUnhcrPermission());
         }
+
+        if (data.getUnrwaRegistered() != null) {
+            setUnrwaRegistered(data.getUnrwaRegistered());
+        }
+
+        if (data.getUnrwaWasRegistered() != null) {
+            setUnrwaWasRegistered(data.getUnrwaWasRegistered());
+        }
+        if (data.getUnrwaNumber() != null) {
+            setUnrwaNumber(data.getUnrwaNumber());
+        }
+        if (data.getUnrwaNotes() != null) {
+            setUnrwaNotes(data.getUnrwaNotes());
+        }
+
+        if (data.getVisaIssues() != null) {
+            setVisaIssues(data.getVisaIssues());
+        }
+        if (data.getVisaIssuesNotes() != null) {
+            setVisaIssuesNotes(data.getVisaIssuesNotes());
+        }
+        if (data.getWorkPermit() != null) {
+            setWorkPermit(data.getWorkPermit());
+        }
+        if (data.getWorkPermitDesired() != null) {
+            setWorkPermitDesired(data.getWorkPermitDesired());
+        }
+
+        if (data.getWorkLegally() != null) {
+            setWorkLegally(data.getWorkLegally());
+        }
+
+
     }
 }

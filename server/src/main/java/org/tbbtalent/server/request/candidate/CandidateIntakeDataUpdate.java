@@ -42,6 +42,7 @@ public class CandidateIntakeDataUpdate {
     private String familyMoveNotes;
     private YesNo familyHealthConcern;
     private String familyHealthConcernNotes;
+    private String homeLocation;
     private LocalDate hostEntryYear;
     private List<IntRecruitReason> intRecruitReasons;
     private YesNoUnsure intRecruitRural;
@@ -51,10 +52,15 @@ public class CandidateIntakeDataUpdate {
     private String returnedHomeReason;
     private YesNoUnsure returnHomeSafe;
     private UnhcrStatus unhcrStatus;
+    private UnhcrStatus unhcrOldStatus;
     private String unhcrNumber;
     private Long unhcrFile;
     private String unhcrNotes;
     private YesNo unhcrPermission;
+    private YesNoUnsure unrwaRegistered;
+    private YesNoUnsure unrwaWasRegistered;
+    private String unrwaNumber;
+    private String unrwaNotes;
 
     private List<VisaIssue> visaIssues;
     private String visaIssuesNotes;

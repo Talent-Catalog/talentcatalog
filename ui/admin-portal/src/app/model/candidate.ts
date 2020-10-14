@@ -52,6 +52,7 @@ export interface CandidateIntakeData {
   familyMoveNotes?: string;
   familyHealth?: YesNo;
   familyHealthNotes?: string;
+  homeLocation?: string;
 
   returnedHome?: YesNoUnsure;
   returnedHomeNotes?: string;
@@ -70,10 +71,15 @@ export interface CandidateIntakeData {
   workDesired?: WorkDesiredField;
   hostEntryYear?: string;
   unhcrStatus?: UnhcrStatus;
+  unhcrOldStatus?: UnhcrStatus;
   unhcrNumber?: string;
   unhcrFile?: number;
   unhcrNotes?: string;
   unhcrPermission?: YesNo;
+  unrwaRegistered?: YesNoUnsure;
+  unrwaWasRegistered?: YesNoUnsure;
+  unrwaNumber?: string;
+  unrwaNotes?: string;
 }
 
 export interface CandidateCitizenship {

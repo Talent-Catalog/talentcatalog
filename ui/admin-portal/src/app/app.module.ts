@@ -143,6 +143,8 @@ import {WorkStatusComponent} from './components/candidates/intake/work-status/wo
 import {HostEntryYearComponent} from './components/candidates/intake/host-entry-year/host-entry-year.component';
 import {CustomDateAdapter, CustomDateParserFormatter} from './util/date-adapter/ngb-date-adapter';
 import {RegistrationUnhcrComponent} from './components/candidates/intake/registration-unhcr/registration-unhcr.component';
+import {RegistrationUnrwaComponent} from './components/candidates/intake/registration-unrwa/registration-unrwa.component';
+import {HomeLocationComponent} from './components/candidates/intake/home-location/home-location.component';
 
 @NgModule({
   declarations: [
@@ -276,7 +278,9 @@ import {RegistrationUnhcrComponent} from './components/candidates/intake/registr
     WorkLegallyComponent,
     WorkStatusComponent,
     HostEntryYearComponent,
-    RegistrationUnhcrComponent
+    RegistrationUnhcrComponent,
+    RegistrationUnrwaComponent,
+    HomeLocationComponent
   ],
   imports: [
     BrowserModule,

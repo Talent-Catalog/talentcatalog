@@ -47,6 +47,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("familyHealthConcern")
                 .add("familyHealthConcernNotes")
 
+                .add("homeLocation")
                 .add("hostEntryYear")
                 .add("intRecruitReasons")
                 .add("intRecruitRural")
@@ -57,10 +58,17 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("returnHomeSafe")
 
                 .add("unhcrStatus")
+                .add("unhcrOldStatus")
                 .add("unhcrNumber")
                 .add("unhcrFile")
                 .add("unhcrNotes")
                 .add("unhcrPermission")
+
+                .add("unrwaRegistered")
+                .add("unrwaWasRegistered")
+                .add("unrwaNumber")
+                .add("unrwaNotes")
+
                 .add("visaIssues")
                 .add("visaIssuesNotes")
 

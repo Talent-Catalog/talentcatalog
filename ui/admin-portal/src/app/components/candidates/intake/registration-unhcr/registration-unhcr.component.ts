@@ -22,6 +22,7 @@ export class RegistrationUnhcrComponent extends IntakeComponentBase implements O
   ngOnInit(): void {
     this.form = this.fb.group({
       unhcrStatus: [this.candidateIntakeData?.unhcrStatus],
+      unhcrOldStatus: [this.candidateIntakeData?.unhcrOldStatus],
       unhcrNumber: [this.candidateIntakeData?.unhcrNumber],
       unhcrFile: [this.candidateIntakeData?.unhcrFile],
       unhcrNotes: [this.candidateIntakeData?.unhcrNotes],
