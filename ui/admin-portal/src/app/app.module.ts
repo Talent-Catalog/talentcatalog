@@ -145,11 +145,12 @@ import {WorkPermitComponent} from './components/candidates/intake/work-permit/wo
 import {WorkLegallyComponent} from './components/candidates/intake/work-legally/work-legally.component';
 import {WorkStatusComponent} from './components/candidates/intake/work-status/work-status.component';
 import {HostEntryYearComponent} from './components/candidates/intake/host-entry-year/host-entry-year.component';
-import {
-  CustomDateAdapter,
-  CustomDateParserFormatter
-} from './util/date-adapter/ngb-date-adapter';
 import {CandidateVisaTabComponent} from './components/candidates/view/tab/candidate-visa-tab/candidate-visa-tab.component';
+import {CustomDateAdapter, CustomDateParserFormatter} from './util/date-adapter/ngb-date-adapter';
+import {RegistrationUnhcrComponent} from './components/candidates/intake/registration-unhcr/registration-unhcr.component';
+import {RegistrationUnrwaComponent} from './components/candidates/intake/registration-unrwa/registration-unrwa.component';
+import {HomeLocationComponent} from './components/candidates/intake/home-location/home-location.component';
+import {AsylumYearComponent} from './components/candidates/intake/asylum-year/asylum-year.component';
 
 @NgModule({
   declarations: [
@@ -283,7 +284,11 @@ import {CandidateVisaTabComponent} from './components/candidates/view/tab/candid
     WorkLegallyComponent,
     WorkStatusComponent,
     HostEntryYearComponent,
-    CandidateVisaTabComponent
+    CandidateVisaTabComponent,
+    RegistrationUnhcrComponent,
+    RegistrationUnrwaComponent,
+    HomeLocationComponent,
+    AsylumYearComponent
   ],
   imports: [
     BrowserModule,

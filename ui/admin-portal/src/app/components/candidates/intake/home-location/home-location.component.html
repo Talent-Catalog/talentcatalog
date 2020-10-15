@@ -1,0 +1,17 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+  <div class="form-group">
+    <div class="form-group">
+      <label for="homeLocation">Where specifically in your home country are you from?</label>
+      <span *ngIf="saving">
+        <i class="fas fa-spinner fa-spin"></i> saving...
+      </span>
+      <input type="text" class="form-control"
+             id="homeLocation" [formControlName]="'homeLocation'">
+    </div>
+  </div>
+</form>
+
+

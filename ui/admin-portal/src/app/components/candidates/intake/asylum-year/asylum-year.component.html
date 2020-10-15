@@ -1,0 +1,36 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+  <div class="form-group">
+    <label for="asylumYear">
+      Date of asylum?
+    </label>
+    <span *ngIf="saving">
+      <i class="fas fa-spinner fa-spin"></i> saving...
+    </span>
+    <div class="input-group">
+      <input id="asylumYear" type="text" class="form-control" placeholder="YYYY-MM-DD"
+             ngbDatepicker #picker="ngbDatepicker"
+             [formControlName]="'asylumYear'"
+             (dateSelect)="form.controls.asylumYear.markAsDirty()"
+             [autoClose]="true"
+             [outsideDays]="'hidden'"
+             [container]="'#asylumYear'"
+             [minDate]="{year: 1950, month: 1, day: 1}"
+             [maxDate]="maxDate">
+
+      <div class="input-group-append">
+        <small class="btn btn-link text-secondary" *ngIf="form.controls.asylumYear.value"
+               (click)="form.controls.asylumYear.patchValue(null); form.controls.asylumYear.markAsDirty();">
+          <span>Clear</span>
+        </small>
+
+        <div class="btn btn-link" *ngIf="!form.controls.asylumYear.value"
+             (click)="picker.toggle()">
+          <span>Choose</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

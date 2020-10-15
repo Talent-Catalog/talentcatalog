@@ -23,6 +23,42 @@
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData">
       </app-return-home-safe>
+      <app-home-location
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-home-location>
+      <app-host-entry-year
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-host-entry-year>
+      <app-asylum-year
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-asylum-year>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="card">
+    <div class="card-header">
+      Registration
+    </div>
+    <div class="card-body">
+      <div class="card-title h6">
+        UNHCR
+      </div>
+      <app-registration-unhcr
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-registration-unhcr>
+      <div class="card-title h6">
+        UNRWA
+      </div>
+      <app-registration-unrwa
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-registration-unrwa>
     </div>
   </div>
 
@@ -68,10 +104,7 @@
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData">
       </app-work-status>
-      <app-host-entry-year
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-host-entry-year>
+
     </div>
   </div>
 

@@ -29,6 +29,7 @@ import java.util.List;
 @ToString
 public class CandidateIntakeDataUpdate {
 
+    private LocalDate asylumYear;
     private YesNoUnsure availImmediate;
     private AvailImmediateReason availImmediateReason;
     private String availImmediateNotes;
@@ -42,21 +43,30 @@ public class CandidateIntakeDataUpdate {
     private String familyMoveNotes;
     private YesNo familyHealthConcern;
     private String familyHealthConcernNotes;
+    private String homeLocation;
+    private LocalDate hostEntryYear;
+    private List<IntRecruitReason> intRecruitReasons;
+    private YesNoUnsure intRecruitRural;
 
     private YesNoUnsure returnedHome;
     private String returnedHomeNotes;
     private String returnedHomeReason;
+    private YesNoUnsure returnHomeSafe;
+    private UnhcrStatus unhcrStatus;
+    private UnhcrStatus unhcrOldStatus;
+    private String unhcrNumber;
+    private Long unhcrFile;
+    private String unhcrNotes;
+    private YesNo unhcrPermission;
+    private YesNoUnsure unrwaRegistered;
+    private YesNoUnsure unrwaWasRegistered;
+    private String unrwaNumber;
+    private String unrwaNotes;
 
     private List<VisaIssue> visaIssues;
     private String visaIssuesNotes;
-
-    private List<IntRecruitReason> intRecruitReasons;
-    private YesNoUnsure intRecruitRural;
-
-    private YesNoUnsure returnHomeSafe;
-
     private WorkPermit workPermit;
     private YesNoUnsure workPermitDesired;
     private YesNo workLegally;
-    private LocalDate hostEntryYear;
+
 }

@@ -224,6 +224,47 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private LocalDate hostEntryYear;
 
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private UnhcrStatus unhcrStatus;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private UnhcrStatus unhcrOldStatus;
+
+    @Nullable
+    private String unhcrNumber;
+
+    @Nullable
+    private Long unhcrFile;
+
+    @Nullable
+    private String unhcrNotes;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNo unhcrPermission;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNoUnsure unrwaRegistered;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNoUnsure unrwaWasRegistered;
+
+    @Nullable
+    private String unrwaNumber;
+
+    @Nullable
+    private String unrwaNotes;
+
+    @Nullable
+    private String homeLocation;
+
+    @Nullable
+    private LocalDate asylumYear;
+
     public Candidate() {
     }
 
@@ -641,6 +682,66 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setHostEntryYear(LocalDate hostEntryYear) { this.hostEntryYear = hostEntryYear; }
 
+    @Nullable
+    public UnhcrStatus getUnhcrStatus() { return unhcrStatus; }
+
+    public void setUnhcrStatus(@Nullable UnhcrStatus unhcrStatus) { this.unhcrStatus = unhcrStatus; }
+
+    @Nullable
+    public UnhcrStatus getUnhcrOldStatus() { return unhcrOldStatus; }
+
+    public void setUnhcrOldStatus(@Nullable UnhcrStatus unhcrOldStatus) { this.unhcrOldStatus = unhcrOldStatus; }
+
+    @Nullable
+    public String getUnhcrNumber() { return unhcrNumber; }
+
+    public void setUnhcrNumber(@Nullable String unhcrNumber) { this.unhcrNumber = unhcrNumber; }
+
+    @Nullable
+    public Long getUnhcrFile() { return unhcrFile; }
+
+    public void setUnhcrFile(@Nullable Long unhcrFile) { this.unhcrFile = unhcrFile; }
+
+    @Nullable
+    public String getUnhcrNotes() { return unhcrNotes; }
+
+    public void setUnhcrNotes(@Nullable String unhcrNotes) { this.unhcrNotes = unhcrNotes; }
+
+    @Nullable
+    public YesNo getUnhcrPermission() { return unhcrPermission; }
+
+    public void setUnhcrPermission(@Nullable YesNo unhcrPermission) { this.unhcrPermission = unhcrPermission; }
+
+    @Nullable
+    public YesNoUnsure getUnrwaRegistered() { return unrwaRegistered; }
+
+    public void setUnrwaRegistered(@Nullable YesNoUnsure unrwaRegistered) { this.unrwaRegistered = unrwaRegistered; }
+
+    @Nullable
+    public YesNoUnsure getUnrwaWasRegistered() { return unrwaWasRegistered; }
+
+    public void setUnrwaWasRegistered(@Nullable YesNoUnsure unrwaWasRegistered) { this.unrwaWasRegistered = unrwaWasRegistered; }
+
+    @Nullable
+    public String getUnrwaNumber() { return unrwaNumber; }
+
+    public void setUnrwaNumber(@Nullable String unrwaNumber) { this.unrwaNumber = unrwaNumber; }
+
+    @Nullable
+    public String getUnrwaNotes() { return unrwaNotes; }
+
+    public void setUnrwaNotes(@Nullable String unrwaNotes) { this.unrwaNotes = unrwaNotes; }
+
+    @Nullable
+    public String getHomeLocation() { return homeLocation; }
+
+    public void setHomeLocation(@Nullable String homeLocation) { this.homeLocation = homeLocation; }
+
+    @Nullable
+    public LocalDate getAsylumYear() { return asylumYear; }
+
+    public void setAsylumYear(@Nullable LocalDate asylumYear) { this.asylumYear = asylumYear; }
+
     public boolean isSelected() {
         return selected;
     }
@@ -703,6 +804,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     }
 
     public void populateIntakeData(CandidateIntakeDataUpdate data) {
+        if (data.getAsylumYear() != null) {
+            setAsylumYear(data.getAsylumYear());
+        }
         if (data.getAvailImmediate() != null) {
             setAvailImmediate(data.getAvailImmediate());
         }
@@ -725,6 +829,18 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getFamilyHealthConcernNotes() != null) {
             setFamilyHealthConcernNotes(data.getFamilyHealthConcernNotes());
         }
+        if (data.getHomeLocation() != null) {
+            setHomeLocation(data.getHomeLocation());
+        }
+        if (data.getHostEntryYear() != null) {
+            setHostEntryYear(data.getHostEntryYear());
+        }
+        if (data.getIntRecruitReasons() != null) {
+            setIntRecruitReasons(data.getIntRecruitReasons());
+        }
+        if (data.getIntRecruitRural() != null) {
+            setIntRecruitRural(data.getIntRecruitRural());
+        }
 
         if (data.getReturnedHome() != null) {
             setReturnedHome(data.getReturnedHome());
@@ -736,24 +852,48 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
             setReturnedHomeReason(data.getReturnedHomeReason());
         }
 
+        if (data.getReturnHomeSafe() != null) {
+            setReturnHomeSafe(data.getReturnHomeSafe());
+        }
+        if (data.getUnhcrStatus() != null) {
+            setUnhcrStatus(data.getUnhcrStatus());
+        }
+        if (data.getUnhcrOldStatus() != null) {
+            setUnhcrOldStatus(data.getUnhcrOldStatus());
+        }
+        if (data.getUnhcrNumber() != null) {
+            setUnhcrNumber(data.getUnhcrNumber());
+        }
+        if (data.getUnhcrFile() != null) {
+            setUnhcrFile(data.getUnhcrFile());
+        }
+        if (data.getUnhcrNotes() != null) {
+            setUnhcrNotes(data.getUnhcrNotes());
+        }
+        if (data.getUnhcrPermission() != null) {
+            setUnhcrPermission(data.getUnhcrPermission());
+        }
+
+        if (data.getUnrwaRegistered() != null) {
+            setUnrwaRegistered(data.getUnrwaRegistered());
+        }
+
+        if (data.getUnrwaWasRegistered() != null) {
+            setUnrwaWasRegistered(data.getUnrwaWasRegistered());
+        }
+        if (data.getUnrwaNumber() != null) {
+            setUnrwaNumber(data.getUnrwaNumber());
+        }
+        if (data.getUnrwaNotes() != null) {
+            setUnrwaNotes(data.getUnrwaNotes());
+        }
+
         if (data.getVisaIssues() != null) {
             setVisaIssues(data.getVisaIssues());
         }
         if (data.getVisaIssuesNotes() != null) {
             setVisaIssuesNotes(data.getVisaIssuesNotes());
         }
-
-        if (data.getIntRecruitReasons() != null) {
-            setIntRecruitReasons(data.getIntRecruitReasons());
-        }
-        if (data.getIntRecruitRural() != null) {
-            setIntRecruitRural(data.getIntRecruitRural());
-        }
-
-        if (data.getReturnHomeSafe() != null) {
-            setReturnHomeSafe(data.getReturnHomeSafe());
-        }
-
         if (data.getWorkPermit() != null) {
             setWorkPermit(data.getWorkPermit());
         }
@@ -765,8 +905,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
             setWorkLegally(data.getWorkLegally());
         }
 
-        if (data.getHostEntryYear() != null) {
-            setHostEntryYear(data.getHostEntryYear());
-        }
+
     }
 }
