@@ -1,1 +1,26 @@
-<p>candidate-visa-tab works!</p>
+<div>
+  selector component
+</div>
+
+<div [ngSwitch]="selectedVisa">
+  <div *ngSwitchCase="'Australia'">
+    {{selectedVisa}}
+  </div>
+  <div *ngSwitchCase="'Canada'">
+    {{selectedVisa}}
+
+  </div>
+  <div *ngSwitchCase="'New Zealand'">
+    {{selectedVisa}}
+
+  </div>
+  <div *ngSwitchCase="'UK'">
+    {{selectedVisa}}
+
+  </div>
+  <div *ngSwitchDefault>
+    No match to {{selectedVisa}}
+
+  </div>
+</div>
+

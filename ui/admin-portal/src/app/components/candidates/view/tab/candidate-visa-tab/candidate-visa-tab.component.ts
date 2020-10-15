@@ -11,9 +11,18 @@ import {IntakeComponentTabBase} from "../../../../util/intake/IntakeComponentTab
 export class CandidateVisaTabComponent
   extends IntakeComponentTabBase implements OnInit {
 
+  selectedVisa: string;
+
   constructor(candidateService: CandidateService,
               nationalityService: NationalityService) {
     super(candidateService, nationalityService)
   }
 
+
+  ngOnInit() {
+    super.ngOnInit();
+
+    //todo debug
+    this.selectedVisa = "Australia";
+  }
 }
