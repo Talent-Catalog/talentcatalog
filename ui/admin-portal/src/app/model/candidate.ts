@@ -49,6 +49,11 @@ export interface CandidateIntakeData {
 
   candidateCitizenships?: CandidateCitizenship[];
 
+  destAus?: YesNoUnsure;
+  destAusFamily?: FamilyRelations;
+  destAusLoc?: string;
+  destAusNotes?: string;
+
   familyMove?: YesNo;
   familyMoveNotes?: string;
   familyHealth?: YesNo;
@@ -105,6 +110,17 @@ export enum AvailImmediateReason {
   Health = "Health",
   CurrentWork = "Current Work",
   Studies = "Studies",
+  Other = "Other"
+}
+
+export enum FamilyRelations {
+  NoResponse = "",
+  NoRelation = "No relatives",
+  Parents = "Mother/Father",
+  Sibling = "Sister/Brother",
+  AuntUncle = "Aunt/Uncle",
+  Grandparent = "Grandmother/Grandfather",
+  Cousin = "First Cousin",
   Other = "Other"
 }
 

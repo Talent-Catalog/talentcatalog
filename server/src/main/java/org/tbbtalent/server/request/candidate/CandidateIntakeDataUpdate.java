@@ -39,6 +39,11 @@ public class CandidateIntakeDataUpdate {
     private HasPassport citizenHasPassport;
     private String citizenNotes;
 
+    private YesNoUnsure destAus;
+    private FamilyRelations destAusFamily;
+    private String destAusLoc;
+    private String destAusNotes;
+
     private YesNo familyMove;
     private String familyMoveNotes;
     private YesNo familyHealthConcern;

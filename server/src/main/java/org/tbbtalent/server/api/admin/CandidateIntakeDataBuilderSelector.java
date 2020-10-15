@@ -43,6 +43,11 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("candidateCitizenships", candidateCitizenshipDto())
 
+                .add("destAus")
+                .add("destAusFamily")
+                .add("destAusLoc")
+                .add("destAusNotes")
+
                 .add("familyMove")
                 .add("familyMoveNotes")
                 .add("familyHealthConcern")

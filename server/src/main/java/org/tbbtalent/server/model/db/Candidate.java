@@ -265,6 +265,20 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private LocalDate asylumYear;
 
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNoUnsure destAus;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private FamilyRelations destAusFamily;
+
+    @Nullable
+    private String destAusLoc;
+
+    @Nullable
+    private String destAusNotes;
+
     public Candidate() {
     }
 
@@ -742,6 +756,26 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setAsylumYear(@Nullable LocalDate asylumYear) { this.asylumYear = asylumYear; }
 
+    @Nullable
+    public YesNoUnsure getDestAus() { return destAus; }
+
+    public void setDestAus(@Nullable YesNoUnsure destAus) { this.destAus = destAus; }
+
+    @Nullable
+    public FamilyRelations getDestAusFamily() { return destAusFamily; }
+
+    public void setDestAusFamily(@Nullable FamilyRelations destAusFamily) { this.destAusFamily = destAusFamily; }
+
+    @Nullable
+    public String getDestAusLoc() { return destAusLoc; }
+
+    public void setDestAusLoc(@Nullable String destAusLoc) { this.destAusLoc = destAusLoc; }
+
+    @Nullable
+    public String getDestAusNotes() { return destAusNotes; }
+
+    public void setDestAusNotes(@Nullable String destAusNotes) { this.destAusNotes = destAusNotes; }
+
     public boolean isSelected() {
         return selected;
     }
@@ -815,6 +849,19 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getAvailImmediateNotes() != null) {
             setAvailImmediateNotes(data.getAvailImmediateNotes());
+        }
+
+        if (data.getDestAus() != null) {
+            setDestAus(data.getDestAus());
+        }
+        if (data.getDestAusFamily() != null) {
+            setDestAusFamily(data.getDestAusFamily());
+        }
+        if (data.getDestAusLoc() != null) {
+            setDestAusLoc(data.getDestAusLoc());
+        }
+        if (data.getDestAusNotes() != null) {
+            setDestAusNotes(data.getDestAusNotes());
         }
 
         if (data.getFamilyMove() != null) {
