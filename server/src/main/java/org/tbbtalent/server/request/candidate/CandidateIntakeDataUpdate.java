@@ -4,13 +4,22 @@
 
 package org.tbbtalent.server.request.candidate;
 
+import java.time.LocalDate;
+import java.util.List;
+
+import org.tbbtalent.server.model.db.AvailImmediateReason;
+import org.tbbtalent.server.model.db.HasPassport;
+import org.tbbtalent.server.model.db.IntRecruitReason;
+import org.tbbtalent.server.model.db.UnhcrStatus;
+import org.tbbtalent.server.model.db.VisaEligibility;
+import org.tbbtalent.server.model.db.VisaIssue;
+import org.tbbtalent.server.model.db.WorkPermit;
+import org.tbbtalent.server.model.db.YesNo;
+import org.tbbtalent.server.model.db.YesNoUnsure;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.tbbtalent.server.model.db.*;
-
-import java.time.LocalDate;
-import java.util.List;
 
 /**
  * Has fields for all candidate intake fields.
@@ -63,6 +72,10 @@ public class CandidateIntakeDataUpdate {
     private String unrwaNumber;
     private String unrwaNotes;
 
+    private String visaAssessmentNotes;
+    private Long visaCountryId;
+    private VisaEligibility visaEligibility;
+    private Long visaId;
     private List<VisaIssue> visaIssues;
     private String visaIssuesNotes;
     private WorkPermit workPermit;

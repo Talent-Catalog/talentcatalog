@@ -119,6 +119,7 @@ import org.tbbtalent.server.service.db.CandidateCitizenshipService;
 import org.tbbtalent.server.service.db.CandidateNoteService;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.CandidateService;
+import org.tbbtalent.server.service.db.CandidateVisaService;
 import org.tbbtalent.server.service.db.CountryService;
 import org.tbbtalent.server.service.db.GoogleFileSystemService;
 import org.tbbtalent.server.service.db.NationalityService;
@@ -154,6 +155,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final SavedSearchService savedSearchService;
     private final CandidateNoteService candidateNoteService;
     private final CandidateCitizenshipService candidateCitizenshipService;
+    private final CandidateVisaService candidateVisaService;
     private final SurveyTypeRepository surveyTypeRepository;
     private final EmailHelper emailHelper;
     private final PdfHelper pdfHelper;
@@ -177,7 +179,8 @@ public class CandidateServiceImpl implements CandidateService {
                                 UserContext userContext,
                                 SavedSearchService savedSearchService,
                                 CandidateNoteService candidateNoteService,
-                                CandidateCitizenshipService candidateCitizenshipService, 
+                                CandidateCitizenshipService candidateCitizenshipService,
+                                CandidateVisaService candidateVisaService, 
                                 SurveyTypeRepository surveyTypeRepository,
                                 EmailHelper emailHelper, PdfHelper pdfHelper) {
         this.userRepository = userRepository;
@@ -197,6 +200,7 @@ public class CandidateServiceImpl implements CandidateService {
         this.savedSearchService = savedSearchService;
         this.candidateNoteService = candidateNoteService;
         this.candidateCitizenshipService = candidateCitizenshipService;
+        this.candidateVisaService = candidateVisaService;
         this.surveyTypeRepository = surveyTypeRepository;
         this.emailHelper = emailHelper;
         this.pdfHelper = pdfHelper;
@@ -1724,6 +1728,14 @@ public class CandidateServiceImpl implements CandidateService {
         if (citizenNationalityId != null) {
             candidateCitizenshipService
                     .updateIntakeData(citizenNationalityId, candidate, data);            
+        }
+
+        //If there is a non null visa country, that means that this
+        //is a visa check update.
+        final Long visaCountryId = data.getVisaCountryId();
+        if (visaCountryId != null) {
+            candidateVisaService
+                    .updateIntakeData(visaCountryId, candidate, data);            
         }
         
         candidate.populateIntakeData(data);
