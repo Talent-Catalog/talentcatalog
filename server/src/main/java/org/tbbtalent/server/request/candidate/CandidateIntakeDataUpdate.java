@@ -48,6 +48,13 @@ public class CandidateIntakeDataUpdate {
     private HasPassport citizenHasPassport;
     private String citizenNotes;
 
+    private Long destinationId;
+    private Long destinationCountryId;
+    private YesNoUnsure destinationInterest;
+    private FamilyRelations destinationFamily;
+    private String destinationLocation;
+    private String destinationNotes;
+
     private YesNo familyMove;
     private String familyMoveNotes;
     private YesNo familyHealthConcern;

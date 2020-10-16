@@ -49,6 +49,8 @@ export interface CandidateIntakeData {
 
   candidateCitizenships?: CandidateCitizenship[];
 
+  candidateDestinations?: CandidateDestination[];
+
   familyMove?: YesNo;
   familyMoveNotes?: string;
   familyHealth?: YesNo;
@@ -90,6 +92,15 @@ export interface CandidateCitizenship {
   notes?: string;
 }
 
+export interface CandidateDestination {
+  id?: number;
+  country?: Country;
+  interest?: YesNoUnsure;
+  family?: FamilyRelations;
+  location?: string;
+  notes?: string;
+}
+
 /*
   Enumerations. These should match equivalent enumerations on the server (Java)
   side.
@@ -105,6 +116,17 @@ export enum AvailImmediateReason {
   Health = "Health",
   CurrentWork = "Current Work",
   Studies = "Studies",
+  Other = "Other"
+}
+
+export enum FamilyRelations {
+  NoResponse = "",
+  NoRelation = "No relatives",
+  Parents = "Mother/Father",
+  Sibling = "Sister/Brother",
+  AuntUncle = "Aunt/Uncle",
+  Grandparent = "Grandmother/Grandfather",
+  Cousin = "First Cousin",
   Other = "Other"
 }
 

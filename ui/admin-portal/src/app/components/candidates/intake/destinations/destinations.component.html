@@ -1,0 +1,12 @@
+<div *ngFor="let destination of candidateIntakeData.candidateDestinations; let i = index;">
+  <div class="card-title h6">
+    {{destination.country.name}}
+  </div>
+  <app-destination
+    [candidateIntakeData]="candidateIntakeData"
+    [candidate]="candidate"
+    [myRecordIndex]="i"
+    [country]="destination.country">
+  </app-destination>
+  <hr/>
+</div>

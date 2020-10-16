@@ -43,6 +43,8 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("candidateCitizenships", candidateCitizenshipDto())
 
+                .add("candidateDestinations", candidateDestinationDto())
+
                 .add("familyMove")
                 .add("familyMoveNotes")
                 .add("familyHealthConcern")
@@ -88,9 +90,26 @@ public class CandidateIntakeDataBuilderSelector {
                 ;
     }
 
+    private DtoBuilder candidateDestinationDto() {
+        return new DtoBuilder()
+                .add("country", countryDto())
+                .add("interest")
+                .add("family")
+                .add("location")
+                .add("notes")
+                ;
+    }
+
     private DtoBuilder nationalityDto() {
         return new DtoBuilder()
                 .add("id")
+                ;
+    }
+
+    private DtoBuilder countryDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
                 ;
     }
 
