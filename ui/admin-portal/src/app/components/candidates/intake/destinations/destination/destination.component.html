@@ -1,0 +1,55 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+
+  <div class="form-group">
+    <label [for]="'destinationInterest'+myRecordIndex">
+      Are you interested in {{country.name}}?
+    </label>
+    <span *ngIf="saving">
+      <i class="fas fa-spinner fa-spin"></i> saving...
+    </span>
+    <select class="form-control"
+            [id]="'destinationInterest'+myRecordIndex"
+            [formControlName]="'destinationInterest'">
+      <option *ngFor="let opt of destAusOptions"
+              [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+  </div>
+
+  <div  *ngIf="interest === 'Yes' || interest === 'Unsure'">
+    <div class="form-group">
+      <label [for]="'destinationFamily'+myRecordIndex">Do you have family in {{country.name}} and if so what is the closest relative?</label>
+      <select class="form-control"
+              [id]="'destinationFamily'+myRecordIndex"
+              [formControlName]="'destinationFamily'">
+        <option *ngFor="let opt of destAusFamilyOptions"
+                [value]="opt.value">
+          {{opt.displayText}}
+        </option>
+      </select>
+    </div>
+    <div  *ngIf="showLocation()">
+      <div class="form-group">
+        <label [for]="'destinationLocation'+myRecordIndex">Where are they located in {{country.name}}?</label>
+        <input type="text"
+               class="form-control"
+               [id]="'destinationLocation'+myRecordIndex"
+               [formControlName]="'destinationLocation'">
+      </div>
+    </div>
+    <div class="form-group">
+      <label [for]="'destinationNotes'+myRecordIndex">Notes</label>
+      <textarea type="text"
+                class="md-textarea-auto form-control"
+                rows="3"
+                [id]="'destinationNotes'+myRecordIndex"
+                [formControlName]="'destinationNotes'"
+                placeholder="" ></textarea>
+    </div>
+  </div>
+</form>
+

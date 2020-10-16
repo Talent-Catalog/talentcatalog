@@ -1,9 +1,11 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Candidate, CandidateIntakeData} from "../../../../../model/candidate";
-import {CandidateService} from "../../../../../services/candidate.service";
-import {forkJoin} from "rxjs";
-import {Nationality} from "../../../../../model/nationality";
-import {NationalityService} from "../../../../../services/nationality.service";
+import {Candidate, CandidateIntakeData} from '../../../../../model/candidate';
+import {CandidateService} from '../../../../../services/candidate.service';
+import {forkJoin} from 'rxjs';
+import {Nationality} from '../../../../../model/nationality';
+import {NationalityService} from '../../../../../services/nationality.service';
+import {Country} from '../../../../../model/country';
+import {CountryService} from '../../../../../services/country.service';
 
 @Component({
   selector: 'app-candidate-intake-tab',
@@ -16,10 +18,12 @@ export class CandidateIntakeTabComponent implements OnInit {
   error: string;
   loading: boolean;
   nationalities: Nationality[];
+  countries: Country[];
 
   constructor(
     private candidateService: CandidateService,
-    private nationalityService: NationalityService
+    private nationalityService: NationalityService,
+    private countryService: CountryService
   ) { }
 
   ngOnInit(): void {
@@ -28,10 +32,12 @@ export class CandidateIntakeTabComponent implements OnInit {
     this.loading = true;
     forkJoin({
       'nationalities': this.nationalityService.listNationalities(),
+      'countries': this.countryService.listCountries(),
       'intakeData':  this.candidateService.getIntakeData(this.candidate.id),
     }).subscribe(results => {
       this.loading = false;
       this.nationalities = results['nationalities'];
+      this.countries = results['countries'];
       this.candidateIntakeData = results['intakeData'];
     }, error => {
       this.loading = false;

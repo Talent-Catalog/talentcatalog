@@ -49,10 +49,7 @@ export interface CandidateIntakeData {
 
   candidateCitizenships?: CandidateCitizenship[];
 
-  destAus?: YesNoUnsure;
-  destAusFamily?: FamilyRelations;
-  destAusLoc?: string;
-  destAusNotes?: string;
+  candidateDestinations?: CandidateDestination[];
 
   familyMove?: YesNo;
   familyMoveNotes?: string;
@@ -92,6 +89,15 @@ export interface CandidateCitizenship {
   id?: number;
   nationality?: {id};
   hasPassport?: HasPassport;
+  notes?: string;
+}
+
+export interface CandidateDestination {
+  id?: number;
+  country?: Country;
+  interest?: YesNoUnsure;
+  family?: FamilyRelations;
+  location?: string;
   notes?: string;
 }
 
