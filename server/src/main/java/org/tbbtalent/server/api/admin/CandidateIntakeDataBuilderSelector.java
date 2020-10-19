@@ -92,6 +92,7 @@ public class CandidateIntakeDataBuilderSelector {
 
     private DtoBuilder candidateDestinationDto() {
         return new DtoBuilder()
+                .add("id")
                 .add("country", countryDto())
                 .add("interest")
                 .add("family")

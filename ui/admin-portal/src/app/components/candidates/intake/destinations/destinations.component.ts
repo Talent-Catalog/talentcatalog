@@ -1,7 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Candidate, CandidateIntakeData} from '../../../../model/candidate';
+import {Candidate, CandidateDestination, CandidateIntakeData} from '../../../../model/candidate';
 import {Country} from '../../../../model/country';
-import {CandidateDestination} from '../../../../model/candidate-destination';
 import {CandidateDestinationService} from '../../../../services/candidate-destination.service';
 
 @Component({
