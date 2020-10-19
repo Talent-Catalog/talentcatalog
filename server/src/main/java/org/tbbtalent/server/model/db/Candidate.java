@@ -169,6 +169,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private List<CandidateCitizenship> candidateCitizenships;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    private List<CandidateDestination> candidateDestinations;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     private List<CandidateVisa> candidateVisas;
     
     @Enumerated(EnumType.STRING)
@@ -280,23 +283,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Nullable
     private LocalDate asylumYear;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
-    private List<CandidateDestination> candidateDestinations;
-
-//    @Enumerated(EnumType.STRING)
-//    @Nullable
-//    private YesNoUnsure destAus;
-//
-//    @Enumerated(EnumType.STRING)
-//    @Nullable
-//    private FamilyRelations destAusFamily;
-//
-//    @Nullable
-//    private String destAusLoc;
-//
-//    @Nullable
-//    private String destAusNotes;
 
     public Candidate() {
     }
@@ -721,7 +707,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     public LocalDate getHostEntryYear() { return hostEntryYear; }
 
-    public void setHostEntryYear(LocalDate hostEntryYear) { this.hostEntryYear = hostEntryYear; }
+    public void setHostEntryYear(@Nullable LocalDate hostEntryYear) { this.hostEntryYear = hostEntryYear; }
 
     @Nullable
     public UnhcrStatus getUnhcrStatus() { return unhcrStatus; }
@@ -783,28 +769,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setAsylumYear(@Nullable LocalDate asylumYear) { this.asylumYear = asylumYear; }
 
-//    @Nullable
-//    public YesNoUnsure getDestAus() { return destAus; }
-//
-//    public void setDestAus(@Nullable YesNoUnsure destAus) { this.destAus = destAus; }
-//
-//    @Nullable
-//    public FamilyRelations getDestAusFamily() { return destAusFamily; }
-//
-//    public void setDestAusFamily(@Nullable FamilyRelations destAusFamily) { this.destAusFamily = destAusFamily; }
-//
-//    @Nullable
-//    public String getDestAusLoc() { return destAusLoc; }
-//
-//    public void setDestAusLoc(@Nullable String destAusLoc) { this.destAusLoc = destAusLoc; }
-//
-//    @Nullable
-//    public String getDestAusNotes() { return destAusNotes; }
-//
-//    public void setDestAusNotes(@Nullable String destAusNotes) { this.destAusNotes = destAusNotes; }
-
-
-    public List<CandidateDestination> getCandidateDestinations() { return candidateDestinations; }
+    public List<CandidateDestination> getCandidateDestinations() {
+        candidateDestinations.sort(null);
+        return candidateDestinations; 
+    }
 
     public void setCandidateDestinations(List<CandidateDestination> candidateDestinations) { this.candidateDestinations = candidateDestinations; }
 

@@ -13,7 +13,9 @@ import org.apache.commons.lang3.StringUtils;
 
 @MappedSuperclass
 @Translatable(value = "name", translation = "translatedName")
-public abstract class AbstractTranslatableDomainObject<IdType extends Serializable> extends AbstractDomainObject<IdType> {
+public abstract class AbstractTranslatableDomainObject<IdType extends Serializable> 
+        extends AbstractDomainObject<IdType> 
+        implements Comparable<AbstractTranslatableDomainObject<IdType>> {
 
     private String name;
 
@@ -28,6 +30,23 @@ public abstract class AbstractTranslatableDomainObject<IdType extends Serializab
 
     protected AbstractTranslatableDomainObject(String translatedName) {
         this.translatedName = translatedName;
+    }
+
+    /**
+     * This supports a "nulls first" alphabetical ascending sort order on 
+     * anything with a name.
+     */
+    @Override
+    public int compareTo(AbstractTranslatableDomainObject<IdType> other) {
+        if (this.name == null) {
+            return other.getName() == null ? 0 : -1;
+        }
+        
+        if (other.getName() == null) {
+            return 1;
+        }
+        
+        return this.name.compareTo(other.getName());
     }
 
     public String getName() {
