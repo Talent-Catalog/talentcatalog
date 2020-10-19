@@ -1,7 +1,10 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Candidate, CandidateIntakeData} from '../../../../model/candidate';
+import {
+  Candidate,
+  CandidateDestination,
+  CandidateIntakeData
+} from '../../../../model/candidate';
 import {Country} from '../../../../model/country';
-import {CandidateDestination} from '../../../../model/candidate-destination';
 import {CandidateDestinationService} from '../../../../services/candidate-destination.service';
 
 @Component({
@@ -24,14 +27,20 @@ export class DestinationsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // ADDING NEW DESTINATION COUNTRY? If adding a new country to the destination countries, just add the name in array below.
+    //todo Move these to server config.
+    // ADDING NEW DESTINATION COUNTRY? If adding a new country to the
+    // destination countries, just add the name in array below.
     this.countryNames = ["Australia", "Canada", "New Zealand", "United Kingdom"]
     this.destinationCountries = [];
     this.destinationCountries = this.countries.filter(c => this.countryNames.includes(c.name));
+
+    //todo I think we always need to create ids otherwise adding a new one won't work.
     // If there are no candidateDestinations for the candidate, create them. But if they are already there, don't create them.
     if (this.candidateIntakeData.candidateDestinations.length <= 0) {
       this.createIds(this.destinationCountries);
     }
+
+    //todo Better to sort on server
     // Order alphatically
     this.candidateIntakeData.candidateDestinations.sort((a, b) => {
       if (a.country.name < b.country.name) { return -1; }
@@ -40,7 +49,9 @@ export class DestinationsComponent implements OnInit {
     })
   }
 
-  createIds(countries: Country[]){
+  //todo Not really creating ids, creating CandidateDestinations
+  //Modify so that it is a createIfNecessary - and do all in one go.
+  createIds(countries: Country[]) {
     for (const c of countries) {
       this.saving = true;
       const candidateDestination: CandidateDestination = {
