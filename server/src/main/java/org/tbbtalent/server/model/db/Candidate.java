@@ -851,19 +851,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
             setAvailImmediateNotes(data.getAvailImmediateNotes());
         }
 
-//        if (data.getDestAus() != null) {
-//            setDestAus(data.getDestAus());
-//        }
-//        if (data.getDestAusFamily() != null) {
-//            setDestAusFamily(data.getDestAusFamily());
-//        }
-//        if (data.getDestAusLoc() != null) {
-//            setDestAusLoc(data.getDestAusLoc());
-//        }
-//        if (data.getDestAusNotes() != null) {
-//            setDestAusNotes(data.getDestAusNotes());
-//        }
-
         if (data.getFamilyMove() != null) {
             setFamilyMove(data.getFamilyMove());
         }
