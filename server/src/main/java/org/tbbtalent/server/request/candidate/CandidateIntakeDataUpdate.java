@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.tbbtalent.server.model.db.AvailImmediateReason;
+import org.tbbtalent.server.model.db.FamilyRelations;
 import org.tbbtalent.server.model.db.HasPassport;
 import org.tbbtalent.server.model.db.IntRecruitReason;
 import org.tbbtalent.server.model.db.UnhcrStatus;
