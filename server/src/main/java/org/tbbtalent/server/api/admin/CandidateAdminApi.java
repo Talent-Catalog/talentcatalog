@@ -100,7 +100,14 @@ public class CandidateAdminApi {
 
     @GetMapping("{id}/intake")
     public Map<String, Object> getIntakeData(@PathVariable("id") long id) {
-        Candidate candidate = this.candidateService.getCandidate(id);
+        Candidate candidate = candidateService.getCandidate(id);
+        
+        //Check if new TBB destinations have been added since the last time
+        //someone looked at this candidate's intake.
+        //If so, we automatically generate some new records corresponding tp
+        //those new destinations - for example for candidate destination 
+        //preferences and visa checks.
+        candidate = candidateService.addMissingDestinations(candidate);
         DtoBuilder builder = intakeDataBuilderSelector.selectBuilder();
         return builder.build(candidate);
     }

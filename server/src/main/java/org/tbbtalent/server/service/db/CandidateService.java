@@ -247,4 +247,24 @@ public interface CandidateService {
      */
     void updateIntakeData(long id, CandidateIntakeDataUpdate data)
         throws NoSuchObjectException;
+
+    /**
+     * Checks all candidate data related to TBB destinations and checks that
+     * the data matches the currently configured TBB destinations 
+     * (eg Australia, Canada etc). It adds any missing destination records
+     * if necessary and returns the updated Candidate record.
+     * <p/>
+     * Typically this only needs to be called when updating a candidate's
+     * intake data so that extra data can be added for any new destinations.
+     * <p/>
+     * This allows candidate data to be modified for new TBB destinations only
+     * as needed - rather than having to do a mass database update of all
+     * candidate data each time a new TBB destination is added.
+     * <p/>
+     * Note that TBB destinations are configured in application.yml
+     * (tbb.destinations). 
+     * @param candidate Candidate to be checked
+     * @return Updated candidate record.
+     */
+    Candidate addMissingDestinations(Candidate candidate);
 }

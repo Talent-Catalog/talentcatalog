@@ -79,14 +79,8 @@ public class CandidateVisaServiceImpl implements CandidateVisaService {
 
             CandidateVisa cv;
             Long id = data.getVisaId();
-            if (id == null) {
-                //Create
-                cv = new CandidateVisa();
-            } else {
-                //Update
-                cv = candidateVisaRepository.findById(id)
-                        .orElseThrow(() -> new NoSuchObjectException(CandidateVisa.class, id));
-            }
+            cv = candidateVisaRepository.findById(id)
+                    .orElseThrow(() -> new NoSuchObjectException(CandidateVisa.class, id));
             cv.populateIntakeData(candidate, country, data);
             candidateVisaRepository.save(cv);
         }

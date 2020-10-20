@@ -1,18 +1,27 @@
 package org.tbbtalent.server.model.db;
 
-import lombok.Getter;
-import lombok.Setter;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
 import org.springframework.lang.NonNull;
 import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 
-import javax.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "candidate_destination")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_destination_id_seq", allocationSize = 1)
-public class CandidateDestination extends AbstractDomainObject<Long> {
+public class CandidateDestination extends AbstractDomainObject<Long> 
+        implements Comparable<CandidateDestination>{
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_id")
@@ -33,6 +42,14 @@ public class CandidateDestination extends AbstractDomainObject<Long> {
     private String notes;
 
     public CandidateDestination() {
+    }
+
+    @Override
+    public int compareTo(CandidateDestination o) {
+        if (country == null) {
+            return o.country == null ? 0 : -1;
+        }
+        return country.compareTo(o.country);
     }
 
     public void populateIntakeData(

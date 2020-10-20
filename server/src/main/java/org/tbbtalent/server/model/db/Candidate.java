@@ -4,18 +4,31 @@
 
 package org.tbbtalent.server.model.db;
 
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.api.admin.SavedSearchAdminApi;
 import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
-
-import javax.persistence.*;
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "candidate")
@@ -156,6 +169,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private List<CandidateCitizenship> candidateCitizenships;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    private List<CandidateDestination> candidateDestinations;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     private List<CandidateVisa> candidateVisas;
     
     @Enumerated(EnumType.STRING)
@@ -267,30 +283,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Nullable
     private LocalDate asylumYear;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
-    private List<CandidateDestination> candidateDestinations;
-
-    @Enumerated(EnumType.STRING)
-    @Nullable
-    private YesNo destLimit;
-
-    @Nullable
-    private String destLimitNotes;
-
-//    @Enumerated(EnumType.STRING)
-//    @Nullable
-//    private YesNoUnsure destAus;
-//
-//    @Enumerated(EnumType.STRING)
-//    @Nullable
-//    private FamilyRelations destAusFamily;
-//
-//    @Nullable
-//    private String destAusLoc;
-//
-//    @Nullable
-//    private String destAusNotes;
 
     public Candidate() {
     }
@@ -715,7 +707,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     public LocalDate getHostEntryYear() { return hostEntryYear; }
 
-    public void setHostEntryYear(LocalDate hostEntryYear) { this.hostEntryYear = hostEntryYear; }
+    public void setHostEntryYear(@Nullable LocalDate hostEntryYear) { this.hostEntryYear = hostEntryYear; }
 
     @Nullable
     public UnhcrStatus getUnhcrStatus() { return unhcrStatus; }
@@ -777,40 +769,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setAsylumYear(@Nullable LocalDate asylumYear) { this.asylumYear = asylumYear; }
 
-//    @Nullable
-//    public YesNoUnsure getDestAus() { return destAus; }
-//
-//    public void setDestAus(@Nullable YesNoUnsure destAus) { this.destAus = destAus; }
-//
-//    @Nullable
-//    public FamilyRelations getDestAusFamily() { return destAusFamily; }
-//
-//    public void setDestAusFamily(@Nullable FamilyRelations destAusFamily) { this.destAusFamily = destAusFamily; }
-//
-//    @Nullable
-//    public String getDestAusLoc() { return destAusLoc; }
-//
-//    public void setDestAusLoc(@Nullable String destAusLoc) { this.destAusLoc = destAusLoc; }
-//
-//    @Nullable
-//    public String getDestAusNotes() { return destAusNotes; }
-//
-//    public void setDestAusNotes(@Nullable String destAusNotes) { this.destAusNotes = destAusNotes; }
-
-
-    public List<CandidateDestination> getCandidateDestinations() { return candidateDestinations; }
+    public List<CandidateDestination> getCandidateDestinations() {
+        candidateDestinations.sort(null);
+        return candidateDestinations;
+    }
 
     public void setCandidateDestinations(List<CandidateDestination> candidateDestinations) { this.candidateDestinations = candidateDestinations; }
-
-    @Nullable
-    public YesNo getDestLimit() { return destLimit; }
-
-    public void setDestLimit(@Nullable YesNo destLimit) { this.destLimit = destLimit; }
-
-    @Nullable
-    public String getDestLimitNotes() { return destLimitNotes; }
-
-    public void setDestLimitNotes(@Nullable String destLimitNotes) { this.destLimitNotes = destLimitNotes; }
 
     public boolean isSelected() {
         return selected;
@@ -885,12 +849,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getAvailImmediateNotes() != null) {
             setAvailImmediateNotes(data.getAvailImmediateNotes());
-        }
-        if (data.getDestLimit() != null) {
-            setDestLimit(data.getDestLimit());
-        }
-        if (data.getDestLimitNotes() != null) {
-            setDestLimitNotes(data.getDestLimitNotes());
         }
 
         if (data.getFamilyMove() != null) {

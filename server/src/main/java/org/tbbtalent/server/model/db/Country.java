@@ -24,7 +24,7 @@ public class Country extends AbstractTranslatableDomainObject<Long> {
     private Status status;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "sourceCountries")
-    Set<User> users = new HashSet<User>();
+    Set<User> users = new HashSet<>();
 
     public Country() {
     }
