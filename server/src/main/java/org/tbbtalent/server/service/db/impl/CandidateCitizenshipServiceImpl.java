@@ -79,14 +79,8 @@ public class CandidateCitizenshipServiceImpl implements CandidateCitizenshipServ
 
             CandidateCitizenship cc;
             Long id = data.getCitizenId();
-            if (id == null) {
-                //Create
-                cc = new CandidateCitizenship();
-            } else {
-                //Update
-                cc = candidateCitizenshipRepository.findById(id)
-                        .orElseThrow(() -> new NoSuchObjectException(CandidateCitizenship.class, id));
-            }
+            cc = candidateCitizenshipRepository.findById(id)
+                    .orElseThrow(() -> new NoSuchObjectException(CandidateCitizenship.class, id));
             cc.populateIntakeData(candidate, nationality, data);
             candidateCitizenshipRepository.save(cc);
         }

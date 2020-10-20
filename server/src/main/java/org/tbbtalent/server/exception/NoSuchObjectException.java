@@ -9,5 +9,9 @@ public class NoSuchObjectException extends ServiceException {
     public NoSuchObjectException(Class objectClass, String email) {
         super("missing_object", "Missing " + objectClass.getSimpleName() + " with email " + email);
     }
+
+    public NoSuchObjectException(String message) {
+        super("missing_object", message);
+    }
 }
 

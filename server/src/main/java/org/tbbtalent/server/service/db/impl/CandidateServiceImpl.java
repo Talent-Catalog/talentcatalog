@@ -1,14 +1,39 @@
 package org.tbbtalent.server.service.db.impl;
 
-import com.opencsv.CSVWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.security.GeneralSecurityException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.elasticsearch.index.query.*;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.elasticsearch.index.query.SimpleQueryStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
@@ -28,21 +53,74 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientException;
-import org.tbbtalent.server.exception.*;
-import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.exception.CircularReferencedException;
+import org.tbbtalent.server.exception.CountryRestrictionException;
+import org.tbbtalent.server.exception.ExportFailedException;
+import org.tbbtalent.server.exception.InvalidRequestException;
+import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.exception.PasswordMatchException;
+import org.tbbtalent.server.exception.UsernameTakenException;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateDestination;
+import org.tbbtalent.server.model.db.CandidateEducation;
+import org.tbbtalent.server.model.db.CandidateLanguage;
+import org.tbbtalent.server.model.db.CandidateOccupation;
+import org.tbbtalent.server.model.db.CandidateStatus;
+import org.tbbtalent.server.model.db.CandidateVisa;
+import org.tbbtalent.server.model.db.Country;
+import org.tbbtalent.server.model.db.DataRow;
+import org.tbbtalent.server.model.db.EducationLevel;
+import org.tbbtalent.server.model.db.Gender;
+import org.tbbtalent.server.model.db.Nationality;
+import org.tbbtalent.server.model.db.Role;
+import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.SavedSearch;
+import org.tbbtalent.server.model.db.SearchJoin;
+import org.tbbtalent.server.model.db.SearchType;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.SurveyType;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.model.sf.Contact;
-import org.tbbtalent.server.repository.db.*;
+import org.tbbtalent.server.repository.db.CandidateRepository;
+import org.tbbtalent.server.repository.db.CandidateSpecification;
+import org.tbbtalent.server.repository.db.CountryRepository;
+import org.tbbtalent.server.repository.db.EducationLevelRepository;
+import org.tbbtalent.server.repository.db.GetSavedListCandidatesQuery;
+import org.tbbtalent.server.repository.db.NationalityRepository;
+import org.tbbtalent.server.repository.db.SavedListRepository;
+import org.tbbtalent.server.repository.db.SavedSearchRepository;
+import org.tbbtalent.server.repository.db.SurveyTypeRepository;
+import org.tbbtalent.server.repository.db.UserRepository;
 import org.tbbtalent.server.repository.es.CandidateEsRepository;
 import org.tbbtalent.server.request.LoginRequest;
-import org.tbbtalent.server.request.candidate.*;
+import org.tbbtalent.server.request.candidate.BaseCandidateContactRequest;
+import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
+import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
+import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
+import org.tbbtalent.server.request.candidate.CandidatePhoneSearchRequest;
+import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
+import org.tbbtalent.server.request.candidate.IHasSetOfSavedLists;
+import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
+import org.tbbtalent.server.request.candidate.SavedListGetRequest;
+import org.tbbtalent.server.request.candidate.SavedSearchGetRequest;
+import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
+import org.tbbtalent.server.request.candidate.SearchJoinRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateContactRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateEducationRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateLinksRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tbbtalent.server.request.candidate.stat.CandidateStatDateRequest;
 import org.tbbtalent.server.request.note.CreateCandidateNoteRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.security.PasswordHelper;
 import org.tbbtalent.server.security.UserContext;
-import org.tbbtalent.server.service.db.*;
 import org.tbbtalent.server.service.db.CandidateCitizenshipService;
+import org.tbbtalent.server.service.db.CandidateDestinationService;
 import org.tbbtalent.server.service.db.CandidateNoteService;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.CandidateService;
@@ -56,23 +134,16 @@ import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.service.db.util.PdfHelper;
 import org.tbbtalent.server.util.filesystem.FileSystemFolder;
 
-import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.security.GeneralSecurityException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import com.opencsv.CSVWriter;
 
 @Service
-public class CandidateServiceImpl implements CandidateService {
+public class CandidateServiceImpl implements CandidateService, InitializingBean {
 
     private static final Logger log = LoggerFactory.getLogger(CandidateServiceImpl.class);
+
+    @Value("${tbb.destinations}")
+    private String[] tbbDestinations;
+    private List<Country> tbbDestinationCountries;
 
     private final UserRepository userRepository;
     private final SavedListRepository savedListRepository;
@@ -147,6 +218,21 @@ public class CandidateServiceImpl implements CandidateService {
         this.pdfHelper = pdfHelper;
         this.fileSystemService = fileSystemService;
         this.salesforceService = salesforceService;
+    }
+
+    @Override
+    public void afterPropertiesSet() {
+        //Extract the TBB destination countries array from the configuration
+        tbbDestinationCountries = new ArrayList<>();
+        for (String tbbDestination : tbbDestinations) {
+            Country country = countryRepository.findByNameIgnoreCase(tbbDestination);
+            if (country == null) {
+                log.error("Error in application.yml file. See tbb.destinations. " +
+                        "No country found called " + tbbDestination);
+            } else {
+                tbbDestinationCountries.add(country);
+            }
+        }
     }
 
     @Transactional
@@ -692,10 +778,58 @@ public class CandidateServiceImpl implements CandidateService {
 
     }
 
+    @Override
+    public Candidate addMissingDestinations(Candidate candidate) {
+        //Check candidate's preferred destinations
+        List<CandidateDestination> destinations = candidate.getCandidateDestinations();
+        //Construct hashset of country ids for quick checking
+        Set<Long> candidateDestinationCountryIds = new HashSet<>();
+        for (CandidateDestination destination : destinations) {
+            candidateDestinationCountryIds.add(destination.getCountry().getId());
+        }
+
+        //Check candidate's visa checks
+        List<CandidateVisa> visaChecks = candidate.getCandidateVisas();
+        //Construct hashset of country ids for quick checking
+        Set<Long> candidateVisaCountryIds = new HashSet<>();
+        for (CandidateVisa visaCheck : visaChecks) {
+            candidateVisaCountryIds.add(visaCheck.getCountry().getId());
+        }
+
+        //Check that all TBB destinations are present for candidate, adding
+        //missing ones if necessary (only destinations that candidate has 
+        //responded to are stored on the database).
+        boolean addedDestinations = false;
+        for (Country country : tbbDestinationCountries) {
+            //Does candidate have this destination preference?
+            if (!candidateDestinationCountryIds.contains(country.getId())) {
+                //If not, add in a new one
+                CandidateDestination cd = new CandidateDestination();
+                cd.setCountry(country);
+                cd.setCandidate(candidate);
+                destinations.add(cd);
+                addedDestinations = true;
+            }
+            //Does candidate have this visa check?
+            if (!candidateVisaCountryIds.contains(country.getId())) {
+                //If not, add in a new one
+                CandidateVisa cv = new CandidateVisa();
+                cv.setCountry(country);
+                cv.setCandidate(candidate);
+                visaChecks.add(cv);
+                addedDestinations = true;
+            }
+        }
+        
+        if (addedDestinations) {
+            candidate = save(candidate, false);
+        }
+        return candidate;
+    }
 
     @Override
     public @NonNull Candidate getCandidate(long id) throws NoSuchObjectException {
-        return this.candidateRepository.findById(id)
+        return candidateRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
     }
 
@@ -1672,7 +1806,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         //If there is a non null destination country, that means that this
-        //is a destinate update.
+        //is a destination update.
         final Long destinationCountryId = data.getDestinationCountryId();
         if (destinationCountryId != null) {
             candidateDestinationService
