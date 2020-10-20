@@ -45,6 +45,9 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("candidateDestinations", candidateDestinationDto())
 
+                .add("destLimit")
+                .add("destLimitNotes")
+
                 .add("familyMove")
                 .add("familyMoveNotes")
                 .add("familyHealthConcern")

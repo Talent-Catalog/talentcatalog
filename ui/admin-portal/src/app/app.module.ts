@@ -1,10 +1,6 @@
 import {BrowserModule, Title} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
-import {
-  NgbDateAdapter,
-  NgbDateParserFormatter,
-  NgbModule
-} from '@ng-bootstrap/ng-bootstrap';
+import {NgbDateAdapter, NgbDateParserFormatter, NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {NgMultiSelectDropDownModule} from 'ng-multiselect-dropdown';
 import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha';
 
@@ -153,6 +149,8 @@ import {HomeLocationComponent} from './components/candidates/intake/home-locatio
 import {AsylumYearComponent} from './components/candidates/intake/asylum-year/asylum-year.component';
 import {DestinationComponent} from './components/candidates/intake/destinations/destination/destination.component';
 import {DestinationsComponent} from './components/candidates/intake/destinations/destinations.component';
+import {ConfirmEmailComponent} from './components/candidates/intake/confirm-contact/confirm-email/confirm-email.component';
+import {DestinationLimitComponent} from './components/candidates/intake/destination-limit/destination-limit.component';
 
 @NgModule({
   declarations: [
@@ -292,7 +290,10 @@ import {DestinationsComponent} from './components/candidates/intake/destinations
     HomeLocationComponent,
     AsylumYearComponent,
     DestinationComponent,
-    DestinationsComponent
+    DestinationsComponent,
+    ConfirmEmailComponent,
+    ConfirmEmailComponent,
+    DestinationLimitComponent
   ],
   imports: [
     BrowserModule,

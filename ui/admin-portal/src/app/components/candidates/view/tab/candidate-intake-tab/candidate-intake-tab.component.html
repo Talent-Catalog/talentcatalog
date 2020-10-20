@@ -50,6 +50,10 @@
         [candidateIntakeData]="candidateIntakeData"
         [countries]="countries">
       </app-destinations>
+      <app-destination-limit
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-destination-limit>
     </div>
   </div>
 
@@ -166,6 +170,20 @@
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData">
       </app-family-health>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="card">
+    <div class="card-header">
+      Confirm Contact Details
+    </div>
+    <div class="card-body">
+      <app-confirm-email
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-confirm-email>
     </div>
   </div>
 

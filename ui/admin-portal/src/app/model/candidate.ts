@@ -51,6 +51,9 @@ export interface CandidateIntakeData {
 
   candidateDestinations?: CandidateDestination[];
 
+  destLimit?: YesNo;
+  destLimitNotes?: string;
+
   familyMove?: YesNo;
   familyMoveNotes?: string;
   familyHealth?: YesNo;
