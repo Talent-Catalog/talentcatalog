@@ -4,31 +4,18 @@
 
 package org.tbbtalent.server.model.db;
 
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.api.admin.SavedSearchAdminApi;
 import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
+
+import javax.persistence.*;
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "candidate")
@@ -283,6 +270,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Nullable
     private LocalDate asylumYear;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNo destLimit;
+
+    @Nullable
+    private String destLimitNotes;
 
     public Candidate() {
     }
@@ -776,6 +770,16 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setCandidateDestinations(List<CandidateDestination> candidateDestinations) { this.candidateDestinations = candidateDestinations; }
 
+    @Nullable
+    public YesNo getDestLimit() { return destLimit; }
+
+    public void setDestLimit(@Nullable YesNo destLimit) { this.destLimit = destLimit; }
+
+    @Nullable
+    public String getDestLimitNotes() { return destLimitNotes; }
+
+    public void setDestLimitNotes(@Nullable String destLimitNotes) { this.destLimitNotes = destLimitNotes; }
+
     public boolean isSelected() {
         return selected;
     }
@@ -850,7 +854,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getAvailImmediateNotes() != null) {
             setAvailImmediateNotes(data.getAvailImmediateNotes());
         }
-
+        if (data.getDestLimit() != null) {
+            setDestLimit(data.getDestLimit());
+        }
+        if (data.getDestLimitNotes() != null) {
+            setDestLimitNotes(data.getDestLimitNotes());
+        }
         if (data.getFamilyMove() != null) {
             setFamilyMove(data.getFamilyMove());
         }
