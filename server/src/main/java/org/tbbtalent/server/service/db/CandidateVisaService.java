@@ -10,14 +10,14 @@ import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateVisa;
+import org.tbbtalent.server.model.db.CandidateVisaCheck;
 import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
-import org.tbbtalent.server.request.candidate.visa.CreateCandidateVisaRequest;
+import org.tbbtalent.server.request.candidate.visa.CreateCandidateVisaCheckRequest;
 
 public interface CandidateVisaService {
 
     /**
-     * Creates a new candidate visa record from the data in the given 
+     * Creates a new candidate visa check record from the data in the given 
      * request. 
      * @param candidateId ID of candidate
      * @param request Request containing visa check details
@@ -25,19 +25,19 @@ public interface CandidateVisaService {
      * @throws NoSuchObjectException if the there is no Candidate record with 
      * that candidateId or no country with the id given in the request  
      */
-    CandidateVisa createVisa(
-            long candidateId, CreateCandidateVisaRequest request)
+    CandidateVisaCheck createVisaCheck(
+            long candidateId, CreateCandidateVisaCheckRequest request)
             throws NoSuchObjectException;
 
     /**
-     * Delete the candidate visa with the given id.  
+     * Delete the candidate visa check with the given id.  
      * @param visaId ID of record to be deleted
      * @return True if record was deleted, false if it was not found.
      * @throws EntityReferencedException if the object cannot be deleted because 
      * it is referenced by another object.
      * @throws InvalidRequestException if not authorized to delete this list.
      */
-    boolean deleteVisa(long visaId)
+    boolean deleteVisaCheck(long visaId)
             throws EntityReferencedException, InvalidRequestException;
 
     /**

@@ -5,10 +5,10 @@
 package org.tbbtalent.server.repository.db;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.tbbtalent.server.model.db.CandidateVisa;
+import org.tbbtalent.server.model.db.CandidateVisaCheck;
 
 public interface CandidateVisaRepository 
-        extends JpaRepository<CandidateVisa, Long> {
+        extends JpaRepository<CandidateVisaCheck, Long> {
     
-    CandidateVisa findByCountryId(Long countryId);
+    CandidateVisaCheck findByCountryId(Long countryId);
 }

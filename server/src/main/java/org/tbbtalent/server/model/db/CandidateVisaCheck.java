@@ -24,7 +24,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "candidate_visa")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_visa_id_seq", allocationSize = 1)
-public class CandidateVisa extends AbstractDomainObject<Long> {
+public class CandidateVisaCheck extends AbstractDomainObject<Long> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_id")
@@ -39,7 +39,7 @@ public class CandidateVisa extends AbstractDomainObject<Long> {
 
     private String assessmentNotes;
 
-    public CandidateVisa() {
+    public CandidateVisaCheck() {
     }
 
     public void populateIntakeData(

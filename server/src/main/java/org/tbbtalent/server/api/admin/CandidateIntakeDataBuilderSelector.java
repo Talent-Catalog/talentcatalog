@@ -4,13 +4,13 @@
 
 package org.tbbtalent.server.api.admin;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.util.dto.DtoBuilder;
-
-import javax.validation.constraints.NotNull;
 
 /**
  * Utility for selecting the right DTO build based on the currently logged in
@@ -44,6 +44,8 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("candidateCitizenships", candidateCitizenshipDto())
 
                 .add("candidateDestinations", candidateDestinationDto())
+                
+                .add("candidateVisaChecks", candidateVisaCheckDto())
 
                 .add("familyMove")
                 .add("familyMoveNotes")
@@ -98,6 +100,15 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("family")
                 .add("location")
                 .add("notes")
+                ;
+    }
+
+    private DtoBuilder candidateVisaCheckDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("country", countryDto())
+                .add("eligibility")
+                .add("assessmentNotes")
                 ;
     }
 
