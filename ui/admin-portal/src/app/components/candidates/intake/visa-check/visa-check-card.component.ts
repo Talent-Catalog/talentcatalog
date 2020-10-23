@@ -3,14 +3,11 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {IntakeComponentBase} from "../../../../util/intake/IntakeComponentBase";
+import {IntakeComponentBase} from "../../../util/intake/IntakeComponentBase";
 import {FormBuilder} from "@angular/forms";
-import {CandidateService} from "../../../../../services/candidate.service";
-import {
-  CandidateVisaCheck,
-  VisaEligibility
-} from "../../../../../model/candidate";
-import {EnumOption, enumOptions} from "../../../../../util/enum";
+import {CandidateService} from "../../../../services/candidate.service";
+import {CandidateVisaCheck, VisaEligibility} from "../../../../model/candidate";
+import {EnumOption, enumOptions} from "../../../../util/enum";
 
 @Component({
   selector: 'app-visa-check-card',

@@ -5,11 +5,9 @@
 import {
   AfterViewInit,
   Directive,
-  EventEmitter,
   Input,
   OnDestroy,
-  OnInit,
-  Output
+  OnInit
 } from '@angular/core';
 import {
   catchError,
@@ -68,8 +66,6 @@ export abstract class IntakeComponentBase implements AfterViewInit, OnDestroy, O
    */
   @Input() myRecordIndex: number;
 
-  @Output() refreshRequest = new EventEmitter();
-
   /**
    * True when a save is underway. Should be used to show the user when a save
    * is happening.
@@ -107,13 +103,6 @@ export abstract class IntakeComponentBase implements AfterViewInit, OnDestroy, O
   ngAfterViewInit(): void {
     //1 second timeout
     this.setupAutosave(1000);
-  }
-
-  /**
-   * Fires an event requesting an intake data refresh from the server.
-   */
-  requestRefresh() {
-    this.refreshRequest.emit();
   }
 
   /**

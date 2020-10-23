@@ -1,13 +1,40 @@
-<div *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i> loading...
+<!-- EXISTING RECORDS -->
+<div class="card">
+  <div class="card-header">
+    Visa checks
+    <span *ngIf="loading">
+          <i class="fas fa-spinner fa-spin"></i>
+    </span>
+    <div class="float-right">
+      <button type="button" class="btn btn-primary btn-sm" (click)="addRecord()">
+        <i class="fas fa-plus"></i>
+      </button>
+    </div>
+  </div>
+  <div class="card-body">
+    <div *ngIf="error">
+      {{error}}
+    </div>
+    <form [formGroup]="form">
+      <div class="form-group">
+        <div *ngFor="let visaCheck of candidateIntakeData?.candidateVisaChecks; let i = index;">
+          <input type="radio" [value]="i"
+                 name="visaCountry" formControlName="visaCountry"
+                 (change)="changeVisaCountry($event)">
+          {{visaCheck.country.name}}
+        </div>
+      </div>
+    </form>
+  </div>
 </div>
-<div *ngIf="error">
-  {{error}}
-</div>
-<div *ngIf="!loading">
-  <app-visa-check
-    [candidate]="candidate"
-    [candidateIntakeData]="candidateIntakeData"
-  >
-  </app-visa-check>
+
+<div [ngSwitch]="selectedIndex">
+  <div *ngFor="let visaCheck of candidateIntakeData?.candidateVisaChecks; let i = index;">
+    <app-visa-check-card *ngSwitchCase="i"
+                         [candidate]="candidate"
+                         [candidateIntakeData]="candidateIntakeData"
+                         [myRecordIndex]="i"
+    >
+    </app-visa-check-card>
+  </div>
 </div>

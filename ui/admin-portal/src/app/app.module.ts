@@ -156,8 +156,7 @@ import {HomeLocationComponent} from './components/candidates/intake/home-locatio
 import {AsylumYearComponent} from './components/candidates/intake/asylum-year/asylum-year.component';
 import {DestinationComponent} from './components/candidates/intake/destinations/destination/destination.component';
 import {DestinationsComponent} from './components/candidates/intake/destinations/destinations.component';
-import {VisaCheckComponent} from './components/candidates/intake/visa-check/visa-check.component';
-import {VisaCheckCardComponent} from './components/candidates/intake/visa-check/card/visa-check-card.component';
+import {VisaCheckCardComponent} from './components/candidates/intake/visa-check/visa-check-card.component';
 
 @NgModule({
   declarations: [
@@ -298,7 +297,6 @@ import {VisaCheckCardComponent} from './components/candidates/intake/visa-check/
     AsylumYearComponent,
     DestinationComponent,
     DestinationsComponent,
-    VisaCheckComponent,
     VisaCheckCardComponent
   ],
   imports: [

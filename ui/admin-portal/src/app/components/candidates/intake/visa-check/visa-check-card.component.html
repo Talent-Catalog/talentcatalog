@@ -7,7 +7,7 @@
 
     <form [formGroup]="form">
       <div class="form-group">
-        <label for="visaEligibility">Passport?</label>
+        <label for="visaEligibility">Put candidate forward to employer?</label>
         <select class="form-control"
                 id="visaEligibility" formControlName="visaEligibility">
           <option *ngFor="let opt of visaEligibilityOptions" [value]="opt.value">
