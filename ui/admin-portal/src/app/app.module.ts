@@ -146,13 +146,18 @@ import {WorkLegallyComponent} from './components/candidates/intake/work-legally/
 import {WorkStatusComponent} from './components/candidates/intake/work-status/work-status.component';
 import {HostEntryYearComponent} from './components/candidates/intake/host-entry-year/host-entry-year.component';
 import {CandidateVisaTabComponent} from './components/candidates/view/tab/candidate-visa-tab/candidate-visa-tab.component';
-import {CustomDateAdapter, CustomDateParserFormatter} from './util/date-adapter/ngb-date-adapter';
+import {
+  CustomDateAdapter,
+  CustomDateParserFormatter
+} from './util/date-adapter/ngb-date-adapter';
 import {RegistrationUnhcrComponent} from './components/candidates/intake/registration-unhcr/registration-unhcr.component';
 import {RegistrationUnrwaComponent} from './components/candidates/intake/registration-unrwa/registration-unrwa.component';
 import {HomeLocationComponent} from './components/candidates/intake/home-location/home-location.component';
 import {AsylumYearComponent} from './components/candidates/intake/asylum-year/asylum-year.component';
 import {DestinationComponent} from './components/candidates/intake/destinations/destination/destination.component';
 import {DestinationsComponent} from './components/candidates/intake/destinations/destinations.component';
+import {VisaCheckComponent} from './components/candidates/intake/visa-check/visa-check.component';
+import {VisaCheckCardComponent} from './components/candidates/intake/visa-check/card/visa-check-card.component';
 
 @NgModule({
   declarations: [
@@ -292,7 +297,9 @@ import {DestinationsComponent} from './components/candidates/intake/destinations
     HomeLocationComponent,
     AsylumYearComponent,
     DestinationComponent,
-    DestinationsComponent
+    DestinationsComponent,
+    VisaCheckComponent,
+    VisaCheckCardComponent
   ],
   imports: [
     BrowserModule,

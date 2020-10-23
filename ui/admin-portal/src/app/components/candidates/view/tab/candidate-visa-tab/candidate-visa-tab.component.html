@@ -3,21 +3,21 @@
 </div>
 
 <div [ngSwitch]="selectedVisa">
-  <div *ngSwitchCase="'Australia'">
+  <app-visa-check-card *ngSwitchCase="'Australia'">
     {{selectedVisa}}
-  </div>
-  <div *ngSwitchCase="'Canada'">
-    {{selectedVisa}}
-
-  </div>
-  <div *ngSwitchCase="'New Zealand'">
+  </app-visa-check-card>
+  <app-visa-check-card *ngSwitchCase="'Canada'">
     {{selectedVisa}}
 
-  </div>
-  <div *ngSwitchCase="'UK'">
+  </app-visa-check-card>
+  <app-visa-check-card *ngSwitchCase="'New Zealand'">
     {{selectedVisa}}
 
-  </div>
+  </app-visa-check-card>
+  <app-visa-check-card *ngSwitchCase="'UK'">
+    {{selectedVisa}}
+
+  </app-visa-check-card>
   <div *ngSwitchDefault>
     No match to {{selectedVisa}}
 
