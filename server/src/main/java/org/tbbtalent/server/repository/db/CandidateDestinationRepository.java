@@ -9,6 +9,4 @@ import org.tbbtalent.server.model.db.CandidateDestination;
 
 public interface CandidateDestinationRepository
         extends JpaRepository<CandidateDestination, Long> {
-
-    CandidateDestination findByCountryId(Long countryId);
 }

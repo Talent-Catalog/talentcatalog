@@ -10,5 +10,4 @@ import org.tbbtalent.server.model.db.CandidateVisaCheck;
 public interface CandidateVisaRepository 
         extends JpaRepository<CandidateVisaCheck, Long> {
     
-    CandidateVisaCheck findByCountryId(Long countryId);
 }

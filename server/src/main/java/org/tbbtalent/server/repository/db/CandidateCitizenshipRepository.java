@@ -10,5 +10,4 @@ import org.tbbtalent.server.model.db.CandidateCitizenship;
 public interface CandidateCitizenshipRepository 
         extends JpaRepository<CandidateCitizenship, Long> {
     
-    CandidateCitizenship findByNationalityId(Long nationalityId);
 }
