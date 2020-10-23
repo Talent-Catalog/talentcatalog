@@ -24,7 +24,9 @@ import lombok.Setter;
 @Entity
 @Table(name = "candidate_visa")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_visa_id_seq", allocationSize = 1)
-public class CandidateVisaCheck extends AbstractDomainObject<Long> {
+public class CandidateVisaCheck extends AbstractDomainObject<Long>
+        implements Comparable<CandidateVisaCheck> {
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_id")
@@ -40,6 +42,14 @@ public class CandidateVisaCheck extends AbstractDomainObject<Long> {
     private String assessmentNotes;
 
     public CandidateVisaCheck() {
+    }
+
+    @Override
+    public int compareTo(CandidateVisaCheck o) {
+        if (country == null) {
+            return o.country == null ? 0 : -1;
+        }
+        return country.compareTo(o.country);
     }
 
     public void populateIntakeData(

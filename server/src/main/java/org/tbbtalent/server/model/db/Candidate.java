@@ -564,6 +564,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     }
 
     public List<CandidateVisaCheck> getCandidateVisaChecks() {
+        candidateVisaChecks.sort(null);
         return candidateVisaChecks;
     }
 
