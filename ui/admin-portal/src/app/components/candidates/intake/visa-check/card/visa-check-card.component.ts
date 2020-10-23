@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020 Talent Beyond Boundaries. All rights reserved.
+ */
+
 import {Component, OnInit} from '@angular/core';
 
 @Component({
