@@ -1,26 +1,13 @@
-<div>
-  selector component
+<div *ngIf="loading">
+  <i class="fas fa-spinner fa-spin"></i> loading...
 </div>
-
-<div [ngSwitch]="selectedVisa">
-  <app-visa-check-card *ngSwitchCase="'Australia'">
-    {{selectedVisa}}
-  </app-visa-check-card>
-  <app-visa-check-card *ngSwitchCase="'Canada'">
-    {{selectedVisa}}
-
-  </app-visa-check-card>
-  <app-visa-check-card *ngSwitchCase="'New Zealand'">
-    {{selectedVisa}}
-
-  </app-visa-check-card>
-  <app-visa-check-card *ngSwitchCase="'UK'">
-    {{selectedVisa}}
-
-  </app-visa-check-card>
-  <div *ngSwitchDefault>
-    No match to {{selectedVisa}}
-
-  </div>
+<div *ngIf="error">
+  {{error}}
 </div>
-
+<div *ngIf="!loading">
+  <app-visa-check
+    [candidate]="candidate"
+    [candidateIntakeData]="candidateIntakeData"
+  >
+  </app-visa-check>
+</div>

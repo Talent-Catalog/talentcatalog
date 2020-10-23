@@ -56,6 +56,10 @@ export abstract class IntakeComponentTabBase implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.refreshIntakeData();
+  }
+
+  refreshIntakeData(): void {
     //Load existing candidateIntakeData and other data needed by intake
     this.error = null;
     this.loading = true;
