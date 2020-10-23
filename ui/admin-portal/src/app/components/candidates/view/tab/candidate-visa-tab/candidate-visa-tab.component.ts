@@ -25,14 +25,18 @@ export class CandidateVisaTabComponent
 
   ngOnInit() {
     super.ngOnInit();
+  }
 
-    //If we have some visa checks, select the first one
-    if (this.candidateIntakeData?.candidateVisaChecks.length > 0) {
-      this.selectedIndex = 0;
+  onDataLoaded(init: boolean) {
+    if (init) {
+      //If we have some visa checks, select the first one
+      if (this.candidateIntakeData?.candidateVisaChecks.length > 0) {
+        this.selectedIndex = 0;
+      }
+      this.form = this.fb.group({
+        visaCountry: [this.selectedIndex]
+      });
     }
-    this.form = this.fb.group({
-      visaCountry: [this.selectedIndex]
-    });
   }
 
   addRecord() {
@@ -56,7 +60,7 @@ export class CandidateVisaTabComponent
 
   changeVisaCountry(event: Event) {
     this.selectedIndex = this.form.controls.visaCountry.value;
-    this.refreshIntakeData();
+    this.refreshIntakeData(false);
   }
 
 }

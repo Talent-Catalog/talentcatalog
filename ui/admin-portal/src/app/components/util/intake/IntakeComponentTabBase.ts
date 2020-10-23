@@ -56,10 +56,10 @@ export abstract class IntakeComponentTabBase implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.refreshIntakeData();
+    this.refreshIntakeData(true);
   }
 
-  refreshIntakeData(): void {
+  refreshIntakeData(init: boolean): void {
     //Load existing candidateIntakeData and other data needed by intake
     this.error = null;
     this.loading = true;
@@ -70,10 +70,15 @@ export abstract class IntakeComponentTabBase implements OnInit {
       this.loading = false;
       this.nationalities = results['nationalities'];
       this.candidateIntakeData = results['intakeData'];
+      this.onDataLoaded(init);
     }, error => {
       this.loading = false;
       this.error = error;
     });
+  }
+
+  onDataLoaded(init: boolean) {
+
   }
 
 }
