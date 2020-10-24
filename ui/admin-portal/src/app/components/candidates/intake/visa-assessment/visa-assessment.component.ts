@@ -10,11 +10,11 @@ import {CandidateVisaCheck, VisaEligibility} from "../../../../model/candidate";
 import {EnumOption, enumOptions} from "../../../../util/enum";
 
 @Component({
-  selector: 'app-visa-check-card',
-  templateUrl: './visa-check-card.component.html',
-  styleUrls: ['./visa-check-card.component.scss']
+  selector: 'app-visa-assessment',
+  templateUrl: './visa-assessment.component.html',
+  styleUrls: ['./visa-assessment.component.scss']
 })
-export class VisaCheckCardComponent extends IntakeComponentBase implements OnInit {
+export class VisaAssessmentComponent extends IntakeComponentBase implements OnInit {
 
   //Drop down values for enumeration
   visaEligibilityOptions: EnumOption[] = enumOptions(VisaEligibility);

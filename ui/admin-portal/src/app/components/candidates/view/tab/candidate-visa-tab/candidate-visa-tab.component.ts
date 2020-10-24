@@ -16,6 +16,7 @@ export class CandidateVisaTabComponent
   @Input() candidateIntakeData: CandidateIntakeData;
   form: FormGroup;
   selectedIndex: number;
+  selectedCountry: string;
 
   constructor(candidateService: CandidateService,
               nationalityService: NationalityService,
@@ -60,6 +61,7 @@ export class CandidateVisaTabComponent
 
   changeVisaCountry(event: Event) {
     this.selectedIndex = this.form.controls.visaCountry.value;
+    //todo set selectedCountry
     this.refreshIntakeData(false);
   }
 

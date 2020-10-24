@@ -4,21 +4,21 @@
 
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {VisaCheckCardComponent} from './visa-check-card.component';
+import {VisaAssessmentComponent} from './visa-check-card.component';
 
 describe('VisaCheckCardComponent', () => {
-  let component: VisaCheckCardComponent;
-  let fixture: ComponentFixture<VisaCheckCardComponent>;
+  let component: VisaAssessmentComponent;
+  let fixture: ComponentFixture<VisaAssessmentComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ VisaCheckCardComponent ]
+      declarations: [ VisaAssessmentComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(VisaCheckCardComponent);
+    fixture = TestBed.createComponent(VisaAssessmentComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

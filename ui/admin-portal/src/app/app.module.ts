@@ -156,7 +156,11 @@ import {HomeLocationComponent} from './components/candidates/intake/home-locatio
 import {AsylumYearComponent} from './components/candidates/intake/asylum-year/asylum-year.component';
 import {DestinationComponent} from './components/candidates/intake/destinations/destination/destination.component';
 import {DestinationsComponent} from './components/candidates/intake/destinations/destinations.component';
-import {VisaCheckCardComponent} from './components/candidates/intake/visa-check/visa-check-card.component';
+import {VisaAssessmentComponent} from './components/candidates/intake/visa-assessment/visa-assessment.component';
+import {VisaCheckAuComponent} from './components/candidates/view/tab/candidate-visa-tab/au/visa-check-au.component';
+import {VisaCheckCaComponent} from './components/candidates/view/tab/candidate-visa-tab/ca/visa-check-ca.component';
+import {VisaCheckNzComponent} from './components/candidates/view/tab/candidate-visa-tab/nz/visa-check-nz.component';
+import {VisaCheckUkComponent} from './components/candidates/view/tab/candidate-visa-tab/uk/visa-check-uk.component';
 
 @NgModule({
   declarations: [
@@ -297,7 +301,11 @@ import {VisaCheckCardComponent} from './components/candidates/intake/visa-check/
     AsylumYearComponent,
     DestinationComponent,
     DestinationsComponent,
-    VisaCheckCardComponent
+    VisaAssessmentComponent,
+    VisaCheckAuComponent,
+    VisaCheckCaComponent,
+    VisaCheckNzComponent,
+    VisaCheckUkComponent
   ],
   imports: [
     BrowserModule,
