@@ -1,1 +1,14 @@
-<p>visa-check-ca works!</p>
+<div *ngIf="loading">
+  <i class="fas fa-spinner fa-spin"></i> loading...
+</div>
+<div *ngIf="error">
+  {{error}}
+</div>
+<div *ngIf="!loading">
+  <app-visa-assessment
+    [candidate]="candidate"
+    [candidateIntakeData]="candidateIntakeData"
+    [myRecordIndex]="selectedIndex"
+  >
+  </app-visa-assessment>
+</div>

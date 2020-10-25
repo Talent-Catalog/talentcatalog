@@ -1,8 +1,7 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {CandidateService} from "../../../../../services/candidate.service";
 import {NationalityService} from "../../../../../services/nationality.service";
 import {IntakeComponentTabBase} from "../../../../util/intake/IntakeComponentTabBase";
-import {Candidate, CandidateIntakeData} from "../../../../../model/candidate";
 import {FormBuilder, FormGroup} from "@angular/forms";
 
 @Component({
@@ -12,8 +11,6 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 })
 export class CandidateVisaTabComponent
   extends IntakeComponentTabBase implements OnInit {
-  @Input() candidate: Candidate;
-  @Input() candidateIntakeData: CandidateIntakeData;
   form: FormGroup;
   selectedIndex: number;
   selectedCountry: string;
@@ -22,10 +19,6 @@ export class CandidateVisaTabComponent
               nationalityService: NationalityService,
               private fb: FormBuilder) {
     super(candidateService, nationalityService)
-  }
-
-  ngOnInit() {
-    super.ngOnInit();
   }
 
   onDataLoaded(init: boolean) {
@@ -37,6 +30,8 @@ export class CandidateVisaTabComponent
       this.form = this.fb.group({
         visaCountry: [this.selectedIndex]
       });
+
+      this.changeVisaCountry(null);
     }
   }
 
@@ -61,7 +56,7 @@ export class CandidateVisaTabComponent
 
   changeVisaCountry(event: Event) {
     this.selectedIndex = this.form.controls.visaCountry.value;
-    //todo set selectedCountry
+    this.selectedCountry = this.candidateIntakeData.candidateVisaChecks[this.selectedIndex].country.name;
     this.refreshIntakeData(false);
   }
 

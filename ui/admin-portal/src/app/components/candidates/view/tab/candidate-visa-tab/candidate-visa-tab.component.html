@@ -26,36 +26,38 @@
         </div>
       </div>
     </form>
+
+    <div [ngSwitch]="selectedCountry" *ngIf="selectedCountry != undefined">
+      <app-visa-check-au *ngSwitchCase="'Australia'"
+                         [candidate]="candidate"
+                         [selectedIndex]="selectedIndex"
+      >
+      </app-visa-check-au>
+
+      <app-visa-check-ca *ngSwitchCase="'Canada'"
+                         [candidate]="candidate"
+                         [selectedIndex]="selectedIndex"
+      >
+      </app-visa-check-ca>
+
+      <app-visa-check-nz *ngSwitchCase="'New Zealand'"
+                         [candidate]="candidate"
+                         [selectedIndex]="selectedIndex"
+      >
+      </app-visa-check-nz>
+
+      <app-visa-check-uk *ngSwitchCase="'United Kingdom'"
+                         [candidate]="candidate"
+                         [selectedIndex]="selectedIndex"
+      >
+      </app-visa-check-uk>
+
+      <div *ngSwitchDefault>
+        //todo error!
+        {{selectedCountry}}
+      </div>
+    </div>
+
   </div>
 </div>
 
-<div [ngSwitch]="selectedCountry">
-    <app-visa-check-au *ngSwitchCase="'Australia'"
-                         [candidate]="candidate"
-                         [candidateIntakeData]="candidateIntakeData"
-    >
-    </app-visa-check-au>
-
-    <app-visa-check-ca *ngSwitchCase="'Canada'"
-                         [candidate]="candidate"
-                         [candidateIntakeData]="candidateIntakeData"
-    >
-    </app-visa-check-ca>
-
-    <app-visa-check-nz *ngSwitchCase="'New Zealand'"
-                         [candidate]="candidate"
-                         [candidateIntakeData]="candidateIntakeData"
-    >
-    </app-visa-check-nz>
-
-    <app-visa-check-uk *ngSwitchCase="'United Kingdom'"
-                         [candidate]="candidate"
-                         [candidateIntakeData]="candidateIntakeData"
-    >
-    </app-visa-check-uk>
-
-    <div *ngSwitchDefault>
-      //todo error!
-      {{selectedCountry}}
-    </div>
-</div>
