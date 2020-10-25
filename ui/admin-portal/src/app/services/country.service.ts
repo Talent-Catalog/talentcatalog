@@ -2,8 +2,9 @@ import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Country} from "../model/country";
-import {Observable} from "rxjs";
+import {Observable, of} from "rxjs";
 import {SearchResults} from "../model/search-results";
+import {tap} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -11,11 +12,20 @@ import {SearchResults} from "../model/search-results";
 export class CountryService {
 
   private apiUrl: string = environment.apiUrl + '/country';
+  private countries: Country[] = [];
 
   constructor(private http: HttpClient) { }
 
   listCountries(): Observable<Country[]> {
-    return this.http.get<Country[]>(`${this.apiUrl}`);
+    //If we already have the data return it, otherwise get it.
+    return this.countries.length > 0 ?
+      //"of" turns the data into an Observable
+      of(this.countries) :
+      this.http.get<Country[]>(`${this.apiUrl}`)
+        .pipe(
+          //Save data the first time we fetch it
+          tap(data => {this.countries = data})
+        );
   }
 
   searchPaged(request): Observable<SearchResults<Country>> {

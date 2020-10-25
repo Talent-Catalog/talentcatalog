@@ -2,10 +2,9 @@ import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Nationality} from "../model/nationality";
-import {Observable} from "rxjs";
+import {Observable, of} from "rxjs";
 import {SearchResults} from "../model/search-results";
-import {User} from "../model/user";
-import {Candidate} from "../model/candidate";
+import {tap} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -14,10 +13,20 @@ export class NationalityService {
 
   private apiUrl: string = environment.apiUrl + '/nationality';
 
+  private nationalities: Nationality[] = [];
+
   constructor(private http: HttpClient) { }
 
   listNationalities(): Observable<Nationality[]> {
-    return this.http.get<Nationality[]>(`${this.apiUrl}`);
+    //If we already have the data return it, otherwise get it.
+    return this.nationalities.length > 0 ?
+      //"of" turns the data into an Observable
+      of(this.nationalities) :
+    this.http.get<Nationality[]>(`${this.apiUrl}`)
+      .pipe(
+        //Save data the first time we fetch it
+        tap(data => {this.nationalities = data})
+      );
   }
 
   search(request): Observable<SearchResults<Nationality>> {
