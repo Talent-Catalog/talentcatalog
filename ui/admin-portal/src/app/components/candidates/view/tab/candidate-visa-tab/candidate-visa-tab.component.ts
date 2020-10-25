@@ -3,6 +3,7 @@ import {CandidateService} from "../../../../../services/candidate.service";
 import {NationalityService} from "../../../../../services/nationality.service";
 import {IntakeComponentTabBase} from "../../../../util/intake/IntakeComponentTabBase";
 import {FormBuilder, FormGroup} from "@angular/forms";
+import {CountryService} from "../../../../../services/country.service";
 
 @Component({
   selector: 'app-candidate-visa-tab',
@@ -16,9 +17,10 @@ export class CandidateVisaTabComponent
   selectedCountry: string;
 
   constructor(candidateService: CandidateService,
+              countryService: CountryService,
               nationalityService: NationalityService,
               private fb: FormBuilder) {
-    super(candidateService, nationalityService)
+    super(candidateService, countryService, nationalityService)
   }
 
   onDataLoaded(init: boolean) {
@@ -57,7 +59,6 @@ export class CandidateVisaTabComponent
   changeVisaCountry(event: Event) {
     this.selectedIndex = this.form.controls.visaCountry.value;
     this.selectedCountry = this.candidateIntakeData.candidateVisaChecks[this.selectedIndex].country.name;
-    this.refreshIntakeData(false);
   }
 
 }

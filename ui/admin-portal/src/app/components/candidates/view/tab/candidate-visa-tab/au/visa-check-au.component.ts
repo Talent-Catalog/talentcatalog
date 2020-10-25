@@ -1,7 +1,5 @@
 import {Component, Input} from '@angular/core';
 import {IntakeComponentTabBase} from "../../../../../util/intake/IntakeComponentTabBase";
-import {CandidateService} from "../../../../../../services/candidate.service";
-import {NationalityService} from "../../../../../../services/nationality.service";
 
 @Component({
   selector: 'app-visa-check-au',
@@ -10,8 +8,4 @@ import {NationalityService} from "../../../../../../services/nationality.service
 })
 export class VisaCheckAuComponent extends IntakeComponentTabBase {
   @Input() selectedIndex: number;
-  constructor(candidateService: CandidateService,
-              nationalityService: NationalityService) {
-    super(candidateService, nationalityService)
-  }
 }
