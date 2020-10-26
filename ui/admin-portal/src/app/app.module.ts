@@ -149,8 +149,9 @@ import {HomeLocationComponent} from './components/candidates/intake/home-locatio
 import {AsylumYearComponent} from './components/candidates/intake/asylum-year/asylum-year.component';
 import {DestinationComponent} from './components/candidates/intake/destinations/destination/destination.component';
 import {DestinationsComponent} from './components/candidates/intake/destinations/destinations.component';
-import {ConfirmEmailComponent} from './components/candidates/intake/confirm-contact/confirm-email/confirm-email.component';
 import {DestinationLimitComponent} from './components/candidates/intake/destination-limit/destination-limit.component';
+import {FixedInputComponent} from './components/util/fixed-input/fixed-input.component';
+import {ConfirmContactComponent} from './components/candidates/intake/confirm-contact/confirm-contact.component';
 
 @NgModule({
   declarations: [
@@ -291,9 +292,9 @@ import {DestinationLimitComponent} from './components/candidates/intake/destinat
     AsylumYearComponent,
     DestinationComponent,
     DestinationsComponent,
-    ConfirmEmailComponent,
-    ConfirmEmailComponent,
-    DestinationLimitComponent
+    DestinationLimitComponent,
+    FixedInputComponent,
+    ConfirmContactComponent
   ],
   imports: [
     BrowserModule,
