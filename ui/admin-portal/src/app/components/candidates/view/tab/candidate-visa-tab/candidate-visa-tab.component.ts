@@ -11,6 +11,8 @@ import {
 import {Country} from "../../../../../model/country";
 import {HasNameSelectorComponent} from "../../../../util/has-name-selector/has-name-selector.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {ConfirmationComponent} from "../../../../util/confirm/confirmation.component";
+import {CandidateVisaCheck} from "../../../../../model/candidate";
 
 @Component({
   selector: 'app-candidate-visa-tab',
@@ -45,7 +47,7 @@ export class CandidateVisaTabComponent
 
       this.changeVisaCountry(null);
 
-      //todo debugging
+      //todo debugging - needs to be uplaoded.
       this.destinations = this.countries;
     }
   }
@@ -104,12 +106,38 @@ export class CandidateVisaTabComponent
   }
 
   deleteRecord(i: number) {
-    this.candidateIntakeData.candidateVisaChecks.splice(i, 1);
+    const confirmationModal = this.modalService.open(ConfirmationComponent);
+    const visaCheck: CandidateVisaCheck = this.candidateIntakeData.candidateVisaChecks[i];
+
+    confirmationModal.componentInstance.message =
+      "Are you sure you want to delete the visa check for " + visaCheck.country.name;
+    confirmationModal.result
+      .then((result) => {
+        if (result === true) {
+          this.doDelete(i, visaCheck);
+        }
+      })
+      .catch(() => {});
+  }
+
+  private doDelete(i: number, visaCheck: CandidateVisaCheck) {
+    this.loading = true;
+    this.candidateVisaCheckService.delete(visaCheck.id).subscribe(
+      (done) => {
+        this.loading = false;
+        this.candidateIntakeData.candidateVisaChecks.splice(i, 1);
+        this.changeVisaCountry(null);
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      });
   }
 
   changeVisaCountry(event: Event) {
     this.selectedIndex = this.form.controls.visaCountry.value;
-    this.selectedCountry = this.candidateIntakeData.candidateVisaChecks[this.selectedIndex].country?.name;
+    this.selectedCountry = this.candidateIntakeData
+      .candidateVisaChecks[this.selectedIndex].country?.name;
   }
 
 }
