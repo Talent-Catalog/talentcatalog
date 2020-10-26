@@ -6,10 +6,10 @@ import {Directive, Input, OnInit} from '@angular/core';
 import {forkJoin} from 'rxjs';
 import {Candidate, CandidateIntakeData} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
-import {Nationality} from "../../../model/nationality";
-import {NationalityService} from "../../../services/nationality.service";
-import {CountryService} from "../../../services/country.service";
-import {Country} from "../../../model/country";
+import {Nationality} from '../../../model/nationality';
+import {NationalityService} from '../../../services/nationality.service';
+import {CountryService} from '../../../services/country.service';
+import {Country} from '../../../model/country';
 
 /**
  * Base class for all candidate intake tab components.
@@ -105,6 +105,6 @@ export abstract class IntakeComponentTabBase implements OnInit {
    * the data loading was triggered by directly calling refreshIntakeData
    * externally to do a data refresh.
    */
-  protected onDataLoaded(init: boolean) {}
+  public onDataLoaded(init: boolean) {}
 
 }
