@@ -57,7 +57,7 @@ export abstract class IntakeComponentTabBase implements OnInit {
    */
   nationalities: Nationality[];
 
-  protected constructor(
+  constructor(
     private candidateService: CandidateService,
     private countryService: CountryService,
     private nationalityService: NationalityService
@@ -105,6 +105,6 @@ export abstract class IntakeComponentTabBase implements OnInit {
    * the data loading was triggered by directly calling refreshIntakeData
    * externally to do a data refresh.
    */
-  public onDataLoaded(init: boolean) {}
+  protected onDataLoaded(init: boolean) {}
 
 }
