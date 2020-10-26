@@ -159,7 +159,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private List<CandidateDestination> candidateDestinations;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
-    private List<CandidateVisa> candidateVisas;
+    private List<CandidateVisaCheck> candidateVisaChecks;
     
     @Enumerated(EnumType.STRING)
     @Nullable
@@ -557,12 +557,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.candidateCitizenships = candidateCitizenships;
     }
 
-    public List<CandidateVisa> getCandidateVisas() {
-        return candidateVisas;
+    public List<CandidateVisaCheck> getCandidateVisaChecks() {
+        candidateVisaChecks.sort(null);
+        return candidateVisaChecks;
     }
 
-    public void setCandidateVisas(List<CandidateVisa> candidateVisas) {
-        this.candidateVisas = candidateVisas;
+    public void setCandidateVisaChecks(List<CandidateVisaCheck> candidateVisaChecks) {
+        this.candidateVisaChecks = candidateVisaChecks;
     }
 
     public String getMigrationCountry() {

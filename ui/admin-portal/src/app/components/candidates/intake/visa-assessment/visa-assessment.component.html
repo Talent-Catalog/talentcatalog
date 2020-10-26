@@ -1,0 +1,26 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+
+<div class="card">
+  <div class="card-body">
+
+    <form [formGroup]="form">
+      <div class="form-group">
+        <label for="visaEligibility">Put candidate forward to employer?</label>
+        <select class="form-control"
+                id="visaEligibility" formControlName="visaEligibility">
+          <option *ngFor="let opt of visaEligibilityOptions" [value]="opt.value">
+            {{opt.displayText}}
+          </option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="visaAssessmentNotes">Notes</label>
+        <textarea type="text" class="md-textarea-auto form-control" rows="4"
+                  id="visaAssessmentNotes" formControlName="visaAssessmentNotes"
+                  placeholder="" ></textarea>
+      </div>
+    </form>
+  </div>
+</div>

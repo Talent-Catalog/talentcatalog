@@ -10,16 +10,16 @@ import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.CandidateVisa;
-import org.tbbtalent.server.request.candidate.visa.CreateCandidateVisaRequest;
+import org.tbbtalent.server.model.db.CandidateVisaCheck;
+import org.tbbtalent.server.request.candidate.visa.CreateCandidateVisaCheckRequest;
 import org.tbbtalent.server.service.db.CandidateVisaService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()
 @RequestMapping("/api/admin/candidate-visa")
 public class CandidateVisaAdminApi 
-        implements IJoinedTableApi<CreateCandidateVisaRequest,
-        CreateCandidateVisaRequest,CreateCandidateVisaRequest> {
+        implements IJoinedTableApi<CreateCandidateVisaCheckRequest,
+        CreateCandidateVisaCheckRequest, CreateCandidateVisaCheckRequest> {
     private final CandidateVisaService candidateVisaService;
 
     public CandidateVisaAdminApi(
@@ -38,12 +38,12 @@ public class CandidateVisaAdminApi
      */
     @Override
     public @NotNull Map<String, Object> create(
-            long candidateId, @Valid CreateCandidateVisaRequest request) 
+            long candidateId, @Valid CreateCandidateVisaCheckRequest request) 
             throws NoSuchObjectException {
-        CandidateVisa candidateVisa = 
+        CandidateVisaCheck candidateVisaCheck = 
                 this.candidateVisaService
-                        .createVisa(candidateId, request);
-        return candidateVisaDto().build(candidateVisa);
+                        .createVisaCheck(candidateId, request);
+        return candidateVisaDto().build(candidateVisaCheck);
     }
 
     /**
@@ -57,7 +57,7 @@ public class CandidateVisaAdminApi
     @Override
     public boolean delete(long id) 
             throws EntityReferencedException, InvalidRequestException {
-        return candidateVisaService.deleteVisa(id);
+        return candidateVisaService.deleteVisaCheck(id);
     }
     
     private DtoBuilder candidateVisaDto() {

@@ -10,13 +10,13 @@ import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateVisa;
+import org.tbbtalent.server.model.db.CandidateVisaCheck;
 import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.CandidateVisaRepository;
 import org.tbbtalent.server.repository.db.CountryRepository;
 import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
-import org.tbbtalent.server.request.candidate.visa.CreateCandidateVisaRequest;
+import org.tbbtalent.server.request.candidate.visa.CreateCandidateVisaCheckRequest;
 import org.tbbtalent.server.service.db.CandidateVisaService;
 
 /**
@@ -40,14 +40,14 @@ public class CandidateVisaServiceImpl implements CandidateVisaService {
     }
 
     @Override
-    public CandidateVisa createVisa(
-            long candidateId, CreateCandidateVisaRequest request) 
+    public CandidateVisaCheck createVisaCheck(
+            long candidateId, CreateCandidateVisaCheckRequest request) 
             throws NoSuchObjectException {
 
         Candidate candidate = candidateRepository.findById(candidateId)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateId));
 
-        CandidateVisa cv = new CandidateVisa();
+        CandidateVisaCheck cv = new CandidateVisaCheck();
         cv.setCandidate(candidate);
 
         final Long countryId = request.getCountryId();
@@ -63,7 +63,7 @@ public class CandidateVisaServiceImpl implements CandidateVisaService {
     }
 
     @Override
-    public boolean deleteVisa(long visaId) 
+    public boolean deleteVisaCheck(long visaId) 
             throws EntityReferencedException, InvalidRequestException {
         candidateVisaRepository.deleteById(visaId);
         return true;
@@ -77,10 +77,10 @@ public class CandidateVisaServiceImpl implements CandidateVisaService {
             Country country = countryRepository.findById(countryId)
                     .orElseThrow(() -> new NoSuchObjectException(Country.class, countryId));
 
-            CandidateVisa cv;
+            CandidateVisaCheck cv;
             Long id = data.getVisaId();
             cv = candidateVisaRepository.findById(id)
-                    .orElseThrow(() -> new NoSuchObjectException(CandidateVisa.class, id));
+                    .orElseThrow(() -> new NoSuchObjectException(CandidateVisaCheck.class, id));
             cv.populateIntakeData(candidate, country, data);
             candidateVisaRepository.save(cv);
         }

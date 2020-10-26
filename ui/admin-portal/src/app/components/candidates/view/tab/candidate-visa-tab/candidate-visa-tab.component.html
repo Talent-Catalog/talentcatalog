@@ -1,25 +1,62 @@
-<div>
-  selector component
-</div>
-
-<div [ngSwitch]="selectedVisa">
-  <div *ngSwitchCase="'Australia'">
-    {{selectedVisa}}
+<!-- EXISTING RECORDS -->
+<div class="card">
+  <div class="card-header">
+    Visa checks
+    <span *ngIf="loading">
+          <i class="fas fa-spinner fa-spin"></i>
+    </span>
+    <div class="float-right" *ngIf="!loading">
+      <button type="button" class="btn btn-primary btn-sm" (click)="addRecord()">
+        <i class="fas fa-plus"></i>
+      </button>
+    </div>
   </div>
-  <div *ngSwitchCase="'Canada'">
-    {{selectedVisa}}
 
-  </div>
-  <div *ngSwitchCase="'New Zealand'">
-    {{selectedVisa}}
+  <div class="card-body" *ngIf="!loading">
+    <div *ngIf="error">
+      {{error}}
+    </div>
+    <form [formGroup]="form">
+      <div class="form-group">
+        <div *ngFor="let visaCheck of candidateIntakeData?.candidateVisaChecks; let i = index;">
+          <input type="radio" [value]="i"
+                 name="visaCountry" formControlName="visaCountry"
+                 (change)="changeVisaCountry($event)">
+          {{visaCheck.country.name}}
+        </div>
+      </div>
+    </form>
 
-  </div>
-  <div *ngSwitchCase="'UK'">
-    {{selectedVisa}}
+    <div [ngSwitch]="selectedCountry" *ngIf="selectedCountry != undefined">
+      <app-visa-check-au *ngSwitchCase="'Australia'"
+                         [candidate]="candidate"
+                         [selectedIndex]="selectedIndex"
+      >
+      </app-visa-check-au>
 
-  </div>
-  <div *ngSwitchDefault>
-    No match to {{selectedVisa}}
+      <app-visa-check-ca *ngSwitchCase="'Canada'"
+                         [candidate]="candidate"
+                         [selectedIndex]="selectedIndex"
+      >
+      </app-visa-check-ca>
+
+      <app-visa-check-nz *ngSwitchCase="'New Zealand'"
+                         [candidate]="candidate"
+                         [selectedIndex]="selectedIndex"
+      >
+      </app-visa-check-nz>
+
+      <app-visa-check-uk *ngSwitchCase="'United Kingdom'"
+                         [candidate]="candidate"
+                         [selectedIndex]="selectedIndex"
+      >
+      </app-visa-check-uk>
+
+      <div *ngSwitchDefault>
+        //todo error!
+        {{selectedCountry}}
+      </div>
+    </div>
 
   </div>
 </div>

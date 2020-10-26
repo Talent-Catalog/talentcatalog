@@ -66,7 +66,6 @@ import org.tbbtalent.server.model.db.CandidateEducation;
 import org.tbbtalent.server.model.db.CandidateLanguage;
 import org.tbbtalent.server.model.db.CandidateOccupation;
 import org.tbbtalent.server.model.db.CandidateStatus;
-import org.tbbtalent.server.model.db.CandidateVisa;
 import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.model.db.DataRow;
 import org.tbbtalent.server.model.db.EducationLevel;
@@ -788,17 +787,8 @@ public class CandidateServiceImpl implements CandidateService, InitializingBean 
             candidateDestinationCountryIds.add(destination.getCountry().getId());
         }
 
-        //Check candidate's visa checks
-        List<CandidateVisa> visaChecks = candidate.getCandidateVisas();
-        //Construct hashset of country ids for quick checking
-        Set<Long> candidateVisaCountryIds = new HashSet<>();
-        for (CandidateVisa visaCheck : visaChecks) {
-            candidateVisaCountryIds.add(visaCheck.getCountry().getId());
-        }
-
         //Check that all TBB destinations are present for candidate, adding
-        //missing ones if necessary (only destinations that candidate has 
-        //responded to are stored on the database).
+        //missing ones if necessary
         boolean addedDestinations = false;
         for (Country country : tbbDestinationCountries) {
             //Does candidate have this destination preference?
@@ -808,15 +798,6 @@ public class CandidateServiceImpl implements CandidateService, InitializingBean 
                 cd.setCountry(country);
                 cd.setCandidate(candidate);
                 destinations.add(cd);
-                addedDestinations = true;
-            }
-            //Does candidate have this visa check?
-            if (!candidateVisaCountryIds.contains(country.getId())) {
-                //If not, add in a new one
-                CandidateVisa cv = new CandidateVisa();
-                cv.setCountry(country);
-                cv.setCandidate(candidate);
-                visaChecks.add(cv);
                 addedDestinations = true;
             }
         }

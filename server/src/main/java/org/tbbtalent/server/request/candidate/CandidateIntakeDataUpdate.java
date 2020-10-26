@@ -34,11 +34,13 @@ public class CandidateIntakeDataUpdate {
     private AvailImmediateReason availImmediateReason;
     private String availImmediateNotes;
 
+    //Corresponds to CandidateCitizenship fields
     private Long citizenId;
     private Long citizenNationalityId;
     private HasPassport citizenHasPassport;
     private String citizenNotes;
 
+    //Corresponds to CandidateDestination fields
     private Long destinationId;
     private Long destinationCountryId;
     private YesNoUnsure destinationInterest;
@@ -73,12 +75,15 @@ public class CandidateIntakeDataUpdate {
     private String unrwaNumber;
     private String unrwaNotes;
 
+    //Corresponds to CandidateVisaCheck fields
+    private Long visaId;
     private String visaAssessmentNotes;
     private Long visaCountryId;
     private VisaEligibility visaEligibility;
-    private Long visaId;
+    
     private List<VisaIssue> visaIssues;
     private String visaIssuesNotes;
+    
     private WorkPermit workPermit;
     private YesNoUnsure workPermitDesired;
     private YesNo workLegally;
