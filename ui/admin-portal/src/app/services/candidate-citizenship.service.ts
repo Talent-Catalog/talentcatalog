@@ -6,7 +6,13 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
-import {CandidateCitizenship} from "../model/candidate";
+import {CandidateCitizenship, HasPassport} from "../model/candidate";
+
+export interface CreateCandidateCitizenshipRequest {
+  nationalityId?: number;
+  hasPassport?: HasPassport;
+  notes?: string;
+}
 
 @Injectable({providedIn: 'root'})
 export class CandidateCitizenshipService {
@@ -15,10 +21,10 @@ export class CandidateCitizenshipService {
 
   constructor(private http: HttpClient) {}
 
-  create(candidateId: number, candidateCitizenship: CandidateCitizenship):
+  create(candidateId: number, request: CreateCandidateCitizenshipRequest):
     Observable<CandidateCitizenship>  {
     return this.http.post<CandidateCitizenship>(
-      `${this.apiUrl}/${candidateId}`, candidateCitizenship);
+      `${this.apiUrl}/${candidateId}`, request);
   }
 
   delete(id: number): Observable<boolean>  {

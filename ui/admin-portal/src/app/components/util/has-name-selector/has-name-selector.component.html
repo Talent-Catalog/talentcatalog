@@ -1,0 +1,15 @@
+<form [formGroup]="form">
+  <label for="hasName">{{label}}</label>
+  <select class="form-control" id="hasName" formControlName="hasNameIndex">
+    <option *ngFor="let hasName of hasNames; let i=index" [value]="i">
+      {{hasName?.name}}</option>
+  </select>
+</form>
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary" (click)="onCancel()">
+    {{cancel}}
+  </button>
+  <button type="button" class="btn btn-primary" (click)="onSelect()">
+    {{select}}
+  </button>
+</div>

@@ -161,6 +161,7 @@ import {VisaCheckAuComponent} from './components/candidates/view/tab/candidate-v
 import {VisaCheckCaComponent} from './components/candidates/view/tab/candidate-visa-tab/ca/visa-check-ca.component';
 import {VisaCheckNzComponent} from './components/candidates/view/tab/candidate-visa-tab/nz/visa-check-nz.component';
 import {VisaCheckUkComponent} from './components/candidates/view/tab/candidate-visa-tab/uk/visa-check-uk.component';
+import {HasNameSelectorComponent} from './components/util/has-name-selector/has-name-selector.component';
 
 @NgModule({
   declarations: [
@@ -305,7 +306,8 @@ import {VisaCheckUkComponent} from './components/candidates/view/tab/candidate-v
     VisaCheckAuComponent,
     VisaCheckCaComponent,
     VisaCheckNzComponent,
-    VisaCheckUkComponent
+    VisaCheckUkComponent,
+    HasNameSelectorComponent
   ],
   imports: [
     BrowserModule,

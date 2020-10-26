@@ -16,13 +16,13 @@ import org.tbbtalent.server.service.db.CandidateVisaService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 @RestController()
-@RequestMapping("/api/admin/candidate-visa")
-public class CandidateVisaAdminApi 
+@RequestMapping("/api/admin/candidate-visa-check")
+public class CandidateVisaCheckAdminApi 
         implements IJoinedTableApi<CreateCandidateVisaCheckRequest,
         CreateCandidateVisaCheckRequest, CreateCandidateVisaCheckRequest> {
     private final CandidateVisaService candidateVisaService;
 
-    public CandidateVisaAdminApi(
+    public CandidateVisaCheckAdminApi(
             CandidateVisaService candidateVisaService) {
         this.candidateVisaService = candidateVisaService;
     }

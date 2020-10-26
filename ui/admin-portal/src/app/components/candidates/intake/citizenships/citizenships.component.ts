@@ -1,9 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {
-  Candidate,
-  CandidateCitizenship,
-  CandidateIntakeData
-} from "../../../../model/candidate";
+import {Candidate, CandidateIntakeData} from "../../../../model/candidate";
 import {Nationality} from "../../../../model/nationality";
 import {CandidateCitizenshipService} from "../../../../services/candidate-citizenship.service";
 
@@ -28,8 +24,7 @@ export class CitizenshipsComponent implements OnInit {
 
   addRecord() {
     this.saving = true;
-    const candidateCitizenship: CandidateCitizenship = {};
-    this.candidateCitizenshipService.create(this.candidate.id, candidateCitizenship).subscribe(
+    this.candidateCitizenshipService.create(this.candidate.id, {}).subscribe(
       (citizenship) => {
         this.candidateIntakeData.candidateCitizenships.push(citizenship)
         this.saving = false;

@@ -1,6 +1,10 @@
 import {User} from './user';
 import {AuthService} from '../services/auth.service';
 
+export interface HasName {
+  name?: string;
+}
+
 export enum CandidateSourceType {
   SavedList,
   SavedSearch

@@ -4,6 +4,13 @@ import {NationalityService} from "../../../../../services/nationality.service";
 import {IntakeComponentTabBase} from "../../../../util/intake/IntakeComponentTabBase";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {CountryService} from "../../../../../services/country.service";
+import {
+  CandidateVisaCheckService,
+  CreateCandidateVisaCheckRequest
+} from "../../../../../services/candidate-visa-check.service";
+import {Country} from "../../../../../model/country";
+import {HasNameSelectorComponent} from "../../../../util/has-name-selector/has-name-selector.component";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-candidate-visa-tab',
@@ -12,6 +19,7 @@ import {CountryService} from "../../../../../services/country.service";
 })
 export class CandidateVisaTabComponent
   extends IntakeComponentTabBase implements OnInit {
+  destinations: Country[];
   form: FormGroup;
   selectedIndex: number;
   selectedCountry: string;
@@ -19,6 +27,8 @@ export class CandidateVisaTabComponent
   constructor(candidateService: CandidateService,
               countryService: CountryService,
               nationalityService: NationalityService,
+              private candidateVisaCheckService: CandidateVisaCheckService,
+              private modalService: NgbModal,
               private fb: FormBuilder) {
     super(candidateService, countryService, nationalityService)
   }
@@ -34,22 +44,63 @@ export class CandidateVisaTabComponent
       });
 
       this.changeVisaCountry(null);
+
+      //todo debugging
+      this.destinations = this.countries;
+    }
+  }
+
+  /**
+   * Filters out destinations already used in existingRecords
+   */
+  private get filteredDestinations(): Country[] {
+    if (!this.destinations) {
+      return [];
+    } else if (!this.candidateIntakeData.candidateCitizenships) {
+      return this.destinations;
+    } else {
+      const existingIds: number[] =
+        this.candidateIntakeData.candidateVisaChecks.map(record => record.country?.id);
+      return this.destinations.filter(
+        record =>
+          //Exclude already used ids
+          !existingIds.includes(record.id)
+      );
     }
   }
 
   addRecord() {
-    //todo
-    // this.saving = true;
-    // const candidateCitizenship: CandidateCitizenship = {};
-    // this.candidateCitizenshipService.create(this.candidate.id, candidateCitizenship).subscribe(
-    //   (citizenship) => {
-    //     this.candidateIntakeData.candidateCitizenships.push(citizenship)
-    //     this.saving = false;
-    //   },
-    //   (error) => {
-    //     this.error = error;
-    //     this.saving = false;
-    //   });
+    const modal = this.modalService.open(HasNameSelectorComponent);
+    modal.componentInstance.hasNames = this.destinations;
+    modal.componentInstance.label = "TBB Destinations";
+
+    modal.result
+      .then((selection: Country) => {
+        if (selection) {
+          this.createRecord(selection);
+        }
+      })
+      .catch(() => {
+        //User cancelled selection
+      });
+  }
+
+  createRecord(country: Country) {
+    this.loading = true;
+    const request: CreateCandidateVisaCheckRequest = {
+      countryId: country.id
+    };
+    this.candidateVisaCheckService.create(this.candidate.id, request)
+      .subscribe(
+      (visaCheck) => {
+        this.candidateIntakeData.candidateVisaChecks.push(visaCheck)
+        this.loading = false;
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      });
+
   }
 
   deleteRecord(i: number) {
@@ -58,7 +109,7 @@ export class CandidateVisaTabComponent
 
   changeVisaCountry(event: Event) {
     this.selectedIndex = this.form.controls.visaCountry.value;
-    this.selectedCountry = this.candidateIntakeData.candidateVisaChecks[this.selectedIndex].country.name;
+    this.selectedCountry = this.candidateIntakeData.candidateVisaChecks[this.selectedIndex].country?.name;
   }
 
 }
