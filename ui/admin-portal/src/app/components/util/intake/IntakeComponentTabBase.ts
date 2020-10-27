@@ -57,10 +57,15 @@ export abstract class IntakeComponentTabBase implements OnInit {
    */
   nationalities: Nationality[];
 
-  constructor(
-    private candidateService: CandidateService,
-    private countryService: CountryService,
-    private nationalityService: NationalityService
+  /**
+   * All TBB destinations
+   */
+  tbbDestinations: Country[];
+
+  public constructor(
+    protected candidateService: CandidateService,
+    protected countryService: CountryService,
+    protected nationalityService: NationalityService
   ) { }
 
   ngOnInit(): void {
@@ -82,11 +87,13 @@ export abstract class IntakeComponentTabBase implements OnInit {
     this.loading = true;
     forkJoin({
       'countries': this.countryService.listCountries(),
+      'tbbDestinations': this.countryService.listTBBDestinations(),
       'nationalities': this.nationalityService.listNationalities(),
       'intakeData':  this.candidateService.getIntakeData(this.candidate.id),
     }).subscribe(results => {
       this.loading = false;
       this.countries = results['countries'];
+      this.tbbDestinations = results['tbbDestinations'];
       this.nationalities = results['nationalities'];
       this.candidateIntakeData = results['intakeData'];
       this.onDataLoaded(init);

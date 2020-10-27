@@ -120,6 +120,13 @@ export interface CandidateVisaCheck {
   country?: Country;
   eligibility?: VisaEligibility;
   assessmentNotes?: string;
+  createdBy?: User;
+  createdDate?: number;
+  updatedBy?: User;
+  updatedDate?: number;
+  protection?: YesNo;
+  protectionGrounds?: string;
+  tbbEligibilityAssessment?: TBBEligibilityAssessment;
 }
 
 /*
@@ -156,6 +163,13 @@ export enum HasPassport {
   ValidPassport = "Has valid passport",
   InvalidPassport = "Has invalid passport",
   NoPassport = "No passport"
+}
+
+export enum TBBEligibilityAssessment {
+  NoResponse = "",
+  Proceed = "Proceed",
+  Discuss = "Discuss further",
+  DontProceed = "Don't proceed",
 }
 
 export enum VisaEligibility {

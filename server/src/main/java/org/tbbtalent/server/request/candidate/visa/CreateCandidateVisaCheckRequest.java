@@ -15,7 +15,6 @@ import lombok.ToString;
 @Setter
 @ToString
 public class CreateCandidateVisaCheckRequest {
-    @Nullable
     private Long countryId;
     @Nullable
     private VisaEligibility eligibility;
