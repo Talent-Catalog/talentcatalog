@@ -14,6 +14,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 
 import lombok.Getter;
@@ -24,22 +25,29 @@ import lombok.Setter;
 @Entity
 @Table(name = "candidate_visa")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_visa_id_seq", allocationSize = 1)
-public class CandidateVisaCheck extends AbstractDomainObject<Long>
+public class CandidateVisaCheck extends AbstractAuditableDomainObject<Long>
         implements Comparable<CandidateVisaCheck> {
-
+    
+    private String assessmentNotes;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_id")
     private Candidate candidate;
 
-    @Enumerated(EnumType.STRING)
-    private VisaEligibility eligibility;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "country_id")
     private Country country;
 
-    private String assessmentNotes;
+    @Enumerated(EnumType.STRING)
+    private VisaEligibility eligibility;
+
+    @Enumerated(EnumType.STRING)
+    private YesNo protection;
+    
+    private String protectionGrounds;
+
+    @Enumerated(EnumType.STRING)
+    private TBBEligibilityAssessment tbbEligibilityAssessment;
 
     public CandidateVisaCheck() {
     }
@@ -53,15 +61,30 @@ public class CandidateVisaCheck extends AbstractDomainObject<Long>
     }
 
     public void populateIntakeData(
-            @NonNull Candidate candidate, @NonNull Country country, 
-            CandidateIntakeDataUpdate data) {
+            @NonNull Candidate candidate, @NonNull Country country,
+            CandidateIntakeDataUpdate data, @Nullable User createdBy) {
         setCandidate(candidate);
         setCountry(country);
+        if (createdBy != null) {
+            setCreatedBy(createdBy);
+        }
         if (data.getVisaAssessmentNotes() != null) {
             setAssessmentNotes(data.getVisaAssessmentNotes());
         }
         if (data.getVisaEligibility() != null) {
             setEligibility(data.getVisaEligibility());
+        }
+        if (data.getVisaCreatedDate() != null) {
+            setCreatedDate(data.getVisaCreatedDate());
+        }
+        if (data.getVisaProtection() != null) {
+            setProtection(data.getVisaProtection());
+        }
+        if (data.getVisaProtectionGrounds() != null) {
+            setProtectionGrounds(data.getVisaProtectionGrounds());
+        }
+        if (data.getVisaTbbEligibilityAssessment() != null) {
+            setTbbEligibilityAssessment(data.getVisaTbbEligibilityAssessment());
         }
     }
     

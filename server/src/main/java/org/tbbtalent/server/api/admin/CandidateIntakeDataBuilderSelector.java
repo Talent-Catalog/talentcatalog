@@ -109,6 +109,21 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("country", countryDto())
                 .add("eligibility")
                 .add("assessmentNotes")
+                .add("createdBy", userDto())
+                .add("createdDate")
+                .add("updatedBy", userDto())
+                .add("updatedDate")
+                .add("protection")
+                .add("protectionGrounds")
+                .add("tbbEligibilityAssessment")
+                ;
+    }
+
+    private DtoBuilder userDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("firstName")
+                .add("lastName")
                 ;
     }
 

@@ -5,12 +5,14 @@
 package org.tbbtalent.server.request.candidate;
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import org.tbbtalent.server.model.db.AvailImmediateReason;
 import org.tbbtalent.server.model.db.FamilyRelations;
 import org.tbbtalent.server.model.db.HasPassport;
 import org.tbbtalent.server.model.db.IntRecruitReason;
+import org.tbbtalent.server.model.db.TBBEligibilityAssessment;
 import org.tbbtalent.server.model.db.UnhcrStatus;
 import org.tbbtalent.server.model.db.VisaEligibility;
 import org.tbbtalent.server.model.db.VisaIssue;
@@ -87,6 +89,11 @@ public class CandidateIntakeDataUpdate {
     private String visaAssessmentNotes;
     private Long visaCountryId;
     private VisaEligibility visaEligibility;
+    private OffsetDateTime visaCreatedDate;
+    private Long visaCreatedById;
+    private YesNo visaProtection;
+    private String visaProtectionGrounds;
+    private TBBEligibilityAssessment visaTbbEligibilityAssessment;
     
     private List<VisaIssue> visaIssues;
     private String visaIssuesNotes;
