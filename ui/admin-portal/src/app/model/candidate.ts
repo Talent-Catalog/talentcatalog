@@ -51,6 +51,8 @@ export interface CandidateIntakeData {
 
   candidateDestinations?: CandidateDestination[];
 
+  candidateExams?: CandidateExam[];
+
   destLimit?: YesNo;
   destLimitNotes?: string;
 
@@ -95,6 +97,13 @@ export interface CandidateCitizenship {
   nationality?: {id};
   hasPassport?: HasPassport;
   notes?: string;
+}
+
+export interface CandidateExam {
+  id?: number;
+  exam?: Exam;
+  otherExam?: string;
+  score?: string;
 }
 
 export interface CandidateDestination {
@@ -209,6 +218,13 @@ export enum YesNoUnsure {
   Yes = "Yes",
   No = "No",
   Unsure = "Unsure"
+}
+
+export enum Exam {
+  IELTSGen = "IELTS General",
+  IELTSAca = "IELTS Academic",
+  TOEFL = "TOEFL",
+  Other = "Other"
 }
 
 export function getCandidateNavigation(candidate: Candidate): any[] {

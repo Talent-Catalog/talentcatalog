@@ -1,0 +1,49 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+
+<div class="card">
+  <div class="card-body">
+
+    <form [formGroup]="form">
+      <div class="form-group">
+        <div class="exam d-flex align-items-baseline justify-content-between">
+          <label [for]="'exam'+myRecordIndex">Exam
+            <span *ngIf="saving">
+              <i class="fas fa-spinner fa-spin"></i>
+            </span>
+          </label>
+          <button class="float-right btn" (click)="doDelete()">
+            <span class="align-top">
+              <i class="fas fa-trash"></i>
+            </span>
+          </button>
+        </div>
+        <select class="form-control"
+                [id]="'examType'+myRecordIndex" [formControlName]="'examType'">
+          <option *ngFor="let opt of examOptions" [value]="opt.value">
+            {{opt.displayText}}
+          </option>
+        </select>
+      </div>
+
+      <div *ngIf="isOtherExam">
+        <div class="form-group">
+          <label [for]="'otherExam'+myRecordIndex">Other Exam Name</label>
+          <input type="text" class="form-control"
+                    [id]="'otherExam'+myRecordIndex" [formControlName]="'otherExam'">
+        </div>
+      </div>
+
+      <div *ngIf="hasSelectedExam">
+        <div class="form-group">
+          <label [for]="'examScore'+myRecordIndex">Score</label>
+          <input type="text" class="form-control"
+                 [id]="'examScore'+myRecordIndex" [formControlName]="'examScore'">
+        </div>
+      </div>
+
+    </form>
+  </div>
+</div>
+

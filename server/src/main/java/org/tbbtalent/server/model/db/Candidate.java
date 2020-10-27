@@ -159,6 +159,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private List<CandidateDestination> candidateDestinations;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    private List<CandidateExam> candidateExams;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     private List<CandidateVisaCheck> candidateVisaChecks;
     
     @Enumerated(EnumType.STRING)
@@ -556,6 +559,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setCandidateCitizenships(List<CandidateCitizenship> candidateCitizenships) {
         this.candidateCitizenships = candidateCitizenships;
     }
+
+    public List<CandidateExam> getCandidateExams() { return candidateExams; }
+
+    public void setCandidateExams(List<CandidateExam> candidateExams) { this.candidateExams = candidateExams; }
 
     public List<CandidateVisaCheck> getCandidateVisaChecks() {
         candidateVisaChecks.sort(null);

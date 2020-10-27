@@ -157,6 +157,8 @@ import {VisaCheckUkComponent} from './components/candidates/view/tab/candidate-v
 import {DestinationLimitComponent} from './components/candidates/intake/destination-limit/destination-limit.component';
 import {FixedInputComponent} from './components/util/intake/fixed-input/fixed-input.component';
 import {ConfirmContactComponent} from './components/candidates/intake/confirm-contact/confirm-contact.component';
+import {ExamsComponent} from './components/candidates/intake/exams/exams.component';
+import {CandidateExamCardComponent} from './components/candidates/intake/exams/card/candidate-exam-card.component';
 
 @NgModule({
   declarations: [
@@ -305,7 +307,9 @@ import {ConfirmContactComponent} from './components/candidates/intake/confirm-co
     DestinationsComponent,
     DestinationLimitComponent,
     FixedInputComponent,
-    ConfirmContactComponent
+    ConfirmContactComponent,
+    ExamsComponent,
+    CandidateExamCardComponent
   ],
   imports: [
     BrowserModule,

@@ -48,6 +48,12 @@ public class CandidateIntakeDataUpdate {
     private String destinationLocation;
     private String destinationNotes;
 
+    //Corresponds to CandidateExam fields
+    private Long examId;
+    private Exam examType;
+    private String otherExam;
+    private String examScore;
+
     private YesNo destLimit;
     private String destLimitNotes;
 

@@ -10,6 +10,14 @@
 
 <div *ngIf="!loading">
 
+  <app-exams
+    [candidate]="candidate"
+    [candidateIntakeData]="candidateIntakeData"
+  >
+  </app-exams>
+
+  <hr/>
+
   <div class="card">
     <div class="card-header">
       Home Country

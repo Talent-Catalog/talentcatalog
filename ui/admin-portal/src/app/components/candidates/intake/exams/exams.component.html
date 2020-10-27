@@ -1,0 +1,28 @@
+<!-- EXISTING RECORDS -->
+<div class="card">
+  <div class="card-header">
+    Exams
+    <span *ngIf="saving">
+          <i class="fas fa-spinner fa-spin"></i>
+    </span>
+    <div class="float-right">
+      <button type="button" class="btn btn-primary btn-sm" (click)="addRecord()">
+        <i class="fas fa-plus"></i>
+      </button>
+    </div>
+  </div>
+  <div class="card-body">
+    <div *ngIf="error">
+      {{error}}
+    </div>
+    <div *ngFor="let exam of candidateIntakeData.candidateExams; let i = index;" class="exam-card">
+      <app-candidate-exam-card
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [myRecordIndex]="i"
+        (delete)="deleteRecord(i)">
+      </app-candidate-exam-card>
+      <hr/>
+    </div>
+  </div>
+</div>
