@@ -31,9 +31,7 @@ import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.index.query.SimpleQueryStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
@@ -136,13 +134,9 @@ import org.tbbtalent.server.util.filesystem.FileSystemFolder;
 import com.opencsv.CSVWriter;
 
 @Service
-public class CandidateServiceImpl implements CandidateService, InitializingBean {
+public class CandidateServiceImpl implements CandidateService {
 
     private static final Logger log = LoggerFactory.getLogger(CandidateServiceImpl.class);
-
-    @Value("${tbb.destinations}")
-    private String[] tbbDestinations;
-    private List<Country> tbbDestinationCountries;
 
     private final UserRepository userRepository;
     private final SavedListRepository savedListRepository;
@@ -217,21 +211,6 @@ public class CandidateServiceImpl implements CandidateService, InitializingBean 
         this.pdfHelper = pdfHelper;
         this.fileSystemService = fileSystemService;
         this.salesforceService = salesforceService;
-    }
-
-    @Override
-    public void afterPropertiesSet() {
-        //Extract the TBB destination countries array from the configuration
-        tbbDestinationCountries = new ArrayList<>();
-        for (String tbbDestination : tbbDestinations) {
-            Country country = countryRepository.findByNameIgnoreCase(tbbDestination);
-            if (country == null) {
-                log.error("Error in application.yml file. See tbb.destinations. " +
-                        "No country found called " + tbbDestination);
-            } else {
-                tbbDestinationCountries.add(country);
-            }
-        }
     }
 
     @Transactional
@@ -790,7 +769,7 @@ public class CandidateServiceImpl implements CandidateService, InitializingBean 
         //Check that all TBB destinations are present for candidate, adding
         //missing ones if necessary
         boolean addedDestinations = false;
-        for (Country country : tbbDestinationCountries) {
+        for (Country country : countryService.getTBBDestinations()) {
             //Does candidate have this destination preference?
             if (!candidateDestinationCountryIds.contains(country.getId())) {
                 //If not, add in a new one

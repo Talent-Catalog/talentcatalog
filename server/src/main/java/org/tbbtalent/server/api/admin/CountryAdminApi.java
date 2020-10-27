@@ -8,6 +8,7 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.EntityExistsException;
@@ -33,6 +34,12 @@ public class CountryAdminApi implements
     @Override
     public @NotNull List<Map<String, Object>> list() {
         List<Country> countries = countryService.listCountries();
+        return countryDto().buildList(countries);
+    }
+
+    @GetMapping("destinations")
+    public @NotNull List<Map<String, Object>> listTBBDestinations() {
+        List<Country> countries = countryService.getTBBDestinations();
         return countryDto().buildList(countries);
     }
 

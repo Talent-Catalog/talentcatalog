@@ -29,4 +29,5 @@ public interface CountryService {
 
     boolean deleteCountry(long id) throws EntityReferencedException;
 
+    List<Country> getTBBDestinations();
 }

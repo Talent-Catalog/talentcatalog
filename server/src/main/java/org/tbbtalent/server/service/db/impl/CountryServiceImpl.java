@@ -1,5 +1,6 @@
 package org.tbbtalent.server.service.db.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,7 +8,9 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,9 +33,13 @@ import org.tbbtalent.server.service.db.TranslationService;
 import io.jsonwebtoken.lang.Collections;
 
 @Service
-public class CountryServiceImpl implements CountryService {
+public class CountryServiceImpl implements CountryService, InitializingBean {
 
     private static final Logger log = LoggerFactory.getLogger(CountryServiceImpl.class);
+
+    @Value("${tbb.destinations}")
+    private String[] tbbDestinations;
+    private List<Country> tbbDestinationCountries;
 
     private Map<Long, Country> cache = null;
     private final CandidateRepository candidateRepository;
@@ -49,6 +56,21 @@ public class CountryServiceImpl implements CountryService {
         this.countryRepository = countryRepository;
         this.translationService = translationService;
         this.userContext = userContext;
+    }
+
+    @Override
+    public void afterPropertiesSet() {
+        //Extract the TBB destination countries array from the configuration
+        tbbDestinationCountries = new ArrayList<>();
+        for (String tbbDestination : tbbDestinations) {
+            Country country = countryRepository.findByNameIgnoreCase(tbbDestination);
+            if (country == null) {
+                log.error("Error in application.yml file. See tbb.destinations. " +
+                        "No country found called " + tbbDestination);
+            } else {
+                tbbDestinationCountries.add(country);
+            }
+        }
     }
 
     private void dropCache() {
@@ -93,6 +115,11 @@ public class CountryServiceImpl implements CountryService {
         List<Country> countries = countryRepository.findByStatus(Status.active);
         translationService.translate(countries, "country", selectedLanguage);
         return countries;
+    }
+
+    @Override
+    public List<Country> getTBBDestinations() {
+        return tbbDestinationCountries;
     }
 
     @Override

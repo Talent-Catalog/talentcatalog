@@ -21,7 +21,6 @@ import {CandidateVisaCheck} from "../../../../../model/candidate";
 })
 export class CandidateVisaTabComponent
   extends IntakeComponentTabBase implements OnInit {
-  destinations: Country[];
   form: FormGroup;
   selectedIndex: number;
   selectedCountry: string;
@@ -46,9 +45,6 @@ export class CandidateVisaTabComponent
       });
 
       this.changeVisaCountry(null);
-
-      //todo debugging - needs to be uplaoded.
-      this.destinations = this.countries;
     }
   }
 
@@ -56,24 +52,24 @@ export class CandidateVisaTabComponent
    * Filters out destinations already used in existingRecords
    */
   private get filteredDestinations(): Country[] {
-    if (!this.destinations) {
+    if (!this.tbbDestinations) {
       return [];
     } else if (!this.candidateIntakeData.candidateCitizenships) {
-      return this.destinations;
+      return this.tbbDestinations;
     } else {
-      const existingIds: number[] =
-        this.candidateIntakeData.candidateVisaChecks.map(record => record.country?.id);
-      return this.destinations.filter(
-        record =>
-          //Exclude already used ids
-          !existingIds.includes(record.id)
+      //Extract currently used ids
+      const existingIds: number[] = this.candidateIntakeData.candidateVisaChecks
+        .map(record => record.country?.id);
+      return this.tbbDestinations.filter(
+        //Exclude already used ids
+        record => !existingIds.includes(record.id)
       );
     }
   }
 
   addRecord() {
     const modal = this.modalService.open(HasNameSelectorComponent);
-    modal.componentInstance.hasNames = this.destinations;
+    modal.componentInstance.hasNames = this.filteredDestinations;
     modal.componentInstance.label = "TBB Destinations";
 
     modal.result
