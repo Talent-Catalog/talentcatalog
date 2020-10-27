@@ -17,8 +17,8 @@
       {{error}}
     </div>
     <form [formGroup]="form">
-      <div class="form-group">
-        <div *ngFor="let visaCheck of candidateIntakeData?.candidateVisaChecks; let i = index;">
+      <div *ngFor="let visaCheck of candidateIntakeData?.candidateVisaChecks; let i = index;">
+        <div class="form-group align-items-center">
           <input type="radio" [value]="i"
                  name="visaCountry" formControlName="visaCountry"
                  (change)="changeVisaCountry($event)">
@@ -31,6 +31,8 @@
         </div>
       </div>
     </form>
+
+    <hr/>
 
     <div [ngSwitch]="selectedCountry" *ngIf="selectedCountry != undefined">
       <app-visa-check-au *ngSwitchCase="'Australia'"
