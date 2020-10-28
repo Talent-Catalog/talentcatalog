@@ -1,18 +1,15 @@
 import {Component, OnInit} from '@angular/core';
-import {CandidateService} from "../../../../../services/candidate.service";
-import {NationalityService} from "../../../../../services/nationality.service";
-import {IntakeComponentTabBase} from "../../../../util/intake/IntakeComponentTabBase";
-import {FormBuilder, FormGroup} from "@angular/forms";
-import {CountryService} from "../../../../../services/country.service";
-import {
-  CandidateVisaCheckService,
-  CreateCandidateVisaCheckRequest
-} from "../../../../../services/candidate-visa-check.service";
-import {Country} from "../../../../../model/country";
-import {HasNameSelectorComponent} from "../../../../util/has-name-selector/has-name-selector.component";
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {ConfirmationComponent} from "../../../../util/confirm/confirmation.component";
-import {CandidateVisaCheck} from "../../../../../model/candidate";
+import {CandidateService} from '../../../../../services/candidate.service';
+import {NationalityService} from '../../../../../services/nationality.service';
+import {IntakeComponentTabBase} from '../../../../util/intake/IntakeComponentTabBase';
+import {FormBuilder, FormGroup} from '@angular/forms';
+import {CountryService} from '../../../../../services/country.service';
+import {CandidateVisaCheckService, CreateCandidateVisaCheckRequest} from '../../../../../services/candidate-visa-check.service';
+import {Country} from '../../../../../model/country';
+import {HasNameSelectorComponent} from '../../../../util/has-name-selector/has-name-selector.component';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {ConfirmationComponent} from '../../../../util/confirm/confirmation.component';
+import {CandidateVisaCheck} from '../../../../../model/candidate';
 
 @Component({
   selector: 'app-candidate-visa-tab',
@@ -133,7 +130,7 @@ export class CandidateVisaTabComponent
   changeVisaCountry(event: Event) {
     this.selectedIndex = this.form.controls.visaCountry.value;
     this.selectedCountry = this.candidateIntakeData
-      .candidateVisaChecks[this.selectedIndex].country?.name;
+      .candidateVisaChecks[this.selectedIndex]?.country?.name;
   }
 
 }
