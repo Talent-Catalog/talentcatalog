@@ -235,6 +235,7 @@ export enum YesNoUnsure {
 }
 
 export enum Exam {
+  OET = "OET",
   IELTSGen = "IELTS General",
   IELTSAca = "IELTS Academic",
   TOEFL = "TOEFL",
