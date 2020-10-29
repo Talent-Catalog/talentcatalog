@@ -14,7 +14,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
@@ -91,7 +90,7 @@ public class TextExtractLibrariesTest {
     /**
      * Test Docx Extraction on English file
      */
-    @Test
+//    @Test
     void apachePoiMethodDocx() throws IOException {
         File cv = new File("src/test/resources/text/EnglishDocx.docx");
         FileInputStream fis = new FileInputStream(cv);
