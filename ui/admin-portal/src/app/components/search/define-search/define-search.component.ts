@@ -1,4 +1,13 @@
-import {Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild} from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  SimpleChanges,
+  ViewChild
+} from '@angular/core';
 
 import {Candidate} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
@@ -406,17 +415,17 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     const showSaveModal = this.modalService.open(CreateUpdateSearchComponent);
     showSaveModal.componentInstance.savedSearch = this.savedSearch;
 
-    // If create, need to send up the search request details. If update does not need search details (only saved search data).
-    if (create) {
-      // Convert ids as we do for searches
-      const request = this.searchForm.value;
-      showSaveModal.componentInstance.searchCandidateRequest =
-        this.getIdsMultiSelect(request);
-    }
+    //Load search parameters.
+    // Convert ids as we do for searches
+    const request = this.searchForm.value;
+    showSaveModal.componentInstance.searchCandidateRequest =
+      this.getIdsMultiSelect(request);
 
     showSaveModal.result
       .then((savedSearch) => {
         if (create) {
+          //If it is a create we want to navigate away from the default
+          //saved search to the newly created search.
           const urlCommands = getCandidateSourceNavigation(savedSearch);
           this.router.navigate(urlCommands);
         }
