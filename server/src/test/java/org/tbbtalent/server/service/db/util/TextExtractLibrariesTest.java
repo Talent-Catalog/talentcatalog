@@ -37,7 +37,7 @@ public class TextExtractLibrariesTest {
     /**
      * Test PDFBox PDF text extraction (two ways)
      */
-    @Test
+//    @Test
     void pdfBoxMethods() throws IOException {
         File file = new File("src/test/resources/text/EnglishPdf.pdf");
         assertTrue(file.exists());
@@ -72,7 +72,7 @@ public class TextExtractLibrariesTest {
     /**
      * Test IText PDF text extraction
      */
-    @Test
+//    @Test
     void iTextMethodsPdf() throws IOException {
         String src = "src/test/resources/text/EnglishPdf.pdf";
         PdfDocument pdfDoc = new PdfDocument(new PdfReader(src));
@@ -105,7 +105,7 @@ public class TextExtractLibrariesTest {
     /**
      * Test Docx Text Extraction on Arabic file
      */
-    @Test
+//    @Test
     void apachePoiMethodDocxArabic() throws IOException {
         File cv = new File("src/test/resources/text/ArabicDocx.docx");
         FileInputStream fis = new FileInputStream(cv);
@@ -119,7 +119,7 @@ public class TextExtractLibrariesTest {
     /**
      * Test TXT file text extraction
      */
-    @Test
+//    @Test
     void txtFileExtraction() throws IOException {
         String data = new String(Files.readAllBytes(Paths.get("src/test/resources/text/EnglishTxt.txt")));
         assertNotEquals("", data);
@@ -139,7 +139,7 @@ public class TextExtractLibrariesTest {
     /**
      * Test file type extraction
      */
-    @Test
+//    @Test
     void testFileExtensionExtraction(){
         File pdfFile = new File("src/test/resources/text/EnglishPdf.pdf");
         String typePdf = getFileExtension(pdfFile);
