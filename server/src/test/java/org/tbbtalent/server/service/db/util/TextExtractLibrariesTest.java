@@ -1,9 +1,11 @@
 package org.tbbtalent.server.service.db.util;
 
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfReader;
-import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor;
-import com.itextpdf.kernel.pdf.canvas.parser.listener.LocationTextExtractionStrategy;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.io.RandomAccessFile;
@@ -12,17 +14,19 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
-import static org.junit.jupiter.api.Assertions.*;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfReader;
+import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor;
+import com.itextpdf.kernel.pdf.canvas.parser.listener.LocationTextExtractionStrategy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 public class TextExtractLibrariesTest {
@@ -32,9 +36,8 @@ public class TextExtractLibrariesTest {
 
     /**
      * Test PDFBox PDF text extraction (two ways)
-     * @throws IOException
      */
-   // @Test
+    @Test
     void pdfBoxMethods() throws IOException {
         File file = new File("src/test/resources/text/EnglishPdf.pdf");
         assertTrue(file.exists());
@@ -63,16 +66,13 @@ public class TextExtractLibrariesTest {
         }
         if(StringUtils.isNotEmpty(pdfFileInText)){
             assertNotNull(pdfFileInText);
-        }else {
-            assertNull(pdfFileInText);
         }
     }
 
     /**
      * Test IText PDF text extraction
-     * @throws IOException
      */
-    //@Test
+    @Test
     void iTextMethodsPdf() throws IOException {
         String src = "src/test/resources/text/EnglishPdf.pdf";
         PdfDocument pdfDoc = new PdfDocument(new PdfReader(src));
@@ -90,9 +90,8 @@ public class TextExtractLibrariesTest {
 
     /**
      * Test Docx Extraction on English file
-     * @throws IOException
      */
-    //@Test
+    @Test
     void apachePoiMethodDocx() throws IOException {
         File cv = new File("src/test/resources/text/EnglishDocx.docx");
         FileInputStream fis = new FileInputStream(cv);
@@ -105,9 +104,8 @@ public class TextExtractLibrariesTest {
 
     /**
      * Test Docx Text Extraction on Arabic file
-     * @throws IOException
      */
-    //@Test
+    @Test
     void apachePoiMethodDocxArabic() throws IOException {
         File cv = new File("src/test/resources/text/ArabicDocx.docx");
         FileInputStream fis = new FileInputStream(cv);
@@ -120,9 +118,8 @@ public class TextExtractLibrariesTest {
 
     /**
      * Test TXT file text extraction
-     * @throws IOException
      */
-    //@Test
+    @Test
     void txtFileExtraction() throws IOException {
         String data = new String(Files.readAllBytes(Paths.get("src/test/resources/text/EnglishTxt.txt")));
         assertNotEquals("", data);
@@ -130,8 +127,6 @@ public class TextExtractLibrariesTest {
 
     /**
      * Extract file type from a file
-     * @param file
-     * @return
      */
     private static String getFileExtension(File file) {
         String fileName = file.getName();
@@ -144,7 +139,7 @@ public class TextExtractLibrariesTest {
     /**
      * Test file type extraction
      */
-    //@Test
+    @Test
     void testFileExtensionExtraction(){
         File pdfFile = new File("src/test/resources/text/EnglishPdf.pdf");
         String typePdf = getFileExtension(pdfFile);
