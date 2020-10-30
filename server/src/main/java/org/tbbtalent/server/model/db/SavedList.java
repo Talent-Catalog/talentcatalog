@@ -23,6 +23,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 
+/**
+ * There are two kinds of SavedList:
+ * <ul>
+ *     <li>
+ *         Normal lists. These are not directly associated with any
+ *         saved search - so the savedSearch attribute will always be null.
+ *     </li>
+ *     <li>
+ *         Selection lists. These are "hidden" lists associated with a saved
+ *         search - indicated by the savedSearch attribute. They are used
+ *         to record a user's items selected from teh results of a saved search.
+ *         So each selection list is associated with a saved search and a 
+ *         particular user. The sfJoblink cannot be set on a selection list and
+ *         will always be null.
+ *     </li>
+ * </ul>
+ */
 @Entity
 @Table(name = "saved_list")
 @SequenceGenerator(name = "seq_gen", sequenceName = "saved_list_id_seq", allocationSize = 1)
