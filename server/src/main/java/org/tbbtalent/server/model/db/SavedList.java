@@ -28,7 +28,18 @@ import org.tbbtalent.server.service.db.CandidateSavedListService;
 @SequenceGenerator(name = "seq_gen", sequenceName = "saved_list_id_seq", allocationSize = 1)
 public class SavedList extends AbstractCandidateSource {
     private static final Logger log = LoggerFactory.getLogger(SavedList.class);
-    
+
+    /**
+     * Non null if this is the selection list for the given saved search.
+     * <p/>
+     * For "normal" saved lists (ie not selection lists) this will always be 
+     * null.
+     * <p/>
+     * Note that a saved search may be shared between multiple users and each
+     * user will have their own personal selection list for that saved search.
+     * So to find a specific selection list you need to specify both the saved
+     * search and a user.
+     */
     @Nullable
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "saved_search_id")
