@@ -113,13 +113,14 @@ public class SavedSearchAdminApi implements
     
     /**
      * Saves the given user's selections for the given saved search to either
-     * the specified existing list, or to a newly created list.
+     * the specified existing list, or to a newly created list if existing list
+     * not specified.
      * The selections can be added to an existing list, or replace any existing
      * contents of the list.
      * @param id ID of saved search
      * @param request Request containing details of the list to be saved to,
      *                the associated user and whether or not the save should
-     *                add ot or replace existing contents.
+     *                add to or replace existing contents.
      * @return List which selection was saved to
      * @throws EntityExistsException If a new list needs to be created but the
      * list name already exists.

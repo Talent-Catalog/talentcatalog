@@ -33,10 +33,12 @@ import org.tbbtalent.server.service.db.CandidateSavedListService;
  *     <li>
  *         Selection lists. These are "hidden" lists associated with a saved
  *         search - indicated by the savedSearch attribute. They are used
- *         to record a user's items selected from teh results of a saved search.
+ *         to record a user's items selected from the results of a saved search.
  *         So each selection list is associated with a saved search and a 
- *         particular user. The sfJoblink cannot be set on a selection list and
- *         will always be null.
+ *         particular user. The sfJoblink of a selection list is copied at
+ *         creation from its associated saved search.
+ *         The name of a selection list is automatically created from the
+ *         user and saved search id's.
  *     </li>
  * </ul>
  */
