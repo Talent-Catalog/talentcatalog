@@ -242,17 +242,21 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.results = null;
     this.error = null;
     this.searching = true;
-    this.subscription = this.candidateService.search(this.searchRequest).subscribe(
+    const request = this.searchRequest;
+    request.pageNumber = this.pageNumber - 1;
+    request.pageSize = this.pageSize;
+    request.sortFields = [this.sortField];
+    request.sortDirection = this.sortDirection;
+
+    this.subscription = this.candidateService.search(request).subscribe(
       results => {
         this.results = results;
         this.cacheResults();
         this.searching = false;
-        this.searchRequest = null;
       },
       error => {
         this.error = error;
         this.searching = false;
-        this.searchRequest = null;
       });
   }
 
@@ -291,35 +295,73 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     if (!done) {
-      this.searching = true;
+      /*
+       * Fetch results from the server rather than from any local cache.
+       * <p/>
+       * This component is used in two ways:
+       * - To display saved lists
+       * - To display saved searches.
+       * This affects the way to a refresh is done.
+       *
+       * For saved lists, it is simply going to the server requesting the requested
+       * page of the list.
+       *
+       * For saved searches, it is made more complicated because saved searches
+       * can be displayed with details of the exact search, which are available
+       * for the user to modify if they wish - thus changing the search.
+       * But those changes are only stored on the server when the user clicks on
+       * Update Search.
+       * So, at any time there are potentially two different searches:
+       * - the one stored on the server
+       * - the modified one on the browser
+       *
+       * The results displayed to the user looking at a saved search are those
+       * which incorporate their local browser changes
+       *
+       * So... when we want to refresh a saved search, we don't want to use the
+       * version stored on the server. But with a saved list we do.
+       */
 
-      //Create the appropriate request
-      let request;
-      if (isSavedSearch(this.candidateSource)) {
-        request = new SavedSearchGetRequest();
+      //If we are being driven by a manually modifiable search request, submit
+      //that search.
+      if (this.searchRequest) {
+
+        this.updatedSearch()
+
       } else {
-        request = new SavedListGetRequest();
-      }
-      request.pageNumber = this.pageNumber - 1;
-      request.pageSize = this.pageSize;
-      request.sortFields = [this.sortField];
-      request.sortDirection = this.sortDirection;
-      if (request instanceof SavedSearchGetRequest) {
-        request.reviewStatusFilter = this.reviewStatusFilter;
-      }
 
-      this.candidateSourceCandidateService.searchPaged(
-        this.candidateSource, request).subscribe(
-        results => {
-          this.results = results;
-          this.cacheResults();
+        //Run the saved list or saved search as stored on the server.
 
-          this.searching = false;
-        },
-        error => {
-          this.error = error;
-          this.searching = false;
-        });
+        this.searching = true;
+
+        //Create the appropriate request
+        let request;
+        if (isSavedSearch(this.candidateSource)) {
+          request = new SavedSearchGetRequest();
+        } else {
+          request = new SavedListGetRequest();
+        }
+        request.pageNumber = this.pageNumber - 1;
+        request.pageSize = this.pageSize;
+        request.sortFields = [this.sortField];
+        request.sortDirection = this.sortDirection;
+        if (request instanceof SavedSearchGetRequest) {
+          request.reviewStatusFilter = this.reviewStatusFilter;
+        }
+
+        this.candidateSourceCandidateService.searchPaged(
+          this.candidateSource, request).subscribe(
+          results => {
+            this.results = results;
+            this.cacheResults();
+
+            this.searching = false;
+          },
+          error => {
+            this.error = error;
+            this.searching = false;
+          });
+      }
     }
   }
 
