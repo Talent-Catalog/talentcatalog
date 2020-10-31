@@ -13,6 +13,7 @@ import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.SavedSearch;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
+import org.tbbtalent.server.request.search.CreateFromDefaultSavedSearchRequest;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
@@ -27,7 +28,32 @@ public interface SavedSearchService {
 
     SavedSearch getSavedSearch(long id);
 
-    SavedSearch createSavedSearch(UpdateSavedSearchRequest request) throws EntityExistsException;
+    /**
+     * Creates a new saved search from the data in the given request. 
+     * @param request Request containing details from which the record is created.
+     * @return Created saved search
+     * @throws EntityExistsException If a saved search with the requested name
+     * already exists.
+     */
+    SavedSearch createSavedSearch(UpdateSavedSearchRequest request) 
+            throws EntityExistsException;
+
+    /**
+     * Creates a new saved search from the current user's default saved search, 
+     * named as specified in the request and with the sfJoblink, if any, in the 
+     * request.
+     * <p/>
+     * The selection for the new saved search is the same as the selection
+     * (including any context notes) for the default search.
+     * <p/>
+     * If a saved search with the given already exists, it is replaced.
+     * @param request Request containing details from which the search is created.
+     * @return Created search
+     * @throws NoSuchObjectException If there is no logged in user.
+     */
+    SavedSearch createFromDefaultSavedSearch(
+            CreateFromDefaultSavedSearchRequest request) 
+            throws NoSuchObjectException;
 
     SavedSearch updateSavedSearch(long id, UpdateSavedSearchRequest request) throws EntityExistsException;
 
@@ -96,4 +122,5 @@ public interface SavedSearchService {
      */ 
     void updateCandidateContextNote(
             long id, UpdateCandidateContextNoteRequest request);
+
 }

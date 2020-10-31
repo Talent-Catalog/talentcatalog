@@ -1,4 +1,10 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges
+} from '@angular/core';
 import {SearchResults} from '../../../../model/search-results';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
@@ -26,7 +32,10 @@ import {SearchSavedListRequest} from '../../../../model/saved-list';
 import {CandidateSourceService} from '../../../../services/candidate-source.service';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {CreateUpdateListComponent} from '../../../list/create-update/create-update-list.component';
-import {SelectListComponent, TargetListSelection} from '../../../list/select/select-list.component';
+import {
+  SelectListComponent,
+  TargetListSelection
+} from '../../../list/select/select-list.component';
 import {CandidateSourceResultsCacheService} from '../../../../services/candidate-source-results-cache.service';
 import {CreateUpdateSearchComponent} from '../../../search/create-update/create-update-search.component';
 import {ConfirmationComponent} from '../../../util/confirm/confirmation.component';
@@ -221,6 +230,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
     const modal = this.modalService.open(SelectListComponent);
     modal.componentInstance.action = "Copy";
     modal.componentInstance.title = "Copy to another List";
+    modal.componentInstance.excludeList = source;
 
     modal.result
       .then((selection: TargetListSelection) => {

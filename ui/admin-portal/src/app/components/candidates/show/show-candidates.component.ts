@@ -14,7 +14,10 @@ import {Candidate} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
 import {SearchResults} from '../../../model/search-results';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {SavedSearchService} from '../../../services/saved-search.service';
+import {
+  CreateFromDefaultSavedSearchRequest,
+  SavedSearchService
+} from '../../../services/saved-search.service';
 import {Observable, of, Subscription} from 'rxjs';
 import {CandidateReviewStatusItem} from '../../../model/candidate-review-status-item';
 import {HttpClient} from '@angular/common/http';
@@ -22,6 +25,7 @@ import {
   ClearSelectionRequest,
   getCandidateSourceBreadcrumb,
   getCandidateSourceExternalHref,
+  getCandidateSourceNavigation,
   getSavedSearchBreadcrumb,
   isSavedSearch,
   SavedSearch,
@@ -75,7 +79,7 @@ import {copyToClipboard} from '../../../util/clipboard';
 import {SavedListService} from '../../../services/saved-list.service';
 
 interface CachedTargetList {
-  searchID: number;
+  sourceID: number;
   listID: number;
   name: string;
   replace: boolean
@@ -208,6 +212,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     if (changes.candidateSource) {
       if (changes.candidateSource.previousValue !== changes.candidateSource.currentValue) {
         if (this.candidateSource) {
+          //Retrieve the list previously used for saving selections from this
+          // source (if any)
           this.restoreTargetListFromCache();
           this.doSearch(true);
           // Set the selected candidates (List only) to null when changing candidate source.
@@ -593,7 +599,12 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     const modal = this.modalService.open(SelectListComponent);
     modal.componentInstance.action = "Save";
     modal.componentInstance.title = "Save Selection to List";
-    modal.componentInstance.sfJoblink = this.candidateSource.sfJoblink;
+    if (this.candidateSource.sfJoblink != null) {
+      modal.componentInstance.sfJoblink = this.candidateSource.sfJoblink;
+    }
+    if (!isSavedSearch(this.candidateSource)) {
+      modal.componentInstance.excludeList = this.candidateSource;
+    }
 
     modal.result
       .then((selection: TargetListSelection) => {
@@ -618,8 +629,11 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   private doSaveSelection(request: SaveSelectionRequest) {
     //Save selection as specified in request
     this.savingSelection = true;
+    this.error = null;
     if (isSavedSearch(this.candidateSource)) {
-      this.savedSearchService.saveSelection(this.candidateSource.id, request).subscribe(
+      const savedSearch: SavedSearch = this.candidateSource;
+      this.savedSearchService.saveSelection(this.candidateSource.id, request)
+        .subscribe(
         savedListResult => {
           this.savingSelection = false;
 
@@ -628,18 +642,42 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
           this.targetListName = savedListResult.name;
           this.targetListReplace = request.replace;
 
-          //Cache the target list
-          this.cacheTargetList();
-
           //Invalidate the cache for this list (so that user does not need
           //to refresh in order to see latest list contents)
           this.candidateSourceResultsCacheService.removeFromCache(savedListResult);
 
+          if (!savedSearch.defaultSearch) {
+            //Remember the target list for this source so that the user does not
+            //have type in details each time they want to save
+            this.cacheTargetList();
+          } else {
+            //Auto save search
+            const ssCreateRequest: CreateFromDefaultSavedSearchRequest = {
+              name: this.targetListName,
+              sfJoblink: request.sfJoblink
+            };
+            this.savedSearchService.createFromDefaultSearch(ssCreateRequest).subscribe(
+              (newSavedSearch) => {
+                //Associate current target list with this new source.
+                this.cacheTargetList(newSavedSearch);
+
+                //Navigate away from the default saved search to the newly created
+                //search.
+                const urlCommands = getCandidateSourceNavigation(newSavedSearch);
+                this.savingSelection = false;
+                this.router.navigate(urlCommands);
+              },
+              (error) => {
+                this.error = error;
+                this.savingSelection = false;
+              });
+          }
         },
         err => {
           this.error = err;
           this.savingSelection = false;
         });
+
     } else {
       // LIST
       //Pick up ids info - including source list id
@@ -715,7 +753,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         this.targetListName = savedListResult.name;
         this.targetListReplace = replace;
 
-        //Cache the target list
+        //Remember the target list for this source so that the user does not
+        //have type in details each time they want to save
         this.cacheTargetList();
 
         //Invalidate the cache for this list (so that user does not need
@@ -743,18 +782,24 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   }
 
-  private cacheTargetList() {
-    if (isSavedSearch(this.candidateSource)) {
-      const cachedTargetList: CachedTargetList = {
-        searchID: this.candidateSource.id,
-        listID: this.targetListId,
-        name: this.targetListName,
-        replace: this.targetListReplace
-      }
-      this.localStorageService.set(this.savedTargetListKey(), cachedTargetList);
+  /**
+   * We keep track of the list used to save selections in local memory
+   * associated with the candidate source.
+   */
+  private cacheTargetList(source: CandidateSource = this.candidateSource) {
+    const cachedTargetList: CachedTargetList = {
+      sourceID: this.candidateSource.id,
+      listID: this.targetListId,
+      name: this.targetListName,
+      replace: this.targetListReplace
     }
+    this.localStorageService.set(this.savedTargetListKey(source), cachedTargetList);
   }
 
+  /**
+   * We keep track of the list used to save selections in local memory
+   * associated with the candidate source.
+   */
   private restoreTargetListFromCache() {
     const cachedTargetList: CachedTargetList =
        this.localStorageService.get(this.savedTargetListKey());
@@ -764,8 +809,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   }
 
-  private savedTargetListKey(): string {
-    return "Target" + this.candidateSource.id;
+  private savedTargetListKey(source: CandidateSource = this.candidateSource): string {
+    return "Target" + source.id;
   }
 
   review(candidate: Candidate) {

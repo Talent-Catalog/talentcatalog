@@ -52,6 +52,7 @@ import org.tbbtalent.server.repository.db.UserRepository;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.candidate.SearchJoinRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
+import org.tbbtalent.server.request.search.CreateFromDefaultSavedSearchRequest;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
@@ -200,6 +201,44 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
         return savedSearch;
 
+    }
+
+    @Override
+    public SavedSearch createFromDefaultSavedSearch(
+            CreateFromDefaultSavedSearchRequest request)  
+            throws NoSuchObjectException {
+        
+        final User loggedInUser = userContext.getLoggedInUser();
+        if (loggedInUser == null) {
+            throw new NoSuchObjectException(User.class, 0);
+        }
+
+        SavedSearch defaultSavedSearch = getDefaultSavedSearch();
+
+        //Delete any existing saved search with the given name.
+        SavedSearch existing =
+                savedSearchRepository.findByNameIgnoreCase(
+                        request.getName(), loggedInUser.getId());
+        if (existing != null) {
+            deleteSavedSearch(existing.getId());
+        }
+        
+        UpdateSavedSearchRequest createRequest = new UpdateSavedSearchRequest();
+        createRequest.setName(request.getName());
+        createRequest.setSfJoblink(request.getSfJoblink());
+        
+        //Default to job type
+        createRequest.setSavedSearchType(SavedSearchType.job);
+        
+        //Other fields eg fixed, reviewable etc to default values
+        
+        //Copy search params from default search
+        createRequest.setSearchCandidateRequest(
+                convertToSearchCandidateRequest(defaultSavedSearch));        
+        
+        SavedSearch createdSearch = createSavedSearch(createRequest);
+        
+        return createdSearch;
     }
 
     @Override

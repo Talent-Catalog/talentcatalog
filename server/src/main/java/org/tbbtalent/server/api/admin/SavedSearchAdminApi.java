@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +24,7 @@ import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
 import org.tbbtalent.server.request.list.HasSetOfCandidatesImpl;
 import org.tbbtalent.server.request.search.ClearSelectionRequest;
+import org.tbbtalent.server.request.search.CreateFromDefaultSavedSearchRequest;
 import org.tbbtalent.server.request.search.SaveSelectionRequest;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
 import org.tbbtalent.server.request.search.SelectCandidateInSearchRequest;
@@ -109,6 +111,28 @@ public class SavedSearchAdminApi implements
 
         //Clear the list.
         savedListService.clearSavedList(selectionList.getId());
+    }
+
+    /**
+     * Creates a new saved search from the current user's default saved search, 
+     * named as specified in the request and with the sfJoblink, if any, in the 
+     * request.
+     * <p/>
+     * The selection for the new saved search is the same as the selection
+     * (including any context notes) for the default search.
+     * <p/>
+     * If a saved search with the given already exists, it is replaced.
+     * @param request Request containing details from which the search is created.
+     * @return Created search
+     * @throws NoSuchObjectException If there is no logged in user.
+     */
+    @PostMapping("create-from-default")
+    public @NotNull Map<String, Object> createFromDefaultSearch(
+            @Valid @RequestBody CreateFromDefaultSavedSearchRequest request) 
+            throws NoSuchObjectException {
+        SavedSearch savedSearch = this.savedSearchService
+                .createFromDefaultSavedSearch(request);
+        return savedSearchDto().build(savedSearch);
     }
     
     /**

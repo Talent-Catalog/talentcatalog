@@ -30,6 +30,7 @@ export interface TargetListSelection {
 export class SelectListComponent implements OnInit {
 
   error: string;
+  excludeList: SavedList;
   form: FormGroup;
   jobName: string;
   loading: boolean;
@@ -80,7 +81,7 @@ export class SelectListComponent implements OnInit {
 
     this.savedListService.search(request).subscribe(
       (results) => {
-        this.lists = results;
+        this.lists = results.filter(list => list.id !== this.excludeList?.id) ;
         this.loading = false;
       },
       (error) => {

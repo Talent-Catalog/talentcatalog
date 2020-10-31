@@ -15,6 +15,11 @@ import {
 import {map} from "rxjs/operators";
 import {SavedList} from "../model/saved-list";
 
+export interface CreateFromDefaultSavedSearchRequest {
+  name: string;
+  sfJoblink?: string;
+}
+
 export interface SavedSearchTypeInfo {
   savedSearchType?: SavedSearchType;
   title: string;
@@ -114,6 +119,13 @@ export class SavedSearchService {
 
   create(savedSearchRequest: SavedSearchRequest): Observable<SavedSearch>  {
     return this.http.post<SavedSearch>(`${this.apiUrl}`, savedSearchRequest)
+      .pipe(
+        map(savedSearch => SavedSearchService.convertSavedSearchEnums(savedSearch))
+      );
+  }
+
+  createFromDefaultSearch(request: CreateFromDefaultSavedSearchRequest): Observable<SavedSearch>  {
+    return this.http.post<SavedSearch>(`${this.apiUrl}/create-from-default`, request)
       .pipe(
         map(savedSearch => SavedSearchService.convertSavedSearchEnums(savedSearch))
       );
