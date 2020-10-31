@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -57,6 +58,7 @@ import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.request.search.UpdateWatchingRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
+import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.service.db.SavedSearchService;
 
 @Service
@@ -67,6 +69,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final CandidateSavedListService candidateSavedListService;
     private final UserRepository userRepository;
     private final SavedListRepository savedListRepository;
+    private final SavedListService savedListService;
     private final SavedSearchRepository savedSearchRepository;
     private final SearchJoinRepository searchJoinRepository;
     private final LanguageLevelRepository languageLevelRepository;
@@ -80,9 +83,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     @Autowired
     public SavedSearchServiceImpl(
-            CandidateSavedListService candidateSavedListService, 
+            CandidateSavedListService candidateSavedListService,
             UserRepository userRepository,
             SavedListRepository savedListRepository,
+            SavedListService savedListService, 
             SavedSearchRepository savedSearchRepository,
             SearchJoinRepository searchJoinRepository,
             LanguageLevelRepository languageLevelRepository,
@@ -96,6 +100,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         this.candidateSavedListService = candidateSavedListService;
         this.userRepository = userRepository;
         this.savedListRepository = savedListRepository;
+        this.savedListService = savedListService;
         this.savedSearchRepository = savedSearchRepository;
         this.searchJoinRepository = searchJoinRepository;
         this.languageLevelRepository = languageLevelRepository;
@@ -205,10 +210,30 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         final User loggedInUser = userContext.getLoggedInUser();
         if (loggedInUser != null) {
             checkDuplicates(null, request.getName(), loggedInUser.getId());
+            savedSearch.setAuditFields(loggedInUser);
         }
-        savedSearch.setAuditFields(loggedInUser);
+
         savedSearch = this.savedSearchRepository.save(savedSearch);
         savedSearch = addSearchJoins(request, savedSearch);
+
+        //Copy across the user's selections (including context notes) 
+        //of the default saved search.
+        if (loggedInUser != null) {
+            SavedSearch defaultSavedSearch = getDefaultSavedSearch();
+            Long savedSearchId = defaultSavedSearch.getId();
+
+            //Get the default selection list.
+            SavedList defaultSelectionList =
+                    getSelectionList(savedSearchId, loggedInUser.getId());
+
+            //Get the selection list of the new saved search
+            SavedList newSelectionList =
+                    getSelectionList(savedSearch.getId(), loggedInUser.getId());
+
+            //Copy default list to the selection list of the new saved search.
+            savedListService.copyContents(
+                    defaultSelectionList, newSelectionList, false);
+        }
         return savedSearch;
     }
 
@@ -428,7 +453,17 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 "Search" + savedSearch.getId(); 
     }
 
-    private void checkDuplicates(Long savedSearchId, String name, Long userId) {
+    /**
+     * Checks whether the given user already has another saved search with this 
+     * name - throwing exception if it does
+     * @param savedSearchId Existing saved search - or null if none 
+     * @param name Saved search name
+     * @param userId User
+     * @throws EntityExistsException if saved search with this name already 
+     * exists for this user
+     */
+    private void checkDuplicates(
+            @Nullable Long savedSearchId, String name, Long userId) {
         SavedSearch existing = 
                 savedSearchRepository.findByNameIgnoreCase(name, userId);
         if (existing != null && existing.getStatus() != Status.deleted) {

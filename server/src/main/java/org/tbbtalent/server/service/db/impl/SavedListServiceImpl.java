@@ -111,23 +111,30 @@ public class SavedListServiceImpl implements SavedListService {
         }
 
 
-        //Preserve any associated Salesforce Job Opportunity
+        //Set any specified Salesforce Job Opportunity
         if (request.getSfJoblink() != null) {
             targetList.setSfJoblink(request.getSfJoblink());
         }
 
-        //Get candidates in source list
-        final Set<Candidate> candidates = sourceList.getCandidates();
-
-        //Add or replace them to target as requested.
-        if (request.isReplace()) {
-            clearSavedList(targetList.getId());
-        }
-        targetList.addCandidates(candidates, sourceList);
-
-        saveIt(targetList);
+        //Copy across list contents (which includes context notes)
+        copyContents(sourceList, targetList, request.isReplace());
 
         return targetList;
+    }
+
+    @Override
+    public void copyContents(
+            SavedList source, SavedList destination, boolean replace) {
+        //Get candidates in source list
+        final Set<Candidate> candidates = source.getCandidates();
+
+        //Add or replace them to desintation as requested.
+        if (replace) {
+            clearSavedList(destination.getId());
+        }
+        destination.addCandidates(candidates, source);
+
+        saveIt(destination);
     }
 
     @Override

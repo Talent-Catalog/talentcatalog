@@ -50,6 +50,16 @@ public interface SavedListService {
             throws EntityExistsException, NoSuchObjectException;
 
     /**
+     * Copies the contents (candidates plus any context notes) from the 
+     * source list to the destination.
+     * Note that other list info (eg name, sfJoblink and other attributes are
+     * not copied).
+     * @param source List to copy from
+     * @param destination List to copy to
+     */
+    void copyContents(SavedList source, SavedList destination, boolean replace);
+
+    /**
      * Create a new SavedList 
      * @param request Create request
      * @return Created saved list
