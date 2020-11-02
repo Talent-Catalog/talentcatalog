@@ -22,7 +22,6 @@ export class ReturnedHomeComponent extends IntakeComponentBase implements OnInit
     this.form = this.fb.group({
       returnedHome: [this.candidateIntakeData?.returnedHome],
       returnedHomeReason: [this.candidateIntakeData?.returnedHomeReason],
-      returnedHomeNotes: [this.candidateIntakeData?.returnedHomeNotes],
     });
   }
 

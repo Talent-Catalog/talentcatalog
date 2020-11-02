@@ -1,0 +1,13 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+  <div class="form-group">
+    <label for="hostChallenges">What have been the major challenges for you in {{candidate.country.name}}? </label>
+    <textarea type="text" class="md-textarea-auto form-control" rows="4"
+              id="hostChallenges" [formControlName]="'hostChallenges'"
+              placeholder="" ></textarea>
+  </div>
+</form>
+
+

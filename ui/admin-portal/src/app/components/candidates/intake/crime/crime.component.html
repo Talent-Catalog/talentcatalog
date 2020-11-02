@@ -1,0 +1,26 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+  <div class="form-group">
+    <label for="crimeConvict">
+      Have you ever been convicted of a crime?
+    </label>
+    <span *ngIf="saving">
+      <i class="fas fa-spinner fa-spin"></i> saving...
+    </span>
+    <select class="form-control"
+            id="crimeConvict" [formControlName]="'crimeConvict'">
+      <option *ngFor="let opt of crimeConvictOptions" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+  </div>
+  <div *ngIf="crime === 'Yes'" class="form-group">
+    <label for="crimeConvictNotes">If yes, when and where? Can you briefly explain the circumstances?</label>
+    <textarea type="text" class="md-textarea-auto form-control" rows="4"
+              id="crimeConvictNotes" [formControlName]="'crimeConvictNotes'"
+              placeholder="" ></textarea>
+  </div>
+</form>
+

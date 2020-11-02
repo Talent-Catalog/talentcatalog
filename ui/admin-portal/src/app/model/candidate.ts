@@ -51,35 +51,61 @@ export interface CandidateIntakeData {
 
   candidateDestinations?: CandidateDestination[];
 
+  candidateVisaChecks?: CandidateVisaCheck[];
+
   candidateExams?: CandidateExam[];
+
+  conflict?: YesNo;
+  conflictNotes?: string;
+
+  crimeConvict?: YesNoUnsure;
+  crimeConvictNotes?: string;
 
   destLimit?: YesNo;
   destLimitNotes?: string;
 
-  candidateVisaChecks?: CandidateVisaCheck[];
+  destJob?: YesNo;
+  destJobNotes?: string;
 
   familyMove?: YesNo;
   familyMoveNotes?: string;
+
   familyHealth?: YesNo;
   familyHealthNotes?: string;
+
   homeLocation?: string;
+
+  hostChallenges?: string;
+  hostEntryYear?: string;
+  hostEntryLegally?: YesNo;
+  intRecruitReasons?: IntRecruitReason[];
+  intRecruitRural?: YesNoUnsure;
+  leftHomeReason?: LeftHomeReason[];
+  leftHomeOther?: string;
+  maritalStatus?: MaritalStatus;
+  partnerTBB?: YesNoUnsure;
 
   returnedHome?: YesNoUnsure;
   returnedHomeNotes?: string;
   returnedHomeReason?: string;
 
-  visaIssues?: VisaIssue[];
-  visaIssuesNotes?: string;
-
-  intRecruitReasons?: IntRecruitReason[];
-  intRecruitRural?: YesNoUnsure;
+  residenceStatus?: ResidenceStatus;
 
   returnHomeSafe?: YesNoUnsure;
+
+  returnHomeFuture?: YesNoUnsure;
+  returnHomeWhen?: string;
+
+  resettleThird?: YesNo;
+  resettleThirdStatus?: string;
+
+  workAbroad?: YesNo;
+  workAbroadLoc?: Country;
+  workAbroadYrs?: number;
   workPermit?: WorkPermitValidity;
   workPermitDesired?: YesNoUnsure;
   workLegally?: YesNo;
   workDesired?: WorkDesiredField;
-  hostEntryYear?: string;
   unhcrStatus?: UnhcrStatus;
   unhcrOldStatus?: UnhcrStatus;
   unhcrNumber?: string;
@@ -90,6 +116,8 @@ export interface CandidateIntakeData {
   unrwaWasRegistered?: YesNoUnsure;
   unrwaNumber?: string;
   unrwaNotes?: string;
+  visaIssues?: VisaIssue[];
+  visaIssuesNotes?: string;
 }
 
 export interface CandidateCitizenship {
@@ -240,6 +268,25 @@ export enum Exam {
   IELTSAca = "IELTS Academic",
   TOEFL = "TOEFL",
   Other = "Other"
+}
+
+export enum ResidenceStatus {
+  NoResponse = "",
+  LegalRes = "Legal Residency",
+  IllegalRes = "Illegal Residency"
+}
+
+export enum LeftHomeReason {
+  Safety = "Safety/Protection",
+  Job = "Job Opportunities",
+  Other = "Other"
+}
+
+export enum MaritalStatus {
+  NoResponse = "",
+  Married = "Married",
+  Engaged = "Engaged",
+  Neither = "Not married or engaged"
 }
 
 export function getCandidateNavigation(candidate: Candidate): any[] {

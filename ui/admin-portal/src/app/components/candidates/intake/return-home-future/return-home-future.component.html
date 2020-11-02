@@ -1,0 +1,29 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+  <div class="form-group">
+    <label for="returnHomeFuture">
+      Do you plan to return to your country of origin in the near future?
+    </label>
+    <span *ngIf="saving">
+      <i class="fas fa-spinner fa-spin"></i> saving...
+    </span>
+    <select class="form-control"
+            id="returnHomeFuture" [formControlName]="'returnHomeFuture'">
+      <option *ngFor="let opt of returnHomeFutureOptions" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+  </div>
+
+  <div *ngIf="returnHomeFuture === 'Yes'">
+    <div class="form-group">
+      <label for="returnHomeWhen">If yes, when do you plan to return? </label>
+      <input type="text" class="form-control" id="returnHomeWhen" [formControlName]="'returnHomeWhen'">
+    </div>
+  </div>
+</form>
+
+
+

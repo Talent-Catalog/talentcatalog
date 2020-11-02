@@ -1717,8 +1717,15 @@ public class CandidateServiceImpl implements CandidateService {
             candidateExamService
                     .updateIntakeData(candidate, data);
         }
+
+        //Get the work abroad country from the id in the data request and pass into the populateIntakeData method
+        final Long workAbroadLocId = data.getWorkAbroadLocId();
+        Country workAbroadLoc = null;
+        if (workAbroadLocId != null) {
+            workAbroadLoc = countryRepository.findById(workAbroadLocId).orElse(null);
+        }
         
-        candidate.populateIntakeData(data);
+        candidate.populateIntakeData(data, workAbroadLoc);
         save(candidate, true);
     }
 }

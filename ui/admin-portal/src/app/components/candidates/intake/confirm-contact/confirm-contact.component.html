@@ -1,12 +1,40 @@
-<app-fixed-input
-  [question]="emailQuestion"
-  [answer]="candidate.user?.email">
-</app-fixed-input>
-<app-fixed-input
-  [question]="phoneQuestion"
-  [answer]="candidate?.phone">
-</app-fixed-input>
-<app-fixed-input
-  [question]="whatsappQuestion"
-  [answer]="candidate?.whatsapp">
-</app-fixed-input>
+<div class="row">
+  <div class="col-4">
+    <app-fixed-input
+      [question]="'Full name?'"
+      [answer]="candidate.user.firstName + ' ' + candidate.user.lastName">
+    </app-fixed-input>
+    <app-fixed-input
+      [question]="'TBB ID number?'"
+      [answer]="candidate.candidateNumber">
+    </app-fixed-input>
+    <app-fixed-input
+      [question]="'Date of birth?'"
+      [answer]="candidate.dob">
+    </app-fixed-input>
+  </div>
+  <div class="col-4">
+    <app-fixed-input
+      [question]="'Nationality?'"
+      [answer]="candidate.nationality.name">
+    </app-fixed-input>
+    <app-fixed-input
+      [question]="'Phone?'"
+      [answer]="candidate.phone">
+    </app-fixed-input>
+    <app-fixed-input
+      [question]="'Whatsapp/Viber?'"
+      [answer]="candidate.whatsapp">
+    </app-fixed-input>
+  </div>
+  <div class="col-4">
+    <app-fixed-input
+      [question]="'Email?'"
+      [answer]="candidate.user.email">
+    </app-fixed-input>
+    <app-fixed-input
+      [question]="'How did you hear about us?'"
+      [answer]="candidate.surveyType.name + ' ' + candidate.surveyComment">
+    </app-fixed-input>
+  </div>
+</div>

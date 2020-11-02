@@ -41,6 +41,12 @@ public class CandidateIntakeDataUpdate {
     private HasPassport citizenHasPassport;
     private String citizenNotes;
 
+    private YesNo conflict;
+    private String conflictNotes;
+
+    private YesNoUnsure crimeConvict;
+    private String crimeConvictNotes;
+
     //Corresponds to CandidateDestination fields
     private Long destinationId;
     private Long destinationCountryId;
@@ -58,19 +64,36 @@ public class CandidateIntakeDataUpdate {
     private YesNo destLimit;
     private String destLimitNotes;
 
+    private YesNo destJob;
+    private String destJobNotes;
+
     private YesNo familyMove;
     private String familyMoveNotes;
     private YesNo familyHealthConcern;
     private String familyHealthConcernNotes;
     private String homeLocation;
+    private String hostChallenges;
     private LocalDate hostEntryYear;
+    private YesNo hostEntryLegally;
     private List<IntRecruitReason> intRecruitReasons;
     private YesNoUnsure intRecruitRural;
+
+    private LeftHomeReason leftHomeReason;
+    private String leftHomeOther;
+    private MaritalStatus maritalStatus;
+
+    private ResidenceStatus residenceStatus;
 
     private YesNoUnsure returnedHome;
     private String returnedHomeNotes;
     private String returnedHomeReason;
     private YesNoUnsure returnHomeSafe;
+    private YesNoUnsure returnHomeFuture;
+    private String returnHomeWhen;
+
+    private YesNo resettleThird;
+    private String resettleThirdStatus;
+
     private UnhcrStatus unhcrStatus;
     private UnhcrStatus unhcrOldStatus;
     private String unhcrNumber;
@@ -96,6 +119,9 @@ public class CandidateIntakeDataUpdate {
     private List<VisaIssue> visaIssues;
     private String visaIssuesNotes;
     
+    private YesNo workAbroad;
+    private Long workAbroadLocId;
+    private Long workAbroadYrs;
     private WorkPermit workPermit;
     private YesNoUnsure workPermitDesired;
     private YesNo workLegally;

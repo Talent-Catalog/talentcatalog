@@ -49,8 +49,14 @@ public class CandidateIntakeDataBuilderSelector {
                 
                 .add("candidateVisaChecks", candidateVisaCheckDto())
 
+                .add("crimeConvict")
+                .add("crimeConvictNotes")
+
                 .add("destLimit")
                 .add("destLimitNotes")
+
+                .add("destJob")
+                .add("destJobNotes")
 
                 .add("familyMove")
                 .add("familyMoveNotes")
@@ -58,14 +64,27 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("familyHealthConcernNotes")
 
                 .add("homeLocation")
+                .add("hostChallenges")
                 .add("hostEntryYear")
+                .add("hostEntryLegally")
                 .add("intRecruitReasons")
                 .add("intRecruitRural")
+
+                .add("leftHomeReason")
+                .add("leftHomeOther")
+                .add("maritalStatus")
+
+                .add("residenceStatus")
 
                 .add("returnedHome")
                 .add("returnedHomeReason")
                 .add("returnedHomeNotes")
                 .add("returnHomeSafe")
+                .add("returnHomeFuture")
+                .add("returnHomeWhen")
+
+                .add("resettleThird")
+                .add("resettleThirdStatus")
 
                 .add("unhcrStatus")
                 .add("unhcrOldStatus")
@@ -82,6 +101,9 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("visaIssues")
                 .add("visaIssuesNotes")
 
+                .add("workAbroad")
+                .add("workAbroadLoc")
+                .add("workAbroadYrs")
                 .add("workPermit")
                 .add("workPermitDesired")
                 .add("workLegally")

@@ -10,6 +10,54 @@
 
 <div *ngIf="!loading">
 
+  <div class="card">
+    <div class="card-header">
+      Confirm General Information
+    </div>
+    <div class="card-body">
+      <app-confirm-contact
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-confirm-contact>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="card">
+    <div class="card-header">
+      Interest in International Recruitment
+    </div>
+    <div class="card-body">
+      <app-avail-immediate
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-avail-immediate>
+      <app-int-recruitment
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-int-recruitment>
+      <app-rural
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-rural>
+    </div>
+  </div>
+
+  <hr/>
+
+  <app-citizenships
+    [candidate]="candidate"
+    [candidateIntakeData]="candidateIntakeData"
+    [nationalities]="nationalities"
+  >
+  </app-citizenships>
+
+
+  <hr/>
+
+
+
   <app-exams
     [candidate]="candidate"
     [candidateIntakeData]="candidateIntakeData"
@@ -20,29 +68,63 @@
 
   <div class="card">
     <div class="card-header">
-      Home Country
+      Home & Host Countries
     </div>
     <div class="card-body">
-      <app-returned-home
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-returned-home>
-      <app-return-home-safe
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-return-home-safe>
-      <app-home-location
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-home-location>
       <app-host-entry-year
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData">
       </app-host-entry-year>
+      <app-host-entry-legally
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-host-entry-legally>
+      <app-returned-home
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-returned-home>
+      <app-home-location
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-home-location>
+      <app-return-home-safe
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-return-home-safe>
+      <app-left-home-reason
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-left-home-reason>
+      <app-return-home-future
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-return-home-future>
+      <app-resettlement-third
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-resettlement-third>
+      <app-host-challenges
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-host-challenges>
       <app-asylum-year
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData">
       </app-asylum-year>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="card">
+    <div class="card-header">
+      Family Information
+    </div>
+    <div class="card-body">
+      <app-marital-status
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-marital-status>
     </div>
   </div>
 
@@ -61,6 +143,10 @@
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData">
       </app-destination-limit>
+      <app-destination-job
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-destination-job>
     </div>
   </div>
 
@@ -92,33 +178,6 @@
 
   <div class="card">
     <div class="card-header">
-      Interest in International Recruitment
-    </div>
-    <div class="card-body">
-      <app-int-recruitment
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-int-recruitment>
-      <app-rural
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-rural>
-    </div>
-  </div>
-
-  <hr/>
-
-  <app-citizenships
-    [candidate]="candidate"
-    [candidateIntakeData]="candidateIntakeData"
-    [nationalities]="nationalities"
-  >
-  </app-citizenships>
-
-  <hr/>
-
-  <div class="card">
-    <div class="card-header">
       Work Status
     </div>
     <div class="card-body">
@@ -130,7 +189,11 @@
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData">
       </app-work-status>
-
+      <app-work-abroad
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [countries]="countries">
+      </app-work-abroad>
     </div>
   </div>
 
@@ -177,20 +240,6 @@
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData">
       </app-family-health>
-    </div>
-  </div>
-
-  <hr/>
-
-  <div class="card">
-    <div class="card-header">
-      Confirm Contact Details
-    </div>
-    <div class="card-body">
-      <app-confirm-contact
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-confirm-contact>
     </div>
   </div>
 

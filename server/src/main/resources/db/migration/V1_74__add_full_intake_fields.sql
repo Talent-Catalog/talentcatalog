@@ -1,0 +1,15 @@
+alter table candidate add column crime_convict text;
+alter table candidate add column crime_convict_notes text;
+alter table candidate add column conflict text;
+alter table candidate add column conflict_notes text;
+alter table candidate add column residence_status text;
+alter table candidate add column work_abroad text;
+alter table candidate add column host_entry_legally text;
+alter table candidate add column left_home_reason text;
+alter table candidate add column left_home_other text;
+alter table candidate add column return_home_future text;
+alter table candidate add column return_home_when text;
+alter table candidate add column resettle_third text;
+alter table candidate add column resettle_third_status text;
+alter table candidate add column host_challenges text;
+alter table candidate add column marital_status text;
