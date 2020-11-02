@@ -102,7 +102,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("visaIssuesNotes")
 
                 .add("workAbroad")
-                .add("workAbroadLoc")
+                .add("workAbroadLoc", countryDto())
                 .add("workAbroadYrs")
                 .add("workPermit")
                 .add("workPermitDesired")
