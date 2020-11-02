@@ -1,0 +1,28 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+  <div class="form-group">
+    <label for="destJob">Would you feel comfortable applying for a visa through work visa and/or humanitarian visa
+      pathways if there was a job in a specific country?</label>
+    <span *ngIf="saving">
+      <i class="fas fa-spinner fa-spin"></i> saving...
+    </span>
+    <select class="form-control"
+            id="destJob" [formControlName]="'destJob'">
+      <option *ngFor="let opt of destJobOptions" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+  </div>
+
+  <div *ngIf="destJob === 'No'">
+    <div class="form-group">
+      <label for="destJobNotes">Notes</label>
+      <textarea type="text" class="md-textarea-auto form-control" rows="6"
+                id="destJobNotes" [formControlName]="'destJobNotes'"
+                placeholder="" ></textarea>
+    </div>
+  </div>
+</form>
+

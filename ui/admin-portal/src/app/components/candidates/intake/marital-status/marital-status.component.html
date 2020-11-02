@@ -1,0 +1,40 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+  <div class="form-group">
+    <label for="maritalStatus">
+      Are you engaged or married?
+    </label>
+    <span *ngIf="saving">
+      <i class="fas fa-spinner fa-spin"></i> saving...
+    </span>
+    <select class="form-control"
+            id="maritalStatus" [formControlName]="'maritalStatus'">
+      <option *ngFor="let opt of maritalStatusOptions" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+    <p class="small">
+      Note: If you are planning on immigrating with your spouse, his or her professional information is also critical
+      to your application. If you are eligible and decide to move forward with this process,
+      we will also discuss in further detail the process related to family.</p>
+  </div>
+
+<!--  <div *ngIf="isMarriedEngaged">-->
+<!--    <div class="form-group">-->
+<!--      <label for="partnerTBB">-->
+<!--        What is your current residence or legal status?-->
+<!--      </label>-->
+<!--      <select class="form-control"-->
+<!--              id="partnerTBB" [formControlName]="'partnerTBB'">-->
+<!--        <option *ngFor="let opt of partnerTBBOptions" [value]="opt.value">-->
+<!--          {{opt.displayText}}-->
+<!--        </option>-->
+<!--      </select>-->
+<!--    </div>-->
+
+<!--  </div>-->
+
+</form>
+

@@ -1,0 +1,26 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+  <div class="form-group">
+    <label for="conflict">
+      Have you ever been part of an armed conflict or group?
+    </label>
+    <span *ngIf="saving">
+      <i class="fas fa-spinner fa-spin"></i> saving...
+    </span>
+    <select class="form-control"
+            id="conflict" [formControlName]="'conflict'">
+      <option *ngFor="let opt of conflictOptions" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+  </div>
+  <div *ngIf="conflict === 'Yes'" class="form-group">
+    <label for="conflictNotes">If yes, when and where? Can you briefly explain the circumstances?</label>
+    <textarea type="text" class="md-textarea-auto form-control" rows="4"
+              id="conflictNotes" [formControlName]="'conflictNotes'"
+              placeholder="" ></textarea>
+  </div>
+</form>
+

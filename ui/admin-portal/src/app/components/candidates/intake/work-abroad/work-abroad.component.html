@@ -1,0 +1,36 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+  <div class="form-group">
+    <label for="workAbroad">
+      Have you ever lived or worked abroad?
+    </label>
+    <span *ngIf="saving">
+      <i class="fas fa-spinner fa-spin"></i> saving...
+    </span>
+    <select class="form-control"
+            id="workAbroad" [formControlName]="'workAbroad'">
+      <option *ngFor="let opt of workAbroadOptions" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+  </div>
+  <div *ngIf="workAbroad === 'Yes'">
+    <div class="form-group">
+      <label for="workAbroadLocId">Country</label>
+      <select class="form-control"
+              id="workAbroadLocId" [formControlName]="'workAbroadLocId'">
+        <option *ngFor="let country of countries" [value]="country.id">
+          {{country.name}}
+        </option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="workAbroadYrs">How many years were you abroad?</label>
+      <input type="number" class="form-control"
+             id="workAbroadYrs" [formControlName]="'workAbroadYrs'">
+    </div>
+  </div>
+</form>
+

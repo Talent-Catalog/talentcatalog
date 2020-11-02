@@ -1,0 +1,29 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+  <div class="form-group">
+    <label for="resettleThird">Have you ever applied for resettlement to a 3rd country?</label>
+    <span *ngIf="saving">
+      <i class="fas fa-spinner fa-spin"></i> saving...
+    </span>
+    <select class="form-control"
+            id="resettleThird" [formControlName]="'resettleThird'">
+      <option *ngFor="let opt of resettlementThirdOptions" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+  </div>
+  <div *ngIf="resettlementThird === 'Yes'">
+    <div class="form-group">
+      <label for="resettleThirdStatus">
+        If yes, do you know the status of your application? Do you know how far along you are in the process?
+        What is the last piece of correspondence/info you received? </label>
+      <textarea type="text" class="md-textarea-auto form-control" rows="4"
+                id="resettleThirdStatus" [formControlName]="'resettleThirdStatus'"
+                placeholder="" ></textarea>
+    </div>
+  </div>
+</form>
+
+

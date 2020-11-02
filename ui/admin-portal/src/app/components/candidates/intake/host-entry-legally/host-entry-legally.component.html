@@ -1,0 +1,20 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+  <div class="form-group">
+    <label for="hostEntryLegally">
+      Did you enter legally?
+    </label>
+    <span *ngIf="saving">
+      <i class="fas fa-spinner fa-spin"></i> saving...
+    </span>
+    <select class="form-control"
+            id="hostEntryLegally" [formControlName]="'hostEntryLegally'">
+      <option *ngFor="let opt of hostEntryLegallyOptions" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+  </div>
+</form>
+

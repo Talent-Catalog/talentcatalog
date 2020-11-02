@@ -1,0 +1,29 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+  <div class="form-group">
+    <label for="leftHomeReason">
+      What are the primary reasons you left your home country and currently live in Lebanon or Jordan?
+    </label>
+    <span *ngIf="saving">
+      <i class="fas fa-spinner fa-spin"></i> saving...
+    </span>
+    <select class="form-control"
+            id="leftHomeReason" [formControlName]="'leftHomeReason'">
+      <option *ngFor="let opt of leftHomeReasonOptions" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+  </div>
+
+  <div *ngIf="leftHomeReason === 'Other'">
+    <div class="form-group">
+      <label for="leftHomeOther">If other, please explain</label>
+      <input type="text" class="form-control" id="leftHomeOther" [formControlName]="'leftHomeOther'">
+    </div>
+  </div>
+</form>
+
+
+
