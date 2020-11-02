@@ -9,16 +9,10 @@ import {Candidate, CandidateIntakeData} from '../../../../model/candidate';
 export class ConfirmContactComponent implements OnInit {
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
-  emailQuestion: string;
-  phoneQuestion: string;
-  whatsappQuestion: string;
 
   constructor() { }
 
   ngOnInit(): void {
-    this.emailQuestion = "Email? ";
-    this.phoneQuestion = "Phone? ";
-    this.whatsappQuestion = "Whatsapp? ";
   }
 
 }

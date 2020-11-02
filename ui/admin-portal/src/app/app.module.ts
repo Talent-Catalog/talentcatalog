@@ -1,10 +1,6 @@
 import {BrowserModule, Title} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
-import {
-  NgbDateAdapter,
-  NgbDateParserFormatter,
-  NgbModule
-} from '@ng-bootstrap/ng-bootstrap';
+import {NgbDateAdapter, NgbDateParserFormatter, NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {NgMultiSelectDropDownModule} from 'ng-multiselect-dropdown';
 import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha';
 
@@ -146,10 +142,7 @@ import {WorkLegallyComponent} from './components/candidates/intake/work-legally/
 import {WorkStatusComponent} from './components/candidates/intake/work-status/work-status.component';
 import {HostEntryYearComponent} from './components/candidates/intake/host-entry-year/host-entry-year.component';
 import {CandidateVisaTabComponent} from './components/candidates/view/tab/candidate-visa-tab/candidate-visa-tab.component';
-import {
-  CustomDateAdapter,
-  CustomDateParserFormatter
-} from './util/date-adapter/ngb-date-adapter';
+import {CustomDateAdapter, CustomDateParserFormatter} from './util/date-adapter/ngb-date-adapter';
 import {RegistrationUnhcrComponent} from './components/candidates/intake/registration-unhcr/registration-unhcr.component';
 import {RegistrationUnrwaComponent} from './components/candidates/intake/registration-unrwa/registration-unrwa.component';
 import {HomeLocationComponent} from './components/candidates/intake/home-location/home-location.component';
@@ -167,6 +160,17 @@ import {ConfirmContactComponent} from './components/candidates/intake/confirm-co
 import {ExamsComponent} from './components/candidates/intake/exams/exams.component';
 import {CandidateExamCardComponent} from './components/candidates/intake/exams/card/candidate-exam-card.component';
 import {HasNameSelectorComponent} from './components/util/has-name-selector/has-name-selector.component';
+import {DestinationJobComponent} from './components/candidates/intake/destination-job/destination-job.component';
+import {CrimeComponent} from './components/candidates/intake/crime/crime.component';
+import {ConflictComponent} from './components/candidates/intake/conflict/conflict.component';
+import {ResidenceStatusComponent} from './components/candidates/intake/residence-status/residence-status.component';
+import {WorkAbroadComponent} from './components/candidates/intake/work-abroad/work-abroad.component';
+import {HostEntryLegallyComponent} from './components/candidates/intake/host-entry-legally/host-entry-legally.component';
+import {LeftHomeReasonComponent} from './components/candidates/intake/left-home-reasons/left-home-reason.component';
+import {ReturnHomeFutureComponent} from './components/candidates/intake/return-home-future/return-home-future.component';
+import {ResettlementThirdComponent} from './components/candidates/intake/resettlement-third/resettlement-third.component';
+import {HostChallengesComponent} from './components/candidates/intake/host-challenges/host-challenges.component';
+import {MaritalStatusComponent} from './components/candidates/intake/marital-status/marital-status.component';
 
 @NgModule({
   declarations: [
@@ -318,7 +322,18 @@ import {HasNameSelectorComponent} from './components/util/has-name-selector/has-
     ConfirmContactComponent,
     ExamsComponent,
     CandidateExamCardComponent,
-    HasNameSelectorComponent
+    HasNameSelectorComponent,
+    DestinationJobComponent,
+    CrimeComponent,
+    ConflictComponent,
+    ResidenceStatusComponent,
+    WorkAbroadComponent,
+    HostEntryLegallyComponent,
+    LeftHomeReasonComponent,
+    ReturnHomeFutureComponent,
+    ResettlementThirdComponent,
+    HostChallengesComponent,
+    MaritalStatusComponent
   ],
   imports: [
     BrowserModule,

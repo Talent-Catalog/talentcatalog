@@ -9,6 +9,85 @@
 </div>
 
 <div *ngIf="!loading">
+
+  <div class="card">
+    <div class="card-header">
+      Confirm General Information
+    </div>
+    <div class="card-body">
+      <app-confirm-contact
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-confirm-contact>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="card">
+    <div class="card-header">
+      Interest in International Recruitment
+    </div>
+    <div class="card-body">
+      <app-avail-immediate
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-avail-immediate>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="card">
+    <div class="card-header">
+      Destinations
+    </div>
+    <div class="card-body">
+      <app-destinations
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-destinations>
+      <app-destination-limit
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-destination-limit>
+      <app-destination-job
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-destination-job>
+    </div>
+  </div>
+
+  <hr/>
+
+  <app-citizenships
+    [candidate]="candidate"
+    [candidateIntakeData]="candidateIntakeData"
+    [nationalities]="nationalities"
+  >
+  </app-citizenships>
+
+  <hr/>
+
+  <div class="card">
+    <div class="card-header">
+      Work Status
+    </div>
+    <div class="card-body">
+      <app-work-permit
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-work-permit>
+      <app-work-status
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-work-status>
+
+    </div>
+  </div>
+
+  <hr/>
+
   <div class="card">
     <div class="card-header">
       Home Country
@@ -18,8 +97,96 @@
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData">
       </app-returned-home>
+      <app-return-home-safe
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-return-home-safe>
+      <app-home-location
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-home-location>
+      <app-host-entry-year
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-host-entry-year>
+      <app-asylum-year
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-asylum-year>
     </div>
   </div>
+
+  <hr/>
+
+  <div class="card">
+    <div class="card-header">
+      Registration
+    </div>
+    <div class="card-body">
+      <div class="card-title h6">
+        UNHCR
+      </div>
+      <app-registration-unhcr
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-registration-unhcr>
+      <div class="card-title h6">
+        UNRWA
+      </div>
+      <app-registration-unrwa
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-registration-unrwa>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="card">
+    <div class="card-header">
+      Visa Issues
+    </div>
+    <div class="card-body">
+      <app-visa-issues
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-visa-issues>
+      <app-crime
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-crime>
+      <app-conflict
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-conflict>
+      <app-residence-status
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-residence-status>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="card">
+    <div class="card-header">
+      Family
+    </div>
+    <div class="card-body">
+      <app-family
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-family>
+    </div>
+  </div>
+
+  <hr/>
+
+  <app-exams
+    [candidate]="candidate"
+    [candidateIntakeData]="candidateIntakeData"
+  >
+  </app-exams>
 
   <hr/>
 

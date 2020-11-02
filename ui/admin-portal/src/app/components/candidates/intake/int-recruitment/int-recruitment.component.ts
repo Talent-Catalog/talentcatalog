@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {enumMultiSelectSettings, EnumOption, enumOptions} from '../../../../util/enum';
+import {enumKeysToEnumOptions, enumMultiSelectSettings, EnumOption, enumOptions} from '../../../../util/enum';
 import {IntRecruitReason} from '../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
@@ -21,8 +21,10 @@ export class IntRecruitmentComponent extends IntakeComponentBase implements OnIn
   }
 
   ngOnInit(): void {
+    const options: EnumOption[] =
+      enumKeysToEnumOptions(this.candidateIntakeData?.intRecruitReasons, IntRecruitReason);
     this.form = this.fb.group({
-      intRecruitReasons: [this.candidateIntakeData?.intRecruitReasons],
+      intRecruitReasons: [options],
     });
   }
 
