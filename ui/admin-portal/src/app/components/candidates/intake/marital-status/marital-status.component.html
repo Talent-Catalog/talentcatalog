@@ -21,20 +21,88 @@
       we will also discuss in further detail the process related to family.</p>
   </div>
 
-<!--  <div *ngIf="isMarriedEngaged">-->
-<!--    <div class="form-group">-->
-<!--      <label for="partnerTBB">-->
-<!--        What is your current residence or legal status?-->
-<!--      </label>-->
-<!--      <select class="form-control"-->
-<!--              id="partnerTBB" [formControlName]="'partnerTBB'">-->
-<!--        <option *ngFor="let opt of partnerTBBOptions" [value]="opt.value">-->
-<!--          {{opt.displayText}}-->
-<!--        </option>-->
-<!--      </select>-->
-<!--    </div>-->
+  <div *ngIf="isMarriedEngaged">
+    <div class="form-group">
+      <label for="partnerRegistered">
+        Is your partner registered with TBB?
+      </label>
+      <select class="form-control"
+              id="partnerRegistered" [formControlName]="'partnerRegistered'">
+        <option *ngFor="let opt of partnerRegisteredOptions" [value]="opt.value">
+          {{opt.displayText}}
+        </option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="partnerEduLevel">
+        What is your partner’s highest level of education?
+      </label>
+      <select class="form-control"
+              id="partnerEduLevel" [formControlName]="'partnerEduLevel'">
+        <option *ngFor="let opt of educationLevels" [value]="opt.id">
+          {{opt.name}}
+        </option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="partnerProfession">
+        What is your partner’s profession?
+      </label>
+      <select class="form-control"
+              id="partnerProfession" [formControlName]="'partnerProfession'">
+        <option *ngFor="let opt of occupations" [value]="opt.id">
+          {{opt.name}}
+        </option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="partnerEnglish">
+        Does your spouse speak English?
+      </label>
+      <select class="form-control"
+              id="partnerEnglish" [formControlName]="'partnerEnglish'">
+        <option *ngFor="let opt of partnerEnglishOptions" [value]="opt.value">
+          {{opt.displayText}}
+        </option>
+      </select>
+    </div>
+    <div *ngIf="partnerEnglish === 'Yes'">
+      <div class="form-group">
+        <label for="partnerEnglishLevel">
+          What level of English does your spouse speak?
+        </label>
+        <select class="form-control"
+                id="partnerEnglishLevel" [formControlName]="'partnerEnglishLevel'">
+          <option *ngFor="let opt of languageLevels" [value]="opt.id">
+            {{opt.name}}
+          </option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="partnerIELTS">
+          Has he/she completed IELTS?
+        </label>
+        <select class="form-control"
+                id="partnerIELTS" [formControlName]="'partnerIELTS'">
+          <option *ngFor="let opt of partnerIELTSOptions" [value]="opt.value">
+            {{opt.displayText}}
+          </option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="partnerCitizenship">
+        What is your partners current citizenship?
+      </label>
+      <select class="form-control"
+              id="partnerCitizenship" [formControlName]="'partnerCitizenship'">
+        <option *ngFor="let opt of nationalities" [value]="opt.id">
+          {{opt.name}}
+        </option>
+      </select>
+    </div>
 
-<!--  </div>-->
+  </div>
 
 </form>
 

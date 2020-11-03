@@ -10,6 +10,12 @@ import {Nationality} from '../../../model/nationality';
 import {NationalityService} from '../../../services/nationality.service';
 import {CountryService} from '../../../services/country.service';
 import {Country} from '../../../model/country';
+import {EducationLevel} from '../../../model/education-level';
+import {EducationLevelService} from '../../../services/education-level.service';
+import {Occupation} from '../../../model/occupation';
+import {OccupationService} from '../../../services/occupation.service';
+import {LanguageLevelService} from '../../../services/language-level.service';
+import {LanguageLevel} from '../../../model/language-level';
 
 /**
  * Base class for all candidate intake tab components.
@@ -62,10 +68,28 @@ export abstract class IntakeComponentTabBase implements OnInit {
    */
   tbbDestinations: Country[];
 
+  /**
+   * All Education Levels
+   */
+  educationLevels: EducationLevel[];
+
+  /**
+   * All Occupations
+   */
+  occupations: Occupation[];
+
+  /**
+   * All Occupations
+   */
+  languageLevels: LanguageLevel[];
+
   public constructor(
     protected candidateService: CandidateService,
     protected countryService: CountryService,
-    protected nationalityService: NationalityService
+    protected nationalityService: NationalityService,
+    protected educationLevelService: EducationLevelService,
+    protected occupationService: OccupationService,
+    protected languageLevelService: LanguageLevelService,
   ) { }
 
   ngOnInit(): void {
@@ -89,12 +113,18 @@ export abstract class IntakeComponentTabBase implements OnInit {
       'countries': this.countryService.listCountries(),
       'tbbDestinations': this.countryService.listTBBDestinations(),
       'nationalities': this.nationalityService.listNationalities(),
+      'educationLevels': this.educationLevelService.listEducationLevels(),
+      'occupations': this.occupationService.listOccupations(),
+      'languageLevels': this.languageLevelService.listLanguageLevels(),
       'intakeData':  this.candidateService.getIntakeData(this.candidate.id),
     }).subscribe(results => {
       this.loading = false;
       this.countries = results['countries'];
       this.tbbDestinations = results['tbbDestinations'];
       this.nationalities = results['nationalities'];
+      this.educationLevels = results['educationLevels'];
+      this.occupations = results['occupations'];
+      this.languageLevels = results['languageLevels'];
       this.candidateIntakeData = results['intakeData'];
       this.onDataLoaded(init);
     }, error => {

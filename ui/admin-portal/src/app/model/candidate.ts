@@ -8,6 +8,8 @@ import {SurveyType} from './survey-type';
 import {Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {getExternalHref} from '../util/url';
+import {Occupation} from './occupation';
+import {LanguageLevel} from './language-level';
 
 export interface Candidate {
   id: number;
@@ -83,7 +85,13 @@ export interface CandidateIntakeData {
   leftHomeReason?: LeftHomeReason[];
   leftHomeOther?: string;
   maritalStatus?: MaritalStatus;
-  partnerTBB?: YesNoUnsure;
+  partnerRegistered?: YesNoUnsure;
+  partnerEduLevel?: EducationLevel;
+  partnerProfession?: Occupation;
+  partnerEnglish?: YesNo;
+  partnerEnglishLevel?: LanguageLevel;
+  partnerIELTS?: YesNoUnsure;
+  partnerCitizenship?: Nationality;
 
   returnedHome?: YesNoUnsure;
   returnedHomeNotes?: string;
