@@ -65,6 +65,15 @@ public class SavedList extends AbstractCandidateSource {
     private SavedSearch savedSearch;
 
     /**
+     * If not null this is a saved search that contributed to the candidates 
+     * in the list. Some of those candidates were selected from that search.
+     */
+    @Nullable
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "saved_search_source_id")
+    private SavedSearch savedSearchSource;
+
+    /**
      * Even though we would prefer CascadeType.ALL with 'orphanRemoval' so that 
      * removing from the candidateSavedLists collection would automatically
      * cascade down to delete the corresponding entry in the 
@@ -96,6 +105,15 @@ public class SavedList extends AbstractCandidateSource {
 
     public void setSavedSearch(@Nullable SavedSearch savedSearch) {
         this.savedSearch = savedSearch;
+    }
+
+    @Nullable
+    public SavedSearch getSavedSearchSource() {
+        return savedSearchSource;
+    }
+
+    public void setSavedSearchSource(@Nullable SavedSearch savedSearchSource) {
+        this.savedSearchSource = savedSearchSource;
     }
 
     public Set<CandidateSavedList> getCandidateSavedLists() {

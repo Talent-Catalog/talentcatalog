@@ -27,9 +27,11 @@ import {
   getCandidateSourceExternalHref,
   getCandidateSourceNavigation,
   getSavedSearchBreadcrumb,
+  getSavedSourceNavigation,
   isSavedSearch,
   SavedSearch,
   SavedSearchGetRequest,
+  SavedSearchRef,
   SaveSelectionRequest,
   SearchCandidateRequestPaged,
   SelectCandidateInSearchRequest
@@ -58,6 +60,7 @@ import {
 import {
   CreateSavedListRequest,
   IHasSetOfCandidates,
+  isSavedList,
   SavedListGetRequest
 } from '../../../model/saved-list';
 import {CandidateSourceCandidateService} from '../../../services/candidate-source-candidate.service';
@@ -672,53 +675,43 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     //Save selection as specified in request
     this.savingSelection = true;
     this.error = null;
+
     if (isSavedSearch(this.candidateSource)) {
-      const savedSearch: SavedSearch = this.candidateSource;
-      this.savedSearchService.saveSelection(this.candidateSource.id, request)
-        .subscribe(
-        savedListResult => {
-          this.savingSelection = false;
 
-          //Save the target list
-          this.targetListId = savedListResult.id;
-          this.targetListName = savedListResult.name;
-          this.targetListReplace = request.replace;
+      const savedSearch = this.candidateSource;
 
-          //Invalidate the cache for this list (so that user does not need
-          //to refresh in order to see latest list contents)
-          this.candidateSourceResultsCacheService.removeFromCache(savedListResult);
+      if (!savedSearch.defaultSearch) {
 
-          if (!savedSearch.defaultSearch) {
-            //Remember the target list for this source so that the user does not
-            //have type in details each time they want to save
-            this.cacheTargetList();
-          } else {
-            //Auto save search
-            const ssCreateRequest: CreateFromDefaultSavedSearchRequest = {
-              name: this.targetListName,
-              sfJoblink: request.sfJoblink
-            };
-            this.savedSearchService.createFromDefaultSearch(ssCreateRequest).subscribe(
-              (newSavedSearch) => {
-                //Associate current target list with this new source.
-                this.cacheTargetList(newSavedSearch);
+        //If the search is already saved, just save the selection
+        this.saveSavedSearchSelection(savedSearch, request);
 
-                //Navigate away from the default saved search to the newly created
-                //search.
-                const urlCommands = getCandidateSourceNavigation(newSavedSearch);
-                this.savingSelection = false;
-                this.router.navigate(urlCommands);
-              },
-              (error) => {
-                this.error = error;
-                this.savingSelection = false;
-              });
-          }
-        },
-        err => {
-          this.error = err;
-          this.savingSelection = false;
-        });
+      } else {
+
+        //If default search, auto save the search, then save the selection
+
+        const ssCreateRequest: CreateFromDefaultSavedSearchRequest = {
+          savedListId: request.savedListId,
+          name: request.newListName,
+          sfJoblink: request.sfJoblink
+        };
+        this.savedSearchService.createFromDefaultSearch(ssCreateRequest).subscribe(
+          (newSavedSearch) => {
+
+            this.saveSavedSearchSelection(newSavedSearch, request);
+
+            //Navigate away from the default saved search to the newly created
+            //search.
+            const urlCommands = getCandidateSourceNavigation(newSavedSearch);
+            this.savingSelection = false;
+            this.router.navigate(urlCommands);
+          },
+          (error) => {
+            this.error = error;
+
+            //Even if auto saved search failed, we still want to save the selection
+            this.saveSavedSearchSelection(savedSearch, request);
+          });
+      }
 
     } else {
       // LIST
@@ -734,8 +727,36 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         // create new saved list
         this.createList(request.newListName, ids, request.replace, request.sfJoblink);
       }
-      this.savingSelection = false;
     }
+  }
+
+  private saveSavedSearchSelection(
+    savedSearch: SavedSearch, request: SaveSelectionRequest) {
+
+    this.savedSearchService.saveSelection(savedSearch.id, request)
+      .subscribe(
+        savedListResult => {
+          this.savingSelection = false;
+
+          //Save the target list
+          this.targetListId = savedListResult.id;
+          this.targetListName = savedListResult.name;
+          this.targetListReplace = request.replace;
+
+          //Associate current target list with this source.
+          this.cacheTargetList(savedSearch);
+
+          //Invalidate the cache for this list (so that user does not need
+          //to refresh in order to see latest list contents)
+          this.candidateSourceResultsCacheService.removeFromCache(savedListResult);
+
+          this.savingSelection = false;
+
+        },
+        err => {
+          this.error = err;
+          this.savingSelection = false;
+        });
   }
 
   private replaceOrMergeList(savedListId: number, ids: IHasSetOfCandidates, replace: boolean) {
@@ -748,6 +769,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     if (replace) {
       this.savedListCandidateService.replace(savedListId, ids).subscribe(
         () => {
+          this.savingSelection = false;
           //Save the target list
           this.targetListId = savedListId;
           this.targetListReplace = true;
@@ -763,6 +785,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       this.savedListCandidateService.merge(savedListId, ids).subscribe(
         () => {
+          this.savingSelection = false;
           //Save the target list
           this.targetListId = savedListId;
           this.targetListReplace = false;
@@ -830,7 +853,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
    */
   private cacheTargetList(source: CandidateSource = this.candidateSource) {
     const cachedTargetList: CachedTargetList = {
-      sourceID: this.candidateSource.id,
+      sourceID: source.id,
       listID: this.targetListId,
       name: this.targetListName,
       replace: this.targetListReplace
@@ -953,6 +976,25 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       return this.candidateSource.defaultSearch;
     } else {
      return false;
+    }
+  }
+
+  private getSavedSearchSource(): SavedSearchRef {
+    if (isSavedList(this.candidateSource)) {
+      return this.candidateSource.savedSearchSource;
+    } else {
+      return null;
+    }
+  }
+
+  hasSavedSearchSource(): boolean {
+    return this.getSavedSearchSource() != null;
+  }
+
+  doShowSearch() {
+    const savedSearchSource = this.getSavedSearchSource();
+    if (savedSearchSource != null) {
+      this.router.navigate(getSavedSourceNavigation(savedSearchSource));
     }
   }
 }

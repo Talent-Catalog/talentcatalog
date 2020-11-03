@@ -40,8 +40,9 @@ public interface SavedSearchService {
 
     /**
      * Creates a new saved search from the current user's default saved search, 
-     * named as specified in the request and with the sfJoblink, if any, in the 
-     * request.
+     * named as specified in the request (either with the name of a specified
+     * existing saved list, or with a specified name) and with the sfJoblink, 
+     * if any, in the request.
      * <p/>
      * The selection for the new saved search is the same as the selection
      * (including any context notes) for the default search.
@@ -49,7 +50,8 @@ public interface SavedSearchService {
      * If a saved search with the given already exists, it is replaced.
      * @param request Request containing details from which the search is created.
      * @return Created search
-     * @throws NoSuchObjectException If there is no logged in user.
+     * @throws NoSuchObjectException If there is no logged in user or no list 
+     * with given id.
      */
     SavedSearch createFromDefaultSavedSearch(
             CreateFromDefaultSavedSearchRequest request) 

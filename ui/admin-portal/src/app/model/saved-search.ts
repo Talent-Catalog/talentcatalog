@@ -1,6 +1,12 @@
 import {SearchCandidateRequest} from './search-candidate-request';
 import {SavedSearchTypeInfo} from '../services/saved-search.service';
-import {Auditable, CandidateSource, PagedSearchRequest, SearchCandidateSourcesRequest} from './base';
+import {
+  Auditable,
+  CandidateSource,
+  HasId,
+  PagedSearchRequest,
+  SearchCandidateSourcesRequest
+} from './base';
 import {Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {TargetListSelection} from '../components/list/select/select-list.component';
@@ -50,7 +56,10 @@ export interface SavedSearchJoin {
   childSavedSearch: SavedSearch;
 }
 
-export interface SavedSearch extends CandidateSource, SearchCandidateRequest {
+export interface SavedSearchRef extends HasId {
+}
+
+export interface SavedSearch extends CandidateSource, SearchCandidateRequest, SavedSearchRef {
   defaultSearch: boolean;
   reviewable: boolean;
   global: boolean;
@@ -66,6 +75,10 @@ export class SearchSavedSearchRequest extends SearchCandidateSourcesRequest {
 export function getCandidateSourceNavigation(source: CandidateSource): any[] {
   const urlSelector: string = isSavedSearch(source) ? 'search' : 'list';
   return [urlSelector, source.id];
+}
+
+export function getSavedSourceNavigation(source: SavedSearchRef): any[] {
+  return ['search', source.id];
 }
 
 export function getCandidateSourceExternalHref(

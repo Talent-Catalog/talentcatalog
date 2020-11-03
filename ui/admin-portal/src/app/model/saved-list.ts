@@ -7,6 +7,7 @@ import {
   PagedSearchRequest,
   SearchCandidateSourcesRequest
 } from "./base";
+import {isSavedSearch, SavedSearchRef} from "./saved-search";
 
 export enum SearchBy {
   type,
@@ -16,6 +17,11 @@ export enum SearchBy {
 }
 
 export interface SavedList extends CandidateSource {
+  savedSearchSource?: SavedSearchRef
+}
+
+export function isSavedList(source: CandidateSource): source is SavedList {
+  return !isSavedSearch(source);
 }
 
 export function indexOfSavedList(savedListID: number, savedLists: SavedList[]): number {

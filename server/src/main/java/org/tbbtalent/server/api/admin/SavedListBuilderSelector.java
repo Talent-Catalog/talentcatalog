@@ -25,6 +25,7 @@ public class SavedListBuilderSelector {
                 .add("status")
                 .add("name")
                 .add("fixed")
+                .add("savedSearchSource", savedSearchSourceDto())
                 .add("sfJoblink")
                 .add("createdBy", userDto())
                 .add("createdDate")
@@ -32,6 +33,12 @@ public class SavedListBuilderSelector {
                 .add("updatedDate")
                 .add("users", userDto())
         ;
+    }
+
+    private DtoBuilder savedSearchSourceDto() {
+        return new DtoBuilder()
+                .add("id")
+                ;
     }
 
     private DtoBuilder userDto() {

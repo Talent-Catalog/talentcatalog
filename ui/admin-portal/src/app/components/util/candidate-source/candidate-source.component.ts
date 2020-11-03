@@ -1,5 +1,19 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-import {getCandidateSourceExternalHref, isSavedSearch, SavedSearch} from '../../../model/saved-search';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
+import {
+  getCandidateSourceExternalHref,
+  getSavedSourceNavigation,
+  isSavedSearch,
+  SavedSearch,
+  SavedSearchRef
+} from '../../../model/saved-search';
 import {SavedSearchService} from '../../../services/saved-search.service';
 import {AuthService} from '../../../services/auth.service';
 import {User} from '../../../model/user';
@@ -7,6 +21,7 @@ import {CandidateSource, canEditSource, isMine} from '../../../model/base';
 import {Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {copyToClipboard} from '../../../util/clipboard';
+import {isSavedList} from "../../../model/saved-list";
 
 @Component({
   selector: 'app-candidate-source',
@@ -150,4 +165,23 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
     })
   }
 
+  private getSavedSearchSource(): SavedSearchRef {
+    if (isSavedList(this.candidateSource)) {
+      return this.candidateSource.savedSearchSource;
+    } else {
+      return null;
+    }
+  }
+
+
+  hasSavedSearchSource(): boolean {
+    return this.getSavedSearchSource() != null;
+  }
+
+  doShowSearch() {
+    const savedSearchSource = this.getSavedSearchSource();
+    if (savedSearchSource != null) {
+      this.router.navigate(getSavedSourceNavigation(savedSearchSource));
+    }
+  }
 }

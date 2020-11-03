@@ -4,12 +4,14 @@
 
 package org.tbbtalent.server.request.list;
 
+import org.springframework.lang.Nullable;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 /**
- * Specifies 
+ * Specifies the list used for saving a selection of candidates 
  *
  * @author John Cameron
  */
@@ -17,15 +19,27 @@ import lombok.ToString;
 @Setter
 @ToString
 public class TargetListSelection {
-    //List id - 0 if new list requested
+    /**
+     * List id - 0 if new list requested
+     */
     Long savedListId;
 
-    //Name of new list to be created (if any - only used if savedListId = 0)
+    /**
+     * Name of new list to be created (if any - only used if savedListId = 0)
+     */
+    @Nullable
     String newListName;
 
-    //If true any existing contents of target list should be replaced, otherwise
-    //contents are added (merged).
+    /**
+     * If true any existing contents of target list should be replaced, otherwise
+     * contents are added (merged). 
+     */
     boolean replace;
 
+    /**
+     * Link to associated Salesforce job opportunity, if any, to be associated
+     * with list 
+     */
+    @Nullable
     String sfJoblink;
 }
