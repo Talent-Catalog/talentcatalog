@@ -25,6 +25,7 @@ import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.SavedSearch;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.sf.Contact;
@@ -99,7 +100,8 @@ public class SavedListServiceImpl implements SavedListService {
 
         SavedList targetList;
         final Long targetId = request.getSavedListId();
-        if (targetId == 0) {
+        boolean newList = targetId == 0;
+        if (newList) {
             //Request is to create a new list
             CreateSavedListRequest createRequest = new CreateSavedListRequest();
             createRequest.setName(request.getNewListName());
@@ -114,6 +116,14 @@ public class SavedListServiceImpl implements SavedListService {
         //Set any specified Salesforce Job Opportunity
         if (request.getSfJoblink() != null) {
             targetList.setSfJoblink(request.getSfJoblink());
+        }
+        
+        //New list inherits source's savedSearchSource, if any
+        if (newList) {
+            final SavedSearch savedSearchSource = sourceList.getSavedSearchSource();
+            if (savedSearchSource != null) {
+                targetList.setSavedSearchSource(savedSearchSource);
+            }
         }
 
         //Copy across list contents (which includes context notes)
@@ -153,6 +163,14 @@ public class SavedListServiceImpl implements SavedListService {
 
         //Retrieve source list, if any
         SavedList sourceList = fetchSourceList(request);
+
+        //New list inherits source's savedSearchSource, if any
+        if (sourceList != null) {
+            final SavedSearch savedSearchSource = sourceList.getSavedSearchSource();
+            if (savedSearchSource != null) {
+                savedList.setSavedSearchSource(savedSearchSource);
+            }
+        }
 
         //Retrieve candidates
         Set<Candidate> candidates = fetchCandidates(request);

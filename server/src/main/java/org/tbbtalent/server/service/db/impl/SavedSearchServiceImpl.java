@@ -443,6 +443,13 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if (savedList == null) {
             savedList = new SavedList();
             savedList.setSavedSearch(savedSearch);
+            
+            //Setting the savedSearchSource on all selection lists allows
+            //the standard list savedSearchSource copy logic to work for
+            //selection lists as well as normal lists. 
+            //See code in SavedListServiceImpl.createSavedList
+            savedList.setSavedSearchSource(savedSearch);
+            
             savedList.setCreatedBy(user);
             savedList.setCreatedDate(OffsetDateTime.now());
             savedList.setName(constructSelectionListName(user, savedSearch));
