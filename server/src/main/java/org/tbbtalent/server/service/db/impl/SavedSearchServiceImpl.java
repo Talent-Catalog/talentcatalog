@@ -213,18 +213,28 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             throw new NoSuchObjectException(User.class, 0);
         }
 
+        String name;
+        //Get name either from the specified saved list, or the specified name.
+        final long savedListId = request.getSavedListId();
+        if (savedListId == 0) {
+            name = request.getName();
+        } else {
+            SavedList savedList = savedListService.get(savedListId);
+            name = savedList.getName();
+        }
+
         SavedSearch defaultSavedSearch = getDefaultSavedSearch();
 
         //Delete any existing saved search with the given name.
         SavedSearch existing =
                 savedSearchRepository.findByNameIgnoreCase(
-                        request.getName(), loggedInUser.getId());
+                        name, loggedInUser.getId());
         if (existing != null) {
             deleteSavedSearch(existing.getId());
         }
         
         UpdateSavedSearchRequest createRequest = new UpdateSavedSearchRequest();
-        createRequest.setName(request.getName());
+        createRequest.setName(name);
         createRequest.setSfJoblink(request.getSfJoblink());
         
         //Default to job type

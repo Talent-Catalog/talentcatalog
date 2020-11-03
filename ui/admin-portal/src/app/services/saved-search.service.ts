@@ -16,6 +16,7 @@ import {map} from "rxjs/operators";
 import {SavedList} from "../model/saved-list";
 
 export interface CreateFromDefaultSavedSearchRequest {
+  savedListId: number;
   name: string;
   sfJoblink?: string;
 }
