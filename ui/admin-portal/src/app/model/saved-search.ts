@@ -1,6 +1,12 @@
 import {SearchCandidateRequest} from './search-candidate-request';
 import {SavedSearchTypeInfo} from '../services/saved-search.service';
-import {Auditable, CandidateSource, PagedSearchRequest, SearchCandidateSourcesRequest} from './base';
+import {
+  Auditable,
+  CandidateSource,
+  HasId,
+  PagedSearchRequest,
+  SearchCandidateSourcesRequest
+} from './base';
 import {Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {TargetListSelection} from '../components/list/select/select-list.component';
@@ -48,6 +54,9 @@ export interface SavedSearchJoin {
   name: string;
   searchType: 'and' | 'or';
   childSavedSearch: SavedSearch;
+}
+
+export interface SavedSearchRef extends HasId {
 }
 
 export interface SavedSearch extends CandidateSource, SearchCandidateRequest {

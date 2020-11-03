@@ -43,8 +43,11 @@ export const defaultReviewStatusFilter: string[] = [
   ReviewedStatus[ReviewedStatus.verified]
 ];
 
-export interface Auditable {
+export interface HasId {
   id: number;
+}
+
+export interface Auditable extends HasId {
   createdBy?: User;
   createdDate?: number;
   updatedBy?: User
