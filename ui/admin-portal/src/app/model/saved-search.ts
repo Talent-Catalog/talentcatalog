@@ -59,7 +59,7 @@ export interface SavedSearchJoin {
 export interface SavedSearchRef extends HasId {
 }
 
-export interface SavedSearch extends CandidateSource, SearchCandidateRequest {
+export interface SavedSearch extends CandidateSource, SearchCandidateRequest, SavedSearchRef {
   defaultSearch: boolean;
   reviewable: boolean;
   global: boolean;
@@ -75,6 +75,10 @@ export class SearchSavedSearchRequest extends SearchCandidateSourcesRequest {
 export function getCandidateSourceNavigation(source: CandidateSource): any[] {
   const urlSelector: string = isSavedSearch(source) ? 'search' : 'list';
   return [urlSelector, source.id];
+}
+
+export function getSavedSourceNavigation(source: SavedSearchRef): any[] {
+  return ['search', source.id];
 }
 
 export function getCandidateSourceExternalHref(

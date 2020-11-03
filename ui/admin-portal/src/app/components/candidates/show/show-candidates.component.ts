@@ -27,9 +27,11 @@ import {
   getCandidateSourceExternalHref,
   getCandidateSourceNavigation,
   getSavedSearchBreadcrumb,
+  getSavedSourceNavigation,
   isSavedSearch,
   SavedSearch,
   SavedSearchGetRequest,
+  SavedSearchRef,
   SaveSelectionRequest,
   SearchCandidateRequestPaged,
   SelectCandidateInSearchRequest
@@ -58,6 +60,7 @@ import {
 import {
   CreateSavedListRequest,
   IHasSetOfCandidates,
+  isSavedList,
   SavedListGetRequest
 } from '../../../model/saved-list';
 import {CandidateSourceCandidateService} from '../../../services/candidate-source-candidate.service';
@@ -953,6 +956,26 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       return this.candidateSource.defaultSearch;
     } else {
      return false;
+    }
+  }
+
+  private getSavedSearchSource(): SavedSearchRef {
+    if (isSavedList(this.candidateSource)) {
+      return this.candidateSource.savedSearchSource;
+    } else {
+      return null;
+    }
+  }
+
+
+  hasSavedSearchSource(): boolean {
+    return this.getSavedSearchSource() != null;
+  }
+
+  doShowSearch() {
+    const savedSearchSource = this.getSavedSearchSource();
+    if (savedSearchSource != null) {
+      this.router.navigate(getSavedSourceNavigation(savedSearchSource));
     }
   }
 }
