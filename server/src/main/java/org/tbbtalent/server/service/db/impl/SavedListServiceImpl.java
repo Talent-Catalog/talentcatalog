@@ -118,8 +118,8 @@ public class SavedListServiceImpl implements SavedListService {
             targetList.setSfJoblink(request.getSfJoblink());
         }
         
-        //New list inherits source's savedSearchSource, if any
-        if (newList) {
+        //New or replaced list inherits source's savedSearchSource, if any
+        if (newList || request.isReplace()) {
             final SavedSearch savedSearchSource = sourceList.getSavedSearchSource();
             if (savedSearchSource != null) {
                 targetList.setSavedSearchSource(savedSearchSource);

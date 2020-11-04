@@ -105,12 +105,7 @@ public class SavedSearchAdminApi implements
                                @Valid @RequestBody ClearSelectionRequest request)
             throws InvalidRequestException, NoSuchObjectException {
 
-        //Get the selection list for this user and saved search.
-        SavedList selectionList =
-                savedSearchService.getSelectionList(id, request.getUserId());
-
-        //Clear the list.
-        savedListService.clearSavedList(selectionList.getId());
+        savedSearchService.clearSelection(id, request.getUserId());
     }
 
     /**

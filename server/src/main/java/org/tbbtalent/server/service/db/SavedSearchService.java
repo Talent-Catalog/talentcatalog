@@ -8,6 +8,7 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.data.domain.Page;
 import org.tbbtalent.server.exception.EntityExistsException;
+import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.SavedSearch;
@@ -27,6 +28,16 @@ public interface SavedSearchService {
     SearchCandidateRequest loadSavedSearch(long id);
 
     SavedSearch getSavedSearch(long id);
+
+    /**
+     * Clears the given user's selections for the given saved search.
+     * @param id ID of saved search
+     * @param userId Associated user id
+     * @throws InvalidRequestException if not authorized.
+     * @throws NoSuchObjectException if there is no such saved search
+     */
+    void clearSelection(long id, Long userId)
+            throws InvalidRequestException, NoSuchObjectException;
 
     /**
      * Creates a new saved search from the data in the given request. 
@@ -124,5 +135,4 @@ public interface SavedSearchService {
      */ 
     void updateCandidateContextNote(
             long id, UpdateCandidateContextNoteRequest request);
-
 }
