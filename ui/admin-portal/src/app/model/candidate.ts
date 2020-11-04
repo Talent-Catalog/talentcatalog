@@ -86,6 +86,7 @@ export interface CandidateIntakeData {
   leftHomeOther?: string;
   maritalStatus?: MaritalStatus;
   partnerRegistered?: YesNoUnsure;
+  partnerCandNumber?: string;
   partnerEduLevel?: EducationLevel;
   partnerProfession?: Occupation;
   partnerEnglish?: YesNo;

@@ -10,6 +10,9 @@ import {HasNameSelectorComponent} from '../../../../util/has-name-selector/has-n
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ConfirmationComponent} from '../../../../util/confirm/confirmation.component';
 import {CandidateVisaCheck} from '../../../../../model/candidate';
+import {EducationLevelService} from '../../../../../services/education-level.service';
+import {OccupationService} from '../../../../../services/occupation.service';
+import {LanguageLevelService} from '../../../../../services/language-level.service';
 
 @Component({
   selector: 'app-candidate-visa-tab',
@@ -25,10 +28,13 @@ export class CandidateVisaTabComponent
   constructor(candidateService: CandidateService,
               countryService: CountryService,
               nationalityService: NationalityService,
+              educationLevelService: EducationLevelService,
+              occupationService: OccupationService,
+              languageLevelService: LanguageLevelService,
               private candidateVisaCheckService: CandidateVisaCheckService,
               private modalService: NgbModal,
               private fb: FormBuilder) {
-    super(candidateService, countryService, nationalityService)
+    super(candidateService, countryService, nationalityService, educationLevelService, occupationService, languageLevelService)
   }
 
   onDataLoaded(init: boolean) {

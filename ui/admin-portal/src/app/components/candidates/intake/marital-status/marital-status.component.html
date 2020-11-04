@@ -33,6 +33,22 @@
         </option>
       </select>
     </div>
+    <div *ngIf="partnerRegistered === 'Yes'">
+      <div class="form-group">
+        <label>
+          What is your partner's candidate number?
+        </label>
+        <app-candidate-name-num-search
+          [handleSelect]="'displayOnly'"
+          [candNumber]="partnerCandNumber"
+          (candNumberChange)="updatePartnerCandNumber($event)">
+        </app-candidate-name-num-search>
+        <app-fixed-input
+          [question]="'Candidate Number'"
+          [answer]="partnerCandNumber">
+        </app-fixed-input>
+      </div>
+    </div>
     <div class="form-group">
       <label for="partnerEduLevel">
         What is your partner’s highest level of education?

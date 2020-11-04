@@ -34,6 +34,7 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
     this.form = this.fb.group({
       maritalStatus: [this.candidateIntakeData?.maritalStatus],
       partnerRegistered: [this.candidateIntakeData?.partnerRegistered],
+      partnerCandNumber: [this.candidateIntakeData?.partnerCandNumber],
       partnerEduLevel: [this.candidateIntakeData?.partnerEduLevel],
       partnerProfession: [this.candidateIntakeData?.partnerProfession],
       partnerEnglish: [this.candidateIntakeData?.partnerEnglish],
@@ -47,8 +48,17 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
     return this.form.value?.maritalStatus;
   }
 
+  get partnerRegistered() {
+    return this.form.value?.partnerRegistered;
+  }
+
   get partnerEnglish() {
     return this.form.value?.partnerEnglish;
+  }
+
+  get partnerCandNumber() {
+    return '15000'
+    //return this.form.value?.partnerCandNumber;
   }
 
   get isMarriedEngaged(): boolean {
@@ -75,4 +85,7 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
     return found;
   }
 
+  updatePartnerCandNumber($event) {
+    this.form.value.partnerCandNumber = $event;
+  }
 }

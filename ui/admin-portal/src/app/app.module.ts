@@ -171,6 +171,7 @@ import {ReturnHomeFutureComponent} from './components/candidates/intake/return-h
 import {ResettlementThirdComponent} from './components/candidates/intake/resettlement-third/resettlement-third.component';
 import {HostChallengesComponent} from './components/candidates/intake/host-challenges/host-challenges.component';
 import {MaritalStatusComponent} from './components/candidates/intake/marital-status/marital-status.component';
+import {CandidateNameNumSearchComponent} from './components/util/candidate-name-num-search/candidate-name-num-search.component';
 
 @NgModule({
   declarations: [
@@ -333,7 +334,8 @@ import {MaritalStatusComponent} from './components/candidates/intake/marital-sta
     ReturnHomeFutureComponent,
     ResettlementThirdComponent,
     HostChallengesComponent,
-    MaritalStatusComponent
+    MaritalStatusComponent,
+    CandidateNameNumSearchComponent
   ],
   imports: [
     BrowserModule,
