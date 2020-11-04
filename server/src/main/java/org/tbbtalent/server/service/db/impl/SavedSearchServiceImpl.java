@@ -204,6 +204,16 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
     @Override
+    public void clearSelection(long id, Long userId) 
+            throws InvalidRequestException, NoSuchObjectException {
+        //Get the selection list for this user and saved search.
+        SavedList selectionList = getSelectionList(id, userId);
+
+        //Clear the list.
+        savedListService.clearSavedList(selectionList.getId());
+    }
+
+    @Override
     public SavedSearch createFromDefaultSavedSearch(
             CreateFromDefaultSavedSearchRequest request)  
             throws NoSuchObjectException {
@@ -248,6 +258,14 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         
         SavedSearch createdSearch = createSavedSearch(createRequest);
         
+        //Clear defaultSavedSearch search attributes and clear its selection.
+        clearSelection(defaultSavedSearch.getId(), loggedInUser.getId());
+        
+        //Clear search attributes by passing in an empty SearchCandidateRequest
+        populateSearchAttributes(defaultSavedSearch, new SearchCandidateRequest());
+        
+        savedSearchRepository.save(defaultSavedSearch);
+
         return createdSearch;
     }
 
@@ -262,7 +280,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setAuditFields(loggedInUser);
         }
 
-        savedSearch = this.savedSearchRepository.save(savedSearch);
+        savedSearch = savedSearchRepository.save(savedSearch);
         savedSearch = addSearchJoins(request, savedSearch);
 
         //Copy across the user's selections (including context notes) 
@@ -561,41 +579,53 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         savedSearch.setType(request.getSavedSearchType(), request.getSavedSearchSubtype());
 
         final SearchCandidateRequest searchCandidateRequest = request.getSearchCandidateRequest();
-        if (searchCandidateRequest != null) {
-            savedSearch.setSimpleQueryString(searchCandidateRequest.getSimpleQueryString());
-            savedSearch.setKeyword(searchCandidateRequest.getKeyword());
-            savedSearch.setStatuses(getStatusListAsString(searchCandidateRequest.getStatuses()));
-            savedSearch.setGender(searchCandidateRequest.getGender());
-            savedSearch.setOccupationIds(getListAsString(searchCandidateRequest.getOccupationIds()));
-            savedSearch.setMinYrs(searchCandidateRequest.getMinYrs());
-            savedSearch.setMaxYrs(searchCandidateRequest.getMaxYrs());
-            savedSearch.setVerifiedOccupationIds(getListAsString(searchCandidateRequest.getVerifiedOccupationIds()));
-            savedSearch.setVerifiedOccupationSearchType(searchCandidateRequest.getVerifiedOccupationSearchType());
-            savedSearch.setNationalityIds(getListAsString(searchCandidateRequest.getNationalityIds()));
-            savedSearch.setNationalitySearchType(searchCandidateRequest.getNationalitySearchType());
-            savedSearch.setCountryIds(getListAsString(searchCandidateRequest.getCountryIds()));
-            savedSearch.setEnglishMinSpokenLevel(searchCandidateRequest.getEnglishMinSpokenLevel());
-            savedSearch.setEnglishMinWrittenLevel(searchCandidateRequest.getEnglishMinWrittenLevel());
-            Optional<Language> language = searchCandidateRequest.getOtherLanguageId() != null ? languageRepository.findById(searchCandidateRequest.getOtherLanguageId()) : null;
+        populateSearchAttributes(savedSearch, searchCandidateRequest);
+
+        return savedSearch;
+    }
+    
+    private void populateSearchAttributes(
+            SavedSearch savedSearch, SearchCandidateRequest request) {
+        if (request != null) {
+            savedSearch.setSimpleQueryString(request.getSimpleQueryString());
+            savedSearch.setKeyword(request.getKeyword());
+            savedSearch.setStatuses(getStatusListAsString(request.getStatuses()));
+            savedSearch.setGender(request.getGender());
+            savedSearch.setOccupationIds(getListAsString(request.getOccupationIds()));
+            savedSearch.setMinYrs(request.getMinYrs());
+            savedSearch.setMaxYrs(request.getMaxYrs());
+            savedSearch.setVerifiedOccupationIds(
+                    getListAsString(request.getVerifiedOccupationIds()));
+            savedSearch.setVerifiedOccupationSearchType(
+                    request.getVerifiedOccupationSearchType());
+            savedSearch.setNationalityIds(
+                    getListAsString(request.getNationalityIds()));
+            savedSearch.setNationalitySearchType(request.getNationalitySearchType());
+            savedSearch.setCountryIds(getListAsString(request.getCountryIds()));
+            savedSearch.setEnglishMinSpokenLevel(request.getEnglishMinSpokenLevel());
+            savedSearch.setEnglishMinWrittenLevel(request.getEnglishMinWrittenLevel());
+            Optional<Language> language = 
+                    request.getOtherLanguageId() != null ? 
+                            languageRepository.findById(
+                                    request.getOtherLanguageId()) : null;
             if (language != null && language.isPresent()) {
                 savedSearch.setOtherLanguage(language.get());
             }
-            savedSearch.setOtherMinSpokenLevel(searchCandidateRequest.getOtherMinSpokenLevel());
-            savedSearch.setOtherMinWrittenLevel(searchCandidateRequest.getOtherMinWrittenLevel());
-            savedSearch.setUnRegistered(searchCandidateRequest.getUnRegistered());
-            savedSearch.setLastModifiedFrom(searchCandidateRequest.getLastModifiedFrom());
-            savedSearch.setLastModifiedTo(searchCandidateRequest.getLastModifiedTo());
+            savedSearch.setOtherMinSpokenLevel(request.getOtherMinSpokenLevel());
+            savedSearch.setOtherMinWrittenLevel(request.getOtherMinWrittenLevel());
+            savedSearch.setUnRegistered(request.getUnRegistered());
+            savedSearch.setLastModifiedFrom(request.getLastModifiedFrom());
+            savedSearch.setLastModifiedTo(request.getLastModifiedTo());
 //        savedSearch.setCreatedFrom(request.getSearchCandidateRequest().getRegisteredFrom());
 //        savedSearch.setCreatedTo(request.getSearchCandidateRequest().getRegisteredTo());
-            savedSearch.setMinAge(searchCandidateRequest.getMinAge());
-            savedSearch.setMaxAge(searchCandidateRequest.getMaxAge());
-            savedSearch.setMinEducationLevel(searchCandidateRequest.getMinEducationLevel());
-            savedSearch.setEducationMajorIds(getListAsString(searchCandidateRequest.getEducationMajorIds()));
-            savedSearch.setIncludeDraftAndDeleted(searchCandidateRequest.getIncludeDraftAndDeleted());
+            savedSearch.setMinAge(request.getMinAge());
+            savedSearch.setMaxAge(request.getMaxAge());
+            savedSearch.setMinEducationLevel(request.getMinEducationLevel());
+            savedSearch.setEducationMajorIds(
+                    getListAsString(request.getEducationMajorIds()));
+            savedSearch.setIncludeDraftAndDeleted(
+                    request.getIncludeDraftAndDeleted());
         }
-
-        return savedSearch;
-
     }
 
     private SearchCandidateRequest convertToSearchCandidateRequest(SavedSearch request) {
