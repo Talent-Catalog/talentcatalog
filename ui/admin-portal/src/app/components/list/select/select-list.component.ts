@@ -29,7 +29,7 @@ export interface TargetListSelection {
 })
 export class SelectListComponent implements OnInit {
 
-  error: string;
+  error: string = null;
   excludeList: SavedList;
   form: FormGroup;
   jobName: string;
