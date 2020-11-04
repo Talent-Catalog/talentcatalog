@@ -257,16 +257,21 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 convertToSearchCandidateRequest(defaultSavedSearch));        
         
         SavedSearch createdSearch = createSavedSearch(createRequest);
-        
-        //Clear defaultSavedSearch search attributes and clear its selection.
-        clearSelection(defaultSavedSearch.getId(), loggedInUser.getId());
-        
-        //Clear search attributes by passing in an empty SearchCandidateRequest
-        populateSearchAttributes(defaultSavedSearch, new SearchCandidateRequest());
-        
-        savedSearchRepository.save(defaultSavedSearch);
+
+        //Clear search attributes and selections of default saved search
+        clearSavedSearch(defaultSavedSearch, loggedInUser);
 
         return createdSearch;
+    }
+
+    private void clearSavedSearch(SavedSearch savedSearch, User user) {
+        //Clear defaultSavedSearch search attributes and clear its selection.
+        clearSelection(savedSearch.getId(), user.getId());
+
+        //Clear search attributes by passing in an empty SearchCandidateRequest
+        populateSearchAttributes(savedSearch, new SearchCandidateRequest());
+
+        savedSearchRepository.save(savedSearch);
     }
 
     @Override
@@ -300,6 +305,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             //Copy default list to the selection list of the new saved search.
             savedListService.copyContents(
                     defaultSelectionList, newSelectionList, false);
+
+            //Clear search attributes and selections of default saved search
+            clearSavedSearch(defaultSavedSearch, loggedInUser);
+            
         }
         return savedSearch;
     }
