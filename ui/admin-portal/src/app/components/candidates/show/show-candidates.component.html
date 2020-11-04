@@ -217,7 +217,8 @@
             </td>
             <td>
               <input type="checkbox" class="custom-checkbox" id="selected"
-                     (ngModelChange)="onSelectionChange(candidate, $event)" [ngModel]="candidate.selected" >
+                     (ngModelChange)="onSelectionChange(candidate, $event)"
+                     [ngModel]="candidate.selected" >
             </td>
             <td *ngIf="isCandidateNameViewable()">{{candidate.user.firstName}}</td>
             <td *ngIf="isCandidateNameViewable()">{{candidate.user.lastName}}</td>
@@ -261,7 +262,6 @@
                                  *ngIf="selectedCandidate"
                                  [candidateSource]="candidateSource"
                                  [sourceType]="pluralType"
-                                 [defaultSearch]="isDefaultSavedSearch()"
                                  [candidate]="selectedCandidate"
                                  [loggedInUser]="loggedInUser"
                                  (onClose)="setSelectedCandidate(null)">
