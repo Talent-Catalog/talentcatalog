@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Candidate} from '../../../model/candidate';
 import {User} from '../../../model/user';
 import {CandidateSource} from '../../../model/base';
@@ -8,15 +8,16 @@ import {CandidateSource} from '../../../model/base';
   templateUrl: './candidate-search-card.component.html',
   styleUrls: ['./candidate-search-card.component.scss']
 })
-export class CandidateSearchCardComponent implements OnInit, OnChanges {
+export class CandidateSearchCardComponent implements OnInit {
 
   @Input() candidate: Candidate;
   @Input() loggedInUser: User;
   @Input() candidateSource: CandidateSource;
   @Input() sourceType: String;
   @Input() defaultSearch: boolean;
+  @Input() savedSearchSelectionChange: boolean;
 
-  @Output() onClose = new EventEmitter();
+  @Output() closeEvent = new EventEmitter();
 
 
   constructor() { }
@@ -24,14 +25,8 @@ export class CandidateSearchCardComponent implements OnInit, OnChanges {
   ngOnInit() {
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
-      // TODO switch to general tab?
-    }
-  }
-
   close() {
-    this.onClose.emit();
+    this.closeEvent.emit();
   }
 
 }

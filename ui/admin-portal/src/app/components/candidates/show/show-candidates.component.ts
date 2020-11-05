@@ -80,6 +80,7 @@ import {
 import {Location} from '@angular/common';
 import {copyToClipboard} from '../../../util/clipboard';
 import {SavedListService} from '../../../services/saved-list.service';
+import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 
 interface CachedTargetList {
   sourceID: number;
@@ -145,6 +146,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   targetListReplace: boolean;
   timestamp: number;
   private reviewStatusFilter: string[] = defaultReviewStatusFilter;
+  savedSearchSelectionChange: boolean;
 
 
   constructor(private http: HttpClient,
@@ -393,6 +395,9 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   setSelectedCandidate(candidate: Candidate) {
     this.selectedCandidate = candidate;
+    if (candidate && isSavedSearch(this.candidateSource)) {
+      this.savedSearchSelectionChange = candidate.selected;
+    }
     this.candidateSelection.emit(candidate);
   }
 
@@ -615,19 +620,44 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.cacheResults();
 
     if (isSavedSearch(this.candidateSource)) {
-      //Record change on server
-      //Candidate is added/removed from this users selection list for this saved search
-      const request: SelectCandidateInSearchRequest = {
-        userId: this.loggedInUser.id,
-        candidateId: candidate.id,
-        selected: selected
-      };
-      this.savedSearchService.selectCandidate(this.candidateSource.id, request).subscribe(
-        () => {},
-        err => {
-          this.error = err;
-        }
-      );
+      //Saved search selection change
+
+      if (candidate.contextNote && !selected) {
+        //They have a context note which they will lose if they deselect.
+        //Ask for confirmation.
+        const confirmation = this.modalService.open(ConfirmationComponent, {
+          centered: true,
+          backdrop: 'static'
+        });
+        confirmation.componentInstance.message =
+          'You will lose the context note for ' + candidate.user.firstName +
+          ' if you deselect this. Are you sure?';
+        confirmation.result
+          .then((confirmed: boolean) => {
+            if (confirmed) {
+              //Clear local copy of note
+              //Note that this does not trigger an update through to the
+              //contextNote component.
+              //That is why we use the savedSearchSelectionChange variable
+              //which is passed down as an input to the contextNote component
+              //and can trigger an action which updates the local contextNote
+              //form field.
+              candidate.contextNote = null;
+              this.savedSearchSelectionChange = false;
+              this.doSavedSearchSelection(candidate, selected);
+            } else {
+              //Unconfirmed, reinstate as selected
+              candidate.selected = true;
+            }
+          })
+          .catch(() => {
+            //Unconfirmed, reinstate as selected
+            candidate.selected = true;
+          });
+      } else {
+        this.savedSearchSelectionChange = selected;
+        this.doSavedSearchSelection(candidate, selected);
+      }
     } else {
       // If selections coming from a list, create a list of the candidateIds selected
       if (selected) {
@@ -635,8 +665,24 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       } else {
         this.selectedListCandidates = this.selectedListCandidates.filter(id => id !== candidate.id);
       }
-
     }
+  }
+
+  private doSavedSearchSelection(candidate: Candidate, selected: boolean) {
+    //Record change on server
+    //Candidate is added/removed from this users selection list for this saved search
+    const request: SelectCandidateInSearchRequest = {
+      userId: this.loggedInUser.id,
+      candidateId: candidate.id,
+      selected: selected
+    };
+    this.savedSearchService.selectCandidate(this.candidateSource.id, request).subscribe(
+      () => {
+      },
+      err => {
+        this.error = err;
+      }
+    );
   }
 
   saveSelection() {

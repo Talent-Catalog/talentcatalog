@@ -1,10 +1,28 @@
-import {AfterViewInit, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  SimpleChanges
+} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {Candidate} from '../../../model/candidate';
-import {catchError, debounceTime, switchMap, takeUntil} from 'rxjs/operators';
-import {Observable, Subject} from 'rxjs';
-import {CandidateSource, UpdateCandidateContextNoteRequest} from '../../../model/base';
+import {
+  catchError,
+  debounceTime,
+  switchMap,
+  takeUntil,
+  tap
+} from 'rxjs/operators';
+import {Subject} from 'rxjs';
+import {
+  CandidateSource,
+  UpdateCandidateContextNoteRequest
+} from '../../../model/base';
 import {CandidateSourceService} from '../../../services/candidate-source.service';
+import {isSavedSearch} from "../../../model/saved-search";
 
 @Component({
   selector: 'app-candidate-context-note',
@@ -16,15 +34,14 @@ export class CandidateContextNoteComponent implements OnInit, AfterViewInit, OnC
   @Input() candidate: Candidate;
   @Input() candidateSource: CandidateSource;
   @Input() sourceType: String;
-  @Input() defaultSearch: boolean;
-
-  data: Observable<any>;
+  @Input() savedSearchSelectionChange: boolean;
 
   form: FormGroup;
 
   private unsubscribe = new Subject<void>()
-  error;
-  saving;
+  error: string;
+  saving: boolean;
+  typing: boolean;
 
   constructor(private fb: FormBuilder,
               private candidateSourceService: CandidateSourceService) { }
@@ -44,28 +61,29 @@ export class CandidateContextNoteComponent implements OnInit, AfterViewInit, OnC
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    // Replace the form value with the new candidates context notes when changing from one candidate to the next.
-    if (!changes.candidate.firstChange) {
-      if (changes.candidate.previousValue !== changes.candidate.currentValue) {
-        this.form.controls['contextNote'].patchValue(this.candidate.contextNote);
-      }
+    //Replace the form value with the new candidates context notes when
+    //changing from one candidate to the next or when selection has changed.
+    if (this.form) {
+      this.form.controls['contextNote'].patchValue(this.candidate.contextNote);
     }
   }
 
   ngAfterViewInit() {
-    //3 second timeout
+    //Set timeout (milliseconds)
     this.autoSaveNote(1000);
   }
 
   private autoSaveNote(timeout: number) {
     this.form.valueChanges.pipe(
 
+      tap(() => this.typing = true),
+
       //Only pass values on if there has been inactivity for the given timeout
       debounceTime(timeout),
 
       //Do a save of the received form values.
       switchMap(formValue => {
-
+          this.typing = false;
           const request: UpdateCandidateContextNoteRequest = {
             candidateId: this.candidate.id,
             contextNote: formValue.contextNote
@@ -105,5 +123,9 @@ export class CandidateContextNoteComponent implements OnInit, AfterViewInit, OnC
     //Stop subscribing by emitting a value from the Unsubscribe Observable
     //See takeUntil in the above pipe.
     this.unsubscribe.next();
+  }
+
+  isSearch() {
+    return isSavedSearch(this.candidateSource);
   }
 }

@@ -1,0 +1,9 @@
+<span *ngIf="typing">
+   <i class="far fa-keyboard"></i>
+</span>
+<span *ngIf="saving">
+   <i class="fas fa-spinner fa-spin"></i>
+</span>
+<span *ngIf="!typing && !saving">
+   <i class="far fa-save"></i>
+</span>

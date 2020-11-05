@@ -7,11 +7,11 @@
 
     <div class="form-group">
       <label class="h6" for="contextNotes">
-        <span *ngIf="defaultSearch">Notes for {{candidate.user.firstName}} in selection.</span>
-        <span *ngIf="!defaultSearch">Notes for {{candidate.user.firstName}} in '{{candidateSource.name}}'.</span>
-        <span *ngIf="saving">
-        <i class="fas fa-spinner fa-spin"></i>
-      </span>
+        <app-autosave-status [saving]="saving" [typing]="typing"></app-autosave-status>
+        <span *ngIf="isSearch()">Notes for {{candidate.user.firstName}} in
+          '{{candidateSource.name}}' search selection</span>
+        <span *ngIf="!isSearch()">Notes for {{candidate.user.firstName}} in
+          '{{candidateSource.name}}'</span>
       </label>
 
 
