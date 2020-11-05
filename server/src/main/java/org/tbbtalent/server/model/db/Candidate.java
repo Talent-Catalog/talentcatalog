@@ -350,6 +350,15 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private MaritalStatus maritalStatus;
 
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNoUnsure partnerRegistered;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "partner_candidate_id")
+    @Nullable
+    private Candidate partnerCandidate;
+
     public Candidate() {
     }
 
@@ -956,6 +965,16 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setMaritalStatus(@Nullable MaritalStatus maritalStatus) { this.maritalStatus = maritalStatus; }
 
+    @Nullable
+    public YesNoUnsure getPartnerRegistered() { return partnerRegistered; }
+
+    public void setPartnerRegistered(@Nullable YesNoUnsure partnerRegistered) { this.partnerRegistered = partnerRegistered; }
+
+    @Nullable
+    public Candidate getPartnerCandidate() { return partnerCandidate; }
+
+    public void setPartnerCandidate(@Nullable Candidate partnerCandidate) { this.partnerCandidate = partnerCandidate; }
+
     public boolean isSelected() {
         return selected;
     }
@@ -1017,7 +1036,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         savedList.getCandidateSavedLists().add(csl);
     }
 
-    public void populateIntakeData(CandidateIntakeDataUpdate data, @Nullable Country workAbroadLoc) {
+    public void populateIntakeData(CandidateIntakeDataUpdate data, @Nullable Country workAbroadLoc, @Nullable Candidate partnerCandidate) {
         if (data.getAsylumYear() != null) {
             setAsylumYear(data.getAsylumYear());
         }
@@ -1092,6 +1111,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getMaritalStatus() != null) {
             setMaritalStatus(data.getMaritalStatus());
+        }
+        if (data.getPartnerRegistered() != null) {
+            setPartnerRegistered(data.getPartnerRegistered());
+        }
+        if (data.getPartnerCandId() != null) {
+            setPartnerCandidate(partnerCandidate);
         }
 
         if (data.getResidenceStatus() != null) {

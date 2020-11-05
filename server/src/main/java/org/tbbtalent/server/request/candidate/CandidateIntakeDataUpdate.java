@@ -81,6 +81,8 @@ public class CandidateIntakeDataUpdate {
     private LeftHomeReason leftHomeReason;
     private String leftHomeOther;
     private MaritalStatus maritalStatus;
+    private YesNoUnsure partnerRegistered;
+    private Long partnerCandId;
 
     private ResidenceStatus residenceStatus;
 

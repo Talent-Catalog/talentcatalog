@@ -73,6 +73,8 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("leftHomeReason")
                 .add("leftHomeOther")
                 .add("maritalStatus")
+                .add("partnerRegistered")
+                .add("partnerCandidate", partnerCandidateDto())
 
                 .add("residenceStatus")
 
@@ -173,6 +175,14 @@ public class CandidateIntakeDataBuilderSelector {
         return new DtoBuilder()
                 .add("id")
                 .add("name")
+                ;
+    }
+
+    private DtoBuilder partnerCandidateDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("candidateNumber")
+                .add("user", userDto())
                 ;
     }
 

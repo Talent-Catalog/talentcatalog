@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from 'rxjs/operators';
 import {Candidate} from '../../../model/candidate';
@@ -11,12 +11,11 @@ import {Router} from '@angular/router';
   templateUrl: './candidate-name-num-search.component.html',
   styleUrls: ['./candidate-name-num-search.component.scss']
 })
-export class CandidateNameNumSearchComponent implements OnInit, OnChanges {
+export class CandidateNameNumSearchComponent implements OnInit {
 
   @Input() handleSelect: string;
-  @Input() form: string;
-  @Input() candNumber: string;
-  @Output() candNumberChange = new EventEmitter<string>();
+  @Input() displayValue: string;
+  @Output() candChange = new EventEmitter<string>();
 
   doNumberOrNameSearch;
   searchFailed: boolean;
@@ -49,18 +48,6 @@ export class CandidateNameNumSearchComponent implements OnInit, OnChanges {
       );
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    this.candidateService.getByNumber(changes.candNumber.currentValue).subscribe(
-      result => {
-        this.candNumber = this.renderCandidateRow(result)
-      }
-    )
-  }
-
-  getCandidateFromNumber($event, input) {
-
-  }
-
   renderCandidateRow(candidate: Candidate) {
     if (this.isUserLimited()) {
       return candidate.candidateNumber;
@@ -70,11 +57,14 @@ export class CandidateNameNumSearchComponent implements OnInit, OnChanges {
   }
 
   selectSearchResult ($event, input) {
-    $event.preventDefault();
+
+    // If we only want to display the selected candidate and handle them, we render the row and emit the candidate. Otherwise it will open
+    // the candidate into a new tab (like the header)
     if (this.handleSelect === 'displayOnly') {
       input.value = this.renderCandidateRow($event.item);
-      this.candNumberChange.emit($event.item.candidateNumber)
+      this.candChange.emit($event.item)
     } else {
+      input.value = ''
       this.router.navigate(['candidate',  $event.item.candidateNumber]);
     }
   }

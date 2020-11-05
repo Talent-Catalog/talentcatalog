@@ -1724,8 +1724,15 @@ public class CandidateServiceImpl implements CandidateService {
         if (workAbroadLocId != null) {
             workAbroadLoc = countryRepository.findById(workAbroadLocId).orElse(null);
         }
+
+        //Get the partner candidate object from the id in the data request and pass into the populateIntakeData method
+        final Long partnerCandId = data.getPartnerCandId();
+        Candidate partnerCandidate = null;
+        if (partnerCandId != null) {
+            partnerCandidate = candidateRepository.findById(partnerCandId).orElse(null);
+        }
         
-        candidate.populateIntakeData(data, workAbroadLoc);
+        candidate.populateIntakeData(data, workAbroadLoc, partnerCandidate);
         save(candidate, true);
     }
 }

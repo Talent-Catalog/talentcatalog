@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../util/enum';
-import {MaritalStatus, YesNo, YesNoUnsure} from '../../../../model/candidate';
+import {Candidate, MaritalStatus, YesNo, YesNoUnsure} from '../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
@@ -34,7 +34,7 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
     this.form = this.fb.group({
       maritalStatus: [this.candidateIntakeData?.maritalStatus],
       partnerRegistered: [this.candidateIntakeData?.partnerRegistered],
-      partnerCandNumber: [this.candidateIntakeData?.partnerCandNumber],
+      partnerCandId: [this.candidateIntakeData?.partnerCandidate?.id],
       partnerEduLevel: [this.candidateIntakeData?.partnerEduLevel],
       partnerProfession: [this.candidateIntakeData?.partnerProfession],
       partnerEnglish: [this.candidateIntakeData?.partnerEnglish],
@@ -56,9 +56,9 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
     return this.form.value?.partnerEnglish;
   }
 
-  get partnerCandNumber() {
-    return '15000'
-    //return this.form.value?.partnerCandNumber;
+  private get partnerCandidate(): Candidate {
+    return this.candidateIntakeData.partnerCandidate ?
+      this.candidateIntakeData.partnerCandidate : null;
   }
 
   get isMarriedEngaged(): boolean {
@@ -85,7 +85,13 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
     return found;
   }
 
-  updatePartnerCandNumber($event) {
-    this.form.value.partnerCandNumber = $event;
+  updatePartnerCand($event) {
+    this.form.controls['partnerCandId'].patchValue($event.id);
+    if (this.partnerCandidate) {
+      this.partnerCandidate.user.firstName = $event.user.firstName;
+      this.partnerCandidate.user.lastName = $event.user.lastName;
+      this.partnerCandidate.candidateNumber = $event.candidateNumber;
+    }
+
   }
 }

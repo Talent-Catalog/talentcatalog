@@ -40,13 +40,25 @@
         </label>
         <app-candidate-name-num-search
           [handleSelect]="'displayOnly'"
-          [candNumber]="partnerCandNumber"
-          (candNumberChange)="updatePartnerCandNumber($event)">
+          [displayValue]="partnerCandidate ?
+          partnerCandidate?.candidateNumber + ': ' + partnerCandidate?.user?.firstName + ' ' + partnerCandidate?.user?.lastName
+           : null"
+          (candChange)="updatePartnerCand($event)">
         </app-candidate-name-num-search>
-        <app-fixed-input
-          [question]="'Candidate Number'"
-          [answer]="partnerCandNumber">
-        </app-fixed-input>
+<!--        <div class="row">-->
+<!--          <div class="col-6">-->
+<!--            <app-fixed-input-->
+<!--              [question]="'Candidate Number'"-->
+<!--              [answer]="partnerCandidate?.candidateNumber">-->
+<!--            </app-fixed-input>-->
+<!--          </div>-->
+<!--          <div class="col-6">-->
+<!--            <app-fixed-input-->
+<!--              [question]="'Full Name'"-->
+<!--              [answer]="partnerCandidate?.user?.firstName + ' ' + partnerCandidate?.user?.lastName">-->
+<!--            </app-fixed-input>-->
+<!--          </div>-->
+<!--        </div>-->
       </div>
     </div>
     <div class="form-group">
