@@ -1,0 +1,22 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+  <div class="form-group">
+    <label for="militaryService">Have you ever completed military service?</label>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
+    <select class="form-control"
+            id="militaryService" [formControlName]="'militaryService'">
+      <option *ngFor="let opt of militaryServiceOptions" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+  </div>
+</form>
+
+
