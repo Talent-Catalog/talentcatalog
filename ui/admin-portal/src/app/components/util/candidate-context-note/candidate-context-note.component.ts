@@ -16,7 +16,7 @@ import {
   takeUntil,
   tap
 } from 'rxjs/operators';
-import {Observable, Subject} from 'rxjs';
+import {Subject} from 'rxjs';
 import {
   CandidateSource,
   UpdateCandidateContextNoteRequest
@@ -34,8 +34,7 @@ export class CandidateContextNoteComponent implements OnInit, AfterViewInit, OnC
   @Input() candidate: Candidate;
   @Input() candidateSource: CandidateSource;
   @Input() sourceType: String;
-
-  data: Observable<any>;
+  @Input() savedSearchSelectionChange: boolean;
 
   form: FormGroup;
 
@@ -62,11 +61,10 @@ export class CandidateContextNoteComponent implements OnInit, AfterViewInit, OnC
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    // Replace the form value with the new candidates context notes when changing from one candidate to the next.
-    if (!changes.candidate.firstChange) {
-      if (changes.candidate.previousValue !== changes.candidate.currentValue) {
-        this.form.controls['contextNote'].patchValue(this.candidate.contextNote);
-      }
+    //Replace the form value with the new candidates context notes when
+    //changing from one candidate to the next or when selection has changed.
+    if (this.form) {
+      this.form.controls['contextNote'].patchValue(this.candidate.contextNote);
     }
   }
 

@@ -264,7 +264,8 @@
                                  [sourceType]="pluralType"
                                  [candidate]="selectedCandidate"
                                  [loggedInUser]="loggedInUser"
-                                 (onClose)="setSelectedCandidate(null)">
+                                 [savedSearchSelectionChange]="savedSearchSelectionChange"
+                                 (closeEvent)="setSelectedCandidate(null)">
       </app-candidate-search-card>
 
     </div>

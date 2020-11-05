@@ -7,19 +7,19 @@
 
     <div class="form-group">
       <label class="h6" for="contextNotes">
+        <span *ngIf="typing">
+          <i class="far fa-keyboard"></i>
+        </span>
+        <span *ngIf="saving">
+          <i class="fas fa-spinner fa-spin"></i>
+        </span>
+        <span *ngIf="!typing && !saving">
+          <i class="far fa-save"></i>
+        </span>
         <span *ngIf="isSearch()">Notes for {{candidate.user.firstName}} in
           '{{candidateSource.name}}' search selection</span>
         <span *ngIf="!isSearch()">Notes for {{candidate.user.firstName}} in
           '{{candidateSource.name}}'</span>
-        <span *ngIf="saving">
-          <i class="fas fa-spinner fa-spin"></i>
-        </span>
-        <span *ngIf="typing">
-          - typing...
-        </span>
-        <span *ngIf="!typing && !saving">
-          - saved
-        </span>
       </label>
 
 
