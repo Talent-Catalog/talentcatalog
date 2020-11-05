@@ -41,6 +41,9 @@ public class CandidateIntakeDataUpdate {
     private HasPassport citizenHasPassport;
     private String citizenNotes;
 
+    private YesNo children;
+    private String childrenAge;
+
     private YesNo conflict;
     private String conflictNotes;
 

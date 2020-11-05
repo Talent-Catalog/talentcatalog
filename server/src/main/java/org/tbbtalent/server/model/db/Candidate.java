@@ -395,6 +395,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private YesNo militaryService;
 
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNo children;
+
+    @Nullable
+    private String childrenAge;
+
     public Candidate() {
     }
 
@@ -1049,6 +1056,16 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setMilitaryService(@Nullable YesNo militaryService) { this.militaryService = militaryService; }
 
+    @Nullable
+    public YesNo getChildren() { return children; }
+
+    public void setChildren(@Nullable YesNo children) { this.children = children; }
+
+    @Nullable
+    public String getChildrenAge() { return childrenAge; }
+
+    public void setChildrenAge(@Nullable String childrenAge) { this.childrenAge = childrenAge; }
+
     public boolean isSelected() {
         return selected;
     }
@@ -1128,6 +1145,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getAvailImmediateNotes() != null) {
             setAvailImmediateNotes(data.getAvailImmediateNotes());
+        }
+        if (data.getChildren() != null) {
+            setChildren(data.getChildren());
+        }
+        if (data.getChildrenAge() != null) {
+            setChildrenAge(data.getChildrenAge());
         }
         if (data.getConflict() != null) {
             setConflict(data.getConflict());

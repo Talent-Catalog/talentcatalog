@@ -57,6 +57,9 @@ export interface CandidateIntakeData {
 
   candidateExams?: CandidateExam[];
 
+  children?: YesNo;
+  childrenAge?: YesNo;
+
   conflict?: YesNo;
   conflictNotes?: string;
 

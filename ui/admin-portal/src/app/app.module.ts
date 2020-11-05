@@ -174,6 +174,7 @@ import {MaritalStatusComponent} from './components/candidates/intake/marital-sta
 import {AutosaveStatusComponent} from './components/util/autosave-status/autosave-status.component';
 import {CandidateNameNumSearchComponent} from './components/util/candidate-name-num-search/candidate-name-num-search.component';
 import {MilitaryServiceComponent} from './components/candidates/intake/military-service/military-service.component';
+import {ChildrenComponent} from './components/candidates/intake/children/children.component';
 
 @NgModule({
   declarations: [
@@ -340,7 +341,8 @@ import {MilitaryServiceComponent} from './components/candidates/intake/military-
     AutosaveStatusComponent,
     MaritalStatusComponent,
     CandidateNameNumSearchComponent,
-    MilitaryServiceComponent
+    MilitaryServiceComponent,
+    ChildrenComponent
   ],
   imports: [
     BrowserModule,

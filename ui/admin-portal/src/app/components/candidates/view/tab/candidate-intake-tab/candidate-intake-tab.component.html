@@ -108,6 +108,10 @@
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData">
       </app-asylum-year>
+      <app-residence-status
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-residence-status>
     </div>
   </div>
 
@@ -133,6 +137,14 @@
         [languageLevels]="languageLevels"
         [nationalities]="nationalities">
       </app-marital-status>
+      <app-children
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-children>
+      <app-family
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-family>
     </div>
   </div>
 
@@ -230,24 +242,6 @@
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData">
       </app-avail-immediate>
-    </div>
-  </div>
-
-  <hr/>
-
-  <div class="card">
-    <div class="card-header">
-      Family
-    </div>
-    <div class="card-body">
-      <app-family
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-family>
-      <app-family-health
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-family-health>
     </div>
   </div>
 

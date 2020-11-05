@@ -49,6 +49,9 @@ public class CandidateIntakeDataBuilderSelector {
                 
                 .add("candidateVisaChecks", candidateVisaCheckDto())
 
+                .add("children")
+                .add("childrenAge")
+
                 .add("conflict")
                 .add("conflictNotes")
 
