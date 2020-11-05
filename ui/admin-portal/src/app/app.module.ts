@@ -1,6 +1,10 @@
 import {BrowserModule, Title} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
-import {NgbDateAdapter, NgbDateParserFormatter, NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {
+  NgbDateAdapter,
+  NgbDateParserFormatter,
+  NgbModule
+} from '@ng-bootstrap/ng-bootstrap';
 import {NgMultiSelectDropDownModule} from 'ng-multiselect-dropdown';
 import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha';
 
@@ -142,7 +146,10 @@ import {WorkLegallyComponent} from './components/candidates/intake/work-legally/
 import {WorkStatusComponent} from './components/candidates/intake/work-status/work-status.component';
 import {HostEntryYearComponent} from './components/candidates/intake/host-entry-year/host-entry-year.component';
 import {CandidateVisaTabComponent} from './components/candidates/view/tab/candidate-visa-tab/candidate-visa-tab.component';
-import {CustomDateAdapter, CustomDateParserFormatter} from './util/date-adapter/ngb-date-adapter';
+import {
+  CustomDateAdapter,
+  CustomDateParserFormatter
+} from './util/date-adapter/ngb-date-adapter';
 import {RegistrationUnhcrComponent} from './components/candidates/intake/registration-unhcr/registration-unhcr.component';
 import {RegistrationUnrwaComponent} from './components/candidates/intake/registration-unrwa/registration-unrwa.component';
 import {HomeLocationComponent} from './components/candidates/intake/home-location/home-location.component';
@@ -171,6 +178,7 @@ import {ReturnHomeFutureComponent} from './components/candidates/intake/return-h
 import {ResettlementThirdComponent} from './components/candidates/intake/resettlement-third/resettlement-third.component';
 import {HostChallengesComponent} from './components/candidates/intake/host-challenges/host-challenges.component';
 import {MaritalStatusComponent} from './components/candidates/intake/marital-status/marital-status.component';
+import {AutosaveStatusComponent} from './components/util/autosave-status/autosave-status.component';
 
 @NgModule({
   declarations: [
@@ -333,7 +341,8 @@ import {MaritalStatusComponent} from './components/candidates/intake/marital-sta
     ReturnHomeFutureComponent,
     ResettlementThirdComponent,
     HostChallengesComponent,
-    MaritalStatusComponent
+    MaritalStatusComponent,
+    AutosaveStatusComponent
   ],
   imports: [
     BrowserModule,
