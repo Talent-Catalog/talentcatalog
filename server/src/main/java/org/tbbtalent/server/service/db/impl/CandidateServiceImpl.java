@@ -87,6 +87,8 @@ public class CandidateServiceImpl implements CandidateService {
     private final CandidateDestinationService candidateDestinationService;
     private final CandidateExamService candidateExamService;
     private final SurveyTypeRepository surveyTypeRepository;
+    private final OccupationRepository occupationRepository;
+    private final LanguageLevelRepository languageLevelRepository;
     private final EmailHelper emailHelper;
     private final PdfHelper pdfHelper;
 
@@ -114,6 +116,8 @@ public class CandidateServiceImpl implements CandidateService {
                                 CandidateVisaService candidateVisaService, 
                                 CandidateExamService candidateExamService,
                                 SurveyTypeRepository surveyTypeRepository,
+                                OccupationRepository occupationRepository,
+                                LanguageLevelRepository languageLevelRepository,
                                 EmailHelper emailHelper, PdfHelper pdfHelper) {
         this.userRepository = userRepository;
         this.savedListRepository = savedListRepository;
@@ -136,6 +140,8 @@ public class CandidateServiceImpl implements CandidateService {
         this.candidateVisaService = candidateVisaService;
         this.candidateExamService = candidateExamService;
         this.surveyTypeRepository = surveyTypeRepository;
+        this.occupationRepository = occupationRepository;
+        this.languageLevelRepository = languageLevelRepository;
         this.emailHelper = emailHelper;
         this.pdfHelper = pdfHelper;
         this.fileSystemService = fileSystemService;
@@ -1731,8 +1737,35 @@ public class CandidateServiceImpl implements CandidateService {
         if (partnerCandId != null) {
             partnerCandidate = candidateRepository.findById(partnerCandId).orElse(null);
         }
+
+        //Get the partner education level object from the id in the data request and pass into the populateIntakeData method
+        final Long partnerEduLevelId = data.getPartnerEduLevelId();
+        EducationLevel partnerEducationLevel = null;
+        if (partnerEduLevelId != null) {
+            partnerEducationLevel = educationLevelRepository.findById(partnerEduLevelId).orElse(null);
+        }
+
+        final Long partnerProfessionId = data.getPartnerProfessionId();
+        Occupation partnerProfession = null;
+        if (partnerProfessionId != null) {
+            partnerProfession = occupationRepository.findById(partnerProfessionId).orElse(null);
+        }
+
+        final Long partnerEnglishLevelId = data.getPartnerEnglishLevelId();
+        LanguageLevel partnerEnglishLevel = null;
+        if (partnerEnglishLevelId != null) {
+            partnerEnglishLevel = languageLevelRepository.findById(partnerEnglishLevelId).orElse(null);
+        }
+
+        final Long partnerCitizenshipId = data.getPartnerCitizenshipId();
+        Nationality partnerCitizenship = null;
+        if (partnerCitizenshipId != null) {
+            partnerCitizenship = nationalityRepository.findById(partnerCitizenshipId).orElse(null);
+        }
         
-        candidate.populateIntakeData(data, workAbroadLoc, partnerCandidate);
+        candidate.populateIntakeData(data, workAbroadLoc, partnerCandidate, partnerEducationLevel,
+                                    partnerProfession, partnerEnglishLevel, partnerCitizenship);
+
         save(candidate, true);
     }
 }

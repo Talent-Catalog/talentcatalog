@@ -359,6 +359,38 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private Candidate partnerCandidate;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "partner_edu_level_id")
+    @Nullable
+    private EducationLevel partnerEduLevel;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "partner_occupation_id")
+    @Nullable
+    private Occupation partnerProfession;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNo partnerEnglish;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "partner_english_level_id")
+    @Nullable
+    private LanguageLevel partnerEnglishLevel;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNoUnsure partnerIelts;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private IeltsScore partnerIeltsScore;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "partner_citizenship_id")
+    @Nullable
+    private Nationality partnerCitizenship;
+
     public Candidate() {
     }
 
@@ -487,9 +519,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         return unRegistrationNumber;
     }
 
-    public void setUnRegistrationNumber(String unRegistrationNumber) {
-        this.unRegistrationNumber = unRegistrationNumber;
-    }
+    public void setUnRegistrationNumber(String unRegistrationNumber) { this.unRegistrationNumber = unRegistrationNumber; }
 
     public EducationLevel getMaxEducationLevel() {
         return maxEducationLevel;
@@ -975,6 +1005,41 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setPartnerCandidate(@Nullable Candidate partnerCandidate) { this.partnerCandidate = partnerCandidate; }
 
+    @Nullable
+    public EducationLevel getPartnerEduLevel() { return partnerEduLevel; }
+
+    public void setPartnerEduLevel(@Nullable EducationLevel partnerEduLevel) { this.partnerEduLevel = partnerEduLevel; }
+
+    @Nullable
+    public Occupation getPartnerProfession() { return partnerProfession; }
+
+    public void setPartnerProfession(@Nullable Occupation partnerProfession) { this.partnerProfession = partnerProfession; }
+
+    @Nullable
+    public YesNo getPartnerEnglish() { return partnerEnglish; }
+
+    public void setPartnerEnglish(@Nullable YesNo partnerEnglish) { this.partnerEnglish = partnerEnglish; }
+
+    @Nullable
+    public LanguageLevel getPartnerEnglishLevel() { return partnerEnglishLevel; }
+
+    public void setPartnerEnglishLevel(@Nullable LanguageLevel partnerEnglishLevel) { this.partnerEnglishLevel = partnerEnglishLevel; }
+
+    @Nullable
+    public YesNoUnsure getPartnerIelts() { return partnerIelts; }
+
+    public void setPartnerIelts(@Nullable YesNoUnsure partnerIelts) { this.partnerIelts = partnerIelts; }
+
+    @Nullable
+    public IeltsScore getPartnerIeltsScore() { return partnerIeltsScore; }
+
+    public void setPartnerIeltsScore(@Nullable IeltsScore partnerIeltsScore) { this.partnerIeltsScore = partnerIeltsScore; }
+
+    @Nullable
+    public Nationality getPartnerCitizenship() { return partnerCitizenship; }
+
+    public void setPartnerCitizenship(@Nullable Nationality partnerCitizenship) { this.partnerCitizenship = partnerCitizenship; }
+
     public boolean isSelected() {
         return selected;
     }
@@ -1036,7 +1101,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         savedList.getCandidateSavedLists().add(csl);
     }
 
-    public void populateIntakeData(CandidateIntakeDataUpdate data, @Nullable Country workAbroadLoc, @Nullable Candidate partnerCandidate) {
+    public void populateIntakeData(CandidateIntakeDataUpdate data,
+                                   @Nullable Country workAbroadLoc,
+                                   @Nullable Candidate partnerCandidate,
+                                   @Nullable EducationLevel partnerEduLevel,
+                                   @Nullable Occupation partnerProfession,
+                                   @Nullable LanguageLevel partnerEnglishLevel,
+                                   @Nullable Nationality partnerCitizenship) {
         if (data.getAsylumYear() != null) {
             setAsylumYear(data.getAsylumYear());
         }
@@ -1117,6 +1188,27 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getPartnerCandId() != null) {
             setPartnerCandidate(partnerCandidate);
+        }
+        if (data.getPartnerEduLevelId() != null) {
+            setPartnerEduLevel(partnerEduLevel);
+        }
+        if (data.getPartnerProfessionId() != null) {
+            setPartnerProfession(partnerProfession);
+        }
+        if (data.getPartnerEnglish() != null) {
+            setPartnerEnglish(data.getPartnerEnglish());
+        }
+        if (data.getPartnerEnglishLevelId() != null) {
+            setPartnerEnglishLevel(partnerEnglishLevel);
+        }
+        if (data.getPartnerIelts() != null) {
+            setPartnerIelts(data.getPartnerIelts());
+        }
+        if (data.getPartnerIeltsScore() != null) {
+            setPartnerIeltsScore(data.getPartnerIeltsScore());
+        }
+        if (data.getPartnerCitizenshipId() != null) {
+            setPartnerCitizenship(partnerCitizenship);
         }
 
         if (data.getResidenceStatus() != null) {

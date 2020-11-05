@@ -75,6 +75,13 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("maritalStatus")
                 .add("partnerRegistered")
                 .add("partnerCandidate", partnerCandidateDto())
+                .add("partnerEduLevel", englishLevelDto())
+                .add("partnerProfession", occupationDto())
+                .add("partnerEnglish")
+                .add("partnerEnglishLevel", languageLevelDto())
+                .add("partnerIelts")
+                .add("partnerIeltsScore")
+                .add("partnerCitizenship", nationalityDto())
 
                 .add("residenceStatus")
 
@@ -166,6 +173,24 @@ public class CandidateIntakeDataBuilderSelector {
     }
 
     private DtoBuilder nationalityDto() {
+        return new DtoBuilder()
+                .add("id")
+                ;
+    }
+
+    private DtoBuilder occupationDto() {
+        return new DtoBuilder()
+                .add("id")
+                ;
+    }
+
+    private DtoBuilder englishLevelDto() {
+        return new DtoBuilder()
+                .add("id")
+                ;
+    }
+
+    private DtoBuilder languageLevelDto() {
         return new DtoBuilder()
                 .add("id")
                 ;

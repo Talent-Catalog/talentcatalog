@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../util/enum';
-import {Candidate, MaritalStatus, YesNo, YesNoUnsure} from '../../../../model/candidate';
+import {Candidate, IeltsScore, MaritalStatus, YesNo, YesNoUnsure} from '../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
@@ -24,7 +24,8 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
   public maritalStatusOptions: EnumOption[] = enumOptions(MaritalStatus);
   public partnerRegisteredOptions: EnumOption[] = enumOptions(YesNoUnsure);
   public partnerEnglishOptions: EnumOption[] = enumOptions(YesNo);
-  public partnerIELTSOptions: EnumOption[] = enumOptions(YesNoUnsure);
+  public partnerIeltsOptions: EnumOption[] = enumOptions(YesNoUnsure);
+  public partnerIeltsScoreOptions: EnumOption[] = enumOptions(IeltsScore);
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
@@ -35,12 +36,13 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
       maritalStatus: [this.candidateIntakeData?.maritalStatus],
       partnerRegistered: [this.candidateIntakeData?.partnerRegistered],
       partnerCandId: [this.candidateIntakeData?.partnerCandidate?.id],
-      partnerEduLevel: [this.candidateIntakeData?.partnerEduLevel],
-      partnerProfession: [this.candidateIntakeData?.partnerProfession],
+      partnerEduLevelId: [this.candidateIntakeData?.partnerEduLevel?.id],
+      partnerProfessionId: [this.candidateIntakeData?.partnerProfession?.id],
       partnerEnglish: [this.candidateIntakeData?.partnerEnglish],
-      partnerEnglishLevel: [this.candidateIntakeData?.partnerEnglishLevel],
-      partnerIELTS: [this.candidateIntakeData?.partnerIELTS],
-      partnerCitizenship: [this.candidateIntakeData?.partnerCitizenship],
+      partnerEnglishLevelId: [this.candidateIntakeData?.partnerEnglishLevel?.id],
+      partnerIelts: [this.candidateIntakeData?.partnerIelts],
+      partnerIeltsScore: [this.candidateIntakeData?.partnerIeltsScore],
+      partnerCitizenshipId: [this.candidateIntakeData?.partnerCitizenship?.id],
     });
   }
 
@@ -56,6 +58,10 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
     return this.form.value?.partnerEnglish;
   }
 
+  get partnerIelts() {
+    return this.form.value?.partnerIelts;
+  }
+
   private get partnerCandidate(): Candidate {
     return this.candidateIntakeData.partnerCandidate ?
       this.candidateIntakeData.partnerCandidate : null;
@@ -65,18 +71,6 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
     let found: boolean = false;
     if (this.maritalStatus) {
       if (this.maritalStatus === 'Engaged') {
-        found = true;
-      } else if (this.maritalStatus === 'Married') {
-        found = true;
-      }
-    }
-    return found;
-  }
-
-  get partnerSpeakEnglish(): boolean {
-    let found: boolean = false;
-    if (this.partnerEnglish) {
-      if (this.partnerEnglish === 'Engaged') {
         found = true;
       } else if (this.maritalStatus === 'Married') {
         found = true;

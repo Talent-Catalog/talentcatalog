@@ -91,7 +91,8 @@ export interface CandidateIntakeData {
   partnerProfession?: Occupation;
   partnerEnglish?: YesNo;
   partnerEnglishLevel?: LanguageLevel;
-  partnerIELTS?: YesNoUnsure;
+  partnerIelts?: YesNoUnsure;
+  partnerIeltsScore?: IeltsScore;
   partnerCitizenship?: Nationality;
 
   returnedHome?: YesNoUnsure;
@@ -296,6 +297,30 @@ export enum MaritalStatus {
   Married = "Married",
   Engaged = "Engaged",
   Neither = "Not married or engaged"
+}
+
+export enum IeltsScore {
+  NoResponse = "",
+  Unsure = "Unsure",
+  Zero = "0",
+  Half = "0.5",
+  One = "1",
+  OneHalf = "1.5",
+  Two = "2",
+  TwoHalf = "2.5",
+  Three = "3",
+  ThreeHalf = "3.5",
+  Four = "4",
+  FourHalf = "4.5",
+  Five = "5",
+  FiveHalf = "5.5",
+  Six = "6",
+  SixHalf = "6.5",
+  Seven = "7",
+  SevenHalf = "7.5",
+  Eight = "8",
+  EightHalf = "8.5",
+  Nine = "9",
 }
 
 export function getCandidateNavigation(candidate: Candidate): any[] {

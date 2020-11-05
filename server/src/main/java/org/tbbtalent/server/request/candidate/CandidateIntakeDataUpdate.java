@@ -83,6 +83,13 @@ public class CandidateIntakeDataUpdate {
     private MaritalStatus maritalStatus;
     private YesNoUnsure partnerRegistered;
     private Long partnerCandId;
+    private Long partnerEduLevelId;
+    private Long partnerProfessionId;
+    private YesNo partnerEnglish;
+    private Long partnerEnglishLevelId;
+    private YesNoUnsure partnerIelts;
+    private IeltsScore partnerIeltsScore;
+    private Long partnerCitizenshipId;
 
     private ResidenceStatus residenceStatus;
 

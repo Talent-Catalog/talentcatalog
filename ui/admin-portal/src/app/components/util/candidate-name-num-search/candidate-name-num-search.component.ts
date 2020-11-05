@@ -22,11 +22,17 @@ export class CandidateNameNumSearchComponent implements OnInit {
   searching: boolean;
   error;
   loggedInUser: User;
+  placeholder: string;
 
   constructor(private candidateService: CandidateService,
               private router: Router) { }
 
   ngOnInit(): void {
+    // If no candidate to display in the input field, set to null and display the placeholder text.
+    if (this.displayValue === undefined) {
+      this.displayValue = null;
+    }
+
     this.doNumberOrNameSearch = (text$: Observable<string>) =>
       text$.pipe(
         debounceTime(300),
@@ -57,7 +63,7 @@ export class CandidateNameNumSearchComponent implements OnInit {
   }
 
   selectSearchResult ($event, input) {
-
+    $event.preventDefault();
     // If we only want to display the selected candidate and handle them, we render the row and emit the candidate. Otherwise it will open
     // the candidate into a new tab (like the header)
     if (this.handleSelect === 'displayOnly') {
