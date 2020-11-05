@@ -49,6 +49,9 @@ public class CandidateIntakeDataBuilderSelector {
                 
                 .add("candidateVisaChecks", candidateVisaCheckDto())
 
+                .add("conflict")
+                .add("conflictNotes")
+
                 .add("crimeConvict")
                 .add("crimeConvictNotes")
 
@@ -72,6 +75,8 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("leftHomeReason")
                 .add("leftHomeOther")
+                .add("militaryService")
+
                 .add("maritalStatus")
                 .add("partnerRegistered")
                 .add("partnerCandidate", partnerCandidateDto())

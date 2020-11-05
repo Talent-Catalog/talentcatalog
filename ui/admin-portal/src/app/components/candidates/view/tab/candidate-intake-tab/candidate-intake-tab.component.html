@@ -53,10 +53,7 @@
   >
   </app-citizenships>
 
-
   <hr/>
-
-
 
   <app-exams
     [candidate]="candidate"
@@ -113,6 +110,13 @@
       </app-asylum-year>
     </div>
   </div>
+
+  <hr/>
+
+  <app-view-candidate-language
+    [candidate]="candidate"
+    [editable]="false">
+  </app-view-candidate-language>
 
   <hr/>
 
@@ -244,6 +248,36 @@
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData">
       </app-family-health>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="card">
+    <div class="card-header">
+      Additional Eligibility
+    </div>
+    <div class="card-body">
+      <app-crime
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-crime>
+      <app-family-health
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-family-health>
+      <app-military-service
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-military-service>
+      <app-conflict
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-conflict>
+      <app-visa-issues
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-visa-issues>
     </div>
   </div>
 

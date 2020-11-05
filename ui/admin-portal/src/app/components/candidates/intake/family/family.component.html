@@ -6,9 +6,12 @@
     <label for="familyMove">
       Do you have family members that you would not consider moving without?
     </label>
-    <span *ngIf="saving">
-      <i class="fas fa-spinner fa-spin"></i> saving...
-    </span>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
     <select class="form-control"
             id="familyMove" [formControlName]="'familyMove'">
       <option *ngFor="let opt of familyMoveOptions" [value]="opt.value">

@@ -7,9 +7,12 @@
     <label [for]="'destinationInterest'+myRecordIndex">
       Are you interested in {{country.name}}?
     </label>
-    <span *ngIf="saving">
-      <i class="fas fa-spinner fa-spin"></i> saving...
-    </span>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
     <select class="form-control"
             [id]="'destinationInterest'+myRecordIndex"
             [formControlName]="'destinationInterest'">

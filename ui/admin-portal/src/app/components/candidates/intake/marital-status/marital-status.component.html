@@ -6,9 +6,12 @@
     <label for="maritalStatus">
       Are you engaged or married?
     </label>
-    <span *ngIf="saving">
-      <i class="fas fa-spinner fa-spin"></i> saving...
-    </span>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
     <select class="form-control"
             id="maritalStatus" [formControlName]="'maritalStatus'">
       <option *ngFor="let opt of maritalStatusOptions" [value]="opt.value">

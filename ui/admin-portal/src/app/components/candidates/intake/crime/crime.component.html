@@ -6,9 +6,12 @@
     <label for="crimeConvict">
       Have you ever been convicted of a crime?
     </label>
-    <span *ngIf="saving">
-      <i class="fas fa-spinner fa-spin"></i> saving...
-    </span>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
     <select class="form-control"
             id="crimeConvict" [formControlName]="'crimeConvict'">
       <option *ngFor="let opt of crimeConvictOptions" [value]="opt.value">

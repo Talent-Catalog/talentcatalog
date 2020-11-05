@@ -5,9 +5,12 @@
   <div class="form-group">
     <div class="form-group">
       <label for="homeLocation">Where specifically in your home country are you from?</label>
-      <span *ngIf="saving">
-        <i class="fas fa-spinner fa-spin"></i> saving...
-      </span>
+      <div class="float-right">
+        <app-autosave-status
+          [saving]="saving"
+          [typing]="typing">
+        </app-autosave-status>
+      </div>
       <input type="text" class="form-control"
              id="homeLocation" [formControlName]="'homeLocation'">
     </div>

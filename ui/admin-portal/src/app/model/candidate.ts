@@ -84,6 +84,7 @@ export interface CandidateIntakeData {
   intRecruitRural?: YesNoUnsure;
   leftHomeReason?: LeftHomeReason[];
   leftHomeOther?: string;
+  militaryService?: YesNo;
   maritalStatus?: MaritalStatus;
   partnerRegistered?: YesNoUnsure;
   partnerCandidate?: Candidate;

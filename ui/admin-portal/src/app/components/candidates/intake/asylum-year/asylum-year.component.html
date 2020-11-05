@@ -6,9 +6,12 @@
     <label for="asylumYear">
       Date of asylum?
     </label>
-    <span *ngIf="saving">
-      <i class="fas fa-spinner fa-spin"></i> saving...
-    </span>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
     <div class="input-group">
       <input id="asylumYear" type="text" class="form-control" placeholder="YYYY-MM-DD"
              ngbDatepicker #picker="ngbDatepicker"

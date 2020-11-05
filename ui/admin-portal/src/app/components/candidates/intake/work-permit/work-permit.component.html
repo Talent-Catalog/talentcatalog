@@ -4,9 +4,12 @@
 <form [formGroup]="form">
   <div class="form-group">
     <label for="workPermit">Do you have a valid work permit?</label>
-    <span *ngIf="saving">
-      <i class="fas fa-spinner fa-spin"></i> saving...
-    </span>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
     <select class="form-control"
             id="workPermit" [formControlName]="'workPermit'">
       <option *ngFor="let opt of workPermitOptions" [value]="opt.value">

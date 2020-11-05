@@ -6,9 +6,12 @@
     <label for="residenceStatus">
       What is your current residence or legal status?
     </label>
-    <span *ngIf="saving">
-      <i class="fas fa-spinner fa-spin"></i> saving...
-    </span>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
     <select class="form-control"
             id="residenceStatus" [formControlName]="'residenceStatus'">
       <option *ngFor="let opt of residenceStatusOptions" [value]="opt.value">

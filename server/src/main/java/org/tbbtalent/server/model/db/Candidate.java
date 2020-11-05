@@ -391,6 +391,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private Nationality partnerCitizenship;
 
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNo militaryService;
+
     public Candidate() {
     }
 
@@ -1040,6 +1044,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setPartnerCitizenship(@Nullable Nationality partnerCitizenship) { this.partnerCitizenship = partnerCitizenship; }
 
+    @Nullable
+    public YesNo getMilitaryService() { return militaryService; }
+
+    public void setMilitaryService(@Nullable YesNo militaryService) { this.militaryService = militaryService; }
+
     public boolean isSelected() {
         return selected;
     }
@@ -1179,6 +1188,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getLeftHomeOther() != null) {
             setLeftHomeOther(data.getLeftHomeOther());
+        }
+        if (data.getMilitaryService() != null) {
+            setMilitaryService(data.getMilitaryService());
         }
         if (data.getMaritalStatus() != null) {
             setMaritalStatus(data.getMaritalStatus());

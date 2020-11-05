@@ -6,10 +6,13 @@
   <div class="form-group">
     <label for="intRecruitRural">
       Are you willing to consider roles in rural areas?
-      <span *ngIf="saving">
-        <i class="fas fa-spinner fa-spin"></i> saving...
-      </span>
     </label>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
     <select class="form-control"
             id="intRecruitRural" [formControlName]="'intRecruitRural'">
       <option *ngFor="let opt of intRecruitRuralOptions" [value]="opt.value">

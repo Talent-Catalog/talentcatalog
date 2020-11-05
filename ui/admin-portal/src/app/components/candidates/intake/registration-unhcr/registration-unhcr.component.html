@@ -7,9 +7,12 @@
     <label for="unhcrStatus">
       What <u>is</u> your registration status with UNHCR?
     </label>
-    <span *ngIf="saving">
-      <i class="fas fa-spinner fa-spin"></i> saving...
-    </span>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
     <select class="form-control"
             id="unhcrStatus" [formControlName]="'unhcrStatus'">
       <option *ngFor="let opt of unhcrStatusOptions" [value]="opt.value">

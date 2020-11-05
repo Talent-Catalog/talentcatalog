@@ -6,9 +6,12 @@
     <label for="hostEntryLegally">
       Did you enter legally?
     </label>
-    <span *ngIf="saving">
-      <i class="fas fa-spinner fa-spin"></i> saving...
-    </span>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
     <select class="form-control"
             id="hostEntryLegally" [formControlName]="'hostEntryLegally'">
       <option *ngFor="let opt of hostEntryLegallyOptions" [value]="opt.value">

@@ -4,9 +4,12 @@
 <form [formGroup]="form">
   <div class="form-group">
     <label for="availImmediate">Available in immediate future for international work?</label>
-    <span *ngIf="saving">
-    <i class="fas fa-spinner fa-spin"></i> saving...
-  </span>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
     <select class="form-control"
             id="availImmediate" [formControlName]="'availImmediate'">
       <option *ngFor="let opt of availImmediateOptions" [value]="opt.value">
