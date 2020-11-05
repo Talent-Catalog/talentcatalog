@@ -179,6 +179,7 @@ import {ResettlementThirdComponent} from './components/candidates/intake/resettl
 import {HostChallengesComponent} from './components/candidates/intake/host-challenges/host-challenges.component';
 import {MaritalStatusComponent} from './components/candidates/intake/marital-status/marital-status.component';
 import {AutosaveStatusComponent} from './components/util/autosave-status/autosave-status.component';
+import {DragulaModule} from "ng2-dragula";
 
 @NgModule({
   declarations: [
@@ -359,7 +360,8 @@ import {AutosaveStatusComponent} from './components/util/autosave-status/autosav
     LocalStorageModule.forRoot({
       prefix: 'tbb-admin',
       storageType: 'localStorage'
-    })
+    }),
+    DragulaModule.forRoot()
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
