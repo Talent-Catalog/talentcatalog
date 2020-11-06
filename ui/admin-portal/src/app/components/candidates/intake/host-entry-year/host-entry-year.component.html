@@ -3,7 +3,7 @@
 </div>
 <form [formGroup]="form">
   <div class="form-group">
-    <label for="hostBorn">Were you born in {{candidate.country.name}}?</label>
+    <label for="hostBorn">Were you born in {{candidate?.country?.name}}?</label>
     <div class="float-right">
       <app-autosave-status
         [saving]="saving"
@@ -21,7 +21,7 @@
   <div *ngIf="hostBorn === 'No'">
     <div class="form-group">
       <label for="hostEntryYear">
-        What year did you immigrate to {{candidate.country.name}}?
+        What year did you immigrate to {{candidate?.country?.name}}?
       </label>
       <div class="input-group">
         <input id="hostEntryYear" type="text" class="form-control" placeholder="YYYY-MM-DD"
