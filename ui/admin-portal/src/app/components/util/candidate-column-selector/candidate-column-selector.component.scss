@@ -1,0 +1,29 @@
+.flex {
+  display: flex;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.field {
+  background: rgba(255, 255, 255, 0.4);
+  list-style: none;
+  padding: 8px;
+  color: #222;
+}
+
+
+.field:not(:last-child) {
+  border-bottom: 1px solid #777;
+}
+
+.container {
+  flex: 1;
+}
+.container:not(:last-child) {
+  margin-right: 8px;
+}
+
+* {
+  box-sizing: border-box;
+}
+

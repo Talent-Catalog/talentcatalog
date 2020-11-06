@@ -180,6 +180,7 @@ import {HostChallengesComponent} from './components/candidates/intake/host-chall
 import {MaritalStatusComponent} from './components/candidates/intake/marital-status/marital-status.component';
 import {AutosaveStatusComponent} from './components/util/autosave-status/autosave-status.component';
 import {DragulaModule} from "ng2-dragula";
+import {CandidateColumnSelectorComponent} from './components/util/candidate-column-selector/candidate-column-selector.component';
 
 @NgModule({
   declarations: [
@@ -343,7 +344,8 @@ import {DragulaModule} from "ng2-dragula";
     ResettlementThirdComponent,
     HostChallengesComponent,
     MaritalStatusComponent,
-    AutosaveStatusComponent
+    AutosaveStatusComponent,
+    CandidateColumnSelectorComponent
   ],
   imports: [
     BrowserModule,

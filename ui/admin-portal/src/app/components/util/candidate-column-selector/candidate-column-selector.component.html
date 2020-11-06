@@ -1,0 +1,31 @@
+<div class="modal-header">
+
+  <h4 class="modal-title">Confirmation</h4>
+
+  <button type="button" class="close" aria-label="Close" (click)="dismiss()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+
+</div>
+
+<div class="modal-body">
+  <div class="flex">
+    <div class="container" dragula="FIELDS" [(dragulaModel)]="availableFields">
+      <div class="field" *ngFor="let field of availableFields">{{ field.name }}</div>
+    </div>
+
+    <div class="container" dragula="FIELDS" [(dragulaModel)]="selectedFields">
+      <div class="field" *ngFor="let field of selectedFields">{{ field.name }}</div>
+  </div>
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary" (click)="close()">
+    Ok
+  </button>
+  <button type="button" class="btn btn-primary" (click)="dismiss()">
+    Cancel
+  </button>
+</div>
+

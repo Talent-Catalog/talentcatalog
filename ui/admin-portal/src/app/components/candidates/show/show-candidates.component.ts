@@ -81,6 +81,7 @@ import {Location} from '@angular/common';
 import {copyToClipboard} from '../../../util/clipboard';
 import {SavedListService} from '../../../services/saved-list.service';
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
+import {CandidateColumnSelectorComponent} from "../../util/candidate-column-selector/candidate-column-selector.component";
 
 interface CachedTargetList {
   sourceID: number;
@@ -1042,5 +1043,19 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     if (savedSearchSource != null) {
       this.router.navigate(getSavedSourceNavigation(savedSearchSource));
     }
+  }
+
+  doSelectColumns() {
+//todo Complete this
+    const modal = this.modalService.open(CandidateColumnSelectorComponent);
+
+    modal.result
+      .then((selection: TargetListSelection) => {
+          },
+          error => {
+          }
+        )
+      .catch();
+
   }
 }
