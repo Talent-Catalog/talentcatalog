@@ -188,7 +188,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                  * INTAKE ENDPOINTS
                  */
                 // PUT (EXC. READ ONLY)
-                .antMatchers(HttpMethod.GET, "/api/admin/candidate/*/intake").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED")
+                .antMatchers(HttpMethod.GET, "/api/admin/candidate/*/intake").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // PUT (EXC. READ ONLY)
                 .antMatchers(HttpMethod.PUT, "/api/admin/candidate/*/intake").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED")
