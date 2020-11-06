@@ -81,6 +81,7 @@ export interface CandidateIntakeData {
   homeLocation?: string;
 
   hostChallenges?: string;
+  hostBorn?: YesNo;
   hostEntryYear?: string;
   hostEntryLegally?: YesNo;
   intRecruitReasons?: IntRecruitReason[];
@@ -130,6 +131,7 @@ export interface CandidateIntakeData {
   unrwaWasRegistered?: YesNoUnsure;
   unrwaNumber?: string;
   unrwaNotes?: string;
+  visaReject?: YesNoUnsure;
   visaIssues?: VisaIssue[];
   visaIssuesNotes?: string;
 }

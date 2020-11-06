@@ -71,6 +71,7 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("homeLocation")
                 .add("hostChallenges")
+                .add("hostBorn")
                 .add("hostEntryYear")
                 .add("hostEntryLegally")
                 .add("intRecruitReasons")
@@ -115,6 +116,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("unrwaNumber")
                 .add("unrwaNotes")
 
+                .add("visaReject")
                 .add("visaIssues")
                 .add("visaIssuesNotes")
 

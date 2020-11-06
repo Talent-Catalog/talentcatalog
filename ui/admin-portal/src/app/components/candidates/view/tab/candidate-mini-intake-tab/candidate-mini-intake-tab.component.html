@@ -71,40 +71,9 @@
 
   <div class="card">
     <div class="card-header">
-      Work Status
+      Personal Status / Program Eligibility
     </div>
     <div class="card-body">
-      <app-work-permit
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-work-permit>
-      <app-work-status
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-work-status>
-
-    </div>
-  </div>
-
-  <hr/>
-
-  <div class="card">
-    <div class="card-header">
-      Home Country
-    </div>
-    <div class="card-body">
-      <app-returned-home
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-returned-home>
-      <app-return-home-safe
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-return-home-safe>
-      <app-home-location
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-home-location>
       <app-host-entry-year
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData">
@@ -113,8 +82,31 @@
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData">
       </app-asylum-year>
+      <app-residence-status
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-residence-status>
+      <app-crime
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-crime>
+      <app-conflict
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-conflict>
+      <app-family
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-family>
     </div>
   </div>
+
+  <hr/>
+
+  <app-exams
+    [candidate]="candidate"
+    [candidateIntakeData]="candidateIntakeData">
+  </app-exams>
 
   <hr/>
 
@@ -139,55 +131,5 @@
       </app-registration-unrwa>
     </div>
   </div>
-
-  <hr/>
-
-  <div class="card">
-    <div class="card-header">
-      Visa Issues
-    </div>
-    <div class="card-body">
-      <app-visa-issues
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-visa-issues>
-      <app-crime
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-crime>
-      <app-conflict
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-conflict>
-      <app-residence-status
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-residence-status>
-    </div>
-  </div>
-
-  <hr/>
-
-  <div class="card">
-    <div class="card-header">
-      Family
-    </div>
-    <div class="card-body">
-      <app-family
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-family>
-    </div>
-  </div>
-
-  <hr/>
-
-  <app-exams
-    [candidate]="candidate"
-    [candidateIntakeData]="candidateIntakeData"
-  >
-  </app-exams>
-
-  <hr/>
 
 </div>

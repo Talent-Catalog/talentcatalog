@@ -402,6 +402,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private String childrenAge;
 
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNoUnsure visaReject;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNo hostBorn;
+
     public Candidate() {
     }
 
@@ -1066,6 +1074,16 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setChildrenAge(@Nullable String childrenAge) { this.childrenAge = childrenAge; }
 
+    @Nullable
+    public YesNoUnsure getVisaReject() { return visaReject; }
+
+    public void setVisaReject(@Nullable YesNoUnsure visaReject) { this.visaReject = visaReject; }
+
+    @Nullable
+    public YesNo getHostBorn() { return hostBorn; }
+
+    public void setHostBorn(@Nullable YesNo hostBorn) { this.hostBorn = hostBorn; }
+
     public boolean isSelected() {
         return selected;
     }
@@ -1194,6 +1212,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getHostChallenges() != null) {
             setHostChallenges(data.getHostChallenges());
         }
+        if (data.getHostBorn() != null) {
+            setHostBorn(data.getHostBorn());
+        }
         if (data.getHostEntryYear() != null) {
             setHostEntryYear(data.getHostEntryYear());
         }
@@ -1306,7 +1327,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getUnrwaNotes() != null) {
             setUnrwaNotes(data.getUnrwaNotes());
         }
-
+        if (data.getVisaReject() != null) {
+            setVisaReject(data.getVisaReject());
+        }
         if (data.getVisaIssues() != null) {
             setVisaIssues(data.getVisaIssues());
         }

@@ -76,6 +76,7 @@ public class CandidateIntakeDataUpdate {
     private String familyHealthConcernNotes;
     private String homeLocation;
     private String hostChallenges;
+    private YesNo hostBorn;
     private LocalDate hostEntryYear;
     private YesNo hostEntryLegally;
     private List<IntRecruitReason> intRecruitReasons;
@@ -130,6 +131,7 @@ public class CandidateIntakeDataUpdate {
     private String visaProtectionGrounds;
     private TBBEligibilityAssessment visaTbbEligibilityAssessment;
 
+    private YesNoUnsure visaReject;
     private List<VisaIssue> visaIssues;
     private String visaIssuesNotes;
     

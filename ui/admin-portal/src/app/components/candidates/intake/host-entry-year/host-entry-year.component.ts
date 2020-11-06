@@ -3,6 +3,8 @@ import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 import {NgbDateStruct} from '@ng-bootstrap/ng-bootstrap';
+import {EnumOption, enumOptions} from '../../../../util/enum';
+import {YesNo} from '../../../../model/candidate';
 
 @Component({
   selector: 'app-host-entry-year',
@@ -10,6 +12,8 @@ import {NgbDateStruct} from '@ng-bootstrap/ng-bootstrap';
   styleUrls: ['./host-entry-year.component.scss']
 })
 export class HostEntryYearComponent extends IntakeComponentBase implements OnInit {
+
+  public hostBornOptions: EnumOption[] = enumOptions(YesNo);
 
   public maxDate: NgbDateStruct;
   public today: Date;
@@ -23,7 +27,12 @@ export class HostEntryYearComponent extends IntakeComponentBase implements OnIni
     this.today = new Date();
     this.maxDate = {year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate()};
     this.form = this.fb.group({
+      hostBorn: [this.candidateIntakeData?.hostBorn],
       hostEntryYear: [this.candidateIntakeData?.hostEntryYear],
     });
+  }
+
+  get hostBorn(): string {
+    return this.form.value?.hostBorn;
   }
 }
