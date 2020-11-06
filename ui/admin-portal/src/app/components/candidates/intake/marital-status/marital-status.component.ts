@@ -62,7 +62,7 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
     return this.form.value?.partnerIelts;
   }
 
-  private get partnerCandidate(): Candidate {
+  get partnerCandidate(): Candidate {
     return this.candidateIntakeData.partnerCandidate ?
       this.candidateIntakeData.partnerCandidate : null;
   }
