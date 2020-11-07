@@ -11,11 +11,11 @@
 <div class="modal-body">
   <div class="flex">
     <div class="container" dragula="FIELDS" [(dragulaModel)]="availableFields">
-      <div class="field" *ngFor="let field of availableFields">{{ field.name }}</div>
+      <div class="field" *ngFor="let field of availableFields">{{ field.displayName }}</div>
     </div>
 
     <div class="container" dragula="FIELDS" [(dragulaModel)]="selectedFields">
-      <div class="field" *ngFor="let field of selectedFields">{{ field.name }}</div>
+      <div class="field" *ngFor="let field of selectedFields">{{ field.displayName }}</div>
   </div>
   </div>
 </div>

@@ -82,6 +82,8 @@ import {copyToClipboard} from '../../../util/clipboard';
 import {SavedListService} from '../../../services/saved-list.service';
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {CandidateColumnSelectorComponent} from "../../util/candidate-column-selector/candidate-column-selector.component";
+import {CandidateFieldInfo} from "../../../model/candidate-field-info";
+import {CandidateFieldService} from "../../../services/candidate-field.service";
 
 interface CachedTargetList {
   sourceID: number;
@@ -107,6 +109,9 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   @Input() searchRequest: SearchCandidateRequestPaged;
   @Output() candidateSelection = new EventEmitter();
   @Output() editSource = new EventEmitter();
+
+  selectedFields: CandidateFieldInfo[] = [];
+
 
   error: any;
   loading: boolean;
@@ -164,6 +169,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
               private location: Location,
               private router: Router,
               private candidateSourceResultsCacheService: CandidateSourceResultsCacheService,
+              private candidateFieldService: CandidateFieldService,
               private authService: AuthService
 
   ) {
@@ -173,6 +179,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit() {
+    this.selectedFields = this.candidateFieldService.defaultDisplayableFields;
+
     this.setSelectedCandidate(null);
     this.loggedInUser = this.authService.getLoggedInUser();
     this.selectedListCandidates = [];
@@ -563,16 +571,6 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   haveTargetList(): boolean {
     return this.targetListName && this.targetListName.length > 0;
-  }
-
-  isCandidateNameViewable(): boolean {
-    const role = this.loggedInUser ? this.loggedInUser.role : null;
-    return role !== 'semilimited' && role !== 'limited';
-  }
-
-  isCountryViewable(): boolean {
-    const role = this.loggedInUser ? this.loggedInUser.role : null;
-    return role !== 'limited';
   }
 
   isContentModifiable(): boolean {
@@ -983,7 +981,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   renderCandidateRow(candidate: Candidate) {
-    if (this.isCandidateNameViewable()) {
+    if (this.candidateFieldService.isCandidateNameViewable()) {
       return candidate.candidateNumber + ": " + candidate.user.firstName + " " + candidate.user.lastName;
     } else {
       return candidate.candidateNumber;
@@ -1047,15 +1045,24 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   doSelectColumns() {
 //todo Complete this
+    //Initialize with current configuration
+    //Output is new configuration
     const modal = this.modalService.open(CandidateColumnSelectorComponent);
+    modal.componentInstance.selectedFields = this.selectedFields;
 
     modal.result
-      .then((selection: TargetListSelection) => {
+      .then((fields) => {
+        console.log(fields)
+        this.selectedFields = fields;
           },
           error => {
           }
         )
       .catch();
 
+  }
+
+  isCandidateNameViewable() {
+    return this.candidateFieldService.isCandidateNameViewable()
   }
 }
