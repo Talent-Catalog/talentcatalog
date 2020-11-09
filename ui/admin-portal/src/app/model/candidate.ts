@@ -57,6 +57,8 @@ export interface CandidateIntakeData {
 
   candidateExams?: CandidateExam[];
 
+  canDrive?: YesNo;
+
   children?: YesNo;
   childrenAge?: YesNo;
 
@@ -71,6 +73,10 @@ export interface CandidateIntakeData {
 
   destJob?: YesNo;
   destJobNotes?: string;
+
+  drivingLicense?: DrivingLicenseStatus;
+  drivingLicenseExp?: string;
+  drivingLicenseCountry?: Country;
 
   familyMove?: YesNo;
   familyMoveNotes?: string;
@@ -327,6 +333,13 @@ export enum IeltsScore {
   Eight = "8",
   EightHalf = "8.5",
   Nine = "9",
+}
+
+export enum DrivingLicenseStatus {
+  NoResponse = "",
+  Valid = "Valid",
+  Expired = "Expired",
+  None = "None"
 }
 
 export function getCandidateNavigation(candidate: Candidate): any[] {

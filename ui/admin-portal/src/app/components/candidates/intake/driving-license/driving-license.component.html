@@ -1,0 +1,50 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+
+  <div class="form-group">
+    <label for="canDrive">
+      Can you drive?
+    </label>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
+    <select class="form-control"
+            id="canDrive" [formControlName]="'canDrive'">
+      <option *ngFor="let opt of canDriveOptions" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+  </div>
+
+  <div *ngIf="canDrive === 'Yes'" class="form-group">
+    <label for="drivingLicense">
+      Do you have a driving license?
+    </label>
+
+    <select class="form-control"
+            id="drivingLicense" [formControlName]="'drivingLicense'">
+      <option *ngFor="let opt of drivingLicenseOptions" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+
+    <div *ngIf="drivingLicense !== 'None'" class="form-group">
+      <label for="">
+        Expiry Date
+      </label>
+
+      <input type="text" class="form-control" placeholder="" id=""
+             [formControlName]="'drivingLicense'">
+    </div>
+
+  </div>
+
+
+
+</form>
+
