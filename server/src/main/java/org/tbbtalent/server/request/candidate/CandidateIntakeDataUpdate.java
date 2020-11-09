@@ -7,7 +7,23 @@ package org.tbbtalent.server.request.candidate;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.model.db.AvailImmediateReason;
+import org.tbbtalent.server.model.db.DrivingLicenseStatus;
+import org.tbbtalent.server.model.db.Exam;
+import org.tbbtalent.server.model.db.FamilyRelations;
+import org.tbbtalent.server.model.db.HasPassport;
+import org.tbbtalent.server.model.db.IeltsScore;
+import org.tbbtalent.server.model.db.IntRecruitReason;
+import org.tbbtalent.server.model.db.LeftHomeReason;
+import org.tbbtalent.server.model.db.MaritalStatus;
+import org.tbbtalent.server.model.db.ResidenceStatus;
+import org.tbbtalent.server.model.db.TBBEligibilityAssessment;
+import org.tbbtalent.server.model.db.UnhcrStatus;
+import org.tbbtalent.server.model.db.VisaEligibility;
+import org.tbbtalent.server.model.db.VisaIssue;
+import org.tbbtalent.server.model.db.WorkPermit;
+import org.tbbtalent.server.model.db.YesNo;
+import org.tbbtalent.server.model.db.YesNoUnsure;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -41,6 +57,8 @@ public class CandidateIntakeDataUpdate {
     private HasPassport citizenHasPassport;
     private String citizenNotes;
 
+    private YesNo canDrive;
+
     private YesNo children;
     private String childrenAge;
 
@@ -69,6 +87,10 @@ public class CandidateIntakeDataUpdate {
 
     private YesNo destJob;
     private String destJobNotes;
+
+    private DrivingLicenseStatus drivingLicense;
+    private LocalDate drivingLicenseExp;
+    private Long drivingLicenseCountryId;
 
     private YesNo familyMove;
     private String familyMoveNotes;

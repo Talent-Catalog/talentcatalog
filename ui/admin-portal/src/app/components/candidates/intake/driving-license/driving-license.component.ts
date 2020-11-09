@@ -1,9 +1,10 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../util/enum';
 import {DrivingLicenseStatus, YesNo} from '../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
+import {Country} from "../../../../model/country";
 
 @Component({
   selector: 'app-driving-license',
@@ -11,6 +12,8 @@ import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
   styleUrls: ['./driving-license.component.scss']
 })
 export class DrivingLicenseComponent extends IntakeComponentBase implements OnInit {
+
+  @Input() countries: Country[];
 
   public canDriveOptions: EnumOption[] = enumOptions(YesNo);
   public drivingLicenseOptions: EnumOption[] = enumOptions(DrivingLicenseStatus);
@@ -39,7 +42,9 @@ export class DrivingLicenseComponent extends IntakeComponentBase implements OnIn
   get hasDrivingLicense(): boolean {
     let found: boolean = false;
     if (this.form?.value) {
-      if (this.drivingLicense === 'Other') {
+      if (this.drivingLicense === 'Valid') {
+        found = true;
+      } else if (this.drivingLicense === 'Expired') {
         found = true;
       }
     }

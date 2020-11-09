@@ -11,7 +11,19 @@ import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
@@ -409,6 +421,22 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Enumerated(EnumType.STRING)
     @Nullable
     private YesNo hostBorn;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNo canDrive;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private DrivingLicenseStatus drivingLicense;
+
+    @Nullable
+    private LocalDate drivingLicenseExp;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "driving_license_country_id")
+    @Nullable
+    private Country drivingLicenseCountry;
 
     public Candidate() {
     }
@@ -1084,6 +1112,26 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setHostBorn(@Nullable YesNo hostBorn) { this.hostBorn = hostBorn; }
 
+    @Nullable
+    public YesNo getCanDrive() { return canDrive; }
+
+    public void setCanDrive(@Nullable YesNo canDrive) { this.canDrive = canDrive; }
+
+    @Nullable
+    public DrivingLicenseStatus getDrivingLicense() { return drivingLicense; }
+
+    public void setDrivingLicense(@Nullable DrivingLicenseStatus drivingLicense) { this.drivingLicense = drivingLicense; }
+
+    @Nullable
+    public LocalDate getDrivingLicenseExp() { return drivingLicenseExp; }
+
+    public void setDrivingLicenseExp(@Nullable LocalDate drivingLicenseExp) { this.drivingLicenseExp = drivingLicenseExp; }
+
+    @Nullable
+    public Country getDrivingLicenseCountry() { return drivingLicenseCountry; }
+
+    public void setDrivingLicenseCountry(@Nullable Country drivingLicenseCountry) { this.drivingLicenseCountry = drivingLicenseCountry; }
+
     public boolean isSelected() {
         return selected;
     }
@@ -1151,7 +1199,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
                                    @Nullable EducationLevel partnerEduLevel,
                                    @Nullable Occupation partnerProfession,
                                    @Nullable LanguageLevel partnerEnglishLevel,
-                                   @Nullable Nationality partnerCitizenship) {
+                                   @Nullable Nationality partnerCitizenship,
+                                   @Nullable Country drivingLicenseCountry) {
         if (data.getAsylumYear() != null) {
             setAsylumYear(data.getAsylumYear());
         }
@@ -1163,6 +1212,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getAvailImmediateNotes() != null) {
             setAvailImmediateNotes(data.getAvailImmediateNotes());
+        }
+        if (data.getCanDrive() != null) {
+            setCanDrive(data.getCanDrive());
         }
         if (data.getChildren() != null) {
             setChildren(data.getChildren());
@@ -1193,6 +1245,15 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getDestJobNotes() != null) {
             setDestJobNotes(data.getDestJobNotes());
+        }
+        if (data.getDrivingLicense() != null) {
+            setDrivingLicense(data.getDrivingLicense());
+        }
+        if (data.getDrivingLicenseExp() != null) {
+            setDrivingLicenseExp(data.getDrivingLicenseExp());
+        }
+        if (data.getDrivingLicenseCountryId() != null) {
+            setDrivingLicenseCountry(drivingLicenseCountry);
         }
         if (data.getFamilyMove() != null) {
             setFamilyMove(data.getFamilyMove());

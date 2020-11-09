@@ -49,6 +49,8 @@ public class CandidateIntakeDataBuilderSelector {
                 
                 .add("candidateVisaChecks", candidateVisaCheckDto())
 
+                .add("canDrive")
+
                 .add("children")
                 .add("childrenAge")
 
@@ -63,6 +65,10 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("destJob")
                 .add("destJobNotes")
+
+                .add("drivingLicense")
+                .add("drivingLicenseExp")
+                .add("drivingLicenseCountry", countryDto())
 
                 .add("familyMove")
                 .add("familyMoveNotes")
@@ -209,7 +215,6 @@ public class CandidateIntakeDataBuilderSelector {
     private DtoBuilder countryDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("name")
                 ;
     }
 
