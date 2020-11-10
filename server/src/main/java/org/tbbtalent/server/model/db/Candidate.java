@@ -11,19 +11,7 @@ import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
@@ -437,6 +425,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @JoinColumn(name = "driving_license_country_id")
     @Nullable
     private Country drivingLicenseCountry;
+
+    @Nullable
+    private Long dependants;
+
+    @Nullable
+    private String dependantsNotes;
 
     public Candidate() {
     }
@@ -1132,6 +1126,16 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setDrivingLicenseCountry(@Nullable Country drivingLicenseCountry) { this.drivingLicenseCountry = drivingLicenseCountry; }
 
+    @Nullable
+    public Long getDependants() { return dependants; }
+
+    public void setDependants(@Nullable Long dependants) { this.dependants = dependants; }
+
+    @Nullable
+    public String getDependantsNotes() { return dependantsNotes; }
+
+    public void setDependantsNotes(@Nullable String dependantsNotes) { this.dependantsNotes = dependantsNotes; }
+
     public boolean isSelected() {
         return selected;
     }
@@ -1233,6 +1237,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getCrimeConvictNotes() != null) {
             setCrimeConvictNotes(data.getCrimeConvictNotes());
+        }
+        if (data.getDependants() != null) {
+            setDependants(data.getDependants());
+        }
+        if (data.getDependantsNotes() != null) {
+            setDependantsNotes(data.getDependantsNotes());
         }
         if (data.getDestLimit() != null) {
             setDestLimit(data.getDestLimit());

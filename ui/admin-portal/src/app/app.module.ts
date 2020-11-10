@@ -177,6 +177,7 @@ import {MilitaryServiceComponent} from './components/candidates/intake/military-
 import {ChildrenComponent} from './components/candidates/intake/children/children.component';
 import {VisaRejectComponent} from './components/candidates/intake/visa-reject/visa-reject.component';
 import {DrivingLicenseComponent} from './components/candidates/intake/driving-license/driving-license.component';
+import {DependantsComponent} from './components/candidates/intake/dependants/dependants.component';
 
 @NgModule({
   declarations: [
@@ -346,7 +347,8 @@ import {DrivingLicenseComponent} from './components/candidates/intake/driving-li
     MilitaryServiceComponent,
     ChildrenComponent,
     VisaRejectComponent,
-    DrivingLicenseComponent
+    DrivingLicenseComponent,
+    DependantsComponent
   ],
   imports: [
     BrowserModule,

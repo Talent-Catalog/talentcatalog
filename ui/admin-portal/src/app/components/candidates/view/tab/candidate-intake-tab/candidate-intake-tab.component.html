@@ -19,11 +19,6 @@
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData">
       </app-confirm-contact>
-      <app-driving-license
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [countries]="countries">
-      </app-driving-license>
     </div>
   </div>
 
@@ -188,6 +183,14 @@
       [candidate]="candidate"
       [candidateIntakeData]="candidateIntakeData">
       </app-children>
+      <app-dependants
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-dependants>
+      <app-family-health
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-family-health>
       <app-family
       [candidate]="candidate"
       [candidateIntakeData]="candidateIntakeData">
@@ -206,10 +209,6 @@
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData">
       </app-crime>
-      <app-family-health
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-family-health>
       <app-military-service
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData">
@@ -222,6 +221,11 @@
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData">
       </app-visa-issues>
+      <app-driving-license
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [countries]="countries">
+      </app-driving-license>
     </div>
   </div>
 

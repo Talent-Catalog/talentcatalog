@@ -60,6 +60,9 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("crimeConvict")
                 .add("crimeConvictNotes")
 
+                .add("dependants")
+                .add("dependantsNotes")
+
                 .add("destLimit")
                 .add("destLimitNotes")
 
