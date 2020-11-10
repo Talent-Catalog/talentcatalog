@@ -2,20 +2,8 @@
  * Copyright (c) 2020 Talent Beyond Boundaries. All rights reserved.
  */
 
-import {
-  AfterViewInit,
-  Directive,
-  Input,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
-import {
-  catchError,
-  debounceTime,
-  map,
-  switchMap,
-  takeUntil
-} from 'rxjs/operators';
+import {AfterViewInit, Directive, Input, OnDestroy, OnInit} from '@angular/core';
+import {catchError, debounceTime, map, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {Subject} from 'rxjs';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {Candidate, CandidateIntakeData} from '../../../model/candidate';
@@ -73,6 +61,11 @@ export abstract class IntakeComponentBase implements AfterViewInit, OnDestroy, O
   saving: boolean;
 
   /**
+   * True when a field is being entered before save. Should be used to show the user difference between typing and save.
+   */
+  typing: boolean;
+
+  /**
    * Used to signal that subscription to form values should be dropped.
    * @see ngOnDestroy
    */
@@ -118,6 +111,8 @@ export abstract class IntakeComponentBase implements AfterViewInit, OnDestroy, O
   private setupAutosave(timeout: number) {
     this.form.valueChanges?.pipe(
 
+      tap(() => this.typing = true),
+
       //Only pass values on if there has been inactivity for the given timeout
       debounceTime(timeout),
 
@@ -126,6 +121,7 @@ export abstract class IntakeComponentBase implements AfterViewInit, OnDestroy, O
 
       //Do a save of the received form values.
       switchMap(formValue => {
+          this.typing = false;
           this.error = null;
           this.saving = true;
           return this.candidateService.updateIntakeData(this.candidate.id, formValue);

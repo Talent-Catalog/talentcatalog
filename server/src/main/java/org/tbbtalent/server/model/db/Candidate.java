@@ -350,6 +350,88 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private MaritalStatus maritalStatus;
 
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNoUnsure partnerRegistered;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "partner_candidate_id")
+    @Nullable
+    private Candidate partnerCandidate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "partner_edu_level_id")
+    @Nullable
+    private EducationLevel partnerEduLevel;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "partner_occupation_id")
+    @Nullable
+    private Occupation partnerProfession;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNo partnerEnglish;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "partner_english_level_id")
+    @Nullable
+    private LanguageLevel partnerEnglishLevel;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNoUnsure partnerIelts;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private IeltsScore partnerIeltsScore;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "partner_citizenship_id")
+    @Nullable
+    private Nationality partnerCitizenship;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNo militaryService;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNo children;
+
+    @Nullable
+    private String childrenAge;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNoUnsure visaReject;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNo hostBorn;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNo canDrive;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private DrivingLicenseStatus drivingLicense;
+
+    @Nullable
+    private LocalDate drivingLicenseExp;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "driving_license_country_id")
+    @Nullable
+    private Country drivingLicenseCountry;
+
+    @Nullable
+    private Long dependants;
+
+    @Nullable
+    private String dependantsNotes;
+
     public Candidate() {
     }
 
@@ -478,9 +560,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         return unRegistrationNumber;
     }
 
-    public void setUnRegistrationNumber(String unRegistrationNumber) {
-        this.unRegistrationNumber = unRegistrationNumber;
-    }
+    public void setUnRegistrationNumber(String unRegistrationNumber) { this.unRegistrationNumber = unRegistrationNumber; }
 
     public EducationLevel getMaxEducationLevel() {
         return maxEducationLevel;
@@ -956,6 +1036,106 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setMaritalStatus(@Nullable MaritalStatus maritalStatus) { this.maritalStatus = maritalStatus; }
 
+    @Nullable
+    public YesNoUnsure getPartnerRegistered() { return partnerRegistered; }
+
+    public void setPartnerRegistered(@Nullable YesNoUnsure partnerRegistered) { this.partnerRegistered = partnerRegistered; }
+
+    @Nullable
+    public Candidate getPartnerCandidate() { return partnerCandidate; }
+
+    public void setPartnerCandidate(@Nullable Candidate partnerCandidate) { this.partnerCandidate = partnerCandidate; }
+
+    @Nullable
+    public EducationLevel getPartnerEduLevel() { return partnerEduLevel; }
+
+    public void setPartnerEduLevel(@Nullable EducationLevel partnerEduLevel) { this.partnerEduLevel = partnerEduLevel; }
+
+    @Nullable
+    public Occupation getPartnerProfession() { return partnerProfession; }
+
+    public void setPartnerProfession(@Nullable Occupation partnerProfession) { this.partnerProfession = partnerProfession; }
+
+    @Nullable
+    public YesNo getPartnerEnglish() { return partnerEnglish; }
+
+    public void setPartnerEnglish(@Nullable YesNo partnerEnglish) { this.partnerEnglish = partnerEnglish; }
+
+    @Nullable
+    public LanguageLevel getPartnerEnglishLevel() { return partnerEnglishLevel; }
+
+    public void setPartnerEnglishLevel(@Nullable LanguageLevel partnerEnglishLevel) { this.partnerEnglishLevel = partnerEnglishLevel; }
+
+    @Nullable
+    public YesNoUnsure getPartnerIelts() { return partnerIelts; }
+
+    public void setPartnerIelts(@Nullable YesNoUnsure partnerIelts) { this.partnerIelts = partnerIelts; }
+
+    @Nullable
+    public IeltsScore getPartnerIeltsScore() { return partnerIeltsScore; }
+
+    public void setPartnerIeltsScore(@Nullable IeltsScore partnerIeltsScore) { this.partnerIeltsScore = partnerIeltsScore; }
+
+    @Nullable
+    public Nationality getPartnerCitizenship() { return partnerCitizenship; }
+
+    public void setPartnerCitizenship(@Nullable Nationality partnerCitizenship) { this.partnerCitizenship = partnerCitizenship; }
+
+    @Nullable
+    public YesNo getMilitaryService() { return militaryService; }
+
+    public void setMilitaryService(@Nullable YesNo militaryService) { this.militaryService = militaryService; }
+
+    @Nullable
+    public YesNo getChildren() { return children; }
+
+    public void setChildren(@Nullable YesNo children) { this.children = children; }
+
+    @Nullable
+    public String getChildrenAge() { return childrenAge; }
+
+    public void setChildrenAge(@Nullable String childrenAge) { this.childrenAge = childrenAge; }
+
+    @Nullable
+    public YesNoUnsure getVisaReject() { return visaReject; }
+
+    public void setVisaReject(@Nullable YesNoUnsure visaReject) { this.visaReject = visaReject; }
+
+    @Nullable
+    public YesNo getHostBorn() { return hostBorn; }
+
+    public void setHostBorn(@Nullable YesNo hostBorn) { this.hostBorn = hostBorn; }
+
+    @Nullable
+    public YesNo getCanDrive() { return canDrive; }
+
+    public void setCanDrive(@Nullable YesNo canDrive) { this.canDrive = canDrive; }
+
+    @Nullable
+    public DrivingLicenseStatus getDrivingLicense() { return drivingLicense; }
+
+    public void setDrivingLicense(@Nullable DrivingLicenseStatus drivingLicense) { this.drivingLicense = drivingLicense; }
+
+    @Nullable
+    public LocalDate getDrivingLicenseExp() { return drivingLicenseExp; }
+
+    public void setDrivingLicenseExp(@Nullable LocalDate drivingLicenseExp) { this.drivingLicenseExp = drivingLicenseExp; }
+
+    @Nullable
+    public Country getDrivingLicenseCountry() { return drivingLicenseCountry; }
+
+    public void setDrivingLicenseCountry(@Nullable Country drivingLicenseCountry) { this.drivingLicenseCountry = drivingLicenseCountry; }
+
+    @Nullable
+    public Long getDependants() { return dependants; }
+
+    public void setDependants(@Nullable Long dependants) { this.dependants = dependants; }
+
+    @Nullable
+    public String getDependantsNotes() { return dependantsNotes; }
+
+    public void setDependantsNotes(@Nullable String dependantsNotes) { this.dependantsNotes = dependantsNotes; }
+
     public boolean isSelected() {
         return selected;
     }
@@ -1017,7 +1197,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         savedList.getCandidateSavedLists().add(csl);
     }
 
-    public void populateIntakeData(CandidateIntakeDataUpdate data, @Nullable Country workAbroadLoc) {
+    public void populateIntakeData(CandidateIntakeDataUpdate data,
+                                   @Nullable Country workAbroadLoc,
+                                   @Nullable Candidate partnerCandidate,
+                                   @Nullable EducationLevel partnerEduLevel,
+                                   @Nullable Occupation partnerProfession,
+                                   @Nullable LanguageLevel partnerEnglishLevel,
+                                   @Nullable Nationality partnerCitizenship,
+                                   @Nullable Country drivingLicenseCountry) {
         if (data.getAsylumYear() != null) {
             setAsylumYear(data.getAsylumYear());
         }
@@ -1029,6 +1216,15 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getAvailImmediateNotes() != null) {
             setAvailImmediateNotes(data.getAvailImmediateNotes());
+        }
+        if (data.getCanDrive() != null) {
+            setCanDrive(data.getCanDrive());
+        }
+        if (data.getChildren() != null) {
+            setChildren(data.getChildren());
+        }
+        if (data.getChildrenAge() != null) {
+            setChildrenAge(data.getChildrenAge());
         }
         if (data.getConflict() != null) {
             setConflict(data.getConflict());
@@ -1042,6 +1238,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getCrimeConvictNotes() != null) {
             setCrimeConvictNotes(data.getCrimeConvictNotes());
         }
+        if (data.getDependants() != null) {
+            setDependants(data.getDependants());
+        }
+        if (data.getDependantsNotes() != null) {
+            setDependantsNotes(data.getDependantsNotes());
+        }
         if (data.getDestLimit() != null) {
             setDestLimit(data.getDestLimit());
         }
@@ -1053,6 +1255,15 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getDestJobNotes() != null) {
             setDestJobNotes(data.getDestJobNotes());
+        }
+        if (data.getDrivingLicense() != null) {
+            setDrivingLicense(data.getDrivingLicense());
+        }
+        if (data.getDrivingLicenseExp() != null) {
+            setDrivingLicenseExp(data.getDrivingLicenseExp());
+        }
+        if (data.getDrivingLicenseCountryId() != null) {
+            setDrivingLicenseCountry(drivingLicenseCountry);
         }
         if (data.getFamilyMove() != null) {
             setFamilyMove(data.getFamilyMove());
@@ -1072,6 +1283,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getHostChallenges() != null) {
             setHostChallenges(data.getHostChallenges());
         }
+        if (data.getHostBorn() != null) {
+            setHostBorn(data.getHostBorn());
+        }
         if (data.getHostEntryYear() != null) {
             setHostEntryYear(data.getHostEntryYear());
         }
@@ -1090,8 +1304,38 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getLeftHomeOther() != null) {
             setLeftHomeOther(data.getLeftHomeOther());
         }
+        if (data.getMilitaryService() != null) {
+            setMilitaryService(data.getMilitaryService());
+        }
         if (data.getMaritalStatus() != null) {
             setMaritalStatus(data.getMaritalStatus());
+        }
+        if (data.getPartnerRegistered() != null) {
+            setPartnerRegistered(data.getPartnerRegistered());
+        }
+        if (data.getPartnerCandId() != null) {
+            setPartnerCandidate(partnerCandidate);
+        }
+        if (data.getPartnerEduLevelId() != null) {
+            setPartnerEduLevel(partnerEduLevel);
+        }
+        if (data.getPartnerProfessionId() != null) {
+            setPartnerProfession(partnerProfession);
+        }
+        if (data.getPartnerEnglish() != null) {
+            setPartnerEnglish(data.getPartnerEnglish());
+        }
+        if (data.getPartnerEnglishLevelId() != null) {
+            setPartnerEnglishLevel(partnerEnglishLevel);
+        }
+        if (data.getPartnerIelts() != null) {
+            setPartnerIelts(data.getPartnerIelts());
+        }
+        if (data.getPartnerIeltsScore() != null) {
+            setPartnerIeltsScore(data.getPartnerIeltsScore());
+        }
+        if (data.getPartnerCitizenshipId() != null) {
+            setPartnerCitizenship(partnerCitizenship);
         }
 
         if (data.getResidenceStatus() != null) {
@@ -1154,7 +1398,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getUnrwaNotes() != null) {
             setUnrwaNotes(data.getUnrwaNotes());
         }
-
+        if (data.getVisaReject() != null) {
+            setVisaReject(data.getVisaReject());
+        }
         if (data.getVisaIssues() != null) {
             setVisaIssues(data.getVisaIssues());
         }

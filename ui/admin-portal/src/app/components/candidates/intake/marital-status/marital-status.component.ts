@@ -1,9 +1,13 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../util/enum';
-import {MaritalStatus, YesNoUnsure} from '../../../../model/candidate';
+import {Candidate, IeltsScore, MaritalStatus, YesNo, YesNoUnsure} from '../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
+import {EducationLevel} from '../../../../model/education-level';
+import {Occupation} from '../../../../model/occupation';
+import {LanguageLevel} from '../../../../model/language-level';
+import {Nationality} from '../../../../model/nationality';
 
 @Component({
   selector: 'app-marital-status',
@@ -12,9 +16,16 @@ import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 })
 export class MaritalStatusComponent extends IntakeComponentBase implements OnInit {
 
+  @Input() educationLevels: EducationLevel[];
+  @Input() occupations: Occupation[];
+  @Input() languageLevels: LanguageLevel[];
+  @Input() nationalities: Nationality[];
+
   public maritalStatusOptions: EnumOption[] = enumOptions(MaritalStatus);
-  public partnerTBBOptions: EnumOption[] = enumOptions(YesNoUnsure
-  );
+  public partnerRegisteredOptions: EnumOption[] = enumOptions(YesNoUnsure);
+  public partnerEnglishOptions: EnumOption[] = enumOptions(YesNo);
+  public partnerIeltsOptions: EnumOption[] = enumOptions(YesNoUnsure);
+  public partnerIeltsScoreOptions: EnumOption[] = enumOptions(IeltsScore);
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
@@ -23,12 +34,37 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
   ngOnInit(): void {
     this.form = this.fb.group({
       maritalStatus: [this.candidateIntakeData?.maritalStatus],
-      partnerTBB: [this.candidateIntakeData?.partnerTBB],
+      partnerRegistered: [this.candidateIntakeData?.partnerRegistered],
+      partnerCandId: [this.candidateIntakeData?.partnerCandidate?.id],
+      partnerEduLevelId: [this.candidateIntakeData?.partnerEduLevel?.id],
+      partnerProfessionId: [this.candidateIntakeData?.partnerProfession?.id],
+      partnerEnglish: [this.candidateIntakeData?.partnerEnglish],
+      partnerEnglishLevelId: [this.candidateIntakeData?.partnerEnglishLevel?.id],
+      partnerIelts: [this.candidateIntakeData?.partnerIelts],
+      partnerIeltsScore: [this.candidateIntakeData?.partnerIeltsScore],
+      partnerCitizenshipId: [this.candidateIntakeData?.partnerCitizenship?.id],
     });
   }
 
   get maritalStatus() {
     return this.form.value?.maritalStatus;
+  }
+
+  get partnerRegistered() {
+    return this.form.value?.partnerRegistered;
+  }
+
+  get partnerEnglish() {
+    return this.form.value?.partnerEnglish;
+  }
+
+  get partnerIelts() {
+    return this.form.value?.partnerIelts;
+  }
+
+  get partnerCandidate(): Candidate {
+    return this.candidateIntakeData.partnerCandidate ?
+      this.candidateIntakeData.partnerCandidate : null;
   }
 
   get isMarriedEngaged(): boolean {
@@ -43,4 +79,13 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
     return found;
   }
 
+  updatePartnerCand($event) {
+    this.form.controls['partnerCandId'].patchValue($event.id);
+    if (this.partnerCandidate) {
+      this.partnerCandidate.user.firstName = $event.user.firstName;
+      this.partnerCandidate.user.lastName = $event.user.lastName;
+      this.partnerCandidate.candidateNumber = $event.candidateNumber;
+    }
+
+  }
 }

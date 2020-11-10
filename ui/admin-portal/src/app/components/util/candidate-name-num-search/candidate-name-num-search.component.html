@@ -1,0 +1,12 @@
+<input id="quickNumberOrNameSearch"
+       type="text" class="form-control" #input
+       [ngbTypeahead]="doNumberOrNameSearch"
+       [resultTemplate]="rt"
+       [inputFormatter]="renderCandidateRow"
+       [value]="displayValue"
+       [editable]="false"
+       (selectItem)="selectSearchResult($event, input)"
+       [placeholder]="displayValue === null ? 'Name or number...' : ''"/>
+<ng-template #rt let-r="result" let-t="term">
+  <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
+</ng-template>

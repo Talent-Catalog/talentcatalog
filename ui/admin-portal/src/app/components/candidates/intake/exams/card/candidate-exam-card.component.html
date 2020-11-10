@@ -8,16 +8,16 @@
     <form [formGroup]="form">
       <div class="form-group">
         <div class="exam d-flex align-items-baseline justify-content-between">
-          <label [for]="'exam'+myRecordIndex">Exam
-            <span *ngIf="saving">
-              <i class="fas fa-spinner fa-spin"></i>
-            </span>
-          </label>
-          <button class="float-right btn" (click)="doDelete()">
-            <span class="align-top">
-              <i class="fas fa-trash"></i>
-            </span>
-          </button>
+          <label [for]="'exam'+myRecordIndex">Exam</label>
+          <div class="float-right d-flex align-items-center">
+            <app-autosave-status
+              [saving]="saving"
+              [typing]="typing">
+            </app-autosave-status>
+            <button class="btn" (click)="doDelete()">
+                <i class="fas fa-trash"></i>
+            </button>
+          </div>
         </div>
         <select class="form-control"
                 [id]="'examType'+myRecordIndex" [formControlName]="'examType'">

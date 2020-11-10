@@ -3,32 +3,47 @@
 </div>
 <form [formGroup]="form">
   <div class="form-group">
-    <label for="hostEntryYear">
-      Date of arrival to {{candidate.country.name}} without intention and/or ability to return?
-    </label>
-    <span *ngIf="saving">
-      <i class="fas fa-spinner fa-spin"></i> saving...
-    </span>
-    <div class="input-group">
-      <input id="hostEntryYear" type="text" class="form-control" placeholder="YYYY-MM-DD"
-             ngbDatepicker #picker="ngbDatepicker"
-             [formControlName]="'hostEntryYear'"
-             (dateSelect)="form.controls.hostEntryYear.markAsDirty()"
-             [autoClose]="true"
-             [outsideDays]="'hidden'"
-             [container]="'#hostEntryYear'"
-             [minDate]="{year: 1950, month: 1, day: 1}"
-             [maxDate]="maxDate">
+    <label for="hostBorn">Were you born in {{candidate?.country?.name}}?</label>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
+    <select class="form-control"
+            id="hostBorn" [formControlName]="'hostBorn'">
+      <option *ngFor="let opt of hostBornOptions" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+  </div>
 
-      <div class="input-group-append">
-        <small class="btn btn-link text-secondary" *ngIf="form.controls.hostEntryYear.value"
-               (click)="form.controls.hostEntryYear.patchValue(null); form.controls.hostEntryYear.markAsDirty();">
-          <span>Clear</span>
-        </small>
+  <div *ngIf="hostBorn === 'No'">
+    <div class="form-group">
+      <label for="hostEntryYear">
+        What year did you immigrate to {{candidate?.country?.name}}?
+      </label>
+      <div class="input-group">
+        <input id="hostEntryYear" type="text" class="form-control" placeholder="YYYY-MM-DD"
+               ngbDatepicker #picker="ngbDatepicker"
+               [formControlName]="'hostEntryYear'"
+               (dateSelect)="form.controls.hostEntryYear.markAsDirty()"
+               [autoClose]="true"
+               [outsideDays]="'hidden'"
+               [container]="'#hostEntryYear'"
+               [minDate]="{year: 1950, month: 1, day: 1}"
+               [maxDate]="maxDate">
 
-        <div class="btn btn-link" *ngIf="!form.controls.hostEntryYear.value"
-             (click)="picker.toggle()">
-          <span>Choose</span>
+        <div class="input-group-append">
+          <small class="btn btn-link text-secondary" *ngIf="form.controls.hostEntryYear.value"
+                 (click)="form.controls.hostEntryYear.patchValue(null); form.controls.hostEntryYear.markAsDirty();">
+            <span>Clear</span>
+          </small>
+
+          <div class="btn btn-link" *ngIf="!form.controls.hostEntryYear.value"
+               (click)="picker.toggle()">
+            <span>Choose</span>
+          </div>
         </div>
       </div>
     </div>

@@ -6,9 +6,12 @@
     <label for="intRecruitReasons">
       Why are you interested in international recruitment?
     </label>
-    <span *ngIf="saving">
-      <i class="fas fa-spinner fa-spin"></i> saving...
-    </span>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
     <ng-multiselect-dropdown
       id="intRecruitReasons"
       [settings]="dropdownSettings"

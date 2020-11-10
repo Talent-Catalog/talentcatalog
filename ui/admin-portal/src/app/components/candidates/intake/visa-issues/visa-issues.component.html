@@ -5,9 +5,12 @@
   <div class="form-group">
     <label for="visaIssues" ngbTooltip="Tooltip on top">Is there anything about your background that could
       be of concern in the visa process?</label>
-    <span *ngIf="saving">
-      <i class="fas fa-spinner fa-spin"></i> saving...
-    </span>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
     <ng-multiselect-dropdown
       id="visaIssues"
       [settings]="dropdownSettings"

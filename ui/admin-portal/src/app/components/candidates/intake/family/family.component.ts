@@ -13,7 +13,6 @@ import {CandidateService} from '../../../../services/candidate.service';
 export class FamilyComponent extends IntakeComponentBase implements OnInit {
 
   public familyMoveOptions: EnumOption[] = enumOptions(YesNo);
-  public familyHealthConcernOptions: EnumOption[] = enumOptions(YesNo);
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
@@ -23,17 +22,11 @@ export class FamilyComponent extends IntakeComponentBase implements OnInit {
     this.form = this.fb.group({
       familyMove: [this.candidateIntakeData?.familyMove],
       familyMoveNotes: [this.candidateIntakeData?.familyMoveNotes],
-      familyHealthConcern: [this.candidateIntakeData?.familyHealth],
-      familyHealthConcernNotes: [this.candidateIntakeData?.familyHealthNotes],
     });
   }
 
   get familyMove(): string {
     return this.form.value?.familyMove;
-  }
-
-  get familyHealthConcern(): string {
-    return this.form.value?.familyHealthConcern;
   }
 
 }

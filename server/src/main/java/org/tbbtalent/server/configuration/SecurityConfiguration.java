@@ -183,6 +183,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // POST: VIEW TRANSLATIONS
                 .antMatchers(HttpMethod.POST, "/api/admin/translation/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
+
+                /**
+                 * INTAKE ENDPOINTS
+                 */
+                // PUT (EXC. READ ONLY)
+                .antMatchers(HttpMethod.GET, "/api/admin/candidate/*/intake").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // PUT (EXC. READ ONLY)
+                .antMatchers(HttpMethod.PUT, "/api/admin/candidate/*/intake").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED")
+
+
                 // ALL OTHER END POINTS
                     // POST (EXC. READ ONLY)
                 .antMatchers(HttpMethod.POST, "/api/admin/**").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED")

@@ -1,0 +1,81 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+
+  <div class="form-group">
+    <label for="canDrive">
+      Can you drive?
+    </label>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
+    <select class="form-control"
+            id="canDrive" [formControlName]="'canDrive'">
+      <option *ngFor="let opt of canDriveOptions" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+  </div>
+
+  <div *ngIf="canDrive === 'Yes'">
+    <div class="form-group">
+      <label for="drivingLicense">
+        Do you have a driving license?
+      </label>
+
+      <select class="form-control"
+              id="drivingLicense" [formControlName]="'drivingLicense'">
+        <option *ngFor="let opt of drivingLicenseOptions" [value]="opt.value">
+          {{opt.displayText}}
+        </option>
+      </select>
+    </div>
+
+    <div *ngIf="hasDrivingLicense">
+      <div class="form-group">
+        <label for="drivingLicenseExp">
+          Expiry Date
+        </label>
+        <div class="input-group">
+          <input id="drivingLicenseExp" type="text" class="form-control" placeholder="YYYY-MM-DD"
+                 ngbDatepicker #picker="ngbDatepicker"
+                 [formControlName]="'drivingLicenseExp'"
+                 (dateSelect)="form.controls.drivingLicenseExp.markAsDirty()"
+                 [autoClose]="true"
+                 [outsideDays]="'hidden'"
+                 [container]="'#drivingLicenseExp'">
+
+          <div class="input-group-append">
+            <small class="btn btn-link text-secondary" *ngIf="form.controls.drivingLicenseExp.value"
+                   (click)="form.controls.drivingLicenseExp.patchValue(null); form.controls.drivingLicenseExp.markAsDirty();">
+              <span>Clear</span>
+            </small>
+            <div class="btn btn-link" *ngIf="!form.controls.drivingLicenseExp.value"
+                 (click)="picker.toggle()">
+              <span>Choose</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="drivingLicenseCountryId">
+          Country of Issue
+        </label>
+        <select class="form-control"
+                id="drivingLicenseCountryId" [formControlName]="'drivingLicenseCountryId'">
+          <option *ngFor="let opt of countries" [value]="opt.id">
+            {{opt.name}}
+          </option>
+        </select>
+      </div>
+
+    </div>
+
+  </div>
+
+</form>
+

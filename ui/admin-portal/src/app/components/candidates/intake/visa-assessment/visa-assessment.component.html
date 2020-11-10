@@ -8,6 +8,12 @@
     <form [formGroup]="form">
       <div class="form-group">
         <label for="visaEligibility">Put candidate forward to employer?</label>
+        <div class="float-right">
+          <app-autosave-status
+            [saving]="saving"
+            [typing]="typing">
+          </app-autosave-status>
+        </div>
         <select class="form-control"
                 id="visaEligibility" formControlName="visaEligibility">
           <option *ngFor="let opt of visaEligibilityOptions" [value]="opt.value">

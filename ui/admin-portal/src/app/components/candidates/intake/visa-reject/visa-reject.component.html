@@ -1,0 +1,25 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+
+  <div class="form-group">
+    <label for="visaReject">
+      Have you ever been rejected for a visa?
+    </label>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
+    <select class="form-control"
+            id="visaReject" [formControlName]="'visaReject'">
+      <option *ngFor="let opt of visaRejectOptions" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+  </div>
+
+</form>
+

@@ -1,0 +1,32 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+
+  <div class="form-group">
+    <label for="dependants">
+      How many dependants do you have?
+    </label>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
+    <input type="number" class="form-control"
+           id="dependants" [formControlName]="'dependants'">
+    <small>Note: If none/single, enter 0.</small>
+  </div>
+
+  <div *ngIf="hasDependants" class="form-group">
+    <label for="dependantsNotes">
+      Please provide some more details on your dependants
+    </label>
+    <textarea type="text" class="md-textarea-auto form-control" rows="4"
+              id="dependantsNotes" [formControlName]="'dependantsNotes'"
+              placeholder="" ></textarea>
+  </div>
+
+
+</form>
+

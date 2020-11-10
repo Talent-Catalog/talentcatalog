@@ -4,9 +4,12 @@
 <form [formGroup]="form">
   <div class="form-group">
     <label for="resettleThird">Have you ever applied for resettlement to a 3rd country?</label>
-    <span *ngIf="saving">
-      <i class="fas fa-spinner fa-spin"></i> saving...
-    </span>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
     <select class="form-control"
             id="resettleThird" [formControlName]="'resettleThird'">
       <option *ngFor="let opt of resettlementThirdOptions" [value]="opt.value">

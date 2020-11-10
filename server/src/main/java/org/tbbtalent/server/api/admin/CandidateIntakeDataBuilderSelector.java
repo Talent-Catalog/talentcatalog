@@ -49,14 +49,29 @@ public class CandidateIntakeDataBuilderSelector {
                 
                 .add("candidateVisaChecks", candidateVisaCheckDto())
 
+                .add("canDrive")
+
+                .add("children")
+                .add("childrenAge")
+
+                .add("conflict")
+                .add("conflictNotes")
+
                 .add("crimeConvict")
                 .add("crimeConvictNotes")
+
+                .add("dependants")
+                .add("dependantsNotes")
 
                 .add("destLimit")
                 .add("destLimitNotes")
 
                 .add("destJob")
                 .add("destJobNotes")
+
+                .add("drivingLicense")
+                .add("drivingLicenseExp")
+                .add("drivingLicenseCountry", countryDto())
 
                 .add("familyMove")
                 .add("familyMoveNotes")
@@ -65,6 +80,7 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("homeLocation")
                 .add("hostChallenges")
+                .add("hostBorn")
                 .add("hostEntryYear")
                 .add("hostEntryLegally")
                 .add("intRecruitReasons")
@@ -72,7 +88,18 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("leftHomeReason")
                 .add("leftHomeOther")
+                .add("militaryService")
+
                 .add("maritalStatus")
+                .add("partnerRegistered")
+                .add("partnerCandidate", partnerCandidateDto())
+                .add("partnerEduLevel", englishLevelDto())
+                .add("partnerProfession", occupationDto())
+                .add("partnerEnglish")
+                .add("partnerEnglishLevel", languageLevelDto())
+                .add("partnerIelts")
+                .add("partnerIeltsScore")
+                .add("partnerCitizenship", nationalityDto())
 
                 .add("residenceStatus")
 
@@ -98,6 +125,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("unrwaNumber")
                 .add("unrwaNotes")
 
+                .add("visaReject")
                 .add("visaIssues")
                 .add("visaIssuesNotes")
 
@@ -169,10 +197,35 @@ public class CandidateIntakeDataBuilderSelector {
                 ;
     }
 
+    private DtoBuilder occupationDto() {
+        return new DtoBuilder()
+                .add("id")
+                ;
+    }
+
+    private DtoBuilder englishLevelDto() {
+        return new DtoBuilder()
+                .add("id")
+                ;
+    }
+
+    private DtoBuilder languageLevelDto() {
+        return new DtoBuilder()
+                .add("id")
+                ;
+    }
+
     private DtoBuilder countryDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("name")
+                ;
+    }
+
+    private DtoBuilder partnerCandidateDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("candidateNumber")
+                .add("user", userDto())
                 ;
     }
 

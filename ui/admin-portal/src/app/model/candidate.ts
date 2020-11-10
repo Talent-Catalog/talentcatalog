@@ -8,6 +8,8 @@ import {SurveyType} from './survey-type';
 import {Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {getExternalHref} from '../util/url';
+import {Occupation} from './occupation';
+import {LanguageLevel} from './language-level';
 
 export interface Candidate {
   id: number;
@@ -55,6 +57,14 @@ export interface CandidateIntakeData {
 
   candidateExams?: CandidateExam[];
 
+  canDrive?: YesNo;
+
+  children?: YesNo;
+  childrenAge?: YesNo;
+
+  dependants?: number;
+  dependantsNotes?: string;
+
   conflict?: YesNo;
   conflictNotes?: string;
 
@@ -67,6 +77,10 @@ export interface CandidateIntakeData {
   destJob?: YesNo;
   destJobNotes?: string;
 
+  drivingLicense?: DrivingLicenseStatus;
+  drivingLicenseExp?: string;
+  drivingLicenseCountry?: Country;
+
   familyMove?: YesNo;
   familyMoveNotes?: string;
 
@@ -76,14 +90,24 @@ export interface CandidateIntakeData {
   homeLocation?: string;
 
   hostChallenges?: string;
+  hostBorn?: YesNo;
   hostEntryYear?: string;
   hostEntryLegally?: YesNo;
   intRecruitReasons?: IntRecruitReason[];
   intRecruitRural?: YesNoUnsure;
   leftHomeReason?: LeftHomeReason[];
   leftHomeOther?: string;
+  militaryService?: YesNo;
   maritalStatus?: MaritalStatus;
-  partnerTBB?: YesNoUnsure;
+  partnerRegistered?: YesNoUnsure;
+  partnerCandidate?: Candidate;
+  partnerEduLevel?: EducationLevel;
+  partnerProfession?: Occupation;
+  partnerEnglish?: YesNo;
+  partnerEnglishLevel?: LanguageLevel;
+  partnerIelts?: YesNoUnsure;
+  partnerIeltsScore?: IeltsScore;
+  partnerCitizenship?: Nationality;
 
   returnedHome?: YesNoUnsure;
   returnedHomeNotes?: string;
@@ -116,6 +140,7 @@ export interface CandidateIntakeData {
   unrwaWasRegistered?: YesNoUnsure;
   unrwaNumber?: string;
   unrwaNotes?: string;
+  visaReject?: YesNoUnsure;
   visaIssues?: VisaIssue[];
   visaIssuesNotes?: string;
 }
@@ -287,6 +312,37 @@ export enum MaritalStatus {
   Married = "Married",
   Engaged = "Engaged",
   Neither = "Not married or engaged"
+}
+
+export enum IeltsScore {
+  NoResponse = "",
+  Unsure = "Unsure",
+  Zero = "0",
+  Half = "0.5",
+  One = "1",
+  OneHalf = "1.5",
+  Two = "2",
+  TwoHalf = "2.5",
+  Three = "3",
+  ThreeHalf = "3.5",
+  Four = "4",
+  FourHalf = "4.5",
+  Five = "5",
+  FiveHalf = "5.5",
+  Six = "6",
+  SixHalf = "6.5",
+  Seven = "7",
+  SevenHalf = "7.5",
+  Eight = "8",
+  EightHalf = "8.5",
+  Nine = "9",
+}
+
+export enum DrivingLicenseStatus {
+  NoResponse = "",
+  Valid = "Valid",
+  Expired = "Expired",
+  None = "None"
 }
 
 export function getCandidateNavigation(candidate: Candidate): any[] {

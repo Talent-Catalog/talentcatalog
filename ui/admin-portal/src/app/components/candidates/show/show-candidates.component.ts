@@ -1,23 +1,10 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  Output,
-  SimpleChanges,
-  ViewChild
-} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 
 import {Candidate} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
 import {SearchResults} from '../../../model/search-results';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {
-  CreateFromDefaultSavedSearchRequest,
-  SavedSearchService
-} from '../../../services/saved-search.service';
+import {CreateFromDefaultSavedSearchRequest, SavedSearchService} from '../../../services/saved-search.service';
 import {Observable, of, Subscription} from 'rxjs';
 import {CandidateReviewStatusItem} from '../../../model/candidate-review-status-item';
 import {HttpClient} from '@angular/common/http';
@@ -36,51 +23,26 @@ import {
   SearchCandidateRequestPaged,
   SelectCandidateInSearchRequest
 } from '../../../model/saved-search';
-import {
-  CandidateSource,
-  canEditSource,
-  defaultReviewStatusFilter,
-  isMine,
-  isSharedWithMe,
-  ReviewedStatus
-} from '../../../model/base';
-import {
-  CachedSourceResults,
-  CandidateSourceResultsCacheService
-} from '../../../services/candidate-source-results-cache.service';
+import {CandidateSource, canEditSource, defaultReviewStatusFilter, isMine, isSharedWithMe, ReviewedStatus} from '../../../model/base';
+import {CachedSourceResults, CandidateSourceResultsCacheService} from '../../../services/candidate-source-results-cache.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {IDropdownSettings} from 'ng-multiselect-dropdown';
 import {User} from '../../../model/user';
 import {AuthService} from '../../../services/auth.service';
 import {UserService} from '../../../services/user.service';
-import {
-  SelectListComponent,
-  TargetListSelection
-} from '../../list/select/select-list.component';
-import {
-  CreateSavedListRequest,
-  IHasSetOfCandidates,
-  isSavedList,
-  SavedListGetRequest
-} from '../../../model/saved-list';
+import {SelectListComponent, TargetListSelection} from '../../list/select/select-list.component';
+import {CreateSavedListRequest, IHasSetOfCandidates, isSavedList, SavedListGetRequest} from '../../../model/saved-list';
 import {CandidateSourceCandidateService} from '../../../services/candidate-source-candidate.service';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {EditCandidateReviewStatusItemComponent} from '../../util/candidate-review/edit/edit-candidate-review-status-item.component';
 import {Router} from '@angular/router';
 import {CandidateSourceService} from '../../../services/candidate-source.service';
 import {SavedListCandidateService} from '../../../services/saved-list-candidate.service';
-import {
-  catchError,
-  debounceTime,
-  distinctUntilChanged,
-  map,
-  switchMap,
-  tap
-} from 'rxjs/operators';
+import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from 'rxjs/operators';
 import {Location} from '@angular/common';
 import {copyToClipboard} from '../../../util/clipboard';
 import {SavedListService} from '../../../services/saved-list.service';
-import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
+import {ConfirmationComponent} from '../../util/confirm/confirmation.component';
 import {CandidateColumnSelectorComponent} from "../../util/candidate-column-selector/candidate-column-selector.component";
 import {CandidateFieldInfo} from "../../../model/candidate-field-info";
 import {CandidateFieldService} from "../../../services/candidate-field.service";
@@ -1018,7 +980,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   isDefaultSavedSearch(): boolean {
     if (isSavedSearch(this.candidateSource)) {
-      return this.candidateSource.defaultSearch;
+      return this.candidateSource?.defaultSearch;
     } else {
      return false;
     }
@@ -1026,7 +988,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   private getSavedSearchSource(): SavedSearchRef {
     if (isSavedList(this.candidateSource)) {
-      return this.candidateSource.savedSearchSource;
+      return this.candidateSource?.savedSearchSource;
     } else {
       return null;
     }

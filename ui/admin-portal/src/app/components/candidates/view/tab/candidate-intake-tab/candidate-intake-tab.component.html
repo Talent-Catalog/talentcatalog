@@ -29,10 +29,6 @@
       Interest in International Recruitment
     </div>
     <div class="card-body">
-      <app-avail-immediate
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-avail-immediate>
       <app-int-recruitment
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData">
@@ -49,14 +45,10 @@
   <app-citizenships
     [candidate]="candidate"
     [candidateIntakeData]="candidateIntakeData"
-    [nationalities]="nationalities"
-  >
+    [nationalities]="nationalities">
   </app-citizenships>
 
-
   <hr/>
-
-
 
   <app-exams
     [candidate]="candidate"
@@ -68,7 +60,34 @@
 
   <div class="card">
     <div class="card-header">
-      Home & Host Countries
+      Residency and Work Status
+    </div>
+    <div class="card-body">
+      <app-residence-status
+      [candidate]="candidate"
+      [candidateIntakeData]="candidateIntakeData">
+      </app-residence-status>
+      <app-work-permit
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-work-permit>
+      <app-work-status
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-work-status>
+      <app-work-abroad
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [countries]="countries">
+      </app-work-abroad>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="card">
+    <div class="card-header">
+      Host Country Status
     </div>
     <div class="card-body">
       <app-host-entry-year
@@ -103,50 +122,14 @@
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData">
       </app-resettlement-third>
+      <app-visa-reject
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-visa-reject>
       <app-host-challenges
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData">
       </app-host-challenges>
-      <app-asylum-year
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-asylum-year>
-    </div>
-  </div>
-
-  <hr/>
-
-  <div class="card">
-    <div class="card-header">
-      Family Information
-    </div>
-    <div class="card-body">
-      <app-marital-status
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-marital-status>
-    </div>
-  </div>
-
-  <hr/>
-
-  <div class="card">
-    <div class="card-header">
-      Destinations
-    </div>
-    <div class="card-body">
-      <app-destinations
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-destinations>
-      <app-destination-limit
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-destination-limit>
-      <app-destination-job
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-destination-job>
     </div>
   </div>
 
@@ -176,70 +159,73 @@
 
   <hr/>
 
-  <div class="card">
-    <div class="card-header">
-      Work Status
-    </div>
-    <div class="card-body">
-      <app-work-permit
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-work-permit>
-      <app-work-status
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-work-status>
-      <app-work-abroad
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [countries]="countries">
-      </app-work-abroad>
-    </div>
-  </div>
+  <app-view-candidate-language
+  [candidate]="candidate"
+  [editable]="false">
+  </app-view-candidate-language>
 
   <hr/>
 
   <div class="card">
     <div class="card-header">
-      Visa Issues
+      Family Information
     </div>
     <div class="card-body">
-      <app-visa-issues
+      <app-marital-status
+      [candidate]="candidate"
+      [candidateIntakeData]="candidateIntakeData"
+      [educationLevels]="educationLevels"
+      [occupations]="occupations"
+      [languageLevels]="languageLevels"
+      [nationalities]="nationalities">
+      </app-marital-status>
+      <app-dependants
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData">
-      </app-visa-issues>
-    </div>
-  </div>
-
-  <hr/>
-
-  <div class="card">
-    <div class="card-header">
-      Immediate Availability
-    </div>
-    <div class="card-body">
-      <app-avail-immediate
+      </app-dependants>
+      <app-children
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData">
-      </app-avail-immediate>
-    </div>
-  </div>
-
-  <hr/>
-
-  <div class="card">
-    <div class="card-header">
-      Family
-    </div>
-    <div class="card-body">
-      <app-family
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-family>
+      </app-children>
       <app-family-health
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData">
       </app-family-health>
+      <app-family
+      [candidate]="candidate"
+      [candidateIntakeData]="candidateIntakeData">
+      </app-family>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="card">
+    <div class="card-header">
+      Additional Eligibility
+    </div>
+    <div class="card-body">
+      <app-crime
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-crime>
+      <app-military-service
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-military-service>
+      <app-conflict
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-conflict>
+      <app-visa-issues
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-visa-issues>
+      <app-driving-license
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [countries]="countries">
+      </app-driving-license>
     </div>
   </div>
 

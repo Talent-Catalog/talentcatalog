@@ -41,11 +41,19 @@ public class CandidateIntakeDataUpdate {
     private HasPassport citizenHasPassport;
     private String citizenNotes;
 
+    private YesNo canDrive;
+
+    private YesNo children;
+    private String childrenAge;
+
     private YesNo conflict;
     private String conflictNotes;
 
     private YesNoUnsure crimeConvict;
     private String crimeConvictNotes;
+
+    private Long dependants;
+    private String dependantsNotes;
 
     //Corresponds to CandidateDestination fields
     private Long destinationId;
@@ -67,12 +75,17 @@ public class CandidateIntakeDataUpdate {
     private YesNo destJob;
     private String destJobNotes;
 
+    private DrivingLicenseStatus drivingLicense;
+    private LocalDate drivingLicenseExp;
+    private Long drivingLicenseCountryId;
+
     private YesNo familyMove;
     private String familyMoveNotes;
     private YesNo familyHealthConcern;
     private String familyHealthConcernNotes;
     private String homeLocation;
     private String hostChallenges;
+    private YesNo hostBorn;
     private LocalDate hostEntryYear;
     private YesNo hostEntryLegally;
     private List<IntRecruitReason> intRecruitReasons;
@@ -80,7 +93,18 @@ public class CandidateIntakeDataUpdate {
 
     private LeftHomeReason leftHomeReason;
     private String leftHomeOther;
+    private YesNo militaryService;
+
     private MaritalStatus maritalStatus;
+    private YesNoUnsure partnerRegistered;
+    private Long partnerCandId;
+    private Long partnerEduLevelId;
+    private Long partnerProfessionId;
+    private YesNo partnerEnglish;
+    private Long partnerEnglishLevelId;
+    private YesNoUnsure partnerIelts;
+    private IeltsScore partnerIeltsScore;
+    private Long partnerCitizenshipId;
 
     private ResidenceStatus residenceStatus;
 
@@ -116,6 +140,7 @@ public class CandidateIntakeDataUpdate {
     private String visaProtectionGrounds;
     private TBBEligibilityAssessment visaTbbEligibilityAssessment;
 
+    private YesNoUnsure visaReject;
     private List<VisaIssue> visaIssues;
     private String visaIssuesNotes;
     

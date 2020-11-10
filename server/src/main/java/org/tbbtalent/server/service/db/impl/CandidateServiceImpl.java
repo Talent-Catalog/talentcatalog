@@ -5,7 +5,11 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.elasticsearch.index.query.*;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.elasticsearch.index.query.SimpleQueryStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,20 +32,88 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientException;
-import org.tbbtalent.server.exception.*;
-import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.exception.CircularReferencedException;
+import org.tbbtalent.server.exception.CountryRestrictionException;
+import org.tbbtalent.server.exception.ExportFailedException;
+import org.tbbtalent.server.exception.InvalidRequestException;
+import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.exception.PasswordMatchException;
+import org.tbbtalent.server.exception.UsernameTakenException;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateDestination;
+import org.tbbtalent.server.model.db.CandidateEducation;
+import org.tbbtalent.server.model.db.CandidateLanguage;
+import org.tbbtalent.server.model.db.CandidateOccupation;
+import org.tbbtalent.server.model.db.CandidateStatus;
+import org.tbbtalent.server.model.db.Country;
+import org.tbbtalent.server.model.db.DataRow;
+import org.tbbtalent.server.model.db.EducationLevel;
+import org.tbbtalent.server.model.db.Exam;
+import org.tbbtalent.server.model.db.Gender;
+import org.tbbtalent.server.model.db.LanguageLevel;
+import org.tbbtalent.server.model.db.Nationality;
+import org.tbbtalent.server.model.db.Occupation;
+import org.tbbtalent.server.model.db.Role;
+import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.SavedSearch;
+import org.tbbtalent.server.model.db.SearchJoin;
+import org.tbbtalent.server.model.db.SearchType;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.SurveyType;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.model.sf.Contact;
-import org.tbbtalent.server.repository.db.*;
+import org.tbbtalent.server.repository.db.CandidateRepository;
+import org.tbbtalent.server.repository.db.CandidateSpecification;
+import org.tbbtalent.server.repository.db.CountryRepository;
+import org.tbbtalent.server.repository.db.EducationLevelRepository;
+import org.tbbtalent.server.repository.db.GetSavedListCandidatesQuery;
+import org.tbbtalent.server.repository.db.LanguageLevelRepository;
+import org.tbbtalent.server.repository.db.NationalityRepository;
+import org.tbbtalent.server.repository.db.OccupationRepository;
+import org.tbbtalent.server.repository.db.SavedListRepository;
+import org.tbbtalent.server.repository.db.SavedSearchRepository;
+import org.tbbtalent.server.repository.db.SurveyTypeRepository;
+import org.tbbtalent.server.repository.db.UserRepository;
 import org.tbbtalent.server.repository.es.CandidateEsRepository;
 import org.tbbtalent.server.request.LoginRequest;
-import org.tbbtalent.server.request.candidate.*;
+import org.tbbtalent.server.request.candidate.BaseCandidateContactRequest;
+import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
+import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
+import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
+import org.tbbtalent.server.request.candidate.CandidatePhoneSearchRequest;
+import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
+import org.tbbtalent.server.request.candidate.IHasSetOfSavedLists;
+import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
+import org.tbbtalent.server.request.candidate.SavedListGetRequest;
+import org.tbbtalent.server.request.candidate.SavedSearchGetRequest;
+import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
+import org.tbbtalent.server.request.candidate.SearchJoinRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateContactRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateEducationRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateLinksRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tbbtalent.server.request.candidate.stat.CandidateStatDateRequest;
 import org.tbbtalent.server.request.note.CreateCandidateNoteRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.security.PasswordHelper;
 import org.tbbtalent.server.security.UserContext;
-import org.tbbtalent.server.service.db.*;
+import org.tbbtalent.server.service.db.CandidateCitizenshipService;
+import org.tbbtalent.server.service.db.CandidateDestinationService;
+import org.tbbtalent.server.service.db.CandidateExamService;
+import org.tbbtalent.server.service.db.CandidateNoteService;
+import org.tbbtalent.server.service.db.CandidateSavedListService;
+import org.tbbtalent.server.service.db.CandidateService;
+import org.tbbtalent.server.service.db.CandidateVisaService;
+import org.tbbtalent.server.service.db.CountryService;
+import org.tbbtalent.server.service.db.GoogleFileSystemService;
+import org.tbbtalent.server.service.db.NationalityService;
+import org.tbbtalent.server.service.db.SalesforceService;
+import org.tbbtalent.server.service.db.SavedSearchService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.service.db.util.PdfHelper;
 import org.tbbtalent.server.util.filesystem.FileSystemFolder;
@@ -55,7 +127,13 @@ import java.security.GeneralSecurityException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -87,6 +165,8 @@ public class CandidateServiceImpl implements CandidateService {
     private final CandidateDestinationService candidateDestinationService;
     private final CandidateExamService candidateExamService;
     private final SurveyTypeRepository surveyTypeRepository;
+    private final OccupationRepository occupationRepository;
+    private final LanguageLevelRepository languageLevelRepository;
     private final EmailHelper emailHelper;
     private final PdfHelper pdfHelper;
 
@@ -114,6 +194,8 @@ public class CandidateServiceImpl implements CandidateService {
                                 CandidateVisaService candidateVisaService, 
                                 CandidateExamService candidateExamService,
                                 SurveyTypeRepository surveyTypeRepository,
+                                OccupationRepository occupationRepository,
+                                LanguageLevelRepository languageLevelRepository,
                                 EmailHelper emailHelper, PdfHelper pdfHelper) {
         this.userRepository = userRepository;
         this.savedListRepository = savedListRepository;
@@ -136,6 +218,8 @@ public class CandidateServiceImpl implements CandidateService {
         this.candidateVisaService = candidateVisaService;
         this.candidateExamService = candidateExamService;
         this.surveyTypeRepository = surveyTypeRepository;
+        this.occupationRepository = occupationRepository;
+        this.languageLevelRepository = languageLevelRepository;
         this.emailHelper = emailHelper;
         this.pdfHelper = pdfHelper;
         this.fileSystemService = fileSystemService;
@@ -1724,8 +1808,48 @@ public class CandidateServiceImpl implements CandidateService {
         if (workAbroadLocId != null) {
             workAbroadLoc = countryRepository.findById(workAbroadLocId).orElse(null);
         }
+
+        //Get the partner candidate object from the id in the data request and pass into the populateIntakeData method
+        final Long partnerCandId = data.getPartnerCandId();
+        Candidate partnerCandidate = null;
+        if (partnerCandId != null) {
+            partnerCandidate = candidateRepository.findById(partnerCandId).orElse(null);
+        }
+
+        //Get the partner education level object from the id in the data request and pass into the populateIntakeData method
+        final Long partnerEduLevelId = data.getPartnerEduLevelId();
+        EducationLevel partnerEducationLevel = null;
+        if (partnerEduLevelId != null) {
+            partnerEducationLevel = educationLevelRepository.findById(partnerEduLevelId).orElse(null);
+        }
+
+        final Long partnerProfessionId = data.getPartnerProfessionId();
+        Occupation partnerProfession = null;
+        if (partnerProfessionId != null) {
+            partnerProfession = occupationRepository.findById(partnerProfessionId).orElse(null);
+        }
+
+        final Long partnerEnglishLevelId = data.getPartnerEnglishLevelId();
+        LanguageLevel partnerEnglishLevel = null;
+        if (partnerEnglishLevelId != null) {
+            partnerEnglishLevel = languageLevelRepository.findById(partnerEnglishLevelId).orElse(null);
+        }
+
+        final Long partnerCitizenshipId = data.getPartnerCitizenshipId();
+        Nationality partnerCitizenship = null;
+        if (partnerCitizenshipId != null) {
+            partnerCitizenship = nationalityRepository.findById(partnerCitizenshipId).orElse(null);
+        }
+
+        final Long drivingLicenseCountryId = data.getDrivingLicenseCountryId();
+        Country drivingLicenseCountry = null;
+        if (drivingLicenseCountryId != null) {
+            drivingLicenseCountry = countryRepository.findById(drivingLicenseCountryId).orElse(null);
+        }
         
-        candidate.populateIntakeData(data, workAbroadLoc);
+        candidate.populateIntakeData(data, workAbroadLoc, partnerCandidate, partnerEducationLevel,
+                                    partnerProfession, partnerEnglishLevel, partnerCitizenship, drivingLicenseCountry);
+
         save(candidate, true);
     }
 }
