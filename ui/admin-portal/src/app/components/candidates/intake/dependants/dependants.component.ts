@@ -29,4 +29,12 @@ export class DependantsComponent extends IntakeComponentBase implements OnInit {
     return this.form.value?.dependants;
   }
 
+  get hasDependants(): boolean {
+    let found: boolean = false;
+    if (this.form?.value) {
+      found = this.form.value?.dependants > 0;
+    }
+    return found;
+  }
+
 }
