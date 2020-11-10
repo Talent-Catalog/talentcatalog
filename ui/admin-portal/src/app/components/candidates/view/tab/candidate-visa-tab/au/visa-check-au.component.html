@@ -11,6 +11,15 @@ Downside == upside : standard appearance of same question
 -->
   <div class="card">
     <div class="card-header">
+      Eligibility Check
+    </div>
+    <div class="card-body">
+
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
       Home Country
     </div>
     <div class="card-body">
@@ -22,11 +31,16 @@ Downside == upside : standard appearance of same question
   </div>
 
   <hr/>
-
-  <app-visa-assessment
-    [candidate]="candidate"
-    [candidateIntakeData]="candidateIntakeData"
-    [myRecordIndex]="selectedIndex"
-  >
-  </app-visa-assessment>
+  <div class="card">
+    <div class="card-header">
+      Final Assessment
+    </div>
+    <div class="card-body">
+      <app-visa-assessment
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [myRecordIndex]="selectedIndex">
+      </app-visa-assessment>
+    </div>
+  </div>
 </div>

@@ -3,8 +3,8 @@ import {Observable} from 'rxjs/index';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
-import {User} from "../model/user";
-import {UpdateSharingRequest} from "../model/saved-search";
+import {User} from '../model/user';
+import {UpdateSharingRequest} from '../model/saved-search';
 
 @Injectable({providedIn: 'root'})
 export class UserService {
@@ -47,5 +47,9 @@ export class UserService {
 
   removeFromSharedSearches(id: number, request: UpdateSharingRequest): Observable<User> {
     return this.http.put<User>(`${this.apiUrl}/shared-remove/${id}`, request);
+  }
+
+  findByUsersName(request): Observable<SearchResults<User>> {
+    return this.http.post<SearchResults<User>>(`${this.apiUrl}/findbyname`, request);
   }
 }

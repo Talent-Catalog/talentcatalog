@@ -178,6 +178,7 @@ import {ChildrenComponent} from './components/candidates/intake/children/childre
 import {VisaRejectComponent} from './components/candidates/intake/visa-reject/visa-reject.component';
 import {DrivingLicenseComponent} from './components/candidates/intake/driving-license/driving-license.component';
 import {DependantsComponent} from './components/candidates/intake/dependants/dependants.component';
+import {UserDateAuditComponent} from './components/util/user-date-audit/user-date-audit.component';
 
 @NgModule({
   declarations: [
@@ -348,7 +349,8 @@ import {DependantsComponent} from './components/candidates/intake/dependants/dep
     ChildrenComponent,
     VisaRejectComponent,
     DrivingLicenseComponent,
-    DependantsComponent
+    DependantsComponent,
+    UserDateAuditComponent
   ],
   imports: [
     BrowserModule,
