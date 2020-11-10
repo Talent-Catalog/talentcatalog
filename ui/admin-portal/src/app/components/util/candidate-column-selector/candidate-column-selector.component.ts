@@ -12,6 +12,7 @@ import {CandidateFieldService} from "../../../services/candidate-field.service";
 export class CandidateColumnSelectorComponent implements OnInit {
 
   availableFields: CandidateFieldInfo[] = [];
+  dragulaGroupName: string = "FIELDS";
   private _selectedFields: CandidateFieldInfo[] = [];
 
   constructor(
@@ -20,12 +21,10 @@ export class CandidateColumnSelectorComponent implements OnInit {
     private activeModal: NgbActiveModal) { }
 
   ngOnInit(): void {
-    this.dragulaService.createGroup("FIELDS", {});
-
-    this.dragulaService.dropModel("FIELDS").subscribe(
-      args => console.log(args)
-    );
-
+    const dragulaGroup = this.dragulaService.find(this.dragulaGroupName);
+    if (!dragulaGroup) {
+      this.dragulaService.createGroup(this.dragulaGroupName, {});
+    }
   }
 
   get selectedFields(): CandidateFieldInfo[] {
@@ -47,6 +46,11 @@ export class CandidateColumnSelectorComponent implements OnInit {
 
     //Copy remaining values to array
     this.availableFields = [...availableFieldsMap.values()];
+
+    //Start by sorting available fields in alpha order of display name
+    this.availableFields.sort(
+      (field1, field2) =>
+        field1.displayName.localeCompare(field2.displayName));
   }
 
   dismiss() {

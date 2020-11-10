@@ -1,6 +1,6 @@
 <div class="modal-header">
 
-  <h4 class="modal-title">Confirmation</h4>
+  <h4 class="modal-title">Select columns to display</h4>
 
   <button type="button" class="close" aria-label="Close" (click)="dismiss()">
     <span aria-hidden="true">&times;</span>
@@ -10,11 +10,11 @@
 
 <div class="modal-body">
   <div class="flex">
-    <div class="container" dragula="FIELDS" [(dragulaModel)]="availableFields">
+    <div class="container" [dragula]="dragulaGroupName" [(dragulaModel)]="availableFields">
       <div class="field" *ngFor="let field of availableFields">{{ field.displayName }}</div>
     </div>
 
-    <div class="container" dragula="FIELDS" [(dragulaModel)]="selectedFields">
+    <div class="container" [dragula]="dragulaGroupName" [(dragulaModel)]="selectedFields">
       <div class="field" *ngFor="let field of selectedFields">{{ field.displayName }}</div>
   </div>
   </div>

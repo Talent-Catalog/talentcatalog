@@ -7,7 +7,7 @@ import {
 } from '@ng-bootstrap/ng-bootstrap';
 import {NgMultiSelectDropDownModule} from 'ng-multiselect-dropdown';
 import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha';
-import {DatePipe} from '@angular/common';
+import {DatePipe, TitleCasePipe} from '@angular/common';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './components/app.component';
@@ -374,7 +374,7 @@ import {CandidateColumnSelectorComponent} from './components/util/candidate-colu
     AuthService,
     RoleGuardService,
     Title,
-    DatePipe
+    DatePipe, TitleCasePipe
   ],
   bootstrap: [AppComponent]
 })

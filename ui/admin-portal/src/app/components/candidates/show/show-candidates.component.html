@@ -35,10 +35,6 @@
                       (pageChange)="doSearch(true)">
       </ngb-pagination>
 
-<!--      todo Temporary link  for launching column selector-->
-      <button class="btn" (click)="doSelectColumns()">
-        Select columns
-      </button>
       <button class="btn" (click)="doCopyLink()">
         <i class="fas fa-link" title="Get shareable link"></i>
       </button>
@@ -47,6 +43,9 @@
       </button>
       <button class="btn" *ngIf="isEditable() && !isDefaultSavedSearch()" (click)="doEditSource()">
         <i class="fas fa-edit" title="Rename"></i>
+      </button>
+      <button class="btn" (click)="doSelectColumns()">
+        <i class="fas fa-columns" title="Select columns to display"></i>
       </button>
       <a *ngIf="candidateSource?.sfJoblink" target="_blank"
          [href]="candidateSource.sfJoblink">

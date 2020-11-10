@@ -21,6 +21,9 @@
             <i *ngIf="!isWatching()" class="far fa-eye notwatched" title="Watch"></i>
           </button>
           <button class="btn" *ngIf="showEdit && isEditable()" (click)="doEditSource()"><i class="fas fa-edit" title="Rename"></i></button>
+
+<!--          todo Short form columns-->
+          <button class="btn" *ngIf="showEdit && isEditable()" (click)="doEditSource()"><i class="fas fa-columns" title="Select columns to display"></i></button>
           <a class="btn" *ngIf="candidateSource.sfJoblink" target="_blank"
              [href]="candidateSource.sfJoblink">
             <i class="fab fa-salesforce" title="Associated Job Opportunity"></i>

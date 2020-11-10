@@ -1,8 +1,7 @@
 import {Injectable} from '@angular/core';
-import {DatePipe} from "@angular/common";
+import {DatePipe, TitleCasePipe} from "@angular/common";
 import {CandidateFieldInfo} from "../model/candidate-field-info";
 import {AuthService} from "./auth.service";
-import {User} from "../model/user";
 
 @Injectable({
   providedIn: 'root'
@@ -10,20 +9,22 @@ import {User} from "../model/user";
 export class CandidateFieldService {
 
   //Note - if you want to use any other pipes for formatting, you also need to
-  //add them to providers in app.module.ts.
+  //add them to providers array in app.module.ts.
   //See https://stackoverflow.com/a/48785621/929968
   private dateFormatter = (value) => this.datePipe.transform(value, "yyyy-MM-dd");
-  private loggedInUser: User;
+  private titleCaseFormatter = (value) => this.titleCasePipe.transform(value);
 
   private allDisplayableFields = [
     new CandidateFieldInfo("First Name", "user.firstName",
       null, this.isCandidateNameViewable),
     new CandidateFieldInfo("Gender", "gender",
-      null, null),
+      this.titleCaseFormatter, null),
     new CandidateFieldInfo("Last Name", "user.lastName",
       null, this.isCandidateNameViewable),
     new CandidateFieldInfo("Location", "country.name",
       null, this.isCountryViewable),
+    new CandidateFieldInfo("Married?", "maritalStatus",
+      null, null),
     new CandidateFieldInfo("Nationality", "nationality.name",
       null, this.isCountryViewable),
     new CandidateFieldInfo("Phone", "phone",
@@ -54,10 +55,9 @@ export class CandidateFieldService {
 
   constructor(
     private authService: AuthService,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private titleCasePipe: TitleCasePipe
   ) {
-
-    this.loggedInUser = this.authService.getLoggedInUser();
 
     for (const field of this.allDisplayableFields) {
       this.allDisplayableFieldsMap.set(field.fieldPath, field);
@@ -65,9 +65,6 @@ export class CandidateFieldService {
   }
 
   get defaultDisplayableFields(): CandidateFieldInfo[] {
-    //todo coudl do lazy creation of this. Then cached value could be cleared at logout.
-    //todo Or fetch loggedInUser each time.
-
     const fields: CandidateFieldInfo[] = [];
 
     for (const fieldPath of this.allDefaultDisplayedFieldPaths) {
@@ -95,12 +92,16 @@ export class CandidateFieldService {
   }
 
   isCandidateNameViewable(): boolean {
-    const role = this.loggedInUser ? this.loggedInUser.role : null;
+    const loggedInUser =
+      this.authService ? this.authService.getLoggedInUser() : null;
+    const role = loggedInUser ? loggedInUser.role : null;
     return role !== 'semilimited' && role !== 'limited';
   }
 
   isCountryViewable(): boolean {
-    const role = this.loggedInUser ? this.loggedInUser.role : null;
+    const loggedInUser =
+      this.authService ? this.authService.getLoggedInUser() : null;
+    const role = loggedInUser ? loggedInUser.role : null;
     return role !== 'limited';
   }
 
