@@ -1,52 +1,44 @@
-<div *ngIf="error">
-  {{error}}
-</div>
-<form [formGroup]="form">
+<div class="form-group">
+  <label for="completedDate">
+    Date of Completion:
+  </label>
+  <div class="input-group">
+    <input id="completedDate" type="text" class="form-control" placeholder="YYYY-MM-DD"
+           ngbDatepicker #picker="ngbDatepicker"
+           (dateSelect)="dateSelection()"
+           [(ngModel)]="dateInput"
+           [autoClose]="true"
+           [outsideDays]="'hidden'"
+           [container]="'#completedDate'">
 
-  <div class="form-group">
-    <label for="completedDate">
-      Date of Completion:
-    </label>
-    <div class="input-group">
-      <input id="completedDate" type="text" class="form-control" placeholder="YYYY-MM-DD"
-             ngbDatepicker #picker="ngbDatepicker"
-             [formControlName]="'completedDate'"
-             (dateSelect)="form.controls.completedDate.markAsDirty()"
-             [autoClose]="true"
-             [outsideDays]="'hidden'"
-             [container]="'#completedDate'">
-
-      <div class="input-group-append">
-        <small class="btn btn-link text-secondary" *ngIf="form.controls.completedDate.value"
-               (click)="form.controls.completedDate.patchValue(null); form.controls.completedDate.markAsDirty();">
-          <span>Clear</span>
-        </small>
-        <div class="btn btn-link" *ngIf="!form.controls.completedDate.value"
-             (click)="picker.toggle()">
-          <span>Choose</span>
-        </div>
+    <div class="input-group-append">
+      <small class="btn btn-link text-secondary" (click)="clearDate($event)">
+        <span>Clear</span>
+      </small>
+      <div class="btn btn-link"
+           (click)="picker.toggle()">
+        <span>Choose</span>
       </div>
     </div>
   </div>
+</div>
 
-  <div class="form-group">
-    <label for="completedBy">
-      Completed By:
-    </label>
-    <input id="completedBy"
-           type="text" class="form-control" #input
-           [ngbTypeahead]="doNameSearch"
-           [resultTemplate]="rt"
-           [inputFormatter]="renderCandidateRow"
-           [value]="displayValue"
-           [editable]="false"
-           (selectItem)="selectSearchResult($event, input)"
-           [placeholder]="displayValue === null ? 'Name or number...' : ''"/>
-    <ng-template #rt let-r="result" let-t="term">
-      <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
-    </ng-template>
+<div class="form-group">
+  <label for="completedBy">
+    Checked By:
+  </label>
+  <input id="completedBy"
+         type="text" class="form-control" #input
+         [ngbTypeahead]="doNameSearch"
+         [resultTemplate]="rt"
+         [inputFormatter]="renderCandidateRow"
+         [value]="user"
+         [editable]="false"
+         (selectItem)="selectSearchResult($event, input)"
+         [placeholder]="user === null ? 'Type name...' : ''"/>
+  <ng-template #rt let-r="result" let-t="term">
+    <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
+  </ng-template>
+</div>
 
-  </div>
-
-</form>
 

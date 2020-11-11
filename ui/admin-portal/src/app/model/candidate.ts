@@ -173,8 +173,8 @@ export interface CandidateVisaCheck {
   country?: Country;
   eligibility?: VisaEligibility;
   assessmentNotes?: string;
-  createdBy?: User;
-  createdDate?: number;
+  checkedBy?: User;
+  checkedDate?: string;
   updatedBy?: User;
   updatedDate?: number;
   protection?: YesNo;

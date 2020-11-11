@@ -179,6 +179,7 @@ import {VisaRejectComponent} from './components/candidates/intake/visa-reject/vi
 import {DrivingLicenseComponent} from './components/candidates/intake/driving-license/driving-license.component';
 import {DependantsComponent} from './components/candidates/intake/dependants/dependants.component';
 import {UserDateAuditComponent} from './components/util/user-date-audit/user-date-audit.component';
+import {VisaEligibilityCheckComponent} from './components/candidates/intake/visa-eligibility-check/visa-eligibility-check.component';
 
 @NgModule({
   declarations: [
@@ -350,7 +351,8 @@ import {UserDateAuditComponent} from './components/util/user-date-audit/user-dat
     VisaRejectComponent,
     DrivingLicenseComponent,
     DependantsComponent,
-    UserDateAuditComponent
+    UserDateAuditComponent,
+    VisaEligibilityCheckComponent
   ],
   imports: [
     BrowserModule,

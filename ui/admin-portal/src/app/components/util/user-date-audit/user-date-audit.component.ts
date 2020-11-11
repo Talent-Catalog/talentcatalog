@@ -12,20 +12,31 @@ import {User} from '../../../model/user';
 })
 export class UserDateAuditComponent implements OnInit {
 
-  @Input() handleSelect: string;
-  @Input() displayValue: string;
-  @Output() userChange = new EventEmitter<string>();
+  @Input() dateInput: string;
+  @Input() userInput: User;
+  @Output() dateChange = new EventEmitter<string>();
+  @Output() userChange = new EventEmitter<User>();
 
   form: FormGroup;
   error: string;
   doNameSearch;
   searchFailed: boolean;
   searching: boolean;
+  user: string;
 
   constructor(private fb: FormBuilder,
               private userService: UserService) { }
 
   ngOnInit(): void {
+    // Display the input user if it's passed down
+    if (this.userInput === undefined) {
+      this.user = null;
+    } else {
+      this.user = this.userInput.id + ': ' + this.userInput.firstName + ' ' + this.userInput.lastName;
+    }
+
+    if (this.dateInput === undefined) {this.dateInput = null;}
+
     this.doNameSearch = (text$: Observable<string>) =>
       text$.pipe(
         debounceTime(300),
@@ -45,11 +56,6 @@ export class UserDateAuditComponent implements OnInit {
         ),
         tap(() => this.searching = false)
       );
-
-    this.form = this.fb.group({
-      completedBy: [null],
-      completedDate: [null],
-    });
   }
 
   renderCandidateRow(user: User) {
@@ -58,10 +64,18 @@ export class UserDateAuditComponent implements OnInit {
 
   selectSearchResult ($event, input) {
     $event.preventDefault();
-    // If we only want to display the selected candidate and handle them, we render the row and emit the candidate. Otherwise it will open
-    // the candidate into a new tab (like the header)
       input.value = this.renderCandidateRow($event.item);
       this.userChange.emit($event.item)
+  }
+
+  dateSelection () {
+    this.dateChange.emit(this.dateInput);
+  }
+
+  // todo can't clear fields using null. Do we send a 'Removed' string instead?
+  clearDate () {
+    this.dateInput = null;
+    this.dateChange.emit(null);
   }
 
 }

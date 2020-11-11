@@ -81,18 +81,18 @@ public class CandidateVisaServiceImpl implements CandidateVisaService {
             Country country = countryRepository.findById(countryId)
                     .orElseThrow(() -> new NoSuchObjectException(Country.class, countryId));
 
-            User createdBy = null;
-            final Long createdById = data.getVisaCreatedById();
-            if (createdById != null) {
-                createdBy = userRepository.findById(createdById)
-                    .orElseThrow(() -> new NoSuchObjectException(User.class, createdById));
+            User checkedBy = null;
+            final Long checkedById = data.getVisaCheckedById();
+            if (checkedById != null) {
+                checkedBy = userRepository.findById(checkedById)
+                    .orElseThrow(() -> new NoSuchObjectException(User.class, checkedById));
             }
             
             CandidateVisaCheck cv;
             Long id = data.getVisaId();
             cv = candidateVisaRepository.findById(id)
                     .orElseThrow(() -> new NoSuchObjectException(CandidateVisaCheck.class, id));
-            cv.populateIntakeData(candidate, country, data, createdBy);
+            cv.populateIntakeData(candidate, country, data, checkedBy);
             candidateVisaRepository.save(cv);
         }
     }
