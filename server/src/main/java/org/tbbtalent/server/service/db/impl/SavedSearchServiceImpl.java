@@ -52,6 +52,7 @@ import org.tbbtalent.server.repository.db.UserRepository;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.candidate.SearchJoinRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
+import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.search.CreateFromDefaultSavedSearchRequest;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
@@ -524,6 +525,21 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                         .updateCandidateContextNote(savedList.getId(), request); 
             }
         }
+    }
+
+    @Override
+    public void updateDisplayedFieldPaths(
+            long id, UpdateDisplayedFieldPathsRequest request)
+            throws NoSuchObjectException {
+        SavedSearch savedSearch = savedSearchRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+        if (request.getDisplayedFieldsLong() != null) {
+            savedSearch.setDisplayedFieldsLong(request.getDisplayedFieldsLong());
+        }
+        if (request.getDisplayedFieldsShort() != null) {
+            savedSearch.setDisplayedFieldsShort(request.getDisplayedFieldsShort());
+        }
+        savedSearchRepository.save(savedSearch);
     }
 
     private static String constructDefaultSearchName(User user) {

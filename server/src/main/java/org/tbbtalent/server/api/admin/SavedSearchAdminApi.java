@@ -22,6 +22,7 @@ import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.SavedSearch;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
+import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.list.HasSetOfCandidatesImpl;
 import org.tbbtalent.server.request.search.ClearSelectionRequest;
 import org.tbbtalent.server.request.search.CreateFromDefaultSavedSearchRequest;
@@ -245,6 +246,13 @@ public class SavedSearchAdminApi implements
         savedSearchService.updateCandidateContextNote(id, request);
     }
 
+    @PutMapping("/displayed-fields/{id}")
+    public void updateDisplayedFieldPaths(
+            @PathVariable("id") long id,
+            @RequestBody UpdateDisplayedFieldPathsRequest request) {
+        savedSearchService.updateDisplayedFieldPaths(id, request);
+    }
+
     private DtoBuilder savedSearchNameDto() {
         return new DtoBuilder()
                 .add("name")
@@ -254,6 +262,8 @@ public class SavedSearchAdminApi implements
     private DtoBuilder savedSearchDto() {
         return new DtoBuilder()
                 .add("id")
+                .add("displayedFieldsLong")
+                .add("displayedFieldsShort")
                 .add("name")
                 .add("savedSearchType")
                 .add("savedSearchSubtype")

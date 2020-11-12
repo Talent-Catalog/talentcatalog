@@ -7,6 +7,7 @@
           (deleteSource)="onDeleteSource($event)"
           (editSource)="onEditSource($event)"
           (copySource)="onCopySource($event)"
+          (selectColumns)="onSelectColumns()"
   >
   </app-candidate-source>
 </div>
@@ -46,25 +47,11 @@
           <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
           #
         </th>
-        <th *ngIf="isCandidateNameViewable()">
-          Name
-        </th>
-        <th *ngIf="isCountryViewable()" (click)="toggleSort('nationality.name')">
-          <app-sorted-by [column]="'nationality.name'" [sortColumn]="sortField"
+        <th *ngFor="let field of selectedFields" (click)="toggleSort(field.fieldPath)">
+          <app-sorted-by [column]="field.fieldPath" [sortColumn]="sortField"
                          [sortDirection]="sortDirection"></app-sorted-by>
-          Nationality
+          {{field.displayName}}
         </th>
-        <th *ngIf="isCountryViewable()" (click)="toggleSort('country.name')">
-          <app-sorted-by [column]="'country.name'" [sortColumn]="sortField"
-                         [sortDirection]="sortDirection"></app-sorted-by>
-          Location
-        </th>
-        <th (click)="toggleSort('gender')">
-          <app-sorted-by [column]="'gender'" [sortColumn]="sortField"
-                         [sortDirection]="sortDirection"></app-sorted-by>
-          Gender
-        </th>
-
       </tr>
       </thead>
 
@@ -92,10 +79,10 @@
             [candidate]="candidate">
           </app-cv-icon>
         </td>
-        <td *ngIf="isCandidateNameViewable()">{{candidate.user.firstName}} {{candidate.user.lastName}}</td>
-        <td *ngIf="isCountryViewable()">{{candidate.nationality?.name}}</td>
-        <td *ngIf="isCountryViewable()">{{candidate.country?.name}}</td>
-        <td>{{candidate.gender | titlecase}}</td>
+
+        <td *ngFor="let field of selectedFields">
+          {{field.getValue(candidate)}}
+        </td>
       </tr>
 
       <!-- no results -->

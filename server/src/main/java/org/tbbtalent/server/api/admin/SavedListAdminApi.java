@@ -18,6 +18,7 @@ import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
+import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.list.CreateSavedListRequest;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
 import org.tbbtalent.server.request.list.TargetListSelection;
@@ -178,6 +179,13 @@ public class SavedListAdminApi implements
             @PathVariable("id") long id,
             @RequestBody UpdateCandidateContextNoteRequest request) {
         candidateSavedListService.updateCandidateContextNote(id, request);
+    }
+
+    @PutMapping("/displayed-fields/{id}")
+    public void updateDisplayedFieldPaths(
+            @PathVariable("id") long id,
+            @RequestBody UpdateDisplayedFieldPathsRequest request) {
+        savedListService.updateDisplayedFieldPaths(id, request);
     }
     
 }

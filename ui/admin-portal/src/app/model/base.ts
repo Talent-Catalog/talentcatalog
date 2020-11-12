@@ -56,6 +56,8 @@ export interface Auditable extends HasId {
 
 export interface CandidateSource extends Auditable {
   name: string;
+  displayedFieldsLong?: string[];
+  displayedFieldsShort?: string[];
   fixed: boolean;
   sfJoblink?: string;
   users?: User[];
@@ -85,6 +87,11 @@ export class SearchCandidateSourcesRequest extends PagedSearchRequest {
 export class UpdateCandidateContextNoteRequest {
   candidateId: number;
   contextNote: string;
+}
+
+export class UpdateDisplayedFieldPathsRequest {
+  displayedFieldsLong?: string[];
+  displayedFieldsShort?: string[];
 }
 
 export class LoginRequest {

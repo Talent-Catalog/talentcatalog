@@ -13,6 +13,7 @@ import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.list.CreateSavedListRequest;
 import org.tbbtalent.server.request.list.IHasSetOfCandidates;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
@@ -193,4 +194,15 @@ public interface SavedListService {
     void createUpdateSalesforce(long id)
             throws NoSuchObjectException, GeneralSecurityException,
             WebClientException;
+    
+    /**
+     * Updates the fields that are displayed for each candidate in the given 
+     * saved list.
+     * @param savedListId Id of saved list
+     * @param request Request containing the field paths to be displayed.
+     * @throws NoSuchObjectException  if there is no saved list with this id
+     */
+    void updateDisplayedFieldPaths(
+            long savedListId, UpdateDisplayedFieldPathsRequest request)
+            throws NoSuchObjectException;
 }

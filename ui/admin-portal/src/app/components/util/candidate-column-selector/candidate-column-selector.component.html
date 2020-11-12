@@ -9,6 +9,14 @@
 </div>
 
 <div class="modal-body">
+
+  <div class="alert alert-danger" *ngIf="error">
+    {{error}}
+  </div>
+  <div *ngIf="updating">
+    <i class="fas fa-spinner fa-spin"></i> Updating...
+  </div>
+
   <div class="flex">
     <div class="container" [dragula]="dragulaGroupName" [(dragulaModel)]="availableFields">
       <div class="field" *ngFor="let field of availableFields">{{ field.displayName }}</div>
@@ -16,8 +24,12 @@
 
     <div class="container" [dragula]="dragulaGroupName" [(dragulaModel)]="selectedFields">
       <div class="field" *ngFor="let field of selectedFields">{{ field.displayName }}</div>
+    </div>
   </div>
-  </div>
+  <button type="button" class="btn btn-primary" (click)="default()">
+    Reset to default
+  </button>
+
 </div>
 
 <div class="modal-footer">

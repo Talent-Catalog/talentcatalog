@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {DatePipe, TitleCasePipe} from "@angular/common";
 import {CandidateFieldInfo} from "../model/candidate-field-info";
 import {AuthService} from "./auth.service";
+import {CandidateSource} from "../model/base";
 
 @Injectable({
   providedIn: 'root'
@@ -43,11 +44,19 @@ export class CandidateFieldService {
 
   private allDisplayableFieldsMap = new Map<string, CandidateFieldInfo>();
 
-  private allDefaultDisplayedFieldPaths: string [] = [
+  private defaultDisplayedFieldPathsLong: string [] = [
     "user.firstName",
     "user.lastName",
     "status",
     "updatedDate",
+    "nationality.name",
+    "country.name",
+    "gender"
+  ];
+
+  private defaultDisplayedFieldPathsShort: string [] = [
+    "user.firstName",
+    "user.lastName",
     "nationality.name",
     "country.name",
     "gender"
@@ -64,20 +73,12 @@ export class CandidateFieldService {
     }
   }
 
-  get defaultDisplayableFields(): CandidateFieldInfo[] {
-    const fields: CandidateFieldInfo[] = [];
+  get defaultDisplayableFieldsLong(): CandidateFieldInfo[] {
+    return this.getFieldsFromPaths(this.defaultDisplayedFieldPathsLong);
+  }
 
-    for (const fieldPath of this.allDefaultDisplayedFieldPaths) {
-      const field = this.allDisplayableFieldsMap.get(fieldPath);
-      if (field == null) {
-        //todo error
-      } else {
-        if (field.fieldSelector == null || field.fieldSelector()) {
-          fields.push(field);
-        }
-      }
-    }
-    return fields;
+  get defaultDisplayableFieldsShort(): CandidateFieldInfo[] {
+    return this.getFieldsFromPaths(this.defaultDisplayedFieldPathsShort);
   }
 
   get displayableFieldsMap(): Map<string, CandidateFieldInfo> {
@@ -86,6 +87,46 @@ export class CandidateFieldService {
     for (const field of this.allDisplayableFields) {
       if (field.fieldSelector == null || field.fieldSelector()) {
         fields.set(field.fieldPath, field);
+      }
+    }
+    return fields;
+  }
+
+  getCandidateSourceFields(
+    source: CandidateSource, longFormat: boolean): CandidateFieldInfo[] {
+    let fields: CandidateFieldInfo[] = [];
+    if (source) {
+      let fieldPaths;
+      if (longFormat) {
+        fieldPaths = source.displayedFieldsLong;
+        //Default if empty fieldPaths
+        if (!fieldPaths || fieldPaths.length === 0) {
+          fieldPaths = this.defaultDisplayedFieldPathsLong;
+        }
+      } else {
+        fieldPaths = source.displayedFieldsShort;
+        //Default if empty fieldPaths
+        if (!fieldPaths || fieldPaths.length === 0) {
+          fieldPaths = this.defaultDisplayedFieldPathsShort;
+        }
+      }
+      fields = this.getFieldsFromPaths(fieldPaths);
+    }
+    return fields;
+  }
+
+
+  getFieldsFromPaths(fieldPaths: string []): CandidateFieldInfo[] {
+    const fields: CandidateFieldInfo[] = [];
+
+    for (const fieldPath of fieldPaths) {
+      const field = this.allDisplayableFieldsMap.get(fieldPath);
+      if (field == null) {
+        console.error("CandidateFieldService: Could not find field for " + fieldPath)
+      } else {
+        if (field.fieldSelector == null || field.fieldSelector()) {
+          fields.push(field);
+        }
       }
     }
     return fields;
@@ -105,4 +146,26 @@ export class CandidateFieldService {
     return role !== 'limited';
   }
 
+  isDefault(fieldPaths: string[], longFormat: boolean) {
+    if (fieldPaths == null) {
+      return false;
+    }
+
+    const defaultPaths = longFormat
+      ? this.defaultDisplayedFieldPathsLong
+      : this.defaultDisplayedFieldPathsShort;
+
+    //Compare fieldPaths and defaultPaths, returning true if they are the same
+    let same = fieldPaths.length === defaultPaths.length;
+    if (same) {
+      for (let i = 0; i < fieldPaths.length; i++) {
+        if (fieldPaths[i] !== defaultPaths[i]) {
+          same = false;
+          break;
+        }
+      }
+    }
+
+    return same;
+  }
 }
