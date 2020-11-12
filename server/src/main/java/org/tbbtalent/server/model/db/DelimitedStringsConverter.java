@@ -4,7 +4,6 @@
 
 package org.tbbtalent.server.model.db;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -29,7 +28,7 @@ public class DelimitedStringsConverter
     @Override
     public List<String> convertToEntityAttribute(String delimitedString) {
         return delimitedString == null || delimitedString.trim().length() == 0 
-                ? new ArrayList<>() 
+                ? null 
                 : Stream.of(delimitedString.split(DELIMITER))
                         .collect(Collectors.toList());
     }
