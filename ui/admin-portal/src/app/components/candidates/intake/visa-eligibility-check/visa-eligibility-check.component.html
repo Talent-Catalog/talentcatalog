@@ -1,0 +1,13 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+  <app-user-date-audit
+    [dateInput]="myRecord?.checkedDate"
+    [userInput]="myRecord?.checkedBy"
+    (dateChange)="dateSelected($event)"
+    (userChange)="userSelected($event)">
+  </app-user-date-audit>
+</form>
+
+
