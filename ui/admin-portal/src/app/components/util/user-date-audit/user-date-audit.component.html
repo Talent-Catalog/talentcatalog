@@ -1,43 +1,45 @@
-<div class="form-group">
-  <label for="completedDate">
-    Date of Completion:
-  </label>
-  <div class="input-group">
-    <input id="completedDate" type="text" class="form-control" placeholder="YYYY-MM-DD"
-           ngbDatepicker #picker="ngbDatepicker"
-           (dateSelect)="dateSelection()"
-           [(ngModel)]="dateInput"
-           [autoClose]="true"
-           [outsideDays]="'hidden'"
-           [container]="'#completedDate'">
+<div class="d-flex justify-content-between">
+  <div class="form-group col-6 pl-0">
+    <label for="completedDate">
+      Date of Completion:
+    </label>
+    <div class="input-group">
+      <input id="completedDate" type="text" class="form-control" placeholder="YYYY-MM-DD"
+             ngbDatepicker #picker="ngbDatepicker"
+             (dateSelect)="dateSelection()"
+             [(ngModel)]="dateInput"
+             [autoClose]="true"
+             [outsideDays]="'hidden'"
+             [container]="'#completedDate'">
 
-    <div class="input-group-append">
-      <small class="btn btn-link text-secondary" (click)="clearDate($event)">
-        <span>Clear</span>
-      </small>
-      <div class="btn btn-link"
-           (click)="picker.toggle()">
-        <span>Choose</span>
+      <div class="input-group-append">
+        <button class="btn btn-outline-secondary calendar" (click)="picker.toggle()">
+          <i class="fas fa-calendar-alt"></i>
+        </button>
+        <button class="btn btn-outline-secondary calendar"
+                (click)="clearDate($event)">
+          <i class="fas fa-times"></i>
+        </button>
       </div>
     </div>
   </div>
-</div>
 
-<div *ngIf="dateInput != null" class="form-group">
-  <label for="completedBy">
-    Checked By:
-  </label>
-  <input id="completedBy"
-         type="text" class="form-control" #input
-         [ngbTypeahead]="doNameSearch"
-         [resultTemplate]="rt"
-         [inputFormatter]="renderCandidateRow"
-         [value]="userDisplay"
-         [editable]="false"
-         (selectItem)="selectSearchResult($event, input)"/>
-  <ng-template #rt let-r="result" let-t="term">
-    <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
-  </ng-template>
+  <div *ngIf="dateInput != null" class="form-group col-6 pr-0">
+    <label for="completedBy">
+      Completed By:
+    </label>
+    <input id="completedBy"
+           type="text" class="form-control" #input
+           [ngbTypeahead]="doNameSearch"
+           [resultTemplate]="rt"
+           [inputFormatter]="renderCandidateRow"
+           [value]="userDisplay"
+           [editable]="false"
+           (selectItem)="selectSearchResult($event, input)"/>
+    <ng-template #rt let-r="result" let-t="term">
+      <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
+    </ng-template>
+  </div>
 </div>
 
 
