@@ -43,6 +43,7 @@ export interface Candidate {
   contextNote: string;
   maritalStatus: MaritalStatus;
   drivingLicense: DrivingLicenseStatus;
+  unhcrStatus: UnhcrStatus;
 }
 
 export interface CandidateIntakeData {

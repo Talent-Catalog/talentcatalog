@@ -69,6 +69,7 @@ public class CandidateBuilderSelector {
                 .add("contextNote")
                 .add("maritalStatus")
                 .add("drivingLicense")
+                .add("unhcrStatus")
                 .add("surveyType", surveyTypeDto())
                 .add("country", countryDto())
                 .add("nationality", nationalityDto())
