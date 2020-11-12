@@ -41,6 +41,8 @@ export interface Candidate {
   createdDate: number;
   updatedDate: number;
   contextNote: string;
+  maritalStatus: MaritalStatus;
+  drivingLicense: DrivingLicenseStatus;
 }
 
 export interface CandidateIntakeData {

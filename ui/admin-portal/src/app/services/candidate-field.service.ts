@@ -18,6 +18,8 @@ export class CandidateFieldService {
   private allDisplayableFields = [
     new CandidateFieldInfo("First Name", "user.firstName",
       null, this.isCandidateNameViewable),
+    new CandidateFieldInfo("Driving License", "drivingLicense",
+      null, null),
     new CandidateFieldInfo("Gender", "gender",
       this.titleCaseFormatter, null),
     new CandidateFieldInfo("Last Name", "user.lastName",
