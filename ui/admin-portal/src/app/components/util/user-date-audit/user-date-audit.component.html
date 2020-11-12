@@ -23,7 +23,7 @@
   </div>
 </div>
 
-<div class="form-group">
+<div *ngIf="dateInput != null" class="form-group">
   <label for="completedBy">
     Checked By:
   </label>
@@ -32,10 +32,9 @@
          [ngbTypeahead]="doNameSearch"
          [resultTemplate]="rt"
          [inputFormatter]="renderCandidateRow"
-         [value]="user"
+         [value]="userDisplay"
          [editable]="false"
-         (selectItem)="selectSearchResult($event, input)"
-         [placeholder]="user === null ? 'Type name...' : ''"/>
+         (selectItem)="selectSearchResult($event, input)"/>
   <ng-template #rt let-r="result" let-t="term">
     <ngb-highlight [result]="renderCandidateRow(r)" [term]="t"></ngb-highlight>
   </ng-template>

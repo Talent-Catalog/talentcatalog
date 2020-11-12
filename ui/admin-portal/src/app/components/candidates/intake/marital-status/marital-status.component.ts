@@ -67,12 +67,14 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
       this.candidateIntakeData.partnerCandidate : null;
   }
 
-  get isMarriedEngaged(): boolean {
+  get hasPartner(): boolean {
     let found: boolean = false;
     if (this.maritalStatus) {
       if (this.maritalStatus === 'Engaged') {
         found = true;
       } else if (this.maritalStatus === 'Married') {
+        found = true;
+      } else if (this.maritalStatus === 'Defacto'){
         found = true;
       }
     }

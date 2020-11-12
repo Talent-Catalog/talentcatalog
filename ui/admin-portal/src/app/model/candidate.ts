@@ -311,7 +311,9 @@ export enum MaritalStatus {
   NoResponse = "",
   Married = "Married",
   Engaged = "Engaged",
-  Neither = "Not married or engaged"
+  Defacto = "Defacto",
+  Single = "Single",
+  Divorced = "Divorced"
 }
 
 export enum IeltsScore {

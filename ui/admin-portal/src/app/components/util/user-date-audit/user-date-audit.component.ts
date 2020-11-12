@@ -4,6 +4,7 @@ import {Observable, of} from 'rxjs';
 import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from 'rxjs/operators';
 import {UserService} from '../../../services/user.service';
 import {User} from '../../../model/user';
+import {AuthService} from '../../../services/auth.service';
 
 @Component({
   selector: 'app-user-date-audit',
@@ -22,20 +23,25 @@ export class UserDateAuditComponent implements OnInit {
   doNameSearch;
   searchFailed: boolean;
   searching: boolean;
-  user: string;
+  userDisplay: string;
+  loggedInUser: User;
+  firstChange: boolean;
 
   constructor(private fb: FormBuilder,
-              private userService: UserService) { }
+              private userService: UserService,
+              private authService: AuthService) { }
 
   ngOnInit(): void {
-    // Display the input user if it's passed down
-    if (this.userInput === undefined) {
-      this.user = null;
-    } else {
-      this.user = this.userInput.id + ': ' + this.userInput.firstName + ' ' + this.userInput.lastName;
+    // If date input is undefined (first change) set flag to true to be used when first date selection made.
+    if (this.dateInput == null) {
+      this.firstChange = true;
+    }
+    // If there is user input, display the user input. If there isn't user input, display logged in user when date selected.
+    if (this.userInput) {
+      this.userDisplay = this.renderCandidateRow(this.userInput);
     }
 
-    if (this.dateInput === undefined) {this.dateInput = null;}
+    this.loggedInUser = this.authService.getLoggedInUser();
 
     this.doNameSearch = (text$: Observable<string>) =>
       text$.pipe(
@@ -59,7 +65,7 @@ export class UserDateAuditComponent implements OnInit {
   }
 
   renderCandidateRow(user: User) {
-      return user.id + ": " + user.firstName + " " + user.lastName;
+      return user?.id + ": " + user?.firstName + " " + user?.lastName;
   }
 
   selectSearchResult ($event, input) {
@@ -69,13 +75,21 @@ export class UserDateAuditComponent implements OnInit {
   }
 
   dateSelection () {
-    this.dateChange.emit(this.dateInput);
+    if (this.firstChange) {
+      this.dateChange.emit(this.dateInput);
+      // On first date change autofill with the current logged in user and emit current logged in user.
+      this.userDisplay = this.renderCandidateRow(this.loggedInUser);
+      this.userChange.emit(this.loggedInUser);
+      // After first change, set to false.
+      this.firstChange = false;
+    } else {
+      this.dateChange.emit(this.dateInput)
+    }
   }
 
-  // todo can't clear fields using null. Do we send a 'Removed' string instead?
   clearDate () {
     this.dateInput = null;
-    this.dateChange.emit(null);
+    this.dateChange.emit('');
   }
 
 }
