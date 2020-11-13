@@ -17,13 +17,18 @@
     <i class="fas fa-spinner fa-spin"></i> Updating...
   </div>
 
-  <div class="flex">
-    <div class="container" [dragula]="dragulaGroupName" [(dragulaModel)]="availableFields">
-      <div class="field" *ngFor="let field of availableFields">{{ field.displayName }}</div>
+  <div class="flex mb-3">
+    <div class="container">
+      <p class="text-center h6">Optional Fields</p>
+      <div [dragula]="dragulaGroupName" [(dragulaModel)]="availableFields">
+        <div id="field" class="field" *ngFor="let field of availableFields">{{ field.displayName }}</div>
+      </div>
     </div>
-
-    <div class="container" [dragula]="dragulaGroupName" [(dragulaModel)]="selectedFields">
-      <div class="field" *ngFor="let field of selectedFields">{{ field.displayName }}</div>
+    <div class="container">
+      <p class="text-center h6">Selected Fields</p>
+      <div [dragula]="dragulaGroupName" [(dragulaModel)]="selectedFields">
+        <div class="field" *ngFor="let field of selectedFields">{{ field.displayName }}</div>
+      </div>
     </div>
   </div>
   <button type="button" class="btn btn-primary" (click)="default()">
