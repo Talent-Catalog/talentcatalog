@@ -28,8 +28,5 @@ task npm_build_ui_bundle(type: NpmTask) {
   dependsOn 'npm_install'
 }
 
+//This will jar up using defaults: the output in dist to the jar in build/libs
 jar.dependsOn 'npm_build_ui_bundle'
-
-jar {
-  from 'dist' into 'ui-bundle'
-}

@@ -1,4 +1,4 @@
-task buildServerCore(dependsOn: [':server:build'])
+task buildServerCore(dependsOn: [':server:repackJar'])
 
 // called by Heroku by default
 task stage(dependsOn: [':buildServerCore'])

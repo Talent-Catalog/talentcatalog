@@ -95,3 +95,41 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+//jar {
+//    from(".") {
+//        include ".ebextensions/**"
+//    }
+//    doLast {
+//        println "Ran add config " + name
+//    }
+//}
+
+task unpackJar(type: Copy) {
+    dependsOn(build)
+    from zipTree("$buildDir/libs/server.jar")
+    into file("$buildDir/toArchive")
+    doLast {
+        println "Ran " + name
+    }
+}
+
+task copyEBConfig(type: Copy) {
+    dependsOn(unpackJar)
+    from(".") {
+        include ".ebextensions/**"
+    }
+    into file("$buildDir/toArchive")
+    doLast {
+        println "Ran " + name
+    }
+}
+
+task repackJar(type: Jar) {
+    dependsOn(copyEBConfig)
+    archiveFileName = "server.jar"
+    destinationDirectory = file("$buildDir/libs")
+    from ("$buildDir/toArchive")
+    doLast {
+        println "Ran " + name
+    }
+}
