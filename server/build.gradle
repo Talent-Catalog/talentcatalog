@@ -95,14 +95,15 @@ dependencies {
 test {
     useJUnitPlatform()
 }
-//jar {
-//    from(".") {
-//        include ".ebextensions/**"
-//    }
-//    doLast {
-//        println "Ran add config " + name
-//    }
-//}
+
+bootJar {
+    from(".") {
+        include ".ebextensions/**"
+    }
+    doLast {
+        println "Ran add config " + name
+    }
+}
 
 //task unpackJar(type: Copy) {
 //    dependsOn(build)
