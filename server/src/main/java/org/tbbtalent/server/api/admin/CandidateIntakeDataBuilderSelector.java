@@ -217,6 +217,7 @@ public class CandidateIntakeDataBuilderSelector {
     private DtoBuilder countryDto() {
         return new DtoBuilder()
                 .add("id")
+                .add("name")
                 ;
     }
 
