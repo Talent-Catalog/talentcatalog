@@ -1,6 +1,10 @@
+//todo Note that candidate-portal and admin-portal build.gradle files
+//are now identical. We should be able to eliminate that duplication.
+//Thinking buildSrc and Kotlin
+
 plugins {
   id 'java'
-  id "com.github.node-gradle.node" version "2.0.0"
+  id "com.github.node-gradle.node" version "2.2.4"
 }
 
 sourceCompatibility = 1.8
@@ -24,12 +28,9 @@ node {
 //See https://angular.io/cli/build
 //So this task effectively runs "ng build --prod --base-href /...-portal/"
 task npm_build_ui_bundle(type: NpmTask) {
-  args = ['run', 'build', '--', '--prod', '--base-href', '/candidate-portal/']
+  args = ['run', 'build', '--', '--prod', '--base-href', "/$project.name/"]
   dependsOn 'npm_install'
 }
-
-//This will jar up using defaults: the output in dist to the jar in build/libs
-jar.dependsOn 'npm_build_ui_bundle'
 
 //This creates a jar which when unpacked has all the Angular stuff in a
 //subdirectory called ui-bundle.
@@ -38,4 +39,5 @@ jar.dependsOn 'npm_build_ui_bundle'
 //that ui-bundle subdirectory directory.
 jar {
   from 'dist' into 'ui-bundle'
+  dependsOn 'npm_build_ui_bundle'
 }
