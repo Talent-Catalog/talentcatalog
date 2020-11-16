@@ -28,9 +28,13 @@ task npm_build_ui_bundle(type: NpmTask) {
   dependsOn 'npm_install'
 }
 
-//This will jar up using defaults: the output in dist to the jar in build/libs
 jar.dependsOn 'npm_build_ui_bundle'
 
+//This creates a jar which when unpacked has all the Angular stuff in a
+//subdirectory called ui-bundle.
+//Both portals will have their classes in that subdirectory.
+//The Spring Server WebConfiguration class serves up that Angular stuff from
+//that ui-bundle subdirectory directory.
 jar {
   from 'dist' into 'ui-bundle'
 }
