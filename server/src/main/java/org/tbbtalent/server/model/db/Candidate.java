@@ -35,8 +35,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private String address1;
     private String city;
     private Integer yearOfArrival;
-    private Boolean unRegistered;
-    private String unRegistrationNumber;
     private String additionalInfo;
     private String candidateMessage;
 
@@ -256,11 +254,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Enumerated(EnumType.STRING)
     @Nullable
-    private YesNoUnsure unrwaRegistered;
-
-    @Enumerated(EnumType.STRING)
-    @Nullable
-    private YesNoUnsure unrwaWasRegistered;
+    private UnrwaStatus unrwaStatus;
 
     @Nullable
     private String unrwaNumber;
@@ -547,20 +541,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setYearOfArrival(Integer yearOfArrival) {
         this.yearOfArrival = yearOfArrival;
     }
-
-    public Boolean getUnRegistered() {
-        return unRegistered;
-    }
-
-    public void setUnRegistered(Boolean unRegistered) {
-        this.unRegistered = unRegistered;
-    }
-
-    public String getUnRegistrationNumber() {
-        return unRegistrationNumber;
-    }
-
-    public void setUnRegistrationNumber(String unRegistrationNumber) { this.unRegistrationNumber = unRegistrationNumber; }
 
     public EducationLevel getMaxEducationLevel() {
         return maxEducationLevel;
@@ -891,14 +871,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setUnhcrPermission(@Nullable YesNo unhcrPermission) { this.unhcrPermission = unhcrPermission; }
 
     @Nullable
-    public YesNoUnsure getUnrwaRegistered() { return unrwaRegistered; }
+    public UnrwaStatus getUnrwaStatus() { return unrwaStatus; }
 
-    public void setUnrwaRegistered(@Nullable YesNoUnsure unrwaRegistered) { this.unrwaRegistered = unrwaRegistered; }
-
-    @Nullable
-    public YesNoUnsure getUnrwaWasRegistered() { return unrwaWasRegistered; }
-
-    public void setUnrwaWasRegistered(@Nullable YesNoUnsure unrwaWasRegistered) { this.unrwaWasRegistered = unrwaWasRegistered; }
+    public void setUnrwaStatus(@Nullable UnrwaStatus unrwaStatus) { this.unrwaStatus = unrwaStatus; }
 
     @Nullable
     public String getUnrwaNumber() { return unrwaNumber; }
@@ -1337,11 +1312,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getPartnerCitizenshipId() != null) {
             setPartnerCitizenship(partnerCitizenship);
         }
-
         if (data.getResidenceStatus() != null) {
             setResidenceStatus(data.getResidenceStatus());
         }
-
         if (data.getReturnedHome() != null) {
             setReturnedHome(data.getReturnedHome());
         }
@@ -1384,13 +1357,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getUnhcrPermission() != null) {
             setUnhcrPermission(data.getUnhcrPermission());
         }
-
-        if (data.getUnrwaRegistered() != null) {
-            setUnrwaRegistered(data.getUnrwaRegistered());
-        }
-
-        if (data.getUnrwaWasRegistered() != null) {
-            setUnrwaWasRegistered(data.getUnrwaWasRegistered());
+        if (data.getUnrwaStatus() != null) {
+            setUnrwaStatus(data.getUnrwaStatus());
         }
         if (data.getUnrwaNumber() != null) {
             setUnrwaNumber(data.getUnrwaNumber());

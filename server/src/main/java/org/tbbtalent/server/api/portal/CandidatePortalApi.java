@@ -177,8 +177,8 @@ public class CandidatePortalApi {
                 .add("city")
                 .add("yearOfArrival")
                 .add("nationality", nationalityDto())
-                .add("unRegistered")
-                .add("unRegistrationNumber")
+                .add("unhcrStatus")
+                .add("unhcrNumber")
                 ;
     }
 
