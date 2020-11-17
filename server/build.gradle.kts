@@ -81,12 +81,14 @@ dependencies {
     runtimeOnly("com.h2database:h2")
 }
 
-tasks.test {
-    useJUnitPlatform()
-}
+tasks {
+    test {
+        useJUnitPlatform()
+    }
 
-tasks.bootJar {
-    from(".") {
-        include(".ebextensions/**")
+    bootJar {
+        from(".") {
+            include(".ebextensions/**")
+        }
     }
 }
