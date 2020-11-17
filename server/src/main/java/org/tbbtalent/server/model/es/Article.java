@@ -18,7 +18,7 @@ import static org.springframework.data.elasticsearch.annotations.FieldType.Keywo
  *
  * @author John Cameron
  */
-@Document(indexName = "blog", type = "article")
+@Document(indexName = "blog")
 public class Article {
 
     @Id
