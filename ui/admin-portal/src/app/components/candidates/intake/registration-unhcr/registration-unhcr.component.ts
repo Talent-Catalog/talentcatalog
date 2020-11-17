@@ -35,7 +35,7 @@ export class RegistrationUnhcrComponent extends IntakeComponentBase implements O
   }
 
   showUnhcrNumber(): boolean {
-    if (this.unhcrStatus === 'Assessed' ||
+    if (this.unhcrStatus === 'MandateRefugee' ||
         this.unhcrStatus === 'RegisteredAsylum' ||
         this.unhcrStatus === 'RegisteredStateless') {
       return true;

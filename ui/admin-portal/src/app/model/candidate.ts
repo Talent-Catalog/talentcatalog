@@ -33,8 +33,6 @@ export interface Candidate {
   folderlink: string;
   sflink: string;
   videolink: string;
-  unRegistered: string;
-  unRegistrationNumber: string;
   surveyType: SurveyType;
   surveyComment: string;
   selected: boolean;
@@ -43,7 +41,6 @@ export interface Candidate {
   contextNote: string;
   maritalStatus: MaritalStatus;
   drivingLicense: DrivingLicenseStatus;
-  unhcrStatus: UnhcrStatus;
 }
 
 export interface CandidateIntakeData {
