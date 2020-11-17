@@ -16,6 +16,10 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.PathResourceResolver;
 
+/**
+ * This is where the Angular jars (admin-portal.jar and candidate-portal.jar) 
+ * are served from on the server. 
+ */
 @Configuration
 public class WebConfiguration implements WebMvcConfigurer {
 
