@@ -4,31 +4,20 @@
 
 package org.tbbtalent.server.model.es;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateAttachment;
-import org.tbbtalent.server.model.db.CandidateCertification;
-import org.tbbtalent.server.model.db.CandidateEducation;
-import org.tbbtalent.server.model.db.CandidateJobExperience;
-import org.tbbtalent.server.model.db.CandidateLanguage;
-import org.tbbtalent.server.model.db.CandidateOccupation;
-import org.tbbtalent.server.model.db.CandidateSkill;
-import org.tbbtalent.server.model.db.CandidateStatus;
-import org.tbbtalent.server.model.db.Gender;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.request.PagedSearchRequest;
 
-import lombok.Getter;
-import lombok.Setter;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This defines the fields which are stored in Elasticsearch "documents"
@@ -49,7 +38,11 @@ public class CandidateEs {
             "lastName",
             "nationality",
             "status",
-            "updated"
+            "updated",
+            "phone",
+            "unhcrStatus",
+            "maritalStatus",
+            "drivingLicense"
     }; 
    
     @Id
@@ -92,6 +85,21 @@ public class CandidateEs {
     @Field(type = FieldType.Keyword)
     private Long updated;
 
+    @Field(type = FieldType.Keyword)
+    private String phone;
+
+    @Field(type = FieldType.Keyword)
+    @Enumerated(EnumType.STRING)
+    private UnhcrStatus unhcrStatus;
+
+    @Field(type = FieldType.Keyword)
+    @Enumerated(EnumType.STRING)
+    private MaritalStatus maritalStatus;
+
+    @Field(type = FieldType.Keyword)
+    @Enumerated(EnumType.STRING)
+    private DrivingLicenseStatus drivingLicense;
+
     /**
      * Id of matching Candidate record in database
      */
@@ -133,6 +141,11 @@ public class CandidateEs {
         this.nationality = candidate.getNationality() == null ? null
                 : candidate.getNationality().getName();
         this.status = candidate.getStatus();
+
+        this.phone = candidate.getPhone();
+        this.unhcrStatus = candidate.getUnhcrStatus();
+        this.maritalStatus = candidate.getMaritalStatus();
+        this.drivingLicense = candidate.getDrivingLicense();
 
         this.minEnglishSpokenLevel = null;
         this.minEnglishWrittenLevel = null;
