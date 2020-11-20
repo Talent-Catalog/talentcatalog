@@ -299,11 +299,13 @@ public class CandidateEs {
                 requestAdj = PageRequest.of(
                         request.getPageNumber(), request.getPageSize());
             } else {
-                //This logic assumes that sorting field, apart from masterId, is
-                //assumed to be a keyword field.
+                //This logic assumes that sorting field, apart from masterId 
+                //and updated, is assumed to be a keyword field.
                 //This will need to change if we add other sorting fields 
                 //that are not keyword fields (eg numeric fields).
-                boolean keywordField = !sortField.equals("masterId");
+                boolean keywordField = 
+                        !sortField.equals("masterId") &&
+                        !sortField.equals("updated");
                 
                 String esFieldSpec = sortField;
                 if (keywordField) {
