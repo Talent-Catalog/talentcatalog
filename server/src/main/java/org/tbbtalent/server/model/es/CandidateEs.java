@@ -4,20 +4,34 @@
 
 package org.tbbtalent.server.model.es;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
-import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateAttachment;
+import org.tbbtalent.server.model.db.CandidateCertification;
+import org.tbbtalent.server.model.db.CandidateEducation;
+import org.tbbtalent.server.model.db.CandidateJobExperience;
+import org.tbbtalent.server.model.db.CandidateLanguage;
+import org.tbbtalent.server.model.db.CandidateOccupation;
+import org.tbbtalent.server.model.db.CandidateSkill;
+import org.tbbtalent.server.model.db.CandidateStatus;
+import org.tbbtalent.server.model.db.DrivingLicenseStatus;
+import org.tbbtalent.server.model.db.Gender;
+import org.tbbtalent.server.model.db.MaritalStatus;
+import org.tbbtalent.server.model.db.UnhcrStatus;
 import org.tbbtalent.server.request.PagedSearchRequest;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * This defines the fields which are stored in Elasticsearch "documents"
@@ -285,9 +299,25 @@ public class CandidateEs {
                 requestAdj = PageRequest.of(
                         request.getPageNumber(), request.getPageSize());
             } else {
+                //This logic assumes that sorting field, apart from masterId, is
+                //assumed to be a keyword field.
+                //This will need to change if we add other sorting fields 
+                //that are not keyword fields (eg numeric fields).
+                boolean keywordField = !sortField.equals("masterId");
+                
+                String esFieldSpec = sortField;
+                if (keywordField) {
+                    //Keyword fields can be stored in ES as both text and 
+                    //keyword types. For sorting purposes, we need to explicitly
+                    //specify "keyword" otherwise it will try and sort by
+                    //the text version of the field which will result in an
+                    //error.
+                    esFieldSpec += ".keyword";
+                }
+                
                 requestAdj = PageRequest.of(
                         request.getPageNumber(), request.getPageSize(),
-                        request.getSortDirection(), sortField
+                        request.getSortDirection(), esFieldSpec
                 );
             }
         } else {
