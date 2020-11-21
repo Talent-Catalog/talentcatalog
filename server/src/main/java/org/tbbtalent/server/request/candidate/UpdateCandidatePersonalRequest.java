@@ -1,8 +1,8 @@
 package org.tbbtalent.server.request.candidate;
 
-import java.time.LocalDate;
-
 import org.tbbtalent.server.model.db.Gender;
+
+import java.time.LocalDate;
 
 public class UpdateCandidatePersonalRequest {
 
@@ -17,8 +17,6 @@ public class UpdateCandidatePersonalRequest {
     private Integer yearOfArrival;
     /* NATIONALITY */
     private Long nationality;
-    private Boolean registeredWithUN;
-    private String registrationId;
 
     public String getFirstName() {
         return firstName;
@@ -78,21 +76,5 @@ public class UpdateCandidatePersonalRequest {
 
     public void setNationality(Long nationality) {
         this.nationality = nationality;
-    }
-
-    public Boolean getRegisteredWithUN() {
-        return registeredWithUN;
-    }
-
-    public void setRegisteredWithUN(Boolean registeredWithUN) {
-        this.registeredWithUN = registeredWithUN;
-    }
-
-    public String getRegistrationId() {
-        return registrationId;
-    }
-
-    public void setRegistrationId(String registrationId) {
-        this.registrationId = registrationId;
     }
 }

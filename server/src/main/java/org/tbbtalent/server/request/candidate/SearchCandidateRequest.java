@@ -1,12 +1,9 @@
 package org.tbbtalent.server.request.candidate;
 
-import java.time.LocalDate;
-import java.util.List;
-
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.validation.constraints.NotNull;
-
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.domain.Sort;
 import org.tbbtalent.server.model.db.CandidateStatus;
 import org.tbbtalent.server.model.db.Gender;
@@ -14,10 +11,11 @@ import org.tbbtalent.server.model.db.ReviewStatus;
 import org.tbbtalent.server.model.db.SearchType;
 import org.tbbtalent.server.request.PagedSearchRequest;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -43,7 +41,7 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     private Long otherLanguageId;
     private Integer otherMinWrittenLevel;
     private Integer otherMinSpokenLevel;
-    private Boolean unRegistered;
+
     @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private LocalDate lastModifiedFrom;
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")

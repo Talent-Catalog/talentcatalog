@@ -1,11 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {CandidateService} from "../../../../../services/candidate.service";
-import {Candidate} from "../../../../../model/candidate";
-import {NationalityService} from "../../../../../services/nationality.service";
-import {CountryService} from "../../../../../services/country.service";
-import {generateYearArray} from "../../../../../util/year-helper";
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import {CandidateService} from '../../../../../services/candidate.service';
+import {Candidate} from '../../../../../model/candidate';
+import {NationalityService} from '../../../../../services/nationality.service';
+import {CountryService} from '../../../../../services/country.service';
+import {generateYearArray} from '../../../../../util/year-helper';
 
 @Component({
   selector: 'app-edit-candidate-contact',
@@ -74,8 +74,6 @@ export class EditCandidateContactComponent implements OnInit {
         email: [candidate.user.email],
         dob: [candidate.dob],
         nationalityId: [candidate.nationality ? candidate.nationality.id : null, Validators.required],
-        unRegistered: [candidate.unRegistered],
-        unRegistrationNumber: [candidate.unRegistrationNumber],
       });
       this.loading = false;
     });

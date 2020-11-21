@@ -124,8 +124,7 @@ public class CandidateIntakeDataUpdate {
     private Long unhcrFile;
     private String unhcrNotes;
     private YesNo unhcrPermission;
-    private YesNoUnsure unrwaRegistered;
-    private YesNoUnsure unrwaWasRegistered;
+    private UnrwaStatus unrwaStatus;
     private String unrwaNumber;
     private String unrwaNotes;
 

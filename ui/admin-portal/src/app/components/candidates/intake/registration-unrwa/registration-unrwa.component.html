@@ -4,7 +4,7 @@
 <form [formGroup]="form">
 
   <div class="form-group">
-    <label for="unrwaRegistered">
+    <label for="unrwaStatus">
       Registered with UNRWA?
     </label>
     <div class="float-right">
@@ -14,8 +14,8 @@
       </app-autosave-status>
     </div>
     <select class="form-control"
-            id="unrwaRegistered" [formControlName]="'unrwaRegistered'">
-      <option *ngFor="let opt of unrwaRegisteredOptions" [value]="opt.value">
+            id="unrwaStatus" [formControlName]="'unrwaStatus'">
+      <option *ngFor="let opt of unrwaStatusOptions" [value]="opt.value">
         {{opt.displayText}}
       </option>
     </select>
@@ -26,17 +26,6 @@
       <input type="text" class="form-control"
              id="unrwaNumber" [formControlName]="'unrwaNumber'">
     </div>
-  </div>
-  <div class="form-group">
-    <label for="unrwaWasRegistered">
-      Was registered with UNRWA?
-    </label>
-    <select class="form-control"
-            id="unrwaWasRegistered" [formControlName]="'unrwaWasRegistered'">
-      <option *ngFor="let opt of unrwaRegisteredOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
   </div>
   <div class="form-group">
     <label for="unrwaNotes">Notes</label>

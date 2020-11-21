@@ -1,11 +1,11 @@
 package org.tbbtalent.server.request.candidate;
 
-import java.time.LocalDate;
+import org.tbbtalent.server.model.db.Gender;
+import org.tbbtalent.server.model.db.UnhcrStatus;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
-import org.tbbtalent.server.model.db.Gender;
+import java.time.LocalDate;
 
 public class UpdateCandidateRequest extends BaseCandidateContactRequest {
 
@@ -23,8 +23,8 @@ public class UpdateCandidateRequest extends BaseCandidateContactRequest {
     private String address1;
     private String city;
     private LocalDate dob;
-    private Boolean unRegistered;
-    private String unRegistrationNumber;
+    private UnhcrStatus unhcrStatus;
+    private String unhcrNumber;
 
     public String getFirstName() {
         return firstName;
@@ -98,19 +98,19 @@ public class UpdateCandidateRequest extends BaseCandidateContactRequest {
         this.dob = dob;
     }
 
-    public Boolean getUnRegistered() {
-        return unRegistered;
+    public UnhcrStatus getUnhcrStatus() {
+        return unhcrStatus;
     }
 
-    public void setUnRegistered(Boolean unRegistered) {
-        this.unRegistered = unRegistered;
+    public void setUnhcrStatus(UnhcrStatus unhcrStatus) {
+        this.unhcrStatus = unhcrStatus;
     }
 
-    public String getUnRegistrationNumber() {
-        return unRegistrationNumber;
+    public String getUnhcrNumber() {
+        return unhcrNumber;
     }
 
-    public void setUnRegistrationNumber(String unRegistrationNumber) {
-        this.unRegistrationNumber = unRegistrationNumber;
+    public void setUnhcrNumber(String unhcrNumber) {
+        this.unhcrNumber = unhcrNumber;
     }
 }
