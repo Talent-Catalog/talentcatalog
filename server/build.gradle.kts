@@ -13,9 +13,6 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-//Yes - you do have to declare this again (even though it is declared in the
-//buildscript above) 
-//- see https://stackoverflow.com/questions/13923766/gradle-buildscript-dependencies
 repositories {
     mavenCentral()
 }

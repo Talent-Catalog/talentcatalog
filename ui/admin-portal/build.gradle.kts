@@ -7,6 +7,7 @@ import com.moowork.gradle.node.npm.NpmTask
 plugins {
   java
   id("com.github.node-gradle.node") version "2.2.4"
+  id("org.tbbtalent.talentcatalog")
 }
 
 java {
