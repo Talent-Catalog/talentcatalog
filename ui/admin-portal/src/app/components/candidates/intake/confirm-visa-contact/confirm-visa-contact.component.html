@@ -1,0 +1,23 @@
+<div class="row">
+  <div class="col-4">
+    <app-fixed-input
+      [question]="'TBB ID:'"
+      [answer]="candidate.candidateNumber">
+    </app-fixed-input>
+    <app-fixed-input
+      [question]="'Full Name:'"
+      [answer]="candidate.user?.firstName + ' ' + candidate.user?.lastName">
+    </app-fixed-input>
+  </div>
+  <div class="col-4">
+    <app-fixed-input
+      [question]="'Gender:'"
+      [answer]="candidate.gender">
+    </app-fixed-input>
+    <app-fixed-input
+      [question]="'Date of birth:'"
+      [answer]="candidate.dob">
+    </app-fixed-input>
+  </div>
+</div>
+

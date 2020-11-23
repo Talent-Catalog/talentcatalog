@@ -172,7 +172,7 @@ import {ResettlementThirdComponent} from './components/candidates/intake/resettl
 import {HostChallengesComponent} from './components/candidates/intake/host-challenges/host-challenges.component';
 import {MaritalStatusComponent} from './components/candidates/intake/marital-status/marital-status.component';
 import {AutosaveStatusComponent} from './components/util/autosave-status/autosave-status.component';
-import {DragulaModule} from "ng2-dragula";
+import {DragulaModule} from 'ng2-dragula';
 import {CandidateColumnSelectorComponent} from './components/util/candidate-column-selector/candidate-column-selector.component';
 import {CandidateNameNumSearchComponent} from './components/util/candidate-name-num-search/candidate-name-num-search.component';
 import {MilitaryServiceComponent} from './components/candidates/intake/military-service/military-service.component';
@@ -180,6 +180,8 @@ import {ChildrenComponent} from './components/candidates/intake/children/childre
 import {VisaRejectComponent} from './components/candidates/intake/visa-reject/visa-reject.component';
 import {DrivingLicenseComponent} from './components/candidates/intake/driving-license/driving-license.component';
 import {DependantsComponent} from './components/candidates/intake/dependants/dependants.component';
+import {ConfirmVisaContactComponent} from './components/candidates/intake/confirm-visa-contact/confirm-visa-contact.component';
+import {IntProtectionComponent} from './components/candidates/intake/int-protection/int-protection.component';
 
 @NgModule({
   declarations: [
@@ -352,7 +354,9 @@ import {DependantsComponent} from './components/candidates/intake/dependants/dep
     ChildrenComponent,
     VisaRejectComponent,
     DrivingLicenseComponent,
-    DependantsComponent
+    DependantsComponent,
+    ConfirmVisaContactComponent,
+    IntProtectionComponent
   ],
   imports: [
     BrowserModule,

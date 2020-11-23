@@ -13,8 +13,8 @@
       </app-autosave-status>
     </div>
     <select class="form-control"
-            id="leftHomeReason" [formControlName]="'leftHomeReason'">
-      <option *ngFor="let opt of leftHomeReasonOptions" [value]="opt.value">
+            id="leftHomeReason" [formControlName]="'leftHomeReason'" [className]="editable ? 'form-control' : 'form-control notEditable'">
+      <option *ngFor="let opt of leftHomeReasonOptions" [value]="opt.value" [disabled]="!editable">
         {{opt.displayText}}
       </option>
     </select>
@@ -23,7 +23,7 @@
   <div *ngIf="leftHomeReason === 'Other'">
     <div class="form-group">
       <label for="leftHomeOther">If other, please explain</label>
-      <input type="text" class="form-control" id="leftHomeOther" [formControlName]="'leftHomeOther'">
+      <input type="text" class="form-control" id="leftHomeOther" [formControlName]="'leftHomeOther'" [readOnly]="!editable">
     </div>
   </div>
 </form>

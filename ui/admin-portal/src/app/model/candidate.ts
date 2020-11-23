@@ -94,6 +94,7 @@ export interface CandidateIntakeData {
   hostBorn?: YesNo;
   hostEntryYear?: string;
   hostEntryLegally?: YesNo;
+  intProtection?: string;
   intRecruitReasons?: IntRecruitReason[];
   intRecruitRural?: YesNoUnsure;
   leftHomeReason?: LeftHomeReason[];
@@ -310,6 +311,7 @@ export enum ResidenceStatus {
 }
 
 export enum LeftHomeReason {
+  NoResponse = "",
   Safety = "Safety/Protection",
   Job = "Job Opportunities",
   Other = "Other"

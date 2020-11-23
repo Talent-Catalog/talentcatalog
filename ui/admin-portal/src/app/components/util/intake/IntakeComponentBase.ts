@@ -71,6 +71,8 @@ export abstract class IntakeComponentBase implements AfterViewInit, OnDestroy, O
    */
   private unsubscribe = new Subject<void>()
 
+  @Input() editable: boolean = true;
+
   /**
    * Inject in a FormBuilder to create the form and CandidateService
    * to perform the saves.
