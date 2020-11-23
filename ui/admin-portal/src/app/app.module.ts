@@ -3,7 +3,7 @@ import {NgModule} from '@angular/core';
 import {NgbDateAdapter, NgbDateParserFormatter, NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {NgMultiSelectDropDownModule} from 'ng-multiselect-dropdown';
 import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha';
-
+import {DatePipe, TitleCasePipe} from '@angular/common';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './components/app.component';
@@ -172,6 +172,8 @@ import {ResettlementThirdComponent} from './components/candidates/intake/resettl
 import {HostChallengesComponent} from './components/candidates/intake/host-challenges/host-challenges.component';
 import {MaritalStatusComponent} from './components/candidates/intake/marital-status/marital-status.component';
 import {AutosaveStatusComponent} from './components/util/autosave-status/autosave-status.component';
+import {DragulaModule} from "ng2-dragula";
+import {CandidateColumnSelectorComponent} from './components/util/candidate-column-selector/candidate-column-selector.component';
 import {CandidateNameNumSearchComponent} from './components/util/candidate-name-num-search/candidate-name-num-search.component';
 import {MilitaryServiceComponent} from './components/candidates/intake/military-service/military-service.component';
 import {ChildrenComponent} from './components/candidates/intake/children/children.component';
@@ -344,6 +346,8 @@ import {VisaEligibilityCheckComponent} from './components/candidates/intake/visa
     HostChallengesComponent,
     MaritalStatusComponent,
     AutosaveStatusComponent,
+    CandidateColumnSelectorComponent,
+    AutosaveStatusComponent,
     MaritalStatusComponent,
     CandidateNameNumSearchComponent,
     MilitaryServiceComponent,
@@ -369,7 +373,8 @@ import {VisaEligibilityCheckComponent} from './components/candidates/intake/visa
     LocalStorageModule.forRoot({
       prefix: 'tbb-admin',
       storageType: 'localStorage'
-    })
+    }),
+    DragulaModule.forRoot()
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
@@ -379,7 +384,9 @@ import {VisaEligibilityCheckComponent} from './components/candidates/intake/visa
     {provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter},
     AuthService,
     RoleGuardService,
-    Title],
+    Title,
+    DatePipe, TitleCasePipe
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {

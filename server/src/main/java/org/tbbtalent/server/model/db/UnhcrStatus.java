@@ -2,7 +2,7 @@ package org.tbbtalent.server.model.db;
 
 public enum UnhcrStatus {
     NoResponse,
-    Assessed,
+    MandateRefugee,
     RegisteredAsylum,
     RegisteredStateless,
     NotRegistered,

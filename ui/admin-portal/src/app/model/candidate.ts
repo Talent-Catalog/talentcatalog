@@ -33,14 +33,15 @@ export interface Candidate {
   folderlink: string;
   sflink: string;
   videolink: string;
-  unRegistered: string;
-  unRegistrationNumber: string;
   surveyType: SurveyType;
   surveyComment: string;
   selected: boolean;
   createdDate: number;
   updatedDate: number;
   contextNote: string;
+  maritalStatus: MaritalStatus;
+  drivingLicense: DrivingLicenseStatus;
+  unhcrStatus: UnhcrStatus;
 }
 
 export interface CandidateIntakeData {
@@ -136,8 +137,7 @@ export interface CandidateIntakeData {
   unhcrFile?: number;
   unhcrNotes?: string;
   unhcrPermission?: YesNo;
-  unrwaRegistered?: YesNoUnsure;
-  unrwaWasRegistered?: YesNoUnsure;
+  unrwaStatus?: UnrwaStatus;
   unrwaNumber?: string;
   unrwaNotes?: string;
   visaReject?: YesNoUnsure;
@@ -253,7 +253,7 @@ export enum IntRecruitReason {
 
 export enum UnhcrStatus {
   NoResponse = "",
-  Assessed = "Assessed by UNHCR as a mandate refugee",
+  MandateRefugee = "Assessed by UNHCR as a mandate refugee",
   RegisteredAsylum = "Registered with UNHCR as asylum seeker",
   RegisteredStateless = "Registered with UNHCR as stateless",
   NotRegistered = "Not registered",
@@ -284,6 +284,14 @@ export enum YesNoUnsure {
   NoResponse = "",
   Yes = "Yes",
   No = "No",
+  Unsure = "Unsure"
+}
+
+export enum UnrwaStatus {
+  NoResponse = "",
+  Registered = "Registered",
+  WasRegistered = "No longer registered, but was registered previously.",
+  NeverRegistered = "Never been registered",
   Unsure = "Unsure"
 }
 

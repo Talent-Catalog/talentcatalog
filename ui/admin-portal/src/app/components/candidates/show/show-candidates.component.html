@@ -44,6 +44,9 @@
       <button class="btn" *ngIf="isEditable() && !isDefaultSavedSearch()" (click)="doEditSource()">
         <i class="fas fa-edit" title="Rename"></i>
       </button>
+      <button class="btn" (click)="doSelectColumns()">
+        <i class="fas fa-columns" title="Select columns to display"></i>
+      </button>
       <a *ngIf="candidateSource?.sfJoblink" target="_blank"
          [href]="candidateSource.sfJoblink">
         <i class="fab fa-salesforce" title="Associated Job Opportunity"></i>
@@ -152,40 +155,10 @@
             <th>
               <i class="far fa-hand-pointer"></i>
             </th>
-            <th *ngIf="isCandidateNameViewable()" (click)="toggleSort('user.firstName')">
-              <app-sorted-by [column]="'user.firstName'" [sortColumn]="sortField"
+            <th *ngFor="let field of selectedFields" (click)="toggleSort(field.fieldPath)">
+              <app-sorted-by [column]="field.fieldPath" [sortColumn]="sortField"
                              [sortDirection]="sortDirection"></app-sorted-by>
-              First Name
-            </th>
-            <th *ngIf="isCandidateNameViewable()" (click)="toggleSort('user.lastName')">
-              <app-sorted-by [column]="'user.lastName'" [sortColumn]="sortField"
-                             [sortDirection]="sortDirection"></app-sorted-by>
-              Last Name
-            </th>
-            <th (click)="toggleSort('status')">
-              <app-sorted-by [column]="'status'" [sortColumn]="sortField"
-                             [sortDirection]="sortDirection"></app-sorted-by>
-              Status
-            </th>
-            <th (click)="toggleSort('updatedDate')">
-              <app-sorted-by [column]="'updatedDate'" [sortColumn]="sortField"
-                             [sortDirection]="sortDirection"></app-sorted-by>
-              Updated
-            </th>
-            <th *ngIf="isCountryViewable()" (click)="toggleSort('nationality.name')">
-              <app-sorted-by [column]="'nationality.name'" [sortColumn]="sortField"
-                             [sortDirection]="sortDirection"></app-sorted-by>
-              Nationality
-            </th>
-            <th *ngIf="isCountryViewable()" (click)="toggleSort('country.name')">
-              <app-sorted-by [column]="'country.name'" [sortColumn]="sortField"
-                             [sortDirection]="sortDirection"></app-sorted-by>
-              Location
-            </th>
-            <th (click)="toggleSort('gender')">
-              <app-sorted-by [column]="'gender'" [sortColumn]="sortField"
-                             [sortDirection]="sortDirection"></app-sorted-by>
-              Gender
+              {{field.displayName}}
             </th>
             <th></th>
           </tr>
@@ -220,13 +193,9 @@
                      (ngModelChange)="onSelectionChange(candidate, $event)"
                      [ngModel]="candidate.selected" >
             </td>
-            <td *ngIf="isCandidateNameViewable()">{{candidate.user.firstName}}</td>
-            <td *ngIf="isCandidateNameViewable()">{{candidate.user.lastName}}</td>
-            <td>{{candidate.status}}</td>
-            <td>{{candidate.updatedDate | date: 'yyyy-MM-dd'}}</td>
-            <td *ngIf="isCountryViewable()">{{candidate.nationality?.name}}</td>
-            <td *ngIf="isCountryViewable()">{{candidate.country?.name}}</td>
-            <td>{{candidate.gender | titlecase}}</td>
+            <td *ngFor="let field of selectedFields">
+              {{field.getValue(candidate)}}
+            </td>
             <td>
               <div ngbDropdown placement="bottom-right" (click)="$event.stopPropagation();" container="body">
                 <button class="btn btn-xs hide-after" ngbDropdownToggle>

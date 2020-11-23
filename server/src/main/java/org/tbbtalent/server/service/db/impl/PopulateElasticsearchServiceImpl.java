@@ -40,7 +40,11 @@ public class PopulateElasticsearchServiceImpl implements PopulateElasticsearchSe
         if (deleteExisting) {
             log.info("Replace all candidates in Elasticsearch - deleting old candidates");
             candidateRepository.clearAllCandidateTextSearchIds();
-            candidateEsRepository.deleteAll();
+            try {
+                candidateEsRepository.deleteAll();
+            } catch (Exception ex) {
+                log.error("ElasticSearch deleteAll failed", ex);
+            }
             log.info("Old candidates deleted.");
         }
 

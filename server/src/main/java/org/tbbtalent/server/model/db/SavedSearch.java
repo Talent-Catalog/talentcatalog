@@ -4,28 +4,16 @@
 
 package org.tbbtalent.server.model.db;
 
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
+
+import javax.persistence.*;
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "saved_search")
@@ -65,9 +53,8 @@ public class SavedSearch extends AbstractCandidateSource {
     private Integer otherMinWrittenLevel;
     private Integer otherMinSpokenLevel;
 
-    private Boolean unRegistered;
-
     private LocalDate lastModifiedFrom;
+
     private LocalDate lastModifiedTo;
 
     private LocalDate createdFrom;
@@ -244,14 +231,6 @@ public class SavedSearch extends AbstractCandidateSource {
 
     public void setOtherMinSpokenLevel(Integer otherMinSpokenLevel) {
         this.otherMinSpokenLevel = otherMinSpokenLevel;
-    }
-
-    public Boolean getUnRegistered() {
-    return unRegistered;
-  }
-
-    public void setUnRegistered(Boolean unRegistered) {
-        this.unRegistered = unRegistered;
     }
 
     public LocalDate getLastModifiedFrom() {

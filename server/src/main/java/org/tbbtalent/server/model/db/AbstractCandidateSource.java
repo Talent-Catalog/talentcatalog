@@ -5,10 +5,12 @@
 package org.tbbtalent.server.model.db;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.persistence.Convert;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.MappedSuperclass;
@@ -28,6 +30,7 @@ import org.springframework.util.CollectionUtils;
  *     <li>Fixed attribute - not modifiable except by owner</li>
  *     <li>WatcherIds - Other users can be notified about changes </li>
  *     <li>Supporting sharing with other users</li>
+ *     <li>Non default displayed candidate fields</li>
  * </ul>
  *
  * @author John Cameron
@@ -42,6 +45,35 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
 
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    /**
+     * If not null (or empty) this is the list of candidate fields which are
+     * displayed for each candidate.
+     * <p/>
+     * Each candidate field is defined as the name of the candidate attribute,
+     * or if a candidate attribute is a reference to another entity, then 
+     * the name of the candidate attribute followed by "." then the name of the
+     * attribute of the nested entity.
+     * For example, "updatedDate" for the candidate's updated date field,
+     * or "user.firstName" for the candidate's first name (the "firstName" 
+     * attribute of the candidate's "user" attribute).
+     * <p/>
+     * If null or empty, a default set of fields are displayed (as defined
+     * in the Angular front end code).
+     * <p/>
+     * The code allows for two different ways of displaying candidates of
+     * a candidate source - a "long" one, and a more compact "short" one.
+     */
+    @Convert(converter = DelimitedStringsConverter.class)
+    @Nullable
+    private List<String> displayedFieldsLong;
+
+    /**
+     * @see #displayedFieldsLong
+     */
+    @Convert(converter = DelimitedStringsConverter.class)
+    @Nullable
+    private List<String> displayedFieldsShort; 
 
     /**
      * If true, only the owner can modify the details of the candidate source
@@ -68,6 +100,24 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
 
     protected AbstractCandidateSource() {
         setStatus(Status.active);
+    }
+
+    @Nullable
+    public List<String> getDisplayedFieldsLong() {
+        return displayedFieldsLong;
+    }
+
+    public void setDisplayedFieldsLong(@Nullable List<String> displayedFieldsLong) {
+        this.displayedFieldsLong = displayedFieldsLong;
+    }
+
+    @Nullable
+    public List<String> getDisplayedFieldsShort() {
+        return displayedFieldsShort;
+    }
+
+    public void setDisplayedFieldsShort(@Nullable List<String> displayedFieldsShort) {
+        this.displayedFieldsShort = displayedFieldsShort;
     }
 
     public String getName() {

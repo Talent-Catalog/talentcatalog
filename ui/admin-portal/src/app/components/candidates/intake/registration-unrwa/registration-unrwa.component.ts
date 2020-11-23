@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../util/enum';
-import {YesNoUnsure} from '../../../../model/candidate';
+import {UnrwaStatus} from '../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
@@ -12,7 +12,7 @@ import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 })
 export class RegistrationUnrwaComponent extends IntakeComponentBase implements OnInit {
 
-  public unrwaRegisteredOptions: EnumOption[] = enumOptions(YesNoUnsure);
+  public unrwaStatusOptions: EnumOption[] = enumOptions(UnrwaStatus);
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
@@ -20,19 +20,18 @@ export class RegistrationUnrwaComponent extends IntakeComponentBase implements O
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      unrwaRegistered: [this.candidateIntakeData?.unrwaRegistered],
-      unrwaWasRegistered: [this.candidateIntakeData?.unrwaWasRegistered],
+      unrwaStatus: [this.candidateIntakeData?.unrwaStatus],
       unrwaNumber: [this.candidateIntakeData?.unrwaNumber],
       unrwaNotes: [this.candidateIntakeData?.unrwaNotes],
     });
   }
 
-  get unrwaRegistered(): string {
-    return this.form.value?.unrwaRegistered;
+  get unrwaStatus(): string {
+    return this.form.value?.unrwaStatus;
   }
 
   showUnrwaNumber(): boolean {
-    return this.unrwaRegistered === 'Yes' ? true : false;
+    return this.unrwaStatus === 'Registered';
   }
 
 }

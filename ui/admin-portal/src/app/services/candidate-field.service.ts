@@ -1,0 +1,169 @@
+import {Injectable} from '@angular/core';
+import {DatePipe, TitleCasePipe} from "@angular/common";
+import {CandidateFieldInfo} from "../model/candidate-field-info";
+import {AuthService} from "./auth.service";
+import {CandidateSource} from "../model/base";
+
+@Injectable({
+  providedIn: 'root'
+})
+export class CandidateFieldService {
+
+  //Note - if you want to use any other pipes for formatting, you also need to
+  //add them to providers array in app.module.ts.
+  //See https://stackoverflow.com/a/48785621/929968
+  private dateFormatter = (value) => this.datePipe.transform(value, "yyyy-MM-dd");
+  private titleCaseFormatter = (value) => this.titleCasePipe.transform(value);
+
+  private allDisplayableFields = [
+    new CandidateFieldInfo("First Name", "user.firstName",
+      null, this.isCandidateNameViewable),
+    new CandidateFieldInfo("Driving License", "drivingLicense",
+      null, null),
+    new CandidateFieldInfo("Gender", "gender",
+      this.titleCaseFormatter, null),
+    new CandidateFieldInfo("Last Name", "user.lastName",
+      null, this.isCandidateNameViewable),
+    new CandidateFieldInfo("Location", "country.name",
+      null, this.isCountryViewable),
+    new CandidateFieldInfo("Married?", "maritalStatus",
+      null, null),
+    new CandidateFieldInfo("Nationality", "nationality.name",
+      null, this.isCountryViewable),
+    new CandidateFieldInfo("Phone", "phone",
+      null, null),
+    new CandidateFieldInfo("Status", "status",
+      null, null),
+    new CandidateFieldInfo("UNHCR Status", "unhcrStatus",
+      null, null),
+    new CandidateFieldInfo("Updated", "updatedDate",
+      this.dateFormatter, null),
+  ];
+
+  private allDisplayableFieldsMap = new Map<string, CandidateFieldInfo>();
+
+  private defaultDisplayedFieldPathsLong: string [] = [
+    "user.firstName",
+    "user.lastName",
+    "status",
+    "updatedDate",
+    "nationality.name",
+    "country.name",
+    "gender"
+  ];
+
+  private defaultDisplayedFieldPathsShort: string [] = [
+    "user.firstName",
+    "user.lastName",
+    "nationality.name",
+    "country.name",
+    "gender"
+  ];
+
+  constructor(
+    private authService: AuthService,
+    private datePipe: DatePipe,
+    private titleCasePipe: TitleCasePipe
+  ) {
+
+    for (const field of this.allDisplayableFields) {
+      this.allDisplayableFieldsMap.set(field.fieldPath, field);
+    }
+  }
+
+  get defaultDisplayableFieldsLong(): CandidateFieldInfo[] {
+    return this.getFieldsFromPaths(this.defaultDisplayedFieldPathsLong);
+  }
+
+  get defaultDisplayableFieldsShort(): CandidateFieldInfo[] {
+    return this.getFieldsFromPaths(this.defaultDisplayedFieldPathsShort);
+  }
+
+  get displayableFieldsMap(): Map<string, CandidateFieldInfo> {
+    const fields = new Map<string, CandidateFieldInfo>();
+    //Filter based on field selectors
+    for (const field of this.allDisplayableFields) {
+      if (field.fieldSelector == null || field.fieldSelector()) {
+        fields.set(field.fieldPath, field);
+      }
+    }
+    return fields;
+  }
+
+  getCandidateSourceFields(
+    source: CandidateSource, longFormat: boolean): CandidateFieldInfo[] {
+    let fields: CandidateFieldInfo[] = [];
+    if (source) {
+      let fieldPaths;
+      if (longFormat) {
+        fieldPaths = source.displayedFieldsLong;
+        //Default if empty fieldPaths
+        if (!fieldPaths || fieldPaths.length === 0) {
+          fieldPaths = this.defaultDisplayedFieldPathsLong;
+        }
+      } else {
+        fieldPaths = source.displayedFieldsShort;
+        //Default if empty fieldPaths
+        if (!fieldPaths || fieldPaths.length === 0) {
+          fieldPaths = this.defaultDisplayedFieldPathsShort;
+        }
+      }
+      fields = this.getFieldsFromPaths(fieldPaths);
+    }
+    return fields;
+  }
+
+
+  getFieldsFromPaths(fieldPaths: string []): CandidateFieldInfo[] {
+    const fields: CandidateFieldInfo[] = [];
+
+    for (const fieldPath of fieldPaths) {
+      const field = this.allDisplayableFieldsMap.get(fieldPath);
+      if (field == null) {
+        console.error("CandidateFieldService: Could not find field for " + fieldPath)
+      } else {
+        if (field.fieldSelector == null || field.fieldSelector()) {
+          fields.push(field);
+        }
+      }
+    }
+    return fields;
+  }
+
+  isCandidateNameViewable(): boolean {
+    const loggedInUser =
+      this.authService ? this.authService.getLoggedInUser() : null;
+    const role = loggedInUser ? loggedInUser.role : null;
+    return role !== 'semilimited' && role !== 'limited';
+  }
+
+  isCountryViewable(): boolean {
+    const loggedInUser =
+      this.authService ? this.authService.getLoggedInUser() : null;
+    const role = loggedInUser ? loggedInUser.role : null;
+    return role !== 'limited';
+  }
+
+  isDefault(fieldPaths: string[], longFormat: boolean) {
+    if (fieldPaths == null) {
+      return false;
+    }
+
+    const defaultPaths = longFormat
+      ? this.defaultDisplayedFieldPathsLong
+      : this.defaultDisplayedFieldPathsShort;
+
+    //Compare fieldPaths and defaultPaths, returning true if they are the same
+    let same = fieldPaths.length === defaultPaths.length;
+    if (same) {
+      for (let i = 0; i < fieldPaths.length; i++) {
+        if (fieldPaths[i] !== defaultPaths[i]) {
+          same = false;
+          break;
+        }
+      }
+    }
+
+    return same;
+  }
+}

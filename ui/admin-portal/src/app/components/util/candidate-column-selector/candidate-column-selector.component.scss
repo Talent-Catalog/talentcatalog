@@ -1,0 +1,32 @@
+@import "src/scss/_variables.scss";
+
+.flex {
+  display: flex;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.field {
+  background-color: $color-text-inactive;
+  list-style: none;
+  padding: 8px;
+  color: $color-text-primary;
+  margin-bottom: 0.5em;
+  border-radius: 3px;
+  text-align: center;
+}
+
+.container {
+  flex: 1;
+}
+.container:not(:last-child) {
+  margin-right: 8px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.gu-mirror {
+  background-color: $color-text-secondary;
+}

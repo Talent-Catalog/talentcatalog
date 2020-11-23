@@ -24,7 +24,10 @@ import org.tbbtalent.server.model.db.CandidateLanguage;
 import org.tbbtalent.server.model.db.CandidateOccupation;
 import org.tbbtalent.server.model.db.CandidateSkill;
 import org.tbbtalent.server.model.db.CandidateStatus;
+import org.tbbtalent.server.model.db.DrivingLicenseStatus;
 import org.tbbtalent.server.model.db.Gender;
+import org.tbbtalent.server.model.db.MaritalStatus;
+import org.tbbtalent.server.model.db.UnhcrStatus;
 import org.tbbtalent.server.request.PagedSearchRequest;
 
 import lombok.Getter;
@@ -49,7 +52,11 @@ public class CandidateEs {
             "lastName",
             "nationality",
             "status",
-            "updated"
+            "updated",
+            "phone",
+            "unhcrStatus",
+            "maritalStatus",
+            "drivingLicense"
     }; 
    
     @Id
@@ -92,6 +99,21 @@ public class CandidateEs {
     @Field(type = FieldType.Keyword)
     private Long updated;
 
+    @Field(type = FieldType.Keyword)
+    private String phone;
+
+    @Field(type = FieldType.Keyword)
+    @Enumerated(EnumType.STRING)
+    private UnhcrStatus unhcrStatus;
+
+    @Field(type = FieldType.Keyword)
+    @Enumerated(EnumType.STRING)
+    private MaritalStatus maritalStatus;
+
+    @Field(type = FieldType.Keyword)
+    @Enumerated(EnumType.STRING)
+    private DrivingLicenseStatus drivingLicense;
+
     /**
      * Id of matching Candidate record in database
      */
@@ -133,6 +155,11 @@ public class CandidateEs {
         this.nationality = candidate.getNationality() == null ? null
                 : candidate.getNationality().getName();
         this.status = candidate.getStatus();
+
+        this.phone = candidate.getPhone();
+        this.unhcrStatus = candidate.getUnhcrStatus();
+        this.maritalStatus = candidate.getMaritalStatus();
+        this.drivingLicense = candidate.getDrivingLicense();
 
         this.minEnglishSpokenLevel = null;
         this.minEnglishWrittenLevel = null;
@@ -272,9 +299,27 @@ public class CandidateEs {
                 requestAdj = PageRequest.of(
                         request.getPageNumber(), request.getPageSize());
             } else {
+                //This logic assumes that sorting field, apart from masterId 
+                //and updated, is assumed to be a keyword field.
+                //This will need to change if we add other sorting fields 
+                //that are not keyword fields (eg numeric fields).
+                boolean keywordField = 
+                        !sortField.equals("masterId") &&
+                        !sortField.equals("updated");
+                
+                String esFieldSpec = sortField;
+                if (keywordField) {
+                    //Keyword fields can be stored in ES as both text and 
+                    //keyword types. For sorting purposes, we need to explicitly
+                    //specify "keyword" otherwise it will try and sort by
+                    //the text version of the field which will result in an
+                    //error.
+                    esFieldSpec += ".keyword";
+                }
+                
                 requestAdj = PageRequest.of(
                         request.getPageNumber(), request.getPageSize(),
-                        request.getSortDirection(), sortField
+                        request.getSortDirection(), esFieldSpec
                 );
             }
         } else {

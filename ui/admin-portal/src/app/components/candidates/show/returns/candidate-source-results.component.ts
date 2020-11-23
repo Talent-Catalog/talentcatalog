@@ -1,18 +1,41 @@
-import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
-import {getCandidateSourceNavigation, isSavedSearch, SavedSearchGetRequest} from '../../../../model/saved-search';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
+import {
+  getCandidateSourceNavigation,
+  isSavedSearch,
+  SavedSearchGetRequest
+} from '../../../../model/saved-search';
 import {Subscription} from 'rxjs';
 import {CandidateService} from '../../../../services/candidate.service';
 import {Candidate} from '../../../../model/candidate';
 import {SearchResults} from '../../../../model/search-results';
 import {SavedSearchService} from '../../../../services/saved-search.service';
 import {Router} from '@angular/router';
-import {CachedSourceResults, CandidateSourceResultsCacheService} from '../../../../services/candidate-source-results-cache.service';
-import {CandidateSource, defaultReviewStatusFilter} from '../../../../model/base';
+import {
+  CachedSourceResults,
+  CandidateSourceResultsCacheService
+} from '../../../../services/candidate-source-results-cache.service';
+import {
+  CandidateSource,
+  defaultReviewStatusFilter
+} from '../../../../model/base';
 import {CandidateSourceCandidateService} from '../../../../services/candidate-source-candidate.service';
 import {SavedListGetRequest} from '../../../../model/saved-list';
 import {AuthService} from '../../../../services/auth.service';
 import {CandidateSourceService} from '../../../../services/candidate-source.service';
 import {User} from '../../../../model/user';
+import {CandidateFieldInfo} from "../../../../model/candidate-field-info";
+import {CandidateFieldService} from "../../../../services/candidate-field.service";
+import {CandidateColumnSelectorComponent} from "../../../util/candidate-column-selector/candidate-column-selector.component";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-candidate-source-results',
@@ -31,6 +54,7 @@ export class CandidateSourceResultsComponent implements OnInit, OnChanges, OnDes
   @Output() deleteSource = new EventEmitter<CandidateSource>();
   @Output() editSource = new EventEmitter<CandidateSource>();
   searching: boolean;
+  selectedFields: CandidateFieldInfo[] = [];
   sortField: string;
   sortDirection: string;
   subscription: Subscription;
@@ -39,8 +63,10 @@ export class CandidateSourceResultsComponent implements OnInit, OnChanges, OnDes
 constructor(
     private authService: AuthService,
     private candidateService: CandidateService,
+    private candidateFieldService: CandidateFieldService,
     private candidateSourceService: CandidateSourceService,
     private candidateSourceCandidateService: CandidateSourceCandidateService,
+    private modalService: NgbModal,
     private router: Router,
     private savedSearchService: SavedSearchService,
     private candidateSourceResultsCacheService: CandidateSourceResultsCacheService
@@ -53,8 +79,14 @@ constructor(
     //Do search if candidate source has changed.
     const change = changes.candidateSource;
     if (change && change.previousValue !== change.currentValue) {
+      this.loadSelectedFields();
       this.search(false);
     }
+  }
+
+  private loadSelectedFields() {
+    this.selectedFields = this.candidateFieldService
+      .getCandidateSourceFields(this.candidateSource, false);
   }
 
   ngOnDestroy(): void {
@@ -206,6 +238,20 @@ constructor(
 
   onRefreshRequest() {
     this.search(true);
+  }
+
+  onSelectColumns() {
+    //Initialize with current configuration
+    //Output is new configuration
+    const modal = this.modalService.open(CandidateColumnSelectorComponent);
+    modal.componentInstance.setSourceAndFormat(this.candidateSource, false);
+
+    modal.result
+      .then(
+        () => this.loadSelectedFields(),
+        error => this.error = error
+      )
+      .catch();
   }
 
   isCandidateNameViewable(): boolean {

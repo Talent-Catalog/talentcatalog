@@ -34,6 +34,7 @@ import org.tbbtalent.server.repository.db.GetCandidateSavedListsQuery;
 import org.tbbtalent.server.repository.db.GetSavedListsQuery;
 import org.tbbtalent.server.repository.db.SavedListRepository;
 import org.tbbtalent.server.repository.db.UserRepository;
+import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.list.CreateSavedListRequest;
 import org.tbbtalent.server.request.list.IHasSetOfCandidates;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
@@ -319,6 +320,20 @@ public class SavedListServiceImpl implements SavedListService {
         SavedList savedList = get(savedListId);
         request.populateFromRequest(savedList);
         return saveIt(savedList);
+    }
+
+    @Override
+    public void updateDisplayedFieldPaths(
+            long savedListId, UpdateDisplayedFieldPathsRequest request) 
+            throws NoSuchObjectException {
+        SavedList savedList = get(savedListId);
+        if (request.getDisplayedFieldsLong() != null) {
+            savedList.setDisplayedFieldsLong(request.getDisplayedFieldsLong());
+        }
+        if (request.getDisplayedFieldsShort() != null) {
+            savedList.setDisplayedFieldsShort(request.getDisplayedFieldsShort());
+        }
+        saveIt(savedList);
     }
 
     @Override

@@ -1,13 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  Input,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  SimpleChanges,
-  ViewChild
-} from '@angular/core';
+import {Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 
 import {Candidate} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
@@ -170,7 +161,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       otherLanguageId: [null],
       otherMinWrittenLevel: [null],
       otherMinSpokenLevel: [null],
-      unRegistered: [null],
       lastModifiedFrom: [null],
       lastModifiedTo: [null],
       createdFrom: [null],

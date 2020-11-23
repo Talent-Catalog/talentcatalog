@@ -4,50 +4,21 @@
 
 package org.tbbtalent.server.repository.db;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.persistence.criteria.Fetch;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
+import io.jsonwebtoken.lang.Collections;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateAttachment;
-import org.tbbtalent.server.model.db.CandidateEducation;
-import org.tbbtalent.server.model.db.CandidateJobExperience;
-import org.tbbtalent.server.model.db.CandidateLanguage;
-import org.tbbtalent.server.model.db.CandidateOccupation;
-import org.tbbtalent.server.model.db.CandidateReviewStatusItem;
-import org.tbbtalent.server.model.db.CandidateSkill;
-import org.tbbtalent.server.model.db.CandidateStatus;
-import org.tbbtalent.server.model.db.EducationLevel;
-import org.tbbtalent.server.model.db.EducationMajor;
-import org.tbbtalent.server.model.db.Language;
-import org.tbbtalent.server.model.db.LanguageLevel;
-import org.tbbtalent.server.model.db.Occupation;
-import org.tbbtalent.server.model.db.ReviewStatus;
-import org.tbbtalent.server.model.db.SavedSearch;
-import org.tbbtalent.server.model.db.SearchType;
-import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 
-import io.jsonwebtoken.lang.Collections;
+import javax.persistence.criteria.*;
+import java.time.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import static org.tbbtalent.server.repository.db.CandidateSpecificationUtil.getOrderByOrders;
 
 public class CandidateSpecification {
@@ -257,14 +228,6 @@ public class CandidateSpecification {
                             builder.lessThanOrEqualTo(candidateOccupations.get("yearsExperience"), maxYrs),
                             builder.isTrue(occupation.get("id").in(request.getOccupationIds()))));
                 }
-            }
-
-
-            // UN REGISTERED SEARCH
-            if (request.getUnRegistered() != null) {
-                conjunction.getExpressions().add(
-                        builder.equal(candidate.get("registeredWithUN"), request.getUnRegistered())
-                );
             }
 
             // NATIONALITY SEARCH

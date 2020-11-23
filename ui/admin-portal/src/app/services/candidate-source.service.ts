@@ -6,12 +6,14 @@ import {SearchResults} from "../model/search-results";
 import {
   CandidateSource,
   SearchCandidateSourcesRequest,
-  UpdateCandidateContextNoteRequest
+  UpdateCandidateContextNoteRequest,
+  UpdateDisplayedFieldPathsRequest
 } from "../model/base";
 import {isSavedSearch, SearchSavedSearchRequest} from "../model/saved-search";
 import {map} from "rxjs/operators";
 import {SavedSearchService} from "./saved-search.service";
 import {TargetListSelection} from "../components/list/select/select-list.component";
+import {CandidateFieldService} from "./candidate-field.service";
 
 @Injectable({providedIn: 'root'})
 export class CandidateSourceService {
@@ -19,7 +21,9 @@ export class CandidateSourceService {
   private savedListApiUrl = environment.apiUrl + '/saved-list';
   private savedSearchApiUrl = environment.apiUrl + '/saved-search';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,
+              private candidateFieldService: CandidateFieldService
+  ) {}
 
   addSharedUser(source: CandidateSource, request: { userId: number }):
     Observable<CandidateSource> {
@@ -92,6 +96,22 @@ export class CandidateSourceService {
     const apiUrl = isSavedSearch(source) ?
       this.savedSearchApiUrl : this.savedListApiUrl;
     return this.http.put<void>(`${apiUrl}/context/${source.id}`, request);
+
+  }
+
+  updateDisplayedFieldPaths(source: CandidateSource,
+                    request: UpdateDisplayedFieldPathsRequest): Observable<void> {
+    const apiUrl = isSavedSearch(source) ?
+      this.savedSearchApiUrl : this.savedListApiUrl;
+
+    //Replace default requests with [].
+    if (this.candidateFieldService.isDefault(request.displayedFieldsLong, true)) {
+      request.displayedFieldsLong = [];
+    }
+    if (this.candidateFieldService.isDefault(request.displayedFieldsShort, false)) {
+      request.displayedFieldsShort = [];
+    }
+    return this.http.put<void>(`${apiUrl}/displayed-fields/${source.id}`, request);
 
   }
 }

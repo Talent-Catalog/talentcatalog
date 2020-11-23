@@ -54,6 +54,7 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
   @Output() copySource = new EventEmitter<CandidateSource>();
   @Output() editSource = new EventEmitter<CandidateSource>();
   @Output() deleteSource = new EventEmitter<CandidateSource>();
+  @Output() selectColumns = new EventEmitter<CandidateSource>();
   @Output() toggleWatch = new EventEmitter<CandidateSource>();
 
   loading;
@@ -118,6 +119,10 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
   doCopyLink() {
     copyToClipboard(getCandidateSourceExternalHref(
       this.router, this.location, this.candidateSource));
+  }
+
+  doSelectColumns() {
+    this.selectColumns.emit(this.candidateSource);
   }
 
   doToggleWatch() {
