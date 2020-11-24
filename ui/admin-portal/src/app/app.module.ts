@@ -182,6 +182,7 @@ import {DrivingLicenseComponent} from './components/candidates/intake/driving-li
 import {DependantsComponent} from './components/candidates/intake/dependants/dependants.component';
 import {ConfirmVisaContactComponent} from './components/candidates/intake/confirm-visa-contact/confirm-visa-contact.component';
 import {IntProtectionComponent} from './components/candidates/intake/int-protection/int-protection.component';
+import {HealthAssessmentComponent} from './components/candidates/intake/health-assessment/health-assessment.component';
 
 @NgModule({
   declarations: [
@@ -356,7 +357,8 @@ import {IntProtectionComponent} from './components/candidates/intake/int-protect
     DrivingLicenseComponent,
     DependantsComponent,
     ConfirmVisaContactComponent,
-    IntProtectionComponent
+    IntProtectionComponent,
+    HealthAssessmentComponent
   ],
   imports: [
     BrowserModule,

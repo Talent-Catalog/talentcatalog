@@ -61,7 +61,10 @@ Downside == upside : standard appearance of same question
         [candidate]="candidate">
       </app-family-health>
       <hr/>
-      <p>meets health requirement question</p>
+      <app-health-assessment
+        [candidateIntakeData]="candidateIntakeData"
+        [candidate]="candidate">
+      </app-health-assessment>
     </div>
   </div>
 
