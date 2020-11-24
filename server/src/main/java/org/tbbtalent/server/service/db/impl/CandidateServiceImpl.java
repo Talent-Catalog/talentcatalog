@@ -379,7 +379,7 @@ public class CandidateServiceImpl implements CandidateService {
             if (minSpokenLevel != null) {
                 boolQueryBuilder =
                         addElasticRangeFilter(boolQueryBuilder,
-                                "minEnglishSpokenLevel", 
+                                "minEnglishSpokenLevel",
                                 minSpokenLevel, null);
             }
             Integer minWrittenLevel = request.getEnglishMinWrittenLevel();
@@ -401,7 +401,7 @@ public class CandidateServiceImpl implements CandidateService {
                 }
                 boolQueryBuilder = 
                         addElasticTermFilter(boolQueryBuilder,
-                                null,"country", reqCountries);
+                                null,"country.keyword", reqCountries);
             }
             
             //Nationalities
@@ -415,7 +415,7 @@ public class CandidateServiceImpl implements CandidateService {
                 }
                 boolQueryBuilder = addElasticTermFilter(boolQueryBuilder, 
                         request.getNationalitySearchType(), 
-                        "nationality", reqNationalities);
+                        "nationality.keyword", reqNationalities);
             }
 
             //Statuses
@@ -436,7 +436,7 @@ public class CandidateServiceImpl implements CandidateService {
                 }
                 boolQueryBuilder =
                         addElasticTermFilter(boolQueryBuilder,
-                                null,"status", reqStatuses);
+                                null,"status.keyword", reqStatuses);
             }
 
             //Gender
