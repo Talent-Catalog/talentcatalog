@@ -56,12 +56,12 @@
       </button>
       {{results?.totalElements}} candidates. Timestamp {{timestamp | date: 'yyyy-MM-dd HH:mm:ss'}}
 
-      <button *ngIf="isShareable() && !isSharedWithMe()"
+      <button *ngIf="isShareable() && !isSharedWithMe() && !isGlobal()"
         class="btn btn-outline-secondary" (click)="addToSharedWithMe()">
         <i class="far fa-handshake"></i> Add to {{pluralType}} shared with me
       </button>
 
-      <button *ngIf="isShareable() && isSharedWithMe()"
+      <button *ngIf="isShareable() && isSharedWithMe() && !isGlobal()"
         class="btn btn-outline-secondary" (click)="removeFromSharedWithMe()">
         <i class="fas fa-handshake-slash"></i> Remove from {{pluralType}} shared with me
       </button>
