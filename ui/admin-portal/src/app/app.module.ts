@@ -183,6 +183,12 @@ import {DependantsComponent} from './components/candidates/intake/dependants/dep
 import {ConfirmVisaContactComponent} from './components/candidates/intake/confirm-visa-contact/confirm-visa-contact.component';
 import {IntProtectionComponent} from './components/candidates/intake/int-protection/int-protection.component';
 import {HealthAssessmentComponent} from './components/candidates/intake/health-assessment/health-assessment.component';
+import {CharacterAssessmentComponent} from './components/candidates/intake/character-assessment/character-assessment.component';
+import {SecurityAssessmentComponent} from './components/candidates/intake/security-assessment/security-assessment.component';
+import {TravelDocumentComponent} from './components/candidates/intake/travel-document/travel-document.component';
+import {RiskAssessmentComponent} from './components/candidates/intake/risk-assessment/risk-assessment.component';
+import {VisaJobAssessmentComponent} from './components/candidates/intake/visa-job-assessment/visa-job-assessment.component';
+import {VisaJobAssessmentCardComponent} from './components/candidates/intake/visa-job-assessment/card/visa-job-assessment-card.component';
 
 @NgModule({
   declarations: [
@@ -358,7 +364,13 @@ import {HealthAssessmentComponent} from './components/candidates/intake/health-a
     DependantsComponent,
     ConfirmVisaContactComponent,
     IntProtectionComponent,
-    HealthAssessmentComponent
+    HealthAssessmentComponent,
+    CharacterAssessmentComponent,
+    SecurityAssessmentComponent,
+    TravelDocumentComponent,
+    RiskAssessmentComponent,
+    VisaJobAssessmentComponent,
+    VisaJobAssessmentCardComponent
   ],
   imports: [
     BrowserModule,

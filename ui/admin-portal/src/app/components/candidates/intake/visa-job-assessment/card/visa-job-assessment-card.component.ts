@@ -1,22 +1,19 @@
-/*
- * Copyright (c) 2020 Talent Beyond Boundaries. All rights reserved.
- */
-
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {CandidateCitizenship, HasPassport} from "../../../../../model/candidate";
-import {EnumOption, enumOptions} from "../../../../../util/enum";
-import {FormBuilder} from "@angular/forms";
-import {CandidateService} from "../../../../../services/candidate.service";
 import {IntakeComponentBase} from "../../../../util/intake/IntakeComponentBase";
 import {Nationality} from "../../../../../model/nationality";
+import {EnumOption, enumOptions} from "../../../../../util/enum";
+import {CandidateCitizenship, HasPassport} from "../../../../../model/candidate";
+import {FormBuilder} from "@angular/forms";
+import {CandidateService} from "../../../../../services/candidate.service";
 import {CandidateCitizenshipService} from "../../../../../services/candidate-citizenship.service";
 
 @Component({
-  selector: 'app-candidate-citizenship-card',
-  templateUrl: './candidate-citizenship-card.component.html',
-  styleUrls: ['./candidate-citizenship-card.component.scss']
+  selector: 'app-visa-job-assessment-card',
+  templateUrl: './visa-job-assessment-card.component.html',
+  styleUrls: ['./visa-job-assessment-card.component.scss']
 })
-export class CandidateCitizenshipCardComponent extends IntakeComponentBase implements OnInit {
+export class VisaJobAssessmentCardComponent extends IntakeComponentBase implements OnInit {
+
   @Output() delete = new EventEmitter();
 
   //All known nationalities - a filtered version of this is used for drop downs
@@ -58,7 +55,7 @@ export class CandidateCitizenshipCardComponent extends IntakeComponentBase imple
   /**
    * Filters out nationalities already used in existingRecords
    */
-  get filteredNationalities(): Nationality[] {
+  get filteredOccupations(): Nationality[] {
     if (!this.nationalities) {
       return [];
     } else if (!this.candidateIntakeData.candidateCitizenships) {

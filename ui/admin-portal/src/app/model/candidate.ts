@@ -355,6 +355,20 @@ export enum DrivingLicenseStatus {
   None = "None"
 }
 
+export enum TravelDocumentStatus {
+  NoResponse = "",
+  Valid = "Valid",
+  Expired = "Expired",
+  None = "None"
+}
+
+export enum RiskAssessment {
+  NoResponse = "",
+  Low = "Low Risk",
+  Medium = "Medium Risk",
+  High = "High Risk"
+}
+
 export function getCandidateNavigation(candidate: Candidate): any[] {
   return ['candidate', candidate.candidateNumber];
 }

@@ -5,7 +5,7 @@
   <div class="form-group">
     <label for="visaIssues" ngbTooltip="Tooltip on top">Is there anything about your background that could
       be of concern in the visa process?</label>
-    <div class="float-right">
+    <div *ngIf="editable" class="float-right">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
@@ -15,7 +15,8 @@
       id="visaIssues"
       [settings]="dropdownSettings"
       [data]="visaIssueOptions"
-      formControlName="visaIssues">
+      formControlName="visaIssues"
+      [disabled]="!editable">
     </ng-multiselect-dropdown>
   </div>
 
@@ -24,7 +25,7 @@
       <label for="visaIssuesNotes">Please explain each issue</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="4"
                 id="visaIssuesNotes" [formControlName]="'visaIssuesNotes'"
-                placeholder="" ></textarea>
+                placeholder="" [readOnly]="!editable"></textarea>
     </div>
   </div>
 </form>

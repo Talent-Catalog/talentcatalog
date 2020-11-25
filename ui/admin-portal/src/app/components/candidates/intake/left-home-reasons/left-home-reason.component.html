@@ -6,14 +6,14 @@
     <label for="leftHomeReason">
       What are the primary reasons you left your home country and currently live in Lebanon or Jordan?
     </label>
-    <div class="float-right">
+    <div *ngIf="editable" class="float-right">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
       </app-autosave-status>
     </div>
     <select class="form-control"
-            id="leftHomeReason" [formControlName]="'leftHomeReason'" [className]="editable ? 'form-control' : 'form-control notEditable'">
+            id="leftHomeReason" [formControlName]="'leftHomeReason'" [class.not-editable]="!editable">
       <option *ngFor="let opt of leftHomeReasonOptions" [value]="opt.value" [disabled]="!editable">
         {{opt.displayText}}
       </option>
@@ -23,7 +23,8 @@
   <div *ngIf="leftHomeReason === 'Other'">
     <div class="form-group">
       <label for="leftHomeOther">If other, please explain</label>
-      <input type="text" class="form-control" id="leftHomeOther" [formControlName]="'leftHomeOther'" [readOnly]="!editable">
+      <input type="text" class="form-control" id="leftHomeOther"
+             [formControlName]="'leftHomeOther'" [readOnly]="!editable">
     </div>
   </div>
 </form>

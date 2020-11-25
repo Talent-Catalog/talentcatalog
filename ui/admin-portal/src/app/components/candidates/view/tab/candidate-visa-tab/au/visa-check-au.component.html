@@ -35,11 +35,13 @@ Downside == upside : standard appearance of same question
       </app-left-home-reason>
       <app-return-home-safe
         [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
+        [candidateIntakeData]="candidateIntakeData"
+        [editable]="false">
       </app-return-home-safe>
       <app-host-challenges
         [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
+        [candidateIntakeData]="candidateIntakeData"
+        [editable]="false">
       </app-host-challenges>
       <hr/>
       <app-int-protection
@@ -53,20 +55,106 @@ Downside == upside : standard appearance of same question
 
   <div class="card">
     <div class="card-header">
-      Meets Health requirement
+      Health Assessment
     </div>
     <div class="card-body">
       <app-family-health
+        [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData"
-        [candidate]="candidate">
+        [editable]="false">
       </app-family-health>
       <hr/>
       <app-health-assessment
-        [candidateIntakeData]="candidateIntakeData"
-        [candidate]="candidate">
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
       </app-health-assessment>
     </div>
   </div>
+
+  <hr/>
+
+  <div class="card">
+    <div class="card-header">
+      Character Assessment
+    </div>
+    <div class="card-body">
+      <app-crime
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [editable]="false">
+      </app-crime>
+      <hr/>
+      <app-character-assessment
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-character-assessment>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="card">
+    <div class="card-header">
+      Security Assessment
+    </div>
+    <div class="card-body">
+      <app-military-service
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [editable]="false">
+      </app-military-service>
+      <app-visa-reject
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [editable]="false">
+      </app-visa-reject>
+      <app-visa-issues
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [editable]="false">
+      </app-visa-issues>
+      <hr/>
+      <app-security-assessment
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-security-assessment>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="card">
+    <div class="card-header">
+      Overall Risk Assessment
+    </div>
+    <div class="card-body">
+      <app-risk-assessment
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-risk-assessment>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="card">
+    <div class="card-header">
+      Travel Document
+    </div>
+    <div class="card-body">
+      <app-travel-document
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-travel-document>
+    </div>
+  </div>
+
+  <hr/>
+
+  <app-visa-job-assessment
+    [candidate]="candidate"
+    [candidateIntakeData]="candidateIntakeData">
+  </app-visa-job-assessment>
 
   <hr/>
 

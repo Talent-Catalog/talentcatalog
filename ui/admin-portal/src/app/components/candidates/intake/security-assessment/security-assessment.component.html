@@ -1,0 +1,21 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+
+<form [formGroup]="form">
+  <div class="form-group">
+    <label for="securityAssessment">Meets security requirement? (e.g. military, prior visa cancellation)</label>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
+    <select class="form-control"
+            id="securityAssessment" formControlName="securityAssessment">
+      <option *ngFor="let opt of securityAssessmentOptions" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+  </div>
+</form>

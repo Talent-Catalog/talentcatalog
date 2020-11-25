@@ -4,15 +4,15 @@
 <form [formGroup]="form">
   <div class="form-group">
     <label for="returnHomeSafe">Do you feel it is safe to return to your home country?</label>
-    <div class="float-right">
+    <div *ngIf="editable" class="float-right">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
       </app-autosave-status>
     </div>
     <select class="form-control"
-            id="returnHomeSafe" [formControlName]="'returnHomeSafe'">
-      <option *ngFor="let opt of homeSafeOptions" [value]="opt.value">
+            id="returnHomeSafe" [formControlName]="'returnHomeSafe'" [class.not-editable]="!editable">
+      <option *ngFor="let opt of homeSafeOptions" [value]="opt.value" [disabled]="!editable">
         {{opt.displayText}}
       </option>
     </select>

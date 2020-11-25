@@ -2,7 +2,7 @@
   {{error}}
 </div>
 <form [formGroup]="form">
-  <div class="form-group">
+  <div *ngIf="editable" class="form-group">
     <label for="militaryService">Have you ever completed military service?</label>
     <div class="float-right">
       <app-autosave-status
@@ -11,8 +11,8 @@
       </app-autosave-status>
     </div>
     <select class="form-control"
-            id="militaryService" [formControlName]="'militaryService'">
-      <option *ngFor="let opt of militaryServiceOptions" [value]="opt.value">
+            id="militaryService" [formControlName]="'militaryService'" [class.not-editable]="!editable">
+      <option *ngFor="let opt of militaryServiceOptions" [value]="opt.value" [disabled]="!editable">
         {{opt.displayText}}
       </option>
     </select>

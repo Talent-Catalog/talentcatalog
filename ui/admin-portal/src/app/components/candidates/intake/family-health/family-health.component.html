@@ -7,15 +7,15 @@
     <label for="familyHealthConcern">
       Do you or any of your dependents/spouse have any serious health concerns?
     </label>
-    <div class="float-right">
+    <div *ngIf="editable" class="float-right">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
       </app-autosave-status>
     </div>
     <select class="form-control"
-            id="familyHealthConcern" [formControlName]="'familyHealthConcern'">
-      <option *ngFor="let opt of familyHealthConcernOptions" [value]="opt.value">
+            id="familyHealthConcern" [formControlName]="'familyHealthConcern'" [class.not-editable]="!editable">
+      <option *ngFor="let opt of familyHealthConcernOptions" [value]="opt.value" [disabled]="!editable">
         {{opt.displayText}}
       </option>
     </select>
@@ -24,7 +24,7 @@
     <label for="familyHealthConcernNotes">Notes</label>
     <textarea type="text" class="md-textarea-auto form-control" rows="4"
               id="familyHealthConcernNotes" [formControlName]="'familyHealthConcernNotes'"
-              placeholder="" ></textarea>
+              placeholder="" [readOnly]="!editable"></textarea>
   </div>
 </form>
 

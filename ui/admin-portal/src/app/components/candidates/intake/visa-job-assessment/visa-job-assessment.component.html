@@ -1,0 +1,26 @@
+<!-- EXISTING RECORDS -->
+<div class="card">
+  <div class="card-header">
+    Job Specific Assessment
+    <div class="float-right">
+      <button type="button" class="btn btn-primary btn-sm" (click)="addRecord()">
+        <i class="fas fa-plus"></i>
+      </button>
+    </div>
+  </div>
+  <div class="card-body">
+    <div *ngIf="error">
+      {{error}}
+    </div>
+    <div *ngFor="let citizenship of candidateIntakeData.candidateCitizenships; let i = index;" class="citizenship-card">
+      <app-visa-job-assessment-card
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [myRecordIndex]="i"
+        [nationalities]="nationalities"
+        (delete)="deleteRecord(i)">
+      </app-visa-job-assessment-card>
+      <hr/>
+    </div>
+  </div>
+</div>
