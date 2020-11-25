@@ -189,6 +189,7 @@ import {TravelDocumentComponent} from './components/candidates/intake/travel-doc
 import {RiskAssessmentComponent} from './components/candidates/intake/risk-assessment/risk-assessment.component';
 import {VisaJobAssessmentComponent} from './components/candidates/intake/visa-job-assessment/visa-job-assessment.component';
 import {VisaJobAssessmentCardComponent} from './components/candidates/intake/visa-job-assessment/card/visa-job-assessment-card.component';
+import {CreateVisaJobAssessementComponent} from './components/candidates/intake/visa-job-assessment/modal/create-visa-job-assessement.component';
 
 @NgModule({
   declarations: [
@@ -370,7 +371,8 @@ import {VisaJobAssessmentCardComponent} from './components/candidates/intake/vis
     TravelDocumentComponent,
     RiskAssessmentComponent,
     VisaJobAssessmentComponent,
-    VisaJobAssessmentCardComponent
+    VisaJobAssessmentCardComponent,
+    CreateVisaJobAssessementComponent
   ],
   imports: [
     BrowserModule,

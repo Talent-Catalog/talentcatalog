@@ -1,7 +1,11 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Candidate, CandidateIntakeData} from "../../../../model/candidate";
+import {Candidate, CandidateIntakeData, CandidateVisaCheck} from "../../../../model/candidate";
 import {Nationality} from "../../../../model/nationality";
-import {CandidateCitizenshipService} from "../../../../services/candidate-citizenship.service";
+import {Country} from "../../../../model/country";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {CreateCandidateVisaCheckRequest} from "../../../../services/candidate-visa-check.service";
+import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
+import {CreateVisaJobAssessementComponent} from "./modal/create-visa-job-assessement.component";
 
 @Component({
   selector: 'app-visa-job-assessment',
@@ -13,31 +17,83 @@ export class VisaJobAssessmentComponent implements OnInit {
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
   error: boolean;
+  loading: boolean;
   @Input() nationalities: Nationality[];
   saving: boolean;
 
   constructor(
-    private candidateCitizenshipService: CandidateCitizenshipService
+    private modalService: NgbModal
   ) {}
 
   ngOnInit(): void {
   }
 
   addRecord() {
-    this.saving = true;
-    this.candidateCitizenshipService.create(this.candidate.id, {}).subscribe(
-      (citizenship) => {
-        this.candidateIntakeData.candidateCitizenships.push(citizenship)
-        this.saving = false;
-      },
-      (error) => {
-        this.error = error;
-        this.saving = false;
+    const modal = this.modalService.open(CreateVisaJobAssessementComponent);
+    modal.componentInstance.label = "TBB Job Opportunities";
+
+    modal.result
+      .then((selection: Country) => {
+        if (selection) {
+          this.createRecord(selection);
+        }
+      })
+      .catch(() => {
+        //User cancelled selection
       });
   }
 
+  createRecord(country: Country) {
+    this.loading = true;
+    const request: CreateCandidateVisaCheckRequest = {
+      countryId: country.id
+    };
+    this.candidateVisaCheckService.create(this.candidate.id, request)
+      .subscribe(
+        (visaCheck) => {
+          this.candidateIntakeData.candidateVisaChecks.push(visaCheck)
+          this.loading = false;
+        },
+        (error) => {
+          this.error = error;
+          this.loading = false;
+        });
+
+  }
+
   deleteRecord(i: number) {
-    this.candidateIntakeData.candidateCitizenships.splice(i, 1);
+    const confirmationModal = this.modalService.open(ConfirmationComponent);
+    const visaCheck: CandidateVisaCheck = this.candidateIntakeData.candidateVisaChecks[i];
+
+    confirmationModal.componentInstance.message =
+      "Are you sure you want to delete the visa check for " + visaCheck.country.name;
+    confirmationModal.result
+      .then((result) => {
+        if (result === true) {
+          this.doDelete(i, visaCheck);
+        }
+      })
+      .catch(() => {});
+  }
+
+  private doDelete(i: number, visaCheck: CandidateVisaCheck) {
+    this.loading = true;
+    this.candidateVisaCheckService.delete(visaCheck.id).subscribe(
+      (done) => {
+        this.loading = false;
+        this.candidateIntakeData.candidateVisaChecks.splice(i, 1);
+        this.changeVisaCountry(null);
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      });
+  }
+
+  changeVisaCountry(event: Event) {
+    this.selectedIndex = this.form.controls.visaCountry.value;
+    this.selectedCountry = this.candidateIntakeData
+      .candidateVisaChecks[this.selectedIndex]?.country?.name;
   }
 
 }
