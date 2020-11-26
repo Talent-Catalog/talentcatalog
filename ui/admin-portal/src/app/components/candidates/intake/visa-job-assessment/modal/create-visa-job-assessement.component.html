@@ -4,7 +4,7 @@
 
 <div class="modal-header">
 
-  <h4 class="modal-title">{{title}}</h4>
+  <h4 class="modal-title">TBB Job Opportunities</h4>
 
   <button type="button" class="close" aria-label="Close" (click)="dismiss()">
     <span aria-hidden="true">&times;</span>
@@ -28,12 +28,8 @@
           Name is required.
         </div>
       </div>
-      <div class="form-inline">
-        <label>Fixed?</label>
-        <input type="checkbox" class="form-control" formControlName="fixed">
-      </div>
 
-      <app-joblink [joblink]="savedList?.sfJoblink"
+      <app-joblink [joblink]="link"
                    (updateError)="error=$event"
                    (joblinkValidation)="onJoblinkValidation($event)"
       ></app-joblink>
@@ -44,18 +40,15 @@
 
     </div>
     <hr/>
-    <div *ngIf="savedList">
-      <!--todo-->
-      <!--      <app-saved-list [savedList]="savedList" [seeMore]="true" [showMore]="false" [showOpen]="false"></app-saved-list>-->
-    </div>
   </form>
 </div>
 
 <div class="modal-footer">
-  <button type="button" class="btn btn-primary" (click)="save()"
-          [disabled]="form?.invalid || saving">
-    <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
-    Save
+  <button type="button" class="btn btn-primary" (click)="onCancel()">
+    Cancel
+  </button>
+  <button type="button" class="btn btn-primary" (click)="onSelect()">
+    Select
   </button>
 </div>
 

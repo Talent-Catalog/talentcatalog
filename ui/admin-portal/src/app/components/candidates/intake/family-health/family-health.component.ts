@@ -20,8 +20,8 @@ export class FamilyHealthComponent extends IntakeComponentBase implements OnInit
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      familyHealthConcern: [this.candidateIntakeData?.familyHealth],
-      familyHealthConcernNotes: [this.candidateIntakeData?.familyHealthNotes],
+      familyHealthConcern: [this.candidateIntakeData?.familyHealthConcern],
+      familyHealthConcernNotes: [this.candidateIntakeData?.familyHealthConcernNotes],
     });
   }
 

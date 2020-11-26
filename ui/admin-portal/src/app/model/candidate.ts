@@ -85,8 +85,8 @@ export interface CandidateIntakeData {
   familyMove?: YesNo;
   familyMoveNotes?: string;
 
-  familyHealth?: YesNo;
-  familyHealthNotes?: string;
+  familyHealthConcern?: YesNo;
+  familyHealthConcernNotes?: string;
 
   homeLocation?: string;
 
@@ -180,6 +180,20 @@ export interface CandidateVisaCheck {
   updatedDate?: number;
   protection?: YesNo;
   protectionGrounds?: string;
+  tbbEligibilityAssessment?: TBBEligibilityAssessment;
+}
+
+export interface CandidateVisaJob {
+  id?: number;
+  country?: Country;
+  eligibility?: VisaEligibility;
+  employer?: string;
+  createdBy?: User;
+  createdDate?: number;
+  updatedBy?: User;
+  updatedDate?: number;
+  name?: string;
+  sfJobLink?: string;
   tbbEligibilityAssessment?: TBBEligibilityAssessment;
 }
 

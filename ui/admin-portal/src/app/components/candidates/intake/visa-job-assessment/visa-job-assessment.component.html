@@ -8,19 +8,27 @@
       </button>
     </div>
   </div>
-  <div class="card-body">
+  <div class="card-body" *ngIf="!loading">
     <div *ngIf="error">
       {{error}}
     </div>
-    <div *ngFor="let citizenship of candidateIntakeData.candidateCitizenships; let i = index;" class="citizenship-card">
-      <app-visa-job-assessment-card
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [myRecordIndex]="i"
-        [nationalities]="nationalities"
-        (delete)="deleteRecord(i)">
-      </app-visa-job-assessment-card>
-      <hr/>
-    </div>
+    <form [formGroup]="form">
+      <div *ngFor="let jobOpportunity of jobCheckOpps; let i = index;">
+        <div class="form-group align-items-center">
+          <input type="radio" [value]="i"
+                 name="jobName" formControlName="jobName"
+                 (change)="changeJobOpp($event)">
+            {{jobOpportunity}}
+          <button class="float-right btn" (click)="deleteRecord(i)">
+            <span class="align-top">
+              <i class="fas fa-trash"></i>
+            </span>
+          </button>
+        </div>
+      </div>
+
+    </form>
+
+    <hr/>
   </div>
 </div>
