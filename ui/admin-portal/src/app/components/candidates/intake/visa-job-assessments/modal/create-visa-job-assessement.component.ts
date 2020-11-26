@@ -34,14 +34,6 @@ export class CreateVisaJobAssessementComponent implements OnInit {
 
   get link() { return this.form.value.link; }
 
-  closeModal(jobOpportunity: JoblinkValidationEvent) {
-    this.activeModal.close(jobOpportunity);
-  }
-
-  dismiss() {
-    this.activeModal.dismiss(false);
-  }
-
   onJoblinkValidation(jobOpportunity: JoblinkValidationEvent) {
     if (jobOpportunity.valid) {
       this.sfJoblink = jobOpportunity.sfJoblink;

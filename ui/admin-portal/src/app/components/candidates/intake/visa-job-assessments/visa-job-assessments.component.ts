@@ -15,11 +15,11 @@ import {OccupationService} from '../../../../services/occupation.service';
 import {LanguageLevelService} from '../../../../services/language-level.service';
 
 @Component({
-  selector: 'app-visa-job-assessment',
-  templateUrl: './visa-job-assessment.component.html',
-  styleUrls: ['./visa-job-assessment.component.scss']
+  selector: 'app-visa-job-assessments',
+  templateUrl: './visa-job-assessments.component.html',
+  styleUrls: ['./visa-job-assessments.component.scss']
 })
-export class VisaJobAssessmentComponent extends IntakeComponentTabBase implements OnInit {
+export class VisaJobAssessmentsComponent extends IntakeComponentTabBase implements OnInit {
 
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
@@ -28,7 +28,7 @@ export class VisaJobAssessmentComponent extends IntakeComponentTabBase implement
   @Input() nationalities: Nationality[];
   saving: boolean;
   selectedIndex: number;
-  selectedCountry: string;
+  selectedJobCheck: string;
   jobChecks: string[];
 
   constructor(candidateService: CandidateService,
@@ -43,25 +43,33 @@ export class VisaJobAssessmentComponent extends IntakeComponentTabBase implement
     super(candidateService, countryService, nationalityService, educationLevelService, occupationService, languageLevelService)
   }
 
-  onDataLoaded(init: boolean) {
-    if (init) {
-      //If we have some visa checks, select the first one
-      if (this.jobChecks.length > 0) {
-        this.selectedIndex = 0;
-      }
-      this.form = this.fb.group({
-        jobName: [this.selectedIndex]
-      });
-
-      this.changeJobOpp(null);
-    }
-  }
+  // onDataLoaded(init: boolean) {
+  //   if (init) {
+  //     //If we have some visa checks, select the first one
+  //     // if (this.jobChecks.length > 0) {
+  //     //   this.selectedIndex = 0;
+  //     // }
+  //     this.form = this.fb.group({
+  //       jobName: [this.selectedIndex]
+  //     });
+  //
+  //     this.changeJobOpp(null);
+  //   }
+  // }
 
   ngOnInit(): void {
-    this.jobChecks = [];
+    this.jobChecks = [
+      'Accoutant - NAB', 'Chartered Accountant - Comm Bank', 'Accountant - Bank West Aus'
+    ]
+    //If we have some job opportunities checks, select the first one
+    if (this.jobChecks.length > 0) {
+      this.selectedIndex = 0;
+    }
     this.form = this.fb.group({
       jobName: [this.selectedIndex]
     });
+
+    this.changeJobOpp(null);
   }
 
   addRecord() {
@@ -128,9 +136,8 @@ export class VisaJobAssessmentComponent extends IntakeComponentTabBase implement
   }
 
   changeJobOpp(event: Event) {
-    this.selectedIndex = this.form.controls.visaCountry.value;
-    this.selectedCountry = this.candidateIntakeData
-      .candidateVisaChecks[this.selectedIndex]?.country?.name;
+    this.selectedIndex = this.form.controls.jobName.value;
+    this.selectedJobCheck = this.jobCheckOpps[this.selectedIndex];
   }
 
 }

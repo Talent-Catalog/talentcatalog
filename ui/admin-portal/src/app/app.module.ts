@@ -187,9 +187,10 @@ import {CharacterAssessmentComponent} from './components/candidates/intake/chara
 import {SecurityAssessmentComponent} from './components/candidates/intake/security-assessment/security-assessment.component';
 import {TravelDocumentComponent} from './components/candidates/intake/travel-document/travel-document.component';
 import {RiskAssessmentComponent} from './components/candidates/intake/risk-assessment/risk-assessment.component';
-import {VisaJobAssessmentComponent} from './components/candidates/intake/visa-job-assessment/visa-job-assessment.component';
-import {VisaJobAssessmentCardComponent} from './components/candidates/intake/visa-job-assessment/card/visa-job-assessment-card.component';
-import {CreateVisaJobAssessementComponent} from './components/candidates/intake/visa-job-assessment/modal/create-visa-job-assessement.component';
+import {VisaJobAssessmentsComponent} from './components/candidates/intake/visa-job-assessments/visa-job-assessments.component';
+import {VisaJobAssessmentCardComponent} from './components/candidates/intake/visa-job-assessments/card/visa-job-assessment-card.component';
+import {CreateVisaJobAssessementComponent} from './components/candidates/intake/visa-job-assessments/modal/create-visa-job-assessement.component';
+import {VisaJobAssessmentComponent} from './components/candidates/intake/visa-job-assessments/visa-job-assessment/visa-job-assessment.component';
 
 @NgModule({
   declarations: [
@@ -370,9 +371,10 @@ import {CreateVisaJobAssessementComponent} from './components/candidates/intake/
     SecurityAssessmentComponent,
     TravelDocumentComponent,
     RiskAssessmentComponent,
-    VisaJobAssessmentComponent,
+    VisaJobAssessmentsComponent,
     VisaJobAssessmentCardComponent,
-    CreateVisaJobAssessementComponent
+    CreateVisaJobAssessementComponent,
+    VisaJobAssessmentComponent
   ],
   imports: [
     BrowserModule,

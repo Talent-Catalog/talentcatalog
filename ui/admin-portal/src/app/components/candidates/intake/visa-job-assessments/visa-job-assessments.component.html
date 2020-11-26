@@ -13,7 +13,7 @@
       {{error}}
     </div>
     <form [formGroup]="form">
-      <div *ngFor="let jobOpportunity of jobCheckOpps; let i = index;">
+      <div *ngFor="let jobOpportunity of jobChecks; let i = index;">
         <div class="form-group align-items-center">
           <input type="radio" [value]="i"
                  name="jobName" formControlName="jobName"
@@ -26,9 +26,19 @@
           </button>
         </div>
       </div>
-
     </form>
 
     <hr/>
+
+    <div [ngSwitch]="selectedJobCheck" *ngIf="selectedJobCheck != undefined">
+      {{selectedIndex}}
+      <app-visa-job-assessment
+        [candidate]="candidate"
+        [selectedIndex]="selectedIndex">
+      </app-visa-job-assessment>
+    </div>
+
+    <hr/>
+
   </div>
 </div>

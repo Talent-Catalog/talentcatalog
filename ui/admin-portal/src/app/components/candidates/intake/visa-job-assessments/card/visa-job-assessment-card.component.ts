@@ -1,11 +1,11 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {IntakeComponentBase} from "../../../../util/intake/IntakeComponentBase";
-import {Nationality} from "../../../../../model/nationality";
-import {EnumOption, enumOptions} from "../../../../../util/enum";
-import {CandidateCitizenship, HasPassport} from "../../../../../model/candidate";
-import {FormBuilder} from "@angular/forms";
-import {CandidateService} from "../../../../../services/candidate.service";
-import {CandidateCitizenshipService} from "../../../../../services/candidate-citizenship.service";
+import {IntakeComponentBase} from '../../../../util/intake/IntakeComponentBase';
+import {Nationality} from '../../../../../model/nationality';
+import {EnumOption, enumOptions} from '../../../../../util/enum';
+import {CandidateCitizenship, HasPassport} from '../../../../../model/candidate';
+import {FormBuilder} from '@angular/forms';
+import {CandidateService} from '../../../../../services/candidate.service';
+import {CandidateCitizenshipService} from '../../../../../services/candidate-citizenship.service';
 
 @Component({
   selector: 'app-visa-job-assessment-card',

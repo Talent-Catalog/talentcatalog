@@ -93,14 +93,16 @@ export class CandidateVisaTabComponent
     };
     this.candidateVisaCheckService.create(this.candidate.id, request)
       .subscribe(
-      (visaCheck) => {
-        this.candidateIntakeData.candidateVisaChecks.push(visaCheck)
-        this.loading = false;
-      },
-      (error) => {
-        this.error = error;
-        this.loading = false;
-      });
+        (visaCheck) => {
+          this.candidateIntakeData.candidateVisaChecks.push(visaCheck);
+          this.form.controls['visaCountry'].patchValue(this.candidateIntakeData.candidateVisaChecks.lastIndexOf(visaCheck));
+          this.changeVisaCountry(null)
+          this.loading = false;
+        },
+        (error) => {
+          this.error = error;
+          this.loading = false;
+        });
 
   }
 
