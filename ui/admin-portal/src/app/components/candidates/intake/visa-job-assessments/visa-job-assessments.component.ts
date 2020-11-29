@@ -1,5 +1,5 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {Candidate, CandidateIntakeData, CandidateVisaCheck} from '../../../../model/candidate';
+import {Component, Input} from '@angular/core';
+import {Candidate, CandidateIntakeData, CandidateJobCheck, CandidateVisaCheck} from '../../../../model/candidate';
 import {Nationality} from '../../../../model/nationality';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {CandidateVisaCheckService} from '../../../../services/candidate-visa-check.service';
@@ -19,17 +19,19 @@ import {LanguageLevelService} from '../../../../services/language-level.service'
   templateUrl: './visa-job-assessments.component.html',
   styleUrls: ['./visa-job-assessments.component.scss']
 })
-export class VisaJobAssessmentsComponent extends IntakeComponentTabBase implements OnInit {
+export class VisaJobAssessmentsComponent extends IntakeComponentTabBase {
 
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
+  @Input() visaRecord: CandidateVisaCheck;
   loading: boolean;
   form: FormGroup;
   @Input() nationalities: Nationality[];
   saving: boolean;
-  selectedIndex: number;
-  selectedJobCheck: string;
-  jobChecks: string[];
+  jobIndex: number;
+  selectedJobCheck: CandidateJobCheck;
+  currentYear: string;
+  birthYear: string;
 
   constructor(candidateService: CandidateService,
              countryService: CountryService,
@@ -43,33 +45,26 @@ export class VisaJobAssessmentsComponent extends IntakeComponentTabBase implemen
     super(candidateService, countryService, nationalityService, educationLevelService, occupationService, languageLevelService)
   }
 
-  // onDataLoaded(init: boolean) {
-  //   if (init) {
-  //     //If we have some visa checks, select the first one
-  //     // if (this.jobChecks.length > 0) {
-  //     //   this.selectedIndex = 0;
-  //     // }
-  //     this.form = this.fb.group({
-  //       jobName: [this.selectedIndex]
-  //     });
-  //
-  //     this.changeJobOpp(null);
-  //   }
-  // }
+  onDataLoaded(init: boolean) {
+    if (init) {
+       this.visaRecord.jobChecks = [{
+         name: 'Accountant - NAB'
+       }, {
+         name: 'Chartered Accountant - Comm Bank'
+       }]
+      this.currentYear = new Date().getFullYear().toString();
+      this.birthYear = this.candidate.dob.toString().slice(0, 4);
 
-  ngOnInit(): void {
-    this.jobChecks = [
-      'Accoutant - NAB', 'Chartered Accountant - Comm Bank', 'Accountant - Bank West Aus'
-    ]
-    //If we have some job opportunities checks, select the first one
-    if (this.jobChecks.length > 0) {
-      this.selectedIndex = 0;
+      //If we have some visa checks, select the first one
+      if (this.visaRecord?.jobChecks.length > 0) {
+        this.jobIndex = 0;
+      }
+      this.form = this.fb.group({
+        jobName: [this.jobIndex]
+      });
+
+      this.changeJobOpp(null);
     }
-    this.form = this.fb.group({
-      jobName: [this.selectedIndex]
-    });
-
-    this.changeJobOpp(null);
   }
 
   addRecord() {
@@ -78,7 +73,9 @@ export class VisaJobAssessmentsComponent extends IntakeComponentTabBase implemen
     modal.result
       .then((selection: string) => {
         if (selection) {
-          this.jobChecks.push(selection);
+          this.visaRecord.jobChecks.push({
+            name: selection
+          });
         }
       })
       .catch(() => {
@@ -88,7 +85,9 @@ export class VisaJobAssessmentsComponent extends IntakeComponentTabBase implemen
 
   createRecord(selection: string) {
     this.loading = true;
-    this.jobChecks.push(selection);
+    this.visaRecord.jobChecks.push({
+      name: selection
+    });
     // this.candidateVisaCheckService.create(this.candidate.id, request)
     //   .subscribe(
     //     (visaCheck) => {
@@ -100,10 +99,6 @@ export class VisaJobAssessmentsComponent extends IntakeComponentTabBase implemen
     //       this.loading = false;
     //     });
 
-  }
-
-  get jobCheckOpps() {
-    return this.jobChecks;
   }
 
   deleteRecord(i: number) {
@@ -136,8 +131,10 @@ export class VisaJobAssessmentsComponent extends IntakeComponentTabBase implemen
   }
 
   changeJobOpp(event: Event) {
-    this.selectedIndex = this.form.controls.jobName.value;
-    this.selectedJobCheck = this.jobCheckOpps[this.selectedIndex];
+    this.jobIndex = this.form.controls.jobName.value;
+    if (this.visaRecord.jobChecks) {
+      this.selectedJobCheck = this.visaRecord.jobChecks[this.jobIndex];
+    }
   }
 
 }

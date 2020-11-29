@@ -188,9 +188,15 @@ import {SecurityAssessmentComponent} from './components/candidates/intake/securi
 import {TravelDocumentComponent} from './components/candidates/intake/travel-document/travel-document.component';
 import {RiskAssessmentComponent} from './components/candidates/intake/risk-assessment/risk-assessment.component';
 import {VisaJobAssessmentsComponent} from './components/candidates/intake/visa-job-assessments/visa-job-assessments.component';
-import {VisaJobAssessmentCardComponent} from './components/candidates/intake/visa-job-assessments/card/visa-job-assessment-card.component';
 import {CreateVisaJobAssessementComponent} from './components/candidates/intake/visa-job-assessments/modal/create-visa-job-assessement.component';
 import {VisaJobAssessmentComponent} from './components/candidates/intake/visa-job-assessments/visa-job-assessment/visa-job-assessment.component';
+import {VisaFinalAssessmentComponent} from './components/candidates/intake/visa-job-assessments/visa-final-assessment/visa-final-assessment.component';
+import {JobOccupationComponent} from './components/candidates/intake/visa-job-assessments/job-occupation/job-occupation.component';
+import {SalaryTsmitComponent} from './components/candidates/intake/visa-job-assessments/salary-tsmit/salary-tsmit.component';
+import {RegionalAreaComponent} from './components/candidates/intake/visa-job-assessments/regional-area/regional-area.component';
+import {JobInterestComponent} from './components/candidates/intake/visa-job-assessments/job-interest/job-interest.component';
+import {JobFamilyAusComponent} from './components/candidates/intake/visa-job-assessments/job-family-aus/job-family-aus.component';
+import {JobEligibilityAssessmentComponent} from './components/candidates/intake/visa-job-assessments/job-eligibility-assessment/job-eligibility-assessment.component';
 
 @NgModule({
   declarations: [
@@ -372,9 +378,15 @@ import {VisaJobAssessmentComponent} from './components/candidates/intake/visa-jo
     TravelDocumentComponent,
     RiskAssessmentComponent,
     VisaJobAssessmentsComponent,
-    VisaJobAssessmentCardComponent,
     CreateVisaJobAssessementComponent,
-    VisaJobAssessmentComponent
+    VisaJobAssessmentComponent,
+    VisaFinalAssessmentComponent,
+    JobOccupationComponent,
+    SalaryTsmitComponent,
+    RegionalAreaComponent,
+    JobInterestComponent,
+    JobFamilyAusComponent,
+    JobEligibilityAssessmentComponent
   ],
   imports: [
     BrowserModule,

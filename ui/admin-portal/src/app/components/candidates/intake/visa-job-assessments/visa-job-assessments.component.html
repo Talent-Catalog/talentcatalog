@@ -12,29 +12,31 @@
     <div *ngIf="error">
       {{error}}
     </div>
-    <form [formGroup]="form">
-      <div *ngFor="let jobOpportunity of jobChecks; let i = index;">
-        <div class="form-group align-items-center">
-          <input type="radio" [value]="i"
-                 name="jobName" formControlName="jobName"
-                 (change)="changeJobOpp($event)">
-            {{jobOpportunity}}
-          <button class="float-right btn" (click)="deleteRecord(i)">
-            <span class="align-top">
-              <i class="fas fa-trash"></i>
-            </span>
-          </button>
-        </div>
-      </div>
-    </form>
+    <div *ngIf="visaRecord.jobChecks">
+        <form [formGroup]="form">
+          <div *ngFor="let jobOpportunity of visaRecord.jobChecks; let i = index;">
+            <div class="form-group align-items-center">
+              <input type="radio" [value]="i"
+                     name="jobName" formControlName="jobName"
+                     (change)="changeJobOpp($event)">
+              {{jobOpportunity.name}}
+              <button class="float-right btn" (click)="deleteRecord(i)">
+              <span class="align-top">
+                <i class="fas fa-trash"></i>
+              </span>
+              </button>
+            </div>
+          </div>
+        </form>
+    </div>
 
     <hr/>
 
-    <div [ngSwitch]="selectedJobCheck" *ngIf="selectedJobCheck != undefined">
-      {{selectedIndex}}
+    <div *ngIf="selectedJobCheck != undefined">
       <app-visa-job-assessment
         [candidate]="candidate"
-        [selectedIndex]="selectedIndex">
+        [visaRecord]="visaRecord"
+        [jobIndex]="jobIndex">
       </app-visa-job-assessment>
     </div>
 

@@ -19,8 +19,7 @@ import {LanguageLevelService} from '../../../../../services/language-level.servi
   templateUrl: './candidate-visa-tab.component.html',
   styleUrls: ['./candidate-visa-tab.component.scss']
 })
-export class CandidateVisaTabComponent
-  extends IntakeComponentTabBase implements OnInit {
+export class CandidateVisaTabComponent extends IntakeComponentTabBase implements OnInit {
   form: FormGroup;
   selectedIndex: number;
   selectedCountry: string;

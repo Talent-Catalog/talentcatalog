@@ -1,0 +1,20 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+  <div *ngIf="editable" class="form-group">
+    <label for="jobOccupation">What occupation is the job on the list?</label>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
+      <select class="form-control"
+              id="jobOccupation" [formControlName]="'jobOccupation'">
+        <option *ngFor="let opt of occupations" [value]="opt.id">
+          {{opt.name}}
+        </option>
+      </select>
+  </div>
+</form>

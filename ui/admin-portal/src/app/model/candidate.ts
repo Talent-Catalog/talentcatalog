@@ -16,7 +16,7 @@ export interface Candidate {
   candidateNumber: string;
   status: string;
   gender: string;
-  dob: Date;
+  dob: number;
   address1: string;
   city: string;
   country: Country;
@@ -172,6 +172,13 @@ export interface CandidateDestination {
 export interface CandidateVisaCheck {
   id?: number;
   country?: Country;
+  intProtection?: string;
+  healthAssessment: YesNo;
+  characterAssessment: YesNo;
+  securityAssessment: YesNo;
+  riskAssessment: YesNo;
+  travelDocument: string;
+  jobChecks?: CandidateJobCheck[]
   eligibility?: VisaEligibility;
   assessmentNotes?: string;
   createdBy?: User;
@@ -183,17 +190,18 @@ export interface CandidateVisaCheck {
   tbbEligibilityAssessment?: TBBEligibilityAssessment;
 }
 
-export interface CandidateVisaJob {
+export interface CandidateJobCheck {
   id?: number;
-  country?: Country;
-  eligibility?: VisaEligibility;
-  employer?: string;
-  createdBy?: User;
-  createdDate?: number;
-  updatedBy?: User;
-  updatedDate?: number;
   name?: string;
   sfJobLink?: string;
+  jobOccupation?: Occupation;
+  salaryTsmit?: YesNo;
+  regionalArea?: YesNo;
+  jobInterest?: YesNo;
+  jobFamilyAus?: YesNo;
+  jobEligibilityAssess?: YesNo;
+  eligibility?: VisaEligibility;
+  employer?: string;
   tbbEligibilityAssessment?: TBBEligibilityAssessment;
 }
 
@@ -381,6 +389,13 @@ export enum RiskAssessment {
   Low = "Low Risk",
   Medium = "Medium Risk",
   High = "High Risk"
+}
+
+export enum TbbEligibility {
+  NoResponse = "",
+  Proceed = "Ready to proceed",
+  Discuss = "Needs discussion",
+  NotProceed = "Do not proceed"
 }
 
 export function getCandidateNavigation(candidate: Candidate): any[] {

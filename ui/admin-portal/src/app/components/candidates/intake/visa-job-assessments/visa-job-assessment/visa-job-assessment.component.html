@@ -1,38 +1,73 @@
-<div *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i> loading...
-</div>
-<div *ngIf="error">
-  {{error}}
-</div>
-<div *ngIf="!loading">
-
-  <!--  todo Why not put this formatting inside component?
-  Downside == upside : standard appearance of same question
-  -->
-  <div class="card">
-    <div class="card-header">
-      Family
-    </div>
-    <div class="card-body">
-      <app-family
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [myRecordIndex]="selectedIndex">
-      </app-family>
-    </div>
+{{jobIndex}}
+<div class="card">
+  <div class="card-header">
+    Employer Eligibility
   </div>
-
-  <hr/>
-
-  <div class="card">
-    <div class="card-header">
-      Final Assessment
-    </div>
-    <div class="card-body">
-      <app-visa-assessment
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [myRecordIndex]="selectedIndex">
-      </app-visa-assessment>
+  <div class="card-body">
+    <app-job-occupation
+      [candidate]="candidate"
+      [occupations]="occupations"
+      [candidateIntakeData]="candidateIntakeData"
+      [visaRecord]="myRecord"
+      [selectedIndex]="jobIndex">
+    </app-job-occupation>
+    <app-salary-tsmit
+      [candidate]="candidate"
+      [candidateIntakeData]="candidateIntakeData">
+    </app-salary-tsmit>
+    <app-regional-area
+      [candidate]="candidate"
+      [candidateIntakeData]="candidateIntakeData">
+    </app-regional-area>
+  </div>
+</div>
+<hr/>
+<div class="card">
+  <div class="card-header">
+    TBB Eligibility
+  </div>
+  <div class="card-body">
+    <app-int-protection
+      [candidate]="candidate"
+      [candidateIntakeData]="candidateIntakeData">
+    </app-int-protection>
+    <app-job-interest
+      [candidate]="candidate"
+      [candidateIntakeData]="candidateIntakeData"
+      [selectedIndex]="jobIndex">
+    </app-job-interest>
+    <app-job-family-aus
+      [candidate]="candidate"
+      [candidateIntakeData]="candidateIntakeData"
+      [selectedIndex]="jobIndex">
+    </app-job-family-aus>
+    <hr/>
+    <app-job-eligibility-assessment
+      [candidate]="candidate"
+      [candidateIntakeData]="candidateIntakeData"
+      [selectedIndex]="jobIndex">
+    </app-job-eligibility-assessment>
+  </div>
 </div>
 
+<hr/>
+
+<div class="card">
+  <div class="card-header">
+    Candidate Visa Eligibility
+  </div>
+  <div class="card-body">
+    <app-fixed-input
+      [question]="'Age: (50 year cutoff for 494; 55 for 186)'"
+      [answer]="currentYear - birthYear">
+    </app-fixed-input>
+    <!--          <app-view-candidate-job-experience-->
+    <!--            [candidate]="candidate"-->
+    <!--            [candidateOccupation]="">-->
+    <!--          </app-view-candidate-job-experience>-->
+    <app-visa-final-assessment
+      [candidate]="candidate"
+      [selectedIndex]="jobIndex">
+    </app-visa-final-assessment>
+  </div>
+</div>
