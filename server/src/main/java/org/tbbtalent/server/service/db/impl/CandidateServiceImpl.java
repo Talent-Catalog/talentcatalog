@@ -469,7 +469,15 @@ public class CandidateServiceImpl implements CandidateService {
             log.info("ServiceSearch8 - Have the ids from the es hits.");
             //Now fetch those candidates from the normal database
             //They will come back in random order
-            List<Candidate> unsorted = candidateRepository.findByIds(candidateIds);
+            List<Candidate> unsorted = null;
+            for (Long id : candidateIds) {
+                log.info("id: " + id);
+            }
+            try {
+                unsorted = candidateRepository.findByIds(candidateIds);
+            } catch(Exception e) {
+                log.error("Can't find ids from candidate repository", e);
+            }
             log.info("ServiceSearch9 - Got list of unsorted ids from cand repo.");
             //Put the results in a map indexed by the id
             Map<Long, Candidate> mapById = new HashMap<>();
