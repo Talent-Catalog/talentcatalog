@@ -1,44 +1,28 @@
 package org.tbbtalent.server.api.admin;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.GeneralSecurityException;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.exception.ExportFailedException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
-import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
-import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
-import org.tbbtalent.server.request.candidate.CandidatePhoneSearchRequest;
-import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
-import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateLinksRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
+import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.GeneralSecurityException;
+import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate")
@@ -47,6 +31,8 @@ public class CandidateAdminApi {
     private final CandidateService candidateService;
     private final CandidateBuilderSelector builderSelector;
     private final CandidateIntakeDataBuilderSelector intakeDataBuilderSelector;
+
+    private static final Logger log = LoggerFactory.getLogger(Candidate.class);
 
     @Autowired
     public CandidateAdminApi(CandidateService candidateService,
@@ -58,8 +44,11 @@ public class CandidateAdminApi {
 
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchCandidateRequest request) {
+        log.info("API Candidate1 - Inside search.");
         Page<Candidate> candidates = this.candidateService.searchCandidates(request);
+        log.info("API Candidate2 - Have candidates after search");
         DtoBuilder builder = builderSelector.selectBuilder();
+        log.info("API Candidate3 - have builder about to build page.");
         return builder.buildPage(candidates);
     }
     

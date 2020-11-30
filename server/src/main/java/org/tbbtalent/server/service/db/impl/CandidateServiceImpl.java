@@ -596,12 +596,14 @@ public class CandidateServiceImpl implements CandidateService {
         Page<Candidate> candidates;
         User user = userContext.getLoggedInUser();
         if (user == null) {
+            log.info("inside user is null search.");
             candidates = doSearchCandidates(request);
         } else {
             //Update default search
             SavedSearch defaultSavedSearch =
                     savedSearchService.getDefaultSavedSearch();
             Long savedSearchId = defaultSavedSearch.getId();
+            log.info("Got default saved search.");
             UpdateSavedSearchRequest updateRequest = new UpdateSavedSearchRequest();
             updateRequest.setSearchCandidateRequest(request);
             //Set other fields - no changes there
@@ -613,12 +615,15 @@ public class CandidateServiceImpl implements CandidateService {
             updateRequest.setSavedSearchSubtype(defaultSavedSearch.getSavedSearchSubtype());
             //todo Need special method which only updates search part. Then don't need the above "no changes there" stuff
             savedSearchService.updateSavedSearch(savedSearchId, updateRequest);
+            log.info("updated saved search with update request.");
 
             //Do the search
             candidates = doSearchCandidates(request);
+            log.info("done the search");
 
             //Add in any selections
             addInSelections(savedSearchId, candidates);
+            log.info("added in selections");
         }
         
         return candidates;
