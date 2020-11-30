@@ -331,13 +331,11 @@ public class CandidateServiceImpl implements CandidateService {
 
         Page<Candidate> candidates;
         String simpleQueryString = request.getSimpleQueryString();
-        log.info("ServiceSearch1 - inside search have the query request string. " + simpleQueryString);
         if (simpleQueryString != null && simpleQueryString.length() > 0) {
             //This is an elastic search request
-            log.info("ServiceSearch2 - inside elastic search about to convert to elastic sort field. ");
+
             //Support sorting 
             PageRequest req = CandidateEs.convertToElasticSortField(request);
-            log.info("ServiceSearch3 - Have page request now. ");
 
             /*
                Constructing a filtered simple query that looks like this:
@@ -361,7 +359,6 @@ public class CandidateServiceImpl implements CandidateService {
             //Create a simple query string builder from the given string 
             SimpleQueryStringBuilder simpleQueryStringBuilder = 
                     QueryBuilders.simpleQueryStringQuery(simpleQueryString);
-            log.info("ServiceSearch4 - simple query string builder. ");
 
             //The simple query will be part of a composite query containing
             //filters.
@@ -448,55 +445,36 @@ public class CandidateServiceImpl implements CandidateService {
                 boolQueryBuilder = boolQueryBuilder.filter(
                         QueryBuilders.termQuery("gender", gender.name()));
             }
-
-            log.info("ServiceSearch5 - finished building bool query builder with ids. About to build native search query");
             
             NativeSearchQuery query = new NativeSearchQueryBuilder()
                     .withQuery(boolQueryBuilder)
                     .withPageable(req)
                     .build();
-            log.info("ServiceSearch6 - Have native search query built. About to search elastic serach operations for hits.");
             SearchHits<CandidateEs> hits = elasticsearchOperations.search(
                     query, CandidateEs.class, IndexCoordinates.of("candidates"));
-            log.info("ServiceSearch7 - Have hits!");
 
             //Get candidate ids from the returned results - maintaining the sort
             //Avoid duplicates, but maintaining order by using a LinkedHashSet
             LinkedHashSet<Long> candidateIds = new LinkedHashSet<>();
             for (SearchHit<CandidateEs> hit : hits) {
                 candidateIds.add(hit.getContent().getMasterId());
-                Candidate cand = getCandidate(hit.getContent().getMasterId());
-                log.info("cand number: " + cand.getCandidateNumber());
             }
-            log.info("ServiceSearch8 - Have the ids from the es hits.");
             //Now fetch those candidates from the normal database
             //They will come back in random order
-            List<Candidate> unsorted = null;
-            for (Long id : candidateIds) {
-                log.info("id: " + id);
-            }
-            try {
-                unsorted = candidateRepository.findByIds(candidateIds);
-            } catch(Exception e) {
-                log.error("Can't find ids from candidate repository", e);
-            }
-            log.info("ServiceSearch9 - Got list of unsorted ids from cand repo.");
+            List<Candidate> unsorted = candidateRepository.findByIds(candidateIds);
             //Put the results in a map indexed by the id
             Map<Long, Candidate> mapById = new HashMap<>();
             for (Candidate candidate : unsorted) {
                 mapById.put(candidate.getId(), candidate);
             }
-            log.info("ServiceSearch10- - Have candidates in a map by the id.");
             //Now construct a candidate list sorted according to the original
             //list of ids.
             List<Candidate> candidateList = new ArrayList<>();
             for (Long candidateId : candidateIds) {
                 candidateList.add(mapById.get(candidateId));
             }
-            log.info("ServiceSearch11- - have a list that is sorted according to original list of ids.");
             candidates = new PageImpl<>(candidateList, request.getPageRequest(),
                     hits.getTotalHits());
-            log.info("ServiceSearch12- - Have new page impl with candidate list, page request and total number of hits.");
         } else {
 
             User user = userContext.getLoggedInUser();
@@ -558,18 +536,15 @@ public class CandidateServiceImpl implements CandidateService {
             if (user != null) {
                 selectionList = savedSearchService
                         .getSelectionList(savedSearchId, user.getId());
-                log.info("addInSelections1 - got selection list");
             }
             if (selectionList != null) {
                 Set<Candidate> selectedCandidates = selectionList.getCandidates();
-                log.info("addInSelections2 - got set of candidates from list");
                 if (selectedCandidates.size() > 0) {
                     for (Candidate candidate : candidates) {
                         if (selectedCandidates.contains(candidate)) {
                             candidate.setSelected(true);
                         }
                     }
-                    log.info("addInSelections3 - set selected candidates to true.");
                 }
             }
         }
@@ -580,23 +555,18 @@ public class CandidateServiceImpl implements CandidateService {
             long savedSearchId, SavedSearchGetRequest request)
             throws NoSuchObjectException {
 
-        log.info("Service1 - inside search candidates method. Next load saved search.");
         SearchCandidateRequest searchRequest =
                 this.savedSearchService.loadSavedSearch(savedSearchId);
-        log.info("Service2 - have search request loaded.");
 
         //Merge the SavedSearchGetRequest - notably the page request - in to
         //the standard saved search request. 
         searchRequest.merge(request);
-        log.info("Service3 - finished merging the search request with the page request. Next about ot do the search.");
 
         //Do the search
         final Page<Candidate> candidates = doSearchCandidates(searchRequest);
-        log.info("Service4 - have a page or candidates from the search.");
 
         //Add in any selections
         addInSelections(savedSearchId, candidates);
-        log.info("Service5 - added in selections. Returning candidates now.");
 
         return candidates;
     }
@@ -606,14 +576,12 @@ public class CandidateServiceImpl implements CandidateService {
         Page<Candidate> candidates;
         User user = userContext.getLoggedInUser();
         if (user == null) {
-            log.info("inside user is null search.");
             candidates = doSearchCandidates(request);
         } else {
             //Update default search
             SavedSearch defaultSavedSearch =
                     savedSearchService.getDefaultSavedSearch();
             Long savedSearchId = defaultSavedSearch.getId();
-            log.info("Got default saved search.");
             UpdateSavedSearchRequest updateRequest = new UpdateSavedSearchRequest();
             updateRequest.setSearchCandidateRequest(request);
             //Set other fields - no changes there
@@ -625,15 +593,12 @@ public class CandidateServiceImpl implements CandidateService {
             updateRequest.setSavedSearchSubtype(defaultSavedSearch.getSavedSearchSubtype());
             //todo Need special method which only updates search part. Then don't need the above "no changes there" stuff
             savedSearchService.updateSavedSearch(savedSearchId, updateRequest);
-            log.info("updated saved search with update request.");
 
             //Do the search
             candidates = doSearchCandidates(request);
-            log.info("done the search");
 
             //Add in any selections
             addInSelections(savedSearchId, candidates);
-            log.info("added in selections");
         }
         
         return candidates;

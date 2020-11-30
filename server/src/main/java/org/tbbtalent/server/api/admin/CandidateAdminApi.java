@@ -1,8 +1,6 @@
 package org.tbbtalent.server.api.admin;
 
 import org.apache.tomcat.util.http.fileupload.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -32,8 +30,6 @@ public class CandidateAdminApi {
     private final CandidateBuilderSelector builderSelector;
     private final CandidateIntakeDataBuilderSelector intakeDataBuilderSelector;
 
-    private static final Logger log = LoggerFactory.getLogger(Candidate.class);
-
     @Autowired
     public CandidateAdminApi(CandidateService candidateService,
                              UserContext userContext) {
@@ -44,11 +40,8 @@ public class CandidateAdminApi {
 
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchCandidateRequest request) {
-        log.info("API Candidate1 - Inside search.");
         Page<Candidate> candidates = this.candidateService.searchCandidates(request);
-        log.info("API Candidate2 - Have candidates after search");
         DtoBuilder builder = builderSelector.selectBuilder();
-        log.info("API Candidate3 - have builder about to build page.");
         return builder.buildPage(candidates);
     }
     

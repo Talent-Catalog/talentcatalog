@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.tbbtalent.server.model.db.CandidateStatus;
 import org.tbbtalent.server.model.db.Gender;
@@ -61,7 +59,6 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     private Boolean includeUploadedFiles;
     private LocalDate fromDate;
     private List<SearchJoinRequest> searchJoinRequests;
-    private static final Logger log = LoggerFactory.getLogger(SearchCandidateRequest.class);
 
     public SearchCandidateRequest() {
         super(Sort.Direction.DESC, new String[]{"id"});
@@ -80,7 +77,6 @@ public class SearchCandidateRequest extends PagedSearchRequest {
         setPageSize(request.getPageSize());
         setSortDirection(request.getSortDirection());
         setSortFields(request.getSortFields());
-        log.info("SearchCandidateRequest - Have finished merging request. " + " page number:" + request.getPageNumber() + " page size:" + request.getPageSize());
     }
 }
 

@@ -6,8 +6,6 @@ package org.tbbtalent.server.model.es;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.annotations.Document;
@@ -119,8 +117,6 @@ public class CandidateEs {
     @Field(type = FieldType.Keyword)
     @Enumerated(EnumType.STRING)
     private CandidateStatus status;
-
-    private static final Logger log = LoggerFactory.getLogger(CandidateEs.class);
 
     public CandidateEs() {
     }
@@ -266,7 +262,7 @@ public class CandidateEs {
         PageRequest requestAdj;
         
         String[] sortFields = request.getSortFields();
-        log.info("ES1 - Have sort fields. ");
+
         if (sortFields != null && sortFields.length > 0) {
             String sortField = sortFields[0];
             
@@ -285,12 +281,11 @@ public class CandidateEs {
                     break;
                 }
             }
-            log.info("ES2 - Matching sorting fields. Matched = " + matched);
+
             
             if (!matched) {
                 requestAdj = PageRequest.of(
                         request.getPageNumber(), request.getPageSize());
-                log.info("ES3 - Not matched page request.");
             } else {
                 //This logic assumes that sorting field, apart from masterId 
                 //and updated, is assumed to be a keyword field.
@@ -309,12 +304,10 @@ public class CandidateEs {
                     //error.
                     esFieldSpec += ".keyword";
                 }
-                log.info("ES4 - Is matched page request.");
                 requestAdj = PageRequest.of(
                         request.getPageNumber(), request.getPageSize(),
                         request.getSortDirection(), esFieldSpec
                 );
-                log.info("ES5 - Page request number is " + requestAdj.getPageNumber());
             }
         } else {
             requestAdj = PageRequest.of(
