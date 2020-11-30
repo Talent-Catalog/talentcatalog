@@ -465,6 +465,8 @@ public class CandidateServiceImpl implements CandidateService {
             LinkedHashSet<Long> candidateIds = new LinkedHashSet<>();
             for (SearchHit<CandidateEs> hit : hits) {
                 candidateIds.add(hit.getContent().getMasterId());
+                Candidate cand = getCandidate(hit.getContent().getMasterId());
+                log.info("cand number: " + cand.getCandidateNumber());
             }
             log.info("ServiceSearch8 - Have the ids from the es hits.");
             //Now fetch those candidates from the normal database
