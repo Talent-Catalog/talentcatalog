@@ -287,6 +287,7 @@ public class CandidateEs {
                 requestAdj = PageRequest.of(
                         request.getPageNumber(), request.getPageSize());
             } else {
+                //todo extract this logic into a method that Candidate Service Impl can also call.
                 //This logic assumes that sorting field, apart from masterId 
                 //and updated, is assumed to be a keyword field.
                 //This will need to change if we add other sorting fields 
