@@ -418,7 +418,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         req.setCv(cv);
         if(StringUtils.isNotBlank(textExtract)) {
             // Remove any null bytes to avoid PSQLException: ERROR: invalid byte sequence for encoding "UTF8"
-            textExtract = Pattern.compile("\\x00").matcher(textExtract).replaceAll("test");
+            textExtract = Pattern.compile("\\x00").matcher(textExtract).replaceAll("?");
             req.setTextExtract(textExtract);
         }
         
