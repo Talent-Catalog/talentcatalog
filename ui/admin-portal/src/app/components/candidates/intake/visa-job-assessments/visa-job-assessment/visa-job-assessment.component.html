@@ -1,4 +1,3 @@
-{{jobIndex}}
 <div class="card">
   <div class="card-header">
     Employer Eligibility
@@ -27,10 +26,6 @@
     TBB Eligibility
   </div>
   <div class="card-body">
-    <app-int-protection
-      [candidate]="candidate"
-      [candidateIntakeData]="candidateIntakeData">
-    </app-int-protection>
     <app-job-interest
       [candidate]="candidate"
       [candidateIntakeData]="candidateIntakeData"
@@ -58,13 +53,50 @@
   </div>
   <div class="card-body">
     <app-fixed-input
-      [question]="'Age: (50 year cutoff for 494; 55 for 186)'"
+      [question]="'Age: '"
       [answer]="currentYear - birthYear">
     </app-fixed-input>
+    <div class="form-group">
+      <small>50 year cutoff for 494; 55 for 186.</small>
+    </div>
     <!--          <app-view-candidate-job-experience-->
     <!--            [candidate]="candidate"-->
     <!--            [candidateOccupation]="">-->
     <!--          </app-view-candidate-job-experience>-->
+    <app-years-relevant-exp
+      [candidate]="candidate"
+      [selectedIndex]="jobIndex">
+    </app-years-relevant-exp>
+    <app-ielts-level
+      [candidate]="candidate"
+      [selectedIndex]="jobIndex">
+    </app-ielts-level>
+    <app-qualification-relevant
+      [candidate]="candidate"
+      [selectedIndex]="jobIndex">
+    </app-qualification-relevant>
+  </div>
+</div>
+
+<hr/>
+
+<div class="card">
+  <div class="card-header">
+    Final Assessment
+  </div>
+  <div class="card-body">
+    <app-visa-four-nine-four
+      [candidate]="candidate"
+      [selectedIndex]="jobIndex">
+    </app-visa-four-nine-four>
+    <app-visa-one-eight-six
+      [candidate]="candidate"
+      [selectedIndex]="jobIndex">
+    </app-visa-one-eight-six>
+    <app-visa-other-options
+      [candidate]="candidate"
+      [selectedIndex]="jobIndex">
+    </app-visa-other-options>
     <app-visa-final-assessment
       [candidate]="candidate"
       [selectedIndex]="jobIndex">

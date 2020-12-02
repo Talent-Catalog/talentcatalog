@@ -197,6 +197,12 @@ import {RegionalAreaComponent} from './components/candidates/intake/visa-job-ass
 import {JobInterestComponent} from './components/candidates/intake/visa-job-assessments/job-interest/job-interest.component';
 import {JobFamilyAusComponent} from './components/candidates/intake/visa-job-assessments/job-family-aus/job-family-aus.component';
 import {JobEligibilityAssessmentComponent} from './components/candidates/intake/visa-job-assessments/job-eligibility-assessment/job-eligibility-assessment.component';
+import {VisaFourNineFourComponent} from './components/candidates/intake/visa-job-assessments/visa-four-nine-four/visa-four-nine-four.component';
+import {VisaOneEightSixComponent} from './components/candidates/intake/visa-job-assessments/visa-one-eight-six/visa-one-eight-six.component';
+import {VisaOtherOptionsComponent} from './components/candidates/intake/visa-job-assessments/visa-other-options/visa-other-options.component';
+import {YearsRelevantExpComponent} from './components/candidates/intake/visa-job-assessments/years-relevant-exp/years-relevant-exp.component';
+import {IeltsLevelComponent} from './components/candidates/intake/visa-job-assessments/ielts-level/ielts-level.component';
+import {QualificationRelevantComponent} from './components/candidates/intake/visa-job-assessments/qualification-relevant/qualification-relevant.component';
 
 @NgModule({
   declarations: [
@@ -386,7 +392,13 @@ import {JobEligibilityAssessmentComponent} from './components/candidates/intake/
     RegionalAreaComponent,
     JobInterestComponent,
     JobFamilyAusComponent,
-    JobEligibilityAssessmentComponent
+    JobEligibilityAssessmentComponent,
+    VisaFourNineFourComponent,
+    VisaOneEightSixComponent,
+    VisaOtherOptionsComponent,
+    YearsRelevantExpComponent,
+    IeltsLevelComponent,
+    QualificationRelevantComponent
   ],
   imports: [
     BrowserModule,

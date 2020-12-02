@@ -1,0 +1,20 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+  <div *ngIf="editable" class="form-group">
+    <label for="visaOther">Other Visa Options?</label>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
+    <select class="form-control"
+            id="visaOther" [formControlName]="'visaOther'">
+      <option *ngFor="let opt of visaOtherOptions" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+  </div>
+</form>

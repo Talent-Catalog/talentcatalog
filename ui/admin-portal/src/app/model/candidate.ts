@@ -190,6 +190,7 @@ export interface CandidateVisaCheck {
   tbbEligibilityAssessment?: TBBEligibilityAssessment;
 }
 
+//todo rename to CandidateVisaRoleCheck? something like that. Role specific checks.
 export interface CandidateJobCheck {
   id?: number;
   name?: string;
@@ -396,6 +397,25 @@ export enum TbbEligibility {
   Proceed = "Ready to proceed",
   Discuss = "Needs discussion",
   NotProceed = "Do not proceed"
+}
+
+export enum OtherVisas {
+  NoResponse = "",
+  TempSkilled = "482 temporary skilled (medium stream)",
+  SpecialHum = "202 (special humanitarian)",
+  OtherHum = "Other humanitarian (200, 201, 203)",
+  DirectEnt = "186 direct entry permanent stream",
+  PointsIndep = "189/190 points tested independant stream",
+}
+
+export enum Qualification {
+  NoResponse = "",
+  HighSchool = "High School",
+  Associates = "Associates",
+  Bachelors = "Bachelors",
+  Masters = "Masters",
+  PHD = "PHD",
+  Other = "Other",
 }
 
 export function getCandidateNavigation(candidate: Candidate): any[] {

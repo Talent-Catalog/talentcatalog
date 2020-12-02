@@ -1,0 +1,23 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+
+  <div class="form-group">
+    <label for="ieltsLevel">
+      Estimated IELTS Level?
+    </label>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
+    <input type="number" class="form-control"
+           id="ieltsLevel" [formControlName]="'ieltsLevel'">
+    <small>Must be minimum 4.5 IELTS, average across all bands.</small>
+  </div>
+
+
+</form>
+
