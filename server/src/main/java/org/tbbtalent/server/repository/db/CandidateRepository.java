@@ -39,35 +39,22 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             + " and c.status <> 'deleted'")
     Candidate findByWhatsappIgnoreCase(@Param("whatsapp") String whatsapp);
 
-    @Query(" select distinct c from Candidate c "
-            + " left join c.candidateOccupations p "
+    @Query(" select c from Candidate c "
+            + " left join fetch c.candidateOccupations p "
             + " where c.id = :id ")
     Candidate findByIdLoadCandidateOccupations(@Param("id") Long id);
 
-    @Query(" select distinct c from Candidate c "
-            + " left join c.candidateEducations e "
-            + " left join e.educationMajor m "
-            + " where c.id = :id ")
-    Candidate findByIdLoadEducations(@Param("id") Long id);
-
-    @Query(" select distinct c from Candidate c "
-            + " left join c.candidateJobExperiences e "
-            + " left join e.candidateOccupation o "
-            + " left join e.country co "
-            + " where c.id = :id ")
-    Candidate findByIdLoadJobExperiences(@Param("id") Long id);
-
-    @Query(" select distinct c from Candidate c "
+    @Query(" select c from Candidate c "
             + " left join fetch c.candidateCertifications cert "
             + " where c.id = :id ")
     Candidate findByIdLoadCertifications(@Param("id") Long id);
 
-    @Query(" select distinct c from Candidate c "
+    @Query(" select c from Candidate c "
             + " left join fetch c.candidateLanguages lang "
             + " where c.id = :id ")
     Candidate findByIdLoadCandidateLanguages(@Param("id") Long id);
 
-    @Query(" select distinct c from Candidate c "
+    @Query(" select c from Candidate c "
             + " left join fetch c.candidateSavedLists "
             + " where c.id = :id ")
     Candidate findByIdLoadSavedLists(@Param("id") Long id);
@@ -75,47 +62,6 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     @Query(" select c from Candidate c "
             + " where c.user.id = :id ")
     Candidate findByUserId(@Param("id") Long userId);
-
-    @Query(" select distinct c from Candidate c "
-            + " left join c.candidateOccupations occ "
-            + " left join c.candidateJobExperiences exp "
-            + " left join exp.candidateOccupation expOcc "
-            + " left join exp.country co "
-            + " left join c.candidateEducations edu "
-            + " left join edu.educationMajor maj "
-            + " left join c.candidateCertifications cert "
-            + " left join c.candidateLanguages clang "
-            + " left join clang.language lang "
-            + " where c.user.id = :id ")
-    Candidate findByUserIdLoadProfile(@Param("id") Long userId);
-
-    @Query(" select distinct c from Candidate c "
-            + " left join c.candidateOccupations occ "
-            + " left join c.candidateJobExperiences exp "
-            + " left join exp.candidateOccupation expOcc "
-            + " left join exp.country co "
-            + " left join c.candidateEducations edu "
-            + " left join edu.educationMajor maj "
-            + " left join c.candidateCertifications cert "
-            + " left join c.candidateAttachments catt "
-            + " left join c.candidateLanguages clang "
-            + " left join clang.language lang "
-            + " where c.user.id = :id ")
-    Candidate findByUserIdLoadText(@Param("id") Long userId);
-
-    @Query(" select distinct c from Candidate c "
-            + " left join c.candidateOccupations occ "
-            + " left join c.candidateJobExperiences exp "
-            + " left join exp.candidateOccupation expOcc "
-            + " left join exp.country co "
-            + " left join c.candidateEducations edu "
-            + " left join edu.educationMajor maj "
-            + " left join c.candidateCertifications cert "
-            + " left join c.candidateAttachments catt "
-            + " left join c.candidateLanguages clang "
-            + " left join clang.language lang "
-            + " where c.id = :id ")
-    Candidate findByIdLoadText(@Param("id") Long candidateId);
 
     @Query(" select c from Candidate c "
             + " where c.id in (:ids) ")

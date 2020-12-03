@@ -141,17 +141,11 @@ public interface CandidateService {
 
     Candidate getLoggedInCandidateLoadCandidateOccupations();
 
-    Candidate getLoggedInCandidateLoadEducations();
-
-    Candidate getLoggedInCandidateLoadJobExperiences();
-
     Candidate getLoggedInCandidateLoadCertifications();
 
     Candidate getLoggedInCandidateLoadCandidateLanguages();
 
     Candidate getLoggedInCandidate();
-
-    Candidate getLoggedInCandidateLoadProfile();
 
     Candidate findByCandidateNumber(String candidateNumber);
 
