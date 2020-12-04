@@ -71,7 +71,7 @@ public class Auditor {
             }
             
             
-            User user = userContext.getLoggedInUser();
+            User user = userContext.getLoggedInUser().orElse(null);
             String auditName = "Anonymous";
             Long userId = ANONYMOUS_USER_ID;
             if (user != null)

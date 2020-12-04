@@ -1,8 +1,31 @@
 package org.tbbtalent.server.api.admin;
 
-import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.model.FileList;
+import java.io.File;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +37,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClientException;
-import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.model.db.AttachmentType;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateAttachment;
+import org.tbbtalent.server.model.db.CandidateStatus;
+import org.tbbtalent.server.model.db.EducationType;
+import org.tbbtalent.server.model.db.Gender;
+import org.tbbtalent.server.model.db.NoteType;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
@@ -28,19 +59,9 @@ import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 import org.tbbtalent.server.util.textExtract.TextExtractHelper;
 
-import java.io.File;
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.sql.Date;
-import java.sql.*;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.model.FileList;
 
 @RestController
 @RequestMapping("/api/admin/system")
@@ -304,7 +325,7 @@ public class SystemAdminApi {
         try {
             Long userId = 1L;
             if (userContext != null) {
-                User loggedInUser = userContext.getLoggedInUser();
+                User loggedInUser = userContext.getLoggedInUser().orElse(null);
                 if (loggedInUser != null){
                     userId = loggedInUser.getId();
                 }
@@ -363,7 +384,7 @@ public class SystemAdminApi {
         TextExtractHelper textExtractHelper = new TextExtractHelper(candidateAttachmentRepository, s3ResourceHelper);
         Long userId = 1L;
         if (userContext != null) {
-            User loggedInUser = userContext.getLoggedInUser();
+            User loggedInUser = userContext.getLoggedInUser().orElse(null);
             if (loggedInUser != null){
                 userId = loggedInUser.getId();
             }
@@ -430,7 +451,7 @@ public class SystemAdminApi {
         try {
             Long userId = 1L;
             if (userContext != null) {
-                User loggedInUser = userContext.getLoggedInUser();
+                User loggedInUser = userContext.getLoggedInUser().orElse(null);
                 if (loggedInUser != null){
                     userId = loggedInUser.getId();
                 }
@@ -509,7 +530,7 @@ public class SystemAdminApi {
         try {
             Long userId = 1L; 
             if (userContext != null) {
-                User loggedInUser = userContext.getLoggedInUser();
+                User loggedInUser = userContext.getLoggedInUser().orElse(null);
                 if (loggedInUser != null){
                     userId = loggedInUser.getId();
                 }

@@ -343,7 +343,7 @@ public class CandidateServiceImpl implements CandidateService {
      * @param candidate Entity to save
      */
     private void saveIt(Candidate candidate) {
-        candidate.setAuditFields(userContext.getLoggedInUser());
+        candidate.setAuditFields(userContext.getLoggedInUser().orElse(null));
         save(candidate, true);
     }
 
@@ -559,7 +559,8 @@ public class CandidateServiceImpl implements CandidateService {
                     hits.getTotalHits());
         } else {
 
-            User user = userContext.getLoggedInUser();
+            User user = userContext.getLoggedInUser()
+                    .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
             List<Long> searchIds = new ArrayList<>();
             if (request.getSavedSearchId() != null) {
@@ -614,7 +615,7 @@ public class CandidateServiceImpl implements CandidateService {
             //Check for selection list to set the selected attribute on returned 
             // candidates.
             SavedList selectionList = null;
-            User user = userContext.getLoggedInUser();
+            User user = userContext.getLoggedInUser().orElse(null);
             if (user != null) {
                 selectionList = savedSearchService
                         .getSelectionList(savedSearchId, user.getId());
@@ -656,7 +657,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Page<Candidate> searchCandidates(SearchCandidateRequest request) {
         Page<Candidate> candidates;
-        User user = userContext.getLoggedInUser();
+        User user = userContext.getLoggedInUser().orElse(null);
         if (user == null) {
             candidates = doSearchCandidates(request);
         } else {
@@ -689,7 +690,8 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Page<Candidate> searchCandidates(CandidateEmailSearchRequest request) {
         String s = request.getCandidateEmail();
-        User loggedInUser = userContext.getLoggedInUser();
+        User loggedInUser = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.sourcepartneradmin) {
             Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
             Page<Candidate> candidates;
@@ -707,7 +709,9 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Page<Candidate> searchCandidates(CandidateNumberOrNameSearchRequest request) {
         String s = request.getCandidateNumberOrName();
-        User loggedInUser = userContext.getLoggedInUser();
+        User loggedInUser = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
         boolean searchForNumber = s.length() > 0 && Character.isDigit(s.charAt(0));
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
         Page<Candidate> candidates;
@@ -733,7 +737,9 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Page<Candidate> searchCandidates(CandidatePhoneSearchRequest request) {
         String s = request.getCandidatePhone();
-        User loggedInUser = userContext.getLoggedInUser();
+        User loggedInUser = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
         if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.sourcepartneradmin){
             Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
             Page<Candidate> candidates;
@@ -752,7 +758,7 @@ public class CandidateServiceImpl implements CandidateService {
         if (savedSearchIds.contains(searchJoinRequest.getSavedSearchId())) {
             throw new CircularReferencedException(searchJoinRequest.getSavedSearchId());
         }
-        User user = userContext.getLoggedInUser();
+        User user = userContext.getLoggedInUser().orElse(null);
         //add id to list as do not want circular references
         savedSearchIds.add(searchJoinRequest.getSavedSearchId());
         //load saved search
@@ -852,7 +858,9 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     @Transactional
     public Candidate updateCandidateStatus(long id, UpdateCandidateStatusRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
+        User loggedInUser = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
         Candidate candidate = this.candidateRepository.findByIdLoadUser(id, sourceCountries)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
@@ -876,7 +884,9 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateCandidateLinks(long id, UpdateCandidateLinksRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
+        User loggedInUser = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
         Candidate candidate = this.candidateRepository.findByIdLoadUser(id, sourceCountries)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
@@ -889,7 +899,9 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateCandidate(long id, UpdateCandidateRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
+        User loggedInUser = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
         Candidate candidate = this.candidateRepository.findByIdLoadUser(id, sourceCountries)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
@@ -928,7 +940,9 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateCandidateAdditionalInfo(long id, UpdateCandidateAdditionalInfoRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
+        User loggedInUser = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
         Candidate candidate = this.candidateRepository.findByIdLoadUser(id, sourceCountries)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
@@ -939,7 +953,9 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateCandidateSurvey(long id, UpdateCandidateSurveyRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
+        User loggedInUser = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
         Candidate candidate = this.candidateRepository.findByIdLoadUser(id, sourceCountries)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
@@ -1020,7 +1036,9 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateContact(UpdateCandidateContactRequest request) {
-        User user = userContext.getLoggedInUser();
+        User user = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
         // Check update request for a duplicate email or phone number
         validateContactRequest(user, request);
 
@@ -1045,7 +1063,9 @@ public class CandidateServiceImpl implements CandidateService {
         Nationality nationality = nationalityRepository.findById(request.getNationality())
                 .orElseThrow(() -> new NoSuchObjectException(Nationality.class, request.getNationality()));
 
-        User user = userContext.getLoggedInUser();
+        User user = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user = userRepository.save(user);
@@ -1150,7 +1170,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Optional<Candidate> getLoggedInCandidate() {
-        User user = userContext.getLoggedInUser();
+        User user = userContext.getLoggedInUser().orElse(null);
         if (user == null) {
             return Optional.empty();
         }
@@ -1160,7 +1180,9 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate findByCandidateNumber(String candidateNumber) {
-        User loggedInUser = userContext.getLoggedInUser();
+        User loggedInUser = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
         return candidateRepository.findByCandidateNumberRestricted(candidateNumber, sourceCountries)
                 .orElseThrow(() -> new CountryRestrictionException("You don't have access to this candidate."));
@@ -1168,11 +1190,6 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Transactional(readOnly = true)
     void validateContactRequest(User user, BaseCandidateContactRequest request) {
-        Candidate candidate = null;
-        if (user != null) {
-            candidate = user.getCandidate();
-        }
-
         // Check email not already taken
         if (!StringUtils.isBlank(request.getEmail())) {
             try {
@@ -1206,8 +1223,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public List<DataRow> getGenderStats(CandidateStatDateRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
+        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
         CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
         return toRows(candidateRepository.countByGenderOrderByCount(
                 sourceCountryIds,
@@ -1217,8 +1233,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public List<DataRow> getBirthYearStats(Gender gender, CandidateStatDateRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
+        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
         CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
         return toRows(candidateRepository.
                 countByBirthYearOrderByYear(
@@ -1230,8 +1245,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public List<DataRow> getRegistrationStats(CandidateStatDateRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
+        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
         CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
         return toRows(candidateRepository.countByCreatedDateOrderByCount(
                 sourceCountryIds,
@@ -1241,8 +1255,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public List<DataRow> getRegistrationOccupationStats(CandidateStatDateRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
+        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
         CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
         final List<DataRow> rows = toRows(candidateRepository.countByOccupationOrderByCount(
                 sourceCountryIds,
@@ -1253,8 +1266,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public List<DataRow> getNationalityStats(Gender gender, String country, CandidateStatDateRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
+        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
         CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
         List<DataRow> rows = toRows(candidateRepository.
                 countByNationalityOrderByCount(
@@ -1268,8 +1280,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public List<DataRow> getSurveyStats(Gender gender, String country, CandidateStatDateRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
+        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
         CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
         return toRows(candidateRepository.
                 countBySurveyOrderByCount(
@@ -1282,8 +1293,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public List<DataRow> getMaxEducationStats(Gender gender, CandidateStatDateRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
+        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
         CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
         return toRows(candidateRepository.
                 countByMaxEducationLevelOrderByCount(
@@ -1295,8 +1305,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public List<DataRow> getLanguageStats(Gender gender, CandidateStatDateRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
+        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
         CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
         List<DataRow> rows = toRows(candidateRepository.
                 countByLanguageOrderByCount(
@@ -1309,8 +1318,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public List<DataRow> getOccupationStats(Gender gender, CandidateStatDateRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
+        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
         CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
         return toRows(candidateRepository.
                 countByOccupationOrderByCount(
@@ -1322,8 +1330,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public List<DataRow> getMostCommonOccupationStats(Gender gender, CandidateStatDateRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
+        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
         CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
         List<DataRow> rows = toRows(candidateRepository.
                 countByMostCommonOccupationOrderByCount(
@@ -1336,8 +1343,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public List<DataRow> getSpokenLanguageLevelStats(Gender gender, String language, CandidateStatDateRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
+        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
         CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
         return toRows(candidateRepository.
                 countBySpokenLanguageLevelByCount(
@@ -1371,7 +1377,7 @@ public class CandidateServiceImpl implements CandidateService {
                     csvWriter.writeNext(getExportCandidateStrings(candidate));
                 }
 
-                if (result.getNumber() * request.getPageSize() < result.getTotalElements()) {
+                if ((long) result.getNumber() * request.getPageSize() < result.getTotalElements()) {
                     request.setPageNumber(request.getPageNumber()+1);
                 } else {
                     hasMore = false;
@@ -1412,7 +1418,7 @@ public class CandidateServiceImpl implements CandidateService {
                     csvWriter.writeNext(getExportCandidateStrings(candidate));
                 }
 
-                if (result.getNumber() * request.getPageSize() < result.getTotalElements()) {
+                if ((long) result.getNumber() * request.getPageSize() < result.getTotalElements()) {
                     request.setPageNumber(request.getPageNumber()+1);
                 } else {
                     hasMore = false;
@@ -1431,7 +1437,7 @@ public class CandidateServiceImpl implements CandidateService {
      */
     @Override
     public void setCandidateContext(long savedSearchId, Iterable<Candidate> candidates) {
-        User user = userContext.getLoggedInUser();
+        User user = userContext.getLoggedInUser().orElse(null);
         SavedList selectionList = null;
         if (user != null) {
             selectionList = savedSearchService
@@ -1451,7 +1457,10 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     private String[] getExportTitles() {
-        Role role = userContext.getLoggedInUser().getRole();
+        User loggedInUser = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+        Role role = loggedInUser.getRole();
         if(role == Role.semilimited){
             return new String[]{
                     "Candidate Number", "Gender", "Country Residing", "Nationality",
@@ -1471,8 +1480,11 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     private String[] getExportCandidateStrings(Candidate candidate) {
-        Role role = userContext.getLoggedInUser().getRole();
-        if(role == Role.semilimited){
+        User loggedInUser = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+        Role role = loggedInUser.getRole();
+        if (role == Role.semilimited) {
             return new String[] {
                     candidate.getCandidateNumber(),
                     candidate.getGender() != null ? candidate.getGender().toString() : null,
@@ -1486,7 +1498,7 @@ public class CandidateServiceImpl implements CandidateService {
                     candidate.getContextNote() != null ? candidate.getContextNote() : null,
                     getCandidateExternalHref(candidate.getCandidateNumber())
             };
-        }else if(role == Role.limited){
+        } else if (role == Role.limited) {
             return new String[] {
                     candidate.getCandidateNumber(),
                     candidate.getGender() != null ? candidate.getGender().toString() : null,
@@ -1498,7 +1510,7 @@ public class CandidateServiceImpl implements CandidateService {
                     candidate.getContextNote() != null ? candidate.getContextNote() : null,
                     getCandidateExternalHref(candidate.getCandidateNumber())
             };
-        }else{
+        } else {
             return new String[] {
                     candidate.getCandidateNumber(),
                     candidate.getUser().getFirstName(),
@@ -1523,7 +1535,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     public String formatCandidateMajor(List<CandidateEducation> candidateEducations){
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         if (!CollectionUtils.isEmpty(candidateEducations)){
             for (CandidateEducation candidateEducation : candidateEducations) {
                 if (candidateEducation.getEducationMajor() != null){
@@ -1536,7 +1548,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     public String formatCandidateOccupation(List<CandidateOccupation> candidateOccupations){
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         if (!CollectionUtils.isEmpty(candidateOccupations)){
             for (CandidateOccupation candidateOccupation : candidateOccupations) {
                 if (candidateOccupation.getOccupation() != null){
@@ -1549,7 +1561,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     public String getEnglishSpokenProficiency(List<CandidateLanguage> candidateLanguages){
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         if (!CollectionUtils.isEmpty(candidateLanguages)){
             for (CandidateLanguage candidateLanguage : candidateLanguages) {
                 if ((candidateLanguage.getLanguage() != null) && "english".equalsIgnoreCase(candidateLanguage.getLanguage().getName())){
@@ -1643,9 +1655,12 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     /**
-     * Get a user’s source country Ids, defaulting to all countries if empty
+     * Get logged in user’s source country Ids, defaulting to all countries if empty
      */
-    public List<Long> getDefaultSourceCountryIds(User user){
+    public List<Long> getDefaultSourceCountryIds(){
+        User user = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
         List<Long> listOfCountryIds;
 
         if(CollectionUtils.isEmpty(user.getSourceCountries())){

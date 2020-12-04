@@ -1,13 +1,24 @@
 package org.tbbtalent.server.service.db.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
+import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateOccupation;
+import org.tbbtalent.server.model.db.Occupation;
+import org.tbbtalent.server.model.db.Role;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.repository.db.CandidateJobExperienceRepository;
 import org.tbbtalent.server.repository.db.CandidateOccupationRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
@@ -21,12 +32,6 @@ import org.tbbtalent.server.service.db.CandidateNoteService;
 import org.tbbtalent.server.service.db.CandidateOccupationService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 public class CandidateOccupationServiceImpl implements CandidateOccupationService {
@@ -64,8 +69,9 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
 
     @Override
     public CandidateOccupation createCandidateOccupation(CreateCandidateOccupationRequest request) {
-        User user = userContext.getLoggedInUser();
-
+        User user = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        
         // Load the industry from the database - throw an exception if not found
         Occupation occupation = occupationRepository.findById(request.getOccupationId())
                 .orElseThrow(() -> new NoSuchObjectException(Occupation.class, request.getOccupationId()));
@@ -81,12 +87,15 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
             // Set verified if request coming from admin
             candidateOccupation.setVerified(request.isVerified());
 
-            candidateOccupation.setAuditFields(userContext.getLoggedInUser());
+            candidateOccupation.setAuditFields(user);
             // removed verification note as verified no longer used
 //            candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(request.getCandidateId(),
 //                    occupation.getName() +" verification status set to "+request.isVerified(), request.getComment()));
         } else {
             candidate = userContext.getLoggedInCandidate();
+            if (candidate == null) {
+                throw new InvalidSessionException("Not logged in");
+            }
         }
 
         candidateOccupation.setCandidate(candidate);
@@ -110,7 +119,8 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
 
     @Override
     public void deleteCandidateOccupation(Long id) {
-        User user = userContext.getLoggedInUser();
+        User user = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         CandidateOccupation candidateOccupation = candidateOccupationRepository.findByIdLoadCandidate(id)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateOccupation.class, id));
@@ -123,6 +133,9 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
                     .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateOccupation.getCandidate().getId()));
         } else {
             candidate = userContext.getLoggedInCandidate();
+            if (candidate == null) {
+                throw new InvalidSessionException("Not logged in");
+            }
             // Check that the user is deleting their own attachment
             if (!candidate.getId().equals(candidateOccupation.getCandidate().getId())) {
                 throw new InvalidCredentialsException("You do not have permission to perform that action");
@@ -137,8 +150,8 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
 
     @Override
     public List<CandidateOccupation> listMyOccupations() {
-        Candidate candidate = userContext.getLoggedInCandidate();
-        return candidateOccupationRepository.findByCandidateIdLoadOccupation(candidate.getId());
+        Long candidateId = userContext.getLoggedInCandidateId();
+        return candidateOccupationRepository.findByCandidateIdLoadOccupation(candidateId);
 
     }
 
@@ -162,6 +175,9 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
     @Override
     public List<CandidateOccupation> updateCandidateOccupations(UpdateCandidateOccupationsRequest request) {
         Candidate candidate = userContext.getLoggedInCandidate();
+        if (candidate == null) {
+            throw new InvalidSessionException("Not logged in");
+        }
         List<CandidateOccupation> updatedOccupations = new ArrayList<>();
         List<Long> updatedOccupationIds = new ArrayList<>();
 
@@ -250,7 +266,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         candidateOccupation.setYearsExperience(request.getYearsExperience());
         candidateOccupation.setVerified(request.isVerified());
 
-        candidateOccupation.setAuditFields(userContext.getLoggedInUser());
+        candidateOccupation.setAuditFields(userContext.getLoggedInUser().orElse(null));
         // removed as no longer use verification
 //        candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(candidateOccupation.getCandidate().getId(),
 //                candidateOccupation.getOccupation().getName() +" verification status set to "+request.isVerified(), request.getComment()));

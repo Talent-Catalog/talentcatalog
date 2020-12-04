@@ -114,7 +114,9 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
     @Override
     public CandidateAttachment createCandidateAttachment(CreateCandidateAttachmentRequest request) {
-        User user = userContext.getLoggedInUser();
+        User user = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
         Candidate candidate;
         String textExtract;
 
@@ -197,10 +199,8 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     // repository but not from S3 bucket.
     @Override
     public void deleteCandidateAttachment(Long id) {
-        User user = userContext.getLoggedInUser();
-        if (user == null) {
-            throw new InvalidSessionException("Not logged in");
-        }
+        User user = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         CandidateAttachment candidateAttachment = candidateAttachmentRepository.findByIdLoadCandidate(id)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateAttachment.class, id));
@@ -304,7 +304,8 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     @Override
     public CandidateAttachment updateCandidateAttachment(
             UpdateCandidateAttachmentRequest request) throws IOException {
-        User user = userContext.getLoggedInUser();
+        User user = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         CandidateAttachment candidateAttachment = 
                 getCandidateAttachment(request.getId()); 

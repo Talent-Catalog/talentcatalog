@@ -1,5 +1,7 @@
 package org.tbbtalent.server.security;
 
+import java.util.Optional;
+
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,13 +12,16 @@ import org.tbbtalent.server.model.db.User;
 @Service
 public class UserContext {
 
-    //todo Make this optional
-    public @Nullable User getLoggedInUser() {
+    /**
+     * Return logged in user. Optional empty id not logged in.
+     * @return Logged in user or empty if not logged in.
+     */
+    public Optional<User> getLoggedInUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.getPrincipal() instanceof AuthenticatedUser) {
-            return ((AuthenticatedUser) auth.getPrincipal()).getUser();
+            return Optional.of(((AuthenticatedUser) auth.getPrincipal()).getUser());
         }
-        return null;
+        return Optional.empty();
     }
 
     /**
@@ -25,7 +30,7 @@ public class UserContext {
      */
     public @Nullable Long getLoggedInCandidateId() {
         Long ret = null;
-        User user = getLoggedInUser();
+        User user = getLoggedInUser().orElse(null);
         if (user != null) {
             Candidate candidate = user.getCandidate();
             if (candidate != null) {
@@ -47,12 +52,12 @@ public class UserContext {
      * @return Candidate with no associated attributes
      */
     public @Nullable Candidate getLoggedInCandidate(){
-        User user = getLoggedInUser();
+        User user = getLoggedInUser().orElse(null);
         return user == null ? null : user.getCandidate();
     }
     
     public @Nullable String getUserLanguage() {
-        User user = getLoggedInUser();
+        User user = getLoggedInUser().orElse(null);
         return user == null ? null : user.getSelectedLanguage();
     }
 }
