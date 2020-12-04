@@ -40,6 +40,7 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tbbtalent.server.request.candidate.stat.CandidateStatDateRequest;
+import org.tbbtalent.server.util.dto.DtoBuilder;
 
 public interface CandidateService {
 
@@ -145,6 +146,32 @@ public interface CandidateService {
 
     Candidate getLoggedInCandidateLoadCandidateLanguages();
 
+    /**
+     * Returns the currently logged in candidate entity.
+     * <p/>
+     * Note that the Candidate entity only lazily loads associated attributes.
+     * So, for example, attributes like <code>candidateOccupations</code>
+     * will not be populated. They will only be populated as needed, eg when 
+     * accessed through a method like {@link Candidate#getCandidateOccupations()}.
+     * <p/>
+     * In that case, assuming that the JPA "persistence context" is still active
+     * (which it normally will be in your controllers processing HTTP requests),
+     * JPA will perform another database access to populate the candidate
+     * occupations.
+     * (See https://www.baeldung.com/jpa-hibernate-persistence-context)
+     * <p/>
+     * Note that our DTO builder class {@link DtoBuilder} will also trigger 
+     * loading of the requested attributes from the database.
+     * <p/>
+     * In order to avoid unnecessary database accesses, there are some special
+     * methods such as {@link #getLoggedInCandidateLoadCandidateOccupations()} 
+     * which load specific attributes at the same time as the Candidate entity
+     * is fetched. This is achieved by using "join fetch" in the repository 
+     * query. See, for example, 
+     * {@link CandidateRepository#findByIdLoadCandidateOccupations}. 
+     * @return Lazily loaded entity corresponding to currently logged in 
+     * candidate.
+     */
     Candidate getLoggedInCandidate();
 
     Candidate findByCandidateNumber(String candidateNumber);
