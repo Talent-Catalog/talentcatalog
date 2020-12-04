@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.GeneralSecurityException;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -140,11 +141,35 @@ public interface CandidateService {
 
     Candidate updateCandidateSurvey(UpdateCandidateSurveyRequest request);
 
-    Candidate getLoggedInCandidateLoadCandidateOccupations();
+    /**
+     * Returns the currently logged in candidate entity preloaded with
+     * candidate occupations.
+     * <p/>
+     * See doc for {@link #getLoggedInCandidate()}
+     * @return candidate entity preloaded with candidate occupations. 
+     * Returned as Optional - can be empty if nobody is logged in.
+     */
+    Optional<Candidate> getLoggedInCandidateLoadCandidateOccupations();
 
-    Candidate getLoggedInCandidateLoadCertifications();
+    /**
+     * Returns the currently logged in candidate entity preloaded with
+     * candidate certifications.
+     * <p/>
+     * See doc for {@link #getLoggedInCandidate()}
+     * @return candidate entity preloaded with candidate certifications. 
+     * Returned as Optional - can be empty if nobody is logged in.
+     */
+    Optional<Candidate> getLoggedInCandidateLoadCertifications();
 
-    Candidate getLoggedInCandidateLoadCandidateLanguages();
+    /**
+     * Returns the currently logged in candidate entity preloaded with
+     * candidate languages.
+     * <p/>
+     * See doc for {@link #getLoggedInCandidate()}
+     * @return candidate entity preloaded with candidate languages. 
+     * Returned as Optional - can be empty if nobody is logged in.
+     */
+    Optional<Candidate> getLoggedInCandidateLoadCandidateLanguages();
 
     /**
      * Returns the currently logged in candidate entity.
@@ -170,9 +195,9 @@ public interface CandidateService {
      * query.
      * See, for example, {@link CandidateRepository#findByIdLoadCandidateOccupations}. 
      * @return Lazily loaded entity corresponding to currently logged in 
-     * candidate.
+     * candidate. Returned as Optional - can be empty if nobody is logged in.
      */
-    Candidate getLoggedInCandidate();
+    Optional<Candidate> getLoggedInCandidate();
 
     Candidate findByCandidateNumber(String candidateNumber);
 

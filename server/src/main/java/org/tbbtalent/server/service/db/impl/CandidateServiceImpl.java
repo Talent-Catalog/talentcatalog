@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -55,6 +56,7 @@ import org.tbbtalent.server.exception.CircularReferencedException;
 import org.tbbtalent.server.exception.CountryRestrictionException;
 import org.tbbtalent.server.exception.ExportFailedException;
 import org.tbbtalent.server.exception.InvalidRequestException;
+import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.PasswordMatchException;
 import org.tbbtalent.server.exception.UsernameTakenException;
@@ -1063,7 +1065,8 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateEducation(UpdateCandidateEducationRequest request) {
-        Candidate candidate = getLoggedInCandidate();
+        Candidate candidate = getLoggedInCandidate()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         EducationLevel educationLevel = null;
         if (request.getMaxEducationLevelId() != null) {
@@ -1079,7 +1082,8 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateCandidateSurvey(UpdateCandidateSurveyRequest request) {
-        Candidate candidate = getLoggedInCandidate();
+        Candidate candidate = getLoggedInCandidate()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         SurveyType surveyType = null;
         if (request.getSurveyTypeId() != null) {
@@ -1096,7 +1100,8 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateAdditionalInfo(UpdateCandidateAdditionalInfoRequest request) {
-        Candidate candidate = getLoggedInCandidate();
+        Candidate candidate = getLoggedInCandidate()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         candidate.setAdditionalInfo(request.getAdditionalInfo());
         if (BooleanUtils.isTrue(request.getSubmit()) && !candidate.getStatus().equals(CandidateStatus.pending)) {
             updateCandidateStatus(candidate.getId(), new UpdateCandidateStatusRequest(CandidateStatus.pending, "Candidate submitted"));
@@ -1108,30 +1113,49 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Candidate getLoggedInCandidateLoadCandidateOccupations() {
-        Candidate candidate = getLoggedInCandidate();
-        candidate = candidateRepository.findByIdLoadCandidateOccupations(candidate.getId());
-        return candidate;
+    public Optional<Candidate> getLoggedInCandidateLoadCandidateOccupations() {
+        Long candidateId = userContext.getLoggedInCandidateId();
+        if (candidateId == null) {
+            return Optional.empty();
+        } else {
+            Candidate candidate = candidateRepository
+                    .findByIdLoadCandidateOccupations(candidateId);
+            return candidate == null ? Optional.empty() : Optional.of(candidate);
+        }
     }
 
     @Override
-    public Candidate getLoggedInCandidateLoadCertifications() {
-        Candidate candidate = getLoggedInCandidate();
-        candidate = candidateRepository.findByIdLoadCertifications(candidate.getId());
-        return candidate;
+    public Optional<Candidate> getLoggedInCandidateLoadCertifications() {
+        Long candidateId = userContext.getLoggedInCandidateId();
+        if (candidateId == null) {
+            return Optional.empty();
+        } else {
+            Candidate candidate = candidateRepository
+                    .findByIdLoadCertifications(candidateId);
+            return candidate == null ? Optional.empty() : Optional.of(candidate);
+        }
     }
 
     @Override
-    public Candidate getLoggedInCandidateLoadCandidateLanguages() {
-        Candidate candidate = getLoggedInCandidate();
-        candidate = candidateRepository.findByIdLoadCandidateLanguages(candidate.getId());
-        return candidate;
+    public Optional<Candidate> getLoggedInCandidateLoadCandidateLanguages() {
+        Long candidateId = userContext.getLoggedInCandidateId();
+        if (candidateId == null) {
+            return Optional.empty();
+        } else {
+            Candidate candidate = candidateRepository
+                    .findByIdLoadCandidateLanguages(candidateId);
+            return candidate == null ? Optional.empty() : Optional.of(candidate);
+        }
     }
 
     @Override
-    public Candidate getLoggedInCandidate() {
+    public Optional<Candidate> getLoggedInCandidate() {
         User user = userContext.getLoggedInUser();
-        return candidateRepository.findByUserId(user.getId());
+        if (user == null) {
+            return Optional.empty();
+        }
+        Candidate candidate = candidateRepository.findByUserId(user.getId()); 
+        return candidate == null ? Optional.empty() : Optional.of(candidate);
     }
 
     @Override

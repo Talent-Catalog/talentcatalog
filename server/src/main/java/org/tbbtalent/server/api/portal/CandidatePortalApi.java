@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateContactRequest;
@@ -37,7 +38,8 @@ public class CandidatePortalApi {
 
     @GetMapping("contact")
     public Map<String, Object> getCandidateEmail() {
-        Candidate candidate = this.candidateService.getLoggedInCandidate();
+        Candidate candidate = this.candidateService.getLoggedInCandidate()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         return candidateContactDto().build(candidate);
     }
 
@@ -49,7 +51,8 @@ public class CandidatePortalApi {
 
     @GetMapping("personal")
     public Map<String, Object> getCandidatePersonal() {
-        Candidate candidate = this.candidateService.getLoggedInCandidate();
+        Candidate candidate = this.candidateService.getLoggedInCandidate()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         return candidatePersonalDto().build(candidate);
     }
 
@@ -61,13 +64,16 @@ public class CandidatePortalApi {
 
     @GetMapping("occupation")
     public Map<String, Object> getCandidateCandidateOccupations() {
-        Candidate candidate = this.candidateService.getLoggedInCandidateLoadCandidateOccupations();
+        Candidate candidate = this.candidateService
+                .getLoggedInCandidateLoadCandidateOccupations()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         return candidateWithCandidateOccupationsDto().build(candidate);
     }
 
     @GetMapping("education")
     public Map<String, Object> getCandidateEducation() {
-        Candidate candidate = this.candidateService.getLoggedInCandidate();
+        Candidate candidate = this.candidateService.getLoggedInCandidate()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         return candidateWithEducationDto().build(candidate);
     }
 
@@ -79,13 +85,16 @@ public class CandidatePortalApi {
 
     @GetMapping("languages")
     public Map<String, Object> getCandidateLanguages() {
-        Candidate candidate = this.candidateService.getLoggedInCandidateLoadCandidateLanguages();
+        Candidate candidate = this.candidateService
+                .getLoggedInCandidateLoadCandidateLanguages()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));         
         return candidateWithCandidateLanguagesDto().build(candidate);
     }
 
     @GetMapping("additional-info")
     public Map<String, Object> getCandidateAdditionalInfo() {
-        Candidate candidate = this.candidateService.getLoggedInCandidate();
+        Candidate candidate = this.candidateService.getLoggedInCandidate()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         return candidateAdditionalInfoDto().build(candidate);
     }
 
@@ -97,7 +106,8 @@ public class CandidatePortalApi {
 
     @GetMapping("survey")
     public Map<String, Object> getCandidateSurvey() {
-        Candidate candidate = this.candidateService.getLoggedInCandidate();
+        Candidate candidate = this.candidateService.getLoggedInCandidate()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         return candidateSurveyDto().build(candidate);
     }
 
@@ -109,31 +119,37 @@ public class CandidatePortalApi {
 
     @GetMapping("job-experiences")
     public Map<String, Object> getCandidateJobExperiences() {
-        Candidate candidate = this.candidateService.getLoggedInCandidate();
+        Candidate candidate = this.candidateService.getLoggedInCandidate()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         return candidateWithJobExperiencesDto().build(candidate);
     }
 
     @GetMapping("certifications")
     public Map<String, Object> getCandidateCertifications() {
-        Candidate candidate = this.candidateService.getLoggedInCandidateLoadCertifications();
+        Candidate candidate = this.candidateService
+                .getLoggedInCandidateLoadCertifications()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));         
         return candidateWithCertificationsDto().build(candidate);
     }
 
     @GetMapping("status")
     public Map<String, Object> getCandidateStatus() {
-        Candidate candidate = this.candidateService.getLoggedInCandidate();
+        Candidate candidate = this.candidateService.getLoggedInCandidate()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         return candidateStatusDto().build(candidate);
     }
 
     @GetMapping("profile")
     public Map<String, Object> getCandidateProfile() {
-        Candidate candidate = this.candidateService.getLoggedInCandidate();
+        Candidate candidate = this.candidateService.getLoggedInCandidate()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         return candidateProfileDto().build(candidate);
     }
 
     @GetMapping("candidate-number")
     public Map<String, Object> getCandidateNumber() {
-        Candidate candidate = this.candidateService.getLoggedInCandidate();
+        Candidate candidate = this.candidateService.getLoggedInCandidate()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         return candidateNumberDto().build(candidate);
     }
 
@@ -141,7 +157,8 @@ public class CandidatePortalApi {
     public void getCandidateCV(HttpServletResponse response)
             throws IOException {
 
-        Candidate candidate = candidateService.getLoggedInCandidate();
+        Candidate candidate = this.candidateService.getLoggedInCandidate()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         String name = candidate.getUser().getDisplayName()+"-"+ "CV";
         response.setContentType("application/pdf");
         response.setHeader("Content-Disposition", "attachment; filename=" + name + ".pdf");

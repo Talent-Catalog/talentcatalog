@@ -1,5 +1,14 @@
 package org.tbbtalent.server.service.db.impl;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
+import java.util.UUID;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -12,8 +21,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
+import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.model.db.AttachmentType;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateAttachment;
+import org.tbbtalent.server.model.db.Role;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.request.PagedSearchRequest;
@@ -28,11 +42,6 @@ import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
 import org.tbbtalent.server.util.filesystem.FileSystemFile;
 import org.tbbtalent.server.util.filesystem.FileSystemFolder;
 import org.tbbtalent.server.util.textExtract.TextExtractHelper;
-
-import java.io.*;
-import java.util.List;
-import java.util.UUID;
-import java.util.regex.Pattern;
 
 @Service
 public class CandidateAttachmentsServiceImpl implements CandidateAttachmentService {
@@ -72,14 +81,21 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
     @Override
     public Page<CandidateAttachment> searchCandidateAttachmentsForLoggedInCandidate(PagedSearchRequest request) {
-        Candidate candidate = userContext.getLoggedInCandidate();
-        return candidateAttachmentRepository.findByCandidateId(candidate.getId(), request.getPageRequest());
+        Long candidateId = userContext.getLoggedInCandidateId();
+        if (candidateId == null) {
+            throw new InvalidSessionException("Not logged in");
+        }
+        return candidateAttachmentRepository
+                .findByCandidateId(candidateId, request.getPageRequest());
     }
 
     @Override
     public List<CandidateAttachment> listCandidateAttachmentsForLoggedInCandidate() {
-        Candidate candidate = userContext.getLoggedInCandidate();
-        return candidateAttachmentRepository.findByCandidateIdLoadAudit(candidate.getId());
+        Long candidateId = userContext.getLoggedInCandidateId();
+        if (candidateId == null) {
+            throw new InvalidSessionException("Not logged in");
+        }
+        return candidateAttachmentRepository.findByCandidateIdLoadAudit(candidateId);
     }
 
     @Override
@@ -108,6 +124,9 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                     .orElseThrow(() -> new NoSuchObjectException(Candidate.class, request.getCandidateId()));
         } else {
             candidate = userContext.getLoggedInCandidate();
+            if (candidate == null) {
+                throw new InvalidSessionException("Not logged in");
+            }
         }
 
         // Create a record of the attachment
@@ -179,6 +198,9 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     @Override
     public void deleteCandidateAttachment(Long id) {
         User user = userContext.getLoggedInUser();
+        if (user == null) {
+            throw new InvalidSessionException("Not logged in");
+        }
 
         CandidateAttachment candidateAttachment = candidateAttachmentRepository.findByIdLoadCandidate(id)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateAttachment.class, id));
@@ -188,6 +210,9 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         // If coming from candidate portal check delete logic
         if (user.getRole().equals(Role.user)) {
              candidate = userContext.getLoggedInCandidate();
+            if (candidate == null) {
+                throw new InvalidSessionException("Not logged in");
+            }
             // Check that the candidate is deleting an attachment related to themselves
             if (!candidate.getId().equals(candidateAttachment.getCandidate().getId())) {
                 throw new InvalidCredentialsException("You do not have permission to perform that action");
@@ -268,7 +293,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
     @Override
     public CandidateAttachment getCandidateAttachment(Long id) 
-            throws IOException, NoSuchObjectException {
+            throws NoSuchObjectException {
         CandidateAttachment candidateAttachment = 
                 candidateAttachmentRepository.findByIdLoadCandidate(id)
                 .orElseThrow(() -> 
@@ -431,13 +456,13 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     @Override
     @NonNull
     public CandidateAttachment uploadAttachment(Boolean cv, MultipartFile file) 
-            throws IOException, NoSuchObjectException {
-        Candidate candidate = userContext.getLoggedInCandidate();
-        if (candidate == null) {
-            throw new NoSuchObjectException(Candidate.class, "");
+            throws IOException, InvalidSessionException {
+        Long candidateId = userContext.getLoggedInCandidateId();
+        if (candidateId == null) {
+            throw new InvalidSessionException("Not logged in");
         }
         
-        return uploadAttachment(candidate.getId(), cv, file);
+        return uploadAttachment(candidateId, cv, file);
     }
 
     private String getFileExtension(String filename) {
