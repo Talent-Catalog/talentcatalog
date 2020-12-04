@@ -163,12 +163,12 @@ public interface CandidateService {
      * Note that our DTO builder class {@link DtoBuilder} will also trigger 
      * loading of the requested attributes from the database.
      * <p/>
-     * In order to avoid unnecessary database accesses, there are some special
-     * methods such as {@link #getLoggedInCandidateLoadCandidateOccupations()} 
+     * Note: In order to avoid unnecessary database accesses, there are some 
+     * special methods such as {@link #getLoggedInCandidateLoadCandidateOccupations()} 
      * which load specific attributes at the same time as the Candidate entity
      * is fetched. This is achieved by using "join fetch" in the repository 
-     * query. See, for example, 
-     * {@link CandidateRepository#findByIdLoadCandidateOccupations}. 
+     * query.
+     * See, for example, {@link CandidateRepository#findByIdLoadCandidateOccupations}. 
      * @return Lazily loaded entity corresponding to currently logged in 
      * candidate.
      */

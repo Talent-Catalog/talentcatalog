@@ -20,6 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.Country;
 
+/**
+ * See notes on "join fetch" in the doc for {@link #findByIdLoadCandidateOccupations}
+ */
 public interface CandidateRepository extends JpaRepository<Candidate, Long>, JpaSpecificationExecutor<Candidate> {
 
     /**
@@ -39,6 +42,20 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             + " and c.status <> 'deleted'")
     Candidate findByWhatsappIgnoreCase(@Param("whatsapp") String whatsapp);
 
+    /**
+     * Uses "join fetch" to load the candidate as well as its associated
+     * occupations. These are configured on the Candidate entity to be
+     * "lazy" loaded which means that they will not be loaded without
+     * this join fetch.
+     * <p/>
+     * Note that Hibernate - the standard JPA provider - generally doesn't like 
+     * "join fetch"ing for more than one association at a time. 
+     * There are ways around that - eg by using Set's instead of List's - but 
+     * then you run into cartesian product issues.
+     * See https://vladmihalcea.com/hibernate-multiplebagfetchexception/
+     * @param id ID of candidate to be loaded from the database.
+     * @return Candidate with loaded occupations.
+     */
     @Query(" select c from Candidate c "
             + " left join fetch c.candidateOccupations p "
             + " where c.id = :id ")
