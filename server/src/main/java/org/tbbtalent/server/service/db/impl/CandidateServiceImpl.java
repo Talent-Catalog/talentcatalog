@@ -559,8 +559,9 @@ public class CandidateServiceImpl implements CandidateService {
                     hits.getTotalHits());
         } else {
 
-            User user = userContext.getLoggedInUser()
-                    .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+            //There may be no logged in user if the search is called by the
+            //overnight Watcher process.
+            User user = userContext.getLoggedInUser().orElse(null);
 
             List<Long> searchIds = new ArrayList<>();
             if (request.getSavedSearchId() != null) {
