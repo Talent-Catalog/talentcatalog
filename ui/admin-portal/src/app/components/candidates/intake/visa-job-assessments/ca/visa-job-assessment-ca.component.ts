@@ -1,13 +1,14 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {IntakeComponentTabBase} from '../../../../util/intake/IntakeComponentTabBase';
 import {CandidateJobCheck, CandidateVisaCheck} from '../../../../../model/candidate';
+import {IntakeComponentTabBase} from '../../../../util/intake/IntakeComponentTabBase';
 
 @Component({
-  selector: 'app-visa-job-assessment',
-  templateUrl: './visa-job-assessment.component.html',
-  styleUrls: ['./visa-job-assessment.component.scss']
+  selector: 'app-visa-job-assessment-ca',
+  templateUrl: './visa-job-assessment-ca.component.html',
+  styleUrls: ['./visa-job-assessment-ca.component.scss']
 })
-export class VisaJobAssessmentComponent extends IntakeComponentTabBase implements OnInit {
+export class VisaJobAssessmentCaComponent extends IntakeComponentTabBase implements OnInit {
+
   @Input() jobIndex: number;
   @Input() visaRecord: CandidateVisaCheck;
 
@@ -22,6 +23,4 @@ export class VisaJobAssessmentComponent extends IntakeComponentTabBase implement
   get myRecord(): CandidateJobCheck {
     return this.visaRecord.jobChecks ? this.visaRecord.jobChecks[this.jobIndex] : null;
   }
-
-
 }

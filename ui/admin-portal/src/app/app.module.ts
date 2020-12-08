@@ -189,7 +189,7 @@ import {TravelDocumentComponent} from './components/candidates/intake/travel-doc
 import {RiskAssessmentComponent} from './components/candidates/intake/risk-assessment/risk-assessment.component';
 import {VisaJobAssessmentsComponent} from './components/candidates/intake/visa-job-assessments/visa-job-assessments.component';
 import {CreateVisaJobAssessementComponent} from './components/candidates/intake/visa-job-assessments/modal/create-visa-job-assessement.component';
-import {VisaJobAssessmentComponent} from './components/candidates/intake/visa-job-assessments/visa-job-assessment/visa-job-assessment.component';
+import {VisaJobAssessmentAuComponent} from './components/candidates/intake/visa-job-assessments/au/visa-job-assessment-au.component';
 import {VisaFinalAssessmentComponent} from './components/candidates/intake/visa-job-assessments/visa-final-assessment/visa-final-assessment.component';
 import {JobOccupationComponent} from './components/candidates/intake/visa-job-assessments/job-occupation/job-occupation.component';
 import {SalaryTsmitComponent} from './components/candidates/intake/visa-job-assessments/salary-tsmit/salary-tsmit.component';
@@ -203,6 +203,7 @@ import {VisaOtherOptionsComponent} from './components/candidates/intake/visa-job
 import {YearsRelevantExpComponent} from './components/candidates/intake/visa-job-assessments/years-relevant-exp/years-relevant-exp.component';
 import {IeltsLevelComponent} from './components/candidates/intake/visa-job-assessments/ielts-level/ielts-level.component';
 import {QualificationRelevantComponent} from './components/candidates/intake/visa-job-assessments/qualification-relevant/qualification-relevant.component';
+import {VisaJobAssessmentCaComponent} from './components/candidates/intake/visa-job-assessments/ca/visa-job-assessment-ca.component';
 
 @NgModule({
   declarations: [
@@ -385,7 +386,7 @@ import {QualificationRelevantComponent} from './components/candidates/intake/vis
     RiskAssessmentComponent,
     VisaJobAssessmentsComponent,
     CreateVisaJobAssessementComponent,
-    VisaJobAssessmentComponent,
+    VisaJobAssessmentAuComponent,
     VisaFinalAssessmentComponent,
     JobOccupationComponent,
     SalaryTsmitComponent,
@@ -398,7 +399,8 @@ import {QualificationRelevantComponent} from './components/candidates/intake/vis
     VisaOtherOptionsComponent,
     YearsRelevantExpComponent,
     IeltsLevelComponent,
-    QualificationRelevantComponent
+    QualificationRelevantComponent,
+    VisaJobAssessmentCaComponent
   ],
   imports: [
     BrowserModule,

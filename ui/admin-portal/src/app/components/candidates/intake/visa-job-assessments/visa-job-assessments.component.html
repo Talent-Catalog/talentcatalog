@@ -32,15 +32,26 @@
 
     <hr/>
 
-    <div *ngIf="selectedJobCheck != undefined">
-      <app-visa-job-assessment
-        [candidate]="candidate"
-        [visaRecord]="visaRecord"
-        [jobIndex]="jobIndex">
-      </app-visa-job-assessment>
-    </div>
+    <div [ngSwitch]="selectedCountry" *ngIf="selectedCountry != undefined">
+      <app-visa-job-assessment-au *ngSwitchCase="'Australia'"
+                                  [candidate]="candidate"
+                                  [jobIndex]="jobIndex"
+                                  [visaRecord]="visaRecord"
+      >
+      </app-visa-job-assessment-au>
 
-    <hr/>
+      <app-visa-job-assessment-ca *ngSwitchCase="'Canada'"
+                                  [candidate]="candidate"
+                                  [jobIndex]="jobIndex"
+                                  [visaRecord]="visaRecord"
+      >
+      </app-visa-job-assessment-ca>
+
+      <div *ngSwitchDefault>
+        //todo error!
+        {{selectedCountry}}
+      </div>
+    </div>
 
   </div>
 </div>

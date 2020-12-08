@@ -137,4 +137,8 @@ export class VisaJobAssessmentsComponent extends IntakeComponentTabBase {
     }
   }
 
+  get selectedCountry(): string {
+    return this.visaRecord?.country?.name;
+  }
+
 }
