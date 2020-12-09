@@ -1,5 +1,17 @@
 package org.tbbtalent.server.service.db.impl;
 
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.validation.constraints.NotNull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,24 +25,44 @@ import org.springframework.util.StringUtils;
 import org.tbbtalent.server.exception.CountryRestrictionException;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
+import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.*;
-import org.tbbtalent.server.repository.db.*;
+import org.tbbtalent.server.model.db.CandidateStatus;
+import org.tbbtalent.server.model.db.Country;
+import org.tbbtalent.server.model.db.EducationLevel;
+import org.tbbtalent.server.model.db.Language;
+import org.tbbtalent.server.model.db.LanguageLevel;
+import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.SavedSearch;
+import org.tbbtalent.server.model.db.SavedSearchType;
+import org.tbbtalent.server.model.db.SearchJoin;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.repository.db.CountryRepository;
+import org.tbbtalent.server.repository.db.EducationLevelRepository;
+import org.tbbtalent.server.repository.db.EducationMajorRepository;
+import org.tbbtalent.server.repository.db.LanguageLevelRepository;
+import org.tbbtalent.server.repository.db.LanguageRepository;
+import org.tbbtalent.server.repository.db.NationalityRepository;
+import org.tbbtalent.server.repository.db.OccupationRepository;
+import org.tbbtalent.server.repository.db.SavedListRepository;
+import org.tbbtalent.server.repository.db.SavedSearchRepository;
+import org.tbbtalent.server.repository.db.SavedSearchSpecification;
+import org.tbbtalent.server.repository.db.SearchJoinRepository;
+import org.tbbtalent.server.repository.db.UserRepository;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.candidate.SearchJoinRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
-import org.tbbtalent.server.request.search.*;
+import org.tbbtalent.server.request.search.CreateFromDefaultSavedSearchRequest;
+import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
+import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
+import org.tbbtalent.server.request.search.UpdateSharingRequest;
+import org.tbbtalent.server.request.search.UpdateWatchingRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.service.db.SavedSearchService;
-
-import javax.validation.constraints.NotNull;
-import java.time.OffsetDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class SavedSearchServiceImpl implements SavedSearchService {
@@ -86,7 +118,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     @Override
     public Page<SavedSearch> searchSavedSearches(SearchSavedSearchRequest request) {
-        final User loggedInUser = userContext.getLoggedInUser();
+        final User loggedInUser = userContext.getLoggedInUser().orElse(null);
 
         Page<SavedSearch> savedSearches;
         //If requesting watches
@@ -188,10 +220,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             CreateFromDefaultSavedSearchRequest request)  
             throws NoSuchObjectException {
         
-        final User loggedInUser = userContext.getLoggedInUser();
-        if (loggedInUser == null) {
-            throw new NoSuchObjectException(User.class, 0);
-        }
+        final User loggedInUser = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         String name;
         //Get name either from the specified saved list, or the specified name.
@@ -249,7 +279,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     public SavedSearch createSavedSearch(UpdateSavedSearchRequest request) 
             throws EntityExistsException {
         SavedSearch savedSearch = convertToSavedSearch(request);
-        final User loggedInUser = userContext.getLoggedInUser();
+        final User loggedInUser = userContext.getLoggedInUser().orElse(null);
         if (loggedInUser != null) {
             checkDuplicates(null, request.getName(), loggedInUser.getId());
             savedSearch.setAuditFields(loggedInUser);
@@ -287,7 +317,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     @Transactional
     public SavedSearch updateSavedSearch(long id, UpdateSavedSearchRequest request) 
             throws EntityExistsException {
-        final User loggedInUser = userContext.getLoggedInUser();
+        final User loggedInUser = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         if(request.getSearchCandidateRequest() == null){
             SavedSearch savedSearch = savedSearchRepository.findById(id)
@@ -315,9 +346,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         savedSearch = addSearchJoins(request, savedSearch);
 
         savedSearch.setAuditFields(loggedInUser);
-        if (loggedInUser != null) {
-            checkDuplicates(id, request.getName(), loggedInUser.getId());
-        }
+        checkDuplicates(id, request.getName(), loggedInUser.getId());
         return savedSearchRepository.save(savedSearch);
     }
 
@@ -325,7 +354,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     @Transactional
     public boolean deleteSavedSearch(long id)  {
         SavedSearch savedSearch = savedSearchRepository.findByIdLoadAudit(id).orElse(null);
-        final User loggedInUser = userContext.getLoggedInUser();
+        final User loggedInUser = userContext.getLoggedInUser().orElse(null);
 
         if (savedSearch != null && loggedInUser != null) {
 
@@ -413,10 +442,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     public @NotNull SavedSearch getDefaultSavedSearch() 
             throws NoSuchObjectException {
         //Check that we have a logged in user.
-        User loggedInUser = userContext.getLoggedInUser();
-        if (loggedInUser == null) {
-            throw new NoSuchObjectException(User.class, 0);
-        }
+        User loggedInUser = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         SavedSearch savedSearch = 
                 savedSearchRepository.findDefaultSavedSearch(loggedInUser.getId())
@@ -484,7 +511,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     @Override
     public void updateCandidateContextNote(long id, UpdateCandidateContextNoteRequest request) {
-        final User loggedInUser = userContext.getLoggedInUser();
+        final User loggedInUser = userContext.getLoggedInUser().orElse(null);
         if (loggedInUser != null) {
             SavedList savedList = savedListRepository
                     .findSelectionList(id, loggedInUser.getId())
@@ -601,8 +628,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             Optional<Language> language = 
                     request.getOtherLanguageId() != null ? 
                             languageRepository.findById(
-                                    request.getOtherLanguageId()) : null;
-            if (language != null && language.isPresent()) {
+                                    request.getOtherLanguageId()) : Optional.empty();
+            if (language.isPresent()) {
                 savedSearch.setOtherLanguage(language.get());
             }
             savedSearch.setOtherMinSpokenLevel(request.getOtherMinSpokenLevel());
@@ -622,7 +649,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
     private SearchCandidateRequest convertToSearchCandidateRequest(SavedSearch request) {
-        User user = userContext.getLoggedInUser();
+        User user = userContext.getLoggedInUser().orElse(null);
         SearchCandidateRequest searchCandidateRequest = new SearchCandidateRequest();
         searchCandidateRequest.setSavedSearchId(request.getId());
         searchCandidateRequest.setSimpleQueryString(request.getSimpleQueryString());

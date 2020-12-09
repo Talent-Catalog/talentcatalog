@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,7 +17,7 @@ public class AuthenticatedUser implements UserDetails {
     private User user;
     private List<GrantedAuthority> authorities;
 
-    public AuthenticatedUser(User user) {
+    public AuthenticatedUser(@NotNull User user) {
         this.user = user;
         this.authorities = new ArrayList<>();
 
@@ -37,11 +39,11 @@ public class AuthenticatedUser implements UserDetails {
         }
     }
 
-    public User getUser() {
+    public @NotNull User getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(@NotNull User user) {
         this.user = user;
     }
 

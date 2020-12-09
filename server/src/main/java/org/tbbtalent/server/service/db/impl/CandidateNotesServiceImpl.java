@@ -5,6 +5,7 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateEducation;
@@ -42,7 +43,8 @@ public class CandidateNotesServiceImpl implements CandidateNoteService {
 
     @Override
     public CandidateNote createCandidateNote(CreateCandidateNoteRequest request) {
-        User user = userContext.getLoggedInUser();
+        User user = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Candidate candidate = candidateRepository.findById(request.getCandidateId())
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, request.getCandidateId()));
@@ -62,7 +64,8 @@ public class CandidateNotesServiceImpl implements CandidateNoteService {
         CandidateNote candidateNote = this.candidateNoteRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateEducation.class, id));
 
-        User user = userContext.getLoggedInUser();
+        User user = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         // Update education object to insert into the database
         candidateNote.setTitle(request.getTitle());

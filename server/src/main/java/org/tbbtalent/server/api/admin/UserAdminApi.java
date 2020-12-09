@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.User;
@@ -49,7 +50,9 @@ public class UserAdminApi {
     @GetMapping("{id}")
     public Map<String, Object> get(@PathVariable("id") long id) {
         User user = this.userService.getUser(id);
-        User loggedInUser = userContext.getLoggedInUser();
+        User loggedInUser = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
         if (loggedInUser.getRole() == Role.admin) {
             return userDto().build(user);
         } else {

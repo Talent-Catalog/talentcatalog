@@ -7,7 +7,6 @@ import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateEducation;
 import org.tbbtalent.server.model.db.CandidateReviewStatusItem;
 import org.tbbtalent.server.model.db.SavedSearch;
-import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.CandidateReviewStatusRepository;
 import org.tbbtalent.server.repository.db.SavedSearchRepository;
@@ -41,8 +40,6 @@ public class CandidateReviewStatusServiceImpl implements CandidateReviewStatusSe
 
     @Override
     public CandidateReviewStatusItem createCandidateReviewStatusItem(CreateCandidateReviewStatusRequest request) {
-        User user = userContext.getLoggedInUser();
-
         Candidate candidate = candidateRepository.findById(request.getCandidateId())
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, request.getCandidateId()));
 
@@ -53,7 +50,7 @@ public class CandidateReviewStatusServiceImpl implements CandidateReviewStatusSe
         candidateReviewStatusItem.setSavedSearch(savedSearch);
         candidateReviewStatusItem.setComment(request.getComment());
         candidateReviewStatusItem.setReviewStatus(request.getReviewStatus());
-        candidateReviewStatusItem.setAuditFields(user);
+        candidateReviewStatusItem.setAuditFields(userContext.getLoggedInUser().orElse(null));
         return candidateReviewStatusRepository.save(candidateReviewStatusItem);
     }
 
@@ -62,11 +59,9 @@ public class CandidateReviewStatusServiceImpl implements CandidateReviewStatusSe
         CandidateReviewStatusItem candidateReviewStatusItem = this.candidateReviewStatusRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateEducation.class, id));
 
-        User user = userContext.getLoggedInUser();
-
         candidateReviewStatusItem.setReviewStatus(request.getReviewStatus());
         candidateReviewStatusItem.setComment(request.getComment());
-        candidateReviewStatusItem.setAuditFields(user);
+        candidateReviewStatusItem.setAuditFields(userContext.getLoggedInUser().orElse(null));
 
         return candidateReviewStatusRepository.save(candidateReviewStatusItem);
 
