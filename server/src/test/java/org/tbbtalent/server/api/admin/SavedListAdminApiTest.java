@@ -45,7 +45,7 @@ class SavedListAdminApiTest {
         User testUser = userRepository.findByUsernameIgnoreCase("camerojo"); 
         
         UserContext userContext = Mockito.mock(UserContext.class);
-        when(userContext.getLoggedInUser()).thenReturn(testUser);
+        when(userContext.getLoggedInUser().orElse(null)).thenReturn(testUser);
         
         SavedListService savedListService = new SavedListServiceImpl(
                 candidateRepository, savedListRepository, null, null, userRepository, 

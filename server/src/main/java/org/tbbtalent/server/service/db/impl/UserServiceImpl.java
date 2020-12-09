@@ -274,7 +274,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public User getLoggedInUser() {
-        User user = userContext.getLoggedInUser();
+        User user = userContext.getLoggedInUser().orElse(null);
         if (user == null) {
             throw new InvalidSessionException("Can not find an active session for a user with this token");
         }
@@ -283,7 +283,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getMyUser() {
-        return userContext.getLoggedInUser();
+        return userContext.getLoggedInUser().orElse(null);
     }
 
     @Override
@@ -295,7 +295,9 @@ public class UserServiceImpl implements UserService {
         }
 
         /* Check that the old passwords match */
-        User user = userContext.getLoggedInUser();
+        User user = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
         // TODO extend PasswordEncoder to expose BCrypts `checkpw` method (to compare plaintext and hashed passwords)
 //        String oldPasswordEnc = passwordHelper.encodePassword(request.getOldPassword());
 //        if (!passwordHelper.isValidPassword(user.getPasswordEnc(), oldPasswordEnc)) {

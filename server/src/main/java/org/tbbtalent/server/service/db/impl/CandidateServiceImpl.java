@@ -1,11 +1,35 @@
 package org.tbbtalent.server.service.db.impl;
 
-import com.opencsv.CSVWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.security.GeneralSecurityException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.elasticsearch.index.query.*;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.elasticsearch.index.query.SimpleQueryStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,36 +52,94 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientException;
-import org.tbbtalent.server.exception.*;
-import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.exception.CircularReferencedException;
+import org.tbbtalent.server.exception.CountryRestrictionException;
+import org.tbbtalent.server.exception.ExportFailedException;
+import org.tbbtalent.server.exception.InvalidRequestException;
+import org.tbbtalent.server.exception.InvalidSessionException;
+import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.exception.PasswordMatchException;
+import org.tbbtalent.server.exception.UsernameTakenException;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateDestination;
+import org.tbbtalent.server.model.db.CandidateEducation;
+import org.tbbtalent.server.model.db.CandidateLanguage;
+import org.tbbtalent.server.model.db.CandidateOccupation;
+import org.tbbtalent.server.model.db.CandidateStatus;
+import org.tbbtalent.server.model.db.Country;
+import org.tbbtalent.server.model.db.DataRow;
+import org.tbbtalent.server.model.db.EducationLevel;
+import org.tbbtalent.server.model.db.Exam;
+import org.tbbtalent.server.model.db.Gender;
+import org.tbbtalent.server.model.db.LanguageLevel;
+import org.tbbtalent.server.model.db.Nationality;
+import org.tbbtalent.server.model.db.Occupation;
+import org.tbbtalent.server.model.db.Role;
+import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.SavedSearch;
+import org.tbbtalent.server.model.db.SearchJoin;
+import org.tbbtalent.server.model.db.SearchType;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.SurveyType;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.model.sf.Contact;
-import org.tbbtalent.server.repository.db.*;
+import org.tbbtalent.server.repository.db.CandidateRepository;
+import org.tbbtalent.server.repository.db.CandidateSpecification;
+import org.tbbtalent.server.repository.db.CountryRepository;
+import org.tbbtalent.server.repository.db.EducationLevelRepository;
+import org.tbbtalent.server.repository.db.GetSavedListCandidatesQuery;
+import org.tbbtalent.server.repository.db.LanguageLevelRepository;
+import org.tbbtalent.server.repository.db.NationalityRepository;
+import org.tbbtalent.server.repository.db.OccupationRepository;
+import org.tbbtalent.server.repository.db.SavedListRepository;
+import org.tbbtalent.server.repository.db.SavedSearchRepository;
+import org.tbbtalent.server.repository.db.SurveyTypeRepository;
+import org.tbbtalent.server.repository.db.UserRepository;
 import org.tbbtalent.server.repository.es.CandidateEsRepository;
 import org.tbbtalent.server.request.LoginRequest;
-import org.tbbtalent.server.request.candidate.*;
+import org.tbbtalent.server.request.candidate.BaseCandidateContactRequest;
+import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
+import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
+import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
+import org.tbbtalent.server.request.candidate.CandidatePhoneSearchRequest;
+import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
+import org.tbbtalent.server.request.candidate.IHasSetOfSavedLists;
+import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
+import org.tbbtalent.server.request.candidate.SavedListGetRequest;
+import org.tbbtalent.server.request.candidate.SavedSearchGetRequest;
+import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
+import org.tbbtalent.server.request.candidate.SearchJoinRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateContactRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateEducationRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateLinksRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tbbtalent.server.request.candidate.stat.CandidateStatDateRequest;
 import org.tbbtalent.server.request.note.CreateCandidateNoteRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.security.PasswordHelper;
 import org.tbbtalent.server.security.UserContext;
-import org.tbbtalent.server.service.db.*;
+import org.tbbtalent.server.service.db.CandidateCitizenshipService;
+import org.tbbtalent.server.service.db.CandidateDestinationService;
+import org.tbbtalent.server.service.db.CandidateExamService;
+import org.tbbtalent.server.service.db.CandidateNoteService;
+import org.tbbtalent.server.service.db.CandidateSavedListService;
+import org.tbbtalent.server.service.db.CandidateService;
+import org.tbbtalent.server.service.db.CandidateVisaService;
+import org.tbbtalent.server.service.db.CountryService;
+import org.tbbtalent.server.service.db.GoogleFileSystemService;
+import org.tbbtalent.server.service.db.NationalityService;
+import org.tbbtalent.server.service.db.SalesforceService;
+import org.tbbtalent.server.service.db.SavedSearchService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.service.db.util.PdfHelper;
 import org.tbbtalent.server.util.filesystem.FileSystemFolder;
 
-import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.security.GeneralSecurityException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import com.opencsv.CSVWriter;
 
 @Service
 public class CandidateServiceImpl implements CandidateService {
@@ -261,7 +343,7 @@ public class CandidateServiceImpl implements CandidateService {
      * @param candidate Entity to save
      */
     private void saveIt(Candidate candidate) {
-        candidate.setAuditFields(userContext.getLoggedInUser());
+        candidate.setAuditFields(userContext.getLoggedInUser().orElse(null));
         save(candidate, true);
     }
 
@@ -333,7 +415,7 @@ public class CandidateServiceImpl implements CandidateService {
         String simpleQueryString = request.getSimpleQueryString();
         if (simpleQueryString != null && simpleQueryString.length() > 0) {
             //This is an elastic search request
-            
+
             //Support sorting 
             PageRequest req = CandidateEs.convertToElasticSortField(request);
 
@@ -362,7 +444,7 @@ public class CandidateServiceImpl implements CandidateService {
 
             //The simple query will be part of a composite query containing
             //filters.
-            BoolQueryBuilder boolQueryBuilder = 
+            BoolQueryBuilder boolQueryBuilder =
                     QueryBuilders.boolQuery().must(simpleQueryStringBuilder);
 
             //Add filters - each filter must return true for a hit
@@ -379,7 +461,7 @@ public class CandidateServiceImpl implements CandidateService {
             if (minSpokenLevel != null) {
                 boolQueryBuilder =
                         addElasticRangeFilter(boolQueryBuilder,
-                                "minEnglishSpokenLevel", 
+                                "minEnglishSpokenLevel",
                                 minSpokenLevel, null);
             }
             Integer minWrittenLevel = request.getEnglishMinWrittenLevel();
@@ -401,7 +483,7 @@ public class CandidateServiceImpl implements CandidateService {
                 }
                 boolQueryBuilder = 
                         addElasticTermFilter(boolQueryBuilder,
-                                null,"country", reqCountries);
+                                null,"country.keyword", reqCountries);
             }
             
             //Nationalities
@@ -415,7 +497,7 @@ public class CandidateServiceImpl implements CandidateService {
                 }
                 boolQueryBuilder = addElasticTermFilter(boolQueryBuilder, 
                         request.getNationalitySearchType(), 
-                        "nationality", reqNationalities);
+                        "nationality.keyword", reqNationalities);
             }
 
             //Statuses
@@ -436,7 +518,7 @@ public class CandidateServiceImpl implements CandidateService {
                 }
                 boolQueryBuilder =
                         addElasticTermFilter(boolQueryBuilder,
-                                null,"status", reqStatuses);
+                                null,"status.keyword", reqStatuses);
             }
 
             //Gender
@@ -452,7 +534,7 @@ public class CandidateServiceImpl implements CandidateService {
                     .build();
             SearchHits<CandidateEs> hits = elasticsearchOperations.search(
                     query, CandidateEs.class, IndexCoordinates.of("candidates"));
-            
+
             //Get candidate ids from the returned results - maintaining the sort
             //Avoid duplicates, but maintaining order by using a LinkedHashSet
             LinkedHashSet<Long> candidateIds = new LinkedHashSet<>();
@@ -473,11 +555,13 @@ public class CandidateServiceImpl implements CandidateService {
             for (Long candidateId : candidateIds) {
                 candidateList.add(mapById.get(candidateId));
             }
-            candidates = new PageImpl<>(candidateList, request.getPageRequest(), 
-                    hits.getTotalHits());  
+            candidates = new PageImpl<>(candidateList, request.getPageRequest(),
+                    hits.getTotalHits());
         } else {
 
-            User user = userContext.getLoggedInUser();
+            //There may be no logged in user if the search is called by the
+            //overnight Watcher process.
+            User user = userContext.getLoggedInUser().orElse(null);
 
             List<Long> searchIds = new ArrayList<>();
             if (request.getSavedSearchId() != null) {
@@ -532,7 +616,7 @@ public class CandidateServiceImpl implements CandidateService {
             //Check for selection list to set the selected attribute on returned 
             // candidates.
             SavedList selectionList = null;
-            User user = userContext.getLoggedInUser();
+            User user = userContext.getLoggedInUser().orElse(null);
             if (user != null) {
                 selectionList = savedSearchService
                         .getSelectionList(savedSearchId, user.getId());
@@ -574,7 +658,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Page<Candidate> searchCandidates(SearchCandidateRequest request) {
         Page<Candidate> candidates;
-        User user = userContext.getLoggedInUser();
+        User user = userContext.getLoggedInUser().orElse(null);
         if (user == null) {
             candidates = doSearchCandidates(request);
         } else {
@@ -607,7 +691,8 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Page<Candidate> searchCandidates(CandidateEmailSearchRequest request) {
         String s = request.getCandidateEmail();
-        User loggedInUser = userContext.getLoggedInUser();
+        User loggedInUser = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.sourcepartneradmin) {
             Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
             Page<Candidate> candidates;
@@ -625,7 +710,9 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Page<Candidate> searchCandidates(CandidateNumberOrNameSearchRequest request) {
         String s = request.getCandidateNumberOrName();
-        User loggedInUser = userContext.getLoggedInUser();
+        User loggedInUser = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
         boolean searchForNumber = s.length() > 0 && Character.isDigit(s.charAt(0));
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
         Page<Candidate> candidates;
@@ -651,7 +738,9 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Page<Candidate> searchCandidates(CandidatePhoneSearchRequest request) {
         String s = request.getCandidatePhone();
-        User loggedInUser = userContext.getLoggedInUser();
+        User loggedInUser = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
         if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.sourcepartneradmin){
             Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
             Page<Candidate> candidates;
@@ -670,7 +759,7 @@ public class CandidateServiceImpl implements CandidateService {
         if (savedSearchIds.contains(searchJoinRequest.getSavedSearchId())) {
             throw new CircularReferencedException(searchJoinRequest.getSavedSearchId());
         }
-        User user = userContext.getLoggedInUser();
+        User user = userContext.getLoggedInUser().orElse(null);
         //add id to list as do not want circular references
         savedSearchIds.add(searchJoinRequest.getSavedSearchId());
         //load saved search
@@ -770,7 +859,9 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     @Transactional
     public Candidate updateCandidateStatus(long id, UpdateCandidateStatusRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
+        User loggedInUser = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
         Candidate candidate = this.candidateRepository.findByIdLoadUser(id, sourceCountries)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
@@ -794,7 +885,9 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateCandidateLinks(long id, UpdateCandidateLinksRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
+        User loggedInUser = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
         Candidate candidate = this.candidateRepository.findByIdLoadUser(id, sourceCountries)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
@@ -807,7 +900,9 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateCandidate(long id, UpdateCandidateRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
+        User loggedInUser = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
         Candidate candidate = this.candidateRepository.findByIdLoadUser(id, sourceCountries)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
@@ -846,7 +941,9 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateCandidateAdditionalInfo(long id, UpdateCandidateAdditionalInfoRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
+        User loggedInUser = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
         Candidate candidate = this.candidateRepository.findByIdLoadUser(id, sourceCountries)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
@@ -857,7 +954,9 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateCandidateSurvey(long id, UpdateCandidateSurveyRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
+        User loggedInUser = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
         Candidate candidate = this.candidateRepository.findByIdLoadUser(id, sourceCountries)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
@@ -938,7 +1037,9 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateContact(UpdateCandidateContactRequest request) {
-        User user = userContext.getLoggedInUser();
+        User user = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
         // Check update request for a duplicate email or phone number
         validateContactRequest(user, request);
 
@@ -963,7 +1064,9 @@ public class CandidateServiceImpl implements CandidateService {
         Nationality nationality = nationalityRepository.findById(request.getNationality())
                 .orElseThrow(() -> new NoSuchObjectException(Nationality.class, request.getNationality()));
 
-        User user = userContext.getLoggedInUser();
+        User user = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user = userRepository.save(user);
@@ -983,7 +1086,8 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateEducation(UpdateCandidateEducationRequest request) {
-        Candidate candidate = getLoggedInCandidate();
+        Candidate candidate = getLoggedInCandidate()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         EducationLevel educationLevel = null;
         if (request.getMaxEducationLevelId() != null) {
@@ -999,7 +1103,8 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateCandidateSurvey(UpdateCandidateSurveyRequest request) {
-        Candidate candidate = getLoggedInCandidate();
+        Candidate candidate = getLoggedInCandidate()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         SurveyType surveyType = null;
         if (request.getSurveyTypeId() != null) {
@@ -1016,7 +1121,8 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateAdditionalInfo(UpdateCandidateAdditionalInfoRequest request) {
-        Candidate candidate = getLoggedInCandidate();
+        Candidate candidate = getLoggedInCandidate()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         candidate.setAdditionalInfo(request.getAdditionalInfo());
         if (BooleanUtils.isTrue(request.getSubmit()) && !candidate.getStatus().equals(CandidateStatus.pending)) {
             updateCandidateStatus(candidate.getId(), new UpdateCandidateStatusRequest(CandidateStatus.pending, "Candidate submitted"));
@@ -1028,55 +1134,56 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Candidate getLoggedInCandidateLoadCandidateOccupations() {
-        Candidate candidate = getLoggedInCandidate();
-        candidate = candidateRepository.findByIdLoadCandidateOccupations(candidate.getId());
-        return candidate;
+    public Optional<Candidate> getLoggedInCandidateLoadCandidateOccupations() {
+        Long candidateId = userContext.getLoggedInCandidateId();
+        if (candidateId == null) {
+            return Optional.empty();
+        } else {
+            Candidate candidate = candidateRepository
+                    .findByIdLoadCandidateOccupations(candidateId);
+            return candidate == null ? Optional.empty() : Optional.of(candidate);
+        }
     }
 
     @Override
-    public Candidate getLoggedInCandidateLoadEducations() {
-        Candidate candidate = getLoggedInCandidate();
-        candidate = candidateRepository.findByIdLoadEducations(candidate.getId());
-        return candidate;
+    public Optional<Candidate> getLoggedInCandidateLoadCertifications() {
+        Long candidateId = userContext.getLoggedInCandidateId();
+        if (candidateId == null) {
+            return Optional.empty();
+        } else {
+            Candidate candidate = candidateRepository
+                    .findByIdLoadCertifications(candidateId);
+            return candidate == null ? Optional.empty() : Optional.of(candidate);
+        }
     }
 
     @Override
-    public Candidate getLoggedInCandidateLoadJobExperiences() {
-        Candidate candidate = getLoggedInCandidate();
-        candidate = candidateRepository.findByIdLoadJobExperiences(candidate.getId());
-        return candidate;
+    public Optional<Candidate> getLoggedInCandidateLoadCandidateLanguages() {
+        Long candidateId = userContext.getLoggedInCandidateId();
+        if (candidateId == null) {
+            return Optional.empty();
+        } else {
+            Candidate candidate = candidateRepository
+                    .findByIdLoadCandidateLanguages(candidateId);
+            return candidate == null ? Optional.empty() : Optional.of(candidate);
+        }
     }
 
     @Override
-    public Candidate getLoggedInCandidateLoadCertifications() {
-        Candidate candidate = getLoggedInCandidate();
-        candidate = candidateRepository.findByIdLoadCertifications(candidate.getId());
-        return candidate;
-    }
-
-    @Override
-    public Candidate getLoggedInCandidateLoadCandidateLanguages() {
-        Candidate candidate = getLoggedInCandidate();
-        candidate = candidateRepository.findByIdLoadCandidateLanguages(candidate.getId());
-        return candidate;
-    }
-
-    @Override
-    public Candidate getLoggedInCandidate() {
-        User user = userContext.getLoggedInUser();
-        return candidateRepository.findByUserId(user.getId());
-    }
-
-    @Override
-    public Candidate getLoggedInCandidateLoadProfile() {
-        User user = userContext.getLoggedInUser();
-        return candidateRepository.findByUserIdLoadProfile(user.getId());
+    public Optional<Candidate> getLoggedInCandidate() {
+        User user = userContext.getLoggedInUser().orElse(null);
+        if (user == null) {
+            return Optional.empty();
+        }
+        Candidate candidate = candidateRepository.findByUserId(user.getId()); 
+        return candidate == null ? Optional.empty() : Optional.of(candidate);
     }
 
     @Override
     public Candidate findByCandidateNumber(String candidateNumber) {
-        User loggedInUser = userContext.getLoggedInUser();
+        User loggedInUser = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
         return candidateRepository.findByCandidateNumberRestricted(candidateNumber, sourceCountries)
                 .orElseThrow(() -> new CountryRestrictionException("You don't have access to this candidate."));
@@ -1084,11 +1191,6 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Transactional(readOnly = true)
     void validateContactRequest(User user, BaseCandidateContactRequest request) {
-        Candidate candidate = null;
-        if (user != null) {
-            candidate = user.getCandidate();
-        }
-
         // Check email not already taken
         if (!StringUtils.isBlank(request.getEmail())) {
             try {
@@ -1122,8 +1224,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public List<DataRow> getGenderStats(CandidateStatDateRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
+        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
         CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
         return toRows(candidateRepository.countByGenderOrderByCount(
                 sourceCountryIds,
@@ -1133,8 +1234,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public List<DataRow> getBirthYearStats(Gender gender, CandidateStatDateRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
+        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
         CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
         return toRows(candidateRepository.
                 countByBirthYearOrderByYear(
@@ -1146,8 +1246,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public List<DataRow> getRegistrationStats(CandidateStatDateRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
+        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
         CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
         return toRows(candidateRepository.countByCreatedDateOrderByCount(
                 sourceCountryIds,
@@ -1157,8 +1256,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public List<DataRow> getRegistrationOccupationStats(CandidateStatDateRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
+        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
         CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
         final List<DataRow> rows = toRows(candidateRepository.countByOccupationOrderByCount(
                 sourceCountryIds,
@@ -1169,8 +1267,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public List<DataRow> getNationalityStats(Gender gender, String country, CandidateStatDateRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
+        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
         CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
         List<DataRow> rows = toRows(candidateRepository.
                 countByNationalityOrderByCount(
@@ -1184,8 +1281,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public List<DataRow> getSurveyStats(Gender gender, String country, CandidateStatDateRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
+        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
         CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
         return toRows(candidateRepository.
                 countBySurveyOrderByCount(
@@ -1198,8 +1294,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public List<DataRow> getMaxEducationStats(Gender gender, CandidateStatDateRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
+        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
         CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
         return toRows(candidateRepository.
                 countByMaxEducationLevelOrderByCount(
@@ -1211,8 +1306,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public List<DataRow> getLanguageStats(Gender gender, CandidateStatDateRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
+        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
         CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
         List<DataRow> rows = toRows(candidateRepository.
                 countByLanguageOrderByCount(
@@ -1225,8 +1319,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public List<DataRow> getOccupationStats(Gender gender, CandidateStatDateRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
+        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
         CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
         return toRows(candidateRepository.
                 countByOccupationOrderByCount(
@@ -1238,8 +1331,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public List<DataRow> getMostCommonOccupationStats(Gender gender, CandidateStatDateRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
+        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
         CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
         List<DataRow> rows = toRows(candidateRepository.
                 countByMostCommonOccupationOrderByCount(
@@ -1252,8 +1344,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public List<DataRow> getSpokenLanguageLevelStats(Gender gender, String language, CandidateStatDateRequest request) {
-        User loggedInUser = userContext.getLoggedInUser();
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds(loggedInUser);
+        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
         CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
         return toRows(candidateRepository.
                 countBySpokenLanguageLevelByCount(
@@ -1287,7 +1378,7 @@ public class CandidateServiceImpl implements CandidateService {
                     csvWriter.writeNext(getExportCandidateStrings(candidate));
                 }
 
-                if (result.getNumber() * request.getPageSize() < result.getTotalElements()) {
+                if ((long) result.getNumber() * request.getPageSize() < result.getTotalElements()) {
                     request.setPageNumber(request.getPageNumber()+1);
                 } else {
                     hasMore = false;
@@ -1328,7 +1419,7 @@ public class CandidateServiceImpl implements CandidateService {
                     csvWriter.writeNext(getExportCandidateStrings(candidate));
                 }
 
-                if (result.getNumber() * request.getPageSize() < result.getTotalElements()) {
+                if ((long) result.getNumber() * request.getPageSize() < result.getTotalElements()) {
                     request.setPageNumber(request.getPageNumber()+1);
                 } else {
                     hasMore = false;
@@ -1347,7 +1438,7 @@ public class CandidateServiceImpl implements CandidateService {
      */
     @Override
     public void setCandidateContext(long savedSearchId, Iterable<Candidate> candidates) {
-        User user = userContext.getLoggedInUser();
+        User user = userContext.getLoggedInUser().orElse(null);
         SavedList selectionList = null;
         if (user != null) {
             selectionList = savedSearchService
@@ -1367,7 +1458,10 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     private String[] getExportTitles() {
-        Role role = userContext.getLoggedInUser().getRole();
+        User loggedInUser = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+        Role role = loggedInUser.getRole();
         if(role == Role.semilimited){
             return new String[]{
                     "Candidate Number", "Gender", "Country Residing", "Nationality",
@@ -1387,8 +1481,11 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     private String[] getExportCandidateStrings(Candidate candidate) {
-        Role role = userContext.getLoggedInUser().getRole();
-        if(role == Role.semilimited){
+        User loggedInUser = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+        Role role = loggedInUser.getRole();
+        if (role == Role.semilimited) {
             return new String[] {
                     candidate.getCandidateNumber(),
                     candidate.getGender() != null ? candidate.getGender().toString() : null,
@@ -1402,7 +1499,7 @@ public class CandidateServiceImpl implements CandidateService {
                     candidate.getContextNote() != null ? candidate.getContextNote() : null,
                     getCandidateExternalHref(candidate.getCandidateNumber())
             };
-        }else if(role == Role.limited){
+        } else if (role == Role.limited) {
             return new String[] {
                     candidate.getCandidateNumber(),
                     candidate.getGender() != null ? candidate.getGender().toString() : null,
@@ -1414,7 +1511,7 @@ public class CandidateServiceImpl implements CandidateService {
                     candidate.getContextNote() != null ? candidate.getContextNote() : null,
                     getCandidateExternalHref(candidate.getCandidateNumber())
             };
-        }else{
+        } else {
             return new String[] {
                     candidate.getCandidateNumber(),
                     candidate.getUser().getFirstName(),
@@ -1439,7 +1536,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     public String formatCandidateMajor(List<CandidateEducation> candidateEducations){
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         if (!CollectionUtils.isEmpty(candidateEducations)){
             for (CandidateEducation candidateEducation : candidateEducations) {
                 if (candidateEducation.getEducationMajor() != null){
@@ -1452,7 +1549,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     public String formatCandidateOccupation(List<CandidateOccupation> candidateOccupations){
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         if (!CollectionUtils.isEmpty(candidateOccupations)){
             for (CandidateOccupation candidateOccupation : candidateOccupations) {
                 if (candidateOccupation.getOccupation() != null){
@@ -1465,7 +1562,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     public String getEnglishSpokenProficiency(List<CandidateLanguage> candidateLanguages){
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         if (!CollectionUtils.isEmpty(candidateLanguages)){
             for (CandidateLanguage candidateLanguage : candidateLanguages) {
                 if ((candidateLanguage.getLanguage() != null) && "english".equalsIgnoreCase(candidateLanguage.getLanguage().getName())){
@@ -1559,9 +1656,12 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     /**
-     * Get a user’s source country Ids, defaulting to all countries if empty
+     * Get logged in user’s source country Ids, defaulting to all countries if empty
      */
-    public List<Long> getDefaultSourceCountryIds(User user){
+    public List<Long> getDefaultSourceCountryIds(){
+        User user = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
         List<Long> listOfCountryIds;
 
         if(CollectionUtils.isEmpty(user.getSourceCountries())){

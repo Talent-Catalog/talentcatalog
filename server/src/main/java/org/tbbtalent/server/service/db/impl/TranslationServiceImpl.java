@@ -11,12 +11,11 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.exception.EntityExistsException;
+import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.ServiceException;
 import org.tbbtalent.server.model.db.AbstractTranslatableDomainObject;
@@ -62,7 +61,7 @@ public class TranslationServiceImpl implements TranslationService {
         }
 
         if (CollectionUtils.isNotEmpty(items)) {
-            List<Long> itemIds = items.stream().map(c -> (Long) c.getId()).collect(Collectors.toList());
+            List<Long> itemIds = items.stream().map(c -> c.getId()).collect(Collectors.toList());
             List<Translation> translations = translationRepository.findByIdsTypeLanguage(itemIds, type, selectedLanguage);
             if (CollectionUtils.isNotEmpty(translations)) {
                 Map<Long, Translation> translationsById = translations.stream().collect(Collectors.toMap(Translation::getObjectId, Function.identity()));
@@ -80,7 +79,9 @@ public class TranslationServiceImpl implements TranslationService {
     @Override
     @Transactional
     public Translation createTranslation(CreateTranslationRequest request) throws EntityExistsException {
-        User user = userContext.getLoggedInUser();
+        User user = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
         Translation translation = new Translation(user, request.getId(), request.getType(),
                 request.getType(), request.getTranslatedName());
         List<Translation> existing = translationRepository.findByTypeLanguage(request.getType(), request.getLanguage());

@@ -11,6 +11,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.web.multipart.MultipartFile;
+import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.CandidateAttachment;
 import org.tbbtalent.server.request.PagedSearchRequest;
@@ -84,12 +85,12 @@ public interface CandidateAttachmentService {
      * @param file Uploaded file attachment
      * @return CandidateAttachment containing link to the file in 
      * {@link CandidateAttachment#getLocation()} 
-     * @throws NoSuchObjectException if logged in user is not a candidate
+     * @throws InvalidSessionException if logged in user is not a candidate
      * @throws IOException           if there is a problem uploading the file.
      */
     @NonNull 
     CandidateAttachment uploadAttachment(Boolean cv, MultipartFile file) 
-            throws IOException, NoSuchObjectException;
+            throws IOException, InvalidSessionException;
 
     /**
      * Uploads a file attachment for the given candidate to Google Drive.

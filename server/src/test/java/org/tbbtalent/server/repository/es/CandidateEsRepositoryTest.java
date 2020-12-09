@@ -46,7 +46,7 @@ public class CandidateEsRepositoryTest {
         CandidateEs candes;
         Candidate cand;
         
-        cand = candidateRepository.findByUserIdLoadText(9710L);
+        cand = candidateRepository.findByUserId(9710L);
         candes = new CandidateEs(cand);
         candidateEsRepository.save(candes);
     }

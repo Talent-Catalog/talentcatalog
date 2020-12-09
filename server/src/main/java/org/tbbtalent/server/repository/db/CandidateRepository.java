@@ -20,6 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.Country;
 
+/**
+ * See notes on "join fetch" in the doc for {@link #findByIdLoadCandidateOccupations}
+ */
 public interface CandidateRepository extends JpaRepository<Candidate, Long>, JpaSpecificationExecutor<Candidate> {
 
     /**
@@ -39,35 +42,36 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             + " and c.status <> 'deleted'")
     Candidate findByWhatsappIgnoreCase(@Param("whatsapp") String whatsapp);
 
-    @Query(" select distinct c from Candidate c "
-            + " left join c.candidateOccupations p "
+    /**
+     * Uses "join fetch" to load the candidate as well as its associated
+     * occupations. These are configured on the Candidate entity to be
+     * "lazy" loaded which means that they will not be loaded without
+     * this join fetch.
+     * <p/>
+     * Note that Hibernate - the standard JPA provider - generally doesn't like 
+     * "join fetch"ing for more than one association at a time. 
+     * There are ways around that - eg by using Set's instead of List's - but 
+     * then you run into cartesian product issues.
+     * See https://vladmihalcea.com/hibernate-multiplebagfetchexception/
+     * @param id ID of candidate to be loaded from the database.
+     * @return Candidate with loaded occupations.
+     */
+    @Query(" select c from Candidate c "
+            + " left join fetch c.candidateOccupations p "
             + " where c.id = :id ")
     Candidate findByIdLoadCandidateOccupations(@Param("id") Long id);
 
-    @Query(" select distinct c from Candidate c "
-            + " left join c.candidateEducations e "
-            + " left join e.educationMajor m "
-            + " where c.id = :id ")
-    Candidate findByIdLoadEducations(@Param("id") Long id);
-
-    @Query(" select distinct c from Candidate c "
-            + " left join c.candidateJobExperiences e "
-            + " left join e.candidateOccupation o "
-            + " left join e.country co "
-            + " where c.id = :id ")
-    Candidate findByIdLoadJobExperiences(@Param("id") Long id);
-
-    @Query(" select distinct c from Candidate c "
+    @Query(" select c from Candidate c "
             + " left join fetch c.candidateCertifications cert "
             + " where c.id = :id ")
     Candidate findByIdLoadCertifications(@Param("id") Long id);
 
-    @Query(" select distinct c from Candidate c "
+    @Query(" select c from Candidate c "
             + " left join fetch c.candidateLanguages lang "
             + " where c.id = :id ")
     Candidate findByIdLoadCandidateLanguages(@Param("id") Long id);
 
-    @Query(" select distinct c from Candidate c "
+    @Query(" select c from Candidate c "
             + " left join fetch c.candidateSavedLists "
             + " where c.id = :id ")
     Candidate findByIdLoadSavedLists(@Param("id") Long id);
@@ -76,58 +80,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             + " where c.user.id = :id ")
     Candidate findByUserId(@Param("id") Long userId);
 
-    @Query(" select distinct c from Candidate c "
-            + " left join c.candidateOccupations occ "
-            + " left join c.candidateJobExperiences exp "
-            + " left join exp.candidateOccupation expOcc "
-            + " left join exp.country co "
-            + " left join c.candidateEducations edu "
-            + " left join edu.educationMajor maj "
-            + " left join c.candidateCertifications cert "
-            + " left join c.candidateLanguages clang "
-            + " left join clang.language lang "
-            + " where c.user.id = :id ")
-    Candidate findByUserIdLoadProfile(@Param("id") Long userId);
-
-    @Query(" select distinct c from Candidate c "
-            + " left join c.candidateOccupations occ "
-            + " left join c.candidateJobExperiences exp "
-            + " left join exp.candidateOccupation expOcc "
-            + " left join exp.country co "
-            + " left join c.candidateEducations edu "
-            + " left join edu.educationMajor maj "
-            + " left join c.candidateCertifications cert "
-            + " left join c.candidateAttachments catt "
-            + " left join c.candidateLanguages clang "
-            + " left join clang.language lang "
-            + " where c.user.id = :id ")
-    Candidate findByUserIdLoadText(@Param("id") Long userId);
-
-    @Query(" select distinct c from Candidate c "
-            + " left join c.candidateOccupations occ "
-            + " left join c.candidateJobExperiences exp "
-            + " left join exp.candidateOccupation expOcc "
-            + " left join exp.country co "
-            + " left join c.candidateEducations edu "
-            + " left join edu.educationMajor maj "
-            + " left join c.candidateCertifications cert "
-            + " left join c.candidateAttachments catt "
-            + " left join c.candidateLanguages clang "
-            + " left join clang.language lang "
-            + " where c.id = :id ")
-    Candidate findByIdLoadText(@Param("id") Long candidateId);
-
-    @Query(" select distinct c from Candidate c "
-            + " left join c.candidateOccupations occ "
-            + " left join c.candidateJobExperiences exp "
-            + " left join exp.candidateOccupation expOcc "
-            + " left join exp.country co "
-            + " left join c.candidateEducations edu "
-            + " left join edu.educationMajor maj "
-            + " left join c.candidateCertifications cert "
-            + " left join c.candidateAttachments catt "
-            + " left join c.candidateLanguages clang "
-            + " left join clang.language lang "
+    @Query(" select c from Candidate c "
             + " where c.id in (:ids) ")
     List<Candidate> findByIds(@Param("ids") Iterable<Long> ids);
 

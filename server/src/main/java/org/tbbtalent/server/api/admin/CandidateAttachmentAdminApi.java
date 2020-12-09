@@ -22,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.AttachmentType;
 import org.tbbtalent.server.model.db.CandidateAttachment;
-import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.attachment.CreateCandidateAttachmentRequest;
 import org.tbbtalent.server.request.attachment.SearchByIdCandidateAttachmentRequest;
 import org.tbbtalent.server.request.attachment.SearchCandidateAttachmentsRequest;
@@ -60,7 +59,6 @@ public class CandidateAttachmentAdminApi {
     @PostMapping("search-paged")
     public Map<String, Object> searchPaged(@RequestBody SearchCandidateAttachmentsRequest request) {
         Page<CandidateAttachment> candidateAttachments = this.candidateAttachmentService.searchCandidateAttachments(request);
-        User user = userContext.getLoggedInUser();
         return candidateAttachmentDto().buildPage(candidateAttachments);
     }
 

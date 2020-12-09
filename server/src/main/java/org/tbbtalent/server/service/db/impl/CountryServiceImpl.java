@@ -89,7 +89,7 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
 
     @Override
     public List<Country> listCountries() {
-        User user = userContext.getLoggedInUser();
+        User user = userContext.getLoggedInUser().orElse(null);
         List<Country> countries;
 
         // Restrict access if there are source countries associated to admin user

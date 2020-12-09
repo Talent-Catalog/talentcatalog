@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
+import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateJobExperience;
@@ -65,6 +66,9 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
                     .orElseThrow(() -> new NoSuchObjectException(Candidate.class, request.getCandidateId()));
         } else {
             candidate = userContext.getLoggedInCandidate();
+            if (candidate == null) {
+                throw new InvalidSessionException("Not logged in");
+            }
             candidate.setAuditFields(candidate.getUser());
         }
 
@@ -99,6 +103,9 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
     @Override
     public CandidateJobExperience updateCandidateJobExperience(UpdateJobExperienceRequest request) {
         Candidate candidate = userContext.getLoggedInCandidate();
+        if (candidate == null) {
+            throw new InvalidSessionException("Not logged in");
+        }
         candidate.setAuditFields(candidate.getUser());
         CandidateJobExperience experience = updateCandidateJobExperience(request.getId(), request);
 
@@ -145,7 +152,8 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
 
     @Override
     public void deleteCandidateJobExperience(Long id) {
-        User user = userContext.getLoggedInUser();
+        User user = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         CandidateJobExperience candidateJobExperience = candidateJobExperienceRepository.findByIdLoadCandidate(id)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateJobExperience.class, id));
@@ -158,6 +166,10 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
                     .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateJobExperience.getCandidate().getId()));
         } else {
             candidate = userContext.getLoggedInCandidate();
+            if (candidate == null) {
+                throw new InvalidSessionException("Not logged in");
+            }
+            
             // Check that the user is deleting their own attachment
             if (!candidate.getId().equals(candidateJobExperience.getCandidate().getId())) {
                 throw new InvalidCredentialsException("You do not have permission to perform that action");

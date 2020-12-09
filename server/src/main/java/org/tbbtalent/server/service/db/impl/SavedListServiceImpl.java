@@ -152,7 +152,7 @@ public class SavedListServiceImpl implements SavedListService {
     @Transactional
     public SavedList createSavedList(CreateSavedListRequest request) 
             throws EntityExistsException {
-        final User loggedInUser = userContext.getLoggedInUser();
+        final User loggedInUser = userContext.getLoggedInUser().orElse(null);
         if (loggedInUser != null) {
             checkDuplicates(null, request.getName(), loggedInUser.getId());
         }
@@ -189,7 +189,7 @@ public class SavedListServiceImpl implements SavedListService {
         SavedList savedList = savedListRepository.findByIdLoadCandidates(savedListId)
                 .orElse(null);
 
-        final User loggedInUser = userContext.getLoggedInUser();
+        final User loggedInUser = userContext.getLoggedInUser().orElse(null);
         if (savedList != null && loggedInUser != null) {
 
             // Check if user owns this list
@@ -259,7 +259,7 @@ public class SavedListServiceImpl implements SavedListService {
 
     @Override
     public List<SavedList> search(long candidateId, SearchSavedListRequest request) {
-        final User loggedInUser = userContext.getLoggedInUser();
+        final User loggedInUser = userContext.getLoggedInUser().orElse(null);
         User userWithSharedSearches = loggedInUser == null ? null :
                 userRepository.findByIdLoadSharedSearches(loggedInUser.getId());
         GetSavedListsQuery getSavedListsQuery =
@@ -277,7 +277,7 @@ public class SavedListServiceImpl implements SavedListService {
 
     @Override
     public List<SavedList> listSavedLists(SearchSavedListRequest request) {
-        final User loggedInUser = userContext.getLoggedInUser();
+        final User loggedInUser = userContext.getLoggedInUser().orElse(null);
         User userWithSharedSearches = loggedInUser == null ? null :
                 userRepository.findByIdLoadSharedSearches(
                         loggedInUser.getId());
@@ -294,7 +294,7 @@ public class SavedListServiceImpl implements SavedListService {
 
     @Override
     public Page<SavedList> searchSavedLists(SearchSavedListRequest request) {
-        final User loggedInUser = userContext.getLoggedInUser();
+        final User loggedInUser = userContext.getLoggedInUser().orElse(null);
         User userWithSharedSearches = loggedInUser == null ? null :
                 userRepository.findByIdLoadSharedSearches(
                         loggedInUser.getId());
@@ -313,7 +313,7 @@ public class SavedListServiceImpl implements SavedListService {
     @Override
     public SavedList updateSavedList(long savedListId, UpdateSavedListInfoRequest request) 
             throws NoSuchObjectException, EntityExistsException {
-        final User loggedInUser = userContext.getLoggedInUser();
+        final User loggedInUser = userContext.getLoggedInUser().orElse(null);
         if (loggedInUser != null) {
             checkDuplicates(savedListId, request.getName(), loggedInUser.getId());
         }
@@ -445,7 +445,7 @@ public class SavedListServiceImpl implements SavedListService {
      * @return Saved entity
      */
     private SavedList saveIt(SavedList savedList) {
-        savedList.setAuditFields(userContext.getLoggedInUser());
+        savedList.setAuditFields(userContext.getLoggedInUser().orElse(null));
         return savedListRepository.save(savedList);
     }
     
