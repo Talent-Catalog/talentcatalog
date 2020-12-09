@@ -143,6 +143,11 @@ export interface CandidateIntakeData {
   visaReject?: YesNoUnsure;
   visaIssues?: VisaIssue[];
   visaIssuesNotes?: string;
+
+  checkedBy?: User;
+  checkedDate?: string;
+  updatedBy?: User;
+  updatedDate?: number;
 }
 
 export interface CandidateCitizenship {

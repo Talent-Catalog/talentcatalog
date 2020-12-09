@@ -11,7 +11,7 @@ export class UserService {
 
   private apiUrl = environment.apiUrl + '/user';
 
-  constructor(private http:HttpClient) {}
+  constructor(private http: HttpClient) {}
 
   search(request): Observable<SearchResults<User>> {
     return this.http.post<SearchResults<User>>(`${this.apiUrl}/search`, request);
@@ -50,6 +50,6 @@ export class UserService {
   }
 
   findByUsersName(request): Observable<SearchResults<User>> {
-    return this.http.post<SearchResults<User>>(`${this.apiUrl}/findbyname`, request);
+    return this.http.post<SearchResults<User>>(`${this.apiUrl}/findbyusersname`, request);
   }
 }

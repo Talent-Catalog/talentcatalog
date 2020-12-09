@@ -1,16 +1,16 @@
 <div class="d-flex justify-content-between">
   <div class="form-group col-6 pl-0">
-    <label for="completedDate">
+    <label for="checkedDate">
       Date of Completion:
     </label>
     <div class="input-group">
-      <input id="completedDate" type="text" class="form-control" placeholder="YYYY-MM-DD"
+      <input id="checkedDate" type="text" class="form-control" placeholder="YYYY-MM-DD"
              ngbDatepicker #picker="ngbDatepicker"
              (dateSelect)="dateSelection()"
              [(ngModel)]="dateInput"
              [autoClose]="true"
              [outsideDays]="'hidden'"
-             [container]="'#completedDate'">
+             [container]="'#checkedDate'">
 
       <div class="input-group-append">
         <button class="btn btn-outline-secondary calendar" (click)="picker.toggle()">
@@ -25,10 +25,10 @@
   </div>
 
   <div *ngIf="dateInput != null" class="form-group col-6 pr-0">
-    <label for="completedBy">
+    <label for="checkedBy">
       Completed By:
     </label>
-    <input id="completedBy"
+    <input id="checkedBy"
            type="text" class="form-control" #input
            [ngbTypeahead]="doNameSearch"
            [resultTemplate]="rt"

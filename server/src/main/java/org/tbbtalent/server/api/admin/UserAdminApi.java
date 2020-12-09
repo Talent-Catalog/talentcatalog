@@ -92,7 +92,7 @@ public class UserAdminApi {
         this.userService.deleteUser(id);
     }
 
-    @PostMapping("findbyname")
+    @PostMapping("findbyusersname")
     public Map<String, Object> findByName(@RequestBody UsersNameSearchRequest request) {
         Page<User> users = this.userService.searchUsers(request);
         return userDto().buildPage(users);

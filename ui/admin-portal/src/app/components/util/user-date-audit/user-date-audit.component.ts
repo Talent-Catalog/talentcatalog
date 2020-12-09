@@ -5,16 +5,21 @@ import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} fro
 import {UserService} from '../../../services/user.service';
 import {User} from '../../../model/user';
 import {AuthService} from '../../../services/auth.service';
+import {Candidate, CandidateIntakeData} from '../../../model/candidate';
+import {IntakeComponentBase} from '../intake/IntakeComponentBase';
+import {CandidateService} from '../../../services/candidate.service';
 
 @Component({
   selector: 'app-user-date-audit',
   templateUrl: './user-date-audit.component.html',
   styleUrls: ['./user-date-audit.component.scss']
 })
-export class UserDateAuditComponent implements OnInit {
+export class UserDateAuditComponent extends IntakeComponentBase implements OnInit {
 
   @Input() dateInput: string;
   @Input() userInput: User;
+  @Input() candidate: Candidate;
+  @Input() candidateIntakeData: CandidateIntakeData;
   @Output() dateChange = new EventEmitter<string>();
   @Output() userChange = new EventEmitter<User>();
 
@@ -27,9 +32,10 @@ export class UserDateAuditComponent implements OnInit {
   loggedInUser: User;
   firstChange: boolean;
 
-  constructor(private fb: FormBuilder,
+  constructor(fb: FormBuilder, candidateService: CandidateService,
               private userService: UserService,
-              private authService: AuthService) { }
+              private authService: AuthService) {super(fb, candidateService) }
+
 
   ngOnInit(): void {
     // If date input is undefined (first change) set flag to true to be used when first date selection made.
@@ -62,6 +68,11 @@ export class UserDateAuditComponent implements OnInit {
         ),
         tap(() => this.searching = false)
       );
+
+    this.form = this.fb.group({
+      checkedById: [this.candidateIntakeData?.checkedBy?.id],
+      checkedDate: [this.candidateIntakeData?.checkedDate],
+    });
   }
 
   renderCandidateRow(user: User) {
@@ -91,5 +102,13 @@ export class UserDateAuditComponent implements OnInit {
     this.dateInput = null;
     this.dateChange.emit('');
   }
+
+  // dateSelected($event) {
+  //   this.form.controls['checkedById'].patchValue($event);
+  // }
+  //
+  // userSelected($event) {
+  //   this.form.controls['visaCheckedById'].patchValue($event.id);
+  // }
 
 }

@@ -5,7 +5,14 @@
   {{error}}
 </div>
 <div class="h6 py-2 text-right">
-  Date of mini intake: xxxx. Completed by xxxx.
+  <app-user-date-audit
+    [candidate]="candidate"
+    [candidateIntakeData]="candidateIntakeData"
+    [dateInput]="candidateIntakeData?.checkedDate"
+    [userInput]="candidateIntakeData?.checkedBy"
+    (dateChange)="dateSelected($event)"
+    (userChange)="userSelected($event)">
+  </app-user-date-audit>
 </div>
 
 <div *ngIf="!loading">
