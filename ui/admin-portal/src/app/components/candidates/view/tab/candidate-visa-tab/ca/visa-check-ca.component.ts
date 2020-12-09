@@ -13,12 +13,6 @@ export class VisaCheckCaComponent extends IntakeComponentTabBase {
   @Input() visaRecord: CandidateVisaCheck;
   form: FormGroup;
 
-  protected onDataLoaded(init: boolean) {
-    this.form = this.fb.group({
-      jobName: [this.jobIndex]
-    });
-  }
-
   private get myRecord(): CandidateVisaCheck {
     return this.candidateIntakeData.candidateVisaChecks ?
       this.candidateIntakeData.candidateVisaChecks[this.selectedIndex]

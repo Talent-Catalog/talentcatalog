@@ -3,13 +3,13 @@
  */
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {CandidateCitizenship, HasPassport} from "../../../../../model/candidate";
-import {EnumOption, enumOptions} from "../../../../../util/enum";
-import {FormBuilder} from "@angular/forms";
-import {CandidateService} from "../../../../../services/candidate.service";
-import {IntakeComponentBase} from "../../../../util/intake/IntakeComponentBase";
-import {Nationality} from "../../../../../model/nationality";
-import {CandidateCitizenshipService} from "../../../../../services/candidate-citizenship.service";
+import {CandidateCitizenship, HasPassport} from '../../../../../model/candidate';
+import {EnumOption, enumOptions} from '../../../../../util/enum';
+import {FormBuilder} from '@angular/forms';
+import {CandidateService} from '../../../../../services/candidate.service';
+import {IntakeComponentBase} from '../../../../util/intake/IntakeComponentBase';
+import {Nationality} from '../../../../../model/nationality';
+import {CandidateCitizenshipService} from '../../../../../services/candidate-citizenship.service';
 
 @Component({
   selector: 'app-candidate-citizenship-card',
@@ -34,7 +34,7 @@ export class CandidateCitizenshipCardComponent extends IntakeComponentBase imple
   ngOnInit(): void {
     this.form = this.fb.group({
       citizenId: [this.myRecord?.id],
-      citizenOccupationId: [this.myRecord?.nationality?.id],
+      citizenNationalityId: [this.myRecord?.nationality?.id],
       citizenHasPassport: [this.myRecord?.hasPassport],
       citizenNotes: [this.myRecord?.notes],
     });
