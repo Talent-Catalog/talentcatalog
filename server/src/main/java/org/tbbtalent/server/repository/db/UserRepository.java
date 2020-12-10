@@ -49,7 +49,6 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     @Query(" select distinct u from User u "
             + " where lower(concat(u.firstName, ' ', u.lastName)) like lower(:usersName)"
             + " and u.role != 'user'")
-    Page<User> searchAdminUsersName(@Param("usersName") String usersName,
-                                    Pageable pageable);
+    Page<User> searchAdminUsersName(@Param("usersName") String usersName, Pageable pageable);
 
 }

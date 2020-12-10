@@ -144,10 +144,8 @@ export interface CandidateIntakeData {
   visaIssues?: VisaIssue[];
   visaIssuesNotes?: string;
 
-  checkedBy?: User;
-  checkedDate?: string;
-  updatedBy?: User;
-  updatedDate?: number;
+  intakeMiniCheckedBy?: User;
+  intakeMiniCheckedDate?: string;
 }
 
 export interface CandidateCitizenship {

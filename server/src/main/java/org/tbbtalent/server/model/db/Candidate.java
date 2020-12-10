@@ -426,6 +426,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private String dependantsNotes;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "intake_mini_checked_by_id")
+    @Nullable
+    private User intakeMiniCheckedBy;
+
+    @Nullable
+    private String intakeMiniCheckedDate;
+
     public Candidate() {
     }
 
@@ -1111,6 +1119,16 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setDependantsNotes(@Nullable String dependantsNotes) { this.dependantsNotes = dependantsNotes; }
 
+    @Nullable
+    public User getIntakeMiniCheckedBy() { return intakeMiniCheckedBy; }
+
+    public void setIntakeMiniCheckedBy(@Nullable User intakeMiniCheckedBy) { this.intakeMiniCheckedBy = intakeMiniCheckedBy; }
+
+    @Nullable
+    public String getIntakeMiniCheckedDate() { return intakeMiniCheckedDate; }
+
+    public void setIntakeMiniCheckedDate(@Nullable String intakeMiniCheckedDate) { this.intakeMiniCheckedDate = intakeMiniCheckedDate; }
+
     public boolean isSelected() {
         return selected;
     }
@@ -1179,7 +1197,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
                                    @Nullable Occupation partnerProfession,
                                    @Nullable LanguageLevel partnerEnglishLevel,
                                    @Nullable Nationality partnerCitizenship,
-                                   @Nullable Country drivingLicenseCountry) {
+                                   @Nullable Country drivingLicenseCountry,
+                                   @Nullable User intakeMiniCheckedBy) {
         if (data.getAsylumYear() != null) {
             setAsylumYear(data.getAsylumYear());
         }
@@ -1392,6 +1411,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getWorkLegally() != null) {
             setWorkLegally(data.getWorkLegally());
+        }
+        if (data.getIntakeMiniCheckedDate() != null) {
+            setIntakeMiniCheckedDate(data.getIntakeMiniCheckedDate());
+        }
+        if (data.getIntakeMiniCheckedById() != null) {
+            setIntakeMiniCheckedBy(intakeMiniCheckedBy);
         }
 
     }

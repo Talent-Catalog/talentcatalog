@@ -7,23 +7,7 @@ package org.tbbtalent.server.request.candidate;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.tbbtalent.server.model.db.AvailImmediateReason;
-import org.tbbtalent.server.model.db.DrivingLicenseStatus;
-import org.tbbtalent.server.model.db.Exam;
-import org.tbbtalent.server.model.db.FamilyRelations;
-import org.tbbtalent.server.model.db.HasPassport;
-import org.tbbtalent.server.model.db.IeltsScore;
-import org.tbbtalent.server.model.db.IntRecruitReason;
-import org.tbbtalent.server.model.db.LeftHomeReason;
-import org.tbbtalent.server.model.db.MaritalStatus;
-import org.tbbtalent.server.model.db.ResidenceStatus;
-import org.tbbtalent.server.model.db.TBBEligibilityAssessment;
-import org.tbbtalent.server.model.db.UnhcrStatus;
-import org.tbbtalent.server.model.db.VisaEligibility;
-import org.tbbtalent.server.model.db.VisaIssue;
-import org.tbbtalent.server.model.db.WorkPermit;
-import org.tbbtalent.server.model.db.YesNo;
-import org.tbbtalent.server.model.db.YesNoUnsure;
+import org.tbbtalent.server.model.db.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -165,4 +149,6 @@ public class CandidateIntakeDataUpdate {
     private YesNoUnsure workPermitDesired;
     private YesNo workLegally;
 
+    private Long intakeMiniCheckedById;
+    private String intakeMiniCheckedDate;
 }

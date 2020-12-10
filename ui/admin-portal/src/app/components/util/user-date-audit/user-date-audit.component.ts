@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {Observable, of} from 'rxjs';
 import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from 'rxjs/operators';
@@ -8,20 +8,19 @@ import {AuthService} from '../../../services/auth.service';
 import {Candidate, CandidateIntakeData} from '../../../model/candidate';
 import {IntakeComponentBase} from '../intake/IntakeComponentBase';
 import {CandidateService} from '../../../services/candidate.service';
+import {CandidateNoteService} from '../../../services/candidate-note.service';
 
 @Component({
   selector: 'app-user-date-audit',
   templateUrl: './user-date-audit.component.html',
   styleUrls: ['./user-date-audit.component.scss']
 })
-export class UserDateAuditComponent extends IntakeComponentBase implements OnInit {
+export class UserDateAuditComponent extends IntakeComponentBase implements OnInit, OnChanges {
 
   @Input() dateInput: string;
   @Input() userInput: User;
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
-  @Output() dateChange = new EventEmitter<string>();
-  @Output() userChange = new EventEmitter<User>();
 
   form: FormGroup;
   error: string;
@@ -32,22 +31,30 @@ export class UserDateAuditComponent extends IntakeComponentBase implements OnIni
   loggedInUser: User;
   firstChange: boolean;
 
-  constructor(fb: FormBuilder, candidateService: CandidateService,
+  constructor(fb: FormBuilder,
+              candidateService: CandidateService,
               private userService: UserService,
-              private authService: AuthService) {super(fb, candidateService) }
+              private authService: AuthService,
+              private candidateNoteService: CandidateNoteService) {
+    super(fb, candidateService)
+  }
 
 
   ngOnInit(): void {
     // If date input is undefined (first change) set flag to true to be used when first date selection made.
-    if (this.dateInput == null) {
-      this.firstChange = true;
-    }
     // If there is user input, display the user input. If there isn't user input, display logged in user when date selected.
-    if (this.userInput) {
-      this.userDisplay = this.renderCandidateRow(this.userInput);
-    }
+    this.form = this.fb.group({
+      intakeMiniCheckedDate: [this.candidateIntakeData?.intakeMiniCheckedDate],
+      intakeMiniCheckedById: [this.candidateIntakeData?.intakeMiniCheckedBy?.id],
+    });
 
-    this.loggedInUser = this.authService.getLoggedInUser();
+    if (this.checkedDate == null) {
+      this.firstChange = true;
+      this.loggedInUser = this.authService.getLoggedInUser();
+    }
+    if (this.candidateIntakeData?.intakeMiniCheckedBy != null) {
+      this.userDisplay = this.renderCandidateRow(this.candidateIntakeData?.intakeMiniCheckedBy);
+    }
 
     this.doNameSearch = (text$: Observable<string>) =>
       text$.pipe(
@@ -68,11 +75,13 @@ export class UserDateAuditComponent extends IntakeComponentBase implements OnIni
         ),
         tap(() => this.searching = false)
       );
+  }
 
-    this.form = this.fb.group({
-      checkedById: [this.candidateIntakeData?.checkedBy?.id],
-      checkedDate: [this.candidateIntakeData?.checkedDate],
-    });
+  ngOnChanges(changes: SimpleChanges) {
+    // If the checked by input changes, a note is created do search.
+    if (changes && changes.candidateIntakeData && changes.candidateIntakeData.previousValue.intakeMiniCheckedBy !== changes.candidateIntakeData.currentValue.intakeMiniCheckedBy) {
+
+    }
   }
 
   renderCandidateRow(user: User) {
@@ -81,34 +90,33 @@ export class UserDateAuditComponent extends IntakeComponentBase implements OnIni
 
   selectSearchResult ($event, input) {
     $event.preventDefault();
-      input.value = this.renderCandidateRow($event.item);
-      this.userChange.emit($event.item)
+    input.value = this.renderCandidateRow($event.item);
+    this.form.controls['intakeMiniCheckedById'].patchValue($event.item.id);
   }
 
-  dateSelection () {
+  dateSelection ($event) {
+    // If it's the first change, set the user value as the logged in user.
     if (this.firstChange) {
-      this.dateChange.emit(this.dateInput);
+      this.form.controls.intakeMiniCheckedDate.markAsDirty()
       // On first date change autofill with the current logged in user and emit current logged in user.
       this.userDisplay = this.renderCandidateRow(this.loggedInUser);
-      this.userChange.emit(this.loggedInUser);
+      this.form.controls['intakeMiniCheckedById'].patchValue(this.loggedInUser.id);
       // After first change, set to false.
       this.firstChange = false;
-    } else {
-      this.dateChange.emit(this.dateInput)
     }
   }
 
   clearDate () {
     this.dateInput = null;
-    this.dateChange.emit('');
+    this.form.controls['intakeMiniCheckedDate'].patchValue('');
   }
 
-  // dateSelected($event) {
-  //   this.form.controls['checkedById'].patchValue($event);
-  // }
-  //
-  // userSelected($event) {
-  //   this.form.controls['visaCheckedById'].patchValue($event.id);
-  // }
+  get checkedDate(): string {
+    return this.form.controls['intakeMiniCheckedDate'].value;
+  }
+
+  get checkedBy(): string {
+    return this.form.controls['intakeMiniCheckedBy'].value;
+  }
 
 }
