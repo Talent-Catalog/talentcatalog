@@ -1791,7 +1791,7 @@ public class CandidateServiceImpl implements CandidateService {
             intakeMiniCheckedBy = userRepository.findById(intakeMiniCheckedById).orElse(null);
             candidateNoteService.createCandidateNote(
                     new CreateCandidateNoteRequest(id,
-                            "Mini intake conducted by " + intakeMiniCheckedBy.getFirstName() + " " + intakeMiniCheckedBy.getLastName(), ""));
+                            "Mini intake conducted by " + intakeMiniCheckedBy.getFirstName() + " " + intakeMiniCheckedBy.getLastName() + " on " + data.getIntakeMiniCheckedDate(), ""));
         }
         
         candidate.populateIntakeData(data, workAbroadLoc, partnerCandidate, partnerEducationLevel,

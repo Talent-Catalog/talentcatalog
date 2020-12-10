@@ -8,7 +8,6 @@ import {AuthService} from '../../../services/auth.service';
 import {Candidate, CandidateIntakeData} from '../../../model/candidate';
 import {IntakeComponentBase} from '../intake/IntakeComponentBase';
 import {CandidateService} from '../../../services/candidate.service';
-import {CandidateNoteService} from '../../../services/candidate-note.service';
 
 @Component({
   selector: 'app-user-date-audit',
@@ -34,8 +33,7 @@ export class UserDateAuditComponent extends IntakeComponentBase implements OnIni
   constructor(fb: FormBuilder,
               candidateService: CandidateService,
               private userService: UserService,
-              private authService: AuthService,
-              private candidateNoteService: CandidateNoteService) {
+              private authService: AuthService,) {
     super(fb, candidateService)
   }
 
