@@ -1789,9 +1789,12 @@ public class CandidateServiceImpl implements CandidateService {
         User intakeMiniCheckedBy = null;
         if (intakeMiniCheckedById != null) {
             intakeMiniCheckedBy = userRepository.findById(intakeMiniCheckedById).orElse(null);
-            candidateNoteService.createCandidateNote(
-                    new CreateCandidateNoteRequest(id,
-                            "Mini intake conducted by " + intakeMiniCheckedBy.getFirstName() + " " + intakeMiniCheckedBy.getLastName() + " on " + data.getIntakeMiniCheckedDate(), ""));
+            // Check if the new checked by user is different from the old checked by user. If different create a note.
+            if (intakeMiniCheckedBy != candidate.getIntakeMiniCheckedBy()) {
+                candidateNoteService.createCandidateNote(
+                        new CreateCandidateNoteRequest(id,
+                                "Mini intake conducted by " + intakeMiniCheckedBy.getFirstName() + " " + intakeMiniCheckedBy.getLastName() + " on " + data.getIntakeMiniCheckedDate(), ""));
+            }
         }
         
         candidate.populateIntakeData(data, workAbroadLoc, partnerCandidate, partnerEducationLevel,

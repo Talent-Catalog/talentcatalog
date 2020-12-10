@@ -38,6 +38,7 @@ public class CandidateIntakeDataUpdate {
     private Long citizenId;
     private Long citizenNationalityId;
     private HasPassport citizenHasPassport;
+    private LocalDate citizenPassportExp;
     private String citizenNotes;
 
     private YesNo canDrive;

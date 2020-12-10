@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {Observable, of} from 'rxjs';
 import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from 'rxjs/operators';
@@ -14,10 +14,8 @@ import {CandidateService} from '../../../services/candidate.service';
   templateUrl: './user-date-audit.component.html',
   styleUrls: ['./user-date-audit.component.scss']
 })
-export class UserDateAuditComponent extends IntakeComponentBase implements OnInit, OnChanges {
+export class UserDateAuditComponent extends IntakeComponentBase implements OnInit {
 
-  @Input() dateInput: string;
-  @Input() userInput: User;
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
 
@@ -43,7 +41,7 @@ export class UserDateAuditComponent extends IntakeComponentBase implements OnIni
     // If there is user input, display the user input. If there isn't user input, display logged in user when date selected.
     this.form = this.fb.group({
       intakeMiniCheckedDate: [this.candidateIntakeData?.intakeMiniCheckedDate],
-      intakeMiniCheckedById: [this.candidateIntakeData?.intakeMiniCheckedBy?.id],
+      intakeMiniCheckedById: [this.candidateIntakeData?.intakeMiniCheckedBy.id],
     });
 
     if (this.checkedDate == null) {
@@ -75,13 +73,6 @@ export class UserDateAuditComponent extends IntakeComponentBase implements OnIni
       );
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    // If the checked by input changes, a note is created do search.
-    if (changes && changes.candidateIntakeData && changes.candidateIntakeData.previousValue.intakeMiniCheckedBy !== changes.candidateIntakeData.currentValue.intakeMiniCheckedBy) {
-
-    }
-  }
-
   renderCandidateRow(user: User) {
       return user?.id + ": " + user?.firstName + " " + user?.lastName;
   }
@@ -105,7 +96,6 @@ export class UserDateAuditComponent extends IntakeComponentBase implements OnIni
   }
 
   clearDate () {
-    this.dateInput = null;
     this.form.controls['intakeMiniCheckedDate'].patchValue('');
   }
 

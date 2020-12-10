@@ -66,79 +66,82 @@ export function createTranslateLoader(http: HttpClient) {
 }
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    HeaderComponent,
-    LandingComponent,
-    RegistrationLandingComponent,
-    RegistrationContactComponent,
-    RegistrationPersonalComponent,
-    RegistrationCandidateOccupationComponent,
-    RegistrationWorkExperienceComponent,
-    RegistrationEducationComponent,
-    CandidateEducationFormComponent,
-    RegistrationLanguageComponent,
-    RegistrationCertificationsComponent,
-    RegistrationAdditionalInfoComponent,
-    LoginComponent,
-    HomeComponent,
-    ResetPasswordComponent,
-    ChangePasswordComponent,
-    RegisterComponent,
-    RegistrationFooterComponent,
-    CandidateJobExperienceFormComponent,
-    CandidateJobExperienceCardComponent,
-    ErrorComponent,
-    LoadingComponent,
-    CandidateProfileComponent,
-    FormControlErrorComponent,
-    CandidateCertificationCardComponent,
-    EditCandidateComponent,
-    CandidateOccupationCardComponent,
-    CandidateEducationCardComponent,
-    CandidateLanguageCardComponent,
-    CandidateAttachmentsComponent,
-    FileUploadComponent,
-    InputFilterDirective,
-    UserPipe,
-    TrimPipe,
-    TranslationPipe,
-    MonthPickerComponent,
-    DeleteOccupationComponent,
-    CandidateCertificationFormComponent,
-    DownloadCvComponent
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-    FormsModule,
-    NgbModule,
-    RecaptchaV3Module,
-    LocalStorageModule.forRoot({
-      prefix: 'tbb-candidate-portal',
-      storageType: 'localStorage'
-    }),
-    TranslateModule.forRoot({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: (createTranslateLoader),
-        deps: [HttpClient]
-      }
-    }),
-    FontAwesomeModule
-  ],
-  providers: [
-    {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
-    {provide: HTTP_INTERCEPTORS, useClass: LanguageInterceptor, multi: true},
-    {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
-    {provide: RECAPTCHA_V3_SITE_KEY, useValue: '6Lc_97cZAAAAAIDqR7gT3h_ROGU6P7Jif-wEk9Vu'},
-    {provide: NgbDateAdapter, useClass: CustomDateAdapter},
-    {provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter},
+    declarations: [
+        AppComponent,
+        HeaderComponent,
+        LandingComponent,
+        RegistrationLandingComponent,
+        RegistrationContactComponent,
+        RegistrationPersonalComponent,
+        RegistrationCandidateOccupationComponent,
+        RegistrationWorkExperienceComponent,
+        RegistrationEducationComponent,
+        CandidateEducationFormComponent,
+        RegistrationLanguageComponent,
+        RegistrationCertificationsComponent,
+        RegistrationAdditionalInfoComponent,
+        LoginComponent,
+        HomeComponent,
+        ResetPasswordComponent,
+        ChangePasswordComponent,
+        RegisterComponent,
+        RegistrationFooterComponent,
+        CandidateJobExperienceFormComponent,
+        CandidateJobExperienceCardComponent,
+        ErrorComponent,
+        LoadingComponent,
+        CandidateProfileComponent,
+        FormControlErrorComponent,
+        CandidateCertificationCardComponent,
+        EditCandidateComponent,
+        CandidateOccupationCardComponent,
+        CandidateEducationCardComponent,
+        CandidateLanguageCardComponent,
+        CandidateAttachmentsComponent,
+        FileUploadComponent,
+        InputFilterDirective,
+        UserPipe,
+        TrimPipe,
+        TranslationPipe,
+        MonthPickerComponent,
+        DeleteOccupationComponent,
+        CandidateCertificationFormComponent,
+        DownloadCvComponent
+    ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        ReactiveFormsModule,
+        HttpClientModule,
+        FormsModule,
+        NgbModule,
+        RecaptchaV3Module,
+        LocalStorageModule.forRoot({
+            prefix: 'tbb-candidate-portal',
+            storageType: 'localStorage'
+        }),
+        TranslateModule.forRoot({
+            loader: {
+                provide: TranslateLoader,
+                useFactory: (createTranslateLoader),
+                deps: [HttpClient]
+            }
+        }),
+        FontAwesomeModule
+    ],
+    providers: [
+        {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
+        {provide: HTTP_INTERCEPTORS, useClass: LanguageInterceptor, multi: true},
+        {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
+        {provide: RECAPTCHA_V3_SITE_KEY, useValue: '6Lc_97cZAAAAAIDqR7gT3h_ROGU6P7Jif-wEk9Vu'},
+        {provide: NgbDateAdapter, useClass: CustomDateAdapter},
+        {provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter},
 
-  ],
-  bootstrap: [AppComponent]
+    ],
+    exports: [
+        ErrorComponent
+    ],
+    bootstrap: [AppComponent]
 })
 export class AppModule {
 

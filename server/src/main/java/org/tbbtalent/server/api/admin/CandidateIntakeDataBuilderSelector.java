@@ -145,6 +145,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("id")
                 .add("nationality", nationalityDto())
                 .add("hasPassport")
+                .add("passportExp")
                 .add("notes")
                 ;
     }

@@ -152,6 +152,7 @@ export interface CandidateCitizenship {
   id?: number;
   nationality?: {id};
   hasPassport?: HasPassport;
+  passportExp?: string;
   notes?: string;
 }
 
