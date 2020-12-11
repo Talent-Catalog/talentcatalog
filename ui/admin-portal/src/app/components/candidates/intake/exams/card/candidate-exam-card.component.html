@@ -41,8 +41,16 @@
           <input type="text" class="form-control"
                  [id]="'examScore'+myRecordIndex" [formControlName]="'examScore'">
         </div>
+        <div class="form-group">
+          <label for="examYear">
+            In what year did you take the test?
+          </label>
+          <select id="examYear" class="form-control" [formControlName]="'examYear'">
+            <option value=""></option>
+            <option *ngFor="let year of years" [ngValue]="year">{{year}} </option>
+          </select>
+        </div>
       </div>
-
     </form>
   </div>
 </div>

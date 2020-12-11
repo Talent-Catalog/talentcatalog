@@ -92,7 +92,7 @@ export interface CandidateIntakeData {
 
   hostChallenges?: string;
   hostBorn?: YesNo;
-  hostEntryYear?: string;
+  hostEntryYear?: number;
   hostEntryLegally?: YesNo;
   intRecruitReasons?: IntRecruitReason[];
   intRecruitRural?: YesNoUnsure;
@@ -161,6 +161,7 @@ export interface CandidateExam {
   exam?: Exam;
   otherExam?: string;
   score?: string;
+  year?: number;
 }
 
 export interface CandidateDestination {
@@ -289,6 +290,13 @@ export enum YesNoUnsure {
   Yes = "Yes",
   No = "No",
   Unsure = "Unsure"
+}
+
+export enum YesNoUnsureLearn {
+  NoResponse = "",
+  Yes = "Yes",
+  No = "No",
+  Unsure = "Unsure - I need to learn more."
 }
 
 export enum UnrwaStatus {

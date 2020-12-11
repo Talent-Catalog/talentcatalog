@@ -156,6 +156,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("exam")
                 .add("otherExam")
                 .add("score")
+                .add("year")
                 ;
     }
 

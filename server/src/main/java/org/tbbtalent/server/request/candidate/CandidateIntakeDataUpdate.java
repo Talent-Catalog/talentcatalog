@@ -68,6 +68,7 @@ public class CandidateIntakeDataUpdate {
     private Exam examType;
     private String otherExam;
     private String examScore;
+    private Long examYear;
 
     private YesNo destLimit;
     private String destLimitNotes;
@@ -86,7 +87,7 @@ public class CandidateIntakeDataUpdate {
     private String homeLocation;
     private String hostChallenges;
     private YesNo hostBorn;
-    private LocalDate hostEntryYear;
+    private Long hostEntryYear;
     private YesNo hostEntryLegally;
     private List<IntRecruitReason> intRecruitReasons;
     private YesNoUnsure intRecruitRural;

@@ -229,7 +229,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private YesNo workLegally;
 
     @Nullable
-    private LocalDate hostEntryYear;
+    private Long hostEntryYear;
 
     @Enumerated(EnumType.STRING)
     @Nullable
@@ -844,9 +844,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setWorkLegally(@Nullable YesNo workLegally) { this.workLegally = workLegally; }
 
     @Nullable
-    public LocalDate getHostEntryYear() { return hostEntryYear; }
+    public Long getHostEntryYear() { return hostEntryYear; }
 
-    public void setHostEntryYear(@Nullable LocalDate hostEntryYear) { this.hostEntryYear = hostEntryYear; }
+    public void setHostEntryYear(@Nullable Long hostEntryYear) { this.hostEntryYear = hostEntryYear; }
 
     @Nullable
     public UnhcrStatus getUnhcrStatus() { return unhcrStatus; }

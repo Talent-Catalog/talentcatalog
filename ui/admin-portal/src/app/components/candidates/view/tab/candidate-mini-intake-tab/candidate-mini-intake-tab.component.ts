@@ -1,5 +1,8 @@
 import {Component} from '@angular/core';
-import {IntakeComponentTabBase} from "../../../../util/intake/IntakeComponentTabBase";
+import {IntakeComponentTabBase} from '../../../../util/intake/IntakeComponentTabBase';
+
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 @Component({
   selector: 'app-candidate-mini-intake-tab',
@@ -7,4 +10,16 @@ import {IntakeComponentTabBase} from "../../../../util/intake/IntakeComponentTab
   styleUrls: ['./candidate-mini-intake-tab.component.scss']
 })
 export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
+  exportAsPdf() {
+      // parentdiv is the html element which has to be converted to PDF
+      html2canvas(document.querySelector("#mini-intake")).then(canvas => {
+
+        const pdf = new jsPDF('p', 'pt', [canvas.width, canvas.height]);
+
+        const imgData  = canvas.toDataURL("image/jpeg", 1.0);
+        pdf.addImage(imgData,0,0,canvas.width, canvas.height);
+        pdf.save('converteddoc.pdf');
+      });
+    }
+
 }
