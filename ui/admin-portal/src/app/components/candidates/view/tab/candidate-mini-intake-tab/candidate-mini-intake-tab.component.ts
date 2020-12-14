@@ -11,14 +11,14 @@ import jsPDF from 'jspdf';
 })
 export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
   exportAsPdf() {
-      // parentdiv is the html element which has to be converted to PDF
-      html2canvas(document.querySelector("#mini-intake")).then(canvas => {
+      // parent div is the html element which has to be converted to PDF
+      html2canvas(document.querySelector("#MiniIntake-panel")).then(canvas => {
 
         const pdf = new jsPDF('p', 'pt', [canvas.width, canvas.height]);
 
         const imgData  = canvas.toDataURL("image/jpeg", 1.0);
-        pdf.addImage(imgData,0,0,canvas.width, canvas.height);
-        pdf.save('converteddoc.pdf');
+        pdf.addImage(imgData, 0, 0, canvas.width, canvas.height);
+        pdf.save('MiniIntake_' + this.candidate.user.firstName + '_' + this.candidate.user.lastName + '.pdf');
       });
     }
 

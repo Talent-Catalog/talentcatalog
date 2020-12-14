@@ -4,8 +4,12 @@
 <div *ngIf="error">
   {{error}}
 </div>
-<div *ngIf="!loading" id="mini-intake">
-  <button class="btn btn-primary" (click)="exportAsPdf()">Export PDF</button>
+<div *ngIf="!loading">
+  <div class="d-flex justify-content-between">
+    <h5>Mini Intake</h5>
+    <button class="btn btn-primary" (click)="exportAsPdf()">Export PDF</button>
+  </div>
+
   <div class="h6 py-2 text-right">
     <app-user-date-audit
       [candidate]="candidate"
