@@ -45,6 +45,9 @@ public class DataSharingServiceImpl implements DataSharingService {
 
     @Value("${spring.datasource.password}")
     private String masterPwd;
+    
+    @Value("${tbb.partner-dbcopy-config}")
+    private String partnerDbcopyConfig = "data.sharing/tbbCopies.xml";
 
     //Need to set zeroDateTimeBehavior because of all the null Dates in the
     //database. Otherwise cannot process those dates.
@@ -254,7 +257,7 @@ public class DataSharingServiceImpl implements DataSharingService {
         List<PartnerDatabaseDefinition> defs = new ArrayList<>();
 
         ClassLoader cl = this.getClass().getClassLoader();
-        InputStream in = cl.getResourceAsStream("data.sharing/tbbCopies.xml");
+        InputStream in = cl.getResourceAsStream(partnerDbcopyConfig);
 
         //Parse the XML input stream.
         SAXBuilder builder = new SAXBuilder();
