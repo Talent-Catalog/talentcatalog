@@ -58,7 +58,7 @@
                         nationality_id INT(11)
                     </fields>
                     <index>
-                        CREATE UNIQUE INDEX jobseeker_user_id_uindex ON test_jobseekers (user_id)
+                        user_id
                     </index>
                 </table>
                 <table>
@@ -178,7 +178,7 @@
                         name TEXT NOT NULL
                     </fields>
                     <index>
-                        CREATE UNIQUE INDEX country_id_uindex ON test_country (id)
+                        id
                     </index>
                 </table>
                 <table>
@@ -191,7 +191,7 @@
                         name TEXT NOT NULL
                     </fields>
                     <index>
-                        CREATE UNIQUE INDEX education_major_id_uindex ON test_education_major (id)
+                        id
                     </index>
                 </table>
                 <table>
@@ -204,7 +204,7 @@
                         name TEXT NOT NULL
                     </fields>
                     <index>
-                        CREATE UNIQUE INDEX industry_id_uindex ON test_industry (id)
+                        id
                     </index>
                 </table>
                 <table>
@@ -217,7 +217,7 @@
                         name TEXT NOT NULL
                     </fields>
                     <index>
-                        CREATE UNIQUE INDEX nationality_id_uindex ON test_nationality (id)
+                        id
                     </index>
                 </table>
                 <table>
@@ -230,7 +230,7 @@
                         name TEXT NOT NULL
                     </fields>
                     <index>
-                        CREATE UNIQUE INDEX occupation_id_uindex ON test_occupation (id)
+                        id
                     </index>
                 </table>
             </stringtables>

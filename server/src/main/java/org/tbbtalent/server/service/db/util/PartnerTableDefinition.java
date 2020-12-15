@@ -12,7 +12,7 @@ public class PartnerTableDefinition {
     private final String filter;
     private final String populateTableSQL;
     private final String sqlTableFields;
-    private final String sqlTableIndexCreate;
+    private final String indexField;
     private final String tableName;
     
     private static final String NEW_PREFIX = "_new_";
@@ -21,16 +21,19 @@ public class PartnerTableDefinition {
     public PartnerTableDefinition(
             String filter,
             String tableName, String sqlTableFields, String populateTableSQL,
-            String sqlTableIndexCreate) {
+            String indexField) {
         this.filter = filter;
         this.tableName = tableName;
         this.sqlTableFields = sqlTableFields;
         this.populateTableSQL = populateTableSQL;
-        this.sqlTableIndexCreate = sqlTableIndexCreate;
+        this.indexField = indexField;
     }
 
     public String getCreateTableIndexSQL() {
-        return  sqlTableIndexCreate;
+        return  indexField == null ? null :
+                "CREATE UNIQUE INDEX " + 
+                tableName + "_" + indexField + "_uindex ON " + 
+                tableName + " (" + indexField + ")";
     }
 
     public String getCreateTableSQL() {

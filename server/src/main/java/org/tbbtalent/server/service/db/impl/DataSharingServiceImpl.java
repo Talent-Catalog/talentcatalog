@@ -345,10 +345,10 @@ public class DataSharingServiceImpl implements DataSharingService {
             String fields = getValue(fieldsEl);
 
             Element indexEl = tableEl.getChild("index");
-            String indexSQL = getValue(indexEl);
+            String indexField = getValue(indexEl);
 
             tableDefs.add(new PartnerTableDefinition(
-                    filter, name, fields, populateSQL, indexSQL));
+                    filter, name, fields, populateSQL, indexField));
         }
         return tableDefs;
     }
