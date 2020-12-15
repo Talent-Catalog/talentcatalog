@@ -33,6 +33,35 @@ import org.tbbtalent.server.service.db.email.EmailSender;
 import org.tbbtalent.server.service.db.util.PartnerDatabaseDefinition;
 import org.tbbtalent.server.service.db.util.PartnerTableDefinition;
 
+/**
+ * Data is shared with destination partners by copying to their own databases, 
+ * as configured in an XML configuration file stored in resources who path is 
+ * specified in tbb.partner-dbcopy-config in application.yml.
+ * <p/>
+ * The configuration file contains a different configuration for each partner
+ * (typically by country - eg Australian partner, UK partner etc).
+ * <p/>
+ * Each destination configuration defines the structure of destination tables
+ * which are populated from the TBB database.
+ * <p/>
+ * In this implementation data is copied in two stages. First a local 
+ * "in memory" copy of the destination database is created on this server
+ * (using an H2 in memory database). This involves reading a subset of data from 
+ * the normal TBB data base (as defined in the "populate" elements of the xml 
+ * configuration) and inserting it into the appropriate fields of the 
+ * destination tables (as defined in the "fields" elements for each destination 
+ * table in the xml configuration).
+ * <p/>
+ * Once the first stage is completed, there is an exact copy of the tables
+ * we want the destination partner to have in our in memory H2 database.
+ * All that remains is to copy all those tables up to the destination partner's
+ * database - replacing any existing content.
+ * This is done in the {@link #exportImport} method in an slightly unusual
+ * way for performance reasons - using an Export/Import method which first
+ * exports all table data in the form of a CSV file which is then imported
+ * into the destination database using "LOAD DATA LOCAL INFILE" statements.
+ * See https://dev.mysql.com/doc/refman/8.0/en/load-data.html
+ */
 @Service
 public class DataSharingServiceImpl implements DataSharingService {
     private static final Logger log = LoggerFactory.getLogger(DataSharingServiceImpl.class);
