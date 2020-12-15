@@ -17,6 +17,9 @@ import {OccupationService} from '../../../services/occupation.service';
 import {LanguageLevelService} from '../../../services/language-level.service';
 import {LanguageLevel} from '../../../model/language-level';
 
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+
 /**
  * Base class for all candidate intake tab components.
  * <p/>
@@ -143,5 +146,33 @@ export abstract class IntakeComponentTabBase implements OnInit {
    * externally to do a data refresh.
    */
   protected onDataLoaded(init: boolean) {}
+
+  public exportAsPdf(formName: string) {
+    // parent div is the html element which has to be converted to PDF
+    html2canvas(document.querySelector('#' + formName)).then(canvas => {
+
+
+
+
+
+
+
+      const heightRatio = canvas.height / canvas.width;
+      const width = 1084;
+      const height = 1084 * heightRatio;
+      let pdf;
+      if (canvas.height > canvas.width) {
+        // Make the PDF the same size as the canvas content
+        pdf = new jsPDF('p', 'pt', [width, height]);
+      } else {
+        // Make the PDF a generic size.
+        pdf = new jsPDF('p', 'pt', [width, 2500]);
+      }
+
+      const imgData  = canvas.toDataURL("image/jpeg", 1.0);
+      pdf.addImage(imgData, 0, 0, width, height);
+      pdf.save(formName + '_' + this.candidate.user.firstName + '_' + this.candidate.user.lastName + '.pdf');
+    });
+  }
 
 }

@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {IntakeComponentTabBase} from "../../../../util/intake/IntakeComponentTabBase";
+import {IntakeComponentTabBase} from '../../../../util/intake/IntakeComponentTabBase';
 
 @Component({
   selector: 'app-candidate-mini-intake-tab',
