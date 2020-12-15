@@ -1596,10 +1596,21 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     @Scheduled(cron = "0 0 0 * * ?", zone = "GMT")
     public void notifyWatchers() {
+        String currentSearch = "";
         try {
             Set<SavedSearch> searches = savedSearchRepository.findByWatcherIdsIsNotNullLoadSearchJoins();
             Map<Long, Set<SavedSearch>> userNotifications = new HashMap<>();
+
+            log.info("Notify watchers: running " + searches.size() + " searches");
+            
+            int count = 0;
+            
             for (SavedSearch savedSearch : searches) {
+
+                count++;
+                currentSearch = savedSearch.getName();
+                log.info("Running search " + count + ": " + currentSearch);
+                
                 SearchCandidateRequest searchCandidateRequest =
                         convertToSearchCandidateRequest(savedSearch);
 
@@ -1636,7 +1647,7 @@ public class CandidateServiceImpl implements CandidateService {
                 }
             }
         } catch (Exception ex) {
-            String mess = "Watcher notification failure";
+            String mess = "Watcher notification failure (" + currentSearch + ")";
             log.error(mess, ex);
             emailHelper.sendAlert(mess, ex);
         }
