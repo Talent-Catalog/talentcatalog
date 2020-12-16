@@ -8,7 +8,10 @@
 <div *ngIf="!loading" id="FullIntakeForm">
   <div class="d-flex justify-content-between align-items-center mb-2">
     <h5 class="ml-3">Full Intake</h5>
-    <button class="btn btn-primary" (click)="exportAsPdf('FullIntakeForm')">Export PDF</button>
+    <button class="btn btn-primary" (click)="exportAsPdf('FullIntakeForm')" [disabled]="saving">
+      <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
+      Export PDF
+    </button>
   </div>
 
   <div class="card">
