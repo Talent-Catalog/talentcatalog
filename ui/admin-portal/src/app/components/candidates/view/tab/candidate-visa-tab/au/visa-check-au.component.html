@@ -7,7 +7,10 @@
 <div *ngIf="!loading" id="VisaAustralia">
   <div class="d-flex justify-content-between align-items-center mb-2">
     <h5>Visa Australia</h5>
-    <button class="btn btn-primary" (click)="exportAsPdf('VisaAustralia')">Export PDF</button>
+    <button class="btn btn-primary" (click)="exportAsPdf('VisaAustralia')" [disabled]="saving">
+      <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
+      Export PDF
+    </button>
   </div>
 
 <!--  todo Why not put this formatting inside component?

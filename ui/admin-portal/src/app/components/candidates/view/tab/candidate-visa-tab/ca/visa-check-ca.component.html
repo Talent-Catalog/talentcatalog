@@ -7,7 +7,10 @@
 <div *ngIf="!loading" id="VisaCanada">
   <div class="d-flex justify-content-between align-items-center mb-2">
     <h5>Visa Canada</h5>
-    <button class="btn btn-primary" (click)="exportAsPdf('VisaCanada')">Export PDF</button>
+    <button class="btn btn-primary" (click)="exportAsPdf('VisaCanada')" [disabled]="saving">
+      <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
+      Export PDF
+    </button>
   </div>
 
   <app-visa-assessment

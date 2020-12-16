@@ -62,6 +62,12 @@ export abstract class IntakeComponentTabBase implements OnInit {
   loading: boolean;
 
   /**
+   * True when saving is underway. Should be used to show the user when a save
+   * is happening.
+   */
+  saving: boolean;
+
+  /**
    * All standard nationalities
    */
   nationalities: Nationality[];
@@ -147,16 +153,15 @@ export abstract class IntakeComponentTabBase implements OnInit {
    */
   protected onDataLoaded(init: boolean) {}
 
+  /**
+   * Called when export button on intake forms is clicked. Exports the div containing
+   * the forms and downloads the file.
+   * @param formName is the id of the div container explain which form relates to.
+   */
   public exportAsPdf(formName: string) {
     // parent div is the html element which has to be converted to PDF
+    this.saving = true;
     html2canvas(document.querySelector('#' + formName)).then(canvas => {
-
-
-
-
-
-
-
       const heightRatio = canvas.height / canvas.width;
       const width = 1084;
       const height = 1084 * heightRatio;
@@ -168,11 +173,9 @@ export abstract class IntakeComponentTabBase implements OnInit {
         // Make the PDF a generic size.
         pdf = new jsPDF('p', 'pt', [width, 2500]);
       }
-
       const imgData  = canvas.toDataURL("image/jpeg", 1.0);
       pdf.addImage(imgData, 0, 0, width, height);
       pdf.save(formName + '_' + this.candidate.user.firstName + '_' + this.candidate.user.lastName + '.pdf');
-    });
-  }
-
+      this.saving = false;
+    })};
 }
