@@ -261,20 +261,25 @@ public class DataSharingServiceImpl implements DataSharingService {
                     ")";
             exportSt.execute(s);
             try (final Statement importSt = tbbRemoteCopy.createStatement()) {
-                //Drop and recreate existing table
-                importSt.executeUpdate(def.getDropTableSQL());
-                importSt.executeUpdate(def.getCreateTableSQL());
+                //Create a new table
+                importSt.executeUpdate(def.getCreateTableSQLAsNew());
                 //Create index if we have one
-                String createIndexSQL = def.getCreateTableIndexSQL();
+                String createIndexSQL = def.getCreateTableIndexSQLAsNew();
                 if (createIndexSQL != null) {
                     importSt.executeUpdate(createIndexSQL);
                 }
-                //Now do import
+                //Now do import into new table
                 importSt.execute("LOAD DATA LOCAL INFILE '" +
                         exportFilePath +
-                        "' INTO TABLE " + tableName +
+                        "' INTO TABLE " + def.getNewTableName() +
                         " FIELDS TERMINATED BY ',' ENCLOSED BY '\"' " +
                         " LINES TERMINATED BY '\n' IGNORE 1 LINES");
+                
+                //Rename current to old, and new to current
+                importSt.executeUpdate(def.getRenameSQL());
+                
+                //Finally drop the old table
+                importSt.executeUpdate(def.getDropTableSQLAsOld());
             }
         } catch (Exception ex) {
             reportError("Exception exporting " + tableName, ex);
