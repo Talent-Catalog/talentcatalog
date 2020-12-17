@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
-import {RegistrationStep} from "../components/register/registration-step";
-import {ActivatedRoute, Router} from "@angular/router";
-import {Subscription} from "rxjs";
+import {RegistrationStep} from '../components/register/registration-step';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Subscription} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,12 +11,6 @@ export class RegistrationService {
   private subscription: Subscription;
 
   public steps: RegistrationStep[] = [
-    {
-      key: 'landing',
-      title: '',
-      section: 0,
-      hideHeader: true
-    },
     {
       key: 'contact',
       title: 'How can we contact you?',

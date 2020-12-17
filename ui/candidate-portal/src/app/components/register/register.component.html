@@ -23,9 +23,6 @@
 
 <div class="step-body" [ngSwitch]="registrationService?.currentStepKey">
 
-  <app-registration-landing *ngSwitchCase="'landing'">
-  </app-registration-landing>
-
   <app-registration-contact *ngSwitchCase="'contact'">
   </app-registration-contact>
 

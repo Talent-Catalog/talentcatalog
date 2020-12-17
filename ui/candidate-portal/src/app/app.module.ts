@@ -56,6 +56,7 @@ import {environment} from '../environments/environment';
 import {DeleteOccupationComponent} from './components/register/candidate-occupation/delete/delete-occupation.component';
 import {CandidateCertificationFormComponent} from './components/common/candidate-certification-form/candidate-certification-form.component';
 import {DownloadCvComponent} from './components/common/download-cv/download-cv.component';
+import {RedirectGuard} from './services/redirect.guard';
 
 export function createTranslateLoader(http: HttpClient) {
   return {
@@ -130,6 +131,7 @@ export function createTranslateLoader(http: HttpClient) {
     FontAwesomeModule
   ],
   providers: [
+    {provide: RedirectGuard},
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: LanguageInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},

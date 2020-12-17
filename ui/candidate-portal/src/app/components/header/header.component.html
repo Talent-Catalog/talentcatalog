@@ -46,7 +46,7 @@
       </ul>
 
       <!-- LOGIN -->
-      <a class="btn btn-link" [routerLink]="['']" *ngIf="!(authService.user$ | async)">
+      <a class="btn btn-link" [routerLink]="['/login']" *ngIf="!(authService.user$ | async)">
         {{ 'HEADER.NAV.LOGIN' | translate }}
       </a>
 
