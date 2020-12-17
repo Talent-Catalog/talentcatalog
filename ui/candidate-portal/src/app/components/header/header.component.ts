@@ -1,8 +1,8 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {AuthService} from "../../services/auth.service";
-import {Router} from "@angular/router";
-import {SystemLanguage} from "../../model/language";
-import {LanguageService} from "../../services/language.service";
+import {AuthService} from '../../services/auth.service';
+import {Router} from '@angular/router';
+import {SystemLanguage} from '../../model/language';
+import {LanguageService} from '../../services/language.service';
 
 @Component({
   selector: 'app-header',
@@ -48,7 +48,7 @@ export class HeaderComponent implements OnInit {
   get selectedLanguage() {
     let language = null;
     if (this.languages) {
-      language = this.languages.find(lang => lang.language === this.languageService.getSelectedLanguage());
+      language = this.languages.find(lang => lang.language !== this.languageService.getSelectedLanguage());
     }
     return language ? language.label : 'Language';
   }

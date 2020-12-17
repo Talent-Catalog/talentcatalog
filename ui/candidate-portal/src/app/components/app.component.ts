@@ -1,8 +1,8 @@
 import {Component, HostBinding} from '@angular/core';
-import {Router} from "@angular/router";
+import {Router} from '@angular/router';
 import {TranslateService} from '@ngx-translate/core';
-import {LocalStorageService} from "angular-2-local-storage";
-import {LanguageService} from "../services/language.service";
+import {LocalStorageService} from 'angular-2-local-storage';
+import {LanguageService} from '../services/language.service';
 
 @Component({
   selector: 'app-root',
@@ -22,22 +22,15 @@ export class AppComponent {
     // this language will be used as a fallback when a translation isn't found in the current language
     translate.setDefaultLang('en');
     const lang = (this.localStorage.get('language') as string) || 'en';
-    this.setLanguage(lang);
+    // Add .rtl-wrapper class to app root if the language is arabic
+    this.rtl = lang === 'ar';
+    this.languageService.setLanguage(lang);
   }
 
   setLanguage(lang) {
     // Add .rtl-wrapper class to app root if the language is arabic
-    this.loading = true;
     this.rtl = lang === 'ar';
-    this.localStorage.set('language', lang);
-    this.languageService.setSelectedLanguage(lang);
-    this.translate.use(lang);
-    this.languageService.loadTranslations().subscribe(
-      result => {
-        this.loading = false;
-      }, error => {
-        this.loading = false;
-      });
+    this.languageService.setLanguage(lang);
   }
 
 }

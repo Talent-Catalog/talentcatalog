@@ -1,10 +1,12 @@
-import {Injectable} from '@angular/core';
-import {environment} from "../../environments/environment";
-import {HttpClient} from "@angular/common/http";
-import {Language, SystemLanguage} from "../model/language";
-import {Observable, of, throwError} from "rxjs";
-import {catchError, map} from "rxjs/operators";
-import {Translation} from "../model/translation";
+import {HostBinding, Injectable} from '@angular/core';
+import {environment} from '../../environments/environment';
+import {HttpClient} from '@angular/common/http';
+import {Language, SystemLanguage} from '../model/language';
+import {Observable, of, throwError} from 'rxjs';
+import {catchError, map} from 'rxjs/operators';
+import {Translation} from '../model/translation';
+import {TranslateService} from '@ngx-translate/core';
+import {LocalStorageService} from 'angular-2-local-storage';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +19,13 @@ export class LanguageService {
 
   selectedLanguage: string = 'en';
 
-  constructor(private http: HttpClient) { }
+  @HostBinding('class.rtl-wrapper') rtl: boolean;
+
+  loading: boolean;
+
+  constructor(private http: HttpClient,
+              private translate: TranslateService,
+              private localStorage: LocalStorageService) { }
 
   listLanguages(): Observable<Language[]> {
     return this.http.get<Language[]>(`${this.apiUrl}`).pipe(
@@ -63,6 +71,21 @@ export class LanguageService {
       return translation ? translation.value : object.name;
     }
     return object.name;
-
   }
+
+  setLanguage(lang) {
+    // Add .rtl-wrapper class to app root if the language is arabic
+    this.loading = true;
+    this.rtl = lang === 'ar';
+    this.localStorage.set('language', lang);
+    this.setSelectedLanguage(lang);
+    this.translate.use(lang);
+    this.loadTranslations().subscribe(
+      result => {
+        this.loading = false;
+      }, error => {
+        this.loading = false;
+      });
+  }
+
 }

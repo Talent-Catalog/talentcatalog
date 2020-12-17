@@ -32,6 +32,10 @@ const routes: Routes = [
     component: LandingComponent
   },
   {
+    path: 'login/:lang',
+    component: LandingComponent
+  },
+  {
     path: 'register',
     component: RegisterComponent
   },
