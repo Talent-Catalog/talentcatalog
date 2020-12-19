@@ -1,12 +1,21 @@
-import {HostBinding, Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {Language, SystemLanguage} from '../model/language';
-import {Observable, of, throwError} from 'rxjs';
+import {Observable, Subject, throwError} from 'rxjs';
 import {catchError, map} from 'rxjs/operators';
 import {Translation} from '../model/translation';
 import {TranslateService} from '@ngx-translate/core';
 import {LocalStorageService} from 'angular-2-local-storage';
+
+export function createTranslateLoader(http: HttpClient) {
+  return {
+    //todo document this
+    getTranslation(lang: string): Observable<any> {
+      return http.get(`${environment.apiUrl}/language/translations/file/${lang}`);
+    }
+  };
+}
 
 @Injectable({
   providedIn: 'root'
@@ -15,17 +24,21 @@ export class LanguageService {
 
   private apiUrl: string = environment.apiUrl + '/language';
 
+  private languageChangedSource = new Subject<string>();
+  languageChanged$ = this.languageChangedSource.asObservable();
+
   translations: Translation[];
 
-  selectedLanguage: string = 'en';
-
-  @HostBinding('class.rtl-wrapper') rtl: boolean;
+  selectedLanguage: string;
 
   loading: boolean;
 
   constructor(private http: HttpClient,
               private translate: TranslateService,
-              private localStorage: LocalStorageService) { }
+              private localStorage: LocalStorageService) {
+
+    this.selectedLanguage = (this.localStorage.get('language') as string) || 'en';
+  }
 
   listLanguages(): Observable<Language[]> {
     return this.http.get<Language[]>(`${this.apiUrl}`).pipe(
@@ -49,43 +62,23 @@ export class LanguageService {
     return this.selectedLanguage;
   }
 
+  isSelectedLanguageRtl(): boolean {
+    return this.selectedLanguage === 'ar';
+  }
+
   setSelectedLanguage(selectedLanguage: string) {
     this.selectedLanguage = selectedLanguage;
   }
 
-  loadTranslations(): Observable<boolean> {
-    if (this.selectedLanguage != 'en'){
-      return this.http.get<Translation[]>(`${this.apiUrl}/translations`).pipe(map(result => {
-        this.translations = result;
-        return true;
-      }));
+  changeLanguage(lang) {
+    if (lang) {
+      this.localStorage.set('language', lang);
+      this.setSelectedLanguage(lang);
     } else {
-      this.translations = [];
-      return of(true);
+      lang = this.selectedLanguage;
     }
-  }
-
-  getTranslation(object, type){
-    if (this.translations){
-      let translation =  this.translations.find(t => t.objectType == type && t.objectId == object.id);
-      return translation ? translation.value : object.name;
-    }
-    return object.name;
-  }
-
-  setLanguage(lang) {
-    // Add .rtl-wrapper class to app root if the language is arabic
-    this.loading = true;
-    this.rtl = lang === 'ar';
-    this.localStorage.set('language', lang);
-    this.setSelectedLanguage(lang);
     this.translate.use(lang);
-    this.loadTranslations().subscribe(
-      result => {
-        this.loading = false;
-      }, error => {
-        this.loading = false;
-      });
+    this.languageChangedSource.next(lang);
   }
 
 }

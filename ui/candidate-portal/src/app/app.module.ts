@@ -4,8 +4,17 @@ import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './components/app.component';
 import {LandingComponent} from './components/landing/landing.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from '@angular/common/http';
-import {NgbDateAdapter, NgbDateParserFormatter, NgbDatepickerConfig, NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {
+  HTTP_INTERCEPTORS,
+  HttpClient,
+  HttpClientModule
+} from '@angular/common/http';
+import {
+  NgbDateAdapter,
+  NgbDateParserFormatter,
+  NgbDatepickerConfig,
+  NgbModule
+} from '@ng-bootstrap/ng-bootstrap';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha';
 
@@ -44,27 +53,23 @@ import {CandidateLanguageCardComponent} from './components/common/candidate-lang
 import {CandidateAttachmentsComponent} from './components/common/candidate-attachments/candidate-attachments.component';
 import {FileUploadComponent} from './components/common/file-upload/file-upload.component';
 import {InputFilterDirective} from './directives/input-filter.directive';
-import {CustomDateAdapter, CustomDateParserFormatter} from './util/date-adapter/ngb-date-adapter';
+import {
+  CustomDateAdapter,
+  CustomDateParserFormatter
+} from './util/date-adapter/ngb-date-adapter';
 import {UserPipe} from './pipes/user.pipe';
 import {TrimPipe} from './pipes/trim.pipe';
 import {MonthPickerComponent} from './components/common/month-picker/month-picker.component';
-import {TranslationPipe} from './pipes/translation.pipe';
-import {FaIconLibrary, FontAwesomeModule} from '@fortawesome/angular-fontawesome';
+import {
+  FaIconLibrary,
+  FontAwesomeModule
+} from '@fortawesome/angular-fontawesome';
 import {faEdit} from '@fortawesome/free-solid-svg-icons';
-import {Observable} from 'rxjs';
-import {environment} from '../environments/environment';
 import {DeleteOccupationComponent} from './components/register/candidate-occupation/delete/delete-occupation.component';
 import {CandidateCertificationFormComponent} from './components/common/candidate-certification-form/candidate-certification-form.component';
 import {DownloadCvComponent} from './components/common/download-cv/download-cv.component';
 import {RedirectGuard} from './services/redirect.guard';
-
-export function createTranslateLoader(http: HttpClient) {
-  return {
-    getTranslation(lang: string): Observable<any> {
-      return http.get(`${environment.apiUrl}/language/translations/file/${lang}`);
-    }
-  };
-}
+import {createTranslateLoader} from "./services/language.service";
 
 @NgModule({
   declarations: [
@@ -103,7 +108,6 @@ export function createTranslateLoader(http: HttpClient) {
     InputFilterDirective,
     UserPipe,
     TrimPipe,
-    TranslationPipe,
     MonthPickerComponent,
     DeleteOccupationComponent,
     CandidateCertificationFormComponent,

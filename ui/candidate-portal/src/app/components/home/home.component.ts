@@ -20,6 +20,7 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.loading = true;
     this.candidateService.getStatus().subscribe(
       (candidate) => {
         this.candidate = candidate || ({status: CandidateStatus.draft} as Candidate);

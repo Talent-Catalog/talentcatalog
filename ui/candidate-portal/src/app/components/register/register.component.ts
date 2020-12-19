@@ -1,7 +1,8 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {RegistrationService} from "../../services/registration.service";
 import {AuthService} from "../../services/auth.service";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
+import {LanguageService} from "../../services/language.service";
 
 @Component({
   selector: 'app-register',
@@ -12,9 +13,17 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   constructor(public registrationService: RegistrationService,
               public authService: AuthService,
+              private route: ActivatedRoute,
+              private languageService: LanguageService,
               public router: Router) { }
 
   ngOnInit() {
+    //todo document this
+    const lang = this.route.snapshot.queryParams['lang'];
+    setTimeout(
+      () => this.languageService.changeLanguage(lang), 1000
+    )
+
     this.registrationService.start();
   }
 

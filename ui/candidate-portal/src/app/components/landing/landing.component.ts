@@ -1,4 +1,4 @@
-import {Component, HostBinding, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {AuthService} from '../../services/auth.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {LanguageService} from '../../services/language.service';
@@ -11,21 +11,19 @@ import {LanguageService} from '../../services/language.service';
 
 export class LandingComponent implements OnInit {
 
-  @HostBinding('class.rtl-wrapper') rtl: boolean;
-  lang: string;
-
   constructor(private authService: AuthService,
               private router: Router,
               private route: ActivatedRoute,
               private languageService: LanguageService) { }
 
   ngOnInit() {
-    this.route.paramMap.subscribe(params => {this.lang = params.get('lang')});
-    // Add .rtl-wrapper class to app root if the language is arabic
-    this.rtl = this.lang === 'ar';
-    this.languageService.setLanguage(this.lang);
 
-    // If there is a loggedInUser, go directly to profile.
+    //todo document this
+    const lang = this.route.snapshot.queryParams['lang'];
+    setTimeout(
+      () => this.languageService.changeLanguage(lang), 1000
+    )
+
     if (this.authService.isAuthenticated()) {
       this.router.navigate(['/home']);
     }
