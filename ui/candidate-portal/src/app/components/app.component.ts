@@ -22,6 +22,7 @@ export class AppComponent {
     //
     this.translate.setDefaultLang('en');
 
+    //todo Could listen to translate onLangChange
     this.languageService.languageChanged$.subscribe(
       () => this.rtl = this.languageService.isSelectedLanguageRtl()
     );

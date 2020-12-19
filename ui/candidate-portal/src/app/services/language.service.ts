@@ -8,6 +8,8 @@ import {Translation} from '../model/translation';
 import {TranslateService} from '@ngx-translate/core';
 import {LocalStorageService} from 'angular-2-local-storage';
 
+
+//todo Instead of this I can make LanguageService a CustomLoader
 export function createTranslateLoader(http: HttpClient) {
   return {
     //todo document this

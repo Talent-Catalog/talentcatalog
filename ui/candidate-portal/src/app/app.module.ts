@@ -15,11 +15,7 @@ import {
   NgbDatepickerConfig,
   NgbModule
 } from '@ng-bootstrap/ng-bootstrap';
-import {
-  TranslateLoader,
-  TranslateModule,
-  TranslatePipe
-} from '@ngx-translate/core';
+import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha';
 
 import {RegistrationLandingComponent} from './components/register/landing/registration-landing.component';
@@ -112,7 +108,6 @@ import {createTranslateLoader} from "./services/language.service";
     InputFilterDirective,
     UserPipe,
     TrimPipe,
-    TranslatePipe,
     MonthPickerComponent,
     DeleteOccupationComponent,
     CandidateCertificationFormComponent,
