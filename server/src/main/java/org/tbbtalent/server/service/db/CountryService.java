@@ -17,8 +17,6 @@ public interface CountryService {
 
     List<Country> listCountries();
 
-    List<Country> listCountries(String selectedLanguage);
-
     Page<Country> searchCountries(SearchCountryRequest request);
 
     Country getCountry(long id);
