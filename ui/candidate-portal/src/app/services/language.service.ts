@@ -8,17 +8,6 @@ import {Translation} from '../model/translation';
 import {TranslateService} from '@ngx-translate/core';
 import {LocalStorageService} from 'angular-2-local-storage';
 
-
-//todo Instead of this I can make LanguageService a CustomLoader
-export function createTranslateLoader(http: HttpClient) {
-  return {
-    //todo document this
-    getTranslation(lang: string): Observable<any> {
-      return http.get(`${environment.apiUrl}/language/translations/file/${lang}`);
-    }
-  };
-}
-
 @Injectable({
   providedIn: 'root'
 })
@@ -38,7 +27,6 @@ export class LanguageService {
   constructor(private http: HttpClient,
               private translate: TranslateService,
               private localStorage: LocalStorageService) {
-
     this.selectedLanguage = (this.localStorage.get('language') as string) || 'en';
   }
 
@@ -50,7 +38,6 @@ export class LanguageService {
       catchError(e => throwError(e))
     );
   }
-
 
   getLanguage(language){
     return this.http.get<Language>(`${this.apiUrl}/${language}`)

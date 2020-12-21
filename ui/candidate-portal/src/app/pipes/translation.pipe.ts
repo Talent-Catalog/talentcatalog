@@ -5,7 +5,8 @@
 import {Pipe, PipeTransform} from '@angular/core';
 import {LanguageService} from "../services/language.service";
 
-//todo This is not used - but maybe needs to be here
+//todo This is not used. ngx-translate does translation - but if this is not here
+//the build on Bitkeeper fails because no translate pipe is found.
 @Pipe({
   name: 'translation'
 })

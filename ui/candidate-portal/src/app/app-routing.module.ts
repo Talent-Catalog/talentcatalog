@@ -9,9 +9,6 @@ import {CandidateProfileComponent} from './components/profile/view/candidate-pro
 import {AuthGuard} from './services/auth.guard';
 import {EditCandidateComponent} from './components/profile/edit/edit-candidate.component';
 import {RedirectGuard} from './services/redirect.guard';
-import {TranslateLoader, TranslateModule} from "@ngx-translate/core";
-import {createTranslateLoader} from "./services/language.service";
-import {HttpClient} from "@angular/common/http";
 
 const routes: Routes = [
   {
@@ -61,15 +58,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes),
-    TranslateModule.forChild({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: (createTranslateLoader),
-        deps: [HttpClient]
-      }
-    }),
-  ],
+  imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

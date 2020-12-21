@@ -4,7 +4,7 @@
 
   <ng-container *ngIf="!loading">
 
-    <h2>{{ ('HOME.TITLE' | translate:{name: (user | user: 'fullName') ? ' ' + (user | user: 'fullName') : '' }) | trim }}!</h2>
+    <h2>{{ ('HOME.TITLE' | translate:{name: (user | user: 'fullName') ? ' ' + (user | user: 'fullName') : '' }) | trim }}</h2>
 
     <ng-container [ngSwitch]="candidate?.status">
 

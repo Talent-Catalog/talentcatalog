@@ -4,11 +4,7 @@ import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './components/app.component';
 import {LandingComponent} from './components/landing/landing.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {
-  HTTP_INTERCEPTORS,
-  HttpClient,
-  HttpClientModule
-} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {
   NgbDateAdapter,
   NgbDateParserFormatter,
@@ -70,7 +66,7 @@ import {DeleteOccupationComponent} from './components/register/candidate-occupat
 import {CandidateCertificationFormComponent} from './components/common/candidate-certification-form/candidate-certification-form.component';
 import {DownloadCvComponent} from './components/common/download-cv/download-cv.component';
 import {RedirectGuard} from './services/redirect.guard';
-import {createTranslateLoader} from "./services/language.service";
+import {LanguageLoader} from "./services/language.loader";
 
 @NgModule({
   declarations: [
@@ -128,11 +124,7 @@ import {createTranslateLoader} from "./services/language.service";
       storageType: 'localStorage'
     }),
     TranslateModule.forRoot({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: (createTranslateLoader),
-        deps: [HttpClient]
-      }
+      loader: {provide: TranslateLoader, useClass: LanguageLoader}
     }),
     FontAwesomeModule
   ],

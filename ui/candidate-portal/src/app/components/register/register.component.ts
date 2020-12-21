@@ -18,7 +18,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
               public router: Router) { }
 
   ngOnInit() {
-    //todo document this
+
+    //Need to delay changing language otherwise you get ExpressionChangedAfterItHasBeenCheckedError
     const lang = this.route.snapshot.queryParams['lang'];
     setTimeout(
       () => this.languageService.changeLanguage(lang), 1000
