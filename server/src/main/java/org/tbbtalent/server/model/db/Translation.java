@@ -8,14 +8,39 @@ import javax.persistence.Entity;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+/**
+ * This table stores translations for the english values of other tables
+ * (typically used in drop downs) eg 
+ * country, nationality, occupation, education_level etc.
+ * 
+ */
 @Entity
 @Table(name = "translation")
 @SequenceGenerator(name = "seq_gen", sequenceName = "translation_id_seq", allocationSize = 1)
 public class Translation extends AbstractAuditableDomainObject<Long> {
 
+    /**
+     * This refers to the id of the object being translated.
+     * So for example, if objectType is "country" this will be the id of 
+     * country in the "country" table.
+     */
     private Long objectId;
+
+    /**
+     * This refers to the name of the associated table that this entry is
+     * translating - eg "country"
+     */
     private String objectType;
+
+    /**
+     * Two character language identifier - eg "ar" for Arabic.
+     */
     private String language;
+
+    /**
+     * This is the translation of the given objectType with the given objectId
+     * to the given language.
+     */
     private String value;
 
     public Translation() {
