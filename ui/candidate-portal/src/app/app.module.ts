@@ -56,7 +56,6 @@ import {
 import {UserPipe} from './pipes/user.pipe';
 import {TrimPipe} from './pipes/trim.pipe';
 import {MonthPickerComponent} from './components/common/month-picker/month-picker.component';
-import {TranslationPipe} from './pipes/translation.pipe';
 import {
   FaIconLibrary,
   FontAwesomeModule
@@ -105,7 +104,6 @@ import {LanguageLoader} from "./services/language.loader";
     InputFilterDirective,
     UserPipe,
     TrimPipe,
-    TranslationPipe,
     MonthPickerComponent,
     DeleteOccupationComponent,
     CandidateCertificationFormComponent,
