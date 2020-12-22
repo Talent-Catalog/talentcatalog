@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Candidate, CandidateIntakeData} from '../../../../model/candidate';
 import {Nationality} from '../../../../model/nationality';
-import {CandidateDependantsService} from '../../../../services/candidate-citizenship.service';
+import {CandidateDependantService} from '../../../../services/candidate-dependant.service';
 
 @Component({
   selector: 'app-dependants',
@@ -17,7 +17,7 @@ export class DependantsComponent implements OnInit {
   saving: boolean;
 
   constructor(
-    private candidateDependantsService: CandidateDependantsService
+    private candidateDependantService: CandidateDependantService
   ) {}
 
   ngOnInit(): void {
@@ -25,9 +25,9 @@ export class DependantsComponent implements OnInit {
 
   addRecord() {
     this.saving = true;
-    this.candidateDependantsService.create(this.candidate.id, {}).subscribe(
-      (citizenship) => {
-        this.candidateIntakeData.candidateDependants.push(citizenship)
+    this.candidateDependantService.create(this.candidate.id, {}).subscribe(
+      (dependant) => {
+        this.candidateIntakeData.candidateDependants.push(dependant)
         this.saving = false;
       },
       (error) => {

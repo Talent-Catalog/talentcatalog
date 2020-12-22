@@ -51,7 +51,7 @@ export interface CandidateIntakeData {
   availImmediateNotes?: string;
 
   candidateCitizenships?: CandidateCitizenship[];
-  candidateDependants?: CandidateDependants[];
+  candidateDependants?: CandidateDependant[];
 
   candidateDestinations?: CandidateDestination[];
 
@@ -153,11 +153,11 @@ export interface CandidateCitizenship {
   notes?: string;
 }
 
-export interface CandidateDependants {
+export interface CandidateDependant {
   id?: number;
-  nationality?: {id};
-  hasPassport?: HasPassport;
-  notes?: string;
+  relation?: FamilyRelations;
+  dob?: string;
+  healthConcerns?: string;
 }
 
 export interface CandidateExam {
@@ -211,6 +211,7 @@ export enum AvailImmediateReason {
 export enum FamilyRelations {
   NoResponse = "",
   NoRelation = "No relatives",
+  Child = "Daughter/Son",
   Parents = "Mother/Father",
   Sibling = "Sister/Brother",
   AuntUncle = "Aunt/Uncle",

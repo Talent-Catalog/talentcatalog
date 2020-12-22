@@ -14,13 +14,13 @@
       {{error}}
     </div>
     <div *ngFor="let citizenship of candidateIntakeData.candidateDependants; let i = index;" class="citizenship-card">
-      <app-candidate-citizenship-card
+      <app-candidate-dependants-card
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData"
         [myRecordIndex]="i"
         [nationalities]="nationalities"
         (delete)="deleteRecord(i)">
-      </app-candidate-citizenship-card>
+      </app-candidate-dependants-card>
       <hr/>
     </div>
   </div>

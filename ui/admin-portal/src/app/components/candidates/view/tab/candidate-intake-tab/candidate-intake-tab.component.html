@@ -183,10 +183,6 @@
       [languageLevels]="languageLevels"
       [nationalities]="nationalities">
       </app-marital-status>
-      <app-dependants
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-dependants>
       <app-children
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData">
@@ -201,6 +197,13 @@
       </app-family>
     </div>
   </div>
+
+  <hr/>
+
+  <app-dependants
+    [candidate]="candidate"
+    [candidateIntakeData]="candidateIntakeData">
+  </app-dependants>
 
   <hr/>
 

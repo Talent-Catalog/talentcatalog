@@ -1,11 +1,11 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Nationality} from '../../../../../model/nationality';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../../util/enum';
-import {CandidateCitizenship, HasPassport} from '../../../../../model/candidate';
+import {CandidateDependant, FamilyRelations} from '../../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../../services/candidate.service';
-import {CandidateCitizenshipService} from '../../../../../services/candidate-citizenship.service';
+import {CandidateDependantService} from '../../../../../services/candidate-dependant.service';
 import {IntakeComponentBase} from '../../../../util/intake/IntakeComponentBase';
+import {NgbDateStruct} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-dependants-card',
@@ -16,61 +16,26 @@ export class DependantsCardComponent extends IntakeComponentBase implements OnIn
 
   @Output() delete = new EventEmitter();
 
-  //All known nationalities - a filtered version of this is used for drop downs
-  //Filtered to remove nationalities already used in existingRecords.
-  @Input() nationalities: Nationality[];
+  public maxDate: NgbDateStruct;
+  public today: Date;
 
   //Drop down values for enumeration
-  hasPassportOptions: EnumOption[] = enumOptions(HasPassport);
+  dependantRelations: EnumOption[] = enumOptions(FamilyRelations);
 
   constructor(fb: FormBuilder, candidateService: CandidateService,
-              private candidateCitizenshipService: CandidateCitizenshipService) {
+              private candidateDependantService: CandidateDependantService) {
     super(fb, candidateService);
   }
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      citizenId: [this.myRecord?.id],
-      citizenNationalityId: [this.myRecord?.nationality?.id],
-      citizenHasPassport: [this.myRecord?.hasPassport],
-      citizenNotes: [this.myRecord?.notes],
+      dependantId: [this.myRecord?.id],
+      dependantRelation: [this.myRecord?.relation],
+      dependantDob: [this.myRecord?.dob],
+      dependantHealth: [this.myRecord?.healthConcerns],
     });
-
-    //Subscribe to changes on the nationality id so that we can keep local
-    //intake data up to date - used to filter ids on new records so that we
-    //don't get duplicates.
-    //Even though the change has been saved on the server and is reflected
-    //on the html form, it is not stored in the local copy of the candidate
-    //intake data. We could refresh the whole page which will reload all
-    //candidate intake data with the saved values - but more efficient just
-    //to update it here.
-    this.form.controls['citizenNationalityId']?.valueChanges.subscribe(
-      change => {
-        //Update my existingRecord
-        this.myRecord.nationality = {id: +change};
-      }
-    );
-  }
-
-  /**
-   * Filters out nationalities already used in existingRecords
-   */
-  get filteredNationalities(): Nationality[] {
-    if (!this.nationalities) {
-      return [];
-    } else if (!this.candidateIntakeData.candidateCitizenships) {
-      return this.nationalities;
-    } else {
-      const existingIds: number[] =
-        this.candidateIntakeData.candidateCitizenships.map(record => record.nationality?.id);
-      return this.nationalities.filter(
-        record =>
-          //Include current id associated with this record
-          record.id === this.myRecord?.nationality?.id ||
-          //But not any other ids already associated with existing records
-          !existingIds.includes(record.id)
-      );
-    }
+    this.today = new Date();
+    this.maxDate = {year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate()};
   }
 
   get hasSelectedNationality(): boolean {
@@ -81,14 +46,14 @@ export class DependantsCardComponent extends IntakeComponentBase implements OnIn
     return found;
   }
 
-  private get myRecord(): CandidateCitizenship {
-    return this.candidateIntakeData.candidateCitizenships ?
-      this.candidateIntakeData.candidateCitizenships[this.myRecordIndex]
+  private get myRecord(): CandidateDependant {
+    return this.candidateIntakeData.candidateDependants ?
+      this.candidateIntakeData.candidateDependants[this.myRecordIndex]
       : null;
   }
 
   doDelete() {
-    this.candidateCitizenshipService.delete(this.myRecord.id)
+    this.candidateDependantService.delete(this.myRecord.id)
       .subscribe(
         ret => {
         },

@@ -8,7 +8,7 @@
     <form [formGroup]="form">
       <div class="form-group">
         <div class="citizenship d-flex align-items-baseline justify-content-between">
-          <label [for]="'nationality'+myRecordIndex">Nationality</label>
+          <label [for]="'dependantRelation'+myRecordIndex">Relation</label>
           <div class="float-right d-flex align-items-center">
             <app-autosave-status
               [saving]="saving"
@@ -21,30 +21,58 @@
 
         </div>
 
-        <select class="form-control" [id]="'nationality'+myRecordIndex"
-                [formControlName]="'citizenNationalityId'">
-          <option *ngFor="let nationality of filteredNationalities" [value]="nationality.id">
-            {{nationality.name}}</option>
+        <select class="form-control"
+                [id]="'dependantRelation'+myRecordIndex"
+                [formControlName]="'dependantRelation'">
+          <option *ngFor="let opt of dependantRelations"
+                  [value]="opt.value">
+            {{opt.displayText}}
+          </option>
         </select>
       </div>
 
-      <ng-container *ngIf="hasSelectedNationality">
-        <div class="form-group">
-          <label [for]="'hasPassport'+myRecordIndex">Passport?</label>
-          <select class="form-control"
-                  [id]="'hasPassport'+myRecordIndex" [formControlName]="'citizenHasPassport'">
-            <option *ngFor="let opt of hasPassportOptions" [value]="opt.value">
-              {{opt.displayText}}
-            </option>
-          </select>
+      <div class="form-group">
+        <label [for]="'hasPassport'+myRecordIndex">Passport?</label>
+        <select class="form-control"
+                [id]="'hasPassport'+myRecordIndex" [formControlName]="'citizenHasPassport'">
+          <option *ngFor="let opt of hasPassportOptions" [value]="opt.value">
+            {{opt.displayText}}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label [for]="'citizenNotes'+myRecordIndex">Notes</label>
+        <textarea type="text" class="md-textarea-auto form-control" rows="4"
+                  [id]="'citizenNotes'+myRecordIndex" [formControlName]="'citizenNotes'"
+                  placeholder="" ></textarea>
+      </div>
+
+      <label for="dependantDob">Date of birth?</label>
+      <div class="input-group">
+        <input id="dependantDob" type="text" class="form-control" placeholder="YYYY-MM-DD"
+               ngbDatepicker #picker="ngbDatepicker"
+               [formControlName]="'dependantDob'"
+               (dateSelect)="form.controls.dependantDob.markAsDirty()"
+               [autoClose]="true"
+               [outsideDays]="'hidden'"
+               [container]="'#dependantDob'"
+               [minDate]="{year: 1950, month: 1, day: 1}"
+               [maxDate]="maxDate">
+
+        <div class="input-group-append">
+          <small class="btn btn-link text-secondary" *ngIf="form.controls.dependantDob.value"
+                 (click)="form.controls.dependantDob.patchValue(null); form.controls.dependantDob.markAsDirty();">
+            <span>Clear</span>
+          </small>
+
+          <div class="btn btn-link" *ngIf="!form.controls.dependantDob.value"
+               (click)="picker.toggle()">
+            <span>Choose</span>
+          </div>
         </div>
-        <div class="form-group">
-          <label [for]="'citizenNotes'+myRecordIndex">Notes</label>
-          <textarea type="text" class="md-textarea-auto form-control" rows="4"
-                    [id]="'citizenNotes'+myRecordIndex" [formControlName]="'citizenNotes'"
-                    placeholder="" ></textarea>
-        </div>
-      </ng-container>
+      </div>
+
     </form>
   </div>
 </div>
