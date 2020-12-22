@@ -51,6 +51,7 @@ export interface CandidateIntakeData {
   availImmediateNotes?: string;
 
   candidateCitizenships?: CandidateCitizenship[];
+  candidateDependants?: CandidateDependants[];
 
   candidateDestinations?: CandidateDestination[];
 
@@ -146,6 +147,13 @@ export interface CandidateIntakeData {
 }
 
 export interface CandidateCitizenship {
+  id?: number;
+  nationality?: {id};
+  hasPassport?: HasPassport;
+  notes?: string;
+}
+
+export interface CandidateDependants {
   id?: number;
   nationality?: {id};
   hasPassport?: HasPassport;

@@ -1,40 +1,43 @@
-import {Component, OnInit} from '@angular/core';
-import {EnumOption, enumOptions} from '../../../../util/enum';
-import {YesNo} from '../../../../model/candidate';
-import {FormBuilder} from '@angular/forms';
-import {CandidateService} from '../../../../services/candidate.service';
-import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
+import {Component, Input, OnInit} from '@angular/core';
+import {Candidate, CandidateIntakeData} from '../../../../model/candidate';
+import {Nationality} from '../../../../model/nationality';
+import {CandidateDependantsService} from '../../../../services/candidate-citizenship.service';
 
 @Component({
   selector: 'app-dependants',
   templateUrl: './dependants.component.html',
   styleUrls: ['./dependants.component.scss']
 })
-export class DependantsComponent extends IntakeComponentBase implements OnInit {
+export class DependantsComponent implements OnInit {
 
-  public dependantsOptions: EnumOption[] = enumOptions(YesNo);
+  @Input() candidate: Candidate;
+  @Input() candidateIntakeData: CandidateIntakeData;
+  error: boolean;
+  @Input() nationalities: Nationality[];
+  saving: boolean;
 
-  constructor(fb: FormBuilder, candidateService: CandidateService) {
-    super(fb, candidateService);
-  }
+  constructor(
+    private candidateDependantsService: CandidateDependantsService
+  ) {}
 
   ngOnInit(): void {
-    this.form = this.fb.group({
-      dependants: [this.candidateIntakeData?.dependants],
-      dependantsNotes: [this.candidateIntakeData?.dependantsNotes],
-    });
   }
 
-  get dependants(): string {
-    return this.form.value?.dependants;
+  addRecord() {
+    this.saving = true;
+    this.candidateDependantsService.create(this.candidate.id, {}).subscribe(
+      (citizenship) => {
+        this.candidateIntakeData.candidateDependants.push(citizenship)
+        this.saving = false;
+      },
+      (error) => {
+        this.error = error;
+        this.saving = false;
+      });
   }
 
-  get hasDependants(): boolean {
-    let found: boolean = false;
-    if (this.form?.value) {
-      found = this.form.value?.dependants > 0;
-    }
-    return found;
+  deleteRecord(i: number) {
+    this.candidateIntakeData.candidateDependants.splice(i, 1);
   }
 
 }
