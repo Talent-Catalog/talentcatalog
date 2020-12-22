@@ -48,8 +48,4 @@ export class UserService {
   removeFromSharedSearches(id: number, request: UpdateSharingRequest): Observable<User> {
     return this.http.put<User>(`${this.apiUrl}/shared-remove/${id}`, request);
   }
-
-  findByUsersName(request): Observable<SearchResults<User>> {
-    return this.http.post<SearchResults<User>>(`${this.apiUrl}/findbyusersname`, request);
-  }
 }

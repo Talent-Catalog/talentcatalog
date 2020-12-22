@@ -75,17 +75,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<User> searchUsers(UsersNameSearchRequest request) {
-        String s = request.getUsersName();
-        Page<User> users;
-
-        users = userRepository.searchAdminUsersName('%' + s + '%', request.getPageRequestWithoutSort());
-
-        log.info("Found " + users.getTotalElements() + " candidates in search");
-        return users;
-    }
-
-    @Override
     public User getUser(long id) {
         return this.userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(User.class, id));

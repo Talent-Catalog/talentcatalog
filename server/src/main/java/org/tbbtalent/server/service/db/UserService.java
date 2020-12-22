@@ -27,8 +27,6 @@ public interface UserService {
 
     Page<User> searchUsers(SearchUserRequest request);
 
-    Page<User> searchUsers(UsersNameSearchRequest request);
-
     User getUser(long id);
 
     User createUser(CreateUserRequest request) throws UsernameTakenException;
