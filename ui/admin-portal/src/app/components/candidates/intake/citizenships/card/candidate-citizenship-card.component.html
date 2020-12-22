@@ -42,7 +42,7 @@
           <div class="form-group">
             <label [for]="'passportExp'+myRecordIndex">Passport Expiry Date?</label>
             <div class="input-group">
-              <input [id]="'passportExp'" type="text" class="form-control" placeholder="YYYY-MM-DD"
+              <input [id]="'passportExp'+myRecordIndex" type="text" class="form-control" placeholder="YYYY-MM-DD"
                      ngbDatepicker #picker="ngbDatepicker"
                      [formControlName]="'citizenPassportExp'"
                      (dateSelect)="form.controls.citizenPassportExp.markAsDirty()"

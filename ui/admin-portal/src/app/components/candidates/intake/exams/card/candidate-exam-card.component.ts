@@ -36,20 +36,6 @@ export class CandidateExamCardComponent extends IntakeComponentBase implements O
 
     this.years = generateYearArray(1950, true);
 
-    //Subscribe to changes on the nationality id so that we can keep local
-    //intake data up to date - used to filter ids on new records so that we
-    //don't get duplicates.
-    //Even though the change has been saved on the server and is reflected
-    //on the html form, it is not stored in the local copy of the candidate
-    //intake data. We could refresh the whole page which will reload all
-    //candidate intake data with the saved values - but more efficient just
-    //to update it here.
-    // this.form.controls['citizenNationalityId']?.valueChanges.subscribe(
-    //   change => {
-    //     //Update my existingRecord
-    //     this.myRecord.exam = {id: +change};
-    //   }
-    // );
   }
 
   get isOtherExam(): boolean {
