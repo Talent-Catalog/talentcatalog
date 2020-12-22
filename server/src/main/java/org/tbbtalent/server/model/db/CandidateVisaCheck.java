@@ -10,15 +10,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import java.time.LocalDate;
+import javax.persistence.*;
 
 @Getter
 @Setter
@@ -49,13 +41,6 @@ public class CandidateVisaCheck extends AbstractAuditableDomainObject<Long>
     @Enumerated(EnumType.STRING)
     private TBBEligibilityAssessment tbbEligibilityAssessment;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "checked_by_user_id")
-    private User checkedBy;
-
-    @Nullable
-    private LocalDate checkedDate;
-
     public CandidateVisaCheck() {
     }
 
@@ -69,11 +54,11 @@ public class CandidateVisaCheck extends AbstractAuditableDomainObject<Long>
 
     public void populateIntakeData(
             @NonNull Candidate candidate, @NonNull Country country,
-            CandidateIntakeDataUpdate data, @Nullable User checkedBy) {
+            CandidateIntakeDataUpdate data, @Nullable User createdBy) {
         setCandidate(candidate);
         setCountry(country);
-        if (checkedBy != null) {
-            setCheckedBy(checkedBy);
+        if (createdBy != null) {
+            setCreatedBy(createdBy);
         }
         if (data.getVisaAssessmentNotes() != null) {
             setAssessmentNotes(data.getVisaAssessmentNotes());
@@ -81,8 +66,8 @@ public class CandidateVisaCheck extends AbstractAuditableDomainObject<Long>
         if (data.getVisaEligibility() != null) {
             setEligibility(data.getVisaEligibility());
         }
-        if (data.getVisaCheckedDate() != null) {
-            setCheckedDate(data.getVisaCheckedDate());
+        if (data.getVisaCreatedDate() != null) {
+            setCreatedDate(data.getVisaCreatedDate());
         }
         if (data.getVisaProtection() != null) {
             setProtection(data.getVisaProtection());
