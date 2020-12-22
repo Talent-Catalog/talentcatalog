@@ -4,11 +4,15 @@
 <div *ngIf="error">
   {{error}}
 </div>
-<div class="h6 py-2 text-right">
-  Date of mini intake: xxxx. Completed by xxxx.
-</div>
 
-<div *ngIf="!loading">
+<div *ngIf="!loading" id="FullIntakeForm">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <h5 class="ml-3">Full Intake</h5>
+    <button class="btn btn-primary" (click)="exportAsPdf('FullIntakeForm')" [disabled]="saving">
+      <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
+      Export PDF
+    </button>
+  </div>
 
   <div class="card">
     <div class="card-header">

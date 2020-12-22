@@ -1,18 +1,23 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {LandingComponent} from "./components/landing/landing.component";
-import {HomeComponent} from "./components/home/home.component";
+import {LandingComponent} from './components/landing/landing.component';
+import {HomeComponent} from './components/home/home.component';
 import {ResetPasswordComponent} from './components/account/reset-password/reset-password.component';
 import {ChangePasswordComponent} from './components/account/change-password/change-password.component';
-import {RegisterComponent} from "./components/register/register.component";
-import {CandidateProfileComponent} from "./components/profile/view/candidate-profile.component";
-import {AuthGuard} from "./services/auth.guard";
-import {EditCandidateComponent} from "./components/profile/edit/edit-candidate.component";
+import {RegisterComponent} from './components/register/register.component';
+import {CandidateProfileComponent} from './components/profile/view/candidate-profile.component';
+import {AuthGuard} from './services/auth.guard';
+import {EditCandidateComponent} from './components/profile/edit/edit-candidate.component';
+import {RedirectGuard} from './services/redirect.guard';
 
 const routes: Routes = [
   {
     path: '',
-    component: LandingComponent
+    canActivate: [RedirectGuard],
+    component: RedirectGuard,
+    data: {
+      externalUrl: 'https://www.talentbeyondboundaries.org/talentcatalog/'
+    }
   },
   {
     path: 'reset-password',
@@ -21,6 +26,10 @@ const routes: Routes = [
   {
     path: 'reset-password/:token',
     component: ChangePasswordComponent
+  },
+  {
+    path: 'login',
+    component: LandingComponent
   },
   {
     path: 'register',

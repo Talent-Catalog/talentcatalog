@@ -107,17 +107,6 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
     }
 
     @Override
-    public List<Country> listCountries(String selectedLanguage) {
-        //Note: Can't use cache because translationService modifies it adding 
-        //translations - which will always get returned to user (because of
-        //the way Dto builder works - if translation is present, it will use 
-        //that as name).
-        List<Country> countries = countryRepository.findByStatus(Status.active);
-        translationService.translate(countries, "country", selectedLanguage);
-        return countries;
-    }
-
-    @Override
     public List<Country> getTBBDestinations() {
         return tbbDestinationCountries;
     }

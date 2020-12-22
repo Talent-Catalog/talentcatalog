@@ -2,7 +2,8 @@ tbb:
   cors:
     urls: ${TBB_CORS_URLS:http://localhost:4200,http://localhost:4201,https://tbbtalent-staging.herokuapp.com}
 
-  destinations: ${TBB_DESTINATIONS:Australia,Canada,New Zealand,United Kingdom} 
+  destinations: ${TBB_DESTINATIONS:Australia,Canada,New Zealand,United Kingdom}
+  partner-dbcopy-config: ${TBB_PARTNER_DBCOPY_CONFIG:data.sharing/tbbCopiesTest.xml}
 
 spring:
   application:

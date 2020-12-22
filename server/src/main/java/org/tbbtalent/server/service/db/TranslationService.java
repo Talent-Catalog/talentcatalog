@@ -22,8 +22,6 @@ public interface TranslationService {
 
     Translation updateTranslation(long id, UpdateTranslationRequest request);
 
-    List<Translation> list();
-
     void updateTranslationFile(String language, Map translations);
 
     Map<String, Object> getTranslationFile(String language);

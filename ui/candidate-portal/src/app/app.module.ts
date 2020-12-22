@@ -4,8 +4,13 @@ import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './components/app.component';
 import {LandingComponent} from './components/landing/landing.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from '@angular/common/http';
-import {NgbDateAdapter, NgbDateParserFormatter, NgbDatepickerConfig, NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
+import {
+  NgbDateAdapter,
+  NgbDateParserFormatter,
+  NgbDatepickerConfig,
+  NgbModule
+} from '@ng-bootstrap/ng-bootstrap';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha';
 
@@ -44,104 +49,94 @@ import {CandidateLanguageCardComponent} from './components/common/candidate-lang
 import {CandidateAttachmentsComponent} from './components/common/candidate-attachments/candidate-attachments.component';
 import {FileUploadComponent} from './components/common/file-upload/file-upload.component';
 import {InputFilterDirective} from './directives/input-filter.directive';
-import {CustomDateAdapter, CustomDateParserFormatter} from './util/date-adapter/ngb-date-adapter';
+import {
+  CustomDateAdapter,
+  CustomDateParserFormatter
+} from './util/date-adapter/ngb-date-adapter';
 import {UserPipe} from './pipes/user.pipe';
 import {TrimPipe} from './pipes/trim.pipe';
 import {MonthPickerComponent} from './components/common/month-picker/month-picker.component';
-import {TranslationPipe} from './pipes/translation.pipe';
-import {FaIconLibrary, FontAwesomeModule} from '@fortawesome/angular-fontawesome';
+import {
+  FaIconLibrary,
+  FontAwesomeModule
+} from '@fortawesome/angular-fontawesome';
 import {faEdit} from '@fortawesome/free-solid-svg-icons';
-import {Observable} from 'rxjs';
-import {environment} from '../environments/environment';
 import {DeleteOccupationComponent} from './components/register/candidate-occupation/delete/delete-occupation.component';
 import {CandidateCertificationFormComponent} from './components/common/candidate-certification-form/candidate-certification-form.component';
 import {DownloadCvComponent} from './components/common/download-cv/download-cv.component';
-
-export function createTranslateLoader(http: HttpClient) {
-  return {
-    getTranslation(lang: string): Observable<any> {
-      return http.get(`${environment.apiUrl}/language/translations/file/${lang}`);
-    }
-  };
-}
+import {RedirectGuard} from './services/redirect.guard';
+import {LanguageLoader} from "./services/language.loader";
 
 @NgModule({
-    declarations: [
-        AppComponent,
-        HeaderComponent,
-        LandingComponent,
-        RegistrationLandingComponent,
-        RegistrationContactComponent,
-        RegistrationPersonalComponent,
-        RegistrationCandidateOccupationComponent,
-        RegistrationWorkExperienceComponent,
-        RegistrationEducationComponent,
-        CandidateEducationFormComponent,
-        RegistrationLanguageComponent,
-        RegistrationCertificationsComponent,
-        RegistrationAdditionalInfoComponent,
-        LoginComponent,
-        HomeComponent,
-        ResetPasswordComponent,
-        ChangePasswordComponent,
-        RegisterComponent,
-        RegistrationFooterComponent,
-        CandidateJobExperienceFormComponent,
-        CandidateJobExperienceCardComponent,
-        ErrorComponent,
-        LoadingComponent,
-        CandidateProfileComponent,
-        FormControlErrorComponent,
-        CandidateCertificationCardComponent,
-        EditCandidateComponent,
-        CandidateOccupationCardComponent,
-        CandidateEducationCardComponent,
-        CandidateLanguageCardComponent,
-        CandidateAttachmentsComponent,
-        FileUploadComponent,
-        InputFilterDirective,
-        UserPipe,
-        TrimPipe,
-        TranslationPipe,
-        MonthPickerComponent,
-        DeleteOccupationComponent,
-        CandidateCertificationFormComponent,
-        DownloadCvComponent
-    ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        ReactiveFormsModule,
-        HttpClientModule,
-        FormsModule,
-        NgbModule,
-        RecaptchaV3Module,
-        LocalStorageModule.forRoot({
-            prefix: 'tbb-candidate-portal',
-            storageType: 'localStorage'
-        }),
-        TranslateModule.forRoot({
-            loader: {
-                provide: TranslateLoader,
-                useFactory: (createTranslateLoader),
-                deps: [HttpClient]
-            }
-        }),
-        FontAwesomeModule
-    ],
-    providers: [
-        {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
-        {provide: HTTP_INTERCEPTORS, useClass: LanguageInterceptor, multi: true},
-        {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
-        {provide: RECAPTCHA_V3_SITE_KEY, useValue: '6Lc_97cZAAAAAIDqR7gT3h_ROGU6P7Jif-wEk9Vu'},
-        {provide: NgbDateAdapter, useClass: CustomDateAdapter},
-        {provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter},
+  declarations: [
+    AppComponent,
+    HeaderComponent,
+    LandingComponent,
+    RegistrationLandingComponent,
+    RegistrationContactComponent,
+    RegistrationPersonalComponent,
+    RegistrationCandidateOccupationComponent,
+    RegistrationWorkExperienceComponent,
+    RegistrationEducationComponent,
+    CandidateEducationFormComponent,
+    RegistrationLanguageComponent,
+    RegistrationCertificationsComponent,
+    RegistrationAdditionalInfoComponent,
+    LoginComponent,
+    HomeComponent,
+    ResetPasswordComponent,
+    ChangePasswordComponent,
+    RegisterComponent,
+    RegistrationFooterComponent,
+    CandidateJobExperienceFormComponent,
+    CandidateJobExperienceCardComponent,
+    ErrorComponent,
+    LoadingComponent,
+    CandidateProfileComponent,
+    FormControlErrorComponent,
+    CandidateCertificationCardComponent,
+    EditCandidateComponent,
+    CandidateOccupationCardComponent,
+    CandidateEducationCardComponent,
+    CandidateLanguageCardComponent,
+    CandidateAttachmentsComponent,
+    FileUploadComponent,
+    InputFilterDirective,
+    UserPipe,
+    TrimPipe,
+    MonthPickerComponent,
+    DeleteOccupationComponent,
+    CandidateCertificationFormComponent,
+    DownloadCvComponent
+  ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    ReactiveFormsModule,
+    HttpClientModule,
+    FormsModule,
+    NgbModule,
+    RecaptchaV3Module,
+    LocalStorageModule.forRoot({
+      prefix: 'tbb-candidate-portal',
+      storageType: 'localStorage'
+    }),
+    TranslateModule.forRoot({
+      loader: {provide: TranslateLoader, useClass: LanguageLoader}
+    }),
+    FontAwesomeModule
+  ],
+  providers: [
+    {provide: RedirectGuard},
+    {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTORS, useClass: LanguageInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
+    {provide: RECAPTCHA_V3_SITE_KEY, useValue: '6Lc_97cZAAAAAIDqR7gT3h_ROGU6P7Jif-wEk9Vu'},
+    {provide: NgbDateAdapter, useClass: CustomDateAdapter},
+    {provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter},
 
-    ],
-    exports: [
-        ErrorComponent
-    ],
-    bootstrap: [AppComponent]
+  ],
+  bootstrap: [AppComponent]
 })
 export class AppModule {
 

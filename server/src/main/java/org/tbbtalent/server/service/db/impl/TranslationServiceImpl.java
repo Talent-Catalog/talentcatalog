@@ -102,11 +102,6 @@ public class TranslationServiceImpl implements TranslationService {
     }
 
     @Override
-    public List<Translation> list() {
-        return translationRepository.findAll();
-    }
-
-    @Override
     public Map<String, Object> getTranslationFile(String language) {
         try {
             File file = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(),

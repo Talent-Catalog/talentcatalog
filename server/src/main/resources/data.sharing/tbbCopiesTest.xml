@@ -19,9 +19,6 @@
     <destination>
         <country>au</country>
         <database>
-            <!--            <url>jdbc:mysql://tbb-database.cicadkawaz3y.ap-southeast-2.rds.amazonaws.com:3306/TBBDatabase</url>-->
-            <!--            <user>admin</user>-->
-            <!--            <password>1212s1212ss</password>-->
 
             <url>jdbc:mysql://mysql.refugeetalent.com:3306/GlobalTalentDb</url>
             <user>GlobalTalentUser</user>
@@ -43,7 +40,7 @@
             </filter>
             <tables>
                 <table>
-                    <name>jobseekers</name>
+                    <name>test_jobseekers</name>
                     <populate>
                         SELECT
                         CAST(candidate_number AS int) AS user_id,
@@ -65,7 +62,7 @@
                     </index>
                 </table>
                 <table>
-                    <name>jobseeker_certifications</name>
+                    <name>test_jobseeker_certifications</name>
                     <populate>
                         SELECT
                         CAST(candidate_number AS int) AS user_id,
@@ -89,7 +86,7 @@
                     </fields>
                 </table>
                 <table>
-                    <name>jobseeker_degrees</name>
+                    <name>test_jobseeker_degrees</name>
                     <populate>
                         SELECT
                         CAST(candidate_number AS int) AS user_id,
@@ -118,7 +115,7 @@
                     </fields>
                 </table>
                 <table>
-                    <name>jobseeker_jobs</name>
+                    <name>test_jobseeker_jobs</name>
                     <populate>
                         SELECT
                         CAST(candidate_number AS int) AS user_id,
@@ -150,7 +147,7 @@
                     </fields>
                 </table>
                 <table>
-                    <name>jobseeker_skills</name>
+                    <name>test_jobseeker_skills</name>
                     <populate>
                         SELECT
                         CAST(candidate_number AS int) AS user_id,
@@ -172,7 +169,7 @@
             </tables>
             <stringtables>
                 <table>
-                    <name>country</name>
+                    <name>test_country</name>
                     <populate>
                         SELECT id, name FROM country WHERE status = 'active'
                     </populate>
@@ -185,7 +182,7 @@
                     </index>
                 </table>
                 <table>
-                    <name>education_major</name>
+                    <name>test_education_major</name>
                     <populate>
                         SELECT id, name FROM education_major WHERE status = 'active'
                     </populate>
@@ -198,7 +195,7 @@
                     </index>
                 </table>
                 <table>
-                    <name>industry</name>
+                    <name>test_industry</name>
                     <populate>
                         SELECT id, name FROM industry WHERE status = 'active'
                     </populate>
@@ -211,7 +208,7 @@
                     </index>
                 </table>
                 <table>
-                    <name>nationality</name>
+                    <name>test_nationality</name>
                     <populate>
                         SELECT id, name FROM nationality WHERE status = 'active'
                     </populate>
@@ -224,7 +221,7 @@
                     </index>
                 </table>
                 <table>
-                    <name>occupation</name>
+                    <name>test_occupation</name>
                     <populate>
                         SELECT id, name FROM occupation WHERE status = 'active'
                     </populate>
@@ -239,149 +236,4 @@
             </stringtables>
         </database>
     </destination>
-    <!--    <destination>-->
-    <!--        <country>nr</country>-->
-    <!--        <database>-->
-    <!--            <url>jdbc:mysql://tbb-database.cicadkawaz3y.ap-southeast-2.rds.amazonaws.com:3306/NauruDB</url>-->
-    <!--            <user>admin</user>-->
-    <!--            <password>1212s1212ss</password>-->
-    <!--            -->
-    <!--            &lt;!&ndash;-->
-    <!--                This filter is added as an AND condition to the WHERE clause-->
-    <!--                of the populate SQL -->
-    <!--            &ndash;&gt;-->
-    <!--            <filter>-->
-    <!--                &lt;!&ndash;Exclude test users&ndash;&gt;-->
-    <!--                &lt;!&ndash;debug&ndash;&gt;-->
-    <!--                &lt;!&ndash;user.username NOT LIKE 'TBB%'&ndash;&gt;-->
-    <!--                &lt;!&ndash;AND&ndash;&gt;-->
-    <!--                &lt;!&ndash;Only look at Active users&ndash;&gt;-->
-    <!--                &lt;!&ndash;user.status >= 10&ndash;&gt;-->
-    <!--                &lt;!&ndash;AND&ndash;&gt;-->
-    <!--                &lt;!&ndash;Located in Nauru&ndash;&gt;-->
-    <!--                &lt;!&ndash;(user_jobseeker.country IS NULL OR user_jobseeker.country IN (6327,9444))&ndash;&gt;-->
-    <!--                user.status > 0-->
-    <!--                AND-->
-    <!--                (user_jobseeker.country IN (6327,9444))-->
-    <!--            </filter>-->
-    <!--            <tables>-->
-    <!--                <table>-->
-    <!--                    <name>jobseekers</name>-->
-    <!--                    <populate>-->
-    <!--                        SELECT user.id,-->
-    <!--                        birth_year,-->
-    <!--                        country AS country_id,-->
-    <!--                        nationality AS nationality_id-->
-    <!--                        FROM user-->
-    <!--                        JOIN user_jobseeker ON id = user_id-->
-    <!--                        WHERE 1-->
-    <!--                    </populate>-->
-    <!--                    <fields>-->
-    <!--                        user_id INT(11) NOT NULL,-->
-    <!--                        birth_year INT(11),-->
-    <!--                        country_id INT(11),-->
-    <!--                        nationality_id INT(11)-->
-    <!--                    </fields>-->
-    <!--                    <index>-->
-    <!--                        CREATE UNIQUE INDEX jobseeker_user_id_uindex ON jobseekers (user_id)-->
-    <!--                    </index>-->
-    <!--                </table>-->
-    <!--                <table>-->
-    <!--                    <name>jobseeker_certifications</name>-->
-    <!--                    <populate>-->
-    <!--                        SELECT user.id,-->
-    <!--                        certification_name AS certification,-->
-    <!--                        institution_name AS institution,-->
-    <!--                        date_of_receipt AS "date"-->
-    <!--                        FROM user-->
-    <!--                        JOIN user_jobseeker ON id = user_id-->
-    <!--                        JOIN user_jobseeker_certification ON user.id = user_jobseeker_certification.user_id-->
-    <!--                        WHERE-->
-    <!--                        certification_name = CONVERT(certification_name USING ASCII)-->
-    <!--                        AND-->
-    <!--                        institution_name = CONVERT(institution_name USING ASCII)-->
-    <!--                    </populate>-->
-    <!--                    <fields>-->
-    <!--                        user_id INT(11),-->
-    <!--                        certification VARCHAR(60),-->
-    <!--                        institution VARCHAR(60),-->
-    <!--                        date DATE-->
-    <!--                    </fields>-->
-    <!--                </table>-->
-    <!--                <table>-->
-    <!--                    <name>jobseeker_degrees</name>-->
-    <!--                    <populate>-->
-    <!--                        SELECT user.id,-->
-    <!--                        user_jobseeker_education.specification_emphasis AS major,-->
-    <!--                        graduation_year AS graduation,-->
-    <!--                        user_jobseeker_education.country AS country_id,-->
-    <!--                        degree AS degree_id,-->
-    <!--                        user_jobseeker_education.university_school AS institution_id-->
-    <!--                        FROM user-->
-    <!--                        JOIN user_jobseeker ON id = user_id-->
-    <!--                        JOIN user_jobseeker_education ON user.id = user_jobseeker_education.user_id-->
-    <!--                        WHERE-->
-    <!--                        user_jobseeker_education.specification_emphasis =-->
-    <!--                        CONVERT(user_jobseeker_education.specification_emphasis USING ASCII)-->
-    <!--                    </populate>-->
-    <!--                    <fields>-->
-    <!--                        user_id INT(11) NOT NULL,-->
-    <!--                        major VARCHAR(60),-->
-    <!--                        graduation INT(11),-->
-    <!--                        country_id INT(11),-->
-    <!--                        degree_id INT(11),-->
-    <!--                        institution_id INT(11)-->
-    <!--                    </fields>-->
-    <!--                </table>-->
-    <!--                <table>-->
-    <!--                    <name>jobseeker_jobs</name>-->
-    <!--                    <populate>-->
-    <!--                        SELECT user.id, -->
-    <!--                        position_title, -->
-    <!--                        company_name,-->
-    <!--                        start_date, -->
-    <!--                        end_date,  -->
-    <!--                        description,-->
-    <!--                        job_occupation AS job_id,-->
-    <!--                        location AS location_id-->
-    <!--                        FROM user-->
-    <!--                        JOIN user_jobseeker ON id = user_id-->
-    <!--                        JOIN user_jobseeker_experience ON user.id = user_jobseeker_experience.user_id -->
-    <!--                        WHERE-->
-    <!--                        position_title = CONVERT(position_title USING ASCII)-->
-    <!--                        AND-->
-    <!--                        company_name = CONVERT(company_name USING ASCII)-->
-    <!--                    </populate>-->
-    <!--                    <fields>-->
-    <!--                        user_id INT(11) NOT NULL,-->
-    <!--                        position_title VARCHAR(60),-->
-    <!--                        company_name VARCHAR(60),-->
-    <!--                        start_date DATE,-->
-    <!--                        end_date DATE,-->
-    <!--                        description TEXT,-->
-    <!--                        job_id INT(11),-->
-    <!--                        location_id INT(11)-->
-    <!--                    </fields>-->
-    <!--                </table>-->
-    <!--                <table>-->
-    <!--                    <name>jobseeker_skills</name>-->
-    <!--                    <populate>-->
-    <!--                        SELECT user.id,-->
-    <!--                        skill,-->
-    <!--                        time_period-->
-    <!--                        FROM user-->
-    <!--                        JOIN user_jobseeker ON id = user_id-->
-    <!--                        JOIN user_jobseeker_skills ON user.id = user_jobseeker_skills.user_id-->
-    <!--                        WHERE-->
-    <!--                        skill = CONVERT(skill USING ASCII)-->
-    <!--                    </populate>-->
-    <!--                    <fields>-->
-    <!--                        user_id INT(11) NOT NULL,-->
-    <!--                        skill VARCHAR(60) NOT NULL,-->
-    <!--                        time_period_id INT(11)-->
-    <!--                    </fields>-->
-    <!--                </table>-->
-    <!--            </tables>-->
-    <!--        </database>-->
-    <!--    </destination>-->
 </destinations>

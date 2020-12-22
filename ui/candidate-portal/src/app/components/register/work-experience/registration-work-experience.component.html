@@ -8,7 +8,7 @@
 
       <div class="card occupation-card">
         <div class="card occupation-heading">
-          <h5>{{occupation.occupation | translation : 'occupation'}}
+          <h5>{{occupation.occupation.name | translate : 'occupation'}}
             <span *ngIf="occupation.occupation.id == 0 && occupation.migrationOccupation"> : {{occupation.migrationOccupation}}</span>
           </h5>
           <p class="text-danger warning-width mb-0" *ngIf="occupation.occupation.id === 0">

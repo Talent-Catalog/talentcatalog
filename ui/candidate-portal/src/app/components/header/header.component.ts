@@ -1,8 +1,8 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {AuthService} from "../../services/auth.service";
-import {Router} from "@angular/router";
-import {SystemLanguage} from "../../model/language";
-import {LanguageService} from "../../services/language.service";
+import {Component, Input, OnInit} from '@angular/core';
+import {AuthService} from '../../services/auth.service';
+import {Router} from '@angular/router';
+import {SystemLanguage} from '../../model/language';
+import {LanguageService} from '../../services/language.service';
 
 @Component({
   selector: 'app-header',
@@ -13,9 +13,7 @@ export class HeaderComponent implements OnInit {
 
   @Input() hideHeader: boolean;
 
-  @Output() languageUpdated = new EventEmitter();
-
-  isNavbarCollapsed=true;
+  isNavbarCollapsed = true;
 
   languages: SystemLanguage[];
   error: any;
@@ -42,13 +40,13 @@ export class HeaderComponent implements OnInit {
 
   setLanguage(language: string) {
     this.isNavbarCollapsed = true;
-    this.languageUpdated.emit(language);
+    this.languageService.changeLanguage(language);
   }
 
   get selectedLanguage() {
     let language = null;
     if (this.languages) {
-      language = this.languages.find(lang => lang.language === this.languageService.getSelectedLanguage());
+      language = this.languages.find(lang => lang.language !== this.languageService.getSelectedLanguage());
     }
     return language ? language.label : 'Language';
   }
