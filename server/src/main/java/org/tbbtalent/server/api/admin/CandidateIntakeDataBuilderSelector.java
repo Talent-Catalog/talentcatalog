@@ -135,8 +135,6 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("workPermitDesired")
                 .add("workLegally")
 
-                .add("intakeMiniCheckedBy", userDto())
-                .add("intakeMiniCheckedDate")
                 ;
     }
 

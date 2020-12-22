@@ -1795,21 +1795,9 @@ public class CandidateServiceImpl implements CandidateService {
         if (drivingLicenseCountryId != null) {
             drivingLicenseCountry = countryRepository.findById(drivingLicenseCountryId).orElse(null);
         }
-
-        final Long intakeMiniCheckedById = data.getIntakeMiniCheckedById();
-        User intakeMiniCheckedBy = null;
-        if (intakeMiniCheckedById != null) {
-            intakeMiniCheckedBy = userRepository.findById(intakeMiniCheckedById).orElse(null);
-            // Check if the new checked by user is different from the old checked by user. If different create a note.
-            if (intakeMiniCheckedBy != candidate.getIntakeMiniCheckedBy()) {
-                candidateNoteService.createCandidateNote(
-                        new CreateCandidateNoteRequest(id,
-                                "Mini intake conducted by " + intakeMiniCheckedBy.getFirstName() + " " + intakeMiniCheckedBy.getLastName() + " on " + data.getIntakeMiniCheckedDate(), ""));
-            }
-        }
         
         candidate.populateIntakeData(data, workAbroadLoc, partnerCandidate, partnerEducationLevel,
-                                    partnerProfession, partnerEnglishLevel, partnerCitizenship, drivingLicenseCountry, intakeMiniCheckedBy);
+                                    partnerProfession, partnerEnglishLevel, partnerCitizenship, drivingLicenseCountry);
 
         save(candidate, true);
     }

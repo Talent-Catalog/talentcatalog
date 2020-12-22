@@ -151,6 +151,4 @@ public class CandidateIntakeDataUpdate {
     private YesNoUnsure workPermitDesired;
     private YesNo workLegally;
 
-    private Long intakeMiniCheckedById;
-    private String intakeMiniCheckedDate;
 }
