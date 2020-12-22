@@ -41,7 +41,7 @@ export class UserDateAuditComponent extends IntakeComponentBase implements OnIni
     // If there is user input, display the user input. If there isn't user input, display logged in user when date selected.
     this.form = this.fb.group({
       intakeMiniCheckedDate: [this.candidateIntakeData?.intakeMiniCheckedDate],
-      intakeMiniCheckedById: [this.candidateIntakeData?.intakeMiniCheckedBy.id],
+      intakeMiniCheckedById: [this.candidateIntakeData?.intakeMiniCheckedBy?.id],
     });
 
     if (this.checkedDate == null) {
