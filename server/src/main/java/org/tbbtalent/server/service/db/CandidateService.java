@@ -236,8 +236,6 @@ public interface CandidateService {
 
     Resource generateCv(Candidate candidate);
 
-    void notifyWatchers();
-
     /**
      * IMPORTANT: Use this instead of {@link CandidateRepository#save} Saves
      * candidate to repository, but also optionally updates corresponding

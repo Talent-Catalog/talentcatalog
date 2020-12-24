@@ -1593,69 +1593,8 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     //Midnight GMT
-    @Scheduled(cron = "0 0 1 * * ?", zone = "GMT")
-    public void notifyWatchers2() {
-        String currentSearch = "";
-        try {
-            Set<SavedSearch> searches = savedSearchRepository.findByWatcherIdsIsNotNullLoadSearchJoins();
-            Map<Long, Set<SavedSearch>> userNotifications = new HashMap<>();
-
-            log.info("Notify watchers: running " + searches.size() + " searches");
-            
-            int count = 0;
-            
-            for (SavedSearch savedSearch : searches) {
-
-                count++;
-                currentSearch = savedSearch.getName();
-                log.info("Running search " + count + ": " + currentSearch);
-                
-                SearchCandidateRequest searchCandidateRequest =
-                        convertToSearchCandidateRequest(savedSearch);
-
-                LocalDate date = LocalDate.now().minusDays(1);
-                searchCandidateRequest.setFromDate(date);
-                Page<Candidate> candidates =
-                        doSearchCandidates(searchCandidateRequest);
-
-                if (candidates.getNumberOfElements() > 0) {
-                    //Query has results. Need to let watchers know
-                    Set<Long> watcherUserIds = savedSearch.getWatcherUserIds();
-                    for (Long watcherUserId : watcherUserIds) {
-                        Set<SavedSearch> userWatches = userNotifications
-                                .computeIfAbsent(watcherUserId, k -> new HashSet<>());
-                        userWatches.add(savedSearch);
-                    }
-                }
-            }
-
-            //Construct and send emails
-            for (Long userId : userNotifications.keySet()) {
-                final Set<SavedSearch> savedSearches = userNotifications.get(userId);
-                String s = savedSearches.stream()
-                        .map(SavedSearch::getName)
-                        .collect(Collectors.joining("/"));
-                log.info("Tell user " + userId + " about searches " + s);
-                User user = this.userRepository.findById(userId).orElse(null);
-                if (user == null) {
-                    final String mess = "Unknown user watcher id " + userId + " watching searches " + s;
-                    log.warn(mess);
-                    emailHelper.sendAlert(mess);
-                } else {
-                    emailHelper.sendWatcherEmail(user, savedSearches);
-                }
-            }
-        } catch (Exception ex) {
-            String mess = "Watcher notification failure (" + currentSearch + ")";
-            log.error(mess, ex);
-            emailHelper.sendAlert(mess, ex);
-        }
-    }
-
-    //Midnight GMT
-    @Override
     @Scheduled(cron = "0 0 0 * * ?", zone = "GMT")
-    public void notifyWatchers() {
+    public void notifySearchWatchers() {
         String currentSearch = "";
         try {
             Set<SavedSearch> searches = savedSearchRepository.findByWatcherIdsIsNotNullLoadSearchJoins();
