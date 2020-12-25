@@ -1593,7 +1593,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     //Midnight GMT
-    @Scheduled(cron = "0 0 0 * * ?", zone = "GMT")
+    @Scheduled(cron = "0 1 0 * * ?", zone = "GMT")
     public void notifySearchWatchers() {
         String currentSearch = "";
         try {
