@@ -4,6 +4,11 @@
 
 package org.tbbtalent.server.configuration;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +25,16 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.tbbtalent.server.security.*;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.tbbtalent.server.security.CandidateUserDetailsService;
+import org.tbbtalent.server.security.JwtAuthenticationEntryPoint;
+import org.tbbtalent.server.security.JwtAuthenticationFilter;
+import org.tbbtalent.server.security.LanguageFilter;
+import org.tbbtalent.server.security.TbbAuthenticationProvider;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
@@ -42,6 +56,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+            //Default is to use a Bean called corsConfigurationSource - defined
+            //below.    
+            .cors(withDefaults())
             .exceptionHandling()
                 .authenticationEntryPoint(unauthorizedHandler)
                 .and()
@@ -213,6 +230,25 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         // Add the JWT security filter
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         http.addFilterAfter(languageFilter(), UsernamePasswordAuthenticationFilter.class);
+    }
+
+    //See https://docs.spring.io/spring-security/site/docs/current/reference/html5/#cors
+    //and https://stackoverflow.com/a/65503296/929968 
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        String urls = env.getProperty("tbb.cors.urls");
+        List<String> corsUrls = new ArrayList<>();
+        if (StringUtils.isNotBlank(urls)) {
+            Collections.addAll(corsUrls, urls.split(","));
+        }
+        configuration.setAllowedOrigins(corsUrls);
+        configuration.setAllowCredentials(true);
+        configuration.setAllowedMethods(Collections.singletonList("*"));
+        configuration.setAllowedHeaders(Collections.singletonList("*"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     @Bean
