@@ -122,7 +122,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // POST: REQUEST INFOGRAPHICS
                 .antMatchers(HttpMethod.POST, "/api/admin/candidate/stat/all").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
-                /**
+                /*
                  * SAVED SEARCH ENDPOINTS
                 */
                 // POST: CREATE SAVED SEARCHES
@@ -149,7 +149,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // POST: EXPORT SAVE SELECTION SAVED SEARCHES
                 .antMatchers(HttpMethod.POST, "/api/admin/saved-search-candidate/*/export/csv").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
-                /**
+                /*
                  * SEARCH ENDPOINTS
                  */
                 // POST: ALL SEARCHES
@@ -167,7 +167,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // POST: SEARCH BY PHONE
                 .antMatchers(HttpMethod.POST, "/api/admin/candidate/findbyphone").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
-                /**
+                /*
                  * LIST ENDPOINTS
                  */
                 // POST: CREATE LIST
@@ -201,7 +201,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/api/admin/translation/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
 
-                /**
+                /*
                  * INTAKE ENDPOINTS
                  */
                 // PUT (EXC. READ ONLY)
@@ -273,7 +273,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    protected void configure(AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(userAuthenticationProvider());
     }
 
