@@ -21,31 +21,52 @@ candidate details. This is written in Angular and connects to the REST API endpo
 
 ### Install the tools ###
 
-Download and install the latest of the following tools: 
+Download and install the latest of the following tools.
 
-- Java JDK8 [https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html]()
-     -     $ brew cask install java
+IMPORTANT NOTE FOR MAC Users:
+
+On a Mac, installing with Homebrew works well. eg "brew install xxx".
+However, Flyway and Postgres don't install with Homebrew, and the book
+"Angular Up & Running" book notes that installing Node.js using Homebrew on a
+can also have problems. Googling you can still see lots of people having
+problems installing Node using brew.
+
+It is also probably easier to install Java directly rather than using brew.
+
+
+- Java JDK8
+   - See [https://stackoverflow.com/questions/24342886/how-to-install-java-8-on-mac]()
+    
+
 - Gradle [https://gradle.org/install/]()
-     -     $ brew install gradle
-- NodeJS [https://nodejs.org/en/]()
-     -     $ brew install node
+  > brew install gradle
+- NodeJS: Install as described here [https://nodejs.org/en/]()
+
+
 - Angular CLI [https://angular.io/cli]()
-     -     $ npm install -g @angular/cli
-- Flyway [https://flywaydb.org/]()
-     -     $ brew install flyway
+  > npm install -g @angular/cli
+
 - cURL (for database migrations, can also use Postman) 
-    -      $ brew install curl
-- Elasticsearch (for text search) [https://www.elastic.co/guide/en/elasticsearch/reference/7.8/brew.html] 
-    -      $ brew tap elastic/tap
-    -      $ brew install elastic/tap/elasticsearch-full 
+  > brew install curl
+
+- Docker (we are moving to a container architecture, so want to start
+  using Docker technology - in particular for running Elasticsearch - 
+  see below)
+    - Install Docker Desktop for Mac - 
+      see [https://hub.docker.com/editions/community/docker-ce-desktop-mac/]()
+
+
+- Elasticsearch (for text search)
+    - Install Docker image. 
+      See [https://www.elastic.co/guide/en/elasticsearch/reference/7.10/docker.html]()
+
+- Kibana (for monitoring Elasticsearch)
+    - Install Docker image.
+    See [https://www.elastic.co/guide/en/kibana/current/docker.html]()
+
 - Git [https://git-scm.com/downloads]()
 - PostgreSQL [https://www.postgresql.org/download/]()
 - IntelliJ IDEA (or the IDE of your choice) [https://www.jetbrains.com/idea/download/]()
-
-(On a Mac, installing with Homebrew works well. eg "brew install xxx". 
-However, Flyway and Postgres don't install with Homebrew, and the book 
-"Angular Up & Running" book notes that installing Node.js using Homebrew on a 
-can also have problems.)
 
 ### Setup your local database ###
 
@@ -72,11 +93,25 @@ full privileges
 
 ### Run Elasticsearch ###
 
-    $ elasticsearch
+Can run from Docker desktop for Mac, or...
 
-Elasticsearch will run listening on port 9200. You can verify this by running:
+> docker rm elasticsearch
 
-    $ curl -X GET "localhost:9200"
+> docker run --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.10.1
+
+Elasticsearch will run listening on port 9200. 
+You can verify this by going to [localhost:9200]() in your browser
+
+### Run Kibana (optional) ###
+
+Can run from Docker desktop for Mac, or...
+
+> docker rm kibana
+
+> docker run --name kibana --link elasticsearch -p 5601:5601 docker.elastic.co/kibana/kibana:7.10.1
+
+Kibana runs listening on port 5601. 
+You can verify this by going to [localhost:5601]() in your browser 
 
 ### Run the server ###
 
@@ -85,8 +120,9 @@ Elasticsearch will run listening on port 9200. You can verify this by running:
 ```
 Started TbbTalentApplication in 2.217 seconds (JVM running for 2.99)
 ```
-- your server will be running on port 8080 
-(can be overriden by setting server.port and updating environment.ts in portals)
+- your server will be running on port 8080 (default for Spring Boot) 
+(can be overridden by setting server.port in application.yml, or Intellij Run 
+  Configuration, and updating environment.ts in portals)
 - To test it open a browser to [http://localhost:8080/test]()
 
 
@@ -248,29 +284,6 @@ bitbucket-pipelines.yml.
 Deployment can take around 10 minutes during which time the production software
 is unavailable. People trying to access the software during deployment
 will see an error on their browser saying something like "520 Bad Gateway".
-
-### Test ###
-We use Heroku to host deployments to a test system.
-
-John Cameron has a Heroku account where there is a server called 
-tbbtalent-staging - [https://tbbtalent-staging.herokuapp.com/]()
-
-
-Once you have installed the Heroku command line 
-[https://devcenter.heroku.com/articles/heroku-cli]()
- 
-... you can add the Heroku remote to your local repository (once only) with 
-this command:
-
-> heroku git:remote -a tbbtalent-staging
-  
-... then you can push your local staging branch any time to Heroku's master branch 
-with this command:
-
-> git push heroku staging:master
-
-That will automatically build and deploy to our Heroku test server at
-[https://tbbtalent-staging.herokuapp.com/]().
 
  
 
