@@ -23,29 +23,10 @@
       <label for="hostEntryYear">
         What year did you immigrate to {{candidate?.country?.name}}?
       </label>
-      <div class="input-group">
-        <input id="hostEntryYear" type="text" class="form-control" placeholder="YYYY-MM-DD"
-               ngbDatepicker #picker="ngbDatepicker"
-               [formControlName]="'hostEntryYear'"
-               (dateSelect)="form.controls.hostEntryYear.markAsDirty()"
-               [autoClose]="true"
-               [outsideDays]="'hidden'"
-               [container]="'#hostEntryYear'"
-               [minDate]="{year: 1950, month: 1, day: 1}"
-               [maxDate]="maxDate">
-
-        <div class="input-group-append">
-          <small class="btn btn-link text-secondary" *ngIf="form.controls.hostEntryYear.value"
-                 (click)="form.controls.hostEntryYear.patchValue(null); form.controls.hostEntryYear.markAsDirty();">
-            <span>Clear</span>
-          </small>
-
-          <div class="btn btn-link" *ngIf="!form.controls.hostEntryYear.value"
-               (click)="picker.toggle()">
-            <span>Choose</span>
-          </div>
-        </div>
-      </div>
+      <select id="hostEntryYear" class="form-control" [formControlName]="'hostEntryYear'">
+        <option value=""></option>
+        <option *ngFor="let year of years" [ngValue]="year">{{year}} </option>
+      </select>
     </div>
   </div>
 </form>

@@ -1,62 +1,31 @@
 package org.tbbtalent.server.service.db.impl;
 
-import java.time.OffsetDateTime;
-import java.util.UUID;
-
-import javax.security.auth.login.AccountLockedException;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.CredentialsExpiredException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.LockedException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tbbtalent.server.exception.EmailSendFailedException;
-import org.tbbtalent.server.exception.ExpiredTokenException;
-import org.tbbtalent.server.exception.InvalidCredentialsException;
-import org.tbbtalent.server.exception.InvalidPasswordTokenException;
-import org.tbbtalent.server.exception.InvalidSessionException;
-import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.exception.PasswordExpiredException;
-import org.tbbtalent.server.exception.PasswordMatchException;
-import org.tbbtalent.server.exception.UserDeactivatedException;
-import org.tbbtalent.server.exception.UsernameTakenException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.Country;
-import org.tbbtalent.server.model.db.SavedSearch;
-import org.tbbtalent.server.model.db.Status;
-import org.tbbtalent.server.model.db.User;
-import org.tbbtalent.server.repository.db.CandidateRepository;
-import org.tbbtalent.server.repository.db.CountryRepository;
-import org.tbbtalent.server.repository.db.SavedSearchRepository;
-import org.tbbtalent.server.repository.db.UserRepository;
-import org.tbbtalent.server.repository.db.UserSpecification;
+import org.tbbtalent.server.exception.*;
+import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.repository.db.*;
 import org.tbbtalent.server.request.LoginRequest;
-import org.tbbtalent.server.request.user.CheckPasswordResetTokenRequest;
-import org.tbbtalent.server.request.user.CreateUserRequest;
-import org.tbbtalent.server.request.user.ResetPasswordRequest;
-import org.tbbtalent.server.request.user.SearchUserRequest;
-import org.tbbtalent.server.request.user.SendResetPasswordEmailRequest;
-import org.tbbtalent.server.request.user.UpdateSharingRequest;
-import org.tbbtalent.server.request.user.UpdateUserPasswordRequest;
-import org.tbbtalent.server.request.user.UpdateUserRequest;
-import org.tbbtalent.server.request.user.UpdateUsernameRequest;
+import org.tbbtalent.server.request.user.*;
 import org.tbbtalent.server.response.JwtAuthenticationResponse;
 import org.tbbtalent.server.security.JwtTokenProvider;
 import org.tbbtalent.server.security.PasswordHelper;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.UserService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
+
+import javax.security.auth.login.AccountLockedException;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {

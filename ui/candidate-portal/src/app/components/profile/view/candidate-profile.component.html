@@ -122,7 +122,7 @@
             <div class="form-group">
               <label>{{ 'PROFILE.PERSONAL.COUNTRY' | translate }}</label>
               <p *ngIf="candidate?.country">
-                {{candidate?.country.name | translate : 'country'}}
+                {{candidate?.country.name | translate }}
               </p>
             </div>
           </div>
@@ -151,7 +151,7 @@
             <div class="form-group">
               <label>{{ 'PROFILE.PERSONAL.NATIONALITY' | translate }}</label>
               <p>
-                {{candidate?.nationality.name | translate : 'nationality'}}
+                {{candidate?.nationality.name | translate }}
               </p>
             </div>
           </div>

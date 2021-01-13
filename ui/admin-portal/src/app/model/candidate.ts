@@ -93,7 +93,7 @@ export interface CandidateIntakeData {
 
   hostChallenges?: string;
   hostBorn?: YesNo;
-  hostEntryYear?: string;
+  hostEntryYear?: number;
   hostEntryLegally?: YesNo;
   intRecruitReasons?: IntRecruitReason[];
   intRecruitRural?: YesNoUnsure;
@@ -144,12 +144,16 @@ export interface CandidateIntakeData {
   visaReject?: YesNoUnsure;
   visaIssues?: VisaIssue[];
   visaIssuesNotes?: string;
+
+  intakeMiniCheckedBy?: User;
+  intakeMiniCheckedDate?: string;
 }
 
 export interface CandidateCitizenship {
   id?: number;
   nationality?: {id};
   hasPassport?: HasPassport;
+  passportExp?: string;
   notes?: string;
 }
 
@@ -166,6 +170,7 @@ export interface CandidateExam {
   exam?: Exam;
   otherExam?: string;
   score?: string;
+  year?: number;
 }
 
 export interface CandidateDestination {
@@ -182,8 +187,8 @@ export interface CandidateVisaCheck {
   country?: Country;
   eligibility?: VisaEligibility;
   assessmentNotes?: string;
-  createdBy?: User;
-  createdDate?: number;
+  checkedBy?: User;
+  checkedDate?: string;
   updatedBy?: User;
   updatedDate?: number;
   protection?: YesNo;
@@ -308,6 +313,13 @@ export enum YesNoUnsure {
   Unsure = "Unsure"
 }
 
+export enum YesNoUnsureLearn {
+  NoResponse = "",
+  Yes = "Yes",
+  No = "No",
+  Unsure = "Unsure - I need to learn more."
+}
+
 export enum UnrwaStatus {
   NoResponse = "",
   Registered = "Registered",
@@ -340,7 +352,9 @@ export enum MaritalStatus {
   NoResponse = "",
   Married = "Married",
   Engaged = "Engaged",
-  Neither = "Not married or engaged"
+  Defacto = "Defacto",
+  Single = "Single",
+  Divorced = "Divorced"
 }
 
 export enum IeltsScore {

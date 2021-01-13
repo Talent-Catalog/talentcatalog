@@ -132,6 +132,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("workPermit")
                 .add("workPermitDesired")
                 .add("workLegally")
+
                 ;
     }
 
@@ -140,6 +141,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("id")
                 .add("nationality", nationalityDto())
                 .add("hasPassport")
+                .add("passportExp")
                 .add("notes")
                 ;
     }
@@ -150,6 +152,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("exam")
                 .add("otherExam")
                 .add("score")
+                .add("year")
                 ;
     }
 

@@ -3,16 +3,14 @@
  */
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {
-  CandidateCitizenship,
-  HasPassport
-} from "../../../../../model/candidate";
-import {EnumOption, enumOptions} from "../../../../../util/enum";
-import {FormBuilder} from "@angular/forms";
-import {CandidateService} from "../../../../../services/candidate.service";
-import {IntakeComponentBase} from "../../../../util/intake/IntakeComponentBase";
-import {Nationality} from "../../../../../model/nationality";
-import {CandidateCitizenshipService} from "../../../../../services/candidate-citizenship.service";
+import {CandidateCitizenship, HasPassport} from '../../../../../model/candidate';
+import {EnumOption, enumOptions} from '../../../../../util/enum';
+import {FormBuilder} from '@angular/forms';
+import {CandidateService} from '../../../../../services/candidate.service';
+import {IntakeComponentBase} from '../../../../util/intake/IntakeComponentBase';
+import {Nationality} from '../../../../../model/nationality';
+import {CandidateCitizenshipService} from '../../../../../services/candidate-citizenship.service';
+import {NgbDateStruct} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-candidate-citizenship-card',
@@ -29,6 +27,9 @@ export class CandidateCitizenshipCardComponent extends IntakeComponentBase imple
   //Drop down values for enumeration
   hasPassportOptions: EnumOption[] = enumOptions(HasPassport);
 
+  today: Date;
+  minDate: NgbDateStruct;
+
   constructor(fb: FormBuilder, candidateService: CandidateService,
               private candidateCitizenshipService: CandidateCitizenshipService) {
     super(fb, candidateService);
@@ -39,8 +40,12 @@ export class CandidateCitizenshipCardComponent extends IntakeComponentBase imple
       citizenId: [this.myRecord?.id],
       citizenNationalityId: [this.myRecord?.nationality?.id],
       citizenHasPassport: [this.myRecord?.hasPassport],
+      citizenPassportExp: [this.myRecord?.passportExp],
       citizenNotes: [this.myRecord?.notes],
     });
+
+    this.today = new Date();
+    this.minDate = {year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate()};
 
     //Subscribe to changes on the nationality id so that we can keep local
     //intake data up to date - used to filter ids on new records so that we
@@ -85,6 +90,21 @@ export class CandidateCitizenshipCardComponent extends IntakeComponentBase imple
       found = this.form.value.citizenNationalityId;
     }
     return found;
+  }
+
+  get hasPassport(): string {
+    return this.form.value.citizenHasPassport;
+  }
+
+  get passportExpiry(): string {
+    return this.form.value.citizenPassportExp;
+  }
+
+  dateDifference() {
+    if (this.passportExpiry) {
+      const expDate = new Date(this.passportExpiry)
+      return expDate < this.today
+    }
   }
 
   private get myRecord(): CandidateCitizenship {

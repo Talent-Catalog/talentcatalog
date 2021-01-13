@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../../util/enum';
-import {CandidateDestination, FamilyRelations, YesNoUnsure} from '../../../../../model/candidate';
+import {CandidateDestination, FamilyRelations, YesNoUnsureLearn} from '../../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../../util/intake/IntakeComponentBase';
@@ -15,7 +15,7 @@ export class DestinationComponent extends IntakeComponentBase implements OnInit 
   @Input() country: Country;
   @Output() touched = new EventEmitter();
 
-  public destAusOptions: EnumOption[] = enumOptions(YesNoUnsure);
+  public destAusOptions: EnumOption[] = enumOptions(YesNoUnsureLearn);
   public destAusFamilyOptions: EnumOption[] = enumOptions(FamilyRelations);
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {

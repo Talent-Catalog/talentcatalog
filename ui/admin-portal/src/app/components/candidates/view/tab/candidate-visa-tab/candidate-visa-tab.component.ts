@@ -70,6 +70,7 @@ export class CandidateVisaTabComponent
     }
   }
 
+
   addRecord() {
     const modal = this.modalService.open(HasNameSelectorComponent);
     modal.componentInstance.hasNames = this.filteredDestinations;
@@ -94,7 +95,9 @@ export class CandidateVisaTabComponent
     this.candidateVisaCheckService.create(this.candidate.id, request)
       .subscribe(
       (visaCheck) => {
-        this.candidateIntakeData.candidateVisaChecks.push(visaCheck)
+        this.candidateIntakeData.candidateVisaChecks.push(visaCheck);
+        this.form.controls['visaCountry'].patchValue(this.candidateIntakeData.candidateVisaChecks.lastIndexOf(visaCheck));
+        this.changeVisaCountry(null)
         this.loading = false;
       },
       (error) => {

@@ -16,6 +16,7 @@
 <!--  todo Why not put this formatting inside component?
 Downside == upside : standard appearance of same question
 -->
+
   <div class="card">
     <div class="card-header">
       Home Country
@@ -29,11 +30,16 @@ Downside == upside : standard appearance of same question
   </div>
 
   <hr/>
-
-  <app-visa-assessment
-    [candidate]="candidate"
-    [candidateIntakeData]="candidateIntakeData"
-    [myRecordIndex]="selectedIndex"
-  >
-  </app-visa-assessment>
+  <div class="card">
+    <div class="card-header">
+      Final Assessment
+    </div>
+    <div class="card-body">
+      <app-visa-assessment
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [myRecordIndex]="selectedIndex">
+      </app-visa-assessment>
+    </div>
+  </div>
 </div>

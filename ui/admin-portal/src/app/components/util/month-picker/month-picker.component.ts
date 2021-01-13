@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {generateYearArray} from "../../../util/year-helper";
-import {FormControl} from "@angular/forms";
+import {generateYearArray} from '../../../util/year-helper';
+import {FormControl} from '@angular/forms';
 
 @Component({
   selector: 'app-month-picker',
@@ -24,7 +24,7 @@ export class MonthPickerComponent implements OnInit {
     this.years = generateYearArray(1950, true);
     if (this.control.value){
       this.date = new Date(this.control.value);
-      this.month = this.date.getMonth()+1;
+      this.month = this.date.getMonth() + 1;
       this.year = this.date.getFullYear();
     }
   }
@@ -34,7 +34,7 @@ export class MonthPickerComponent implements OnInit {
       this.date = new Date();
     }
     if (this.month){
-      this.date.setMonth(this.month-1);
+      this.date.setMonth(this.month - 1);
     } else {
       this.date = null;
     }

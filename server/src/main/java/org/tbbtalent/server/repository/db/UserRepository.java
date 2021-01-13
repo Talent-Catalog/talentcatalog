@@ -4,6 +4,8 @@
 
 package org.tbbtalent.server.repository.db;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -44,5 +46,9 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
             + " where u.id = :id ")
     User findByIdLoadSharedLists(@Param("id") Long id);
 
+    @Query(" select distinct u from User u "
+            + " where lower(concat(u.firstName, ' ', u.lastName)) like lower(:usersName)"
+            + " and u.role != 'user'")
+    Page<User> searchAdminUsersName(@Param("usersName") String usersName, Pageable pageable);
 
 }

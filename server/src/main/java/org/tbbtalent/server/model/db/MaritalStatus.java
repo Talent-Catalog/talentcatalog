@@ -4,5 +4,7 @@ public enum MaritalStatus {
     NoResponse,
     Married,
     Engaged,
-    Neither
+    Defacto,
+    Single,
+    Divorced
 }

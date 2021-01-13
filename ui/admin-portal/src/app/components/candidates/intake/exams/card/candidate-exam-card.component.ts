@@ -5,6 +5,7 @@ import {CandidateExam, Exam} from '../../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../../services/candidate.service';
 import {CandidateExamService} from '../../../../../services/candidate-exam.service';
+import {generateYearArray} from '../../../../../util/year-helper';
 
 @Component({
   selector: 'app-candidate-exam-card',
@@ -17,6 +18,7 @@ export class CandidateExamCardComponent extends IntakeComponentBase implements O
 
   //Drop down values for enumeration
   examOptions: EnumOption[] = enumOptions(Exam);
+  years: number[];
 
   constructor(fb: FormBuilder, candidateService: CandidateService,
               private candidateExamService: CandidateExamService) {
@@ -29,22 +31,11 @@ export class CandidateExamCardComponent extends IntakeComponentBase implements O
       examType: [this.myRecord?.exam],
       otherExam: [this.myRecord?.otherExam],
       examScore: [this.myRecord?.score],
+      examYear: [this.myRecord?.year],
     });
 
-    //Subscribe to changes on the nationality id so that we can keep local
-    //intake data up to date - used to filter ids on new records so that we
-    //don't get duplicates.
-    //Even though the change has been saved on the server and is reflected
-    //on the html form, it is not stored in the local copy of the candidate
-    //intake data. We could refresh the whole page which will reload all
-    //candidate intake data with the saved values - but more efficient just
-    //to update it here.
-    // this.form.controls['citizenNationalityId']?.valueChanges.subscribe(
-    //   change => {
-    //     //Update my existingRecord
-    //     this.myRecord.exam = {id: +change};
-    //   }
-    // );
+    this.years = generateYearArray(1950, true);
+
   }
 
   get isOtherExam(): boolean {

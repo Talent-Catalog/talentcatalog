@@ -38,6 +38,36 @@
             </option>
           </select>
         </div>
+        <div *ngIf="hasPassport === 'ValidPassport'">
+          <div class="form-group">
+            <label [for]="'passportExp'+myRecordIndex">Passport Expiry Date?</label>
+            <div class="input-group">
+              <input [id]="'passportExp'+myRecordIndex" type="text" class="form-control" placeholder="YYYY-MM-DD"
+                     ngbDatepicker #picker="ngbDatepicker"
+                     [formControlName]="'citizenPassportExp'"
+                     (dateSelect)="form.controls.citizenPassportExp.markAsDirty()"
+                     [autoClose]="true"
+                     [outsideDays]="'hidden'"
+                     [container]="'#passportExp'"
+                     [minDate]="minDate">
+
+              <div class="input-group-append">
+                <small class="btn btn-link text-secondary" *ngIf="form.controls.citizenPassportExp.value"
+                       (click)="form.controls.citizenPassportExp.patchValue(null); form.controls.citizenPassportExp.markAsDirty();">
+                  <span>Clear</span>
+                </small>
+                <div class="btn btn-link" *ngIf="!form.controls.citizenPassportExp.value"
+                     (click)="picker.toggle()">
+                  <span>Choose</span>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="dateDifference()"
+                 class="alert alert-danger">
+              This passport has expired since entry.
+            </div>
+          </div>
+        </div>
         <div class="form-group">
           <label [for]="'citizenNotes'+myRecordIndex">Notes</label>
           <textarea type="text" class="md-textarea-auto form-control" rows="4"
