@@ -154,6 +154,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private List<CandidateCitizenship> candidateCitizenships;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    private List<CandidateDependant> candidateDependants;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     private List<CandidateDestination> candidateDestinations;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
@@ -419,12 +422,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @JoinColumn(name = "driving_license_country_id")
     @Nullable
     private Country drivingLicenseCountry;
-
-    @Nullable
-    private Long dependants;
-
-    @Nullable
-    private String dependantsNotes;
 
     public Candidate() {
     }
@@ -1102,14 +1099,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setDrivingLicenseCountry(@Nullable Country drivingLicenseCountry) { this.drivingLicenseCountry = drivingLicenseCountry; }
 
     @Nullable
-    public Long getDependants() { return dependants; }
+    public List<CandidateDependant> getCandidateDependants() { return candidateDependants; }
 
-    public void setDependants(@Nullable Long dependants) { this.dependants = dependants; }
-
-    @Nullable
-    public String getDependantsNotes() { return dependantsNotes; }
-
-    public void setDependantsNotes(@Nullable String dependantsNotes) { this.dependantsNotes = dependantsNotes; }
+    public void setCandidateDependants(List<CandidateDependant> candidateDependants) { this.candidateDependants = candidateDependants; }
 
     public boolean isSelected() {
         return selected;
@@ -1212,12 +1204,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getCrimeConvictNotes() != null) {
             setCrimeConvictNotes(data.getCrimeConvictNotes());
-        }
-        if (data.getDependants() != null) {
-            setDependants(data.getDependants());
-        }
-        if (data.getDependantsNotes() != null) {
-            setDependantsNotes(data.getDependantsNotes());
         }
         if (data.getDestLimit() != null) {
             setDestLimit(data.getDestLimit());

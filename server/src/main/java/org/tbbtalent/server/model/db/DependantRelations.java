@@ -1,8 +1,7 @@
 package org.tbbtalent.server.model.db;
 
-public enum FamilyRelations {
+public enum DependantRelations {
     NoResponse,
-    NoRelation,
     Child,
     Parent,
     Sibling,

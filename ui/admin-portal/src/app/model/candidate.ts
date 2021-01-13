@@ -155,9 +155,10 @@ export interface CandidateCitizenship {
 
 export interface CandidateDependant {
   id?: number;
-  relation?: FamilyRelations;
+  relation?: DependantRelations;
   dob?: string;
   healthConcerns?: string;
+  healthConcernsNotes?: string;
 }
 
 export interface CandidateExam {
@@ -212,7 +213,18 @@ export enum FamilyRelations {
   NoResponse = "",
   NoRelation = "No relatives",
   Child = "Daughter/Son",
-  Parents = "Mother/Father",
+  Parent = "Mother/Father",
+  Sibling = "Sister/Brother",
+  AuntUncle = "Aunt/Uncle",
+  Grandparent = "Grandmother/Grandfather",
+  Cousin = "First Cousin",
+  Other = "Other"
+}
+
+export enum DependantRelations {
+  NoResponse = "",
+  Child = "Daughter/Son",
+  Parent = "Mother/Father",
   Sibling = "Sister/Brother",
   AuntUncle = "Aunt/Uncle",
   Grandparent = "Grandmother/Grandfather",

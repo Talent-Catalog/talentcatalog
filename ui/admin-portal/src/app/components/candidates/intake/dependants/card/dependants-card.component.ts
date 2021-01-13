@@ -1,6 +1,6 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../../util/enum';
-import {CandidateDependant, FamilyRelations} from '../../../../../model/candidate';
+import {CandidateDependant, DependantRelations, YesNo} from '../../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../../services/candidate.service';
 import {CandidateDependantService} from '../../../../../services/candidate-dependant.service';
@@ -20,7 +20,8 @@ export class DependantsCardComponent extends IntakeComponentBase implements OnIn
   public today: Date;
 
   //Drop down values for enumeration
-  dependantRelations: EnumOption[] = enumOptions(FamilyRelations);
+  dependantRelations: EnumOption[] = enumOptions(DependantRelations);
+  dependentHealthConcerns: EnumOption[] = enumOptions(YesNo);
 
   constructor(fb: FormBuilder, candidateService: CandidateService,
               private candidateDependantService: CandidateDependantService) {
@@ -32,7 +33,8 @@ export class DependantsCardComponent extends IntakeComponentBase implements OnIn
       dependantId: [this.myRecord?.id],
       dependantRelation: [this.myRecord?.relation],
       dependantDob: [this.myRecord?.dob],
-      dependantHealth: [this.myRecord?.healthConcerns],
+      dependantHealthConcerns: [this.myRecord?.healthConcerns],
+      dependantHealthConcernsNotes: [this.myRecord?.healthConcernsNotes],
     });
     this.today = new Date();
     this.maxDate = {year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate()};
