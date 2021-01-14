@@ -18,6 +18,7 @@ export class DependantsCardComponent extends IntakeComponentBase implements OnIn
 
   public maxDate: NgbDateStruct;
   public today: Date;
+  public age: number;
 
   //Drop down values for enumeration
   dependantRelations: EnumOption[] = enumOptions(DependantRelations);
@@ -34,24 +35,27 @@ export class DependantsCardComponent extends IntakeComponentBase implements OnIn
       dependantRelation: [this.myRecord?.relation],
       dependantDob: [this.myRecord?.dob],
       dependantHealthConcerns: [this.myRecord?.healthConcerns],
-      dependantHealthConcernsNotes: [this.myRecord?.healthConcernsNotes],
+      dependantNotes: [this.myRecord?.notes],
     });
     this.today = new Date();
     this.maxDate = {year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate()};
   }
 
-  get hasSelectedNationality(): boolean {
-    let found: boolean = false;
-    if (this.form?.value) {
-      found = this.form.value.citizenNationalityId;
-    }
-    return found;
+  get hasHealthConcern(): string {
+    return this.form.value.dependantHealthConcerns;
   }
 
   private get myRecord(): CandidateDependant {
     return this.candidateIntakeData.candidateDependants ?
       this.candidateIntakeData.candidateDependants[this.myRecordIndex]
       : null;
+  }
+
+  get dependantAge(): number {
+    if (this.form?.value.dependantDob) {
+      const timeDiff = Math.abs(Date.now() - new Date(this.form.value.dependantDob).getTime());
+      return Math.floor(timeDiff / (1000 * 3600 * 24) / 365.25);
+    }
   }
 
   doDelete() {

@@ -8,7 +8,7 @@
     <form [formGroup]="form">
       <div class="form-group">
         <div class="citizenship d-flex align-items-baseline justify-content-between">
-          <label [for]="'dependantRelation'+myRecordIndex">Relation</label>
+          <label [for]="'dependantRelation'+myRecordIndex">Relation to candidate</label>
           <div class="float-right d-flex align-items-center">
             <app-autosave-status
               [saving]="saving"
@@ -32,7 +32,7 @@
       </div>
 
       <div class="form-group">
-        <label [for]="'dependantDob'+myRecordIndex">Date of birth?</label>
+        <label [for]="'dependantDob'+myRecordIndex">What is their date of birth?</label>
         <div class="input-group">
           <input [id]="'dependantDob'+myRecordIndex" type="text" class="form-control" placeholder="YYYY-MM-DD"
                  ngbDatepicker #picker="ngbDatepicker"
@@ -56,18 +56,13 @@
             </div>
           </div>
         </div>
+        <p class="small">Age: {{dependantAge}}</p>
       </div>
 
       <div class="form-group">
         <label [for]="'dependantHealthConcerns'+myRecordIndex">
-          Do you or any of your dependents/spouse have any serious health concerns?
+          Does your {{form.controls.dependantRelation.value}} have any health concerns?
         </label>
-        <div class="float-right">
-          <app-autosave-status
-            [saving]="saving"
-            [typing]="typing">
-          </app-autosave-status>
-        </div>
         <select class="form-control"
                 [id]="'dependantHealthConcerns'+myRecordIndex" [formControlName]="'dependantHealthConcerns'">
           <option *ngFor="let opt of dependentHealthConcerns" [value]="opt.value">
@@ -75,10 +70,10 @@
           </option>
         </select>
       </div>
-      <div *ngIf="'dependantHealthConcerns'+myRecordIndex === 'Yes'" class="form-group">
-        <label [for]="'dependantHealthConcernsNotes'+myRecordIndex">Notes</label>
+      <div *ngIf="hasHealthConcern === 'Yes'" class="form-group">
+        <label [for]="'dependantNotes'+myRecordIndex">Notes</label>
         <textarea type="text" class="md-textarea-auto form-control" rows="4"
-                  [id]="'dependantHealthNotes'+myRecordIndex" [formControlName]="'dependantHealthConcernsNotes'"
+                  [id]="'dependantNotes'+myRecordIndex" [formControlName]="'dependantNotes'"
                   placeholder="" ></textarea>
       </div>
 

@@ -162,7 +162,7 @@ export interface CandidateDependant {
   relation?: DependantRelations;
   dob?: string;
   healthConcerns?: string;
-  healthConcernsNotes?: string;
+  notes?: string;
 }
 
 export interface CandidateExam {
