@@ -14,6 +14,17 @@
               id="langAssessment" [formControlName]="'langAssessment'"
               placeholder="" ></textarea>
   </div>
+  <div class="form-group">
+    <label for="langAssessmentScore">
+      Estimated IELTS score
+    </label>
+    <select class="form-control"
+            id="langAssessmentScore" [formControlName]="'langAssessmentScore'">
+      <option *ngFor="let opt of langAssessmentScore" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+  </div>
 </form>
 
 

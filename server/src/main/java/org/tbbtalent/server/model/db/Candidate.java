@@ -426,6 +426,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private String langAssessment;
 
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private IeltsScore langAssessmentScore;
+
     public Candidate() {
     }
 
@@ -1111,6 +1115,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setLangAssessment(@Nullable String langAssessment) { this.langAssessment = langAssessment; }
 
+    @Nullable
+    public IeltsScore getLangAssessmentScore() { return langAssessmentScore; }
+
+    public void setLangAssessmentScore(@Nullable IeltsScore langAssessmentScore) { this.langAssessmentScore = langAssessmentScore; }
+
     public boolean isSelected() {
         return selected;
     }
@@ -1269,6 +1278,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getLangAssessment() != null) {
             setLangAssessment(data.getLangAssessment());
+        }
+        if (data.getLangAssessmentScore() != null) {
+            setLangAssessmentScore(data.getLangAssessmentScore());
         }
         if (data.getLeftHomeReason() != null) {
             setLeftHomeReason(data.getLeftHomeReason());

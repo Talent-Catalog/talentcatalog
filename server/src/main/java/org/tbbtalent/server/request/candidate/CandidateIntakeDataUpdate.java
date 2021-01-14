@@ -98,6 +98,7 @@ public class CandidateIntakeDataUpdate {
     private YesNoUnsure intRecruitRural;
 
     private String langAssessment;
+    private IeltsScore langAssessmentScore;
     private LeftHomeReason leftHomeReason;
     private String leftHomeOther;
     private YesNo militaryService;
