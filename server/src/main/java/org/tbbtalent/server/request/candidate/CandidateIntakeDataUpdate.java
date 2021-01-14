@@ -97,6 +97,7 @@ public class CandidateIntakeDataUpdate {
     private List<IntRecruitReason> intRecruitReasons;
     private YesNoUnsure intRecruitRural;
 
+    private String langAssessment;
     private LeftHomeReason leftHomeReason;
     private String leftHomeOther;
     private YesNo militaryService;

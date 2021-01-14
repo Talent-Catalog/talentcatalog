@@ -181,6 +181,7 @@ import {VisaRejectComponent} from './components/candidates/intake/visa-reject/vi
 import {DrivingLicenseComponent} from './components/candidates/intake/driving-license/driving-license.component';
 import {DependantsComponent} from './components/candidates/intake/dependants/dependants.component';
 import {DependantsCardComponent} from './components/candidates/intake/dependants/card/dependants-card.component';
+import {LangAssessmentComponent} from './components/candidates/intake/lang-assessment/lang-assessment.component';
 
 @NgModule({
   declarations: [
@@ -354,7 +355,8 @@ import {DependantsCardComponent} from './components/candidates/intake/dependants
     VisaRejectComponent,
     DrivingLicenseComponent,
     DependantsComponent,
-    DependantsCardComponent
+    DependantsCardComponent,
+    LangAssessmentComponent
   ],
   imports: [
     BrowserModule,

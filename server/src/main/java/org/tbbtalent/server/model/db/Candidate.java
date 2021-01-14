@@ -423,6 +423,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private Country drivingLicenseCountry;
 
+    @Nullable
+    private String langAssessment;
+
     public Candidate() {
     }
 
@@ -892,6 +895,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setAsylumYear(@Nullable LocalDate asylumYear) { this.asylumYear = asylumYear; }
 
+    @Nullable
+    public List<CandidateDependant> getCandidateDependants() { return candidateDependants; }
+
+    public void setCandidateDependants(List<CandidateDependant> candidateDependants) { this.candidateDependants = candidateDependants; }
+
     public List<CandidateDestination> getCandidateDestinations() {
         candidateDestinations.sort(null);
         return candidateDestinations;
@@ -1099,9 +1107,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setDrivingLicenseCountry(@Nullable Country drivingLicenseCountry) { this.drivingLicenseCountry = drivingLicenseCountry; }
 
     @Nullable
-    public List<CandidateDependant> getCandidateDependants() { return candidateDependants; }
+    public String getLangAssessment() { return langAssessment; }
 
-    public void setCandidateDependants(List<CandidateDependant> candidateDependants) { this.candidateDependants = candidateDependants; }
+    public void setLangAssessment(@Nullable String langAssessment) { this.langAssessment = langAssessment; }
 
     public boolean isSelected() {
         return selected;
@@ -1258,6 +1266,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getIntRecruitRural() != null) {
             setIntRecruitRural(data.getIntRecruitRural());
+        }
+        if (data.getLangAssessment() != null) {
+            setLangAssessment(data.getLangAssessment());
         }
         if (data.getLeftHomeReason() != null) {
             setLeftHomeReason(data.getLeftHomeReason());

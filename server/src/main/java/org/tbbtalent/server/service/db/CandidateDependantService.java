@@ -42,7 +42,6 @@ public interface CandidateDependantService {
     /**
      * Updates the candidate dependant intake data associated with the given
      * nationality and given candidate.
-     * @param countryId ID of nationality - If null this method does nothing
      * @param candidate Candidate
      * @param data Partially populated CandidateIntakeData record. Null data
      *             fields are ignored. Only non null fields are updated.

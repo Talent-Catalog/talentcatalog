@@ -1735,80 +1735,81 @@ public class CandidateServiceImpl implements CandidateService {
         if (dependantRelation != null) {
             candidateDependantService
                     .updateIntakeData(candidate, data);
-
-            //If there is a non null destination country, that means that this
-            //is a destination update.
-            final Long destinationCountryId = data.getDestinationCountryId();
-            if (destinationCountryId != null) {
-                candidateDestinationService
-                        .updateIntakeData(destinationCountryId, candidate, data);
-            }
-
-            //If there is a non null visa country, that means that this
-            //is a visa check update.
-            final Long visaCountryId = data.getVisaCountryId();
-            if (visaCountryId != null) {
-                candidateVisaService
-                        .updateIntakeData(visaCountryId, candidate, data);
-            }
-
-            //If there is a non null exam type, that means that this
-            //is a exam update.
-            final Exam exam = data.getExamType();
-            if (exam != null) {
-                candidateExamService
-                        .updateIntakeData(candidate, data);
-            }
-
-            //Get the work abroad country from the id in the data request and pass into the populateIntakeData method
-            final Long workAbroadLocId = data.getWorkAbroadLocId();
-            Country workAbroadLoc = null;
-            if (workAbroadLocId != null) {
-                workAbroadLoc = countryRepository.findById(workAbroadLocId).orElse(null);
-            }
-
-            //Get the partner candidate object from the id in the data request and pass into the populateIntakeData method
-            final Long partnerCandId = data.getPartnerCandId();
-            Candidate partnerCandidate = null;
-            if (partnerCandId != null) {
-                partnerCandidate = candidateRepository.findById(partnerCandId).orElse(null);
-            }
-
-            //Get the partner education level object from the id in the data request and pass into the populateIntakeData method
-            final Long partnerEduLevelId = data.getPartnerEduLevelId();
-            EducationLevel partnerEducationLevel = null;
-            if (partnerEduLevelId != null) {
-                partnerEducationLevel = educationLevelRepository.findById(partnerEduLevelId).orElse(null);
-            }
-
-            final Long partnerProfessionId = data.getPartnerProfessionId();
-            Occupation partnerProfession = null;
-            if (partnerProfessionId != null) {
-                partnerProfession = occupationRepository.findById(partnerProfessionId).orElse(null);
-            }
-
-            final Long partnerEnglishLevelId = data.getPartnerEnglishLevelId();
-            LanguageLevel partnerEnglishLevel = null;
-            if (partnerEnglishLevelId != null) {
-                partnerEnglishLevel = languageLevelRepository.findById(partnerEnglishLevelId).orElse(null);
-            }
-
-            final Long partnerCitizenshipId = data.getPartnerCitizenshipId();
-            Nationality partnerCitizenship = null;
-            if (partnerCitizenshipId != null) {
-                partnerCitizenship = nationalityRepository.findById(partnerCitizenshipId).orElse(null);
-            }
-
-            final Long drivingLicenseCountryId = data.getDrivingLicenseCountryId();
-            Country drivingLicenseCountry = null;
-            if (drivingLicenseCountryId != null) {
-                drivingLicenseCountry = countryRepository.findById(drivingLicenseCountryId).orElse(null);
-            }
-
-            candidate.populateIntakeData(data, workAbroadLoc, partnerCandidate, partnerEducationLevel,
-                    partnerProfession, partnerEnglishLevel, partnerCitizenship, drivingLicenseCountry);
-
-            save(candidate, true);
         }
+
+        //If there is a non null destination country, that means that this
+        //is a destination update.
+        final Long destinationCountryId = data.getDestinationCountryId();
+        if (destinationCountryId != null) {
+            candidateDestinationService
+                    .updateIntakeData(destinationCountryId, candidate, data);
+        }
+
+        //If there is a non null visa country, that means that this
+        //is a visa check update.
+        final Long visaCountryId = data.getVisaCountryId();
+        if (visaCountryId != null) {
+            candidateVisaService
+                    .updateIntakeData(visaCountryId, candidate, data);
+        }
+
+        //If there is a non null exam type, that means that this
+        //is a exam update.
+        final Exam exam = data.getExamType();
+        if (exam != null) {
+            candidateExamService
+                    .updateIntakeData(candidate, data);
+        }
+
+        //Get the work abroad country from the id in the data request and pass into the populateIntakeData method
+        final Long workAbroadLocId = data.getWorkAbroadLocId();
+        Country workAbroadLoc = null;
+        if (workAbroadLocId != null) {
+            workAbroadLoc = countryRepository.findById(workAbroadLocId).orElse(null);
+        }
+
+        //Get the partner candidate object from the id in the data request and pass into the populateIntakeData method
+        final Long partnerCandId = data.getPartnerCandId();
+        Candidate partnerCandidate = null;
+        if (partnerCandId != null) {
+            partnerCandidate = candidateRepository.findById(partnerCandId).orElse(null);
+        }
+
+        //Get the partner education level object from the id in the data request and pass into the populateIntakeData method
+        final Long partnerEduLevelId = data.getPartnerEduLevelId();
+        EducationLevel partnerEducationLevel = null;
+        if (partnerEduLevelId != null) {
+            partnerEducationLevel = educationLevelRepository.findById(partnerEduLevelId).orElse(null);
+        }
+
+        final Long partnerProfessionId = data.getPartnerProfessionId();
+        Occupation partnerProfession = null;
+        if (partnerProfessionId != null) {
+            partnerProfession = occupationRepository.findById(partnerProfessionId).orElse(null);
+        }
+
+        final Long partnerEnglishLevelId = data.getPartnerEnglishLevelId();
+        LanguageLevel partnerEnglishLevel = null;
+        if (partnerEnglishLevelId != null) {
+            partnerEnglishLevel = languageLevelRepository.findById(partnerEnglishLevelId).orElse(null);
+        }
+
+        final Long partnerCitizenshipId = data.getPartnerCitizenshipId();
+        Nationality partnerCitizenship = null;
+        if (partnerCitizenshipId != null) {
+            partnerCitizenship = nationalityRepository.findById(partnerCitizenshipId).orElse(null);
+        }
+
+        final Long drivingLicenseCountryId = data.getDrivingLicenseCountryId();
+        Country drivingLicenseCountry = null;
+        if (drivingLicenseCountryId != null) {
+            drivingLicenseCountry = countryRepository.findById(drivingLicenseCountryId).orElse(null);
+        }
+
+        candidate.populateIntakeData(data, workAbroadLoc, partnerCandidate, partnerEducationLevel,
+                partnerProfession, partnerEnglishLevel, partnerCitizenship, drivingLicenseCountry);
+
+        save(candidate, true);
+
     }
 }

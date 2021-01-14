@@ -97,6 +97,7 @@ export interface CandidateIntakeData {
   hostEntryLegally?: YesNo;
   intRecruitReasons?: IntRecruitReason[];
   intRecruitRural?: YesNoUnsure;
+  langAssessment?: string;
   leftHomeReason?: LeftHomeReason[];
   leftHomeOther?: string;
   militaryService?: YesNo;
