@@ -15,8 +15,8 @@ export class DestinationComponent extends IntakeComponentBase implements OnInit 
   @Input() country: Country;
   @Output() touched = new EventEmitter();
 
-  public destAusOptions: EnumOption[] = enumOptions(YesNoUnsureLearn);
-  public destAusFamilyOptions: EnumOption[] = enumOptions(FamilyRelations);
+  public destInterestOptions: EnumOption[] = enumOptions(YesNoUnsureLearn);
+  public destFamilyOptions: EnumOption[] = enumOptions(FamilyRelations);
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);

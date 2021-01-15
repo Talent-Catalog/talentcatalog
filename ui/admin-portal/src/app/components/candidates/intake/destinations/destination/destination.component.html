@@ -16,7 +16,7 @@
     <select class="form-control"
             [id]="'destinationInterest'+myRecordIndex"
             [formControlName]="'destinationInterest'">
-      <option *ngFor="let opt of destAusOptions"
+      <option *ngFor="let opt of destInterestOptions"
               [value]="opt.value">
         {{opt.displayText}}
       </option>
@@ -29,7 +29,7 @@
       <select class="form-control"
               [id]="'destinationFamily'+myRecordIndex"
               [formControlName]="'destinationFamily'">
-        <option *ngFor="let opt of destAusFamilyOptions"
+        <option *ngFor="let opt of destFamilyOptions"
                 [value]="opt.value">
           {{opt.displayText}}
         </option>

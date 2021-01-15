@@ -1782,10 +1782,10 @@ public class CandidateServiceImpl implements CandidateService {
             partnerEducationLevel = educationLevelRepository.findById(partnerEduLevelId).orElse(null);
         }
 
-        final Long partnerProfessionId = data.getPartnerProfessionId();
-        Occupation partnerProfession = null;
-        if (partnerProfessionId != null) {
-            partnerProfession = occupationRepository.findById(partnerProfessionId).orElse(null);
+        final Long partnerOccupationId = data.getPartnerOccupationId();
+        Occupation partnerOccupation = null;
+        if (partnerOccupationId != null) {
+            partnerOccupation = occupationRepository.findById(partnerOccupationId).orElse(null);
         }
 
         final Long partnerEnglishLevelId = data.getPartnerEnglishLevelId();
@@ -1807,7 +1807,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         candidate.populateIntakeData(data, workAbroadLoc, partnerCandidate, partnerEducationLevel,
-                partnerProfession, partnerEnglishLevel, partnerCitizenship, drivingLicenseCountry);
+                partnerOccupation, partnerEnglishLevel, partnerCitizenship, drivingLicenseCountry);
 
         save(candidate, true);
 

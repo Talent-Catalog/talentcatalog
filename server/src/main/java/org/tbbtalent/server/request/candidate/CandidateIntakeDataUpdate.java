@@ -44,9 +44,6 @@ public class CandidateIntakeDataUpdate {
 
     private YesNo canDrive;
 
-    private YesNo children;
-    private String childrenAge;
-
     private YesNo conflict;
     private String conflictNotes;
 
@@ -87,8 +84,7 @@ public class CandidateIntakeDataUpdate {
 
     private YesNo familyMove;
     private String familyMoveNotes;
-    private YesNo familyHealthConcern;
-    private String familyHealthConcernNotes;
+
     private String homeLocation;
     private String hostChallenges;
     private YesNo hostBorn;
@@ -107,7 +103,7 @@ public class CandidateIntakeDataUpdate {
     private YesNoUnsure partnerRegistered;
     private Long partnerCandId;
     private Long partnerEduLevelId;
-    private Long partnerProfessionId;
+    private Long partnerOccupationId;
     private YesNo partnerEnglish;
     private Long partnerEnglishLevelId;
     private YesNoUnsure partnerIelts;
@@ -117,7 +113,6 @@ public class CandidateIntakeDataUpdate {
     private ResidenceStatus residenceStatus;
 
     private YesNoUnsure returnedHome;
-    private String returnedHomeNotes;
     private String returnedHomeReason;
     private YesNoUnsure returnHomeSafe;
     private YesNoUnsure returnHomeFuture;
