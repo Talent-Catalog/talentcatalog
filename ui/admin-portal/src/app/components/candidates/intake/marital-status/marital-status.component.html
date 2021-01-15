@@ -62,11 +62,11 @@
       </select>
     </div>
     <div class="form-group">
-      <label for="partnerProfessionId">
+      <label for="partnerOccupationId">
         What is your partner’s profession?
       </label>
       <select class="form-control"
-              id="partnerProfessionId" [formControlName]="'partnerProfessionId'">
+              id="partnerOccupationId" [formControlName]="'partnerOccupationId'">
         <option *ngFor="let opt of occupations" [value]="opt.id">
           {{opt.name}}
         </option>

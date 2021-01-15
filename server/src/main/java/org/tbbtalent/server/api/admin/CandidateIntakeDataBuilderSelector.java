@@ -100,7 +100,7 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("returnedHome")
                 .add("returnedHomeReason")
-                .add("returnedHomeNotes")
+
                 .add("returnHomeSafe")
                 .add("returnHomeFuture")
                 .add("returnHomeWhen")
@@ -129,6 +129,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("workPermit")
                 .add("workPermitDesired")
                 .add("workLegally")
+                .add("workDesired")
 
                 ;
     }

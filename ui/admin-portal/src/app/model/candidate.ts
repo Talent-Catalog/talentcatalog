@@ -106,7 +106,7 @@ export interface CandidateIntakeData {
   partnerRegistered?: YesNoUnsure;
   partnerCandidate?: Candidate;
   partnerEduLevel?: EducationLevel;
-  partnerProfession?: Occupation;
+  partnerOccupation?: Occupation;
   partnerEnglish?: YesNo;
   partnerEnglishLevel?: LanguageLevel;
   partnerIelts?: YesNoUnsure;
@@ -133,7 +133,7 @@ export interface CandidateIntakeData {
   workPermit?: WorkPermitValidity;
   workPermitDesired?: YesNoUnsure;
   workLegally?: YesNo;
-  workDesired?: WorkDesiredField;
+  workDesired?: YesNoUnemployed;
   unhcrStatus?: UnhcrStatus;
   unhcrOldStatus?: UnhcrStatus;
   unhcrNumber?: string;
@@ -163,7 +163,7 @@ export interface CandidateDependant {
   id?: number;
   relation?: DependantRelations;
   dob?: string;
-  healthConcerns?: string;
+  healthConcern?: string;
   notes?: string;
 }
 
@@ -295,7 +295,7 @@ export enum WorkPermitValidity {
   No = "No - I do not have a work permit",
 }
 
-export enum WorkDesiredField {
+export enum YesNoUnemployed {
   NoResponse = "",
   Yes = "Yes",
   No = "No",

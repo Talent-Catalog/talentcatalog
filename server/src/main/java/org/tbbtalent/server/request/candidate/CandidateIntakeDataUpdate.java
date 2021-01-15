@@ -152,5 +152,6 @@ public class CandidateIntakeDataUpdate {
     private WorkPermit workPermit;
     private YesNoUnsure workPermitDesired;
     private YesNo workLegally;
+    private YesNoUnemployed workDesired;
 
 }

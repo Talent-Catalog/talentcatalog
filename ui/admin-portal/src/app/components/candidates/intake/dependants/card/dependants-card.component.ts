@@ -34,7 +34,7 @@ export class DependantsCardComponent extends IntakeComponentBase implements OnIn
       dependantId: [this.myRecord?.id],
       dependantRelation: [this.myRecord?.relation],
       dependantDob: [this.myRecord?.dob],
-      dependantHealthConcerns: [this.myRecord?.healthConcerns],
+      dependantHealthConcerns: [this.myRecord?.healthConcern],
       dependantNotes: [this.myRecord?.notes],
     });
     this.today = new Date();

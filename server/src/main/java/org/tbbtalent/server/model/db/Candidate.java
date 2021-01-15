@@ -221,6 +221,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private YesNo workLegally;
 
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNoUnemployed workDesired;
+
     @Nullable
     private Long hostEntryYear;
 
@@ -804,6 +808,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setWorkLegally(@Nullable YesNo workLegally) { this.workLegally = workLegally; }
 
     @Nullable
+    public YesNoUnemployed getWorkDesired() { return workDesired; }
+
+    public void setWorkDesired(@Nullable YesNoUnemployed workDesired) { this.workDesired = workDesired; }
+
+    @Nullable
     public Long getHostEntryYear() { return hostEntryYear; }
 
     public void setHostEntryYear(@Nullable Long hostEntryYear) { this.hostEntryYear = hostEntryYear; }
@@ -1340,6 +1349,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getWorkLegally() != null) {
             setWorkLegally(data.getWorkLegally());
+        }
+        if (data.getWorkDesired() != null) {
+            setWorkDesired(data.getWorkDesired());
         }
 
     }
