@@ -52,9 +52,6 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("canDrive")
 
-                .add("children")
-                .add("childrenAge")
-
                 .add("conflict")
                 .add("conflictNotes")
 
@@ -73,8 +70,6 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("familyMove")
                 .add("familyMoveNotes")
-                .add("familyHealthConcern")
-                .add("familyHealthConcernNotes")
 
                 .add("homeLocation")
                 .add("hostChallenges")
