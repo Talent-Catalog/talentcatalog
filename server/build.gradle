@@ -86,6 +86,16 @@ dependencies {
     runtimeOnly('com.h2database:h2')
 }
 
+jib {
+    to {
+        image = "968457613372.dkr.ecr.us-east-1.amazonaws.com/tbbtalentv2"
+        auth {
+            username = "AKIA6C7ESOA6BEFHEO5C"
+            password = "GQ73cq6sVeIuNZV9yCZ3WS9C5lupMtDatruG2npF"
+        }
+    }
+}
+
 test {
     useJUnitPlatform()
 }
