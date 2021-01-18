@@ -201,7 +201,6 @@ export abstract class IntakeComponentTabBase implements OnInit {
    * @param button is the button that's clicked, used to change the button text on click.
    */
   public createIntakeNote(formName: string, update: boolean, button) {
-    this.saving = true;
     this.loggedInUser = this.authService.getLoggedInUser();
     if (update) {
        this.noteRequest = {
@@ -220,11 +219,9 @@ export abstract class IntakeComponentTabBase implements OnInit {
     }
     this.noteService.create(this.noteRequest).subscribe(
       (candidateNote) => {
-        this.saving = false;
         button.textContent = update ? 'Updated!' : 'Started!';
       }, (error) => {
         this.error = error;
-        this.saving = false;
       })
   };
 
