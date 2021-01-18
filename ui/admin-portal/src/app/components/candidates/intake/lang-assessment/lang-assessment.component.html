@@ -1,0 +1,30 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+  <div class="form-group">
+    <label for="langAssessment"><strong>English: </strong>Can you tell me about yourself and profession? What is your biggest accomplishment?</label>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
+    <textarea type="text" class="md-textarea-auto form-control" rows="4"
+              id="langAssessment" [formControlName]="'langAssessment'"
+              placeholder="" ></textarea>
+  </div>
+  <div class="form-group">
+    <label for="langAssessmentScore">
+      Estimated IELTS score
+    </label>
+    <select class="form-control"
+            id="langAssessmentScore" [formControlName]="'langAssessmentScore'">
+      <option *ngFor="let opt of langAssessmentScore" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+  </div>
+</form>
+
+

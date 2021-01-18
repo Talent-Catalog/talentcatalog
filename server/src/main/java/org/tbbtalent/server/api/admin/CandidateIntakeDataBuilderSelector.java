@@ -43,6 +43,7 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("candidateCitizenships", candidateCitizenshipDto())
 
+                .add("candidateDependants", candidateDependantDto())
                 .add("candidateDestinations", candidateDestinationDto())
 
                 .add("candidateExams", candidateExamDto())
@@ -51,17 +52,11 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("canDrive")
 
-                .add("children")
-                .add("childrenAge")
-
                 .add("conflict")
                 .add("conflictNotes")
 
                 .add("crimeConvict")
                 .add("crimeConvictNotes")
-
-                .add("dependants")
-                .add("dependantsNotes")
 
                 .add("destLimit")
                 .add("destLimitNotes")
@@ -75,8 +70,6 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("familyMove")
                 .add("familyMoveNotes")
-                .add("familyHealthConcern")
-                .add("familyHealthConcernNotes")
 
                 .add("homeLocation")
                 .add("hostChallenges")
@@ -86,6 +79,8 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("intRecruitReasons")
                 .add("intRecruitRural")
 
+                .add("langAssessment")
+                .add("langAssessmentScore")
                 .add("leftHomeReason")
                 .add("leftHomeOther")
                 .add("militaryService")
@@ -94,7 +89,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("partnerRegistered")
                 .add("partnerCandidate", partnerCandidateDto())
                 .add("partnerEduLevel", englishLevelDto())
-                .add("partnerProfession", occupationDto())
+                .add("partnerOccupation", occupationDto())
                 .add("partnerEnglish")
                 .add("partnerEnglishLevel", languageLevelDto())
                 .add("partnerIelts")
@@ -105,7 +100,7 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("returnedHome")
                 .add("returnedHomeReason")
-                .add("returnedHomeNotes")
+
                 .add("returnHomeSafe")
                 .add("returnHomeFuture")
                 .add("returnHomeWhen")
@@ -134,6 +129,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("workPermit")
                 .add("workPermitDesired")
                 .add("workLegally")
+                .add("workDesired")
 
                 ;
     }
@@ -158,6 +154,15 @@ public class CandidateIntakeDataBuilderSelector {
                 ;
     }
 
+    private DtoBuilder candidateDependantDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("relation")
+                .add("dob")
+                .add("healthConcern")
+                .add("notes")
+                ;
+    }
     private DtoBuilder candidateDestinationDto() {
         return new DtoBuilder()
                 .add("id")

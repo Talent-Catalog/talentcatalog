@@ -44,17 +44,18 @@ public class CandidateIntakeDataUpdate {
 
     private YesNo canDrive;
 
-    private YesNo children;
-    private String childrenAge;
-
     private YesNo conflict;
     private String conflictNotes;
 
     private YesNoUnsure crimeConvict;
     private String crimeConvictNotes;
 
-    private Long dependants;
-    private String dependantsNotes;
+    //Corresponds to CandidateDependant fields
+    private Long dependantId;
+    private DependantRelations dependantRelation;
+    private LocalDate dependantDob;
+    private YesNo dependantHealthConcerns;
+    private String dependantNotes;
 
     //Corresponds to CandidateDestination fields
     private Long destinationId;
@@ -83,8 +84,7 @@ public class CandidateIntakeDataUpdate {
 
     private YesNo familyMove;
     private String familyMoveNotes;
-    private YesNo familyHealthConcern;
-    private String familyHealthConcernNotes;
+
     private String homeLocation;
     private String hostChallenges;
     private YesNo hostBorn;
@@ -93,6 +93,8 @@ public class CandidateIntakeDataUpdate {
     private List<IntRecruitReason> intRecruitReasons;
     private YesNoUnsure intRecruitRural;
 
+    private String langAssessment;
+    private IeltsScore langAssessmentScore;
     private LeftHomeReason leftHomeReason;
     private String leftHomeOther;
     private YesNo militaryService;
@@ -101,7 +103,7 @@ public class CandidateIntakeDataUpdate {
     private YesNoUnsure partnerRegistered;
     private Long partnerCandId;
     private Long partnerEduLevelId;
-    private Long partnerProfessionId;
+    private Long partnerOccupationId;
     private YesNo partnerEnglish;
     private Long partnerEnglishLevelId;
     private YesNoUnsure partnerIelts;
@@ -111,7 +113,6 @@ public class CandidateIntakeDataUpdate {
     private ResidenceStatus residenceStatus;
 
     private YesNoUnsure returnedHome;
-    private String returnedHomeNotes;
     private String returnedHomeReason;
     private YesNoUnsure returnHomeSafe;
     private YesNoUnsure returnHomeFuture;
@@ -151,5 +152,6 @@ public class CandidateIntakeDataUpdate {
     private WorkPermit workPermit;
     private YesNoUnsure workPermitDesired;
     private YesNo workLegally;
+    private YesNoUnemployed workDesired;
 
 }

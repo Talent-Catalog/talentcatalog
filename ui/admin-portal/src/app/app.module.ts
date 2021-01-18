@@ -135,7 +135,6 @@ import {FamilyComponent} from './components/candidates/intake/family/family.comp
 import {CandidateMiniIntakeTabComponent} from './components/candidates/view/tab/candidate-mini-intake-tab/candidate-mini-intake-tab.component';
 import {IntRecruitmentComponent} from './components/candidates/intake/int-recruitment/int-recruitment.component';
 import {RuralComponent} from './components/candidates/intake/rural/rural.component';
-import {FamilyHealthComponent} from './components/candidates/intake/family-health/family-health.component';
 import {ReturnHomeSafeComponent} from './components/candidates/intake/return-home-safe/return-home-safe.component';
 import {WorkPermitComponent} from './components/candidates/intake/work-permit/work-permit.component';
 import {WorkLegallyComponent} from './components/candidates/intake/work-legally/work-legally.component';
@@ -176,10 +175,11 @@ import {DragulaModule} from 'ng2-dragula';
 import {CandidateColumnSelectorComponent} from './components/util/candidate-column-selector/candidate-column-selector.component';
 import {CandidateNameNumSearchComponent} from './components/util/candidate-name-num-search/candidate-name-num-search.component';
 import {MilitaryServiceComponent} from './components/candidates/intake/military-service/military-service.component';
-import {ChildrenComponent} from './components/candidates/intake/children/children.component';
 import {VisaRejectComponent} from './components/candidates/intake/visa-reject/visa-reject.component';
 import {DrivingLicenseComponent} from './components/candidates/intake/driving-license/driving-license.component';
 import {DependantsComponent} from './components/candidates/intake/dependants/dependants.component';
+import {DependantsCardComponent} from './components/candidates/intake/dependants/card/dependants-card.component';
+import {LangAssessmentComponent} from './components/candidates/intake/lang-assessment/lang-assessment.component';
 
 @NgModule({
   declarations: [
@@ -307,7 +307,6 @@ import {DependantsComponent} from './components/candidates/intake/dependants/dep
     CandidateMiniIntakeTabComponent,
     IntRecruitmentComponent,
     RuralComponent,
-    FamilyHealthComponent,
     ReturnHomeSafeComponent,
     WorkPermitComponent,
     WorkLegallyComponent,
@@ -349,10 +348,11 @@ import {DependantsComponent} from './components/candidates/intake/dependants/dep
     MaritalStatusComponent,
     CandidateNameNumSearchComponent,
     MilitaryServiceComponent,
-    ChildrenComponent,
     VisaRejectComponent,
     DrivingLicenseComponent,
-    DependantsComponent
+    DependantsComponent,
+    DependantsCardComponent,
+    LangAssessmentComponent
   ],
   imports: [
     BrowserModule,

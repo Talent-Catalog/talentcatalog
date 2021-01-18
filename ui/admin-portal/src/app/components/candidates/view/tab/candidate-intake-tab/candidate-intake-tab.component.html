@@ -172,6 +172,23 @@
 
   <div class="card">
     <div class="card-header">
+      Language Assessment
+      <span class="small ml-2">
+        Only complete if never taken IELTS or TOEFL.
+      </span>
+    </div>
+    <div class="card-body">
+      <app-lang-assessment
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-lang-assessment>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="card">
+    <div class="card-header">
       Family Information
     </div>
     <div class="card-body">
@@ -183,24 +200,19 @@
       [languageLevels]="languageLevels"
       [nationalities]="nationalities">
       </app-marital-status>
-      <app-dependants
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-dependants>
-      <app-children
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-children>
-      <app-family-health
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-family-health>
       <app-family
       [candidate]="candidate"
       [candidateIntakeData]="candidateIntakeData">
       </app-family>
     </div>
   </div>
+
+  <hr/>
+
+  <app-dependants
+    [candidate]="candidate"
+    [candidateIntakeData]="candidateIntakeData">
+  </app-dependants>
 
   <hr/>
 

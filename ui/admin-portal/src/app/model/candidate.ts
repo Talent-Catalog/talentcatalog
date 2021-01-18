@@ -51,6 +51,7 @@ export interface CandidateIntakeData {
   availImmediateNotes?: string;
 
   candidateCitizenships?: CandidateCitizenship[];
+  candidateDependants?: CandidateDependant[];
 
   candidateDestinations?: CandidateDestination[];
 
@@ -96,6 +97,8 @@ export interface CandidateIntakeData {
   hostEntryLegally?: YesNo;
   intRecruitReasons?: IntRecruitReason[];
   intRecruitRural?: YesNoUnsure;
+  langAssessment?: string;
+  langAssessmentScore?: IeltsScore;
   leftHomeReason?: LeftHomeReason[];
   leftHomeOther?: string;
   militaryService?: YesNo;
@@ -103,7 +106,7 @@ export interface CandidateIntakeData {
   partnerRegistered?: YesNoUnsure;
   partnerCandidate?: Candidate;
   partnerEduLevel?: EducationLevel;
-  partnerProfession?: Occupation;
+  partnerOccupation?: Occupation;
   partnerEnglish?: YesNo;
   partnerEnglishLevel?: LanguageLevel;
   partnerIelts?: YesNoUnsure;
@@ -130,7 +133,7 @@ export interface CandidateIntakeData {
   workPermit?: WorkPermitValidity;
   workPermitDesired?: YesNoUnsure;
   workLegally?: YesNo;
-  workDesired?: WorkDesiredField;
+  workDesired?: YesNoUnemployed;
   unhcrStatus?: UnhcrStatus;
   unhcrOldStatus?: UnhcrStatus;
   unhcrNumber?: string;
@@ -153,6 +156,14 @@ export interface CandidateCitizenship {
   nationality?: {id};
   hasPassport?: HasPassport;
   passportExp?: string;
+  notes?: string;
+}
+
+export interface CandidateDependant {
+  id?: number;
+  relation?: DependantRelations;
+  dob?: string;
+  healthConcern?: string;
   notes?: string;
 }
 
@@ -208,7 +219,19 @@ export enum AvailImmediateReason {
 export enum FamilyRelations {
   NoResponse = "",
   NoRelation = "No relatives",
-  Parents = "Mother/Father",
+  Child = "Daughter/Son",
+  Parent = "Mother/Father",
+  Sibling = "Sister/Brother",
+  AuntUncle = "Aunt/Uncle",
+  Grandparent = "Grandmother/Grandfather",
+  Cousin = "First Cousin",
+  Other = "Other"
+}
+
+export enum DependantRelations {
+  NoResponse = "",
+  Child = "Daughter/Son",
+  Parent = "Mother/Father",
   Sibling = "Sister/Brother",
   AuntUncle = "Aunt/Uncle",
   Grandparent = "Grandmother/Grandfather",
@@ -272,7 +295,7 @@ export enum WorkPermitValidity {
   No = "No - I do not have a work permit",
 }
 
-export enum WorkDesiredField {
+export enum YesNoUnemployed {
   NoResponse = "",
   Yes = "Yes",
   No = "No",

@@ -37,7 +37,7 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
       partnerRegistered: [this.candidateIntakeData?.partnerRegistered],
       partnerCandId: [this.candidateIntakeData?.partnerCandidate?.id],
       partnerEduLevelId: [this.candidateIntakeData?.partnerEduLevel?.id],
-      partnerProfessionId: [this.candidateIntakeData?.partnerProfession?.id],
+      partnerOccupationId: [this.candidateIntakeData?.partnerOccupation?.id],
       partnerEnglish: [this.candidateIntakeData?.partnerEnglish],
       partnerEnglishLevelId: [this.candidateIntakeData?.partnerEnglishLevel?.id],
       partnerIelts: [this.candidateIntakeData?.partnerIelts],

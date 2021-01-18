@@ -1,32 +1,26 @@
-<div *ngIf="error">
-  {{error}}
-</div>
-<form [formGroup]="form">
-
-  <div class="form-group">
-    <label for="dependants">
-      Other dependant relatives?
-    </label>
+<!-- EXISTING RECORDS -->
+<div class="card">
+  <div class="card-header">
+    Dependants
+    <span class="small ml-2">Include any potential future dependants (e.g. are you getting married to someone soon who will give you another citizenship?)</span>
     <div class="float-right">
-      <app-autosave-status
-        [saving]="saving"
-        [typing]="typing">
-      </app-autosave-status>
+      <button type="button" class="btn btn-primary btn-sm" (click)="addRecord()">
+        <i class="fas fa-plus"></i>
+      </button>
     </div>
-    <input type="number" class="form-control"
-           id="dependants" [formControlName]="'dependants'">
-    <small>Note: If none/single, enter 0.</small>
   </div>
-
-  <div *ngIf="hasDependants" class="form-group">
-    <label for="dependantsNotes">
-      Please provide some more details on your dependants
-    </label>
-    <textarea type="text" class="md-textarea-auto form-control" rows="4"
-              id="dependantsNotes" [formControlName]="'dependantsNotes'"
-              placeholder="" ></textarea>
+  <div class="card-body">
+    <div *ngIf="error">
+      {{error}}
+    </div>
+    <div *ngFor="let citizenship of candidateIntakeData.candidateDependants; let i = index;" class="citizenship-card">
+      <app-dependants-card
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [myRecordIndex]="i"
+        (delete)="deleteRecord(i)">
+      </app-dependants-card>
+      <hr/>
+    </div>
   </div>
-
-
-</form>
-
+</div>
