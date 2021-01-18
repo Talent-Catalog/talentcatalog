@@ -129,6 +129,7 @@
           <ng-template ngbTabContent>
             <app-candidate-mini-intake-tab
               [candidate]="candidate"
+
             >
             </app-candidate-mini-intake-tab>
           </ng-template>
@@ -162,20 +163,27 @@
           <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
             class="fas fa-arrow-{{sidePanelColWidth == 8 ? 'right' : 'left'}}"></i></button>
         </div>
+        <app-view-candidate-note
+          [candidate]="candidate"
+          [editable]="!loggedInUser.readOnly"
+          [characterLimit]="1000"
+          (onResize)="resizeSidePanel()">
+        </app-view-candidate-note>
 
-        <ngb-tabset>
 
-          <!--         HISTORY -->
-          <ngb-tab [title]="'History'">
-            <ng-template ngbTabContent>
-              <app-candidate-history-tab
-                [candidate]="candidate"
-                [characterLimit]="1000"
-                [editable]="!loggedInUser.readOnly"
-                (onResize)="resizeSidePanel()">
-              </app-candidate-history-tab>
-            </ng-template>
-          </ngb-tab>
+<!--        <ngb-tabset>-->
+
+<!--          &lt;!&ndash;         HISTORY &ndash;&gt;-->
+<!--          <ngb-tab [title]="'History'">-->
+<!--            <ng-template ngbTabContent>-->
+<!--              <app-candidate-history-tab-->
+<!--                [candidate]="candidate"-->
+<!--                [characterLimit]="1000"-->
+<!--                [editable]="!loggedInUser.readOnly"-->
+<!--                (onResize)="resizeSidePanel()">-->
+<!--              </app-candidate-history-tab>-->
+<!--            </ng-template>-->
+<!--          </ngb-tab>-->
 
           <!--         HISTORY -->
 <!--          <ngb-tab [title]="'Audit'">-->
@@ -184,7 +192,7 @@
             <!--          </ng-template>-->
 <!--          </ngb-tab>-->
 
-        </ngb-tabset>
+<!--        </ngb-tabset>-->
       </div>
     </div>
   </div>

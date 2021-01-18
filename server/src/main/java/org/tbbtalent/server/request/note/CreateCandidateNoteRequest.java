@@ -11,7 +11,6 @@ public class CreateCandidateNoteRequest {
     @NotBlank
     private String title;
 
-    @NotBlank
     private String comment;
 
     public CreateCandidateNoteRequest() {

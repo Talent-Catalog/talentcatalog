@@ -1,11 +1,11 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {Candidate} from "../../../../model/candidate";
-import {CandidateNote} from "../../../../model/candidate-note";
-import {CandidateNoteService} from "../../../../services/candidate-note.service";
-import {EditCandidateNoteComponent} from "./edit/edit-candidate-note.component";
-import {CreateCandidateNoteComponent} from "./create/create-candidate-note.component";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {Candidate} from '../../../../model/candidate';
+import {CandidateNote} from '../../../../model/candidate-note';
+import {CandidateNoteService} from '../../../../services/candidate-note.service';
+import {EditCandidateNoteComponent} from './edit/edit-candidate-note.component';
+import {CreateCandidateNoteComponent} from './create/create-candidate-note.component';
+import {FormBuilder, FormGroup} from '@angular/forms';
 
 @Component({
   selector: 'app-view-candidate-note',
@@ -76,7 +76,7 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
     this.candidateNoteService.search(this.candidateNoteForm.value).subscribe(
       results => {
         this.notes = results.content;
-        this.hasMore = results.totalPages > results.number+1;
+        this.hasMore = results.totalPages > results.number + 1;
         this.loading = false;
       },
       error => {
@@ -84,7 +84,6 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
         this.loading = false;
       })
     ;
-
   }
 
   loadMore() {

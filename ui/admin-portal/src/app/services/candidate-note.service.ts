@@ -8,7 +8,7 @@ import {CandidateNote} from '../model/candidate-note';
 export interface CreateCandidateNoteRequest {
   candidateId: number;
   title: string;
-  comment: string;
+  comment?: string;
 }
 
 @Injectable({providedIn: 'root'})

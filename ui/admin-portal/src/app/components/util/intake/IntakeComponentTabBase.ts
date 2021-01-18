@@ -205,21 +205,20 @@ export abstract class IntakeComponentTabBase implements OnInit {
     if (update) {
        this.noteRequest = {
         candidateId: this.candidate.id,
-        title: formName + ' interview updated.',
-        comment: formName + ' interview updated by ' + this.loggedInUser.firstName + ' '
+        title: formName + ' interview updated by ' + this.loggedInUser.firstName + ' '
           + this.loggedInUser.lastName + ' on the ' + new Date().toLocaleDateString() + '.',
       };
     } else {
       this.noteRequest = {
         candidateId: this.candidate.id,
-        title: formName + ' interview started.',
-        comment: formName + ' interview started by ' + this.loggedInUser.firstName + ' '
+        title: formName + ' interview started by ' + this.loggedInUser.firstName + ' '
           + this.loggedInUser.lastName + ' on the ' + new Date().toLocaleDateString() + '.',
       };
     }
     this.noteService.create(this.noteRequest).subscribe(
       (candidateNote) => {
         button.textContent = update ? 'Updated!' : 'Started!';
+        //todo fire event
       }, (error) => {
         this.error = error;
       })
