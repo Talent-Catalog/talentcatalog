@@ -33,6 +33,9 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+    this.candidateNoteService.newNote$.subscribe(
+      () => this.reload()
+    );
   }
 
   ngOnChanges(changes: SimpleChanges) {

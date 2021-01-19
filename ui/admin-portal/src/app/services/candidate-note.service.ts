@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/index';
+import {Observable, Subject} from 'rxjs/index';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
@@ -15,6 +15,9 @@ export interface CreateCandidateNoteRequest {
 export class CandidateNoteService {
 
   private apiUrl = environment.apiUrl + '/candidate-note';
+
+  private newNoteSource = new Subject();
+  newNote$ = this.newNoteSource.asObservable();
 
   constructor(private http: HttpClient) {}
 
@@ -32,6 +35,10 @@ export class CandidateNoteService {
 
   update(id: number, details): Observable<CandidateNote>  {
     return this.http.put<CandidateNote>(`${this.apiUrl}/${id}`, details);
+  }
+
+  refreshNotes(){
+    this.newNoteSource.next();
   }
 
 }

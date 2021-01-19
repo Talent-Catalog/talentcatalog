@@ -218,7 +218,7 @@ export abstract class IntakeComponentTabBase implements OnInit {
     this.noteService.create(this.noteRequest).subscribe(
       (candidateNote) => {
         button.textContent = update ? 'Updated!' : 'Started!';
-        //todo fire event
+        this.noteService.refreshNotes();
       }, (error) => {
         this.error = error;
       })
