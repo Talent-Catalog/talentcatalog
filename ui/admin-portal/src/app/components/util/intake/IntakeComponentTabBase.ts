@@ -19,6 +19,9 @@ import {LanguageLevel} from '../../../model/language-level';
 
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import {CandidateNoteService, CreateCandidateNoteRequest} from '../../../services/candidate-note.service';
+import {User} from '../../../model/user';
+import {AuthService} from '../../../services/auth.service';
 
 /**
  * Base class for all candidate intake tab components.
@@ -92,6 +95,16 @@ export abstract class IntakeComponentTabBase implements OnInit {
    */
   languageLevels: LanguageLevel[];
 
+  /**
+   * Logged in User for audit
+   */
+  loggedInUser: User;
+
+  /**
+   * Note request for intake start and update.
+   */
+  noteRequest: CreateCandidateNoteRequest;
+
   public constructor(
     protected candidateService: CandidateService,
     protected countryService: CountryService,
@@ -99,6 +112,8 @@ export abstract class IntakeComponentTabBase implements OnInit {
     protected educationLevelService: EducationLevelService,
     protected occupationService: OccupationService,
     protected languageLevelService: LanguageLevelService,
+    protected noteService: CandidateNoteService,
+    protected authService: AuthService,
   ) { }
 
   ngOnInit(): void {
@@ -178,4 +193,35 @@ export abstract class IntakeComponentTabBase implements OnInit {
       pdf.save(formName + '_' + this.candidate.user.firstName + '_' + this.candidate.user.lastName + '.pdf');
       this.saving = false;
     })};
+
+  /**
+   * Called when Start button on intake forms is clicked. Creates a start note with user/time.
+   * @param formName is the type of intake interview used for the comment/title.
+   * @param action is either start or update.
+   * @param button is the button that's clicked, used to change the button text on click.
+   */
+  public createIntakeNote(formName: string, update: boolean, button) {
+    this.loggedInUser = this.authService.getLoggedInUser();
+    if (update) {
+       this.noteRequest = {
+        candidateId: this.candidate.id,
+        title: formName + ' interview updated by ' + this.loggedInUser.firstName + ' '
+          + this.loggedInUser.lastName + ' on the ' + new Date().toLocaleDateString() + '.',
+      };
+    } else {
+      this.noteRequest = {
+        candidateId: this.candidate.id,
+        title: formName + ' interview started by ' + this.loggedInUser.firstName + ' '
+          + this.loggedInUser.lastName + ' on the ' + new Date().toLocaleDateString() + '.',
+      };
+    }
+    this.noteService.create(this.noteRequest).subscribe(
+      (candidateNote) => {
+        button.textContent = update ? 'Updated!' : 'Started!';
+        this.noteService.refreshNotes();
+      }, (error) => {
+        this.error = error;
+      })
+  };
+
 }

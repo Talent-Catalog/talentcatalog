@@ -6,12 +6,29 @@
 </div>
 
 <div *ngIf="!loading" id="FullIntakeForm">
-  <div class="d-flex justify-content-between align-items-center mb-2">
-    <h5 class="ml-3">Full Intake</h5>
-    <button class="btn btn-primary" (click)="exportAsPdf('FullIntakeForm')" [disabled]="saving">
-      <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
-      Export PDF
-    </button>
+  <div class="d-flex justify-content-between mb-2 ml-2">
+    <div class="d-flex flex-column">
+      <button class="btn btn-sm btn-primary mb-3" (click)="exportAsPdf('FullIntakeForm')" [disabled]="saving">
+        <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
+        Export PDF
+      </button>
+      <h5>Full Intake</h5>
+    </div>
+    <div class="d-flex align-items-end flex-column justify-content-between">
+      <div class="d-flex float-right">
+        <button class="btn btn-sm btn-outline-success mr-1" (click)="createIntakeNote('Full Intake', false, $event.target)" [disabled]="saving">
+          Start Intake
+        </button>
+        <button class="btn btn-sm btn-outline-secondary ml-1" (click)="createIntakeNote('Full Intake', true, $event.target)" [disabled]="saving">
+          Update Intake
+        </button>
+      </div>
+      <div>
+        <div class="text-muted small text-right">Before starting or updating the interview, please click appropriate button.</div>
+        <div class="text-muted small text-right">This will create a note on the right to help track changes.</div>
+      </div>
+
+    </div>
   </div>
 
   <div class="card">

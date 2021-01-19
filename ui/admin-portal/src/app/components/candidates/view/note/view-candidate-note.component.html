@@ -4,10 +4,11 @@
 <div *ngIf="error">
   {{error}}
 </div>
-<div class="h3" *ngIf="!loading && editable">
-  Notes
-  <div class="float-right">
-    <button type="button" class="btn btn-sm btn-primary" (click)="createCandidateNote()"><i class="fas fa-plus"></i>
+<div class="d-flex justify-content-between mb-2" *ngIf="!loading && editable">
+  <h3>Notes</h3>
+  <div>
+    <button type="button" class="btn btn-sm btn-primary mr-2" (click)="createCandidateNote()">
+      <i class="fas fa-plus"></i>
     </button>
   </div>
 </div>
@@ -24,21 +25,22 @@
 
 <div *ngFor="let candidateNote of notes; let i = index">
   <div class="card">
-    <div class="card-header">
+    <div class="card-header d-flex justify-content-between">
+      <div>
         {{candidateNote.title}}
-        <div class="text-right">
-          <div class="btn-toolbar">
-            <button *ngIf="candidateNote.comment" class="btn btn-sm btn-default" (click)="showNote(candidateNote)"><i
-              class="fas fa-ellipsis-h"></i></button>
-            <button *ngIf="editable" class="btn btn-sm btn-default" (click)="editCandidateNote(candidateNote)"><i
-              class="fas fa-edit"></i></button>
-          </div>
+      </div>
+      <div class="float-right">
+        <button *ngIf="candidateNote.comment" class="btn btn-sm btn-default" (click)="showNote(candidateNote)"><i
+          class="fas fa-ellipsis-h"></i></button>
+        <button *ngIf="editable" class="btn btn-sm btn-default" (click)="editCandidateNote(candidateNote)"><i
+          class="fas fa-edit"></i></button>
       </div>
     </div>
 
     <div class="card-body">
       <div *ngIf="candidateNote.comment && candidateNote.showDetail">
         <div [innerHTML]="candidateNote.comment"></div>
+        <hr/>
       </div>
 
       <div *ngIf="candidateNote">
