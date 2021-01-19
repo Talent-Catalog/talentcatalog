@@ -9,6 +9,15 @@ pipelines: # We set up all the pipeline or actions beneath test
           name: "Build bundle jar file"
           image: java:8
           script:
+            # Install the Amazon ECR credential helper which is used by the
+            # jib plugin in the gradle file to build a docker image.
+            # The credential helper will pick up the authentication it needs
+            # from the environment variables AWS_ACCESS_KEY_ID and
+            # AWS_SECRET_ACCESS_KEY.
+            # See https://support.atlassian.com/bitbucket-cloud/docs/specify-dependencies-in-your-pipelines-build/
+            - apt update && apt install amazon-ecr-credential-helper
+            
+            # Build using gradle
             - bash ./gradlew clean stage
           artifacts:
             - server/build/libs/server.jar
