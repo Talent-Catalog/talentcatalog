@@ -15,7 +15,7 @@ pipelines: # We set up all the pipeline or actions beneath test
             # from the environment variables AWS_ACCESS_KEY_ID and
             # AWS_SECRET_ACCESS_KEY.
             # See https://support.atlassian.com/bitbucket-cloud/docs/specify-dependencies-in-your-pipelines-build/
-            - apt install amazon-ecr-credential-helper
+            - apt-get update && apt-get install -y amazon-ecr-credential-helper
             
             # Build using gradle
             - bash ./gradlew clean stage
