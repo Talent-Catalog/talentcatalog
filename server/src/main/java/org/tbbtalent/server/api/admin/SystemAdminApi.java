@@ -122,14 +122,6 @@ public class SystemAdminApi {
         countryForGeneralCountry = getExtraCountryMappings();
     }
 
-    public static void main(String[] args) {
-        SystemAdminApi api = new SystemAdminApi(null, null, null, null, null, null, null, null);
-        api.setTargetJdbcUrl("jdbc:postgresql://localhost:5432/tbbtalent");
-        api.setTargetUser("tbbtalent");
-        api.setTargetPwd("tbbtalent");
-        api.migrate();
-    }
-
     /**
      * Returns info (including "name") about the Salesforce opportunity 
      * corresponding to the given url - or null if the url does not refer
