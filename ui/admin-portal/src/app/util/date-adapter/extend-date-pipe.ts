@@ -9,7 +9,8 @@ import {DatePipe} from '@angular/common';
 export class ExtendDatePipe extends DatePipe implements PipeTransform {
   readonly customFormats = {
     customDefault: 'dd MMM yy',
-    customDateTime: 'dd MMM yy, h:mm:ss a'
+    customDateTime: 'dd MMM yy, h:mm:ss a',
+    customMonthYear: 'MMM yy'
   };
 
   constructor(@Inject(LOCALE_ID) locale: string) {
