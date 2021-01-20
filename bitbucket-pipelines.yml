@@ -7,7 +7,6 @@ pipelines: # We set up all the pipeline or actions beneath test
     master:
       - step:
           name: "Build bundle jar file"
-          image: java:8
           script:
             # Install the Amazon ECR credential helper which is used by the
             # jib plugin in the gradle file to build a docker image.
