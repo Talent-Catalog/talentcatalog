@@ -22,6 +22,7 @@ import jsPDF from 'jspdf';
 import {CandidateNoteService, CreateCandidateNoteRequest} from '../../../services/candidate-note.service';
 import {User} from '../../../model/user';
 import {AuthService} from '../../../services/auth.service';
+import {formatDate} from '@angular/common';
 
 /**
  * Base class for all candidate intake tab components.
@@ -202,23 +203,23 @@ export abstract class IntakeComponentTabBase implements OnInit {
    */
   public createIntakeNote(formName: string, update: boolean, button) {
     this.loggedInUser = this.authService.getLoggedInUser();
+
     if (update) {
        this.noteRequest = {
         candidateId: this.candidate.id,
         title: formName + ' interview updated by ' + this.loggedInUser.firstName + ' '
-          + this.loggedInUser.lastName + ' on the ' + new Date().toLocaleDateString() + '.',
+          + this.loggedInUser.lastName + ' on ' + formatDate(new Date(), 'dd MMM yy' , 'en-US') + '.',
       };
     } else {
       this.noteRequest = {
         candidateId: this.candidate.id,
         title: formName + ' interview started by ' + this.loggedInUser.firstName + ' '
-          + this.loggedInUser.lastName + ' on the ' + new Date().toLocaleDateString() + '.',
+          + this.loggedInUser.lastName + ' on ' + formatDate(new Date(), 'dd MMM yy' , 'en-US') + '.',
       };
     }
     this.noteService.create(this.noteRequest).subscribe(
       (candidateNote) => {
         button.textContent = update ? 'Updated!' : 'Started!';
-        this.noteService.refreshNotes();
       }, (error) => {
         this.error = error;
       })

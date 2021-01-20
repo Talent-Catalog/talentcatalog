@@ -33,7 +33,12 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+    // Subscribe when a new note is made
     this.candidateNoteService.newNote$.subscribe(
+      () => this.reload()
+    );
+    // Subscribe when a note is updated
+    this.candidateNoteService.updatedNote$.subscribe(
       () => this.reload()
     );
   }
@@ -102,11 +107,6 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
 
     editCandidateNoteModal.componentInstance.candidateNote = candidateNote;
 
-    editCandidateNoteModal.result
-      .then((candidateNote) => this.reload())
-      .catch(() => { /* Isn't possible */
-      });
-
   }
 
   createCandidateNote() {
@@ -116,11 +116,6 @@ export class ViewCandidateNoteComponent implements OnInit, OnChanges {
     });
 
     createCandidateNoteModal.componentInstance.candidateId = this.candidate.id;
-
-    createCandidateNoteModal.result
-      .then((candidateNote) => this.reload())
-      .catch(() => { /* Isn't possible */
-      });
 
   }
 
