@@ -34,17 +34,19 @@ export class CandidateNoteService {
   }
 
   create(request: CreateCandidateNoteRequest): Observable<CandidateNote>  {
-     return this.http.post<CandidateNote>(`${this.apiUrl}`, request).pipe(
-       tap(() => {
-         this.newNoteSource.next()
-       }))
+    return this.http.post<CandidateNote>(`${this.apiUrl}`, request).pipe(
+      tap(() => {
+        this.newNoteSource.next()
+      })
+    )
   }
 
   update(id: number, details): Observable<CandidateNote>  {
     return this.http.put<CandidateNote>(`${this.apiUrl}/${id}`, details).pipe(
       tap(() => {
         this.updatedNoteSource.next()
-      }));
+      })
+    )
   }
 
 }

@@ -13,7 +13,7 @@
 
   <!-- DATE -->
   <span class="date" *ngIf="object?.updatedDate || object?.createdDate">
-    {{ (object.updatedDate ? object.updatedDate : object.createdDate) | date: 'short' }}
+    {{ (object.updatedDate ? object.updatedDate : object.createdDate) | date: 'customDateTime' }}
   </span>
 
 </div>

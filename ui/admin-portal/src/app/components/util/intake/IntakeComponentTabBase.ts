@@ -22,7 +22,7 @@ import jsPDF from 'jspdf';
 import {CandidateNoteService, CreateCandidateNoteRequest} from '../../../services/candidate-note.service';
 import {User} from '../../../model/user';
 import {AuthService} from '../../../services/auth.service';
-import {formatDate} from '@angular/common';
+import {dateString} from '../../../util/date-adapter/date-adapter';
 
 /**
  * Base class for all candidate intake tab components.
@@ -208,13 +208,13 @@ export abstract class IntakeComponentTabBase implements OnInit {
        this.noteRequest = {
         candidateId: this.candidate.id,
         title: formName + ' interview updated by ' + this.loggedInUser.firstName + ' '
-          + this.loggedInUser.lastName + ' on ' + formatDate(new Date(), 'dd MMM yy' , 'en-US') + '.',
+          + this.loggedInUser.lastName + ' on ' + dateString(new Date()) + '.',
       };
     } else {
       this.noteRequest = {
         candidateId: this.candidate.id,
         title: formName + ' interview started by ' + this.loggedInUser.firstName + ' '
-          + this.loggedInUser.lastName + ' on ' + formatDate(new Date(), 'dd MMM yy' , 'en-US') + '.',
+          + this.loggedInUser.lastName + ' on ' + dateString(new Date()) + '.',
       };
     }
     this.noteService.create(this.noteRequest).subscribe(

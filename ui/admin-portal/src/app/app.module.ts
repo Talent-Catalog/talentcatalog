@@ -180,6 +180,7 @@ import {DrivingLicenseComponent} from './components/candidates/intake/driving-li
 import {DependantsComponent} from './components/candidates/intake/dependants/dependants.component';
 import {DependantsCardComponent} from './components/candidates/intake/dependants/card/dependants-card.component';
 import {LangAssessmentComponent} from './components/candidates/intake/lang-assessment/lang-assessment.component';
+import {ExtendDatePipe} from './util/date-adapter/extend-date-pipe';
 
 @NgModule({
   declarations: [
@@ -352,7 +353,8 @@ import {LangAssessmentComponent} from './components/candidates/intake/lang-asses
     DrivingLicenseComponent,
     DependantsComponent,
     DependantsCardComponent,
-    LangAssessmentComponent
+    LangAssessmentComponent,
+    ExtendDatePipe
   ],
   imports: [
     BrowserModule,
