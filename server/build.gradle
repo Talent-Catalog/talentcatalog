@@ -94,7 +94,7 @@ jib {
 }
 
 //TODO Comment this back in to enable job build once credential helper is installing successfully
-tasks.build.dependsOn tasks.jib
+//tasks.build.dependsOn tasks.jib
 
 test {
     useJUnitPlatform()
