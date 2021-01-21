@@ -17,7 +17,7 @@ export class ExtendDatePipe extends DatePipe implements PipeTransform {
     super(locale);
   }
 
-  transform(value: any, format = 'customDefault', timezone: string, locale?: string): string {
+  transform(value: any, format = 'customDefault', timezone?: string, locale?: string): string {
     format = this.customFormats[format] || format;
 
     return super.transform(value, format, timezone, locale);
