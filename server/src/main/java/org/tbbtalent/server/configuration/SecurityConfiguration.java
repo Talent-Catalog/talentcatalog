@@ -4,10 +4,6 @@
 
 package org.tbbtalent.server.configuration;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -28,11 +24,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.tbbtalent.server.security.CandidateUserDetailsService;
-import org.tbbtalent.server.security.JwtAuthenticationEntryPoint;
-import org.tbbtalent.server.security.JwtAuthenticationFilter;
-import org.tbbtalent.server.security.LanguageFilter;
-import org.tbbtalent.server.security.TbbAuthenticationProvider;
+import org.tbbtalent.server.security.*;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -86,6 +82,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
                 // DELETE: DELETE ATTACHMENT
                 .antMatchers(HttpMethod.DELETE, "/api/admin/candidate-attachment/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED")
+
+                // DELETE: DELETE CANDIDATE EXAM (INTAKE INTERVIEW)
+                .antMatchers(HttpMethod.DELETE, "/api/admin/candidate-exam/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED")
+
+                // DELETE: DELETE CANDIDATE CITIZENSHIP (INTAKE INTERVIEW)
+                .antMatchers(HttpMethod.DELETE, "/api/admin/candidate-citizenship/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED")
+
+                // DELETE: DELETE CANDIDATE DEPENDANT (INTAKE INTERVIEW)
+                .antMatchers(HttpMethod.DELETE, "/api/admin/candidate-dependant/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED")
 
                 // ADMIN ONLY RESTRICTIONS
                     // All OTHER DELETE end points
