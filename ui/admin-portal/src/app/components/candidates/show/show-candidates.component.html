@@ -54,7 +54,7 @@
       <button class="btn" *ngIf="timestamp" (click)="doSearch(true)">
         <i class="fas fa-sync" title="Refresh search"></i>
       </button>
-      {{results?.totalElements}} candidates. Timestamp {{timestamp | date: 'yyyy-MM-dd HH:mm:ss'}}
+      {{results?.totalElements}} candidates. Timestamp {{timestamp | date: 'customDateTime'}}
 
       <button *ngIf="isShareable() && !isSharedWithMe() && !isGlobal()"
         class="btn btn-outline-secondary" (click)="addToSharedWithMe()">

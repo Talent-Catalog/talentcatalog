@@ -25,11 +25,11 @@
 
 <div *ngFor="let candidateNote of notes; let i = index">
   <div class="card">
-    <div class="card-header d-flex justify-content-between">
+    <div class="card-header d-flex justify-content-between align-items-start">
       <div>
         {{candidateNote.title}}
       </div>
-      <div class="float-right">
+      <div class="float-right d-flex ml-3">
         <button *ngIf="candidateNote.comment" class="btn btn-sm btn-default" (click)="showNote(candidateNote)"><i
           class="fas fa-ellipsis-h"></i></button>
         <button *ngIf="editable" class="btn btn-sm btn-default" (click)="editCandidateNote(candidateNote)"><i
