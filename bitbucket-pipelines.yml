@@ -28,6 +28,8 @@ pipelines: # We set up all the pipeline or actions beneath test
 
             # Build using gradle
             - bash ./gradlew clean stage
+          services:
+            - docker
           artifacts:
             - server/build/libs/server.jar
       - step:
