@@ -17,7 +17,15 @@ pipelines: # We set up all the pipeline or actions beneath test
             
             # TODO Uncomment when we find build image which has ecr helper
             #- apt-get update && apt-get install -y amazon-ecr-credential-helper
-            
+            - git clone https://github.com/awslabs/amazon-ecr-credential-helper.git
+            - cd amazon-ecr-credential-helper
+            - make docker
+            - chmod +x ./bin/local/docker-credential-ecr-login
+            - mkdir ~/bin
+            - mv ./bin/local/docker-credential-ecr-login ~/bin
+            - export PATH=~/bin:$PATH
+
+
             # Build using gradle
             - bash ./gradlew clean stage
           artifacts:
