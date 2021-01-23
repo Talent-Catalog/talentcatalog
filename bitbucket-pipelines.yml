@@ -27,6 +27,8 @@ pipelines: # We set up all the pipeline or actions beneath test
             - mv ./bin/local/docker-credential-ecr-login ~/bin
             - export PATH=~/bin:$PATH
             - cd ..
+            - mkdir ~/.docker
+            - echo "{ \"credsStore\":\"ecr-login\" }" > ~/.docker/config.json 
             - cat ~/.docker/config.json
 
 
