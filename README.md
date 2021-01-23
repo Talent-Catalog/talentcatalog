@@ -25,7 +25,7 @@ Download and install the latest of the following tools.
 
 IMPORTANT NOTE FOR MAC Users:
 
-On a Mac, installing with Homebrew works well. eg "brew install xxx".
+On a Mac, installing with Homebrew usually works well. eg "brew install xxx".
 However, Flyway and Postgres don't install with Homebrew, and the book
 "Angular Up & Running" book notes that installing Node.js using Homebrew on a
 can also have problems. Googling you can still see lots of people having
@@ -59,10 +59,12 @@ It is also probably easier to install Java directly rather than using brew.
 - Elasticsearch (for text search)
     - Install Docker image. 
       See [https://www.elastic.co/guide/en/elasticsearch/reference/7.10/docker.html]()
+      Just pull the image to install. See later for how to run.
 
 - Kibana (for monitoring Elasticsearch)
     - Install Docker image.
-    See [https://www.elastic.co/guide/en/kibana/current/docker.html]()
+      See [https://www.elastic.co/guide/en/kibana/current/docker.html]()
+      Just pull the image to install. See later for how to run.
 
 - Git [https://git-scm.com/downloads]()
 - PostgreSQL [https://www.postgresql.org/download/]()
@@ -97,7 +99,7 @@ Can run from Docker desktop for Mac, or...
 
 > docker rm elasticsearch
 
-> docker run --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.10.1
+> docker run --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.10.2
 
 Elasticsearch will run listening on port 9200. 
 You can verify this by going to [localhost:9200]() in your browser
@@ -108,7 +110,7 @@ Can run from Docker desktop for Mac, or...
 
 > docker rm kibana
 
-> docker run --name kibana --link elasticsearch -p 5601:5601 docker.elastic.co/kibana/kibana:7.10.1
+> docker run --name kibana --link elasticsearch -p 5601:5601 docker.elastic.co/kibana/kibana:7.10.2
 
 Kibana runs listening on port 5601. 
 You can verify this by going to [localhost:5601]() in your browser 

@@ -4,11 +4,23 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.io.Encoders;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.Signature;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -31,20 +43,13 @@ import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
-import reactor.core.publisher.Mono;
 
-import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
-import java.security.KeyFactory;
-import java.security.PrivateKey;
-import java.security.Signature;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.text.MessageFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.io.Encoders;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import reactor.core.publisher.Mono;
 
 /**
  * Standard implementation of Salesforce service
@@ -238,7 +243,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         //
         //We figure out which candidates have opportunities still to be
         //created by first creating a map of candidates indexed by their unique
-        //opportunity id. 
+        //opportunity id - constructed from the candidate number and the 
+        //job opportunity id.
         Map<String,Candidate> idCandidateMap = new HashMap<>();
         for (Candidate candidate : candidates) {
             String id = makeExternalId(candidate.getCandidateNumber(), 
@@ -254,7 +260,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             idCandidateMap.remove(externalId); 
         }
 
-        //If the map is empty, that means that all candidate alreday have their 
+        //If the map is empty, that means that all candidate already have their 
         //opp for this job. So nothing to do.
         if (idCandidateMap.size() > 0) {
             
