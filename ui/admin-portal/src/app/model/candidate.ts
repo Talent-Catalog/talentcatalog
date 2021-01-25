@@ -146,9 +146,6 @@ export interface CandidateIntakeData {
   visaReject?: YesNoUnsure;
   visaIssues?: VisaIssue[];
   visaIssuesNotes?: string;
-
-  intakeMiniCheckedBy?: User;
-  intakeMiniCheckedDate?: string;
 }
 
 export interface CandidateCitizenship {
@@ -230,6 +227,7 @@ export enum FamilyRelations {
 
 export enum DependantRelations {
   NoResponse = "",
+  Partner = "Spouse/Partner",
   Child = "Daughter/Son",
   Parent = "Mother/Father",
   Sibling = "Sister/Brother",
