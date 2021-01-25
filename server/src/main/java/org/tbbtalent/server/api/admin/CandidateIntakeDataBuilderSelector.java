@@ -78,6 +78,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("hostEntryLegally")
                 .add("intRecruitReasons")
                 .add("intRecruitRural")
+                .add("intRecruitRuralNotes")
 
                 .add("langAssessment")
                 .add("langAssessmentScore")

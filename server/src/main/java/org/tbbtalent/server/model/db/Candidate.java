@@ -205,6 +205,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private YesNoUnsure intRecruitRural;
 
+    @Nullable
+    private String intRecruitRuralNotes;
+
     @Enumerated(EnumType.STRING)
     @Nullable
     private YesNoUnsure returnHomeSafe;
@@ -788,6 +791,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setIntRecruitRural(@Nullable YesNoUnsure intRecruitRural) { this.intRecruitRural = intRecruitRural; }
 
     @Nullable
+    public String getIntRecruitRuralNotes() { return intRecruitRuralNotes; }
+
+    public void setIntRecruitRuralNotes(@Nullable String intRecruitRuralNotes) { this.intRecruitRuralNotes = intRecruitRuralNotes; }
+
+    @Nullable
     public YesNoUnsure getReturnHomeSafe() { return returnHomeSafe; }
 
     public void setReturnHomeSafe(@Nullable YesNoUnsure returnHomeSafe) { this.returnHomeSafe = returnHomeSafe; }
@@ -1226,6 +1234,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getIntRecruitRural() != null) {
             setIntRecruitRural(data.getIntRecruitRural());
+        }
+        if (data.getIntRecruitRuralNotes() != null) {
+            setIntRecruitRuralNotes(data.getIntRecruitRuralNotes());
         }
         if (data.getLangAssessment() != null) {
             setLangAssessment(data.getLangAssessment());

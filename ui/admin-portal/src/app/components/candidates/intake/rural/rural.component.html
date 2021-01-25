@@ -20,6 +20,14 @@
       </option>
     </select>
   </div>
+  <div *ngIf="ruralInterest">
+    <div class="form-group">
+      <label for="intRecruitRuralNotes">Any specific terms or conditions for rural roles?</label>
+      <textarea type="text" class="md-textarea-auto form-control" rows="4"
+                id="intRecruitRuralNotes" [formControlName]="'intRecruitRuralNotes'"
+                placeholder="" ></textarea>
+    </div>
+  </div>
 
 </form>
 

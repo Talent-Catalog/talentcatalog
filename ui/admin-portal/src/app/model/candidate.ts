@@ -98,6 +98,7 @@ export interface CandidateIntakeData {
   intRecruitReasons?: IntRecruitReason[];
   intRecruitOther?: string;
   intRecruitRural?: YesNoUnsure;
+  intRecruitRuralNotes?: string;
   langAssessment?: string;
   langAssessmentScore?: IeltsScore;
   leftHomeReason?: LeftHomeReason[];

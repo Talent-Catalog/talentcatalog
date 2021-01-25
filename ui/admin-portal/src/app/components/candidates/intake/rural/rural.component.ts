@@ -21,6 +21,15 @@ export class RuralComponent extends IntakeComponentBase implements OnInit {
   ngOnInit(): void {
     this.form = this.fb.group({
       intRecruitRural: [this.candidateIntakeData?.intRecruitRural],
+      intRecruitRuralNotes: [this.candidateIntakeData?.intRecruitRuralNotes],
     });
+  }
+
+  get ruralInterest(): boolean {
+    let interested: boolean;
+    if (this.form.value.intRecruitRural) {
+      interested = this.form.value.intRecruitRural === 'Yes' || this.form.value.intRecruitRural === 'Unsure';
+    }
+    return interested;
   }
 }

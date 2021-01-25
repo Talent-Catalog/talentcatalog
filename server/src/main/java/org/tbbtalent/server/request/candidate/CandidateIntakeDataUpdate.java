@@ -92,6 +92,7 @@ public class CandidateIntakeDataUpdate {
     private YesNo hostEntryLegally;
     private List<IntRecruitReason> intRecruitReasons;
     private YesNoUnsure intRecruitRural;
+    private String intRecruitRuralNotes;
 
     private String langAssessment;
     private IeltsScore langAssessmentScore;
