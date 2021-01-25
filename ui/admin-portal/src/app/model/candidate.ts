@@ -96,6 +96,7 @@ export interface CandidateIntakeData {
   hostEntryYear?: number;
   hostEntryLegally?: YesNo;
   intRecruitReasons?: IntRecruitReason[];
+  intRecruitOther?: string;
   intRecruitRural?: YesNoUnsure;
   langAssessment?: string;
   langAssessmentScore?: IeltsScore;

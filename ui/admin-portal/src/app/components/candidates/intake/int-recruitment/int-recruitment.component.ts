@@ -28,4 +28,11 @@ export class IntRecruitmentComponent extends IntakeComponentBase implements OnIn
     });
   }
 
+  get hasOther(): boolean {
+    let found: boolean;
+    found = this.form.value?.intRecruitReasons?.includes('Other');
+    return found;
+  }
+
 }
+
