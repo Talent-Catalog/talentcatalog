@@ -24,3 +24,8 @@ jobs:
       run: chmod +x gradlew
     - name: Build with Gradle
       run: ./gradlew build
+    - name: Store jar file
+      uses: actions/upload-artifact@v2
+      with:
+        name: server jar
+        path: server/build/libs/server.jar
