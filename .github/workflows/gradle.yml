@@ -37,6 +37,7 @@ jobs:
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         application_name: tbb-app-prod
         environment_name: TbbAppProd-env
-        version_label: 12345
+        version_label: ${{github.workflow}}-${{github.run_number}}
+        version_description: ${{ github.sha }}
         region: us-east-1
         deployment_package: server/build/libs/server.jar
