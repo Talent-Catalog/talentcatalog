@@ -5,6 +5,7 @@ import {YesNo} from '../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {Country} from '../../../../model/country';
+import {IDropdownSettings} from 'ng-multiselect-dropdown';
 
 @Component({
   selector: 'app-work-abroad',
@@ -15,6 +16,16 @@ export class WorkAbroadComponent extends IntakeComponentBase implements OnInit {
 
   @Input() countries: Country[];
 
+  /* MULTI SELECT */
+  dropdownSettings: IDropdownSettings = {
+    idField: 'id',
+    textField: 'name',
+    enableCheckAll: false,
+    singleSelection: false,
+    allowSearchFilter: true
+  };
+
+
   public workAbroadOptions: EnumOption[] = enumOptions(YesNo);
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
@@ -24,7 +35,7 @@ export class WorkAbroadComponent extends IntakeComponentBase implements OnInit {
   ngOnInit(): void {
     this.form = this.fb.group({
       workAbroad: [this.candidateIntakeData?.workAbroad],
-      workAbroadLocId: [this.candidateIntakeData?.workAbroadLoc?.id],
+      workAbroadLoc: [this.candidateIntakeData?.workAbroadLoc],
       workAbroadYrs: [this.candidateIntakeData?.workAbroadYrs],
     });
   }

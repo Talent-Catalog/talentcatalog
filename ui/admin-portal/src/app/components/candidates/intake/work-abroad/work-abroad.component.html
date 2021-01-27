@@ -21,13 +21,17 @@
   </div>
   <div *ngIf="workAbroad === 'Yes'">
     <div class="form-group">
-      <label for="workAbroadLocId">Country</label>
-      <select class="form-control"
-              id="workAbroadLocId" [formControlName]="'workAbroadLocId'">
-        <option *ngFor="let country of countries" [value]="country.id">
-          {{country.name}}
-        </option>
-      </select>
+      <div class="form-group">
+        <label for="workAbroadLoc">
+          Countries you worked in
+        </label>
+        <ng-multiselect-dropdown
+          id="workAbroadLoc"
+          [settings]="dropdownSettings"
+          [data]="countries"
+          formControlName="workAbroadLoc">
+        </ng-multiselect-dropdown>
+      </div>
     </div>
     <div class="form-group">
       <label for="workAbroadYrs">How many years were you abroad?</label>
