@@ -192,7 +192,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
 
     forkJoin({
       'nationalities': this.nationalityService.listNationalities(),
-      'countries': this.countryService.listCountries(),
+      'countriesRestricted': this.countryService.listCountriesRestricted(),
       'languages': this.languageService.listLanguages(),
       'languageLevels': this.languageLevelService.listLanguageLevels(),
       'educationLevels': this.educationLevelService.listEducationLevels(),
@@ -202,7 +202,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     }).subscribe(results => {
       this.loading = false;
       this.nationalities = results['nationalities'];
-      this.countries = results['countries'];
+      this.countries = results['countriesRestricted'];
       this.languages = results['languages'];
       this.languageLevels = results['languageLevels'];
       this.educationLevels = results['educationLevels'];

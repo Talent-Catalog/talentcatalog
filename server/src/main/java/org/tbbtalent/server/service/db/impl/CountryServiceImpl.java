@@ -1,10 +1,6 @@
 package org.tbbtalent.server.service.db.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import io.jsonwebtoken.lang.Collections;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +26,10 @@ import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.CountryService;
 import org.tbbtalent.server.service.db.TranslationService;
 
-import io.jsonwebtoken.lang.Collections;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class CountryServiceImpl implements CountryService, InitializingBean {
@@ -88,18 +87,22 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
     }
 
     @Override
-    public List<Country> listCountries() {
+    public List<Country> listCountries(Boolean restricted) {
         User user = userContext.getLoggedInUser().orElse(null);
         List<Country> countries;
 
-        // Restrict access if there are source countries associated to admin user
-        if(user != null && user.getSourceCountries().size() > 0){
-            countries = countryRepository.findByStatusAndSourceCountries(Status.active, user.getSourceCountries());
+        if (restricted) {
+            // Restrict access if there are source countries associated to admin user
+            if(user != null && user.getSourceCountries().size() > 0 ){
+                countries = countryRepository.findByStatusAndSourceCountries(Status.active, user.getSourceCountries());
+            } else {
+                //Note: Can't use cache because translationService modifies it adding
+                //translations - which will always get returned to user (because of
+                //the way Dto builder works - if translation is present, it will use
+                //that as name).
+                countries = countryRepository.findByStatus(Status.active);
+            }
         } else {
-            //Note: Can't use cache because translationService modifies it adding 
-            //translations - which will always get returned to user (because of
-            //the way Dto builder works - if translation is present, it will use 
-            //that as name).
             countries = countryRepository.findByStatus(Status.active);
         }
         translationService.translate(countries, "country");

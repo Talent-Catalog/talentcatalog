@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {CandidateNoteService} from "../../../../../services/candidate-note.service";
-import {CandidateNote} from "../../../../../model/candidate-note";
-import {CountryService} from "../../../../../services/country.service";
+import {FormBuilder, FormGroup} from '@angular/forms';
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import {CandidateNoteService} from '../../../../../services/candidate-note.service';
+import {CandidateNote} from '../../../../../model/candidate-note';
+import {CountryService} from '../../../../../services/country.service';
 
 @Component({
   selector: 'app-edit-candidate-note',
@@ -31,16 +31,16 @@ export class EditCandidateNoteComponent implements OnInit {
   ngOnInit() {
     this.loading = true;
 
-    /*load the countries */
-    this.countryService.listCountries().subscribe(
-      (response) => {
-        this.countries = response;
-      },
-      (error) => {
-        this.error = error;
-        this.loading = false;
-      }
-    );
+    // /*load the countries */
+    // this.countryService.listCountries().subscribe(
+    //   (response) => {
+    //     this.countries = response;
+    //   },
+    //   (error) => {
+    //     this.error = error;
+    //     this.loading = false;
+    //   }
+    // );
 
     this.candidateForm = this.fb.group({
       title: [this.candidateNote.title],

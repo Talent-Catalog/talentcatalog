@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
-import {environment} from "../../environments/environment";
-import {HttpClient} from "@angular/common/http";
-import {Country} from "../model/country";
-import {Observable, of} from "rxjs";
-import {SearchResults} from "../model/search-results";
-import {tap} from "rxjs/operators";
+import {environment} from '../../environments/environment';
+import {HttpClient} from '@angular/common/http';
+import {Country} from '../model/country';
+import {Observable, of} from 'rxjs';
+import {SearchResults} from '../model/search-results';
+import {tap} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +13,7 @@ export class CountryService {
 
   private apiUrl: string = environment.apiUrl + '/country';
   private countries: Country[] = [];
+  private countriesRestricted: Country[] = [];
   private tbbDestinations: Country[] = [];
 
   constructor(private http: HttpClient) { }
@@ -27,6 +28,11 @@ export class CountryService {
           //Save data the first time we fetch it
           tap(data => {this.countries = data})
         );
+  }
+
+  listCountriesRestricted(): Observable<Country[]> {
+    //Get the restricted countries based on the users source countries
+    return this.http.get<Country[]>(`${this.apiUrl}/restricted`);
   }
 
   listTBBDestinations(): Observable<Country[]> {
