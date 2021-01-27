@@ -1761,13 +1761,6 @@ public class CandidateServiceImpl implements CandidateService {
                     .updateIntakeData(candidate, data);
         }
 
-        //Get the work abroad country from the id in the data request and pass into the populateIntakeData method
-        final Long workAbroadLocId = data.getWorkAbroadLocId();
-        Country workAbroadLoc = null;
-        if (workAbroadLocId != null) {
-            workAbroadLoc = countryRepository.findById(workAbroadLocId).orElse(null);
-        }
-
         //Get the partner candidate object from the id in the data request and pass into the populateIntakeData method
         final Long partnerCandId = data.getPartnerCandId();
         Candidate partnerCandidate = null;
@@ -1806,7 +1799,7 @@ public class CandidateServiceImpl implements CandidateService {
             drivingLicenseCountry = countryRepository.findById(drivingLicenseCountryId).orElse(null);
         }
 
-        candidate.populateIntakeData(data, workAbroadLoc, partnerCandidate, partnerEducationLevel,
+        candidate.populateIntakeData(data, partnerCandidate, partnerEducationLevel,
                 partnerOccupation, partnerEnglishLevel, partnerCitizenship, drivingLicenseCountry);
 
         save(candidate, true);

@@ -148,7 +148,7 @@ public class CandidateIntakeDataUpdate {
     private String visaIssuesNotes;
     
     private YesNo workAbroad;
-    private Long workAbroadLocId;
+    private String workAbroadCountryIds;
     private Long workAbroadYrs;
     private WorkPermit workPermit;
     private YesNoUnsure workPermitDesired;

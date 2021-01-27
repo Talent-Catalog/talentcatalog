@@ -130,7 +130,7 @@ export interface CandidateIntakeData {
   resettleThirdStatus?: string;
 
   workAbroad?: YesNo;
-  workAbroadLoc?: Country;
+  workAbroadCountryIds?: string;
   workAbroadYrs?: number;
   workPermit?: WorkPermitValidity;
   workPermitDesired?: YesNoUnsure;

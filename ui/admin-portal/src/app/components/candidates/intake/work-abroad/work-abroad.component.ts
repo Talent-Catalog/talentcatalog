@@ -35,11 +35,20 @@ export class WorkAbroadComponent extends IntakeComponentBase implements OnInit {
   ngOnInit(): void {
     this.form = this.fb.group({
       workAbroad: [this.candidateIntakeData?.workAbroad],
-      workAbroadLoc: [this.candidateIntakeData?.workAbroadLoc],
+      workAbroadCountryIds: [this.candidateIntakeData?.workAbroadCountryIds],
       workAbroadYrs: [this.candidateIntakeData?.workAbroadYrs],
+      countriesSelected: [],
     });
   }
   get workAbroad(): string {
     return this.form.value?.workAbroad;
   }
+
+  private getIdsMultiSelect(request) {
+    if (this.form.value.countriesSelected != null) {
+      this.form.value.countryIds = request.countries.map(c => c.id);
+      delete request.countries;
+    }
+  }
+
 }

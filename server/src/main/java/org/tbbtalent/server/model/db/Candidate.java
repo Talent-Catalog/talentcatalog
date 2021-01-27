@@ -304,10 +304,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private YesNo workAbroad;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "work_abroad_loc_id")
     @Nullable
-    private Country workAbroadLoc;
+    private String workAbroadCountryIds;
 
     @Nullable
     private Long workAbroadYrs;
@@ -947,9 +945,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setWorkAbroad(@Nullable YesNo workAbroad) { this.workAbroad = workAbroad; }
 
     @Nullable
-    public Country getWorkAbroadLoc() { return workAbroadLoc; }
+    public String getWorkAbroadCountryIds() { return workAbroadCountryIds; }
 
-    public void setWorkAbroadLoc(@Nullable Country workAbroadLoc) { this.workAbroadLoc = workAbroadLoc; }
+    public void setWorkAbroadCountryIds(@Nullable String workAbroadCountryIds) { this.workAbroadCountryIds = workAbroadCountryIds; }
 
     @Nullable
     public Long getWorkAbroadYrs() { return workAbroadYrs; }
@@ -1153,7 +1151,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     }
 
     public void populateIntakeData(CandidateIntakeDataUpdate data,
-                                   @Nullable Country workAbroadLoc,
                                    @Nullable Candidate partnerCandidate,
                                    @Nullable EducationLevel partnerEduLevel,
                                    @Nullable Occupation partnerOccupation,
@@ -1346,8 +1343,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getWorkAbroad() != null) {
             setWorkAbroad(data.getWorkAbroad());
         }
-        if (data.getWorkAbroadLocId() != null) {
-            setWorkAbroadLoc(workAbroadLoc);
+        if (data.getWorkAbroadCountryIds() != null) {
+            setWorkAbroadCountryIds(data.getWorkAbroadCountryIds());
         }
         if (data.getWorkAbroadYrs() != null) {
             setWorkAbroadYrs(data.getWorkAbroadYrs());

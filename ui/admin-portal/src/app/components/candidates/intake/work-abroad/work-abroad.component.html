@@ -22,14 +22,14 @@
   <div *ngIf="workAbroad === 'Yes'">
     <div class="form-group">
       <div class="form-group">
-        <label for="workAbroadLoc">
+        <label for="workAbroadCountryIds">
           Countries you worked in
         </label>
         <ng-multiselect-dropdown
-          id="workAbroadLoc"
+          id="workAbroadCountryIds"
           [settings]="dropdownSettings"
           [data]="countries"
-          formControlName="workAbroadLoc">
+          formControlName="workAbroadCountryIds">
         </ng-multiselect-dropdown>
       </div>
     </div>
