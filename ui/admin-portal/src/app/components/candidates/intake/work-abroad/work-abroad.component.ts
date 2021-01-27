@@ -44,6 +44,7 @@ export class WorkAbroadComponent extends IntakeComponentBase implements OnInit {
     return this.form.value?.workAbroad;
   }
 
+  // Get Ids from the countries
   private getIdsMultiSelect(request) {
     if (this.form.value.countriesSelected != null) {
       this.form.value.countryIds = request.countries.map(c => c.id);
