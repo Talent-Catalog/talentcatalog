@@ -132,6 +132,7 @@ export interface CandidateIntakeData {
   workAbroad?: YesNo;
   workAbroadCountryIds?: number[];
   workAbroadYrs?: number;
+  workAbroadNotes?: string;
   workPermit?: WorkPermitValidity;
   workPermitDesired?: YesNoUnsure;
   workLegally?: YesNo;
@@ -285,7 +286,8 @@ export enum UnhcrStatus {
   RegisteredAsylum = "Registered with UNHCR as asylum seeker",
   RegisteredStateless = "Registered with UNHCR as stateless",
   NotRegistered = "Not registered",
-  Unsure = "Unsure"
+  Unsure = "Unsure",
+  NA = "Not applicable"
 }
 
 export enum WorkPermitValidity {
@@ -327,7 +329,8 @@ export enum UnrwaStatus {
   Registered = "Registered",
   WasRegistered = "No longer registered, but was registered previously.",
   NeverRegistered = "Never been registered",
-  Unsure = "Unsure"
+  Unsure = "Unsure",
+  NA = "Not applicable"
 }
 
 export enum Exam {

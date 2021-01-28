@@ -150,6 +150,7 @@ public class CandidateIntakeDataUpdate {
     private YesNo workAbroad;
     private List<Long> workAbroadCountryIds;
     private Long workAbroadYrs;
+    private String workAbroadNotes;
     private WorkPermit workPermit;
     private YesNoUnsure workPermitDesired;
     private YesNo workLegally;

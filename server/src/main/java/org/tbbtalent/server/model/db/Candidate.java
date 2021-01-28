@@ -311,6 +311,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private Long workAbroadYrs;
 
+    @Nullable
+    private String workAbroadNotes;
+
     @Enumerated(EnumType.STRING)
     @Nullable
     private YesNo hostEntryLegally;
@@ -956,6 +959,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setWorkAbroadYrs(@Nullable Long workAbroadYrs) { this.workAbroadYrs = workAbroadYrs; }
 
     @Nullable
+    public String getWorkAbroadNotes() { return workAbroadNotes; }
+
+    public void setWorkAbroadNotes(@Nullable String workAbroadNotes) { this.workAbroadNotes = workAbroadNotes; }
+
+    @Nullable
     public YesNo getHostEntryLegally() { return hostEntryLegally; }
 
     public void setHostEntryLegally(@Nullable YesNo hostEntryLegally) { this.hostEntryLegally = hostEntryLegally; }
@@ -1349,6 +1357,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getWorkAbroadYrs() != null) {
             setWorkAbroadYrs(data.getWorkAbroadYrs());
+        }
+        if (data.getWorkAbroadNotes() != null) {
+            setWorkAbroadNotes(data.getWorkAbroadNotes());
         }
         if (data.getWorkPermit() != null) {
             setWorkPermit(data.getWorkPermit());

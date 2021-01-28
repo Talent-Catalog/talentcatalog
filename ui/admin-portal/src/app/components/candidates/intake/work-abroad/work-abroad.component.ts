@@ -51,7 +51,8 @@ export class WorkAbroadComponent extends IntakeComponentBase implements OnInit {
       workAbroad: [this.candidateIntakeData?.workAbroad],
       workAbroadCountryIds: [],
       workAbroadYrs: [this.candidateIntakeData?.workAbroadYrs],
-      // Used to get the ids from multiselect
+      workAbroadNotes: [this.candidateIntakeData?.workAbroadNotes],
+      // Used to display for multiselect
       selectedCountries: [selectedCountries]
     });
   }
