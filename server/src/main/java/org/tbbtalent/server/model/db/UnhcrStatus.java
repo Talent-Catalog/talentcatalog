@@ -6,5 +6,6 @@ public enum UnhcrStatus {
     RegisteredAsylum,
     RegisteredStateless,
     NotRegistered,
-    Unsure
+    Unsure,
+    NA
 }

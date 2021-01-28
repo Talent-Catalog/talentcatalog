@@ -5,5 +5,6 @@ public enum UnrwaStatus {
     Registered,
     WasRegistered,
     NeverRegistered,
-    Unsure
+    Unsure,
+    NA
 }
