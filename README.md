@@ -287,5 +287,6 @@ Deployment can take around 10 minutes during which time the production software
 is unavailable. People trying to access the software during deployment
 will see an error on their browser saying something like "520 Bad Gateway".
 
- 
+## License
+[GNU AGPLv3](https://choosealicense.com/licenses/agpl-3.0/)
 
