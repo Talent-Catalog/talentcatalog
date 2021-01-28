@@ -29,7 +29,9 @@
           id="workAbroadCountryIds"
           [settings]="dropdownSettings"
           [data]="countries"
-          formControlName="workAbroadCountryIds">
+          formControlName="selectedCountries"
+          (onSelect)="addIds()"
+          (onDeSelect)="addIds()">
         </ng-multiselect-dropdown>
       </div>
     </div>

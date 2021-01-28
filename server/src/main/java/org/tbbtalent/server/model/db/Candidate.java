@@ -304,8 +304,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private YesNo workAbroad;
 
+    @Convert(converter = ModelConverter.class)
     @Nullable
-    private String workAbroadCountryIds;
+    private List<Long> workAbroadCountryIds;
 
     @Nullable
     private Long workAbroadYrs;
@@ -945,9 +946,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setWorkAbroad(@Nullable YesNo workAbroad) { this.workAbroad = workAbroad; }
 
     @Nullable
-    public String getWorkAbroadCountryIds() { return workAbroadCountryIds; }
+    public List<Long> getWorkAbroadCountryIds() { return workAbroadCountryIds; }
 
-    public void setWorkAbroadCountryIds(@Nullable String workAbroadCountryIds) { this.workAbroadCountryIds = workAbroadCountryIds; }
+    public void setWorkAbroadCountryIds(@Nullable List<Long> workAbroadCountryIds) { this.workAbroadCountryIds = workAbroadCountryIds; }
 
     @Nullable
     public Long getWorkAbroadYrs() { return workAbroadYrs; }
