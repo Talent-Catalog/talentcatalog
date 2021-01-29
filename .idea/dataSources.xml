@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="postgres@localhost" uuid="161d4b59-a098-483d-9f46-145d460d7282">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://localhost:5432/postgres</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="Live AWS TBB Database" uuid="6c4cbcc9-c0f0-4280-b66e-0d1eadcbfc59">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://prod-tbb.cskpt7osayvj.us-east-1.rds.amazonaws.com:5432/tbbtalent</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="Old TBB (V1) Database" uuid="2df7fa5a-20ad-4e2b-baa2-da6e15a373ff">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://v1.tbbtalent.org:3306/yiitbb</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="Old TBB V1 Read write" uuid="3138cbe4-5be4-4101-8b22-dca38be73578">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://v1.tbbtalent.org:3306/yiitbb</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="GlobalTalentDb@mysql.refugeetalent.com" uuid="e316ed1d-8a68-44f3-bb86-82f718870b6b">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://mysql.refugeetalent.com:3306/GlobalTalentDb</jdbc-url>
+    </data-source>
+  </component>
+</project>

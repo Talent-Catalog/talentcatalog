@@ -1,0 +1,50 @@
+# This workflow builds a Java project with Gradle and deploys to Elastic beanstalk
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+# And https://github.com/marketplace/actions/beanstalk-deploy
+
+name: tbb-prod-build-deploy
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Install creditional helper - for jib
+        run: sudo apt update && sudo apt install amazon-ecr-credential-helper
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Build with Gradle
+        run: ./gradlew build
+        
+        # These env variable will be picked up by the jib stage of the gradle 
+        # build which is configured to use the ecr credential helper.
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        
+        
+        # The above gradle build creates server/build/libs/server.jar
+        
+        # This step deploys the above server.jar to AWS Elastic Beanstalk
+      - name: Deploy to EB
+        uses: einaregilsson/beanstalk-deploy@v14
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: tbb-app-prod
+          environment_name: TbbAppProd-env
+          version_label: ${{github.workflow}}-${{github.run_number}}
+          version_description: Commit ${{ github.sha }}
+          region: us-east-1
+          deployment_package: server/build/libs/server.jar
+        
