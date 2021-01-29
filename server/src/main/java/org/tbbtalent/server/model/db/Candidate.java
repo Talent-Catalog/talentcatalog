@@ -318,6 +318,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private YesNo hostEntryLegally;
 
+    @Nullable
+    private String hostEntryLegallyNotes;
+
     @Enumerated(EnumType.STRING)
     @Nullable
     private LeftHomeReason leftHomeReason;
@@ -969,6 +972,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setHostEntryLegally(@Nullable YesNo hostEntryLegally) { this.hostEntryLegally = hostEntryLegally; }
 
     @Nullable
+    public String getHostEntryLegallyNotes() { return hostEntryLegallyNotes; }
+
+    public void setHostEntryLegallyNotes(@Nullable String hostEntryLegallyNotes) { this.hostEntryLegallyNotes = hostEntryLegallyNotes; }
+
+    @Nullable
     public LeftHomeReason getLeftHomeReason() { return leftHomeReason; }
 
     public void setLeftHomeReason(@Nullable LeftHomeReason leftHomeReason) { this.leftHomeReason = leftHomeReason; }
@@ -1234,6 +1242,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getHostEntryLegally() != null) {
             setHostEntryLegally(data.getHostEntryLegally());
+        }
+        if (data.getHostEntryLegallyNotes() != null) {
+            setHostEntryLegallyNotes(data.getHostEntryLegallyNotes());
         }
         if (data.getIntRecruitReasons() != null) {
             setIntRecruitReasons(data.getIntRecruitReasons());

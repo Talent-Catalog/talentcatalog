@@ -76,6 +76,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("hostBorn")
                 .add("hostEntryYear")
                 .add("hostEntryLegally")
+                .add("hostEntryLegallyNotes")
                 .add("intRecruitReasons")
                 .add("intRecruitRural")
                 .add("intRecruitRuralNotes")

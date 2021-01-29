@@ -19,5 +19,11 @@
       </option>
     </select>
   </div>
+  <div *ngIf="enterLegally === 'No'" class="form-group">
+    <label for="hostEntryLegallyNotes">Notes?</label>
+    <textarea type="text" class="md-textarea-auto form-control" rows="4"
+              id="hostEntryLegallyNotes" [formControlName]="'hostEntryLegallyNotes'"
+              placeholder="" ></textarea>
+  </div>
 </form>
 

@@ -21,9 +21,10 @@ export class HostEntryLegallyComponent extends IntakeComponentBase implements On
   ngOnInit(): void {
     this.form = this.fb.group({
       hostEntryLegally: [this.candidateIntakeData?.hostEntryLegally],
+      hostEntryLegallyNotes: [this.candidateIntakeData?.hostEntryLegallyNotes],
     });
   }
-  get workAbroad(): string {
-    return this.form.value?.workAbroad;
+  get enterLegally(): string {
+    return this.form.value?.hostEntryLegally;
   }
 }

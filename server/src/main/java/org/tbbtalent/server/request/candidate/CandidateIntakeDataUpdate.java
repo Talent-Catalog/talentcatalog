@@ -90,6 +90,7 @@ public class CandidateIntakeDataUpdate {
     private YesNo hostBorn;
     private Long hostEntryYear;
     private YesNo hostEntryLegally;
+    private String hostEntryLegallyNotes;
     private List<IntRecruitReason> intRecruitReasons;
     private YesNoUnsure intRecruitRural;
     private String intRecruitRuralNotes;
