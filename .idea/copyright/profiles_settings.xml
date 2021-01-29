@@ -1,5 +1,8 @@
 <component name="CopyrightManager">
   <settings default="TBB">
+    <module2copyright>
+      <element module="Project Files" copyright="TBB" />
+    </module2copyright>
     <LanguageOptions name="JAVA" />
   </settings>
 </component>
