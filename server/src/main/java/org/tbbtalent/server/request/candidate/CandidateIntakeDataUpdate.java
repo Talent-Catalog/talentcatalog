@@ -145,6 +145,7 @@ public class CandidateIntakeDataUpdate {
     private TBBEligibilityAssessment visaTbbEligibilityAssessment;
 
     private YesNoUnsure visaReject;
+    private String visaRejectNotes;
     private List<VisaIssue> visaIssues;
     private String visaIssuesNotes;
     

@@ -122,6 +122,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("unrwaNotes")
 
                 .add("visaReject")
+                .add("visaRejectNotes")
                 .add("visaIssues")
                 .add("visaIssuesNotes")
 

@@ -148,6 +148,7 @@ export interface CandidateIntakeData {
   unrwaNumber?: string;
   unrwaNotes?: string;
   visaReject?: YesNoUnsure;
+  visaRejectNotes?: string;
   visaIssues?: VisaIssue[];
   visaIssuesNotes?: string;
 }

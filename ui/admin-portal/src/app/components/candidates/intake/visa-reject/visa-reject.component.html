@@ -20,6 +20,12 @@
       </option>
     </select>
   </div>
+  <div *ngIf="visaReject === 'Yes'" class="form-group">
+    <label for="visaRejectNotes">Notes</label>
+    <textarea type="text" class="md-textarea-auto form-control" rows="4"
+              id="visaRejectNotes" [formControlName]="'visaRejectNotes'"
+              placeholder="" ></textarea>
+  </div>
 
 </form>
 
