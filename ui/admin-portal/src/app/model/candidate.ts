@@ -114,6 +114,9 @@ export interface CandidateIntakeData {
   partnerEnglishLevel?: LanguageLevel;
   partnerIelts?: YesNoUnsure;
   partnerIeltsScore?: IeltsScore;
+  partnerExamType?: Exam;
+  partnerExamOther?: string;
+  partnerExamYr?: number;
   partnerCitizenship?: Nationality;
 
   returnedHome?: YesNoUnsure;

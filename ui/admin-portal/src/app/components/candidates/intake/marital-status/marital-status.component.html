@@ -108,6 +108,15 @@
       </div>
       <div *ngIf="partnerIelts === 'Yes'">
         <div class="form-group">
+          <label for="partnerExamType">Exam Type</label>
+          <select class="form-control"
+                  id="partnerExamType" [formControlName]="'partnerExamType'">
+            <option *ngFor="let opt of examOptions" [value]="opt.value">
+              {{opt.displayText}}
+            </option>
+          </select>
+        </div>
+        <div class="form-group">
           <label for="partnerIeltsScore">
             What was his/her score?
           </label>
@@ -118,6 +127,25 @@
             </option>
           </select>
         </div>
+      </div>
+    </div>
+    <div *ngIf="isOtherExam">
+      <div class="form-group">
+        <label for="partnerExamOther">Other Exam Name</label>
+        <input type="text" class="form-control"
+               id="partnerExamOther" [formControlName]="'partnerExamOther'">
+      </div>
+    </div>
+
+    <div *ngIf="hasSelectedExam">
+      <div class="form-group">
+        <label [for]="'examYear'+myRecordIndex">
+          In what year did you take the test?
+        </label>
+        <select [id]="'examYear'+myRecordIndex" class="form-control" [formControlName]="'examYear'">
+          <option value=""></option>
+          <option *ngFor="let year of years" [ngValue]="year">{{year}} </option>
+        </select>
       </div>
     </div>
     <div class="form-group">

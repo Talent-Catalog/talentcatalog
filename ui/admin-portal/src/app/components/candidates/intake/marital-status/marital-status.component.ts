@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../util/enum';
-import {Candidate, IeltsScore, MaritalStatus, YesNo, YesNoUnsure} from '../../../../model/candidate';
+import {Candidate, Exam, IeltsScore, MaritalStatus, YesNo, YesNoUnsure} from '../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
@@ -8,6 +8,7 @@ import {EducationLevel} from '../../../../model/education-level';
 import {Occupation} from '../../../../model/occupation';
 import {LanguageLevel} from '../../../../model/language-level';
 import {Nationality} from '../../../../model/nationality';
+import {generateYearArray} from '../../../../util/year-helper';
 
 @Component({
   selector: 'app-marital-status',
@@ -26,6 +27,8 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
   public partnerEnglishOptions: EnumOption[] = enumOptions(YesNo);
   public partnerIeltsOptions: EnumOption[] = enumOptions(YesNoUnsure);
   public partnerIeltsScoreOptions: EnumOption[] = enumOptions(IeltsScore);
+  public examOptions: EnumOption[] = enumOptions(Exam);
+  years: number[];
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
@@ -42,8 +45,12 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
       partnerEnglishLevelId: [this.candidateIntakeData?.partnerEnglishLevel?.id],
       partnerIelts: [this.candidateIntakeData?.partnerIelts],
       partnerIeltsScore: [this.candidateIntakeData?.partnerIeltsScore],
+      partnerExamType: [this.candidateIntakeData?.partnerExamType],
+      partnerExamOther: [this.candidateIntakeData?.partnerExamOther],
+      partnerExamYr: [this.candidateIntakeData?.partnerExamYr],
       partnerCitizenshipId: [this.candidateIntakeData?.partnerCitizenship?.id],
     });
+    this.years = generateYearArray(1950, true);
   }
 
   get maritalStatus() {
