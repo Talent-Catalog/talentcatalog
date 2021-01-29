@@ -204,32 +204,33 @@
 
   <hr/>
 
-  <div class="card">
-    <div class="card-header">
-      Family Information
-    </div>
-    <div class="card-body">
-      <app-marital-status
-      [candidate]="candidate"
-      [candidateIntakeData]="candidateIntakeData"
-      [educationLevels]="educationLevels"
-      [occupations]="occupations"
-      [languageLevels]="languageLevels"
-      [nationalities]="nationalities">
-      </app-marital-status>
-      <app-family
-      [candidate]="candidate"
-      [candidateIntakeData]="candidateIntakeData">
-      </app-family>
-    </div>
-  </div>
+
+  <app-dependants
+  [candidate]="candidate"
+  [candidateIntakeData]="candidateIntakeData">
+  </app-dependants>
 
   <hr/>
 
-  <app-dependants
-    [candidate]="candidate"
-    [candidateIntakeData]="candidateIntakeData">
-  </app-dependants>
+  <div class="card">
+    <div class="card-header">
+      Partner Information
+    </div>
+    <div class="card-body">
+      <app-marital-status
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData"
+        [educationLevels]="educationLevels"
+        [occupations]="occupations"
+        [languageLevels]="languageLevels"
+        [nationalities]="nationalities">
+      </app-marital-status>
+      <app-family
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-family>
+    </div>
+  </div>
 
   <hr/>
 
