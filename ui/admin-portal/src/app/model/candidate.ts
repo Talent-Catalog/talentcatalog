@@ -128,11 +128,9 @@ export interface CandidateIntakeData {
   partnerOccupation?: Occupation;
   partnerEnglish?: YesNo;
   partnerEnglishLevel?: LanguageLevel;
-  partnerIelts?: YesNoUnsure;
+  partnerIelts?: IeltsStatus;
   partnerIeltsScore?: IeltsScore;
-  partnerExamType?: Exam;
-  partnerExamOther?: string;
-  partnerExamYr?: number;
+  partnerIeltsYr?: number;
   partnerCitizenship?: Nationality;
 
   returnedHome?: YesNoUnsure;
@@ -334,6 +332,14 @@ export enum YesNo {
 export enum YesNoUnsure {
   NoResponse = "",
   Yes = "Yes",
+  No = "No",
+  Unsure = "Unsure"
+}
+
+export enum IeltsStatus {
+  NoResponse = "",
+  YesGeneral = "Yes - Ielts General",
+  YesAcademic = "Yes - Ielts Academic",
   No = "No",
   Unsure = "Unsure"
 }

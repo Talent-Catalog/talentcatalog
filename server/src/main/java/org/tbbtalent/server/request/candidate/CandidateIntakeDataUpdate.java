@@ -120,8 +120,9 @@ public class CandidateIntakeDataUpdate {
     private Long partnerOccupationId;
     private YesNo partnerEnglish;
     private Long partnerEnglishLevelId;
-    private YesNoUnsure partnerIelts;
+    private IeltsStatus partnerIelts;
     private IeltsScore partnerIeltsScore;
+    private Long partnerIeltsYr;
     private Long partnerCitizenshipId;
 
     private ResidenceStatus residenceStatus;

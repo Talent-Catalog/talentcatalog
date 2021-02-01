@@ -391,11 +391,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Enumerated(EnumType.STRING)
     @Nullable
-    private YesNoUnsure partnerIelts;
+    private IeltsStatus partnerIelts;
 
     @Enumerated(EnumType.STRING)
     @Nullable
     private IeltsScore partnerIeltsScore;
+
+    @Nullable
+    private Long partnerIeltsYr;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "partner_citizenship_id")
@@ -1062,14 +1065,19 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setPartnerEnglishLevel(@Nullable LanguageLevel partnerEnglishLevel) { this.partnerEnglishLevel = partnerEnglishLevel; }
 
     @Nullable
-    public YesNoUnsure getPartnerIelts() { return partnerIelts; }
+    public IeltsStatus getPartnerIelts() { return partnerIelts; }
 
-    public void setPartnerIelts(@Nullable YesNoUnsure partnerIelts) { this.partnerIelts = partnerIelts; }
+    public void setPartnerIelts(@Nullable IeltsStatus partnerIelts) { this.partnerIelts = partnerIelts; }
 
     @Nullable
     public IeltsScore getPartnerIeltsScore() { return partnerIeltsScore; }
 
     public void setPartnerIeltsScore(@Nullable IeltsScore partnerIeltsScore) { this.partnerIeltsScore = partnerIeltsScore; }
+
+    @Nullable
+    public Long getPartnerIeltsYr() { return partnerIeltsYr; }
+
+    public void setPartnerIeltsYr(@Nullable Long partnerIeltsYr) { this.partnerIeltsYr = partnerIeltsYr; }
 
     @Nullable
     public Nationality getPartnerCitizenship() { return partnerCitizenship; }
@@ -1316,6 +1324,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getPartnerIeltsScore() != null) {
             setPartnerIeltsScore(data.getPartnerIeltsScore());
+        }
+        if (data.getPartnerIeltsYr() != null) {
+            setPartnerIeltsYr(data.getPartnerIeltsYr());
         }
         if (data.getPartnerCitizenshipId() != null) {
             setPartnerCitizenship(partnerCitizenship);

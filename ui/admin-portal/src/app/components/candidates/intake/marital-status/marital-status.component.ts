@@ -16,7 +16,7 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../util/enum';
-import {Candidate, Exam, IeltsScore, MaritalStatus, YesNo, YesNoUnsure} from '../../../../model/candidate';
+import {Candidate, IeltsScore, IeltsStatus, MaritalStatus, YesNo, YesNoUnsure} from '../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
@@ -41,9 +41,8 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
   public maritalStatusOptions: EnumOption[] = enumOptions(MaritalStatus);
   public partnerRegisteredOptions: EnumOption[] = enumOptions(YesNoUnsure);
   public partnerEnglishOptions: EnumOption[] = enumOptions(YesNo);
-  public partnerIeltsOptions: EnumOption[] = enumOptions(YesNoUnsure);
+  public partnerIeltsOptions: EnumOption[] = enumOptions(IeltsStatus);
   public partnerIeltsScoreOptions: EnumOption[] = enumOptions(IeltsScore);
-  public examOptions: EnumOption[] = enumOptions(Exam);
   years: number[];
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
@@ -61,9 +60,7 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
       partnerEnglishLevelId: [this.candidateIntakeData?.partnerEnglishLevel?.id],
       partnerIelts: [this.candidateIntakeData?.partnerIelts],
       partnerIeltsScore: [this.candidateIntakeData?.partnerIeltsScore],
-      partnerExamType: [this.candidateIntakeData?.partnerExamType],
-      partnerExamOther: [this.candidateIntakeData?.partnerExamOther],
-      partnerExamYr: [this.candidateIntakeData?.partnerExamYr],
+      partnerIeltsYr: [this.candidateIntakeData?.partnerIeltsYr],
       partnerCitizenshipId: [this.candidateIntakeData?.partnerCitizenship?.id],
     });
     this.years = generateYearArray(1950, true);
@@ -111,6 +108,17 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
       this.partnerCandidate.user.lastName = $event.user.lastName;
       this.partnerCandidate.candidateNumber = $event.candidateNumber;
     }
-
   }
+
+  get takenIelts(): boolean {
+    let ielts: boolean = false;
+    if (this.form?.value) {
+      if (this.form.value.partnerIelts === 'YesGeneral' || this.form.value.partnerIelts === 'YesAcademic') {
+        ielts = true;
+      }
+    }
+    return ielts;
+  }
+
+
 }
