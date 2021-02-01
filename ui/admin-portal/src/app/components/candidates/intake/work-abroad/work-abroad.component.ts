@@ -77,25 +77,17 @@ export class WorkAbroadComponent extends IntakeComponentBase implements OnInit {
     return this.form.value?.workAbroad;
   }
 
-  // Get Ids from the countries
-  // getIdsMultiSelect(request): SearchCandidateRequestPaged {
-  //   if (this.form.value.countries != null) {
-  //     request.countryIds = request.countries.map(c => c.id);
-  //     delete request.countries;
-  //   }
-  // }
-
   private updateSelectedIds() {
     const ids: number[] = this.form.value.selectedCountries.map(c => c.id);
     this.form.controls['workAbroadCountryIds'].setValue(ids);
     console.log('test');
   }
 
-  private addIds() {
+  public addIds() {
     this.updateSelectedIds()
   }
 
-  private removeIds($event) {
+  public removeIds($event) {
     this.updateSelectedIds()
   }
 
