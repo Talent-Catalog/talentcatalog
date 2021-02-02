@@ -183,6 +183,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Nullable
     private String returnedHomeReason;
+
+    @Nullable
+    private String returnedHomeReasonNo;
     
     @Convert(converter = VisaIssuesConverter.class)
     @Nullable
@@ -758,9 +761,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         return returnedHomeReason;
     }
 
-    public void setReturnedHomeReason(@Nullable String returnedHomeReason) {
-        this.returnedHomeReason = returnedHomeReason;
-    }
+    public void setReturnedHomeReason(@Nullable String returnedHomeReason) { this.returnedHomeReason = returnedHomeReason; }
+
+    @Nullable
+    public String getReturnedHomeReasonNo() { return returnedHomeReasonNo; }
+
+    public void setReturnedHomeReasonNo(@Nullable String returnedHomeReasonNo) { this.returnedHomeReasonNo = returnedHomeReasonNo; }
 
     @Nullable
     public List<VisaIssue> getVisaIssues() {
@@ -1352,6 +1358,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getReturnedHomeReason() != null) {
             setReturnedHomeReason(data.getReturnedHomeReason());
+        }
+        if (data.getReturnedHomeReasonNo() != null) {
+            setReturnedHomeReasonNo(data.getReturnedHomeReasonNo());
         }
         if (data.getReturnHomeSafe() != null) {
             setReturnHomeSafe(data.getReturnHomeSafe());

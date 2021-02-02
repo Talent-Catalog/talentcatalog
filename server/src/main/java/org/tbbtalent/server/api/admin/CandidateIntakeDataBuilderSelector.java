@@ -117,6 +117,7 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("returnedHome")
                 .add("returnedHomeReason")
+                .add("returnedHomeReasonNo")
 
                 .add("returnHomeSafe")
                 .add("returnHomeFuture")

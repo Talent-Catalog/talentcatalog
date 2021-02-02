@@ -138,6 +138,7 @@ export interface CandidateIntakeData {
   returnedHome?: YesNoUnsure;
   returnedHomeNotes?: string;
   returnedHomeReason?: string;
+  returnedHomeReasonNo?: string;
 
   residenceStatus?: ResidenceStatus;
 

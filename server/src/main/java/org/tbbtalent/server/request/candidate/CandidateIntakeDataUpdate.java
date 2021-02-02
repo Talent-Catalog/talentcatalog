@@ -131,6 +131,7 @@ public class CandidateIntakeDataUpdate {
 
     private YesNoUnsure returnedHome;
     private String returnedHomeReason;
+    private String returnedHomeReasonNo;
     private YesNoUnsure returnHomeSafe;
     private YesNoUnsure returnHomeFuture;
     private String returnHomeWhen;
