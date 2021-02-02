@@ -128,6 +128,7 @@ public class CandidateIntakeDataUpdate {
     private Long partnerCitizenshipId;
 
     private ResidenceStatus residenceStatus;
+    private String residenceStatusNotes;
 
     private YesNoUnsure returnedHome;
     private String returnedHomeReason;
@@ -172,5 +173,6 @@ public class CandidateIntakeDataUpdate {
     private WorkPermit workPermit;
     private YesNoUnsure workPermitDesired;
     private YesNoUnemployed workDesired;
+    private String workDesiredNotes;
 
 }

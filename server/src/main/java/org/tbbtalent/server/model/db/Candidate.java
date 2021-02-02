@@ -240,6 +240,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private YesNoUnemployed workDesired;
 
     @Nullable
+    private String workDesiredNotes;
+
+    @Nullable
     private Long hostEntryYear;
 
     @Enumerated(EnumType.STRING)
@@ -310,6 +313,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Enumerated(EnumType.STRING)
     @Nullable
     private ResidenceStatus residenceStatus;
+
+    @Nullable
+    private String residenceStatusNotes;
 
     @Enumerated(EnumType.STRING)
     @Nullable
@@ -847,6 +853,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setWorkDesired(@Nullable YesNoUnemployed workDesired) { this.workDesired = workDesired; }
 
     @Nullable
+    public String getWorkDesiredNotes() { return workDesiredNotes; }
+
+    public void setWorkDesiredNotes(@Nullable String workDesiredNotes) { this.workDesiredNotes = workDesiredNotes; }
+
+    @Nullable
     public Long getHostEntryYear() { return hostEntryYear; }
 
     public void setHostEntryYear(@Nullable Long hostEntryYear) { this.hostEntryYear = hostEntryYear; }
@@ -966,6 +977,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public ResidenceStatus getResidenceStatus() { return residenceStatus; }
 
     public void setResidenceStatus(@Nullable ResidenceStatus residenceStatus) { this.residenceStatus = residenceStatus; }
+
+    @Nullable
+    public String getResidenceStatusNotes() { return residenceStatusNotes; }
+
+    public void setResidenceStatusNotes(@Nullable String residenceStatusNotes) { this.residenceStatusNotes = residenceStatusNotes; }
 
     @Nullable
     public YesNo getWorkAbroad() { return workAbroad; }
@@ -1353,6 +1369,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getResidenceStatus() != null) {
             setResidenceStatus(data.getResidenceStatus());
         }
+        if (data.getResidenceStatusNotes() != null) {
+            setResidenceStatusNotes(data.getResidenceStatusNotes());
+        }
         if (data.getReturnedHome() != null) {
             setReturnedHome(data.getReturnedHome());
         }
@@ -1436,6 +1455,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getWorkDesired() != null) {
             setWorkDesired(data.getWorkDesired());
+        }
+        if (data.getWorkDesiredNotes() != null) {
+            setWorkDesiredNotes(data.getWorkDesiredNotes());
         }
 
     }

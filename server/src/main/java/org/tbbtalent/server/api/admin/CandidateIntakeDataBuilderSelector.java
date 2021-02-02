@@ -114,6 +114,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("partnerCitizenship", nationalityDto())
 
                 .add("residenceStatus")
+                .add("residenceStatusNotes")
 
                 .add("returnedHome")
                 .add("returnedHomeReason")
@@ -149,6 +150,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("workPermit")
                 .add("workPermitDesired")
                 .add("workDesired")
+                .add("workDesiredNotes")
 
                 ;
     }

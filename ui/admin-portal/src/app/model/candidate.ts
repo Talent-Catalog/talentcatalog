@@ -141,6 +141,7 @@ export interface CandidateIntakeData {
   returnedHomeReasonNo?: string;
 
   residenceStatus?: ResidenceStatus;
+  residenceStatusNotes?: string;
 
   returnHomeSafe?: YesNoUnsure;
 
@@ -157,6 +158,7 @@ export interface CandidateIntakeData {
   workPermit?: WorkPermitValidity;
   workPermitDesired?: YesNoUnsure;
   workDesired?: YesNoUnemployed;
+  workDesiredNotes?: string;
   unhcrStatus?: UnhcrStatus;
   unhcrOldStatus?: UnhcrStatus;
   unhcrNumber?: string;

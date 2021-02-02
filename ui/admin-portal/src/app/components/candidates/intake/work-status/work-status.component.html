@@ -33,6 +33,14 @@
       </option>
     </select>
   </div>
+  <div *ngIf="hasWorkDesired">
+    <div class="form-group">
+      <label for="workDesiredNotes">Notes</label>
+      <textarea type="text" class="md-textarea-auto form-control" rows="4"
+                id="workDesiredNotes" [formControlName]="'workDesiredNotes'"
+                placeholder="" ></textarea>
+    </div>
+  </div>
 </form>
 
 

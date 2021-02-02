@@ -36,8 +36,17 @@ export class WorkStatusComponent extends IntakeComponentBase implements OnInit {
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      workDesired: [this.candidateIntakeData?.workDesired]
+      workDesired: [this.candidateIntakeData?.workDesired],
+      workDesiredNotes: [this.candidateIntakeData?.workDesiredNotes]
     });
+  }
+
+  get hasWorkDesired(): boolean {
+    if (this.form.value?.workDesired == null || this.form.value?.workDesired == 'NoResponse') {
+      return false;
+    } else {
+      return true;
+    }
   }
 
 }
