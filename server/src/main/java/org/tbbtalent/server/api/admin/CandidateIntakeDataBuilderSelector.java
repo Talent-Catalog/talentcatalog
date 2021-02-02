@@ -103,6 +103,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("partnerRegistered")
                 .add("partnerCandidate", partnerCandidateDto())
                 .add("partnerEduLevel", englishLevelDto())
+                .add("partnerEduLevelNotes")
                 .add("partnerOccupation", occupationDto())
                 .add("partnerEnglish")
                 .add("partnerEnglishLevel", languageLevelDto())

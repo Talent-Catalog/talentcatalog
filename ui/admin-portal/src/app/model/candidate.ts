@@ -125,6 +125,7 @@ export interface CandidateIntakeData {
   partnerRegistered?: YesNoUnsure;
   partnerCandidate?: Candidate;
   partnerEduLevel?: EducationLevel;
+  partnerEduLevelNotes?: string;
   partnerOccupation?: Occupation;
   partnerEnglish?: YesNo;
   partnerEnglishLevel?: LanguageLevel;

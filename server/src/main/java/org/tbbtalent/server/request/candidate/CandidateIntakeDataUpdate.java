@@ -117,6 +117,7 @@ public class CandidateIntakeDataUpdate {
     private YesNoUnsure partnerRegistered;
     private Long partnerCandId;
     private Long partnerEduLevelId;
+    private String partnerEduLevelNotes;
     private Long partnerOccupationId;
     private YesNo partnerEnglish;
     private Long partnerEnglishLevelId;

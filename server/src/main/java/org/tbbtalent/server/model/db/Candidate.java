@@ -375,6 +375,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private EducationLevel partnerEduLevel;
 
+    @Nullable
+    private String partnerEduLevelNotes;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "partner_occupation_id")
     @Nullable
@@ -1050,6 +1053,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setPartnerEduLevel(@Nullable EducationLevel partnerEduLevel) { this.partnerEduLevel = partnerEduLevel; }
 
     @Nullable
+    public String getPartnerEduLevelNotes() { return partnerEduLevelNotes; }
+
+    public void setPartnerEduLevelNotes(@Nullable String partnerEduLevelNotes) { this.partnerEduLevelNotes = partnerEduLevelNotes; }
+
+    @Nullable
     public Occupation getPartnerOccupation() { return partnerOccupation; }
 
     public void setPartnerOccupation(@Nullable Occupation partnerOccupation) { this.partnerOccupation = partnerOccupation; }
@@ -1309,6 +1317,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getPartnerEduLevelId() != null) {
             setPartnerEduLevel(partnerEduLevel);
+        }
+        if (data.getPartnerEduLevelNotes() != null) {
+            setPartnerEduLevelNotes(data.getPartnerEduLevelNotes());
         }
         if (data.getPartnerOccupationId() != null) {
             setPartnerOccupation(partnerOccupation);

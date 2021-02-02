@@ -55,6 +55,7 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
       partnerRegistered: [this.candidateIntakeData?.partnerRegistered],
       partnerCandId: [this.candidateIntakeData?.partnerCandidate?.id],
       partnerEduLevelId: [this.candidateIntakeData?.partnerEduLevel?.id],
+      partnerEduLevelNotes: [this.candidateIntakeData?.partnerEduLevelNotes],
       partnerOccupationId: [this.candidateIntakeData?.partnerOccupation?.id],
       partnerEnglish: [this.candidateIntakeData?.partnerEnglish],
       partnerEnglishLevelId: [this.candidateIntakeData?.partnerEnglishLevel?.id],
@@ -118,6 +119,10 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
       }
     }
     return ielts;
+  }
+
+  get eduLevelSelected(): boolean {
+    return this.form?.value?.partnerEduLevelId != null;
   }
 
 

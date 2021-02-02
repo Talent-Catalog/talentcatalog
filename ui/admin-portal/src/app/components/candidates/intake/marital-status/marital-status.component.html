@@ -78,6 +78,16 @@
         </option>
       </select>
     </div>
+    <div *ngIf="eduLevelSelected">
+      <div class="form-group">
+        <label for="partnerEduLevelNotes">
+          Notes
+        </label>
+        <textarea type="text" class="md-textarea-auto form-control" rows="4"
+                  id="partnerEduLevelNotes" [formControlName]="'partnerEduLevelNotes'"
+                  placeholder="" ></textarea>
+      </div>
+    </div>
     <div class="form-group">
       <label for="partnerOccupationId">
         What is your partner’s profession?
