@@ -72,6 +72,7 @@
       </label>
       <select class="form-control"
               id="partnerEduLevelId" [formControlName]="'partnerEduLevelId'">
+        <option value="0"></option>
         <option *ngFor="let opt of educationLevels" [value]="opt.id">
           {{opt.name}}
         </option>
