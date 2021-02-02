@@ -170,7 +170,6 @@ public class CandidateIntakeDataUpdate {
     private String workAbroadNotes;
     private WorkPermit workPermit;
     private YesNoUnsure workPermitDesired;
-    private YesNo workLegally;
     private YesNoUnemployed workDesired;
 
 }

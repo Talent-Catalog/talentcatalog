@@ -234,10 +234,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Enumerated(EnumType.STRING)
     @Nullable
-    private YesNo workLegally;
-
-    @Enumerated(EnumType.STRING)
-    @Nullable
     private YesNoUnemployed workDesired;
 
     @Nullable
@@ -840,11 +836,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setWorkPermitDesired(@Nullable YesNoUnsure workPermitDesired) { this.workPermitDesired = workPermitDesired; }
 
     @Nullable
-    public YesNo getWorkLegally() { return workLegally; }
-
-    public void setWorkLegally(@Nullable YesNo workLegally) { this.workLegally = workLegally; }
-
-    @Nullable
     public YesNoUnemployed getWorkDesired() { return workDesired; }
 
     public void setWorkDesired(@Nullable YesNoUnemployed workDesired) { this.workDesired = workDesired; }
@@ -1433,9 +1424,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getWorkPermitDesired() != null) {
             setWorkPermitDesired(data.getWorkPermitDesired());
-        }
-        if (data.getWorkLegally() != null) {
-            setWorkLegally(data.getWorkLegally());
         }
         if (data.getWorkDesired() != null) {
             setWorkDesired(data.getWorkDesired());

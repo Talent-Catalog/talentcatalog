@@ -16,7 +16,7 @@
 
 import {Component, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../util/enum';
-import {YesNo, YesNoUnemployed} from '../../../../model/candidate';
+import {YesNoUnemployed} from '../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
@@ -29,7 +29,6 @@ import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 export class WorkStatusComponent extends IntakeComponentBase implements OnInit {
 
   public workDesiredOptions: EnumOption[] = enumOptions(YesNoUnemployed);
-  public workLegallyOptions: EnumOption[] = enumOptions(YesNo);
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
@@ -37,13 +36,8 @@ export class WorkStatusComponent extends IntakeComponentBase implements OnInit {
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      workDesired: [this.candidateIntakeData?.workDesired],
-      workLegally: [this.candidateIntakeData?.workLegally],
+      workDesired: [this.candidateIntakeData?.workDesired]
     });
-  }
-
-  get workDesired(): string {
-    return this.form.value?.workDesired;
   }
 
 }

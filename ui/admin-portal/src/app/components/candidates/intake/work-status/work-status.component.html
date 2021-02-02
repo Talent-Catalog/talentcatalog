@@ -33,17 +33,6 @@
       </option>
     </select>
   </div>
-  <div *ngIf="workDesired === 'Yes' || workDesired === 'No'">
-    <div class="form-group">
-      <label for="workLegally">If you are currently working, are you working legally?</label>
-      <select class="form-control"
-              id="workLegally" [formControlName]="'workLegally'">
-        <option *ngFor="let opt of workLegallyOptions" [value]="opt.value">
-          {{opt.displayText}}
-        </option>
-      </select>
-    </div>
-  </div>
 </form>
 
 

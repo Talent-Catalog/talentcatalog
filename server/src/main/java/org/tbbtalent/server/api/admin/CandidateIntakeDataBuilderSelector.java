@@ -147,7 +147,6 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("workAbroadNotes")
                 .add("workPermit")
                 .add("workPermitDesired")
-                .add("workLegally")
                 .add("workDesired")
 
                 ;
