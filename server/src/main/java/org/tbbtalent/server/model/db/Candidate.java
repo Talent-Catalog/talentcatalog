@@ -383,6 +383,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private Occupation partnerOccupation;
 
+    @Nullable
+    private String partnerOccupationNotes;
+
     @Enumerated(EnumType.STRING)
     @Nullable
     private YesNo partnerEnglish;
@@ -1063,6 +1066,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setPartnerOccupation(@Nullable Occupation partnerOccupation) { this.partnerOccupation = partnerOccupation; }
 
     @Nullable
+    public String getPartnerOccupationNotes() { return partnerOccupationNotes; }
+
+    public void setPartnerOccupationNotes(@Nullable String partnerOccupationNotes) { this.partnerOccupationNotes = partnerOccupationNotes; }
+
+    @Nullable
     public YesNo getPartnerEnglish() { return partnerEnglish; }
 
     public void setPartnerEnglish(@Nullable YesNo partnerEnglish) { this.partnerEnglish = partnerEnglish; }
@@ -1323,6 +1331,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getPartnerOccupationId() != null) {
             setPartnerOccupation(partnerOccupation);
+        }
+        if (data.getPartnerOccupationNotes() != null) {
+            setPartnerOccupationNotes(data.getPartnerOccupationNotes());
         }
         if (data.getPartnerEnglish() != null) {
             setPartnerEnglish(data.getPartnerEnglish());
