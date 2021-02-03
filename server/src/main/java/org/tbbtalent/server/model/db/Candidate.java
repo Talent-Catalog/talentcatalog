@@ -338,9 +338,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private String hostEntryLegallyNotes;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = LeftHomeReasonsConverter.class)
     @Nullable
-    private LeftHomeReason leftHomeReason;
+    private List<LeftHomeReason> leftHomeReasons;
 
     @Nullable
     private String leftHomeOther;
@@ -1014,9 +1014,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setHostEntryLegallyNotes(@Nullable String hostEntryLegallyNotes) { this.hostEntryLegallyNotes = hostEntryLegallyNotes; }
 
     @Nullable
-    public LeftHomeReason getLeftHomeReason() { return leftHomeReason; }
+    public List<LeftHomeReason> getLeftHomeReasons() { return leftHomeReasons; }
 
-    public void setLeftHomeReason(@Nullable LeftHomeReason leftHomeReason) { this.leftHomeReason = leftHomeReason; }
+    public void setLeftHomeReasons(@Nullable List<LeftHomeReason> leftHomeReasons) { this.leftHomeReasons = leftHomeReasons; }
 
     @Nullable
     public String getLeftHomeOther() { return leftHomeOther; }
@@ -1318,8 +1318,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getLangAssessmentScore() != null) {
             setLangAssessmentScore(data.getLangAssessmentScore());
         }
-        if (data.getLeftHomeReason() != null) {
-            setLeftHomeReason(data.getLeftHomeReason());
+        if (data.getLeftHomeReasons() != null) {
+            setLeftHomeReasons(data.getLeftHomeReasons());
         }
         if (data.getLeftHomeOther() != null) {
             setLeftHomeOther(data.getLeftHomeOther());

@@ -118,7 +118,7 @@ export interface CandidateIntakeData {
   intRecruitRuralNotes?: string;
   langAssessment?: string;
   langAssessmentScore?: IeltsScore;
-  leftHomeReason?: LeftHomeReason[];
+  leftHomeReasons?: LeftHomeReason[];
   leftHomeOther?: string;
   militaryService?: YesNo;
   maritalStatus?: MaritalStatus;

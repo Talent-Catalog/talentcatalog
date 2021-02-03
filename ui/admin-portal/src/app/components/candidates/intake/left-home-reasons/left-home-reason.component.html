@@ -19,7 +19,7 @@
 </div>
 <form [formGroup]="form">
   <div class="form-group">
-    <label for="leftHomeReason">
+    <label for="leftHomeReasons">
       What are the primary reasons you left your home country and currently live in Lebanon or Jordan?
     </label>
     <div class="float-right">
@@ -28,20 +28,20 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <select class="form-control"
-            id="leftHomeReason" [formControlName]="'leftHomeReason'">
-      <option *ngFor="let opt of leftHomeReasonOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <ng-multiselect-dropdown
+      id="leftHomeReasons"
+      [settings]="dropdownSettings"
+      [data]="leftHomeReasonOptions"
+      formControlName="leftHomeReasons">
+    </ng-multiselect-dropdown>
   </div>
 
-  <div *ngIf="leftHomeReason === 'Other'">
-    <div class="form-group">
-      <label for="leftHomeOther">If other, please explain</label>
-      <input type="text" class="form-control" id="leftHomeOther" [formControlName]="'leftHomeOther'">
-    </div>
-  </div>
+<!--  <div *ngIf="leftHomeReason === 'Other'">-->
+<!--    <div class="form-group">-->
+<!--      <label for="leftHomeOther">If other, please explain</label>-->
+<!--      <input type="text" class="form-control" id="leftHomeOther" [formControlName]="'leftHomeOther'">-->
+<!--    </div>-->
+<!--  </div>-->
 </form>
 
 

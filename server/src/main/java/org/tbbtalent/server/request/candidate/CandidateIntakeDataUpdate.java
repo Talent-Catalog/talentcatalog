@@ -109,7 +109,7 @@ public class CandidateIntakeDataUpdate {
 
     private String langAssessment;
     private IeltsScore langAssessmentScore;
-    private LeftHomeReason leftHomeReason;
+    private List<LeftHomeReason> leftHomeReasons;
     private String leftHomeOther;
     private YesNo militaryService;
 
