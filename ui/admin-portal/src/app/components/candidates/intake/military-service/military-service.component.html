@@ -34,12 +34,22 @@
     </select>
   </div>
   <div *ngIf="served">
-    <div class="form-group">
-      <label for="militaryDates">
-        What were your dates of service?
-      </label>
-      <input type="text" class="form-control"
-             id="militaryDates" [formControlName]="'militaryDates'">
+    <div>
+        <div>What were your dates of service?</div>
+      <!-- START DATE -->
+      <div class="d-flex flex-row">
+        <div class="form-group flex-fill mr-2">
+          <label class="small" for="startDate">Start Date *</label>
+          <app-month-picker id="startDate" [control]="form.get('militaryStart')"></app-month-picker>
+        </div>
+
+        <!-- END DATE -->
+        <div class="form-group flex-fill ml-2">
+          <label class="small" for="endDate">End Date</label>
+          <app-month-picker id="endDate" [control]="form.get('militaryEnd')"></app-month-picker>
+        </div>
+      </div>
+
     </div>
   </div>
   <div *ngIf="serviceSelected">

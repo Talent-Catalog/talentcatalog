@@ -100,6 +100,8 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("militaryService")
                 .add("militaryWanted")
                 .add("militaryNotes")
+                .add("militaryStart")
+                .add("militaryEnd")
 
                 .add("maritalStatus")
                 .add("partnerRegistered")

@@ -123,6 +123,8 @@ export interface CandidateIntakeData {
   militaryService?: YesNo;
   militaryWanted?: YesNo;
   militaryNotes?: string;
+  militaryStart?: string;
+  militaryEnd?: string;
   maritalStatus?: MaritalStatus;
   partnerRegistered?: YesNoUnsure;
   partnerCandidate?: Candidate;

@@ -40,6 +40,8 @@ export class MilitaryServiceComponent extends IntakeComponentBase implements OnI
       militaryService: [this.candidateIntakeData?.militaryService],
       militaryWanted: [this.candidateIntakeData?.militaryWanted],
       militaryNotes: [this.candidateIntakeData?.militaryNotes],
+      militaryStart: [this.candidateIntakeData?.militaryStart],
+      militaryEnd: [this.candidateIntakeData?.militaryEnd],
     });
   }
 

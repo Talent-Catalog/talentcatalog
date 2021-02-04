@@ -114,6 +114,8 @@ public class CandidateIntakeDataUpdate {
     private YesNo militaryService;
     private YesNo militaryWanted;
     private String militaryNotes;
+    private LocalDate militaryStart;
+    private LocalDate militaryEnd;
 
     private MaritalStatus maritalStatus;
     private YesNoUnsure partnerRegistered;

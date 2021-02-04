@@ -427,6 +427,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private String militaryNotes;
 
+    @Nullable
+    private LocalDate militaryStart;
+
+    @Nullable
+    private LocalDate militaryEnd;
+
     @Enumerated(EnumType.STRING)
     @Nullable
     private YesNoUnsure visaReject;
@@ -1136,6 +1142,16 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setMilitaryNotes(@Nullable String militaryNotes) { this.militaryNotes = militaryNotes; }
 
     @Nullable
+    public LocalDate getMilitaryStart() { return militaryStart; }
+
+    public void setMilitaryStart(@Nullable LocalDate militaryStart) { this.militaryStart = militaryStart; }
+
+    @Nullable
+    public LocalDate getMilitaryEnd() { return militaryEnd; }
+
+    public void setMilitaryEnd(@Nullable LocalDate militaryEnd) { this.militaryEnd = militaryEnd; }
+
+    @Nullable
     public YesNoUnsure getVisaReject() { return visaReject; }
 
     public void setVisaReject(@Nullable YesNoUnsure visaReject) { this.visaReject = visaReject; }
@@ -1349,6 +1365,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getMilitaryNotes() != null) {
             setMilitaryNotes(data.getMilitaryNotes());
+        }
+        if (data.getMilitaryStart() != null) {
+            setMilitaryStart(data.getMilitaryStart());
+        }
+        if (data.getMilitaryEnd() != null) {
+            setMilitaryEnd(data.getMilitaryEnd());
         }
         if (data.getMaritalStatus() != null) {
             setMaritalStatus(data.getMaritalStatus());
