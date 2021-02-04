@@ -63,6 +63,7 @@ export interface Candidate {
 export interface CandidateIntakeData {
   asylumYear?: string;
   availImmediate?: YesNoUnsure;
+  availImmediateJobOps?: string;
   availImmediateReason?: AvailImmediateReason;
   availImmediateNotes?: string;
 

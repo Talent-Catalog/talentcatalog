@@ -44,6 +44,7 @@ public class CandidateIntakeDataUpdate {
 
     private LocalDate asylumYear;
     private YesNoUnsure availImmediate;
+    private String availImmediateJobOps;
     private AvailImmediateReason availImmediateReason;
     private String availImmediateNotes;
 

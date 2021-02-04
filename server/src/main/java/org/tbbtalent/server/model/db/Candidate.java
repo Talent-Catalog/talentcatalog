@@ -198,6 +198,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private YesNoUnsure availImmediate;
 
+    @Nullable
+    private String availImmediateJobOps;
+
     @Enumerated(EnumType.STRING)
     @Nullable
     private AvailImmediateReason availImmediateReason;
@@ -814,6 +817,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setAvailImmediate(@Nullable YesNoUnsure availImmediate) { this.availImmediate = availImmediate; }
 
     @Nullable
+    public String getAvailImmediateJobOps() { return availImmediateJobOps; }
+
+    public void setAvailImmediateJobOps(@Nullable String availImmediateJobOps) { this.availImmediateJobOps = availImmediateJobOps; }
+
+    @Nullable
     public String getAvailImmediateNotes() { return availImmediateNotes; }
 
     public void setAvailImmediateNotes(@Nullable String availImmediateNotes) { this.availImmediateNotes = availImmediateNotes; }
@@ -1277,6 +1285,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getAvailImmediate() != null) {
             setAvailImmediate(data.getAvailImmediate());
+        }
+        if (data.getAvailImmediateJobOps() != null) {
+            setAvailImmediateJobOps(data.getAvailImmediateJobOps());
         }
         if (data.getAvailImmediateReason() != null) {
             setAvailImmediateReason(data.getAvailImmediateReason());

@@ -50,6 +50,7 @@ public class CandidateIntakeDataBuilderSelector {
         return new DtoBuilder()
                 .add("asylumYear")
                 .add("availImmediate")
+                .add("availImmediateJobOps")
                 .add("availImmediateReason")
                 .add("availImmediateNotes")
 
