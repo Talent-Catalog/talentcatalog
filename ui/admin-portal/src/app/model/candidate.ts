@@ -121,6 +121,8 @@ export interface CandidateIntakeData {
   leftHomeReasons?: LeftHomeReason[];
   leftHomeOther?: string;
   militaryService?: YesNo;
+  militaryWanted?: YesNo;
+  militaryNotes?: string;
   maritalStatus?: MaritalStatus;
   partnerRegistered?: YesNoUnsure;
   partnerCandidate?: Candidate;

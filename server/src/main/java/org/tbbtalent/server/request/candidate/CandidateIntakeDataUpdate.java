@@ -112,6 +112,8 @@ public class CandidateIntakeDataUpdate {
     private List<LeftHomeReason> leftHomeReasons;
     private String leftHomeOther;
     private YesNo militaryService;
+    private YesNo militaryWanted;
+    private String militaryNotes;
 
     private MaritalStatus maritalStatus;
     private YesNoUnsure partnerRegistered;

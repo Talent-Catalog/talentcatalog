@@ -98,6 +98,8 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("leftHomeReasons")
                 .add("leftHomeOther")
                 .add("militaryService")
+                .add("militaryWanted")
+                .add("militaryNotes")
 
                 .add("maritalStatus")
                 .add("partnerRegistered")
