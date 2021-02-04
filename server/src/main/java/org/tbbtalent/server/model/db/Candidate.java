@@ -216,6 +216,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private List<IntRecruitReason> intRecruitReasons;
 
+    @Nullable
+    private String intRecruitOther;
+
     @Enumerated(EnumType.STRING)
     @Nullable
     private YesNoUnsure intRecruitRural;
@@ -836,6 +839,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setIntRecruitReasons(@Nullable List<IntRecruitReason> intRecruitReasons) { this.intRecruitReasons = intRecruitReasons; }
 
     @Nullable
+    public String getIntRecruitOther() { return intRecruitOther; }
+
+    public void setIntRecruitOther(@Nullable String intRecruitOther) { this.intRecruitOther = intRecruitOther; }
+
+    @Nullable
     public YesNoUnsure getIntRecruitRural() { return intRecruitRural; }
 
     public void setIntRecruitRural(@Nullable YesNoUnsure intRecruitRural) { this.intRecruitRural = intRecruitRural; }
@@ -1338,6 +1346,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getIntRecruitReasons() != null) {
             setIntRecruitReasons(data.getIntRecruitReasons());
+        }
+        if (data.getIntRecruitOther() != null) {
+            setIntRecruitOther(data.getIntRecruitOther());
         }
         if (data.getIntRecruitRural() != null) {
             setIntRecruitRural(data.getIntRecruitRural());

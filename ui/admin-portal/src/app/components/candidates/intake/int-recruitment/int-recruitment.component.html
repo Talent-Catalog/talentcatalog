@@ -34,8 +34,13 @@
       [data]="intRecruitReasonOptions"
       formControlName="intRecruitReasons">
     </ng-multiselect-dropdown>
-    <div *ngIf="hasOther">
-      <p>Hey</p>
+  </div>
+  <div *ngIf="hasOther">
+    <div class="form-group">
+      <label for="intRecruitOther">If other, please explain</label>
+      <textarea type="text" class="md-textarea-auto form-control" rows="4"
+                id="intRecruitOther" [formControlName]="'intRecruitOther'"
+                placeholder="" ></textarea>
     </div>
   </div>
 </form>
