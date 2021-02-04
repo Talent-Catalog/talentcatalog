@@ -164,12 +164,14 @@ export interface CandidateIntakeData {
   workPermitDesired?: YesNoUnsure;
   workDesired?: YesNoUnemployed;
   workDesiredNotes?: string;
+  unhcrRegistered?: YesNoUnsure;
   unhcrStatus?: UnhcrStatus;
   unhcrOldStatus?: UnhcrStatus;
   unhcrNumber?: string;
   unhcrFile?: number;
   unhcrNotes?: string;
   unhcrPermission?: YesNo;
+  unrwaRegistered?: YesNoUnsure;
   unrwaStatus?: UnrwaStatus;
   unrwaNumber?: string;
   unrwaNotes?: string;

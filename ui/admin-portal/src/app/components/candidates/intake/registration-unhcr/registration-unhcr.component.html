@@ -18,10 +18,9 @@
   {{error}}
 </div>
 <form [formGroup]="form">
-
   <div class="form-group">
-    <label for="unhcrStatus">
-      What <u>is</u> your registration status with UNHCR?
+    <label for="unhcrRegistered">
+      Are you registered with UNHCR?
     </label>
     <div class="float-right">
       <app-autosave-status
@@ -30,52 +29,68 @@
       </app-autosave-status>
     </div>
     <select class="form-control"
-            id="unhcrStatus" [formControlName]="'unhcrStatus'">
-      <option *ngFor="let opt of unhcrStatusOptions" [value]="opt.value">
+            id="unhcrRegistered" [formControlName]="'unhcrRegistered'">
+      <option *ngFor="let opt of unhcrRegisteredOptions" [value]="opt.value">
         {{opt.displayText}}
       </option>
     </select>
   </div>
-  <div  *ngIf="showUnhcrNumber()">
-    <div class="form-group">
-      <label for="unhcrNumber">What is your UNHCR ID number?</label>
-      <input type="text" class="form-control"
-                id="unhcrNumber" [formControlName]="'unhcrNumber'">
+  <div *ngIf="showAll">
+    <div *ngIf="unhcrRegistered == 'Yes'">
+      <div class="form-group">
+        <label for="unhcrStatus">
+          What <u>is</u> your registration status with UNHCR?
+        </label>
+        <select class="form-control"
+                id="unhcrStatus" [formControlName]="'unhcrStatus'">
+          <option *ngFor="let opt of unhcrStatusOptions" [value]="opt.value">
+            {{opt.displayText}}
+          </option>
+        </select>
+      </div>
+      <div  *ngIf="showUnhcrNumber()">
+        <div class="form-group">
+          <label for="unhcrNumber">What is your UNHCR ID number?</label>
+          <input type="text" class="form-control"
+                 id="unhcrNumber" [formControlName]="'unhcrNumber'">
+        </div>
+        <div class="form-group">
+          <label for="unhcrFile">How many people are included on your UNHCR file?</label>
+          <input type="number" class="form-control"
+                 id="unhcrFile" [formControlName]="'unhcrFile'">
+        </div>
+      </div>
     </div>
     <div class="form-group">
-      <label for="unhcrFile">How many people are included on your UNHCR file?</label>
-      <input type="number" class="form-control"
-             id="unhcrFile" [formControlName]="'unhcrFile'">
+      <label for="unhcrOldStatus">
+        What <u>was</u> your registration status with UNHCR?
+      </label>
+      <select class="form-control"
+              id="unhcrOldStatus" [formControlName]="'unhcrOldStatus'">
+        <option *ngFor="let opt of unhcrStatusOptions" [value]="opt.value">
+          {{opt.displayText}}
+        </option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="unhcrPermission">
+        Permission to share with UNHCR?
+      </label>
+      <select class="form-control"
+              id="unhcrPermission" [formControlName]="'unhcrPermission'">
+        <option *ngFor="let opt of unhcrPermissionOptions" [value]="opt.value">
+          {{opt.displayText}}
+        </option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="unhcrNotes">Notes</label>
+      <textarea type="text" class="md-textarea-auto form-control" rows="3"
+                id="unhcrNotes" [formControlName]="'unhcrNotes'"
+                placeholder="" ></textarea>
     </div>
   </div>
-  <div class="form-group">
-    <label for="unhcrOldStatus">
-      What <u>was</u> your registration status with UNHCR?
-    </label>
-    <select class="form-control"
-            id="unhcrOldStatus" [formControlName]="'unhcrOldStatus'">
-      <option *ngFor="let opt of unhcrStatusOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
-  </div>
-  <div class="form-group">
-    <label for="unhcrPermission">
-      Permission to share with UNHCR?
-    </label>
-    <select class="form-control"
-            id="unhcrPermission" [formControlName]="'unhcrPermission'">
-      <option *ngFor="let opt of unhcrPermissionOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
-  </div>
-  <div class="form-group">
-    <label for="unhcrNotes">Notes</label>
-    <textarea type="text" class="md-textarea-auto form-control" rows="3"
-              id="unhcrNotes" [formControlName]="'unhcrNotes'"
-              placeholder="" ></textarea>
-  </div>
+
 
 </form>
 

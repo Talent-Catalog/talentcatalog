@@ -133,6 +133,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("resettleThird")
                 .add("resettleThirdStatus")
 
+                .add("unhcrRegistered")
                 .add("unhcrStatus")
                 .add("unhcrOldStatus")
                 .add("unhcrNumber")
@@ -140,7 +141,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("unhcrNotes")
                 .add("unhcrPermission")
 
-                .add("unrwaStatus")
+                .add("unrwaRegistered")
                 .add("unrwaNumber")
                 .add("unrwaNotes")
 

@@ -253,6 +253,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Enumerated(EnumType.STRING)
     @Nullable
+    private YesNoUnsure unhcrRegistered;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
     private UnhcrStatus unhcrStatus;
 
     @Enumerated(EnumType.STRING)
@@ -271,6 +275,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Enumerated(EnumType.STRING)
     @Nullable
     private YesNo unhcrPermission;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNoUnsure unrwaRegistered;
 
     @Enumerated(EnumType.STRING)
     @Nullable
@@ -892,6 +900,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setHostEntryYear(@Nullable Long hostEntryYear) { this.hostEntryYear = hostEntryYear; }
 
     @Nullable
+    public YesNoUnsure getUnhcrRegistered() { return unhcrRegistered; }
+
+    public void setUnhcrRegistered(@Nullable YesNoUnsure unhcrRegistered) { this.unhcrRegistered = unhcrRegistered; }
+
+    @Nullable
     public UnhcrStatus getUnhcrStatus() { return unhcrStatus; }
 
     public void setUnhcrStatus(@Nullable UnhcrStatus unhcrStatus) { this.unhcrStatus = unhcrStatus; }
@@ -920,6 +933,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public YesNo getUnhcrPermission() { return unhcrPermission; }
 
     public void setUnhcrPermission(@Nullable YesNo unhcrPermission) { this.unhcrPermission = unhcrPermission; }
+
+    @Nullable
+    public YesNoUnsure getUnrwaRegistered() { return unrwaRegistered; }
+
+    public void setUnrwaRegistered(@Nullable YesNoUnsure unrwaRegistered) { this.unrwaRegistered = unrwaRegistered; }
 
     @Nullable
     public UnrwaStatus getUnrwaStatus() { return unrwaStatus; }
@@ -1463,6 +1481,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getResettleThirdStatus() != null) {
             setResettleThirdStatus(data.getResettleThirdStatus());
         }
+        if (data.getUnhcrRegistered() != null) {
+            setUnhcrRegistered(data.getUnhcrRegistered());
+        }
         if (data.getUnhcrStatus() != null) {
             setUnhcrStatus(data.getUnhcrStatus());
         }
@@ -1480,6 +1501,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getUnhcrPermission() != null) {
             setUnhcrPermission(data.getUnhcrPermission());
+        }
+        if (data.getUnrwaRegistered() != null) {
+            setUnrwaRegistered(data.getUnrwaRegistered());
         }
         if (data.getUnrwaStatus() != null) {
             setUnrwaStatus(data.getUnrwaStatus());
