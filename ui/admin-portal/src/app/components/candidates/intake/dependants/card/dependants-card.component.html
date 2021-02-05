@@ -58,7 +58,9 @@
         <div class="form-group">
           <label [for]="'dependantDob'+myRecordIndex">DOB</label>
           <div class="input-group">
-            <input [id]="'dependantDob'+myRecordIndex" type="text" class="form-control" placeholder="YYYY-MM-DD"
+            <input [id]="'dependantDob'+myRecordIndex" type="text" class="form-control read-only-white"
+                   placeholder="YYYY-MM-DD"
+                   [readOnly]="true"
                    ngbDatepicker #picker="ngbDatepicker"
                    [formControlName]="'dependantDob'"
                    (dateSelect)="form.controls.dependantDob.markAsDirty()"

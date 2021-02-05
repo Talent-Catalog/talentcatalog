@@ -29,9 +29,10 @@
       </app-autosave-status>
     </div>
     <div class="input-group">
-      <input id="asylumYear" type="text" class="form-control" placeholder="YYYY-MM-DD"
+      <input id="asylumYear" type="text" class="form-control read-only-white" placeholder="YYYY-MM-DD"
              ngbDatepicker #picker="ngbDatepicker"
              [formControlName]="'asylumYear'"
+             [readOnly]="true"
              (dateSelect)="form.controls.asylumYear.markAsDirty()"
              [autoClose]="true"
              [outsideDays]="'hidden'"
