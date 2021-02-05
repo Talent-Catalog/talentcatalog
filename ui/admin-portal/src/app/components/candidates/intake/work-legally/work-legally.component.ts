@@ -35,9 +35,9 @@ export class WorkLegallyComponent extends IntakeComponentBase implements OnInit 
   }
 
   ngOnInit(): void {
-    this.form = this.fb.group({
-      workLegally: [this.candidateIntakeData?.workLegally],
-    });
+    // this.form = this.fb.group({
+    //   workLegally: [this.candidateIntakeData?.workLegally],
+    // });
   }
 
 }
