@@ -43,6 +43,9 @@ public class CandidateDependant extends AbstractDomainObject<Long> {
     private String name;
 
     @Enumerated(EnumType.STRING)
+    private Registration registered;
+
+    @Enumerated(EnumType.STRING)
     private YesNo healthConcern;
 
     private String notes;
@@ -62,6 +65,9 @@ public class CandidateDependant extends AbstractDomainObject<Long> {
         }
         if (data.getDependantName() != null) {
             setName(data.getDependantName());
+        }
+        if (data.getDependantRegistered() != null) {
+            setRegistered(data.getDependantRegistered());
         }
         if (data.getDependantHealthConcerns() != null) {
             setHealthConcern(data.getDependantHealthConcerns());

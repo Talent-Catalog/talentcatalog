@@ -68,6 +68,7 @@ public class CandidateIntakeDataUpdate {
     private DependantRelations dependantRelation;
     private LocalDate dependantDob;
     private String dependantName;
+    private Registration dependantRegistered;
     private YesNo dependantHealthConcerns;
     private String dependantNotes;
 

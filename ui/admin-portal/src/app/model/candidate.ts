@@ -194,6 +194,7 @@ export interface CandidateDependant {
   relation?: DependantRelations;
   dob?: string;
   name?: string;
+  registered?: string;
   healthConcern?: string;
   notes?: string;
 }
@@ -430,6 +431,15 @@ export enum DrivingLicenseStatus {
   Valid = "Valid",
   Expired = "Expired",
   None = "None"
+}
+
+export enum Registrations {
+  NoResponse = "",
+  UNHCR = "UNHCR only",
+  UNRWA = "UNRWA only",
+  UNHCRUNRWA = "UNHCR & UNRWA",
+  Neither = "Neither",
+  NA = "Not Applicable",
 }
 
 export function getCandidateNavigation(candidate: Candidate): any[] {

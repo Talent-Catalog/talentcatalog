@@ -49,6 +49,13 @@
 
       <div *ngIf="hasDependant">
         <div class="form-group">
+          <label [for]="'dependantName'+myRecordIndex">Name</label>
+
+          <input type="text" class="form-control"
+                 [id]="'dependantName'+myRecordIndex" [formControlName]="'dependantName'">
+        </div>
+
+        <div class="form-group">
           <label [for]="'dependantDob'+myRecordIndex">DOB</label>
           <div class="input-group">
             <input [id]="'dependantDob'+myRecordIndex" type="text" class="form-control" placeholder="YYYY-MM-DD"
@@ -77,13 +84,6 @@
         </div>
 
         <div class="form-group">
-          <label for="dependantName">Name</label>
-
-          <input type="text" class="form-control"
-                 id="dependantName" [formControlName]="'dependantName'">
-        </div>
-
-        <div class="form-group">
           <label [for]="'dependantHealthConcerns'+myRecordIndex">
             Any health concerns?
           </label>
@@ -100,6 +100,19 @@
                     [id]="'dependantNotes'+myRecordIndex" [formControlName]="'dependantNotes'"
                     placeholder="" ></textarea>
         </div>
+
+        <div class="form-group">
+          <label [for]="'dependantRegistered'+myRecordIndex">
+            Are they registered?
+          </label>
+          <select class="form-control"
+                  [id]="'dependantRegistered'+myRecordIndex" [formControlName]="'dependantRegistered'">
+            <option *ngFor="let opt of dependantRegisterOptions" [value]="opt.value">
+              {{opt.displayText}}
+            </option>
+          </select>
+        </div>
+
       </div>
 
     </form>
