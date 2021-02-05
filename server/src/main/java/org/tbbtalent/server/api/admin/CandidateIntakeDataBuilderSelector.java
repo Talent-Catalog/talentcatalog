@@ -187,6 +187,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("id")
                 .add("relation")
                 .add("dob")
+                .add("name")
                 .add("healthConcern")
                 .add("notes")
                 ;

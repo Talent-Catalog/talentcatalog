@@ -193,6 +193,7 @@ export interface CandidateDependant {
   id?: number;
   relation?: DependantRelations;
   dob?: string;
+  name?: string;
   healthConcern?: string;
   notes?: string;
 }

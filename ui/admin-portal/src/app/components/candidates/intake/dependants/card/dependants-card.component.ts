@@ -50,6 +50,7 @@ export class DependantsCardComponent extends IntakeComponentBase implements OnIn
       dependantId: [this.myRecord?.id],
       dependantRelation: [this.myRecord?.relation],
       dependantDob: [this.myRecord?.dob],
+      dependantName: [this.myRecord?.name],
       dependantHealthConcerns: [this.myRecord?.healthConcern],
       dependantNotes: [this.myRecord?.notes],
     });
@@ -65,6 +66,14 @@ export class DependantsCardComponent extends IntakeComponentBase implements OnIn
     return this.candidateIntakeData.candidateDependants ?
       this.candidateIntakeData.candidateDependants[this.myRecordIndex]
       : null;
+  }
+
+  get hasDependant(): boolean {
+    let found: boolean;
+    if (this.form?.value?.dependantRelation) {
+      found = this.form.value.dependantRelation !== 'NoResponse'
+    }
+    return found;
   }
 
   get dependantAge(): number {
