@@ -101,7 +101,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     singleSelection: false,
     selectAllText: 'Select All',
     unSelectAllText: 'Deselect All',
-    itemsShowLimit: 2,
     allowSearchFilter: true
   };
 
