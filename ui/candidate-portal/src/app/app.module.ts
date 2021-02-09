@@ -21,12 +21,7 @@ import {AppComponent} from './components/app.component';
 import {LandingComponent} from './components/landing/landing.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
-import {
-  NgbDateAdapter,
-  NgbDateParserFormatter,
-  NgbDatepickerConfig,
-  NgbModule
-} from '@ng-bootstrap/ng-bootstrap';
+import {NgbDateAdapter, NgbDateParserFormatter, NgbDatepickerConfig, NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha';
 
@@ -65,23 +60,19 @@ import {CandidateLanguageCardComponent} from './components/common/candidate-lang
 import {CandidateAttachmentsComponent} from './components/common/candidate-attachments/candidate-attachments.component';
 import {FileUploadComponent} from './components/common/file-upload/file-upload.component';
 import {InputFilterDirective} from './directives/input-filter.directive';
-import {
-  CustomDateAdapter,
-  CustomDateParserFormatter
-} from './util/date-adapter/ngb-date-adapter';
+import {CustomDateAdapter, CustomDateParserFormatter} from './util/date-adapter/ngb-date-adapter';
 import {UserPipe} from './pipes/user.pipe';
 import {TrimPipe} from './pipes/trim.pipe';
 import {MonthPickerComponent} from './components/common/month-picker/month-picker.component';
-import {
-  FaIconLibrary,
-  FontAwesomeModule
-} from '@fortawesome/angular-fontawesome';
+import {FaIconLibrary, FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {faEdit} from '@fortawesome/free-solid-svg-icons';
 import {DeleteOccupationComponent} from './components/register/candidate-occupation/delete/delete-occupation.component';
 import {CandidateCertificationFormComponent} from './components/common/candidate-certification-form/candidate-certification-form.component';
 import {DownloadCvComponent} from './components/common/download-cv/download-cv.component';
 import {RedirectGuard} from './services/redirect.guard';
 import {LanguageLoader} from "./services/language.loader";
+import {WebcamModule} from "ngx-webcam";
+import {WebcamUploadComponent} from './components/common/webcam-upload/webcam-upload.component';
 
 @NgModule({
   declarations: [
@@ -123,7 +114,8 @@ import {LanguageLoader} from "./services/language.loader";
     MonthPickerComponent,
     DeleteOccupationComponent,
     CandidateCertificationFormComponent,
-    DownloadCvComponent
+    DownloadCvComponent,
+    WebcamUploadComponent
   ],
   imports: [
     BrowserModule,
@@ -133,6 +125,7 @@ import {LanguageLoader} from "./services/language.loader";
     FormsModule,
     NgbModule,
     RecaptchaV3Module,
+    WebcamModule,
     LocalStorageModule.forRoot({
       prefix: 'tbb-candidate-portal',
       storageType: 'localStorage'

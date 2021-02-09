@@ -1,0 +1,38 @@
+
+
+
+<div class="modal-header">
+  <h4 class="modal-title">Capture Document</h4>
+  <button type="button" class="close" aria-label="Close"
+          [disabled]="deleting" (click)="cancel()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="text-center">
+    <webcam [width]="200" [trigger]="triggerObservable" (imageCapture)="handleImage($event)" *ngIf="showWebcam"
+            [allowCameraSwitch]="allowCameraSwitch" [switchCamera]="nextWebcamObservable" [videoOptions]="videoOptions" (cameraSwitched)="cameraWasSwitched($event)"
+            (initError)="handleInitError($event)"></webcam>
+    <br/>
+    <div class="btn btn-primary" (click)="triggerSnapshot();" title="Take Picture">Take Photo</div>
+    <div class="btn btn-primary" (click)="showNextWebcam(true);" title="Switch Camera">Switch Camera</div>
+
+  </div>
+  <h4 *ngIf="errors.length > 0">Messages:</h4>
+  <ul *ngFor="let error of errors">
+    <li>{{error | json}}</li>
+  </ul>
+  <div class="snapshot" *ngIf="webcamImage">
+    <div>Happy with this image?</div>
+    <img [src]="webcamImage.imageAsDataUrl"/>
+  </div>
+</div>
+<div class="modal-footer">
+  <span *ngIf="deleting"><i class="fas fa-spinner fa-spin"></i> deleting...</span>
+  <button type="button" class="btn btn-danger"
+          [disabled]="deleting"
+          (click)="confirm()">{{ 'REGISTRATION.OCCUPATION.DELETE.YES' | translate }}</button>
+  <button type="button" class="btn btn-secondary"
+          [disabled]="deleting"
+          (click)="cancel()">{{ 'REGISTRATION.OCCUPATION.DELETE.NO' | translate }}</button>
+</div>

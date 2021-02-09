@@ -29,6 +29,9 @@
       <ng-container *ngIf="!uploading">{{ 'FORM.ATTACHMENT.LABEL.BROWSE' | translate }}</ng-container>
       <ng-container *ngIf="uploading">{{ 'FORM.ATTACHMENT.LABEL.UPLOADING' | translate }}</ng-container>
     </button>
+    <button class="btn btn-primary" (click)="webcamModal()">
+      <ng-container>Take Photo</ng-container>
+    </button>
   </span>
 
 </div>
