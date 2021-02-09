@@ -338,6 +338,7 @@ export enum YesNoUnsure {
 
 export enum IeltsStatus {
   NoResponse = "",
+  Yes = "Yes",
   YesGeneral = "Yes - Ielts General",
   YesAcademic = "Yes - Ielts Academic",
   No = "No",
