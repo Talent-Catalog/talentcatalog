@@ -32,7 +32,7 @@ export class MonthPickerComponent implements OnInit {
   date;
 
   years: number[];
-  months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  months = ['Jan', 'Feb', 'March', 'April', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
 
   constructor() { }
 
@@ -40,17 +40,22 @@ export class MonthPickerComponent implements OnInit {
     this.years = generateYearArray(1950, true);
     if (this.control.value){
       this.date = new Date(this.control.value);
-      this.month = this.date.getMonth() + 1;
+      this.month = this.months[this.date.getMonth()];
       this.year = this.date.getFullYear();
+    } else {
+      this.month = null;
+      this.year = null;
     }
   }
 
   updateMonth(){
     if (!this.date){
       this.date = new Date();
+      //Set date as the 1st as default
+      this.date.setDate(1);
     }
     if (this.month){
-      this.date.setMonth(this.month - 1);
+      this.date.setMonth(this.months.indexOf(this.month));
     } else {
       this.date = null;
     }
@@ -61,6 +66,8 @@ export class MonthPickerComponent implements OnInit {
   updateYear(){
     if (!this.date){
       this.date = new Date();
+      //Set date as the 1st as default
+      this.date.setDate(1);
     }
     if (this.year){
       this.date.setFullYear(this.year);

@@ -72,10 +72,21 @@
       </label>
       <select class="form-control"
               id="partnerEduLevelId" [formControlName]="'partnerEduLevelId'">
+        <option value="0"></option>
         <option *ngFor="let opt of educationLevels" [value]="opt.id">
           {{opt.name}}
         </option>
       </select>
+    </div>
+    <div *ngIf="eduLevelSelected">
+      <div class="form-group">
+        <label for="partnerEduLevelNotes">
+          Notes
+        </label>
+        <textarea type="text" class="md-textarea-auto form-control" rows="4"
+                  id="partnerEduLevelNotes" [formControlName]="'partnerEduLevelNotes'"
+                  placeholder="" ></textarea>
+      </div>
     </div>
     <div class="form-group">
       <label for="partnerOccupationId">
@@ -86,7 +97,18 @@
         <option *ngFor="let opt of occupations" [value]="opt.id">
           {{opt.name}}
         </option>
+        <option value="0">Other</option>
       </select>
+    </div>
+    <div *ngIf="occupationSelected">
+      <div class="form-group">
+        <label for="partnerOccupationNotes">
+          Notes
+        </label>
+        <textarea type="text" class="md-textarea-auto form-control" rows="4"
+                  id="partnerOccupationNotes" [formControlName]="'partnerOccupationNotes'"
+                  placeholder="" ></textarea>
+      </div>
     </div>
     <div class="form-group">
       <label for="partnerEnglish">

@@ -50,6 +50,7 @@ public class CandidateIntakeDataBuilderSelector {
         return new DtoBuilder()
                 .add("asylumYear")
                 .add("availImmediate")
+                .add("availImmediateJobOps")
                 .add("availImmediateReason")
                 .add("availImmediateNotes")
 
@@ -90,20 +91,27 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("hostEntryLegally")
                 .add("hostEntryLegallyNotes")
                 .add("intRecruitReasons")
+                .add("intRecruitOther")
                 .add("intRecruitRural")
                 .add("intRecruitRuralNotes")
 
                 .add("langAssessment")
                 .add("langAssessmentScore")
-                .add("leftHomeReason")
+                .add("leftHomeReasons")
                 .add("leftHomeOther")
                 .add("militaryService")
+                .add("militaryWanted")
+                .add("militaryNotes")
+                .add("militaryStart")
+                .add("militaryEnd")
 
                 .add("maritalStatus")
                 .add("partnerRegistered")
                 .add("partnerCandidate", partnerCandidateDto())
                 .add("partnerEduLevel", englishLevelDto())
+                .add("partnerEduLevelNotes")
                 .add("partnerOccupation", occupationDto())
+                .add("partnerOccupationNotes")
                 .add("partnerEnglish")
                 .add("partnerEnglishLevel", languageLevelDto())
                 .add("partnerIelts")
@@ -112,9 +120,11 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("partnerCitizenship", nationalityDto())
 
                 .add("residenceStatus")
+                .add("residenceStatusNotes")
 
                 .add("returnedHome")
                 .add("returnedHomeReason")
+                .add("returnedHomeReasonNo")
 
                 .add("returnHomeSafe")
                 .add("returnHomeFuture")
@@ -123,6 +133,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("resettleThird")
                 .add("resettleThirdStatus")
 
+                .add("unhcrRegistered")
                 .add("unhcrStatus")
                 .add("unhcrOldStatus")
                 .add("unhcrNumber")
@@ -130,7 +141,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("unhcrNotes")
                 .add("unhcrPermission")
 
-                .add("unrwaStatus")
+                .add("unrwaRegistered")
                 .add("unrwaNumber")
                 .add("unrwaNotes")
 
@@ -145,8 +156,8 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("workAbroadNotes")
                 .add("workPermit")
                 .add("workPermitDesired")
-                .add("workLegally")
                 .add("workDesired")
+                .add("workDesiredNotes")
 
                 ;
     }
@@ -176,6 +187,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("id")
                 .add("relation")
                 .add("dob")
+                .add("name")
                 .add("healthConcern")
                 .add("notes")
                 ;

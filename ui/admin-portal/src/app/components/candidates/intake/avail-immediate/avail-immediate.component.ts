@@ -17,10 +17,7 @@
 import {Component, OnInit} from '@angular/core';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 import {EnumOption, enumOptions} from '../../../../util/enum';
-import {
-  AvailImmediateReason,
-  YesNoUnsureLearn
-} from '../../../../model/candidate';
+import {AvailImmediateReason, YesNoUnsureLearn} from '../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 
@@ -42,6 +39,7 @@ export class AvailImmediateComponent extends IntakeComponentBase implements OnIn
   ngOnInit(): void {
     this.form = this.fb.group({
       availImmediate: [this.candidateIntakeData?.availImmediate],
+      availImmediateJobOps: [this.candidateIntakeData?.availImmediateJobOps],
       availImmediateReason: [this.candidateIntakeData?.availImmediateReason],
       availImmediateNotes: [this.candidateIntakeData?.availImmediateNotes],
     });

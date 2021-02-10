@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (c) 2021 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -14,12 +14,4 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-:host {
-  display: block;
-  padding-top: 24px;
-  padding-bottom: 24px;
-}
-
-:host ::ng-deep .read-only-white {
-  background-color: white;
-}
+update candidate set partner_ielts = null where partner_ielts = 'Yes';
