@@ -116,7 +116,7 @@ public class CandidateIntakeDataUpdate {
     private List<LeftHomeReason> leftHomeReasons;
     private String leftHomeOther;
     private YesNo militaryService;
-    private YesNo militaryWanted;
+    private YesNoUnsure militaryWanted;
     private String militaryNotes;
     private LocalDate militaryStart;
     private LocalDate militaryEnd;

@@ -436,7 +436,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Enumerated(EnumType.STRING)
     @Nullable
-    private YesNo militaryWanted;
+    private YesNoUnsure militaryWanted;
 
     @Nullable
     private String militaryNotes;
@@ -1166,9 +1166,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setMilitaryService(@Nullable YesNo militaryService) { this.militaryService = militaryService; }
 
     @Nullable
-    public YesNo getMilitaryWanted() { return militaryWanted; }
+    public YesNoUnsure getMilitaryWanted() { return militaryWanted; }
 
-    public void setMilitaryWanted(@Nullable YesNo militaryWanted) { this.militaryWanted = militaryWanted; }
+    public void setMilitaryWanted(@Nullable YesNoUnsure militaryWanted) { this.militaryWanted = militaryWanted; }
 
     @Nullable
     public String getMilitaryNotes() { return militaryNotes; }
