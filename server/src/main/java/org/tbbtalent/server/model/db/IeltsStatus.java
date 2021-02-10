@@ -18,7 +18,6 @@ package org.tbbtalent.server.model.db;
 
 public enum IeltsStatus {
     NoResponse,
-    Yes,
     YesGeneral,
     YesAcademic,
     No,
