@@ -36,12 +36,12 @@
     </ng-multiselect-dropdown>
   </div>
 
-<!--  <div *ngIf="leftHomeReason === 'Other'">-->
-<!--    <div class="form-group">-->
-<!--      <label for="leftHomeOther">If other, please explain</label>-->
-<!--      <input type="text" class="form-control" id="leftHomeOther" [formControlName]="'leftHomeOther'">-->
-<!--    </div>-->
-<!--  </div>-->
+  <div *ngIf="hasOther">
+    <div class="form-group">
+      <label for="leftHomeOther">If other, please explain</label>
+      <input type="text" class="form-control" id="leftHomeOther" [formControlName]="'leftHomeOther'">
+    </div>
+  </div>
 </form>
 
 
