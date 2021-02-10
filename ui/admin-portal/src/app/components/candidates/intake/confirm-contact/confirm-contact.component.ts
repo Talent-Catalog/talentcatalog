@@ -33,7 +33,9 @@ export class ConfirmContactComponent implements OnInit {
   }
 
   get date(): string {
-    return dateString(this.candidate.dob)
+    if (this.candidate?.dob) {
+      return dateString(this.candidate.dob)
+    }
   }
 
 }
