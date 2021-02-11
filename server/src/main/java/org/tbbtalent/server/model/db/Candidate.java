@@ -1238,7 +1238,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     public Country getBirthCountry() { return birthCountry; }
 
-    public void setBirthCountry(@Nullable Country countryOfBirth) { this.birthCountry = countryOfBirth; }
+    public void setBirthCountry(@Nullable Country birthCountry) { this.birthCountry = birthCountry; }
 
     public boolean isSelected() {
         return selected;
@@ -1323,6 +1323,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getAvailImmediateNotes() != null) {
             setAvailImmediateNotes(data.getAvailImmediateNotes());
+        }
+        if (data.getBirthCountryId() != null) {
+            setBirthCountry(birthCountry);
         }
         if (data.getCanDrive() != null) {
             setCanDrive(data.getCanDrive());
