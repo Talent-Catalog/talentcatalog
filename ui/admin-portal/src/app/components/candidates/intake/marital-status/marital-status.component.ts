@@ -123,7 +123,13 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
   }
 
   get eduLevelSelected(): boolean {
-    return this.form?.value?.partnerEduLevelId != null;
+    let show: boolean = true;
+    if (this.form?.value?.partnerEduLevelId == null){
+      show = false;
+    } else if (this.form?.value?.partnerEduLevelId == 0) {
+      show = false;
+    }
+    return show;
   }
 
   get occupationSelected(): boolean {
