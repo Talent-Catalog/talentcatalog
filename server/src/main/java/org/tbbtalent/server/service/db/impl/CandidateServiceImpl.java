@@ -1815,8 +1815,14 @@ public class CandidateServiceImpl implements CandidateService {
             drivingLicenseCountry = countryRepository.findById(drivingLicenseCountryId).orElse(null);
         }
 
+        final Long birthCountryId = data.getBirthCountryId();
+        Country birthCountry = null;
+        if (birthCountryId != null) {
+            birthCountry = countryRepository.findById(birthCountryId).orElse(null);
+        }
+
         candidate.populateIntakeData(data, partnerCandidate, partnerEducationLevel,
-                partnerOccupation, partnerEnglishLevel, partnerCitizenship, drivingLicenseCountry);
+                partnerOccupation, partnerEnglishLevel, partnerCitizenship, drivingLicenseCountry, birthCountry);
 
         save(candidate, true);
 

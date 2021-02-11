@@ -63,6 +63,8 @@ public class CandidateIntakeDataUpdate {
     private YesNoUnsure crimeConvict;
     private String crimeConvictNotes;
 
+    private Long birthCountryId;
+
     //Corresponds to CandidateDependant fields
     private Long dependantId;
     private DependantRelations dependantRelation;

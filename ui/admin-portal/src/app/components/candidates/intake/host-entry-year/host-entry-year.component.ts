@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
@@ -22,6 +22,7 @@ import {NgbDateStruct} from '@ng-bootstrap/ng-bootstrap';
 import {EnumOption, enumOptions} from '../../../../util/enum';
 import {YesNo} from '../../../../model/candidate';
 import {generateYearArray} from '../../../../util/year-helper';
+import {Country} from "../../../../model/country";
 
 @Component({
   selector: 'app-host-entry-year',
@@ -29,6 +30,8 @@ import {generateYearArray} from '../../../../util/year-helper';
   styleUrls: ['./host-entry-year.component.scss']
 })
 export class HostEntryYearComponent extends IntakeComponentBase implements OnInit {
+
+  @Input() countries: Country[];
 
   public hostBornOptions: EnumOption[] = enumOptions(YesNo);
 
@@ -48,6 +51,7 @@ export class HostEntryYearComponent extends IntakeComponentBase implements OnIni
     this.form = this.fb.group({
       hostBorn: [this.candidateIntakeData?.hostBorn],
       hostEntryYear: [this.candidateIntakeData?.hostEntryYear],
+      birthCountryId: [this.candidateIntakeData?.birthCountry?.id],
     });
   }
 

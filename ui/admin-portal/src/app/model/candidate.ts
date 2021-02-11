@@ -81,6 +81,8 @@ export interface CandidateIntakeData {
   children?: YesNo;
   childrenAge?: YesNo;
 
+  birthCountry?: Country;
+
   dependants?: number;
   dependantsNotes?: string;
 

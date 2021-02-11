@@ -481,6 +481,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private IeltsScore langAssessmentScore;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "birth_country_id")
+    @Nullable
+    private Country birthCountry;
+
     public Candidate() {
     }
 
@@ -1230,6 +1235,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setLangAssessmentScore(@Nullable IeltsScore langAssessmentScore) { this.langAssessmentScore = langAssessmentScore; }
 
+    @Nullable
+    public Country getBirthCountry() { return birthCountry; }
+
+    public void setBirthCountry(@Nullable Country countryOfBirth) { this.birthCountry = countryOfBirth; }
+
     public boolean isSelected() {
         return selected;
     }
@@ -1297,7 +1307,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
                                    @Nullable Occupation partnerOccupation,
                                    @Nullable LanguageLevel partnerEnglishLevel,
                                    @Nullable Nationality partnerCitizenship,
-                                   @Nullable Country drivingLicenseCountry) {
+                                   @Nullable Country drivingLicenseCountry,
+                                   @Nullable Country birthCountry) {
         if (data.getAsylumYear() != null) {
             setAsylumYear(data.getAsylumYear());
         }

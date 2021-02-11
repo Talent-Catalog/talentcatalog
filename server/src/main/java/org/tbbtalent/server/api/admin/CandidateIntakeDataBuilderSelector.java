@@ -53,6 +53,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("availImmediateJobOps")
                 .add("availImmediateReason")
                 .add("availImmediateNotes")
+                .add("birthCountry", countryDto())
 
                 .add("candidateCitizenships", candidateCitizenshipDto())
 
