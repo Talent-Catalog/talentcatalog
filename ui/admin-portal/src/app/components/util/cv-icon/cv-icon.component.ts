@@ -23,7 +23,7 @@ import {
 import {environment} from '../../../../environments/environment';
 import {CandidateAttachmentService} from '../../../services/candidate-attachment.service';
 import {Candidate} from '../../../model/candidate';
-import {saveBlob} from "../../../util/file";
+import {forkJoin, Observable} from "rxjs";
 
 @Component({
   selector: 'app-cv-icon',
@@ -42,6 +42,8 @@ export class CvIconComponent implements OnInit {
 
   cvs: CandidateAttachment[];
   s3BucketUrl = environment.s3BucketUrl;
+  loading: boolean;
+  error: boolean;
 
   constructor(private candidateAttachmentService: CandidateAttachmentService) { }
 
@@ -65,7 +67,7 @@ export class CvIconComponent implements OnInit {
           this.cvs = results;
         },
         error => {
-          console.log(error);
+          this.error = error;
         })
       ;
     }
@@ -80,29 +82,26 @@ export class CvIconComponent implements OnInit {
   }
 
   openCVs() {
-    for (let i = 0; i < this.cvs.length; i++) {
-      const cv = this.cvs[i];
+    this.loading = true;
+    const downloads: Observable<any>[] = [];
+    this.cvs.forEach(cv => {
       if (cv.type === AttachmentType.googlefile) {
-        this.downloadCandidateAttachment(cv)
+        downloads.push(this.candidateAttachmentService.downloadAttachment(cv.id, cv.name))
       } else {
         const newTab = window.open();
         const url = this.getAttachmentUrl(cv);
         newTab.location.href = url;
       }
-    }
+    })
+    forkJoin(...downloads).subscribe(
+      (results: CandidateAttachment[]) => {
+        this.loading = false;
+      },
+      error => {
+        this.error = error;
+        this.loading = false;
+      })
   }
 
-  downloadCandidateAttachment(attachment: CandidateAttachment) {
-    this.loadingStatus.emit(true);
-    this.candidateAttachmentService.downloadAttachment(attachment.id).subscribe(
-      (resp: Blob) => {
-        saveBlob(resp, attachment.name);
-        this.loadingStatus.emit(false);
-      },
-      (error) => {
-        console.log(error);
-        this.loadingStatus.emit(false);
-      });
-  }
 
 }

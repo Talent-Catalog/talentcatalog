@@ -14,29 +14,17 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from '../../../../model/candidate';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {
-  AttachmentType,
-  CandidateAttachment
-} from '../../../../model/candidate-attachment';
+import {AttachmentType, CandidateAttachment} from '../../../../model/candidate-attachment';
 import {CandidateAttachmentService} from '../../../../services/candidate-attachment.service';
 import {environment} from '../../../../../environments/environment';
 import {CreateCandidateAttachmentComponent} from './create/create-candidate-attachment.component';
 import {ConfirmationComponent} from '../../../util/confirm/confirmation.component';
 import {EditCandidateAttachmentComponent} from './edit/edit-candidate-attachment.component';
 import {User} from '../../../../model/user';
-import {saveBlob} from "../../../../util/file";
 
 @Component({
   selector: 'app-view-candidate-attachment',
@@ -192,9 +180,8 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
   downloadCandidateAttachment(attachment: CandidateAttachment) {
     this.error = null;
     this.loading = true;
-    this.candidateAttachmentService.downloadAttachment(attachment.id).subscribe(
-      (resp: Blob) => {
-        saveBlob(resp, attachment.name);
+    this.candidateAttachmentService.downloadAttachment(attachment.id, attachment.name).subscribe(
+      () => {
         this.loading = false;
       },
       (error) => {

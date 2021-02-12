@@ -15,14 +15,13 @@
  */
 
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
+import {Observable, throwError} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
-import {
-  CandidateAttachment,
-  CandidateAttachmentRequest
-} from '../model/candidate-attachment';
+import {catchError, map} from "rxjs/operators";
+import {CandidateAttachment, CandidateAttachmentRequest} from '../model/candidate-attachment';
+import {saveBlob} from "../util/file";
 
 @Injectable({providedIn: 'root'})
 export class CandidateAttachmentService {
@@ -47,9 +46,18 @@ export class CandidateAttachmentService {
     return this.http.delete<CandidateAttachment>(`${this.apiUrl}/${id}`);
   }
 
-  downloadAttachment(id: number) {
+  downloadAttachment(id: number, name: string) {
     return this.http.get(`${this.apiUrl}/${id}/download`,
-      { responseType: 'blob' });
+      { responseType: 'blob' }).pipe(
+        map((resp: Blob) => {
+          saveBlob(resp, name);
+        }, catchError(e => {
+              console.log('error', e);
+              return throwError(e);
+            }
+          )
+        )
+    )
   }
 
   uploadAttachment(id: number, cv: boolean, formData: FormData): Observable<CandidateAttachment> {
