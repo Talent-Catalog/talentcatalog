@@ -8,6 +8,12 @@ on:
   push:
     branches: [ master ]
 
+#This should correspond to the AWS IAM user prod-tbb-deploy
+#The matching secret key is stored as a GitHub secret and is accessible
+#as ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
+env:
+  AWS_ACCESS_KEY_ID: AKIA6C7ESOA6NE2SZYWH
+  
 jobs:
   build:
 
@@ -26,10 +32,10 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
         
-        # These env variable will be picked up by the jib stage of the gradle 
+        # These env variables will be used by the jib stage of the gradle 
         # build which is configured to use the ecr credential helper.
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_ACCESS_KEY_ID: ${{env.AWS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         
         
@@ -39,7 +45,7 @@ jobs:
       - name: Deploy to EB
         uses: einaregilsson/beanstalk-deploy@v14
         with:
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_access_key: ${{env.AWS_ACCESS_KEY_ID}}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: tbb-app-prod
           environment_name: TbbAppProd-env
