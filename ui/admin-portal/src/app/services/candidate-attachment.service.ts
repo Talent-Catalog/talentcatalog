@@ -15,18 +15,25 @@
  */
 
 import {Injectable} from '@angular/core';
-import {Observable, throwError} from 'rxjs';
+import {forkJoin, Observable, throwError} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
 import {catchError, map} from "rxjs/operators";
-import {CandidateAttachment, CandidateAttachmentRequest} from '../model/candidate-attachment';
+import {
+  AttachmentType,
+  CandidateAttachment,
+  CandidateAttachmentRequest
+} from '../model/candidate-attachment';
 import {saveBlob} from "../util/file";
+import {Subject} from "rxjs/index";
+import {Candidate} from "../model/candidate";
 
 @Injectable({providedIn: 'root'})
 export class CandidateAttachmentService {
 
   private apiUrl = environment.apiUrl + '/candidate-attachment';
+  s3BucketUrl = environment.s3BucketUrl;
 
   constructor(private http: HttpClient) {}
 
@@ -58,6 +65,46 @@ export class CandidateAttachmentService {
           )
         )
     )
+  }
+
+  getAttachmentUrl(candidate: Candidate, att: CandidateAttachment) {
+    if (att.type === AttachmentType.file) {
+      return this.s3BucketUrl + '/candidate/' + (att.migrated ? 'migrated' :
+        candidate.candidateNumber) + '/' + att.location;
+    }
+    return att.location;
+  }
+
+  downloadAttachments(candidate: Candidate, ats: CandidateAttachment[]): Observable<string> {
+    const downloadComplete = new Subject<string>();
+
+    const downloads: Observable<any>[] = [];
+    ats.forEach(cv => {
+      if (cv.type === AttachmentType.googlefile) {
+        downloads.push(this.downloadAttachment(cv.id, cv.name))
+      } else {
+        const newTab = window.open();
+        const url = this.getAttachmentUrl(candidate, cv);
+        newTab.location.href = url;
+      }
+    })
+
+    if (downloads.length === 0) {
+      downloadComplete.next();
+      downloadComplete.complete();
+    } else {
+      forkJoin(...downloads).subscribe(
+        (results: CandidateAttachment[]) => {
+          downloadComplete.next();
+          downloadComplete.complete();
+        },
+        error => {
+          downloadComplete.next(error);
+          downloadComplete.complete();
+        })
+    }
+
+    return downloadComplete.asObservable();
   }
 
   uploadAttachment(id: number, cv: boolean, formData: FormData): Observable<CandidateAttachment> {

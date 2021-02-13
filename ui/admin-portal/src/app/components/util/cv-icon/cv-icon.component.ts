@@ -16,14 +16,11 @@
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {
-  AttachmentType,
   CandidateAttachment,
   SearchCandidateAttachmentsRequest
 } from '../../../model/candidate-attachment';
-import {environment} from '../../../../environments/environment';
 import {CandidateAttachmentService} from '../../../services/candidate-attachment.service';
 import {Candidate} from '../../../model/candidate';
-import {forkJoin, Observable} from "rxjs";
 
 @Component({
   selector: 'app-cv-icon',
@@ -41,9 +38,8 @@ export class CvIconComponent implements OnInit {
   @Output() loadingStatus = new EventEmitter<boolean>();
 
   cvs: CandidateAttachment[];
-  s3BucketUrl = environment.s3BucketUrl;
   loading: boolean;
-  error: boolean;
+  error: string;
 
   constructor(private candidateAttachmentService: CandidateAttachmentService) { }
 
@@ -73,35 +69,12 @@ export class CvIconComponent implements OnInit {
     }
   }
 
-  getAttachmentUrl(att: CandidateAttachment) {
-    if (att.type === AttachmentType.file) {
-      return this.s3BucketUrl + '/candidate/' + (att.migrated ? 'migrated' :
-        this.candidate.candidateNumber) + '/' + att.location;
-    }
-    return att.location;
-  }
-
   openCVs() {
     this.loading = true;
-    const downloads: Observable<any>[] = [];
-    this.cvs.forEach(cv => {
-      if (cv.type === AttachmentType.googlefile) {
-        downloads.push(this.candidateAttachmentService.downloadAttachment(cv.id, cv.name))
-      } else {
-        const newTab = window.open();
-        const url = this.getAttachmentUrl(cv);
-        newTab.location.href = url;
-        this.loading = false;
-      }
-    })
-    forkJoin(...downloads).subscribe(
-      (results: CandidateAttachment[]) => {
-        this.loading = false;
-      },
-      error => {
-        this.error = error;
-        this.loading = false;
-      })
+    this.candidateAttachmentService.downloadAttachments(this.candidate, this.cvs).subscribe(
+      () => this.loading = false,
+      (err: string) => {this.loading = false; this.error = err}
+    );
   }
 
 }
