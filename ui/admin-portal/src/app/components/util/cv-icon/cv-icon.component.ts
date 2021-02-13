@@ -91,6 +91,7 @@ export class CvIconComponent implements OnInit {
         const newTab = window.open();
         const url = this.getAttachmentUrl(cv);
         newTab.location.href = url;
+        this.loading = false;
       }
     })
     forkJoin(...downloads).subscribe(
@@ -102,6 +103,5 @@ export class CvIconComponent implements OnInit {
         this.loading = false;
       })
   }
-
 
 }
