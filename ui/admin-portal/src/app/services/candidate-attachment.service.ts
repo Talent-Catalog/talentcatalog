@@ -89,6 +89,12 @@ export class CandidateAttachmentService {
       }
     })
 
+    //Attempt any downloads needed.
+    //When all are done (with or without error) signal that fact using the
+    //downloadComplete Observable (which is returned to the caller).
+    //Note that the "complete" method is also called on downloadComplete.
+    //This will automatically unsubscribe any subscribers, avoiding memory leaks.
+    //See https://stackoverflow.com/questions/55893962/do-i-need-to-unsubscribe-from-observable-of
     if (downloads.length === 0) {
       downloadComplete.next();
       downloadComplete.complete();
