@@ -185,14 +185,6 @@ export class ViewCandidateComponent implements OnInit {
         }
       );
   }
-  //
-  // cvLoad($event: boolean) {
-  //   if ($event) {
-  //     this.cvLoading = true;
-  //   } else {
-  //     this.cvLoading = false;
-  //   }
-  // }
 
   onItemSelect($event: ListItem) {
     const savedListId: number = +$event.id;
