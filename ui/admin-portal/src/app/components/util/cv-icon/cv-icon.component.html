@@ -17,3 +17,7 @@
 <a *ngIf="cvs?.length > 0" target="_blank" (click)="openCVs()">
   <i class="fas fa-address-card is-link" title="Open candidate's CV(s)"></i>
 </a>
+<span *ngIf="loading">
+    <i class="fas fa-spinner fa-spin"></i>
+</span>
+<div *ngIf="error" class="error">{{error}} hey</div>

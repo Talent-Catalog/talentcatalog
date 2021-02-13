@@ -47,21 +47,10 @@ export class CreateCandidateNoteComponent implements OnInit {
   ngOnInit() {
     this.loading = true;
 
-    // /* load the countries */
-    // this.countryService.listCountries().subscribe(
-    //   (response) => {
-    //     this.countries = response;
-    //   },
-    //   (error) => {
-    //     this.error = error;
-    //     this.loading = false;
-    //   }
-    // );
-
     this.candidateForm = this.fb.group({
       candidateId: [this.candidateId],
       title: ['', [Validators.required]],
-      comment: ['', [Validators.required]]
+      comment: ['']
     });
     this.loading = false;
   }
