@@ -26,7 +26,9 @@ the issue tracker is only for software bugs and feature requests.
 
 ## Fork & create a branch
 
-If this is something you think you can fix, then [fork Active Admin] and create
+We [collaborate with issues and pull requests], using the [fork and pull model].
+
+If this is something you think you can fix, then [fork TbbTalent] and create
 a branch with a descriptive name.
 
 A good branch name would be (where issue #325 is the one you're working on):
@@ -52,46 +54,25 @@ checks as the rest of the project.
 ## Make a Pull Request
 
 At this point, you should switch back to your master branch and make sure it's
-up to date with the tbbtalentv2 master branch:
-
-```sh
-git remote add upstream https://github.com/talentbeyondboundaries/tbbtalentv2.git
-git checkout master
-git pull upstream master
-```
+up to date with the ("upstream") tbbtalentv2 master branch:
 
 Then update your feature branch from your local copy of master, and push it!
 
-```sh
-git checkout 325-add-french-translations
-git rebase master
-git push --set-upstream origin 325-add-french-translations
-```
-
 Finally, go to GitHub and [make a Pull Request] 
 
-Github Actions will run our test suite. We
-care about quality, so your PR won't be merged until all tests pass.
+Github Actions will run our test suite. Your PR won't be merged until all tests pass.
 
 ## Keeping your Pull Request updated
 
-If a maintainer asks you to "rebase" your PR, they're saying that a lot of code
-has changed, and that you need to update your branch so that it's easier to merge.
-
-To learn more about rebasing in Git, there are a lot of [good][git rebasing]
-[resources][interactive rebase] but here's the suggested workflow:
-
-```sh
-git checkout 325-add-french-translations
-git pull --rebase upstream master
-git push --force-with-lease 325-add-french-translations
-```
+If a maintainer asks you to "merge" your PR, they're saying that a lot of code
+has changed, and that you need to update your branch by merging the current 
+master with it. Let the maintainer know if you have problems doing that.
 
 ## Merging a PR (maintainers only)
 
 A PR can only be merged into master by a maintainer if:
 
-* It is passing CI.
+* It is passing all tests.
 * It has been approved by at least two maintainers. If it was a maintainer who
   opened the PR, only one extra approval is needed.
 * It has no requested changes.
@@ -105,9 +86,8 @@ met.
 See [the README for how to do a release](README.md).
 
 
-[new issue]: https://github.com/activeadmin/activeadmin/issues/new
-[fork Active Admin]: https://help.github.com/articles/fork-a-repo
+[new issue]: https://github.com/talentbeyondboundaries/tbbtalentv2/issues/new
+[fork TbbTalent]: https://help.github.com/articles/fork-a-repo
+[collaborate with issues and pull requests]: https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests
+[fork and pull model]: https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/about-collaborative-development-models
 [make a pull request]: https://help.github.com/articles/creating-a-pull-request
-[git rebasing]: http://git-scm.com/book/en/Git-Branching-Rebasing
-[interactive rebase]: https://help.github.com/en/github/using-git/about-git-rebase
-[Node.js]: https://nodejs.org/en/
