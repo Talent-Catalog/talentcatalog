@@ -230,8 +230,9 @@ Our repository is called tbbtalentv2 - John Cameron is the owner.
 ### Master branch ###
 
 The main branch is "master". We only merge and push into "master" when we are 
-deploying to production (deployment to production is automatic, triggered by any 
-push to "master" - see Deployment section below).
+ready to deploy to production (rebuild and upload of build artifacts to the 
+production environment is automatic, triggered by any push to "master". 
+See Deployment section below).
 
 Master should only be accessed directly when staging
 is merged into it, triggering deployment to production. You should not
