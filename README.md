@@ -275,7 +275,6 @@ rather having changes just saved on your computer.
   
 ## Deployment ##
 
-### Production ###
 Pushing to the master branch of our GitHub repository triggers a build 
 on GitHub as defined by the 
 [workflow .github/workflows/tbb-prod-build-deploy.yml](https://github.com/talentbeyondboundaries/tbbtalentv2/actions). 
@@ -287,9 +286,16 @@ Registry](https://us-east-1.console.aws.amazon.com/ecr/repositories?region=us-ea
 
 In order to move it into a production one more step is required to force 
 a redeployment by the 
-[Elastic Container Service](https://console.aws.amazon.com/ecs/home?region=us-east-1#/clusters/new-tbb-cluster/services/tbb-service-with-lb/details). There is no downtime for
-users - the old version is used until the new version is fully deployed.
+[Elastic Container Service](https://console.aws.amazon.com/ecs/home?region=us-east-1#/clusters/new-tbb-cluster/services/tbb-service-with-lb/details). 
+Click on "Update" for the Service and check "Force deployment".
+There is no downtime for users.
+The old version is used until the new version is fully deployed.
 
+## Monitoring ##
+
+- [Status and configuration](https://console.aws.amazon.com/ecs/home?region=us-east-1#/clusters/new-tbb-cluster/services/tbb-service-with-lb/details)
+- [Metrics](https://console.aws.amazon.com/cloudwatch/home?region=us-east-1#cw:dashboard=ECS)
+- [Logs](https://console.aws.amazon.com/cloudwatch/home?region=us-east-1#logsV2:log-groups/log-group/$252Fecs$252Ftbb-task-definition)
 
 ## License
 [GNU AGPLv3](https://choosealicense.com/licenses/agpl-3.0/)
