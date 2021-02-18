@@ -44,6 +44,7 @@ public class CandidateIntakeDataUpdate {
 
     private LocalDate asylumYear;
     private YesNoUnsure availImmediate;
+    private String availImmediateJobOps;
     private AvailImmediateReason availImmediateReason;
     private String availImmediateNotes;
 
@@ -62,10 +63,14 @@ public class CandidateIntakeDataUpdate {
     private YesNoUnsure crimeConvict;
     private String crimeConvictNotes;
 
+    private Long birthCountryId;
+
     //Corresponds to CandidateDependant fields
     private Long dependantId;
     private DependantRelations dependantRelation;
     private LocalDate dependantDob;
+    private String dependantName;
+    private Registration dependantRegistered;
     private YesNo dependantHealthConcerns;
     private String dependantNotes;
 
@@ -104,20 +109,27 @@ public class CandidateIntakeDataUpdate {
     private YesNo hostEntryLegally;
     private String hostEntryLegallyNotes;
     private List<IntRecruitReason> intRecruitReasons;
+    private String intRecruitOther;
     private YesNoUnsure intRecruitRural;
     private String intRecruitRuralNotes;
 
     private String langAssessment;
     private IeltsScore langAssessmentScore;
-    private LeftHomeReason leftHomeReason;
+    private List<LeftHomeReason> leftHomeReasons;
     private String leftHomeOther;
     private YesNo militaryService;
+    private YesNoUnsure militaryWanted;
+    private String militaryNotes;
+    private LocalDate militaryStart;
+    private LocalDate militaryEnd;
 
     private MaritalStatus maritalStatus;
     private YesNoUnsure partnerRegistered;
     private Long partnerCandId;
     private Long partnerEduLevelId;
+    private String partnerEduLevelNotes;
     private Long partnerOccupationId;
+    private String partnerOccupationNotes;
     private YesNo partnerEnglish;
     private Long partnerEnglishLevelId;
     private IeltsStatus partnerIelts;
@@ -126,9 +138,11 @@ public class CandidateIntakeDataUpdate {
     private Long partnerCitizenshipId;
 
     private ResidenceStatus residenceStatus;
+    private String residenceStatusNotes;
 
     private YesNoUnsure returnedHome;
     private String returnedHomeReason;
+    private String returnedHomeReasonNo;
     private YesNoUnsure returnHomeSafe;
     private YesNoUnsure returnHomeFuture;
     private String returnHomeWhen;
@@ -136,12 +150,14 @@ public class CandidateIntakeDataUpdate {
     private YesNo resettleThird;
     private String resettleThirdStatus;
 
+    private YesNoUnsure unhcrRegistered;
     private UnhcrStatus unhcrStatus;
     private UnhcrStatus unhcrOldStatus;
     private String unhcrNumber;
     private Long unhcrFile;
     private String unhcrNotes;
     private YesNo unhcrPermission;
+    private YesNoUnsure unrwaRegistered;
     private UnrwaStatus unrwaStatus;
     private String unrwaNumber;
     private String unrwaNotes;
@@ -168,7 +184,7 @@ public class CandidateIntakeDataUpdate {
     private String workAbroadNotes;
     private WorkPermit workPermit;
     private YesNoUnsure workPermitDesired;
-    private YesNo workLegally;
     private YesNoUnemployed workDesired;
+    private String workDesiredNotes;
 
 }

@@ -41,12 +41,18 @@ export class IntRecruitmentComponent extends IntakeComponentBase implements OnIn
       enumKeysToEnumOptions(this.candidateIntakeData?.intRecruitReasons, IntRecruitReason);
     this.form = this.fb.group({
       intRecruitReasons: [options],
+      intRecruitOther: [this.candidateIntakeData?.intRecruitOther],
     });
   }
 
   get hasOther(): boolean {
     let found: boolean;
-    found = this.form.value?.intRecruitReasons?.includes('Other');
+    // Check if reasons is an array of objects or strings (changes the way we handle the search for Other)
+    if (this.form?.value?.intRecruitReasons?.some(r => r.value)) {
+      found = this.form?.value?.intRecruitReasons?.find(r => r.value === 'Other');
+    } else {
+      found = this.form?.value?.intRecruitReasons?.includes('Other')
+    }
     return found;
   }
 

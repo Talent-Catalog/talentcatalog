@@ -15,11 +15,12 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {EnumOption, enumOptions} from '../../../../util/enum';
+import {enumKeysToEnumOptions, enumMultiSelectSettings, EnumOption, enumOptions} from '../../../../util/enum';
 import {LeftHomeReason} from '../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
+import {IDropdownSettings} from "ng-multiselect-dropdown";
 
 @Component({
   selector: 'app-left-home-reason',
@@ -27,7 +28,7 @@ import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
   styleUrls: ['./left-home-reason.component.scss']
 })
 export class LeftHomeReasonComponent extends IntakeComponentBase implements OnInit {
-
+  public dropdownSettings: IDropdownSettings = enumMultiSelectSettings;
   public leftHomeReasonOptions: EnumOption[] = enumOptions(LeftHomeReason);
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
@@ -35,14 +36,23 @@ export class LeftHomeReasonComponent extends IntakeComponentBase implements OnIn
   }
 
   ngOnInit(): void {
+    const options: EnumOption[] =
+      enumKeysToEnumOptions(this.candidateIntakeData?.leftHomeReasons, LeftHomeReason);
     this.form = this.fb.group({
-      leftHomeReason: [this.candidateIntakeData?.leftHomeReason],
+      leftHomeReasons: [options],
       leftHomeOther: [this.candidateIntakeData?.leftHomeOther]
     });
   }
 
-  get leftHomeReason(): string {
-    return this.form.value?.leftHomeReason;
+  get hasOther(): boolean {
+    let found: boolean;
+    // Check if reasons is an array of objects or strings (changes the way we handle the search for Other)
+    if (this.form?.value?.leftHomeReasons?.some(r => r.value)) {
+      found = this.form?.value?.leftHomeReasons?.find(r => r.value === 'Other');
+    } else {
+      found = this.form?.value?.leftHomeReasons?.includes('Other')
+    }
+    return found;
   }
 
 }

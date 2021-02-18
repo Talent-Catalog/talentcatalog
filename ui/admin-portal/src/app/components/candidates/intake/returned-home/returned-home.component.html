@@ -42,6 +42,14 @@
                 placeholder="" ></textarea>
     </div>
   </div>
+  <div *ngIf="returnedHome === 'No'">
+    <div class="form-group">
+      <label for="returnedHomeReasonNo">What are the reasons you have not returned?</label>
+      <textarea type="text" class="md-textarea-auto form-control" rows="4"
+                id="returnedHomeReasonNo" [formControlName]="'returnedHomeReasonNo'"
+                placeholder="" ></textarea>
+    </div>
+  </div>
 </form>
 
 

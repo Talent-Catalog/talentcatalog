@@ -37,7 +37,16 @@ export class ResidenceStatusComponent extends IntakeComponentBase implements OnI
   ngOnInit(): void {
     this.form = this.fb.group({
       residenceStatus: [this.candidateIntakeData?.residenceStatus],
+      residenceStatusNotes: [this.candidateIntakeData?.residenceStatusNotes],
     });
+  }
+
+  get hasStatus(): boolean {
+    if (this.form.value?.residenceStatus == 'LegalRes' || this.form.value?.residenceStatus == 'IllegalRes') {
+      return true;
+    } else {
+      return false;
+    }
   }
 
 }

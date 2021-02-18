@@ -16,7 +16,7 @@
 
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../../util/enum';
-import {CandidateDependant, DependantRelations, YesNo} from '../../../../../model/candidate';
+import {CandidateDependant, DependantRelations, Registrations, YesNo} from '../../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../../services/candidate.service';
 import {CandidateDependantService} from '../../../../../services/candidate-dependant.service';
@@ -38,6 +38,7 @@ export class DependantsCardComponent extends IntakeComponentBase implements OnIn
 
   //Drop down values for enumeration
   dependantRelations: EnumOption[] = enumOptions(DependantRelations);
+  dependantRegisterOptions: EnumOption[] = enumOptions(Registrations);
   dependentHealthConcerns: EnumOption[] = enumOptions(YesNo);
 
   constructor(fb: FormBuilder, candidateService: CandidateService,
@@ -50,6 +51,8 @@ export class DependantsCardComponent extends IntakeComponentBase implements OnIn
       dependantId: [this.myRecord?.id],
       dependantRelation: [this.myRecord?.relation],
       dependantDob: [this.myRecord?.dob],
+      dependantName: [this.myRecord?.name],
+      dependantRegistered: [this.myRecord?.registered],
       dependantHealthConcerns: [this.myRecord?.healthConcern],
       dependantNotes: [this.myRecord?.notes],
     });
@@ -65,6 +68,14 @@ export class DependantsCardComponent extends IntakeComponentBase implements OnIn
     return this.candidateIntakeData.candidateDependants ?
       this.candidateIntakeData.candidateDependants[this.myRecordIndex]
       : null;
+  }
+
+  get hasDependant(): boolean {
+    let found: boolean;
+    if (this.form?.value?.dependantRelation) {
+      found = this.form.value.dependantRelation !== 'NoResponse'
+    }
+    return found;
   }
 
   get dependantAge(): number {

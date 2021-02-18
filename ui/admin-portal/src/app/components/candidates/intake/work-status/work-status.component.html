@@ -33,15 +33,12 @@
       </option>
     </select>
   </div>
-  <div *ngIf="workDesired === 'Yes' || workDesired === 'No'">
+  <div *ngIf="hasWorkDesired">
     <div class="form-group">
-      <label for="workLegally">If you are currently working, are you working legally?</label>
-      <select class="form-control"
-              id="workLegally" [formControlName]="'workLegally'">
-        <option *ngFor="let opt of workLegallyOptions" [value]="opt.value">
-          {{opt.displayText}}
-        </option>
-      </select>
+      <label for="workDesiredNotes">Please explain more</label>
+      <textarea type="text" class="md-textarea-auto form-control" rows="4"
+                id="workDesiredNotes" [formControlName]="'workDesiredNotes'"
+                placeholder="" ></textarea>
     </div>
   </div>
 </form>

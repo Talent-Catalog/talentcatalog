@@ -35,5 +35,13 @@
       </option>
     </select>
   </div>
+  <div *ngIf="hasStatus">
+    <div class="form-group">
+      <label for="residenceStatusNotes">Please explain more</label>
+      <textarea type="text" class="md-textarea-auto form-control" rows="4"
+                id="residenceStatusNotes" [formControlName]="'residenceStatusNotes'"
+                placeholder="" ></textarea>
+    </div>
+  </div>
 </form>
 

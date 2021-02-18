@@ -16,7 +16,7 @@
 
 import {Component, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../util/enum';
-import {YesNo} from '../../../../model/candidate';
+import {YesNo, YesNoUnsure} from '../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
@@ -29,6 +29,7 @@ import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 export class MilitaryServiceComponent extends IntakeComponentBase implements OnInit {
 
   public militaryServiceOptions: EnumOption[] = enumOptions(YesNo);
+  public militaryWantedOptions: EnumOption[] = enumOptions(YesNoUnsure);
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
@@ -37,6 +38,18 @@ export class MilitaryServiceComponent extends IntakeComponentBase implements OnI
   ngOnInit(): void {
     this.form = this.fb.group({
       militaryService: [this.candidateIntakeData?.militaryService],
+      militaryWanted: [this.candidateIntakeData?.militaryWanted],
+      militaryNotes: [this.candidateIntakeData?.militaryNotes],
+      militaryStart: [this.candidateIntakeData?.militaryStart],
+      militaryEnd: [this.candidateIntakeData?.militaryEnd],
     });
+  }
+
+  get served(): boolean {
+    return this.form?.value?.militaryService == 'Yes'
+  }
+
+  get serviceSelected(): boolean {
+    return this.form?.value?.militaryService == 'Yes' || this.form?.value?.militaryService == 'No'
   }
 }

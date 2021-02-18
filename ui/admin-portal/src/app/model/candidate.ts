@@ -63,6 +63,7 @@ export interface Candidate {
 export interface CandidateIntakeData {
   asylumYear?: string;
   availImmediate?: YesNoUnsure;
+  availImmediateJobOps?: string;
   availImmediateReason?: AvailImmediateReason;
   availImmediateNotes?: string;
 
@@ -79,6 +80,8 @@ export interface CandidateIntakeData {
 
   children?: YesNo;
   childrenAge?: YesNo;
+
+  birthCountry?: Country;
 
   dependants?: number;
   dependantsNotes?: string;
@@ -118,14 +121,20 @@ export interface CandidateIntakeData {
   intRecruitRuralNotes?: string;
   langAssessment?: string;
   langAssessmentScore?: IeltsScore;
-  leftHomeReason?: LeftHomeReason[];
+  leftHomeReasons?: LeftHomeReason[];
   leftHomeOther?: string;
   militaryService?: YesNo;
+  militaryWanted?: YesNo;
+  militaryNotes?: string;
+  militaryStart?: string;
+  militaryEnd?: string;
   maritalStatus?: MaritalStatus;
   partnerRegistered?: YesNoUnsure;
   partnerCandidate?: Candidate;
   partnerEduLevel?: EducationLevel;
+  partnerEduLevelNotes?: string;
   partnerOccupation?: Occupation;
+  partnerOccupationNotes?: string;
   partnerEnglish?: YesNo;
   partnerEnglishLevel?: LanguageLevel;
   partnerIelts?: IeltsStatus;
@@ -136,8 +145,10 @@ export interface CandidateIntakeData {
   returnedHome?: YesNoUnsure;
   returnedHomeNotes?: string;
   returnedHomeReason?: string;
+  returnedHomeReasonNo?: string;
 
   residenceStatus?: ResidenceStatus;
+  residenceStatusNotes?: string;
 
   returnHomeSafe?: YesNoUnsure;
 
@@ -153,14 +164,16 @@ export interface CandidateIntakeData {
   workAbroadNotes?: string;
   workPermit?: WorkPermitValidity;
   workPermitDesired?: YesNoUnsure;
-  workLegally?: YesNo;
   workDesired?: YesNoUnemployed;
+  workDesiredNotes?: string;
+  unhcrRegistered?: YesNoUnsure;
   unhcrStatus?: UnhcrStatus;
   unhcrOldStatus?: UnhcrStatus;
   unhcrNumber?: string;
   unhcrFile?: number;
   unhcrNotes?: string;
   unhcrPermission?: YesNo;
+  unrwaRegistered?: YesNoUnsure;
   unrwaStatus?: UnrwaStatus;
   unrwaNumber?: string;
   unrwaNotes?: string;
@@ -182,6 +195,8 @@ export interface CandidateDependant {
   id?: number;
   relation?: DependantRelations;
   dob?: string;
+  name?: string;
+  registered?: string;
   healthConcern?: string;
   notes?: string;
 }
@@ -418,6 +433,15 @@ export enum DrivingLicenseStatus {
   Valid = "Valid",
   Expired = "Expired",
   None = "None"
+}
+
+export enum Registrations {
+  NoResponse = "",
+  UNHCR = "UNHCR only",
+  UNRWA = "UNRWA only",
+  UNHCRUNRWA = "UNHCR & UNRWA",
+  Neither = "Neither",
+  NA = "Not Applicable",
 }
 
 export function getCandidateNavigation(candidate: Candidate): any[] {

@@ -97,6 +97,23 @@
 
   <div class="card">
     <div class="card-header">
+      English Assessment
+      <span class="small ml-2">
+        Only complete if never taken IELTS or TOEFL.
+      </span>
+    </div>
+    <div class="card-body">
+      <app-lang-assessment
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-lang-assessment>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="card">
+    <div class="card-header">
       Residency and Work Status
     </div>
     <div class="card-body">
@@ -129,7 +146,8 @@
     <div class="card-body">
       <app-host-entry-year
         [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
+        [candidateIntakeData]="candidateIntakeData"
+        [countries]="countries">
       </app-host-entry-year>
       <app-host-entry-legally
         [candidate]="candidate"
@@ -202,24 +220,6 @@
   </app-view-candidate-language>
 
   <hr/>
-
-  <div class="card">
-    <div class="card-header">
-      Language Assessment
-      <span class="small ml-2">
-        Only complete if never taken IELTS or TOEFL.
-      </span>
-    </div>
-    <div class="card-body">
-      <app-lang-assessment
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-lang-assessment>
-    </div>
-  </div>
-
-  <hr/>
-
 
   <app-dependants
   [candidate]="candidate"

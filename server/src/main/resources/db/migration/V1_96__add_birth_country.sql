@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (c) 2021 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -14,6 +14,4 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-.error {
-  font-size: 14px;
-}
+alter table candidate add column birth_country_id bigint references country;

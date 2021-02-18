@@ -90,7 +90,7 @@ full privileges
 
 ### Download and edit the code ###
 
-- Clone [the repository](https://bitbucket.org/johncameron/tbbtalentv2/src/master/) to your local system
+- Clone [the repository](https://github.com/talentbeyondboundaries/tbbtalentv2.git) to your local system
 - Open the root folder in IntelliJ IDEA (it should auto detect gradle and self-configure)
 
 ### Run Elasticsearch ###
@@ -223,15 +223,16 @@ directory.
 
 ## Version Control ##
 
-We use Bitbucket - [https://bitbucket.org/dashboard/overview]()
+We use GitHub - [https://github.com/talentbeyondboundaries/tbbtalentv2]()
 
 Our repository is called tbbtalentv2 - John Cameron is the owner.
 
 ### Master branch ###
 
 The main branch is "master". We only merge and push into "master" when we are 
-deploying to production (deployment to production is automatic, triggered by any 
-push to "master" - see Deployment section below).
+ready to deploy to production (rebuild and upload of build artifacts to the 
+production environment is automatic, triggered by any push to "master". 
+See Deployment section below).
 
 Master should only be accessed directly when staging
 is merged into it, triggering deployment to production. You should not
@@ -275,17 +276,27 @@ rather having changes just saved on your computer.
   
 ## Deployment ##
 
-### Production ###
-Deployment to production is triggered by pushing to the master branch on our
-Bitbucket version control. See Version Control section above.
+Pushing to the master branch of our GitHub repository triggers a build 
+on GitHub as defined by the 
+[workflow .github/workflows/tbb-prod-build-deploy.yml](https://github.com/talentbeyondboundaries/tbbtalentv2/actions). 
 
-The "master" branch is associated with a pipeline which automatically builds
-and deploys (to AWS). This build process is controlled by 
-bitbucket-pipelines.yml.
+See Version Control section above.
 
-Deployment can take around 10 minutes during which time the production software
-is unavailable. People trying to access the software during deployment
-will see an error on their browser saying something like "520 Bad Gateway".
+A successful build will upload a new version to Amazon's AWS [Elastic Container 
+Registry](https://us-east-1.console.aws.amazon.com/ecr/repositories?region=us-east-1).
+
+In order to move it into a production one more step is required to force 
+a redeployment by the 
+[Elastic Container Service](https://console.aws.amazon.com/ecs/home?region=us-east-1#/clusters/new-tbb-cluster/services/tbb-service-with-lb/details). 
+Click on "Update" for the Service and check "Force deployment".
+There is no downtime for users.
+The old version is used until the new version is fully deployed.
+
+## Monitoring ##
+
+- [Status and configuration](https://console.aws.amazon.com/ecs/home?region=us-east-1#/clusters/new-tbb-cluster/services/tbb-service-with-lb/details)
+- [Metrics](https://console.aws.amazon.com/cloudwatch/home?region=us-east-1#cw:dashboard=ECS)
+- [Logs](https://console.aws.amazon.com/cloudwatch/home?region=us-east-1#logsV2:log-groups/log-group/$252Fecs$252Ftbb-task-definition)
 
 ## License
 [GNU AGPLv3](https://choosealicense.com/licenses/agpl-3.0/)

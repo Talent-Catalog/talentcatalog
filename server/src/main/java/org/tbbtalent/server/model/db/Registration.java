@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (c) 2021 Talent Beyond Boundaries.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -14,6 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-.error {
-  font-size: 14px;
+package org.tbbtalent.server.model.db;
+
+public enum Registration {
+    NoResponse,
+    UNHCR,
+    UNRWA,
+    UNHCRUNRWA,
+    Neither,
+    NA
 }
