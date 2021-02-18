@@ -432,7 +432,8 @@ const ALL_FIELDS = {
           "DROP": null,
           "OR": null,
           "BROWSE": null,
-          "UPLOADING": null
+          "UPLOADING": null,
+          "PHOTO": null
         }
       }
     },
