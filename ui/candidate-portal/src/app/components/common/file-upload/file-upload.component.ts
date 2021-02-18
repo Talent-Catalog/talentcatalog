@@ -63,6 +63,8 @@ export class FileUploadComponent implements OnInit {
   }
 
   ngOnInit() {
+    const device = navigator.userAgent;
+    console.log(device)
   }
 
   handleImage(webcamImage: WebcamImage) {

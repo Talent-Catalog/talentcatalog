@@ -16,7 +16,7 @@
 
 <app-error [error]="error"></app-error>
 
-<div class="upload-box card text-center" [class.hover]="hover">
+<div class="d-none d-lg-flex upload-box card text-center" [class.hover]="hover">
 
   <input #input type="file" multiple hidden (change)="handleFileChanged($event)">
 
@@ -29,9 +29,21 @@
       <ng-container *ngIf="!uploading">{{ 'FORM.ATTACHMENT.LABEL.BROWSE' | translate }}</ng-container>
       <ng-container *ngIf="uploading">{{ 'FORM.ATTACHMENT.LABEL.UPLOADING' | translate }}</ng-container>
     </button>
-    <button class="btn btn-primary" (click)="webcamModal()">
-      <ng-container>Take Photo</ng-container>
-    </button>
   </span>
+
+</div>
+<div class="d-lg-none text-center">
+
+  <div class="file-input btn btn-primary">
+    <input #input type="file" accept="image/*" accept="file/*" id="file" class="file">
+    <label for="file">{{ 'FORM.ATTACHMENT.LABEL.BROWSE' | translate }} {{ 'FORM.ATTACHMENT.LABEL.OR' | translate }} Take photo</label>
+  </div>
+
+<!--  <span>-->
+<!--    <button class="btn btn-primary" [disabled]="uploading" (click)="input.click()">-->
+<!--      <ng-container *ngIf="!uploading">{{ 'FORM.ATTACHMENT.LABEL.BROWSE' | translate }}</ng-container>-->
+<!--      <ng-container *ngIf="uploading">{{ 'FORM.ATTACHMENT.LABEL.UPLOADING' | translate }}</ng-container>-->
+<!--    </button>-->
+<!--  </span>-->
 
 </div>

@@ -45,3 +45,20 @@
     @include border-color('border');
   }
 }
+
+.file {
+    opacity: 0;
+    width: 0.1px;
+    height: 0.1px;
+    position: absolute;
+}
+
+.file-input {
+  margin: 1em 0 ;
+  border-radius: 5px;
+  label {
+    margin-bottom: 0;
+  }
+}
+
+
