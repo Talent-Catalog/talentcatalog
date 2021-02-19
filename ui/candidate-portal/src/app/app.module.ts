@@ -71,8 +71,6 @@ import {CandidateCertificationFormComponent} from './components/common/candidate
 import {DownloadCvComponent} from './components/common/download-cv/download-cv.component';
 import {RedirectGuard} from './services/redirect.guard';
 import {LanguageLoader} from "./services/language.loader";
-import {WebcamModule} from "ngx-webcam";
-import {WebcamUploadComponent} from './components/common/webcam-upload/webcam-upload.component';
 
 @NgModule({
   declarations: [
@@ -115,7 +113,6 @@ import {WebcamUploadComponent} from './components/common/webcam-upload/webcam-up
     DeleteOccupationComponent,
     CandidateCertificationFormComponent,
     DownloadCvComponent,
-    WebcamUploadComponent
   ],
   imports: [
     BrowserModule,
@@ -125,7 +122,6 @@ import {WebcamUploadComponent} from './components/common/webcam-upload/webcam-up
     FormsModule,
     NgbModule,
     RecaptchaV3Module,
-    WebcamModule,
     LocalStorageModule.forRoot({
       prefix: 'tbb-candidate-portal',
       storageType: 'localStorage'

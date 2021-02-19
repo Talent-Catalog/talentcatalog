@@ -15,9 +15,7 @@
  */
 
 import {Component, EventEmitter, HostListener, Input, OnInit, Output} from '@angular/core';
-import {WebcamImage} from "ngx-webcam";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {WebcamUploadComponent} from "../webcam-upload/webcam-upload.component";
 
 @Component({
   selector: 'app-file-upload',
@@ -56,19 +54,10 @@ export class FileUploadComponent implements OnInit {
   error: any;
   hover: boolean;
 
-
-  public webcamImage: WebcamImage = null;
-
   constructor(private modalService: NgbModal) {
   }
 
   ngOnInit() {
-    const device = navigator.userAgent;
-    console.log(device)
-  }
-
-  handleImage(webcamImage: WebcamImage) {
-    this.webcamImage = webcamImage;
   }
 
   handleFileChanged(event: any) {
@@ -109,20 +98,6 @@ export class FileUploadComponent implements OnInit {
     }
 
     return true;
-  }
-
-  webcamModal() {
-    const webcamUploadModal = this.modalService.open(WebcamUploadComponent, {
-      centered: true,
-      backdrop: 'static'
-    });
-
-    webcamUploadModal.result
-      .then((result) => {
-        // remove occupation from occupations if confirmed modal
-        console.log(result);
-      })
-      .catch(() => { /* Isn't possible */ });
   }
 
 }

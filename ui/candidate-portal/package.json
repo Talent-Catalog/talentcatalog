@@ -31,7 +31,6 @@
     "bootstrap": "^4.5.3",
     "core-js": "^3.8.1",
     "ng-recaptcha": "^6.1.0",
-    "ngx-webcam": "^0.3.2",
     "rxjs": "^6.6.3",
     "tslib": "^2.0.3",
     "zone.js": "~0.10.3"

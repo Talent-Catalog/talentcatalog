@@ -14,7 +14,7 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<p class="text-muted" *ngIf="!loading && !attachments.length">
+<p class="text-muted" *ngIf="!loading && !attachments.length && !uploading">
   {{ 'REGISTRATION.ATTACHMENTS.EMPTYSTATE' | translate }}
 </p>
 
