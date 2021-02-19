@@ -30,15 +30,16 @@
       <ng-container *ngIf="uploading">{{ 'FORM.ATTACHMENT.LABEL.UPLOADING' | translate }}</ng-container>
     </button>
   </span>
-
 </div>
-<div class="d-lg-none text-center">
-  <div class="file-input btn btn-primary">
-    <input #input type="file" id="file" class="file" (change)="handleFileChanged($event)">
-    <label for="file">
-      <ng-container *ngIf="!uploading">{{ 'FORM.ATTACHMENT.LABEL.BROWSE' | translate }} {{ 'FORM.ATTACHMENT.LABEL.OR' | translate }} {{ 'FORM.ATTACHMENT.LABEL.PHOTO' | translate }}</ng-container>
-      <ng-container *ngIf="uploading">{{ 'FORM.ATTACHMENT.LABEL.UPLOADING' | translate }}</ng-container>
-    </label>
-  </div>
 
+<div class="d-lg-none text-center">
+  <div class="file-input">
+    <input #input type="file" id="file" class="file" (change)="handleFileChanged($event)">
+    <span>
+      <button class="btn btn-primary" [disabled]="uploading" (click)="input.click()">
+        <ng-container *ngIf="!uploading">{{ 'FORM.ATTACHMENT.LABEL.BROWSE' | translate }} {{ 'FORM.ATTACHMENT.LABEL.OR' | translate }} {{ 'FORM.ATTACHMENT.LABEL.PHOTO' | translate }}</ng-container>
+        <ng-container *ngIf="uploading">{{ 'FORM.ATTACHMENT.LABEL.UPLOADING' | translate }}</ng-container>
+      </button>
+     </span>
+  </div>
 </div>
