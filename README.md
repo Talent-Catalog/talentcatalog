@@ -278,7 +278,8 @@ rather having changes just saved on your computer.
   
 ## Deployment and Monitoring ##
 
-See the Deployment and Monitoring pages on the [GitHub wiki]().
+See the Deployment and Monitoring pages on the 
+[GitHub wiki](https://github.com/talentbeyondboundaries/tbbtalentv2/wiki).
 
 ## License
 [GNU AGPLv3](https://choosealicense.com/licenses/agpl-3.0/)
