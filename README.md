@@ -27,7 +27,7 @@ IMPORTANT NOTE FOR MAC Users:
 
 On a Mac, installing with Homebrew usually works well. eg "brew install xxx".
 However, Flyway and Postgres don't install with Homebrew, and the book
-"Angular Up & Running" book notes that installing Node.js using Homebrew on a
+"Angular Up & Running" notes that installing Node.js using Homebrew
 can also have problems. Googling you can still see lots of people having
 problems installing Node using brew.
 
