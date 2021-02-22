@@ -223,9 +223,11 @@ directory.
 
 ## Version Control ##
 
-We use GitHub - [https://github.com/talentbeyondboundaries/tbbtalentv2]()
+We use GitHub. Our repository is called tbbtalentv2 - 
+[https://github.com/talentbeyondboundaries/tbbtalentv2]()
 
-Our repository is called tbbtalentv2 - John Cameron is the owner.
+See the [GitHub wiki](https://github.com/talentbeyondboundaries/tbbtalentv2/wiki) 
+for additional documentation.
 
 ### Master branch ###
 
@@ -274,29 +276,9 @@ You should feel comfortable pushing regularly - often doing Commit and Push
 at the same time. Pushing is effectively saving your work into the "cloud"
 rather having changes just saved on your computer.
   
-## Deployment ##
+## Deployment and Monitoring ##
 
-Pushing to the master branch of our GitHub repository triggers a build 
-on GitHub as defined by the 
-[workflow .github/workflows/tbb-prod-build-deploy.yml](https://github.com/talentbeyondboundaries/tbbtalentv2/actions). 
-
-See Version Control section above.
-
-A successful build will upload a new version to Amazon's AWS [Elastic Container 
-Registry](https://us-east-1.console.aws.amazon.com/ecr/repositories?region=us-east-1).
-
-In order to move it into a production one more step is required to force 
-a redeployment by the 
-[Elastic Container Service](https://console.aws.amazon.com/ecs/home?region=us-east-1#/clusters/new-tbb-cluster/services/tbb-service-with-lb/details). 
-Click on "Update" for the Service and check "Force deployment".
-There is no downtime for users.
-The old version is used until the new version is fully deployed.
-
-## Monitoring ##
-
-- [Status and configuration](https://console.aws.amazon.com/ecs/home?region=us-east-1#/clusters/new-tbb-cluster/services/tbb-service-with-lb/details)
-- [Metrics](https://console.aws.amazon.com/cloudwatch/home?region=us-east-1#cw:dashboard=ECS)
-- [Logs](https://console.aws.amazon.com/cloudwatch/home?region=us-east-1#logsV2:log-groups/log-group/$252Fecs$252Ftbb-task-definition)
+See the Deployment and Monitoring pages on the [GitHub wiki]().
 
 ## License
 [GNU AGPLv3](https://choosealicense.com/licenses/agpl-3.0/)
