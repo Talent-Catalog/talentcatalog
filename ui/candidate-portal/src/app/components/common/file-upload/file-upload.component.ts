@@ -46,10 +46,10 @@ export class FileUploadComponent implements OnInit {
     evt.stopPropagation();
     this.hover = false;
     const fileChangeEvent = {target: {files: evt.dataTransfer.files}};
-    this.handleFileChanged(fileChangeEvent);
+    this.handleFileChanged(fileChangeEvent, 'file');
   }
 
-  @Output() uploadStarted = new EventEmitter();
+  @Output() uploadStarted = new EventEmitter<{files: File[], type: string}>();
 
   error: any;
   hover: boolean;
@@ -60,7 +60,7 @@ export class FileUploadComponent implements OnInit {
   ngOnInit() {
   }
 
-  handleFileChanged(event: any) {
+  handleFileChanged(event: any, type: string) {
     const files: File[] = [...event.target.files];
 
     if (!!files && files.length) {
@@ -72,7 +72,7 @@ export class FileUploadComponent implements OnInit {
           return;
         }
       }
-      this.uploadStarted.emit(files);
+      this.uploadStarted.emit({files, type});
     }
   }
 

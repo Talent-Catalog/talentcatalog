@@ -18,7 +18,7 @@
 
 <div class="d-none d-lg-flex upload-box card text-center" [class.hover]="hover">
 
-  <input #input type="file" multiple hidden (change)="handleFileChanged($event)">
+  <input #input type="file" multiple hidden (change)="handleFileChanged($event, 'file')">
 
   <span>{{ 'FORM.ATTACHMENT.LABEL.DROP' | translate }}</span>
 
@@ -33,13 +33,24 @@
 </div>
 
 <div class="d-lg-none text-center">
-  <div class="file-input">
-    <input #input type="file" id="file" class="file" (change)="handleFileChanged($event)">
-    <span>
-      <button class="btn btn-primary" [disabled]="uploading" (click)="input.click()">
-        <ng-container *ngIf="!uploading">{{ 'FORM.ATTACHMENT.LABEL.BROWSE' | translate }} {{ 'FORM.ATTACHMENT.LABEL.OR' | translate }} {{ 'FORM.ATTACHMENT.LABEL.PHOTO' | translate }}</ng-container>
+  <div *ngIf="!uploading">
+    <div  class="file-input">
+      <input #inputFile type="file" id="file" class="file" (change)="handleFileChanged($event, 'file')">
+      <span>
+      <button class="btn btn-primary" [disabled]="uploading" (click)="inputFile.click()">
+        <ng-container *ngIf="!uploading">{{ 'FORM.ATTACHMENT.LABEL.BROWSE' | translate }}</ng-container>
+        <ng-container *ngIf="uploading">{{ 'FORM.ATTACHMENT.LABEL.UPLOADING' | translate }}</ng-container>
+      </button>
+    </span>
+    </div>
+    <div class="file-input">
+      <input #inputPhoto type="file" id="camera" class="file" accept="image/*" capture="" (change)="handleFileChanged($event, 'camera')">
+      <span>
+      <button class="btn btn-primary" [disabled]="uploading" (click)="inputPhoto.click()">
+        <ng-container *ngIf="!uploading">{{ 'FORM.ATTACHMENT.LABEL.PHOTO' | translate }}</ng-container>
         <ng-container *ngIf="uploading">{{ 'FORM.ATTACHMENT.LABEL.UPLOADING' | translate }}</ng-container>
       </button>
      </span>
+    </div>
   </div>
 </div>

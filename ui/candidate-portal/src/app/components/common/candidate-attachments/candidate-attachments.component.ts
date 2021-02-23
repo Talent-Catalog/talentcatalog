@@ -16,10 +16,7 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {CandidateAttachmentService} from '../../../services/candidate-attachment.service';
-import {
-  AttachmentType,
-  CandidateAttachment
-} from '../../../model/candidate-attachment';
+import {AttachmentType, CandidateAttachment} from '../../../model/candidate-attachment';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {environment} from '../../../../environments/environment';
 import {CandidateService} from '../../../services/candidate.service';
@@ -133,16 +130,20 @@ export class CandidateAttachmentsComponent implements OnInit {
       });
   }
 
-  startServerUpload(files: File[]) {
+  startServerUpload($event) {
     this.error = null;
     this.uploading = true;
     this.attachments = [];
 
     const uploads: Observable<CandidateAttachment>[] = [];
-    for (const file of files) {
+    for (const file of $event.files) {
       const formData: FormData = new FormData();
-      formData.append('file', file);
-
+      if ($event.type === 'camera') {
+        // If a camera upload create new file name
+        formData.append('file', file, 'CameraUpload_' + new Date().toLocaleDateString() + '_' + new Date().toLocaleTimeString() + '.jpg');
+      } else {
+        formData.append('file', file);
+      }
       uploads.push(this.candidateAttachmentService
         .uploadAttachment(this.cv, formData));
     }
