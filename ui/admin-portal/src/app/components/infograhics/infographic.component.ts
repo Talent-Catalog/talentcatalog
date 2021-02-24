@@ -24,7 +24,6 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {SavedList, SearchSavedListRequest} from "../../model/saved-list";
 import {SavedListService} from "../../services/saved-list.service";
 import {IDropdownSettings} from "ng-multiselect-dropdown";
-import {isArray} from "rxjs/internal-compatibility";
 
 @Component({
   selector: 'app-infographic',
@@ -70,8 +69,7 @@ export class InfographicComponent implements OnInit {
   get savedListId(): number {
     const savedList: SavedList = this.statsFilter.value.savedList;
     //Control always returns an array
-    return savedList == null || isArray(savedList) && savedList.length === 0
-      ? null : savedList[0].id;
+    return savedList == null ? 0 : savedList[0].id;
   }
 
   private loadLists() {
@@ -98,12 +96,8 @@ export class InfographicComponent implements OnInit {
   submitStatsRequest(){
     this.loading = true;
 
-    //todo debug
-    const savedSearchId = 331;
-
     const request: CandidateStatsRequest = {
       listId: this.savedListId,
-      searchId: savedSearchId,  //todo debug
       dateFrom: this.dateFrom,
       dateTo: this.dateTo
     }
@@ -126,7 +120,7 @@ export class InfographicComponent implements OnInit {
 
       const csv: string[] = [];
 
-      //todo Need to add list save search names in here
+      //todo Need to add list/save search names in here
 
       // Add date filter to export csv
       csv.push('"' + 'Exported Date' + '","' + new Date().toUTCString() + '"\n');
