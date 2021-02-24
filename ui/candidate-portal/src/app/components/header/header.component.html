@@ -53,6 +53,14 @@
             {{ 'HEADER.NAV.ACCOUNT' | translate }}
           </a>
           <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
+            <a class="dropdown-item" [routerLink]="['/profile']">
+              {{ 'REGISTRATION.COMPLETE.BUTTON.PROFILE' | translate }}
+            </a>
+
+            <a class="dropdown-item" [routerLink]="['/profile/edit/other']">
+              Upload File
+            </a>
+
             <a class="dropdown-item" (click)="logout()">
               {{ 'HEADER.NAV.LOGOUT' | translate }}
             </a>

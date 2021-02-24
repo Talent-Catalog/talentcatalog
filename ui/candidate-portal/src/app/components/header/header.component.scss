@@ -31,6 +31,14 @@ $navbar-height: 80px;
     max-height: calc(#{$navbar-height} - 20px);
   }
 
+  .navbar-nav {
+    margin: 0 1em;
+  }
+
+  .dropdown-item {
+    text-align: right;
+  }
+
   @media screen and (min-width: 768px) {
     .navbar-collapse {
       display: flex;
