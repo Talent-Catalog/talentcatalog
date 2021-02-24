@@ -20,14 +20,20 @@ import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {StatReport} from "../model/stat-report";
 
+export interface CandidateStatsRequest {
+  listId?: number;
+  dateFrom?: string;
+  dateTo?: string;
+}
+
 @Injectable({providedIn: 'root'})
 export class CandidateStatService {
 
   private apiUrl = environment.apiUrl + '/candidate/stat';
 
-  constructor(private http:HttpClient) {}
+  constructor(private http: HttpClient) {}
 
-  getAllStats(details): Observable<StatReport[]> {
+  getAllStats(details: CandidateStatsRequest): Observable<StatReport[]> {
     return this.http.post<StatReport[]>(`${this.apiUrl}/all`, details);
   }
 
