@@ -22,8 +22,20 @@
   </div>
 
   <div class="col-sm-12 col-md-6">
-    <form [formGroup]="dateFilter">
+    <form [formGroup]="statsFilter">
       <div class="form-row d-flex align-items-end">
+
+        <!-- SAVED LIST -->
+        <div>
+          <label>Existing list</label>
+          <ng-multiselect-dropdown formControlName="savedList"
+                                   id="savedLists"
+                                   [settings]="dropdownSettings"
+                                   [data]="lists">
+          </ng-multiselect-dropdown>
+        </div>
+
+
         <!-- DATE FROM -->
         <div class="form-group form-inline justify-content-end col-sm-12 col-md-5">
           <label for="dateFrom">Date From:</label>
@@ -39,7 +51,7 @@
                  date-disabled="disabled(date, mode)" ng-required="true" close-text="Close"/>
         </div>
         <div class="form-group form-inline justify-content-end col-sm-12 col-md-2">
-          <button class="btn btn-outline-secondary" (click)="submitDate()">
+          <button class="btn btn-outline-secondary" (click)="submitStatsRequest()">
             <i class="fas fa-calendar-alt"></i> Filter
           </button>
         </div>

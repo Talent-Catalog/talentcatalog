@@ -15,9 +15,15 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {CandidateStatService} from "../../services/candidate-stat.service";
+import {
+  CandidateStatService,
+  CandidateStatsRequest
+} from "../../services/candidate-stat.service";
 import {StatReport} from "../../model/stat-report";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {SavedList, SearchSavedListRequest} from "../../model/saved-list";
+import {SavedListService} from "../../services/saved-list.service";
+import {IDropdownSettings} from "ng-multiselect-dropdown";
 
 @Component({
   selector: 'app-infographic',
@@ -29,27 +35,73 @@ export class InfographicComponent implements OnInit {
   loading: boolean = false;
   dataLoaded: boolean = false;
   error: any;
+  lists: SavedList[] = [];
   statReports: StatReport[];
-  dateFilter: FormGroup;
+  statsFilter: FormGroup;
+
+  dropdownSettings: IDropdownSettings = {
+    idField: 'id',
+    textField: 'name',
+    enableCheckAll: false,
+    singleSelection: true,
+    allowSearchFilter: true
+  };
 
   constructor(private statService: CandidateStatService,
-              private fb: FormBuilder,) {
+              private savedListService: SavedListService,
+              private fb: FormBuilder) {
   }
 
   ngOnInit() {
     this.dataLoaded = false;
 
-    this.dateFilter = this.fb.group({
+    this.statsFilter = this.fb.group({
+      savedList: [null],
       dateFrom: ['', [Validators.required]],
       dateTo: ['', [Validators.required]]
     });
 
+    this.loadLists();
   }
 
-  submitDate(){
+  get dateFrom(): string { return this.statsFilter.value.dateFrom; }
+  get dateTo(): string { return this.statsFilter.value.dateTo; }
+  get savedListId(): number {
+    const savedList: SavedList = this.statsFilter.value.savedList;
+    //Control always returns an array
+    return savedList == null ? 0 : savedList[0].id;
+  }
+
+  private loadLists() {
+    /*load all our non fixed lists */
+    this.loading = true;
+    const request: SearchSavedListRequest = {
+      owned: true,
+      shared: true,
+      fixed: false
+    };
+
+    this.savedListService.search(request).subscribe(
+      (results) => {
+        this.lists = results;
+        this.loading = false;
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      }
+    );
+  }
+
+  submitStatsRequest(){
     this.loading = true;
 
-    this.statService.getAllStats(this.dateFilter.value).subscribe(result => {
+    const request: CandidateStatsRequest = {
+      listId: this.savedListId,
+      dateFrom: this.dateFrom,
+      dateTo: this.dateTo
+    }
+    this.statService.getAllStats(request).subscribe(result => {
         this.loading = false;
         this.statReports = result;
         this.dataLoaded = true;
@@ -63,36 +115,38 @@ export class InfographicComponent implements OnInit {
   }
 
   exportStats() {
-      let options = {type: 'text/csv;charset=utf-8;'};
-      let filename = 'stats.csv';
+      const options = {type: 'text/csv;charset=utf-8;'};
+      const filename = 'stats.csv';
 
-      let csv: string[] = [];
+      const csv: string[] = [];
+
+      //todo Need to add list/save search names in here
 
       // Add date filter to export csv
       csv.push('"' + 'Exported Date' + '","' + new Date().toUTCString() + '"\n');
-      csv.push('"' + 'Date From' + '","' + this.dateFilter.value.dateFrom + '"\n')
-      csv.push('"' + 'Date To' + '","' + this.dateFilter.value.dateTo + '"\n')
+      csv.push('"' + 'Date From' + '","' + this.statsFilter.value.dateFrom + '"\n')
+      csv.push('"' + 'Date To' + '","' + this.statsFilter.value.dateTo + '"\n')
       csv.push('\n');
 
       // Add data to export csv
-      for (let statReport of this.statReports) {
+      for (const statReport of this.statReports) {
         csv.push(statReport.name + '\n');
-        for (let row of statReport.rows) {
+        for (const row of statReport.rows) {
           csv.push('"' + row.label + '","' + row.value.toString() + '"\n')
         }
         csv.push('\n');
       }
 
-    let blob = new Blob(csv, options);
+    const blob = new Blob(csv, options);
 
     if (navigator.msSaveBlob) {
       // IE 10+
       navigator.msSaveBlob(blob, filename);
     } else {
-      let link = document.createElement('a');
+      const link = document.createElement('a');
       // Browsers that support HTML5 download attribute
       if (link.download !== undefined) {
-        let url = URL.createObjectURL(blob);
+        const url = URL.createObjectURL(blob);
         link.setAttribute('href', url);
         link.setAttribute('download', filename);
         link.style.visibility = 'hidden';

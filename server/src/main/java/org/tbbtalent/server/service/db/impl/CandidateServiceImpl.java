@@ -52,7 +52,7 @@ import org.tbbtalent.server.repository.db.*;
 import org.tbbtalent.server.repository.es.CandidateEsRepository;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.candidate.*;
-import org.tbbtalent.server.request.candidate.stat.CandidateStatDateRequest;
+import org.tbbtalent.server.request.candidate.stat.CandidateStatsRequest;
 import org.tbbtalent.server.request.note.CreateCandidateNoteRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.security.PasswordHelper;
@@ -1162,9 +1162,9 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<DataRow> getGenderStats(CandidateStatDateRequest request) {
+    public List<DataRow> getGenderStats(CandidateStatsRequest request) {
         List<Long> sourceCountryIds = getDefaultSourceCountryIds();
-        CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
+        CandidateStatsRequest requestWithDefaults = convertDateRangeDefaults(request);
         return toRows(candidateRepository.countByGenderOrderByCount(
                 sourceCountryIds,
                 requestWithDefaults.getDateFrom(),
@@ -1172,9 +1172,9 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<DataRow> getBirthYearStats(Gender gender, CandidateStatDateRequest request) {
+    public List<DataRow> getBirthYearStats(Gender gender, CandidateStatsRequest request) {
         List<Long> sourceCountryIds = getDefaultSourceCountryIds();
-        CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
+        CandidateStatsRequest requestWithDefaults = convertDateRangeDefaults(request);
         return toRows(candidateRepository.
                 countByBirthYearOrderByYear(
                         genderStr(gender),
@@ -1184,9 +1184,9 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<DataRow> getRegistrationStats(CandidateStatDateRequest request) {
+    public List<DataRow> getRegistrationStats(CandidateStatsRequest request) {
         List<Long> sourceCountryIds = getDefaultSourceCountryIds();
-        CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
+        CandidateStatsRequest requestWithDefaults = convertDateRangeDefaults(request);
         return toRows(candidateRepository.countByCreatedDateOrderByCount(
                 sourceCountryIds,
                 requestWithDefaults.getDateFrom(),
@@ -1194,9 +1194,9 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<DataRow> getRegistrationOccupationStats(CandidateStatDateRequest request) {
+    public List<DataRow> getRegistrationOccupationStats(CandidateStatsRequest request) {
         List<Long> sourceCountryIds = getDefaultSourceCountryIds();
-        CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
+        CandidateStatsRequest requestWithDefaults = convertDateRangeDefaults(request);
         final List<DataRow> rows = toRows(candidateRepository.countByOccupationOrderByCount(
                 sourceCountryIds,
                 requestWithDefaults.getDateFrom(),
@@ -1205,9 +1205,9 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<DataRow> getNationalityStats(Gender gender, String country, CandidateStatDateRequest request) {
+    public List<DataRow> getNationalityStats(Gender gender, String country, CandidateStatsRequest request) {
         List<Long> sourceCountryIds = getDefaultSourceCountryIds();
-        CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
+        CandidateStatsRequest requestWithDefaults = convertDateRangeDefaults(request);
         List<DataRow> rows = toRows(candidateRepository.
                 countByNationalityOrderByCount(
                         genderStr(gender),
@@ -1219,9 +1219,9 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<DataRow> getSurveyStats(Gender gender, String country, CandidateStatDateRequest request) {
+    public List<DataRow> getSurveyStats(Gender gender, String country, CandidateStatsRequest request) {
         List<Long> sourceCountryIds = getDefaultSourceCountryIds();
-        CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
+        CandidateStatsRequest requestWithDefaults = convertDateRangeDefaults(request);
         return toRows(candidateRepository.
                 countBySurveyOrderByCount(
                         genderStr(gender),
@@ -1232,9 +1232,9 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<DataRow> getMaxEducationStats(Gender gender, CandidateStatDateRequest request) {
+    public List<DataRow> getMaxEducationStats(Gender gender, CandidateStatsRequest request) {
         List<Long> sourceCountryIds = getDefaultSourceCountryIds();
-        CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
+        CandidateStatsRequest requestWithDefaults = convertDateRangeDefaults(request);
         return toRows(candidateRepository.
                 countByMaxEducationLevelOrderByCount(
                         genderStr(gender),
@@ -1244,9 +1244,9 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<DataRow> getLanguageStats(Gender gender, CandidateStatDateRequest request) {
+    public List<DataRow> getLanguageStats(Gender gender, CandidateStatsRequest request) {
         List<Long> sourceCountryIds = getDefaultSourceCountryIds();
-        CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
+        CandidateStatsRequest requestWithDefaults = convertDateRangeDefaults(request);
         List<DataRow> rows = toRows(candidateRepository.
                 countByLanguageOrderByCount(
                         genderStr(gender),
@@ -1257,9 +1257,9 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<DataRow> getOccupationStats(Gender gender, CandidateStatDateRequest request) {
+    public List<DataRow> getOccupationStats(Gender gender, CandidateStatsRequest request) {
         List<Long> sourceCountryIds = getDefaultSourceCountryIds();
-        CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
+        CandidateStatsRequest requestWithDefaults = convertDateRangeDefaults(request);
         return toRows(candidateRepository.
                 countByOccupationOrderByCount(
                         genderStr(gender),
@@ -1269,9 +1269,9 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<DataRow> getMostCommonOccupationStats(Gender gender, CandidateStatDateRequest request) {
+    public List<DataRow> getMostCommonOccupationStats(Gender gender, CandidateStatsRequest request) {
         List<Long> sourceCountryIds = getDefaultSourceCountryIds();
-        CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
+        CandidateStatsRequest requestWithDefaults = convertDateRangeDefaults(request);
         List<DataRow> rows = toRows(candidateRepository.
                 countByMostCommonOccupationOrderByCount(
                         genderStr(gender),
@@ -1282,9 +1282,9 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<DataRow> getSpokenLanguageLevelStats(Gender gender, String language, CandidateStatDateRequest request) {
+    public List<DataRow> getSpokenLanguageLevelStats(Gender gender, String language, CandidateStatsRequest request) {
         List<Long> sourceCountryIds = getDefaultSourceCountryIds();
-        CandidateStatDateRequest requestWithDefaults = convertDateRangeDefaults(request);
+        CandidateStatsRequest requestWithDefaults = convertDateRangeDefaults(request);
         return toRows(candidateRepository.
                 countBySpokenLanguageLevelByCount(
                         genderStr(gender),
@@ -1629,7 +1629,7 @@ public class CandidateServiceImpl implements CandidateService {
     /**
      * Convert null string to date default.
      */
-    public CandidateStatDateRequest convertDateRangeDefaults(CandidateStatDateRequest request){
+    public CandidateStatsRequest convertDateRangeDefaults(CandidateStatsRequest request){
         if (request.getDateFrom() == null) {
             request.setDateFrom(LocalDate.parse("2000-01-01"));
         }
