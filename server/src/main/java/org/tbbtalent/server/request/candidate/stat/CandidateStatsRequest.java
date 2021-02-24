@@ -28,14 +28,9 @@ import lombok.ToString;
 public class CandidateStatsRequest {
 
     /**
-     * If not null, stats are computed on candidates in the corresponding list.
+     * If not zero, stats are computed on candidates in the corresponding list.
      */
-    private Long listId;
-
-    /**
-     * If not null, stats are computed on candidates in the corresponding saved search.
-     */
-    private Long searchId;
+    private long listId;
 
     /**
      * Start date for stats.
