@@ -23,20 +23,21 @@
 
     <div class="text-right" *ngIf="!preview && attachment.createdBy.id == user?.id">
       <button class="btn btn-secondary btn-card"
-              [disabled]="deleting"
-              (click)="deleteAttachment(attachment)">
-        <fa-icon class="d-flex" icon="edit" size="xs"></fa-icon>
-      </button>
+              (click)="editCandidateAttachment(attachment)">
+        <fa-icon class="d-flex" icon="edit" size="xs"></fa-icon></button>
+
       <button class="btn btn-danger btn-card"
               [disabled]="deleting"
               (click)="deleteAttachment(attachment)">&times;</button>
+
+
     </div>
 
     <div class="row">
 
       <div class="col-12">
 
-        <div class="form-group">
+        <div *ngIf="editTarget?.id !== attachment.id" class="form-group">
           <label>{{ 'REGISTRATION.ATTACHMENTS.LABEL.NAME' | translate }}
             <span *ngIf="downloading">
                 ...
@@ -60,6 +61,12 @@
             </a>
           </p>
         </div>
+
+        <div *ngIf="editTarget?.id == attachment.id" class="form-group">
+          <label for="courseName">Change name? </label>
+          <input type="text" class="form-control" placeholder="" id="courseName" [(ngModel)]="attachment.name" (blur)="updateAttachmentName(attachment, i)">
+        </div>
+        <fa-icon *ngIf="_loading.change" icon="edit"></fa-icon>
 
       </div>
 

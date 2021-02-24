@@ -56,4 +56,8 @@ export class CandidateAttachmentService {
       `${this.apiUrl}/upload?cv=${cv}`, formData);
   }
 
+  updateAttachment(value: any): Observable<CandidateAttachment> {
+    return this.http.put<CandidateAttachment>(`${this.apiUrl}`, value);
+  }
+
 }

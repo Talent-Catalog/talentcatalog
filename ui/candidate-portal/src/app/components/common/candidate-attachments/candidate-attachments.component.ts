@@ -40,7 +40,8 @@ export class CandidateAttachmentsComponent implements OnInit {
   _loading = {
     candidate: true,
     attachments: true,
-    user: true
+    user: true,
+    change: false
   };
   deleting: boolean;
   uploading: boolean;
@@ -51,6 +52,8 @@ export class CandidateAttachmentsComponent implements OnInit {
   attachments: CandidateAttachment[] = [];
   candidateNumber: string;
   user: User;
+
+  editTarget: CandidateAttachment;
 
   constructor(private fb: FormBuilder,
               private candidateService: CandidateService,
@@ -64,6 +67,7 @@ export class CandidateAttachmentsComponent implements OnInit {
   ngOnInit() {
     this._loading.candidate = true;
     this._loading.user = true;
+    this.editTarget = null;
 
     this.candidateService.getCandidateNumber().subscribe(
       (response) => {
@@ -173,6 +177,30 @@ export class CandidateAttachmentsComponent implements OnInit {
         this.error = error;
         this.downloading = false;
       });
+  }
 
+  editCandidateAttachment(attachment: CandidateAttachment) {
+    if (this.editTarget) {
+      this.editTarget = null;
+    } else {
+      this.editTarget = attachment;
+    }
+  }
+
+  updateAttachmentName(attachment: CandidateAttachment, i) {
+    this._loading.change = true;
+    const request = Object.assign(this.form.value, {
+      id: attachment.id,
+      name: attachment.name
+    });
+    this.candidateAttachmentService.updateAttachment(request).subscribe(
+      (response) => {
+        this.attachments[i] = attachment;
+        this.editTarget = null;
+        this._loading.change = false;
+      }, (error) => {
+        this.error = error;
+      }
+    )
   }
 }
