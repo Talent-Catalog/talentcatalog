@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.StatReport;
-import org.tbbtalent.server.request.candidate.stat.CandidateStatDateRequest;
+import org.tbbtalent.server.request.candidate.stat.CandidateStatsRequest;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -43,7 +43,7 @@ public class CandidateStatAdminApi {
     }
 
     @PostMapping("all")
-    public List<Map<String, Object>> getAllStats(@RequestBody CandidateStatDateRequest request) {
+    public List<Map<String, Object>> getAllStats(@RequestBody CandidateStatsRequest request) {
         String language;
         String title;
         String chartType;

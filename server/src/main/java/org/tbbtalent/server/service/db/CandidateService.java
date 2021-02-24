@@ -52,7 +52,7 @@ import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
-import org.tbbtalent.server.request.candidate.stat.CandidateStatDateRequest;
+import org.tbbtalent.server.request.candidate.stat.CandidateStatsRequest;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 public interface CandidateService {
@@ -224,27 +224,27 @@ public interface CandidateService {
 
     void setCandidateContext(long savedSearchId, Iterable<Candidate> candidates);
 
-    List<DataRow> getGenderStats(CandidateStatDateRequest request);
+    List<DataRow> getGenderStats(CandidateStatsRequest request);
 
-    List<DataRow> getBirthYearStats(Gender gender, CandidateStatDateRequest request);
+    List<DataRow> getBirthYearStats(Gender gender, CandidateStatsRequest request);
 
-    List<DataRow> getRegistrationStats(CandidateStatDateRequest request);
+    List<DataRow> getRegistrationStats(CandidateStatsRequest request);
 
-    List<DataRow> getRegistrationOccupationStats(CandidateStatDateRequest request);
+    List<DataRow> getRegistrationOccupationStats(CandidateStatsRequest request);
 
-    List<DataRow> getLanguageStats(Gender gender, CandidateStatDateRequest request);
+    List<DataRow> getLanguageStats(Gender gender, CandidateStatsRequest request);
 
-    List<DataRow> getOccupationStats(Gender gender, CandidateStatDateRequest request);
+    List<DataRow> getOccupationStats(Gender gender, CandidateStatsRequest request);
 
-    List<DataRow> getMostCommonOccupationStats(Gender gender, CandidateStatDateRequest request);
+    List<DataRow> getMostCommonOccupationStats(Gender gender, CandidateStatsRequest request);
 
-    List<DataRow> getSpokenLanguageLevelStats(Gender gender, String language, CandidateStatDateRequest request);
+    List<DataRow> getSpokenLanguageLevelStats(Gender gender, String language, CandidateStatsRequest request);
 
-    List<DataRow> getMaxEducationStats(Gender gender, CandidateStatDateRequest request);
+    List<DataRow> getMaxEducationStats(Gender gender, CandidateStatsRequest request);
 
-    List<DataRow> getNationalityStats(Gender gender, String country, CandidateStatDateRequest request);
+    List<DataRow> getNationalityStats(Gender gender, String country, CandidateStatsRequest request);
 
-    List<DataRow> getSurveyStats(Gender gender, String country, CandidateStatDateRequest request);
+    List<DataRow> getSurveyStats(Gender gender, String country, CandidateStatsRequest request);
 
     Resource generateCv(Candidate candidate);
 
