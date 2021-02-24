@@ -21,6 +21,13 @@ import {Observable} from "rxjs";
 import {CandidateAttachment} from "../model/candidate-attachment";
 import {SearchResults} from "../model/search-results";
 
+export interface UpdateCandidateAttachmentRequest {
+  id?: number;
+  name?: string;
+  location?: string;
+  cv?: boolean;
+}
+
 @Injectable({
   providedIn: 'root'
 })

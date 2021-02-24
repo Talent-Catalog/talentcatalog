@@ -54,11 +54,20 @@
           </a>
           <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
             <a class="dropdown-item" [routerLink]="['/profile']">
-              {{ 'REGISTRATION.COMPLETE.BUTTON.PROFILE' | translate }}
+              {{ 'HEADER.NAV.PROFILE' | translate }}
             </a>
 
-            <a class="dropdown-item" [routerLink]="['/profile/edit/other']">
-              Upload File
+            <!-- Show/hide menu item depending on phone. See bootstrap classes explained:https://getbootstrap.com/docs/4.0/utilities/display/
+            Think going from smallest screen to largest and that classes go upwards in that way
+            (e.g. if d-sm-none it is hidden from small screens upwards until/if there's another d class - but shown on xs screens).
+            On a small screen we want to hide Upload File (d-none) and then show on a large screen (d-lg-block).
+            We want to see Upload File/Photo so that is only hidden once we hit large screens (d-lg-none). -->
+            <a class="dropdown-item d-none d-lg-block" [routerLink]="['/profile/edit/other']">
+              {{ 'HEADER.NAV.UPLOAD.FILE' | translate }}
+            </a>
+
+            <a class="dropdown-item d-lg-none" [routerLink]="['/profile/edit/other']">
+              {{ 'HEADER.NAV.UPLOAD.PHOTO' | translate }}
             </a>
 
             <a class="dropdown-item" (click)="logout()">

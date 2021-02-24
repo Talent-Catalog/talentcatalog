@@ -102,7 +102,12 @@ const ALL_FIELDS = {
       "NAV": {
         "ACCOUNT": null,
         "LOGOUT": null,
-        "LOGIN": null
+        "LOGIN": null,
+        "PROFILE": null,
+        "UPLOAD": {
+          "FILE": null,
+          "PHOTO": null
+        }
       }
     },
     "LOADING": null,
