@@ -64,9 +64,20 @@
 
         <div *ngIf="editTarget?.id == attachment.id" class="form-group">
           <label for="courseName">Change name? </label>
-          <input type="text" class="form-control" placeholder="" id="courseName" [(ngModel)]="attachment.name" (blur)="updateAttachmentName(attachment, i)">
+          <div class="d-flex">
+            <input type="text" class="form-control" placeholder="" id="courseName" [(ngModel)]="attachment.name">
+            <div>
+              <button class="btn btn-sm"
+                      (click)="updateAttachmentName(attachment, i)">
+                <span *ngIf="!saving">Save</span>
+                <fa-icon *ngIf="saving" [spin]="true" icon="spinner"></fa-icon>
+              </button>
+
+            </div>
+          </div>
         </div>
-        <fa-icon *ngIf="_loading.change" icon="edit"></fa-icon>
+
+
 
       </div>
 

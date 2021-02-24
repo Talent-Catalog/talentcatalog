@@ -41,7 +41,7 @@ export class CandidateAttachmentsComponent implements OnInit {
     candidate: true,
     attachments: true,
     user: true,
-    change: false
+    saving: false
   };
   deleting: boolean;
   uploading: boolean;
@@ -112,6 +112,11 @@ export class CandidateAttachmentsComponent implements OnInit {
   get loading() {
     const l = this._loading;
     return l.attachments || l.candidate;
+  }
+
+  get saving() {
+    const l = this._loading;
+    return l.saving;
   }
 
   getAttachmentUrl(att: CandidateAttachment) {
@@ -188,16 +193,16 @@ export class CandidateAttachmentsComponent implements OnInit {
   }
 
   updateAttachmentName(attachment: CandidateAttachment, i) {
-    this._loading.change = true;
-    const request = Object.assign(this.form.value, {
+    this._loading.saving = true;
+    const request = {
       id: attachment.id,
       name: attachment.name
-    });
-    this.candidateAttachmentService.updateAttachment(request).subscribe(
+    };
+    this.candidateAttachmentService.updateAttachment(attachment.id, request).subscribe(
       (response) => {
         this.attachments[i] = attachment;
         this.editTarget = null;
-        this._loading.change = false;
+        this._loading.saving = false;
       }, (error) => {
         this.error = error;
       }

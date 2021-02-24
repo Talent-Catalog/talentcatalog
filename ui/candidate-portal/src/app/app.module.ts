@@ -71,6 +71,7 @@ import {CandidateCertificationFormComponent} from './components/common/candidate
 import {DownloadCvComponent} from './components/common/download-cv/download-cv.component';
 import {RedirectGuard} from './services/redirect.guard';
 import {LanguageLoader} from "./services/language.loader";
+import {faSpinner} from "@fortawesome/free-solid-svg-icons/faSpinner";
 
 @NgModule({
   declarations: [
@@ -148,7 +149,8 @@ export class AppModule {
   constructor(private datepickerConfig: NgbDatepickerConfig, library: FaIconLibrary) {
     this.datepickerConfig.minDate = {year: 1950, month: 1, day: 1};
     library.addIcons(
-      faEdit
+      faEdit,
+      faSpinner
     );
   }
 }

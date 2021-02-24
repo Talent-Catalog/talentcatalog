@@ -116,8 +116,8 @@ public class CandidateAttachmentPortalApi {
         return candidateAttachmentDto().build(candidateAttachment);
     }
 
-    @PutMapping()
-    public Map<String, Object> update(
+    @PutMapping("{id}")
+    public Map<String, Object> update( @PathVariable("id") long id,
             @RequestBody UpdateCandidateAttachmentRequest request)
             throws IOException {
         CandidateAttachment candidateAttachment =
