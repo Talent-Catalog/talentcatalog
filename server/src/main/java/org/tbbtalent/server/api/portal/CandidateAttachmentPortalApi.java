@@ -121,7 +121,7 @@ public class CandidateAttachmentPortalApi {
             @RequestBody UpdateCandidateAttachmentRequest request)
             throws IOException {
         CandidateAttachment candidateAttachment =
-                this.candidateAttachmentService.updateCandidateAttachment(request);
+                this.candidateAttachmentService.updateCandidateAttachment(id, request);
         return candidateAttachmentDto().build(candidateAttachment);
     }
     

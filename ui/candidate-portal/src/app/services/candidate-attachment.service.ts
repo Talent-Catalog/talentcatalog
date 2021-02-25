@@ -21,6 +21,7 @@ import {Observable} from "rxjs";
 import {CandidateAttachment} from "../model/candidate-attachment";
 import {SearchResults} from "../model/search-results";
 
+//todo use this for other requests
 export interface UpdateCandidateAttachmentRequest {
   id?: number;
   name?: string;
@@ -63,8 +64,8 @@ export class CandidateAttachmentService {
       `${this.apiUrl}/upload?cv=${cv}`, formData);
   }
 
-  updateAttachment(id: number, value: any): Observable<CandidateAttachment> {
-    return this.http.put<CandidateAttachment>(`${this.apiUrl}/${id}`, value);
+  updateAttachment(id: number, request: UpdateCandidateAttachmentRequest): Observable<CandidateAttachment> {
+    return this.http.put<CandidateAttachment>(`${this.apiUrl}/${id}`, request);
   }
 
 }

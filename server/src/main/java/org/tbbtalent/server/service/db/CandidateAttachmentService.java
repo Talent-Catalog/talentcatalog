@@ -16,10 +16,6 @@
 
 package org.tbbtalent.server.service.db;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,6 +26,10 @@ import org.tbbtalent.server.request.PagedSearchRequest;
 import org.tbbtalent.server.request.attachment.CreateCandidateAttachmentRequest;
 import org.tbbtalent.server.request.attachment.SearchCandidateAttachmentsRequest;
 import org.tbbtalent.server.request.attachment.UpdateCandidateAttachmentRequest;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.List;
 
 public interface CandidateAttachmentService {
 
@@ -84,7 +84,7 @@ public interface CandidateAttachmentService {
     CandidateAttachment getCandidateAttachment(Long id)
             throws IOException, NoSuchObjectException;
 
-    CandidateAttachment updateCandidateAttachment(
+    CandidateAttachment updateCandidateAttachment(Long id,
             UpdateCandidateAttachmentRequest request) throws IOException;
 
     /**

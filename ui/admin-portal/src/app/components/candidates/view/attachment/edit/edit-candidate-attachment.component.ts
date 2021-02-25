@@ -18,7 +18,10 @@ import {Component, OnInit} from '@angular/core';
 import {CandidateAttachment} from "../../../../../model/candidate-attachment";
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {CandidateAttachmentService} from "../../../../../services/candidate-attachment.service";
+import {
+  CandidateAttachmentService,
+  UpdateCandidateAttachmentRequest
+} from "../../../../../services/candidate-attachment.service";
 
 @Component({
   selector: 'app-edit-candidate-attachment',
@@ -50,12 +53,19 @@ export class EditCandidateAttachmentComponent implements OnInit {
   }
 
   save() {
-    this.candidateAttachmentService.updateAttachment(this.form.value).subscribe(
+    this.loading = true;
+    const request: UpdateCandidateAttachmentRequest = {
+      name: this.form.value.name,
+      cv: this.form.value.cv
+    };
+    this.candidateAttachmentService.updateAttachment(this.form.value.id, request).subscribe(
       (response) => {
+        this.loading = true;
         this.modal.close(response);
       },
       (error) => {
         console.log('error', error);
+        this.loading = true;
       });
   }
 

@@ -20,14 +20,17 @@ import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
 import {catchError, map} from "rxjs/operators";
-import {
-  AttachmentType,
-  CandidateAttachment,
-  CandidateAttachmentRequest
-} from '../model/candidate-attachment';
+import {AttachmentType, CandidateAttachment, CandidateAttachmentRequest} from '../model/candidate-attachment';
 import {saveBlob} from "../util/file";
 import {Subject} from "rxjs/index";
 import {Candidate} from "../model/candidate";
+
+export interface UpdateCandidateAttachmentRequest {
+  id?: number;
+  name?: string;
+  location?: string;
+  cv?: boolean;
+}
 
 @Injectable({providedIn: 'root'})
 export class CandidateAttachmentService {
@@ -118,7 +121,7 @@ export class CandidateAttachmentService {
       `${this.apiUrl}/${id}/upload?cv=${cv}`, formData);
   }
 
-  updateAttachment(value: any): Observable<CandidateAttachment> {
-    return this.http.put<CandidateAttachment>(`${this.apiUrl}`, value);
+  updateAttachment(id: number, request: UpdateCandidateAttachmentRequest): Observable<CandidateAttachment> {
+    return this.http.put<CandidateAttachment>(`${this.apiUrl}/${id}`, request);
   }
 }

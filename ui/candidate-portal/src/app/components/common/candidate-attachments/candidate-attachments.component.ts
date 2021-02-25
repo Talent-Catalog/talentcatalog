@@ -15,7 +15,10 @@
  */
 
 import {Component, Input, OnInit} from '@angular/core';
-import {CandidateAttachmentService} from '../../../services/candidate-attachment.service';
+import {
+  CandidateAttachmentService,
+  UpdateCandidateAttachmentRequest
+} from '../../../services/candidate-attachment.service';
 import {AttachmentType, CandidateAttachment} from '../../../model/candidate-attachment';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {environment} from '../../../../environments/environment';
@@ -194,8 +197,7 @@ export class CandidateAttachmentsComponent implements OnInit {
 
   updateAttachmentName(attachment: CandidateAttachment, i) {
     this._loading.saving = true;
-    const request = {
-      id: attachment.id,
+    const request: UpdateCandidateAttachmentRequest = {
       name: attachment.name
     };
     this.candidateAttachmentService.updateAttachment(attachment.id, request).subscribe(
