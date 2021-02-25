@@ -64,7 +64,7 @@ export class EditCandidateAttachmentComponent implements OnInit {
         this.modal.close(response);
       },
       (error) => {
-        console.log('error', error);
+        this.error = error;
         this.loading = true;
       });
   }
