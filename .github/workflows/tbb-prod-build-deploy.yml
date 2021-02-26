@@ -37,20 +37,3 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{env.AWS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        
-        
-        # The above gradle build creates server/build/libs/server.jar
-        
-        # This step deploys the above server.jar to AWS Elastic Beanstalk
-      - name: Deploy to EB
-        uses: einaregilsson/beanstalk-deploy@v14
-        with:
-          aws_access_key: ${{env.AWS_ACCESS_KEY_ID}}
-          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: tbb-app-prod
-          environment_name: TbbAppProd-env
-          version_label: ${{github.workflow}}-${{github.run_number}}
-          version_description: Commit ${{ github.sha }}
-          region: us-east-1
-          deployment_package: server/build/libs/server.jar
-        
