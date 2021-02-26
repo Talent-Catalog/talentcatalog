@@ -12,7 +12,7 @@ on:
 #The matching secret key is stored as a GitHub secret and is accessible
 #as ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
 env:
-  AWS_ACCESS_KEY_ID: AKIA6C7ESOA6NE2SZYWH
+  AWS_ACCESS_KEY_ID: AKIA6C7ESOA6BS5PUOWH
   
 jobs:
   build:
