@@ -322,6 +322,9 @@ const ALL_FIELDS = {
         "OTHER": {
           "NAME": null,
           "EXPLANATION": null
+        },
+        "WARN": {
+          "MOBILE": null
         }
       }
     },
@@ -436,7 +439,10 @@ const ALL_FIELDS = {
         "LABEL": {
           "DROP": null,
           "OR": null,
-          "BROWSE": null,
+          "BROWSE": {
+            "FILE": null,
+            "IMAGE": null,
+          },
           "UPLOADING": null,
           "PHOTO": null
         }

@@ -150,7 +150,7 @@ export class CandidateAttachmentsComponent implements OnInit {
     const uploads: Observable<CandidateAttachment>[] = [];
     for (const file of $event.files) {
       const formData: FormData = new FormData();
-      if ($event.type === 'camera') {
+      if ($event.type === 'photo') {
         // If a camera upload create new file name
         formData.append('file', file, 'CameraUpload_' + new Date().toLocaleDateString() + '_' + new Date().toLocaleTimeString() + '.jpg');
       } else {
