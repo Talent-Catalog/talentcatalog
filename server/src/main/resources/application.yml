@@ -135,8 +135,9 @@ aws:
     max-size: 52428800
     upload-folder: temp
   credentials:
-    accessKey: ${AWS_CREDENTIALS_ACCESSKEY:AKIA6C7ESOA6FCQTELMN}
-    secretKey: ${AWS_CREDENTIALS_SECRETKEY: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}
+    # For dev this should be set in tbb-secrets    
+    accessKey: ${AWS_CREDENTIALS_ACCESSKEY:}
+    secretKey: ${AWS_CREDENTIALS_SECRETKEY:}
 
 #email:
 #   type: SMTP # STUB or SMTP
