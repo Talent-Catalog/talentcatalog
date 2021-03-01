@@ -1,0 +1,77 @@
+<!--
+  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<div class="container">
+
+
+  <ng-container>
+    <h5 class="mb-3">{{ 'REGISTRATION.ATTACHMENTS.TITLE' | translate }}</h5>
+    <div class="d-lg-none alert-warning">
+      <p>{{ 'REGISTRATION.ATTACHMENTS.WARN.MOBILE' | translate }}</p>
+    </div>
+    <ngb-accordion #a="ngbAccordion" activeIds="custom-panel-2">
+      <ngb-panel id="custom-panel-2">
+        <ng-template ngbPanelHeader let-opened="opened">
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <strong>{{ 'REGISTRATION.ATTACHMENTS.OTHER.NAME' | translate }}</strong>
+              <p class="mb-0">{{ 'REGISTRATION.ATTACHMENTS.OTHER.EXPLANATION' | translate }}</p>
+            </div>
+            <button ngbPanelToggle class="btn btn-link p-0 ml-4 btn-outline-none">
+              <fa-icon *ngIf="opened" class="d-flex" icon="chevron-up"></fa-icon>
+              <fa-icon *ngIf="!opened" class="d-flex" icon="chevron-down"></fa-icon>
+            </button>
+          </div>
+        </ng-template>
+        <ng-template ngbPanelContent>
+          <app-candidate-attachments
+            [cv]="false">
+          </app-candidate-attachments>
+        </ng-template>
+      </ngb-panel>
+    </ngb-accordion>
+
+      <ngb-accordion #a="ngbAccordion">
+        <ngb-panel id="custom-panel-1">
+          <ng-template ngbPanelHeader let-opened="opened">
+            <div class="d-flex align-items-center justify-content-between">
+              <div>
+                <strong>{{ 'REGISTRATION.ATTACHMENTS.CV.NAME' | translate }}</strong>
+                <p class="mb-0">{{ 'REGISTRATION.ATTACHMENTS.CV.EXPLANATION' | translate }}</p>
+              </div>
+              <button ngbPanelToggle class="btn btn-link p-0 ml-4 btn-outline-none">
+                <fa-icon *ngIf="opened" class="d-flex" icon="chevron-up"></fa-icon>
+                <fa-icon *ngIf="!opened" class="d-flex" icon="chevron-down"></fa-icon>
+              </button>
+            </div>
+          </ng-template>
+          <ng-template ngbPanelContent>
+            <app-candidate-attachments
+              [cv]="true">
+            </app-candidate-attachments>
+          </ng-template>
+        </ngb-panel>
+      </ngb-accordion>
+
+  </ng-container>
+
+</div>
+
+<app-registration-footer [nextDisabled]="loading || saving || form?.invalid"
+                         [type]="edit ? 'update' : 'submit'"
+                         (backClicked)="edit ? cancel() : save('back') "
+                         (nextClicked)="next()">
+</app-registration-footer>

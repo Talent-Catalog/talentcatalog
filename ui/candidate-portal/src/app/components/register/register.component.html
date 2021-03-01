@@ -30,7 +30,7 @@
 
   <div class="step-progress">
 
-    <div class="step-progress-bar" *ngFor="let x of [1, 2, 3, 4, 5, 6, 7, 8];let i = index;"
+    <div class="step-progress-bar" *ngFor="let x of [1, 2, 3, 4, 5, 6, 7, 8, 9];let i = index;"
          [class.selected]="registrationService?.currentStep?.section === i + 1"></div>
 
   </div>
@@ -60,8 +60,11 @@
   <app-registration-certifications *ngSwitchCase="'certifications'">
   </app-registration-certifications>
 
-  <app-registration-additional-info *ngSwitchCase="'submit'" [submitApplication]="true">
+  <app-registration-additional-info *ngSwitchCase="'additional'">
   </app-registration-additional-info>
+
+  <app-registration-upload-file *ngSwitchCase="'upload'" [submitApplication]="true">
+  </app-registration-upload-file>
 
   <div class="container text-center" *ngSwitchCase="'complete'">
 

@@ -63,10 +63,15 @@
                                    (onSave)="handleSave()">
   </app-registration-certifications>
 
-  <app-registration-additional-info *ngSwitchCase="'other'"
+  <app-registration-additional-info *ngSwitchCase="'additionalInfo'"
+                                   [edit]="true"
+                                   (onSave)="handleSave()">
+  </app-registration-additional-info>
+
+  <app-registration-upload-file  *ngSwitchCase="'other'"
                                     [edit]="true"
                                     (onSave)="handleSave()"
                                     [submitApplication]="false">
-  </app-registration-additional-info>
+  </app-registration-upload-file>
 
 </div>

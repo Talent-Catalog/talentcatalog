@@ -23,10 +23,6 @@
   <app-file-upload *ngIf="!preview && !loading" [uploading]="uploading" (uploadStarted)="startServerUpload($event)"></app-file-upload>
 </div>
 
-<div class="d-lg-none alert-warning">
-  <p>{{ 'REGISTRATION.ATTACHMENTS.WARN.MOBILE' | translate }}</p>
-</div>
-
 <div class="attachments">
   <div class="mb-3" *ngFor="let attachment of attachments; let i = index;" [class.card]="!preview">
 

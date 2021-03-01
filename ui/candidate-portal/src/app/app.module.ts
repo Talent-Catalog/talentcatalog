@@ -65,13 +65,14 @@ import {UserPipe} from './pipes/user.pipe';
 import {TrimPipe} from './pipes/trim.pipe';
 import {MonthPickerComponent} from './components/common/month-picker/month-picker.component';
 import {FaIconLibrary, FontAwesomeModule} from '@fortawesome/angular-fontawesome';
-import {faEdit} from '@fortawesome/free-solid-svg-icons';
+import {faChevronDown, faChevronUp, faEdit, faEllipsisH} from '@fortawesome/free-solid-svg-icons';
 import {DeleteOccupationComponent} from './components/register/candidate-occupation/delete/delete-occupation.component';
 import {CandidateCertificationFormComponent} from './components/common/candidate-certification-form/candidate-certification-form.component';
 import {DownloadCvComponent} from './components/common/download-cv/download-cv.component';
 import {RedirectGuard} from './services/redirect.guard';
 import {LanguageLoader} from "./services/language.loader";
 import {faSpinner} from "@fortawesome/free-solid-svg-icons/faSpinner";
+import {RegistrationUploadFileComponent} from './components/register/upload-file/registration-upload-file.component';
 
 @NgModule({
   declarations: [
@@ -114,6 +115,7 @@ import {faSpinner} from "@fortawesome/free-solid-svg-icons/faSpinner";
     DeleteOccupationComponent,
     CandidateCertificationFormComponent,
     DownloadCvComponent,
+    RegistrationUploadFileComponent,
   ],
   imports: [
     BrowserModule,
@@ -150,7 +152,11 @@ export class AppModule {
     this.datepickerConfig.minDate = {year: 1950, month: 1, day: 1};
     library.addIcons(
       faEdit,
-      faSpinner
+      faSpinner,
+      faChevronDown,
+      faChevronUp,
+      faEllipsisH
+
     );
   }
 }

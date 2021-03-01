@@ -63,15 +63,20 @@ export class RegistrationService {
       section: 7
     },
     {
-      key: 'submit',
-      title: 'Are you ready to submit your application?',
+      key: 'additional',
+      title: 'How did you hear about us?',
       section: 8
+    },
+    {
+      key: 'upload',
+      title: 'Do you have any files to upload?',
+      section: 9
     },
     {
       key: 'complete',
       title: '',
       hideHeader: true,
-      section: 8
+      section: 9
     }
   ];
   public totalSections: number = Math.max(...this.steps.map(s => s.section));
