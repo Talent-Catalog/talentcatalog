@@ -18,6 +18,15 @@
   {{ 'REGISTRATION.ATTACHMENTS.EMPTYSTATE' | translate }}
 </p>
 
+<!-- If CV & Mobile device don't display by adding bootstrap classes d-none & d-lg-block if CV is true -->
+<div [class.d-none]="cv" [class.d-lg-block]="cv">
+  <app-file-upload *ngIf="!preview && !loading" [uploading]="uploading" (uploadStarted)="startServerUpload($event)"></app-file-upload>
+</div>
+
+<div class="d-lg-none alert-warning">
+  <p>{{ 'REGISTRATION.ATTACHMENTS.WARN.MOBILE' | translate }}</p>
+</div>
+
 <div class="attachments">
   <div class="mb-3" *ngFor="let attachment of attachments; let i = index;" [class.card]="!preview">
 
@@ -110,7 +119,6 @@
 
 <app-error [error]="error"></app-error>
 
-<app-file-upload *ngIf="!preview && !loading" [uploading]="uploading" (uploadStarted)="startServerUpload($event)"></app-file-upload>
 
 
 
