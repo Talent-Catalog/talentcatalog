@@ -32,23 +32,27 @@
   </span>
 </div>
 
-<div class="d-lg-none text-center row align-items-center border-bottom pb-3">
-  <div  class="file-input col-6">
-    <input #inputFile type="file" id="file" class="file" accept="image/*" (change)="handleFileChanged($event, 'file')">
-    <span>
+<div class="d-lg-none">
+  <div class="d-flex justify-content-between">
+    <div  class="file-input">
+      <input #inputFile type="file" id="file" class="file" accept="image/*" (change)="handleFileChanged($event, 'file')">
+      <span>
       <button class="btn btn-primary" [disabled]="uploading" (click)="inputFile.click()">
         <ng-container *ngIf="!uploading">{{ 'FORM.ATTACHMENT.LABEL.BROWSE.IMAGE' | translate }}</ng-container>
         <ng-container *ngIf="uploading">{{ 'FORM.ATTACHMENT.LABEL.UPLOADING' | translate }}</ng-container>
       </button>
     </span>
+    </div>
+    <div class="file-input">
+      <input #inputPhoto type="file" id="camera" class="file" accept="image/*" capture="" (change)="handleFileChanged($event, 'camera')">
+      <div>
+        <button class="btn btn-primary" [disabled]="uploading" (click)="inputPhoto.click()">
+          <ng-container *ngIf="!uploading">{{ 'FORM.ATTACHMENT.LABEL.PHOTO' | translate }}</ng-container>
+          <ng-container *ngIf="uploading">{{ 'FORM.ATTACHMENT.LABEL.UPLOADING' | translate }}</ng-container>
+        </button>
+      </div>
+    </div>
   </div>
-  <div class="file-input col-6">
-    <input #inputPhoto type="file" id="camera" class="file" accept="image/*" capture="" (change)="handleFileChanged($event, 'camera')">
-    <span>
-      <button class="btn btn-primary" [disabled]="uploading" (click)="inputPhoto.click()">
-        <ng-container *ngIf="!uploading">{{ 'FORM.ATTACHMENT.LABEL.PHOTO' | translate }}</ng-container>
-        <ng-container *ngIf="uploading">{{ 'FORM.ATTACHMENT.LABEL.UPLOADING' | translate }}</ng-container>
-      </button>
-    </span>
-  </div>
+  <hr *ngIf="!uploading"/>
 </div>
+

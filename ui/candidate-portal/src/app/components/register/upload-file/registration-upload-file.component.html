@@ -29,7 +29,7 @@
             <div class="d-flex align-items-center justify-content-between">
               <div>
                 <strong>{{ 'REGISTRATION.ATTACHMENTS.OTHER.NAME' | translate }}</strong>
-                <p class="mb-0">{{ 'REGISTRATION.ATTACHMENTS.OTHER.EXPLANATION' | translate }}</p>
+                <p class="mb-0 small">{{ 'REGISTRATION.ATTACHMENTS.OTHER.EXPLANATION' | translate }}</p>
               </div>
               <button ngbPanelToggle class="btn btn-link p-0 ml-4 btn-outline-none">
                 <fa-icon *ngIf="opened" class="d-flex" icon="chevron-up"></fa-icon>
@@ -53,9 +53,9 @@
             <div class="d-flex align-items-center justify-content-between">
               <div>
                 <strong>{{ 'REGISTRATION.ATTACHMENTS.CV.NAME' | translate }}</strong>
-                <p class="mb-0">{{ 'REGISTRATION.ATTACHMENTS.CV.EXPLANATION' | translate }}</p>
+                <p class="mb-0 small">{{ 'REGISTRATION.ATTACHMENTS.CV.EXPLANATION' | translate }}</p>
               </div>
-              <button ngbPanelToggle class="btn btn-link p-0 ml-4 btn-outline-none">
+              <button ngbPanelToggle class="btn btn-link p-0 ml-4">
                 <fa-icon *ngIf="opened" class="d-flex" icon="chevron-up"></fa-icon>
                 <fa-icon *ngIf="!opened" class="d-flex" icon="chevron-down"></fa-icon>
               </button>
