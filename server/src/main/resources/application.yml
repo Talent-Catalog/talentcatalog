@@ -6,13 +6,6 @@ tbb:
   partner-dbcopy-config: ${TBB_PARTNER_DBCOPY_CONFIG:data.sharing/tbbCopiesTest.xml}
 
 spring:
-  application:
-    name: TalentCatalog
-  security:
-    user:
-      name: client
-      password: client
-
   servlet:
     multipart:
       max-file-size: ${SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE:10MB}
@@ -33,18 +26,6 @@ spring:
       maximum-pool-size: ${SPRING_DBPOOL_MAX:10}
       minimum-idle:  ${SPRING_DBPOOL_MIN:10}
       
-  boot:
-    admin:
-      client:
-#        url: ${SPRING_BOOT_ADMIN_CLIENT_URL:http://localhost:8081}
-        username: admin
-        password: admin
-        instance:
-          metadata:
-            user:
-              name: ${spring.security.user.name}
-              password: ${spring.security.user.password}
-
 #  To catch resource not found errors (404)
 #  See https://stackoverflow.com/questions/36733254/spring-boot-rest-how-to-configure-404-resource-not-found/36734193#36734193
   mvc:
@@ -62,22 +43,10 @@ spring:
         temp:
           use_jdbc_metadata_defaults: false
 
-
 management:
-   endpoints:
-     web:
-       exposure:
-         include: ${MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE:*}
-
-#Is this needed - not in Baeldung
-   endpoint:
-     loggers:
-       enabled: true
-   
-   health:
-     elasticsearch:
-       enabled: false
-
+  health:
+    elasticsearch:
+      enabled: false
 
 jwt:
   secret: ${JWT_SECRET:RX4bokONoSrrNLM6CMTij9iG9jHFG5VfsN1zIi9UqDGK3pQXASG7xMEga2VrAj3P1SNmywqnWRoTXnltuJ5l+A==}
