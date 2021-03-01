@@ -2,3 +2,12 @@
   outline: none !important;
   box-shadow: none !important;
 }
+
+::ng-deep #upload .accordion > .card {
+  padding: 0px;
+  border: none;
+}
+
+::ng-deep .card-header {
+  background-color: rgba(0,0,0,.1);
+}
