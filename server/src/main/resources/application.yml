@@ -109,22 +109,23 @@ flyway:
 
 google:
   drive:
-#  These are the credentials set up in the Google Drive API for the TalentCatalog project 
-#  see https://console.developers.google.com/apis/api/drive.googleapis.com/
+  #  These are the credentials set up in the Google Drive API for the TalentCatalog project 
+  #  see https://console.developers.google.com/apis/api/drive.googleapis.com/
     
-#    We use a different Google Drive in dev than we do in production.
-#    The Drive and folder ids are the latter part of the url you see when you 
-#    go to that drive or folder.
-    candidateDataDriveId: ${GOOGLE_DRIVE_CANDIDATEDATADRIVEID:0AHvd4Bs-dSp4Uk9PVA}
-    candidateRootFolderId: ${GOOGLE_DRIVE_CANDIDATEROOTFOLDERID:1TdqTBpojT07qNPWTgU_wXWON1678beTn}
+    clientId: ${GOOGLE_DRIVE_CLIENTID:100905261598930740359}
+    clientEmail: ${GOOGLE_DRIVE_CLIENTEMAIL:talentcatalogdrive@talentcatalog.iam.gserviceaccount.com}
+    projectId: ${GOOGLE_DRIVE_PROJECTID:talentcatalog}
+    tokenUri: ${GOOGLE_DRIVE_TOKENURI:https://oauth2.googleapis.com/token}
     
-# For dev these should be set in tbb-secrets    
-    clientId: ${GOOGLE_DRIVE_CLIENTID:}
-    clientEmail: ${GOOGLE_DRIVE_CLIENTEMAIL:}
+  # For dev these should be set in tbb-secrets    
     privateKey: ${GOOGLE_DRIVE_PRIVATEKEY:}
     privateKeyId: ${GOOGLE_DRIVE_PRIVATEKEYID:}
-    projectId: ${GOOGLE_DRIVE_PROJECTID:}
-    tokenUri: ${GOOGLE_DRIVE_TOKENURI:}
+
+  # We use a different Google Drive in dev than we do in production.
+  # The Drive and folder ids are the latter part of the url you see when you 
+  # go to that drive or folder.
+    candidateDataDriveId: ${GOOGLE_DRIVE_CANDIDATEDATADRIVEID:0AHvd4Bs-dSp4Uk9PVA}
+    candidateRootFolderId: ${GOOGLE_DRIVE_CANDIDATEROOTFOLDERID:1TdqTBpojT07qNPWTgU_wXWON1678beTn}
         
       
       
