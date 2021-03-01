@@ -16,63 +16,63 @@
 
 <div class="container">
 
-  <h5 class="mb-3">{{ 'REGISTRATION.ATTACHMENTS.TITLE' | translate }}</h5>
-  <div class="d-lg-none alert-warning">
-    <p>{{ 'REGISTRATION.ATTACHMENTS.WARN.MOBILE' | translate }}</p>
-  </div>
 
-  <div id="upload">
-    <ngb-accordion #a="ngbAccordion" activeIds="upload-file">
-      <ngb-panel id="upload-file">
-        <ng-template ngbPanelHeader let-opened="opened">
-          <div class="d-flex align-items-center justify-content-between">
-            <div>
-              <strong>{{ 'REGISTRATION.ATTACHMENTS.OTHER.NAME' | translate }}</strong>
-              <p class="mb-0">{{ 'REGISTRATION.ATTACHMENTS.OTHER.EXPLANATION' | translate }}</p>
+    <h5 class="mb-3">{{ 'REGISTRATION.ATTACHMENTS.TITLE' | translate }}</h5>
+    <div class="d-lg-none alert-warning">
+      <p>{{ 'REGISTRATION.ATTACHMENTS.WARN.MOBILE' | translate }}</p>
+    </div>
+
+    <div id="upload">
+      <ngb-accordion #a="ngbAccordion" activeIds="upload-file">
+        <ngb-panel id="upload-file">
+          <ng-template ngbPanelHeader let-opened="opened">
+            <div class="d-flex align-items-center justify-content-between">
+              <div>
+                <strong>{{ 'REGISTRATION.ATTACHMENTS.OTHER.NAME' | translate }}</strong>
+                <p class="mb-0">{{ 'REGISTRATION.ATTACHMENTS.OTHER.EXPLANATION' | translate }}</p>
+              </div>
+              <button ngbPanelToggle class="btn btn-link p-0 ml-4 btn-outline-none">
+                <fa-icon *ngIf="opened" class="d-flex" icon="chevron-up"></fa-icon>
+                <fa-icon *ngIf="!opened" class="d-flex" icon="chevron-down"></fa-icon>
+              </button>
             </div>
-            <button ngbPanelToggle class="btn btn-link p-0 ml-4 btn-outline-none">
-              <fa-icon *ngIf="opened" class="d-flex" icon="chevron-up"></fa-icon>
-              <fa-icon *ngIf="!opened" class="d-flex" icon="chevron-down"></fa-icon>
-            </button>
-          </div>
-        </ng-template>
-        <ng-template ngbPanelContent>
-          <app-candidate-attachments
-            [cv]="false">
-          </app-candidate-attachments>
-        </ng-template>
-      </ngb-panel>
-    </ngb-accordion>
+          </ng-template>
+          <ng-template ngbPanelContent>
+            <app-candidate-attachments
+              [cv]="false">
+            </app-candidate-attachments>
+          </ng-template>
+        </ngb-panel>
+      </ngb-accordion>
 
-    <br>
+      <br>
 
-    <ngb-accordion #a="ngbAccordion">
-      <ngb-panel id="upload-cv">
-        <ng-template ngbPanelHeader let-opened="opened">
-          <div class="d-flex align-items-center justify-content-between">
-            <div>
-              <strong>{{ 'REGISTRATION.ATTACHMENTS.CV.NAME' | translate }}</strong>
-              <p class="mb-0">{{ 'REGISTRATION.ATTACHMENTS.CV.EXPLANATION' | translate }}</p>
+      <ngb-accordion #a="ngbAccordion">
+        <ngb-panel id="upload-cv">
+          <ng-template ngbPanelHeader let-opened="opened">
+            <div class="d-flex align-items-center justify-content-between">
+              <div>
+                <strong>{{ 'REGISTRATION.ATTACHMENTS.CV.NAME' | translate }}</strong>
+                <p class="mb-0">{{ 'REGISTRATION.ATTACHMENTS.CV.EXPLANATION' | translate }}</p>
+              </div>
+              <button ngbPanelToggle class="btn btn-link p-0 ml-4 btn-outline-none">
+                <fa-icon *ngIf="opened" class="d-flex" icon="chevron-up"></fa-icon>
+                <fa-icon *ngIf="!opened" class="d-flex" icon="chevron-down"></fa-icon>
+              </button>
             </div>
-            <button ngbPanelToggle class="btn btn-link p-0 ml-4 btn-outline-none">
-              <fa-icon *ngIf="opened" class="d-flex" icon="chevron-up"></fa-icon>
-              <fa-icon *ngIf="!opened" class="d-flex" icon="chevron-down"></fa-icon>
-            </button>
-          </div>
-        </ng-template>
-        <ng-template ngbPanelContent>
-          <app-candidate-attachments
-            [cv]="true">
-          </app-candidate-attachments>
-        </ng-template>
-      </ngb-panel>
-    </ngb-accordion>
-  </div>
+          </ng-template>
+          <ng-template ngbPanelContent>
+            <app-candidate-attachments
+              [cv]="true">
+            </app-candidate-attachments>
+          </ng-template>
+        </ngb-panel>
+      </ngb-accordion>
+    </div>
 
 </div>
 
-<app-registration-footer [nextDisabled]="loading || saving || form?.invalid"
-                         [type]="edit ? 'update' : 'submit'"
-                         (backClicked)="edit ? cancel() : save('back') "
+<app-registration-footer [type]="edit ? 'update' : 'submit'"
+                         (backClicked)="edit ? cancel() : back() "
                          (nextClicked)="next()">
 </app-registration-footer>

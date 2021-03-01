@@ -62,11 +62,11 @@
             (e.g. if d-sm-none it is hidden from small screens upwards until/if there's another d class - but shown on xs screens).
             On a small screen we want to hide Upload File (d-none) and then show on a large screen (d-lg-block).
             We want to see Upload File/Photo so that is only hidden once we hit large screens (d-lg-none). -->
-            <a class="dropdown-item d-none d-lg-block" [routerLink]="['/profile/edit/other']">
+            <a class="dropdown-item d-none d-lg-block" [routerLink]="['/profile/edit/upload']">
               {{ 'HEADER.NAV.UPLOAD.FILE' | translate }}
             </a>
 
-            <a class="dropdown-item d-lg-none" [routerLink]="['/profile/edit/other']">
+            <a class="dropdown-item d-lg-none" [routerLink]="['/profile/edit/upload']">
               {{ 'HEADER.NAV.UPLOAD.PHOTO' | translate }}
             </a>
 

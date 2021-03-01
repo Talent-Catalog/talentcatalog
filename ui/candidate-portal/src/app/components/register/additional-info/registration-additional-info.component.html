@@ -51,25 +51,6 @@
 
     </form>
 
-    <div>
-      <hr>
-      <h5 class="mb-3">{{ 'REGISTRATION.ATTACHMENTS.TITLE' | translate }}</h5>
-      <strong>{{ 'REGISTRATION.ATTACHMENTS.CV.NAME' | translate }}</strong>
-      <p>{{ 'REGISTRATION.ATTACHMENTS.CV.EXPLANATION' | translate }}</p>
-      <app-candidate-attachments
-        [cv]="true">
-      </app-candidate-attachments>
-      <br>
-      <strong>{{ 'REGISTRATION.ATTACHMENTS.OTHER.NAME' | translate }}</strong>
-      <p>{{ 'REGISTRATION.ATTACHMENTS.OTHER.EXPLANATION' | translate }}</p>
-      <app-candidate-attachments
-        [cv]="false">
-      </app-candidate-attachments>
-
-    </div>
-
-
-
   </ng-container>
 
 </div>

@@ -329,7 +329,7 @@
 
         <h5>{{ 'PROFILE.OTHER.TITLE' | translate }}</h5>
 
-        <a class="btn btn-outline-primary" [routerLink]="['edit', 'other']">
+        <a class="btn btn-outline-primary" [routerLink]="['edit', 'additional']">
           {{ 'PROFILE.BUTTON.EDIT' | translate }}
         </a>
 
@@ -365,6 +365,24 @@
           </div>
 
         </div>
+
+      </div>
+
+    </section>
+
+    <section>
+
+      <div class="section-heading">
+
+        <h5>{{ 'PROFILE.UPLOADS.TITLE' | translate }}</h5>
+
+        <a class="btn btn-outline-primary" [routerLink]="['edit', 'upload']">
+          {{ 'PROFILE.BUTTON.EDIT' | translate }}
+        </a>
+
+      </div>
+
+      <div class="card">
 
         <!-- UPLOADS -->
         <app-candidate-attachments class="mt-3" [preview]="true"></app-candidate-attachments>
