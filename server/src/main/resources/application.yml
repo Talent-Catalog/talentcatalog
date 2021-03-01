@@ -84,7 +84,16 @@ jwt:
   expirationInMs: 604800000
 
 salesforce:
-# For dev this should be set in tbb-secrets    
+  # Security is set up using a self signed certificate generated using openssl:
+  # eg
+  # openssl req -x509 -newkey rsa:1024 -nodes -keyout key.pem -out cert.pem -days 36500 -subj "/O=Talent Beyond Boundaries/CN=www.talentbeyondboundaries.org"
+  # The key.pem becomes the private key below.
+  # The cert.pem needs to be uploaded to the Salesforce tbbtalent Connected App.
+  # (Note that you can only do the certificate upload from Setup|Apps|AppManager
+  # - then selecting Edit. Bizarrely, you can't do it from 
+  # Setup|Apps|ConnectedApps|Manage Connected Apps)
+  #
+  # For dev this should be set in tbb-secrets
   privatekey: ${SALESFORCE_PRIVATEKEY:}
   tbb:
     jordanAccount: 0013l00002Jm1rRAAR
