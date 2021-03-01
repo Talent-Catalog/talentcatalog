@@ -24,7 +24,7 @@ spring:
     # - see https://stackoverflow.com/questions/47002094/spring-multiple-spring-data-modules-found-entering-strict-repository-configur 
     jpa:
       repositories:
-        enabled: false
+        enabled: true
     elasticsearch:
       repositories:
         enabled: false
