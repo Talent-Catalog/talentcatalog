@@ -17,6 +17,19 @@ spring:
       username: ${ELASTICSEARCH_USERNAME:}
       password: ${ELASTICSEARCH_PASSWORD:} 
   
+  data:
+    # We explicitly enable repositories with @EnableJpaRepositories and 
+    # @EnableElasticsearchRepositories.
+    # Turn off default enabling to avoid errors 
+    # - see https://stackoverflow.com/questions/47002094/spring-multiple-spring-data-modules-found-entering-strict-repository-configur 
+    jpa:
+      repositories:
+        enabled: false
+    elasticsearch:
+      repositories:
+        enabled: false
+
+
   datasource:
     driverClassName: org.postgresql.Driver
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/tbbtalent}

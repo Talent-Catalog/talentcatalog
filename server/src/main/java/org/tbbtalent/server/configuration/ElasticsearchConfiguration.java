@@ -21,6 +21,8 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import org.elasticsearch.client.RestHighLevelClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,6 +51,8 @@ public class ElasticsearchConfiguration extends AbstractElasticsearchConfigurati
     @Value("${spring.elasticsearch.rest.password}")
     private String password;
 
+    private static final Logger log = LoggerFactory.getLogger(ElasticsearchConfiguration.class);
+
     @Override
     @Bean
     public @NonNull RestHighLevelClient elasticsearchClient() {
@@ -58,6 +62,8 @@ public class ElasticsearchConfiguration extends AbstractElasticsearchConfigurati
                 String hostAndPort = uri.getAuthority();
                 String protocol = uri.getScheme();
                 boolean useSsl = "https".equals(protocol);
+                
+                log.info("Connecting to Elasticsearch at " + hostAndPort);
                 
                 ClientConfiguration.MaybeSecureClientConfigurationBuilder x
                         = ClientConfiguration.builder().connectedTo(hostAndPort);
