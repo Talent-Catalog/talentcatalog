@@ -117,7 +117,16 @@ You can verify this by going to [localhost:5601]() in your browser
 
 ### Run the server ###
 
-- Create a new Run Profile for `org.tbbtalent.server.TbbTalentApplication`
+- Some secret information such as passwords and private keys are set in 
+  environment variables - including programmatic access to TBB's Amazon AWS, 
+  Google and Salesforce accounts. If these environment variables are not set
+  the application should still run in your development environment, but it may
+  not have access to these integrations. Contact TBB if you need access to these
+  "secrets". They are stored in a tbb_secrets.txt file which you can hook into
+  your start up to set the relevant environment variables.
+- Create a new Run Profile for `org.tbbtalent.server.TbbTalentApplication`. 
+  In the Environment Variables section of Intellij, check the 
+  "Include system environment variables" checkbox.
 - Run the new profile, you should see something similar to this in the logs: 
 ```
 Started TbbTalentApplication in 2.217 seconds (JVM running for 2.99)

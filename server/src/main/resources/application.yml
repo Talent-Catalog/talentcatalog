@@ -6,13 +6,6 @@ tbb:
   partner-dbcopy-config: ${TBB_PARTNER_DBCOPY_CONFIG:data.sharing/tbbCopiesTest.xml}
 
 spring:
-  application:
-    name: TalentCatalog
-  security:
-    user:
-      name: client
-      password: client
-
   servlet:
     multipart:
       max-file-size: ${SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE:10MB}
@@ -33,18 +26,6 @@ spring:
       maximum-pool-size: ${SPRING_DBPOOL_MAX:10}
       minimum-idle:  ${SPRING_DBPOOL_MIN:10}
       
-  boot:
-    admin:
-      client:
-#        url: ${SPRING_BOOT_ADMIN_CLIENT_URL:http://localhost:8081}
-        username: admin
-        password: admin
-        instance:
-          metadata:
-            user:
-              name: ${spring.security.user.name}
-              password: ${spring.security.user.password}
-
 #  To catch resource not found errors (404)
 #  See https://stackoverflow.com/questions/36733254/spring-boot-rest-how-to-configure-404-resource-not-found/36734193#36734193
   mvc:
@@ -62,29 +43,26 @@ spring:
         temp:
           use_jdbc_metadata_defaults: false
 
-
 management:
-   endpoints:
-     web:
-       exposure:
-         include: ${MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE:*}
-
-#Is this needed - not in Baeldung
-   endpoint:
-     loggers:
-       enabled: true
-   
-   health:
-     elasticsearch:
-       enabled: false
-
+  health:
+    elasticsearch:
+      enabled: false
 
 jwt:
   secret: ${JWT_SECRET:RX4bokONoSrrNLM6CMTij9iG9jHFG5VfsN1zIi9UqDGK3pQXASG7xMEga2VrAj3P1SNmywqnWRoTXnltuJ5l+A==}
   expirationInMs: 604800000
 
 salesforce:
-# For dev this should be set in tbb-secrets    
+  # Security is set up using a self signed certificate generated using openssl:
+  # eg
+  # openssl req -x509 -newkey rsa:1024 -nodes -keyout key.pem -out cert.pem -days 36500 -subj "/O=Talent Beyond Boundaries/CN=www.talentbeyondboundaries.org"
+  # The key.pem becomes the private key below.
+  # The cert.pem needs to be uploaded to the Salesforce tbbtalent Connected App.
+  # (Note that you can only do the certificate upload from Setup|Apps|AppManager
+  # - then selecting Edit. Bizarrely, you can't do it from 
+  # Setup|Apps|ConnectedApps|Manage Connected Apps)
+  #
+  # For dev this should be set in tbb-secrets
   privatekey: ${SALESFORCE_PRIVATEKEY:}
   tbb:
     jordanAccount: 0013l00002Jm1rRAAR
@@ -109,22 +87,23 @@ flyway:
 
 google:
   drive:
-#  These are the credentials set up in the Google Drive API for the TalentCatalog project 
-#  see https://console.developers.google.com/apis/api/drive.googleapis.com/
+  #  These are the credentials set up in the Google Drive API for the TalentCatalog project 
+  #  see https://console.developers.google.com/apis/api/drive.googleapis.com/
     
-#    We use a different Google Drive in dev than we do in production.
-#    The Drive and folder ids are the latter part of the url you see when you 
-#    go to that drive or folder.
-    candidateDataDriveId: ${GOOGLE_DRIVE_CANDIDATEDATADRIVEID:0AHvd4Bs-dSp4Uk9PVA}
-    candidateRootFolderId: ${GOOGLE_DRIVE_CANDIDATEROOTFOLDERID:1TdqTBpojT07qNPWTgU_wXWON1678beTn}
+    clientId: ${GOOGLE_DRIVE_CLIENTID:100905261598930740359}
+    clientEmail: ${GOOGLE_DRIVE_CLIENTEMAIL:talentcatalogdrive@talentcatalog.iam.gserviceaccount.com}
+    projectId: ${GOOGLE_DRIVE_PROJECTID:talentcatalog}
+    tokenUri: ${GOOGLE_DRIVE_TOKENURI:https://oauth2.googleapis.com/token}
     
-# For dev these should be set in tbb-secrets    
-    clientId: ${GOOGLE_DRIVE_CLIENTID:}
-    clientEmail: ${GOOGLE_DRIVE_CLIENTEMAIL:}
+  # For dev these should be set in tbb-secrets    
     privateKey: ${GOOGLE_DRIVE_PRIVATEKEY:}
     privateKeyId: ${GOOGLE_DRIVE_PRIVATEKEYID:}
-    projectId: ${GOOGLE_DRIVE_PROJECTID:}
-    tokenUri: ${GOOGLE_DRIVE_TOKENURI:}
+
+  # We use a different Google Drive in dev than we do in production.
+  # The Drive and folder ids are the latter part of the url you see when you 
+  # go to that drive or folder.
+    candidateDataDriveId: ${GOOGLE_DRIVE_CANDIDATEDATADRIVEID:0AHvd4Bs-dSp4Uk9PVA}
+    candidateRootFolderId: ${GOOGLE_DRIVE_CANDIDATEROOTFOLDERID:1TdqTBpojT07qNPWTgU_wXWON1678beTn}
         
       
       
