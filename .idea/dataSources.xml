@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="postgres@localhost" uuid="161d4b59-a098-483d-9f46-145d460d7282">
-      <driver-ref>postgresql</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://localhost:5432/postgres</jdbc-url>
-    </data-source>
     <data-source source="LOCAL" name="Live AWS TBB Database" uuid="6c4cbcc9-c0f0-4280-b66e-0d1eadcbfc59">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
@@ -30,6 +24,13 @@
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://mysql.refugeetalent.com:3306/GlobalTalentDb</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="tbbtalent@localhost" uuid="986cc1b1-2328-49b8-b144-f4937600710f">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://localhost:5432/tbbtalent</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>
 </project>
