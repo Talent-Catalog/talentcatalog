@@ -20,7 +20,8 @@ spring:
   data:
     # We explicitly enable repositories with @EnableJpaRepositories and 
     # @EnableElasticsearchRepositories.
-    # Turn off default enabling to avoid errors 
+    # Turn off default enabling to avoid errors
+    # jpa has to be enabled otherwise unit tests fail
     # - see https://stackoverflow.com/questions/47002094/spring-multiple-spring-data-modules-found-entering-strict-repository-configur 
     jpa:
       repositories:
