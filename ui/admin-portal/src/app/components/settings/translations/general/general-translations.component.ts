@@ -201,6 +201,8 @@ const ALL_FIELDS = {
           "EDUCATION/SCHOOL": null,
           "LANGUAGE": null,
           "CERTIFICATIONS": null,
+          "ADDITIONAL": null,
+          "UPLOAD": null,
           "SUBMIT": null
         }
       },
@@ -365,6 +367,9 @@ const ALL_FIELDS = {
         "TITLE": null,
         "ADDITIONALINFO": null
       },
+      "UPLOAD": {
+        "TITLE": null
+      },
       "BUTTON": {
         "EDIT": null,
         "CV": null
@@ -381,7 +386,8 @@ const ALL_FIELDS = {
         "EDUCATION": null,
         "LANGUAGES": null,
         "CERTIFICATIONS": null,
-        "OTHER": null
+        "OTHER": null,
+        "UPLOAD": null
       }
     },
     "FORM": {
