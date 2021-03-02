@@ -33,13 +33,12 @@
 </div>
 
 <div class="d-lg-none">
-  <div class="d-flex justify-content-between">
-    <div  class="file-input">
+  <div  *ngIf="!uploading" class="d-flex justify-content-between">
+    <div class="file-input">
       <input #inputFile type="file" id="file" class="file" accept="image/*" (change)="handleFileChanged($event, 'file')">
       <span>
       <button class="btn btn-primary" [disabled]="uploading" (click)="inputFile.click()">
         <ng-container *ngIf="!uploading">{{ 'FORM.ATTACHMENT.LABEL.BROWSE.IMAGE' | translate }}</ng-container>
-        <ng-container *ngIf="uploading">{{ 'FORM.ATTACHMENT.LABEL.UPLOADING' | translate }}</ng-container>
       </button>
     </span>
     </div>
@@ -48,11 +47,14 @@
       <div>
         <button class="btn btn-primary" [disabled]="uploading" (click)="inputPhoto.click()">
           <ng-container *ngIf="!uploading">{{ 'FORM.ATTACHMENT.LABEL.PHOTO' | translate }}</ng-container>
-          <ng-container *ngIf="uploading">{{ 'FORM.ATTACHMENT.LABEL.UPLOADING' | translate }}</ng-container>
         </button>
       </div>
     </div>
   </div>
-  <hr *ngIf="!uploading"/>
+  <div *ngIf="uploading" class="d-flex justify-content-center">
+    <button class="btn btn-primary justify-content-center" [disabled]="uploading">
+      <ng-container>{{ 'FORM.ATTACHMENT.LABEL.UPLOADING' | translate }}</ng-container>
+    </button>
+  </div>
 </div>
 
