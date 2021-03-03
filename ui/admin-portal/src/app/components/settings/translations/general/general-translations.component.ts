@@ -298,7 +298,8 @@ const ALL_FIELDS = {
         "LABEL": {
           "ADDITIONALINFO": null,
           "SURVEY": null,
-          "COMMENT": null
+          "COMMENT": null,
+          "LINKEDIN": null
         }
       },
       "COMPLETE": {
