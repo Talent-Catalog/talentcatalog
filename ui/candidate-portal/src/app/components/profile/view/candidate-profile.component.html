@@ -349,7 +349,7 @@
           </div>
           <div class="col-12 col-md-6">
             <div class="form-group">
-              <label>How did you hear about us?</label>
+              <label>{{ 'PROFILE.OTHER.SURVEY' | translate }}</label>
               <p>
                 {{candidate?.surveyType?.name || ''}}
               </p>
@@ -357,9 +357,18 @@
           </div>
           <div class="col-12 col-md-6">
             <div class="form-group">
-              <label>Additional information</label>
+              <label>{{ 'PROFILE.OTHER.SURVEYCOMMENT' | translate }}</label>
               <p>
                 {{candidate?.surveyComment || ''}}
+              </p>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="form-group">
+              <label>{{ 'PROFILE.OTHER.LINKEDIN' | translate }}</label>
+              <p>
+                {{candidate?.linkedInProfile || ''}}
               </p>
             </div>
           </div>

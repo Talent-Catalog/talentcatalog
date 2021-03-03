@@ -420,6 +420,7 @@ public class CandidatePortalApi {
                 .add("candidateMessage")
                 .add("surveyType", surveyTypeDto())
                 .add("surveyComment")
+                .add("linkedInProfile")
                 ;
     }
 }
