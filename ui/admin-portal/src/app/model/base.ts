@@ -54,8 +54,11 @@ export const salesforceUrlPattern: string =
 
 export const salesforceUrlRegExp: RegExp = new RegExp(salesforceUrlPattern);
 
-export const linkedInUrl: string =
-  'https://www.linkedin.com/in/';
+/**
+ * Defines the start of a linkedIn profile URL.
+ * Defined here in case the link structure changes so only needs changing in one place.
+ */
+export const linkedInUrl: string = 'https://www.linkedin.com/in/';
 
 export const defaultReviewStatusFilter: string[] = [
   ReviewedStatus[ReviewedStatus.pending],
