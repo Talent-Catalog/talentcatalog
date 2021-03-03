@@ -54,6 +54,9 @@ export const salesforceUrlPattern: string =
 
 export const salesforceUrlRegExp: RegExp = new RegExp(salesforceUrlPattern);
 
+export const linkedInUrl: string =
+  'https://www.linkedin.com/in/';
+
 export const defaultReviewStatusFilter: string[] = [
   ReviewedStatus[ReviewedStatus.pending],
   ReviewedStatus[ReviewedStatus.verified]
