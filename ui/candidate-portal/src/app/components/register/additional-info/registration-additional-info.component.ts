@@ -21,6 +21,7 @@ import {CandidateService} from "../../../services/candidate.service";
 import {RegistrationService} from "../../../services/registration.service";
 import {SurveyTypeService} from "../../../services/survey-type.service";
 import {SurveyType} from "../../../model/survey-type";
+import {linkedInUrl} from "../../../model/candidate";
 
 @Component({
   selector: 'app-registration-additional-info',
@@ -47,6 +48,8 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
   saving: boolean;
 
   surveyTypes: SurveyType[];
+
+  linkedInUrl = linkedInUrl;
 
   constructor(private fb: FormBuilder,
               private router: Router,

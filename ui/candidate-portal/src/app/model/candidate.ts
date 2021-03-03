@@ -88,3 +88,9 @@ export class SendResetPasswordEmailRequest {
   reCaptchaV3Token: string;
 }
 
+/**
+ * Defines the start of a linkedIn profile URL.
+ * Defined here in case the link structure changes so only needs changing in one place.
+ */
+export const linkedInUrl: string = 'https://www.linkedin.com/in/';
+

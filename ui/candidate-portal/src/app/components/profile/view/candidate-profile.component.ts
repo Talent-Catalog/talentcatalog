@@ -16,7 +16,7 @@
 
 import {Component, OnInit} from '@angular/core';
 import {CandidateService} from "../../../services/candidate.service";
-import {Candidate} from "../../../model/candidate";
+import {Candidate, linkedInUrl} from "../../../model/candidate";
 
 @Component({
   selector: 'app-candidate-profile',
@@ -29,6 +29,7 @@ export class CandidateProfileComponent implements OnInit {
   loading: boolean;
 
   candidate: Candidate;
+  linkedInUrl = linkedInUrl;
 
   constructor(private candidateService: CandidateService) { }
 
