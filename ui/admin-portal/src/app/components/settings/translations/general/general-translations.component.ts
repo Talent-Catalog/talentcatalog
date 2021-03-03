@@ -366,7 +366,10 @@ const ALL_FIELDS = {
       },
       "OTHER": {
         "TITLE": null,
-        "ADDITIONALINFO": null
+        "ADDITIONALINFO": null,
+        "SURVEY": null,
+        "SURVEYCOMMENT": null,
+        "LINKEDIN": null
       },
       "UPLOAD": {
         "TITLE": null
@@ -387,7 +390,7 @@ const ALL_FIELDS = {
         "EDUCATION": null,
         "LANGUAGES": null,
         "CERTIFICATIONS": null,
-        "OTHER": null,
+        "ADDITIONAL": null,
         "UPLOAD": null
       }
     },
