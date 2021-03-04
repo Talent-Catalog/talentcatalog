@@ -29,8 +29,12 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * Entity representing the Many to Many relationship between Candidates and
+ * A candidate can appear in multiple saved lists.
+ * Similarly a saved list contains multiple candidates.
+ * This entity represents this Many to Many relationship between Candidates and
  * SavedLists.
+ * Each entity record  records the fact that a candidate is associated with a 
+ * saved list.
  * <p/>
  * It is expressed as an entity so that it can have its own attributes
  * namely {@link #contextNote}.
