@@ -831,6 +831,7 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setSflink(request.getSflink());
         candidate.setFolderlink(request.getFolderlink());
         candidate.setVideolink(request.getVideolink());
+        candidate.setLinkedInProfile(request.getLinkedInProfile());
         candidate = save(candidate, true);
         return candidate;
     }

@@ -26,7 +26,7 @@ import {
   CachedSourceResults,
   CandidateSourceResultsCacheService
 } from '../../../../services/candidate-source-results-cache.service';
-import {CandidateSource, defaultReviewStatusFilter, linkedInUrl} from '../../../../model/base';
+import {CandidateSource, defaultReviewStatusFilter} from '../../../../model/base';
 import {CandidateSourceCandidateService} from '../../../../services/candidate-source-candidate.service';
 import {SavedListGetRequest} from '../../../../model/saved-list';
 import {AuthService} from '../../../../services/auth.service';
@@ -59,7 +59,6 @@ export class CandidateSourceResultsComponent implements OnInit, OnChanges, OnDes
   sortDirection: string;
   subscription: Subscription;
   timestamp: number;
-  linkedInUrl = linkedInUrl;
 
 constructor(
     private authService: AuthService,

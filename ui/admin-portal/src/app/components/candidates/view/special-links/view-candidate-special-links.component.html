@@ -42,6 +42,17 @@
   <div class="card-body">
 
     <div class="col-sm-12">
+      <span *ngIf="candidate.linkedInProfile">Candidate's LinkedIn:
+        <a [href]="candidate.linkedInProfile" target="_blank">
+          <i class="fab fa-linkedin"></i>
+        </a>
+      </span>
+      <span *ngIf="!candidate.linkedInProfile" class="alert-danger">
+          Please add link to candidate's LinkedIn.
+      </span>
+    </div>
+
+    <div class="col-sm-12">
       <span *ngIf="candidate.folderlink">Candidate's Google Docs Folder:
         <a [href]="candidate.folderlink" target="_blank">
           <i class="fab fa-google-drive"></i>

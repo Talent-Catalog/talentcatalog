@@ -58,8 +58,8 @@
           <a *ngIf="candidate.videolink" [href]="candidate.videolink" target="_blank">
             <i class="fas fa-video" title="Show candidate's one way video"></i>
           </a>
-          <a *ngIf="candidate.linkedInProfile" [href]="linkedInUrl + candidate.linkedInProfile" target="_blank">
-            <i class="fab fa-linkedin" title="Show candidate's one way video"></i>
+          <a *ngIf="candidate.linkedInProfile" [href]="candidate.linkedInProfile" target="_blank">
+            <i class="fab fa-linkedin" title="Show candidate's linkedIn"></i>
           </a>
           <app-cv-icon
             *ngIf="isCVViewable()"

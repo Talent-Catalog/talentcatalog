@@ -59,12 +59,13 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
   }
 
   ngOnInit() {
+    const linkedInRegex = /http(s)?:\/\/([\w]+\.)?linkedin\.com\/in\/[A-z0-9_-]+\/?/
     this.saving = false;
     this.form = this.fb.group({
       additionalInfo: [''],
       surveyTypeId: [null, Validators.required],
       surveyComment: [''],
-      linkedInProfile: [''],
+      linkedInProfile: ['', Validators.pattern(linkedInRegex)],
       submit: this.submitApplication
     });
 
