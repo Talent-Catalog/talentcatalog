@@ -37,7 +37,6 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 import {environment} from '../../../../environments/environment';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {CreateUpdateListComponent} from '../../list/create-update/create-update-list.component';
-import {linkedInUrl} from "../../../model/base";
 
 @Component({
   selector: 'app-view-candidate',
@@ -63,7 +62,6 @@ export class ViewCandidateComponent implements OnInit {
   attachments: CandidateAttachment[];
   cvs: CandidateAttachment[];
   s3BucketUrl = environment.s3BucketUrl;
-  linkedInUrl = linkedInUrl;
 
   /* MULTI SELECT */
   dropdownSettings: IDropdownSettings = {

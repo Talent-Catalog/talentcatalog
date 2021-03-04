@@ -299,8 +299,11 @@ const ALL_FIELDS = {
           "ADDITIONALINFO": null,
           "SURVEY": null,
           "COMMENT": null,
-          "LINKEDIN": null
-        }
+        },
+        "LINKEDIN": {
+          "LABEL": null,
+          "WARN": null
+        },
       },
       "COMPLETE": {
         "TITLE": null,
