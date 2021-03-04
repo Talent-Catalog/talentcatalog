@@ -68,7 +68,7 @@ public class CandidateBuilderSelector {
                 .add("address1")
                 .add("yearOfArrival")
                 .add("additionalInfo")
-                .add("linkedInProfile")
+                .add("linkedInLink")
                 .add("candidateMessage")
                 .add("folderlink")
                 .add("sflink")

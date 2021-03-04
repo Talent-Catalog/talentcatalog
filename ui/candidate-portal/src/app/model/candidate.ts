@@ -46,7 +46,7 @@ export interface Candidate {
   maxEducationLevel: EducationLevel;
   candidateEducations: CandidateEducation[];
   additionalInfo: string;
-  linkedInProfile: string;
+  linkedInLink: string;
   candidateMessage: string;
   surveyType: SurveyType;
   surveyComment: string;

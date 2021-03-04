@@ -831,7 +831,7 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setSflink(request.getSflink());
         candidate.setFolderlink(request.getFolderlink());
         candidate.setVideolink(request.getVideolink());
-        candidate.setLinkedInProfile(request.getLinkedInProfile());
+        candidate.setLinkedInLink(request.getLinkedInLink());
         candidate = save(candidate, true);
         return candidate;
     }
@@ -1062,7 +1062,7 @@ public class CandidateServiceImpl implements CandidateService {
         Candidate candidate = getLoggedInCandidate()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         candidate.setAdditionalInfo(request.getAdditionalInfo());
-        candidate.setLinkedInProfile(request.getLinkedInProfile());
+        candidate.setLinkedInLink(request.getLinkedInLink());
         if (BooleanUtils.isTrue(request.getSubmit()) && !candidate.getStatus().equals(CandidateStatus.pending)) {
             updateCandidateStatus(candidate.getId(), new UpdateCandidateStatusRequest(CandidateStatus.pending, "Candidate submitted"));
 

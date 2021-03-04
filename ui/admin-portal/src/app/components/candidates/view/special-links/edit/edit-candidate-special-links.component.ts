@@ -46,7 +46,7 @@ export class EditCandidateSpecialLinksComponent implements OnInit {
         sflink: [candidate.sflink],
         folderlink: [candidate.folderlink],
         videolink: [candidate.videolink],
-        linkedInProfile: [candidate.linkedInProfile],
+        linkedInLink: [candidate.linkedInLink],
       });
       this.loading = false;
     });

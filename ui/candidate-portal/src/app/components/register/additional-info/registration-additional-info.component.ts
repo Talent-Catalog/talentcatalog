@@ -42,7 +42,7 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
     surveyTypes: true,
     additionalInfo: true,
     candidateSurvey: true,
-    linkedInProfile: true
+    linkedInLink: true
   };
   // Component states
   saving: boolean;
@@ -65,7 +65,7 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
       additionalInfo: [''],
       surveyTypeId: [null, Validators.required],
       surveyComment: [''],
-      linkedInProfile: ['', Validators.pattern(linkedInRegex)],
+      linkedInLink: ['', Validators.pattern(linkedInRegex)],
       submit: this.submitApplication
     });
 
@@ -76,15 +76,15 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
       (response) => {
         this.form.patchValue({
           additionalInfo: response.additionalInfo,
-          linkedInProfile: response.linkedInProfile
+          linkedInLink: response.linkedInLink
         });
         this._loading.additionalInfo = false;
-        this._loading.linkedInProfile = false;
+        this._loading.linkedInLink = false;
       },
       (error) => {
         this.error = error;
         this._loading.additionalInfo = false;
-        this._loading.linkedInProfile = false;
+        this._loading.linkedInLink = false;
       }
     );
 
