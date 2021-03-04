@@ -86,6 +86,10 @@ public class SavedList extends AbstractCandidateSource {
     private SavedSearch savedSearchSource;
 
     /**
+     * This is the set of all CandidateSavedList entities associated with this
+     * SavedList. There is one of these for each candidate in the list.
+     * @see #getCandidates() 
+     * <p/>
      * Even though we would prefer CascadeType.ALL with 'orphanRemoval' so that 
      * removing from the candidateSavedLists collection would automatically
      * cascade down to delete the corresponding entry in the 
@@ -136,6 +140,11 @@ public class SavedList extends AbstractCandidateSource {
         this.candidateSavedLists = candidateSavedLists;
     }
 
+    /**
+     * Get all candidates in this list.
+     * @return Set of candidates in this list (a candidate cannot appear more 
+     * than once in a given list).
+     */
     @Transient
     public Set<Candidate> getCandidates() {
         Set<Candidate> candidates = new HashSet<>();
