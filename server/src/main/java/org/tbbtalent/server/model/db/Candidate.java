@@ -49,7 +49,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private Integer yearOfArrival;
     private String additionalInfo;
     private String candidateMessage;
-    private String linkedInProfile;
+    private String linkedInLink;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "survey_type_id")
@@ -625,9 +625,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.candidateMessage = candidateMessage;
     }
 
-    public String getLinkedInProfile() { return linkedInProfile; }
+    public String getLinkedInLink() { return linkedInLink; }
 
-    public void setLinkedInProfile(String linkedInProfile) { this.linkedInProfile = linkedInProfile; }
+    public void setLinkedInLink(String linkedInLink) { this.linkedInLink = linkedInLink; }
 
     public SurveyType getSurveyType() { return surveyType; }
 

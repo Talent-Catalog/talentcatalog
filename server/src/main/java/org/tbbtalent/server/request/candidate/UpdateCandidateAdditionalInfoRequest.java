@@ -19,16 +19,16 @@ package org.tbbtalent.server.request.candidate;
 public class UpdateCandidateAdditionalInfoRequest {
 
     private String additionalInfo;
-    private String linkedInProfile;
+    private String linkedInLink;
     private Boolean submit;
 
     public String getAdditionalInfo() { return additionalInfo; }
 
     public void setAdditionalInfo(String additionalInfo) { this.additionalInfo = additionalInfo; }
 
-    public String getLinkedInProfile() { return linkedInProfile; }
+    public String getLinkedInLink() { return linkedInLink; }
 
-    public void setLinkedInProfile(String linkedInProfile) { this.linkedInProfile = linkedInProfile; }
+    public void setLinkedInLink(String linkedInLink) { this.linkedInLink = linkedInLink; }
 
     public Boolean getSubmit() {
         return submit;

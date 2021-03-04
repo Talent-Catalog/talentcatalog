@@ -290,7 +290,7 @@ public class CandidatePortalApi {
         return new DtoBuilder()
                 .add("id")
                 .add("additionalInfo")
-                .add("linkedInProfile")
+                .add("linkedInLink")
                 ;
     }
 
@@ -420,7 +420,7 @@ public class CandidatePortalApi {
                 .add("candidateMessage")
                 .add("surveyType", surveyTypeDto())
                 .add("surveyComment")
-                .add("linkedInProfile")
+                .add("linkedInLink")
                 ;
     }
 }

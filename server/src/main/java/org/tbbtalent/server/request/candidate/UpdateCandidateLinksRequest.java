@@ -26,7 +26,7 @@ public class UpdateCandidateLinksRequest {
     private String sflink;
     private String folderlink;
     private String videolink;
-    private String linkedInProfile;
+    private String linkedInLink;
 
     public UpdateCandidateLinksRequest() {
     }
@@ -70,7 +70,7 @@ public class UpdateCandidateLinksRequest {
         this.videolink = videolink;
     }
 
-    public String getLinkedInProfile() { return linkedInProfile; }
+    public String getLinkedInLink() { return linkedInLink; }
 
-    public void setLinkedInProfile(String linkedInProfile) { this.linkedInProfile = linkedInProfile; }
+    public void setLinkedInLink(String linkedInLink) { this.linkedInLink = linkedInLink; }
 }
