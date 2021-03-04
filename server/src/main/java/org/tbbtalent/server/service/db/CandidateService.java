@@ -95,7 +95,13 @@ public interface CandidateService {
 
     Page<Candidate> searchCandidates(CandidatePhoneSearchRequest request);
 
-    Page<Candidate> getSavedListCandidates(long id, SavedListGetRequest request);
+    /**
+     * Returns the requested page of candidates from the given list.
+     * @param savedListId ID of list
+     * @param request defines required page and sort
+     * @return Page of candidates
+     */
+    Page<Candidate> getSavedListCandidates(long savedListId, SavedListGetRequest request);
 
     /**
      * Remove the given candidate from all its lists
