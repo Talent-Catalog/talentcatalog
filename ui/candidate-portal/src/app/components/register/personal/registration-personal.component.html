@@ -72,27 +72,29 @@
       <div class="form-group">
         <label for="dob">{{ 'REGISTRATION.PERSONAL.LABEL.DOB' | translate }} <sup>*</sup></label>
 
-        <div class="input-group">
-          <input id="dob" type="text" class="form-control" placeholder="YYYY-MM-DD"
-                 ngbDatepicker #picker="ngbDatepicker"
-                 [formControlName]="'dob'"
-                 (dateSelect)="form.controls.dob.markAsDirty()"
-                 [autoClose]="true"
-                 [outsideDays]="'hidden'"
-                 [container]="'#dob'">
+        <app-date-picker id="dob" [control]="form.get('dob')"></app-date-picker>
 
-          <div class="input-group-append">
-            <small class="btn btn-link text-secondary" *ngIf="form.controls.dob.value"
-                   (click)="form.controls.dob.patchValue(null); form.controls.dob.markAsDirty();">
-              <span>{{ 'FORM.LABEL.CLEAR' | translate }}</span>
-            </small>
+<!--        <div class="input-group">-->
+<!--          <input id="dob2" type="text" class="form-control" placeholder="YYYY-MM-DD"-->
+<!--                 ngbDatepicker #picker="ngbDatepicker"-->
+<!--                 [formControlName]="'dob'"-->
+<!--                 (dateSelect)="form.controls.dob.markAsDirty()"-->
+<!--                 [autoClose]="true"-->
+<!--                 [outsideDays]="'hidden'"-->
+<!--                 [container]="'#dob'">-->
 
-            <div class="btn btn-link" *ngIf="!form.controls.dob.value"
-                 (click)="picker.toggle()">
-              <span>{{ 'FORM.LABEL.CHOOSE' | translate}}</span>
-            </div>
-          </div>
-        </div>
+<!--          <div class="input-group-append">-->
+<!--            <small class="btn btn-link text-secondary" *ngIf="form.controls.dob.value"-->
+<!--                   (click)="form.controls.dob.patchValue(null); form.controls.dob.markAsDirty();">-->
+<!--              <span>{{ 'FORM.LABEL.CLEAR' | translate }}</span>-->
+<!--            </small>-->
+
+<!--            <div class="btn btn-link" *ngIf="!form.controls.dob.value"-->
+<!--                 (click)="picker.toggle()">-->
+<!--              <span>{{ 'FORM.LABEL.CHOOSE' | translate}}</span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
 
         <app-form-control-error [control]="form.controls.dob"></app-form-control-error>
       </div>
