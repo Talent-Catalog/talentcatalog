@@ -368,7 +368,7 @@
             <div class="form-group">
               <label>{{ 'PROFILE.OTHER.LINKEDIN' | translate }}</label>
               <p>
-                {{candidate?.linkedInLink || ''}}
+                <a href="{{candidate?.linkedInLink || ''}}" target="_blank">{{candidate?.linkedInLink || ''}}</a>
               </p>
             </div>
           </div>
