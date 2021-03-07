@@ -133,7 +133,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
     @Override
-    public Page<SavedSearch> searchSavedSearches(SearchSavedSearchRequest request) {
+    public Page<SavedSearch> searchPaged(SearchSavedSearchRequest request) {
         final User loggedInUser = userContext.getLoggedInUser().orElse(null);
 
         Page<SavedSearch> savedSearches;
