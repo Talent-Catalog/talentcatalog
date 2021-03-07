@@ -22,11 +22,19 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * Used for searching candidate sources (eg SavedLists and SavedSearches) by
+ * their attributes.
+ */
 @Getter
 @Setter
 @ToString
 public class SearchCandidateSourceRequestPaged extends PagedSearchRequest {
+    /**
+     * Used to match sources whose names are like this keyword
+     */
     private String keyword;
+    
     private Boolean fixed;
     private Boolean global;
     private Boolean owned;
