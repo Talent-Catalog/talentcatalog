@@ -22,6 +22,7 @@ import {StatReport} from "../model/stat-report";
 
 export interface CandidateStatsRequest {
   listId?: number;
+  searchId?: number;
   dateFrom?: string;
   dateTo?: string;
 }
