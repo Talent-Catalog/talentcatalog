@@ -36,7 +36,13 @@ import org.tbbtalent.server.request.search.UpdateWatchingRequest;
 
 public interface SavedSearchService {
 
-    Page<SavedSearch> searchSavedSearches(SearchSavedSearchRequest request);
+    /**
+     * Searches for saved searches whose name and other attributes match the
+     * given search request.
+     * @param request Attributes to search on
+     * @return Matching saved searches.
+     */
+    Page<SavedSearch> searchPaged(SearchSavedSearchRequest request);
 
     SearchCandidateRequest loadSavedSearch(long id);
 
