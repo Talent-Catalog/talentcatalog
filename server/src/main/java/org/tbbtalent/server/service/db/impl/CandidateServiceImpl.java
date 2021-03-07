@@ -135,7 +135,6 @@ import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
-import org.tbbtalent.server.request.candidate.stat.CandidateStatsRequest;
 import org.tbbtalent.server.request.note.CreateCandidateNoteRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.security.PasswordHelper;
@@ -430,6 +429,83 @@ public class CandidateServiceImpl implements CandidateService {
                 .collect(Collectors.toList()) : null;
     }
 
+    private BoolQueryBuilder addElasticRangeFilter(
+            BoolQueryBuilder builder, String field, 
+            @Nullable Object min, @Nullable Object max) {
+        if (min != null || max != null) {
+            RangeQueryBuilder rangeQueryBuilder = 
+                    QueryBuilders.rangeQuery(field).from(min).to(max);
+            builder = builder.filter(rangeQueryBuilder);
+        } 
+        return builder;
+    }
+
+    private BoolQueryBuilder addElasticTermFilter(
+            BoolQueryBuilder builder, @Nullable SearchType searchType, String field, 
+            List<String> values) {
+        final int nValues = values.size();
+        if (nValues > 0) {
+            QueryBuilder queryBuilder;
+            if (nValues == 1) {
+                queryBuilder = QueryBuilders.termQuery(field, values.get(0));
+            } else {
+                queryBuilder = QueryBuilders.termsQuery(field, values.toArray());
+            }
+            if (searchType == SearchType.not) {
+                builder = builder.mustNot(queryBuilder);
+            } else {
+                builder = builder.filter(queryBuilder);
+            }
+        } return builder;
+    }
+
+    private void markUserSelectedCandidates(@Nullable Long savedSearchId, Page<Candidate> candidates) {
+        if (savedSearchId != null) {
+            //Check for selection list to set the selected attribute on returned 
+            // candidates.
+            SavedList selectionList = null;
+            User user = userContext.getLoggedInUser().orElse(null);
+            if (user != null) {
+                selectionList = savedSearchService
+                        .getSelectionList(savedSearchId, user.getId());
+            }
+            if (selectionList != null) {
+                Set<Candidate> selectedCandidates = selectionList.getCandidates();
+                if (selectedCandidates.size() > 0) {
+                    for (Candidate candidate : candidates) {
+                        if (selectedCandidates.contains(candidate)) {
+                            candidate.setSelected(true);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private Specification<Candidate> computeQuery(SearchCandidateRequest request) {
+        //There may be no logged in user if the search is called by the
+        //overnight Watcher process.
+        User user = userContext.getLoggedInUser().orElse(null);
+
+        //This list is initialized with the main saved search id, but can be
+        //added to by addQuery below when the search is built on other 
+        //searches. The idea is to avoid circular dependencies between searches.
+        //For example, in the simplest case we don't want a saved search 
+        //to be based on itself.
+        List<Long> searchIds = new ArrayList<>();
+        if (request.getSavedSearchId() != null) {
+            searchIds.add(request.getSavedSearchId());
+        }
+
+        Specification<Candidate> query = CandidateSpecification.buildSearchQuery(request, user);
+        if (CollectionUtils.isNotEmpty(request.getSearchJoinRequests())) {
+            for (SearchJoinRequest searchJoinRequest : request.getSearchJoinRequests()) {
+                query = addQuery(query, searchJoinRequest, searchIds);
+            }
+        }
+        return query;
+    }
+
     private Page<Candidate> doSearchCandidates(SearchCandidateRequest request) {
 
         Page<Candidate> candidates;
@@ -458,9 +534,9 @@ public class CandidateServiceImpl implements CandidateService {
                   }
                 }
              */
-            
+
             //Create a simple query string builder from the given string 
-            SimpleQueryStringBuilder simpleQueryStringBuilder = 
+            SimpleQueryStringBuilder simpleQueryStringBuilder =
                     QueryBuilders.simpleQueryStringQuery(simpleQueryString);
 
             //The simple query will be part of a composite query containing
@@ -471,7 +547,7 @@ public class CandidateServiceImpl implements CandidateService {
             //Add filters - each filter must return true for a hit
             //(Note: Filters are different from "Must" entries only in that
             //they don't affect the Elasticsearch score)
-            
+
             //Add a TermsQuery filter for each multiselect request - eg
             //countries and nationalities. A match against any one of the 
             //multiselected values will result in the filter returning true.
@@ -492,7 +568,7 @@ public class CandidateServiceImpl implements CandidateService {
                                 "minEnglishWrittenLevel",
                                 minWrittenLevel, null);
             }
-            
+
             //Countries
             final List<Long> countryIds = request.getCountryIds();
             if (countryIds != null) {
@@ -502,11 +578,11 @@ public class CandidateServiceImpl implements CandidateService {
                     final Country country = countryService.getCountry(countryId);
                     reqCountries.add(country.getName());
                 }
-                boolQueryBuilder = 
+                boolQueryBuilder =
                         addElasticTermFilter(boolQueryBuilder,
                                 null,"country.keyword", reqCountries);
             }
-            
+
             //Nationalities
             final List<Long> nationalityIds = request.getNationalityIds();
             if (nationalityIds != null) {
@@ -516,14 +592,14 @@ public class CandidateServiceImpl implements CandidateService {
                     final Nationality nationality = nationalityService.getNationality(id);
                     reqNationalities.add(nationality.getName());
                 }
-                boolQueryBuilder = addElasticTermFilter(boolQueryBuilder, 
-                        request.getNationalitySearchType(), 
+                boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
+                        request.getNationalitySearchType(),
                         "nationality.keyword", reqNationalities);
             }
 
             //Statuses
             List<CandidateStatus> statuses = request.getStatuses();
-            if (request.getIncludeDraftAndDeleted() != null 
+            if (request.getIncludeDraftAndDeleted() != null
                     && request.getIncludeDraftAndDeleted()) {
                 if (statuses == null) {
                     statuses = new ArrayList<>();
@@ -548,7 +624,7 @@ public class CandidateServiceImpl implements CandidateService {
                 boolQueryBuilder = boolQueryBuilder.filter(
                         QueryBuilders.termQuery("gender", gender.name()));
             }
-            
+
             NativeSearchQuery query = new NativeSearchQueryBuilder()
                     .withQuery(boolQueryBuilder)
                     .withPageable(req)
@@ -580,79 +656,12 @@ public class CandidateServiceImpl implements CandidateService {
                     hits.getTotalHits());
         } else {
 
-            //There may be no logged in user if the search is called by the
-            //overnight Watcher process.
-            User user = userContext.getLoggedInUser().orElse(null);
-
-            List<Long> searchIds = new ArrayList<>();
-            if (request.getSavedSearchId() != null) {
-                searchIds.add(request.getSavedSearchId());
-            }
-
-            Specification<Candidate> query = CandidateSpecification.buildSearchQuery(request, user);
-            if (CollectionUtils.isNotEmpty(request.getSearchJoinRequests())) {
-                for (SearchJoinRequest searchJoinRequest : request.getSearchJoinRequests()) {
-                    query = addQuery(query, searchJoinRequest, searchIds);
-                }
-            }
+            Specification<Candidate> query = computeQuery(request);
 
             candidates = candidateRepository.findAll(query, request.getPageRequestWithoutSort());
         }
         log.info("Found " + candidates.getTotalElements() + " candidates in search");
         return candidates;
-    }
-
-    private BoolQueryBuilder addElasticRangeFilter(
-            BoolQueryBuilder builder, String field, 
-            @Nullable Object min, @Nullable Object max) {
-        if (min != null || max != null) {
-            RangeQueryBuilder rangeQueryBuilder = 
-                    QueryBuilders.rangeQuery(field).from(min).to(max);
-            builder = builder.filter(rangeQueryBuilder);
-        } 
-        return builder;
-    }
-
-    private BoolQueryBuilder addElasticTermFilter(
-            BoolQueryBuilder builder, @Nullable SearchType searchType, String field, 
-            List<String> values) {
-        final int nValues = values.size();
-        if (nValues > 0) {
-            QueryBuilder queryBuilder;
-            if (nValues == 1) {
-                queryBuilder = QueryBuilders.termQuery(field, values.get(0));
-            } else {
-                queryBuilder = QueryBuilders.termsQuery(field, values.toArray());
-            }
-            if (searchType == SearchType.not) {
-                builder = builder.mustNot(queryBuilder);
-            } else {
-                builder = builder.filter(queryBuilder);
-            }
-        } return builder;
-    }
-
-    private void addInSelections(@Nullable Long savedSearchId, Page<Candidate> candidates) {
-        if (savedSearchId != null) {
-            //Check for selection list to set the selected attribute on returned 
-            // candidates.
-            SavedList selectionList = null;
-            User user = userContext.getLoggedInUser().orElse(null);
-            if (user != null) {
-                selectionList = savedSearchService
-                        .getSelectionList(savedSearchId, user.getId());
-            }
-            if (selectionList != null) {
-                Set<Candidate> selectedCandidates = selectionList.getCandidates();
-                if (selectedCandidates.size() > 0) {
-                    for (Candidate candidate : candidates) {
-                        if (selectedCandidates.contains(candidate)) {
-                            candidate.setSelected(true);
-                        }
-                    }
-                }
-            }
-        }
     }
 
     @Override
@@ -671,7 +680,23 @@ public class CandidateServiceImpl implements CandidateService {
         final Page<Candidate> candidates = doSearchCandidates(searchRequest);
 
         //Add in any selections
-        addInSelections(savedSearchId, candidates);
+        markUserSelectedCandidates(savedSearchId, candidates);
+
+        return candidates;
+    }
+
+    @Override
+    public List<Candidate> searchCandidates(long savedSearchId) 
+            throws NoSuchObjectException {
+        SearchCandidateRequest searchRequest =
+                this.savedSearchService.loadSavedSearch(savedSearchId);
+        
+        //Compute the query
+        final Specification<Candidate> query = computeQuery(searchRequest);
+
+        List<Candidate> candidates = candidateRepository.findAll(query);
+
+        log.info("Found " + candidates.size() + " candidates in search");
 
         return candidates;
     }
@@ -703,7 +728,7 @@ public class CandidateServiceImpl implements CandidateService {
             candidates = doSearchCandidates(request);
 
             //Add in any selections
-            addInSelections(savedSearchId, candidates);
+            markUserSelectedCandidates(savedSearchId, candidates);
         }
         
         return candidates;
@@ -1246,136 +1271,163 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<DataRow> getGenderStats(CandidateStatsRequest request) {
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
-        CandidateStatsRequest requestWithDefaults = convertDateRangeDefaults(request);
-        return toRows(candidateRepository.countByGenderOrderByCount(
-                sourceCountryIds,
-                requestWithDefaults.getDateFrom(),
-                requestWithDefaults.getDateTo()));
-    }
-
-    @Override
-    public List<DataRow> getBirthYearStats(Gender gender, CandidateStatsRequest request) {
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
-        CandidateStatsRequest requestWithDefaults = convertDateRangeDefaults(request);
+    public List<DataRow> computeBirthYearStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds) {
         return toRows(candidateRepository.
                 countByBirthYearOrderByYear(
-                        genderStr(gender),
-                        sourceCountryIds,
-                        requestWithDefaults.getDateFrom(),
-                        requestWithDefaults.getDateTo()));
+                        genderStr(gender), sourceCountryIds, dateFrom, dateTo));
     }
 
     @Override
-    public List<DataRow> getRegistrationStats(CandidateStatsRequest request) {
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
-        CandidateStatsRequest requestWithDefaults = convertDateRangeDefaults(request);
-        return toRows(candidateRepository.countByCreatedDateOrderByCount(
-                sourceCountryIds,
-                requestWithDefaults.getDateFrom(),
-                requestWithDefaults.getDateTo()));
-    }
-
-    @Override
-    public List<DataRow> getRegistrationOccupationStats(CandidateStatsRequest request) {
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
-        CandidateStatsRequest requestWithDefaults = convertDateRangeDefaults(request);
-        final List<DataRow> rows = toRows(candidateRepository.countByOccupationOrderByCount(
-                sourceCountryIds,
-                requestWithDefaults.getDateFrom(),
-                requestWithDefaults.getDateTo()));
-        return limitRows(rows, 15);
-    }
-
-    @Override
-    public List<DataRow> getNationalityStats(Gender gender, String country, CandidateStatsRequest request) {
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
-        CandidateStatsRequest requestWithDefaults = convertDateRangeDefaults(request);
-        List<DataRow> rows = toRows(candidateRepository.
-                countByNationalityOrderByCount(
-                        genderStr(gender),
-                        countryStr(country),
-                        sourceCountryIds,
-                        requestWithDefaults.getDateFrom(),
-                        requestWithDefaults.getDateTo()));
-        return limitRows(rows, 15);
-    }
-
-    @Override
-    public List<DataRow> getSurveyStats(Gender gender, String country, CandidateStatsRequest request) {
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
-        CandidateStatsRequest requestWithDefaults = convertDateRangeDefaults(request);
+    public List<DataRow> computeBirthYearStats(Gender gender, Set<Long> candidateIds, List<Long> sourceCountryIds) {
         return toRows(candidateRepository.
-                countBySurveyOrderByCount(
-                        genderStr(gender),
-                        countryStr(country),
-                        sourceCountryIds,
-                        requestWithDefaults.getDateFrom(),
-                        requestWithDefaults.getDateTo()));
+                countByBirthYearOrderByYear(
+                        genderStr(gender), sourceCountryIds, candidateIds));
     }
 
     @Override
-    public List<DataRow> getMaxEducationStats(Gender gender, CandidateStatsRequest request) {
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
-        CandidateStatsRequest requestWithDefaults = convertDateRangeDefaults(request);
-        return toRows(candidateRepository.
-                countByMaxEducationLevelOrderByCount(
-                        genderStr(gender),
-                        sourceCountryIds,
-                        requestWithDefaults.getDateFrom(),
-                        requestWithDefaults.getDateTo()));
+    public List<DataRow> computeGenderStats(LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds) {
+        return toRows(candidateRepository.countByGenderOrderByCount(
+                sourceCountryIds, dateFrom, dateTo));
     }
 
     @Override
-    public List<DataRow> getLanguageStats(Gender gender, CandidateStatsRequest request) {
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
-        CandidateStatsRequest requestWithDefaults = convertDateRangeDefaults(request);
+    public List<DataRow> computeGenderStats(Set<Long> candidateIds, List<Long> sourceCountryIds) {
+        return toRows(candidateRepository.countByGenderOrderByCount(
+                sourceCountryIds, candidateIds));
+    }
+
+    @Override
+    public List<DataRow> computeLanguageStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds) {
         List<DataRow> rows = toRows(candidateRepository.
                 countByLanguageOrderByCount(
-                        genderStr(gender),
-                        sourceCountryIds,
-                        requestWithDefaults.getDateFrom(),
-                        requestWithDefaults.getDateTo()));
+                        genderStr(gender), sourceCountryIds, dateFrom, dateTo));
         return limitRows(rows, 15);
     }
 
     @Override
-    public List<DataRow> getOccupationStats(Gender gender, CandidateStatsRequest request) {
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
-        CandidateStatsRequest requestWithDefaults = convertDateRangeDefaults(request);
-        return toRows(candidateRepository.
-                countByOccupationOrderByCount(
-                        genderStr(gender),
-                        sourceCountryIds,
-                        requestWithDefaults.getDateFrom(),
-                        requestWithDefaults.getDateTo()));
+    public List<DataRow> computeLanguageStats(Gender gender, Set<Long> candidateIds, List<Long> sourceCountryIds) {
+        List<DataRow> rows = toRows(candidateRepository.
+                countByLanguageOrderByCount(
+                        genderStr(gender), sourceCountryIds, candidateIds));
+        return limitRows(rows, 15);
     }
 
     @Override
-    public List<DataRow> getMostCommonOccupationStats(Gender gender, CandidateStatsRequest request) {
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
-        CandidateStatsRequest requestWithDefaults = convertDateRangeDefaults(request);
+    public List<DataRow> computeMaxEducationStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds) {
+        return toRows(candidateRepository.
+                countByMaxEducationLevelOrderByCount(
+                        genderStr(gender), sourceCountryIds, dateFrom, dateTo));
+    }
+
+    @Override
+    public List<DataRow> computeMaxEducationStats(Gender gender, Set<Long> candidateIds, List<Long> sourceCountryIds) {
+        return toRows(candidateRepository.
+                countByMaxEducationLevelOrderByCount(
+                        genderStr(gender), sourceCountryIds, candidateIds));
+    }
+
+    @Override
+    public List<DataRow> computeMostCommonOccupationStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds) {
         List<DataRow> rows = toRows(candidateRepository.
                 countByMostCommonOccupationOrderByCount(
-                        genderStr(gender),
-                        sourceCountryIds,
-                        requestWithDefaults.getDateFrom(),
-                        requestWithDefaults.getDateTo()));
+                        genderStr(gender), sourceCountryIds, dateFrom, dateTo));
         return limitRows(rows, 15);
     }
 
     @Override
-    public List<DataRow> getSpokenLanguageLevelStats(Gender gender, String language, CandidateStatsRequest request) {
-        List<Long> sourceCountryIds = getDefaultSourceCountryIds();
-        CandidateStatsRequest requestWithDefaults = convertDateRangeDefaults(request);
+    public List<DataRow> computeMostCommonOccupationStats(Gender gender, Set<Long> candidateIds, List<Long> sourceCountryIds) {
+        List<DataRow> rows = toRows(candidateRepository.
+                countByMostCommonOccupationOrderByCount(
+                        genderStr(gender), sourceCountryIds, candidateIds));
+        return limitRows(rows, 15);
+    }
+
+    @Override
+    public List<DataRow> computeNationalityStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds) {
+        List<DataRow> rows = toRows(candidateRepository.
+                countByNationalityOrderByCount(
+                        genderStr(gender), countryStr(country),
+                        sourceCountryIds, dateFrom, dateTo));
+        return limitRows(rows, 15);
+    }
+
+    @Override
+    public List<DataRow> computeNationalityStats(Gender gender, String country, Set<Long> candidateIds, List<Long> sourceCountryIds) {
+        List<DataRow> rows = toRows(candidateRepository.
+                countByNationalityOrderByCount(
+                        genderStr(gender), countryStr(country),
+                        sourceCountryIds, candidateIds));
+        return limitRows(rows, 15);
+    }
+
+    @Override
+    public List<DataRow> computeOccupationStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds) {
         return toRows(candidateRepository.
-                countBySpokenLanguageLevelByCount(
-                        genderStr(gender),
-                        language,
-                        sourceCountryIds,
-                        requestWithDefaults.getDateFrom(),
-                        requestWithDefaults.getDateTo()));
+                countByOccupationOrderByCount(
+                        genderStr(gender), sourceCountryIds, dateFrom, dateTo));
+    }
+
+    @Override
+    public List<DataRow> computeOccupationStats(Gender gender, Set<Long> candidateIds, List<Long> sourceCountryIds) {
+        return toRows(candidateRepository.
+                countByOccupationOrderByCount(
+                        genderStr(gender), sourceCountryIds, candidateIds));
+    }
+
+    @Override
+    public List<DataRow> computeRegistrationOccupationStats(LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds) {
+        final List<DataRow> rows = toRows(candidateRepository.countByOccupationOrderByCount(
+                sourceCountryIds, dateFrom, dateTo));
+        return limitRows(rows, 15);
+    }
+
+    @Override
+    public List<DataRow> computeRegistrationOccupationStats(Set<Long> candidateIds, List<Long> sourceCountryIds) {
+        final List<DataRow> rows = toRows(candidateRepository.countByOccupationOrderByCount(
+                sourceCountryIds, candidateIds));
+        return limitRows(rows, 15);
+    }
+
+    @Override
+    public List<DataRow> computeRegistrationStats(LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds) {
+        return toRows(candidateRepository.countByCreatedDateOrderByCount(
+                sourceCountryIds, dateFrom, dateTo));
+    }
+
+    @Override
+    public List<DataRow> computeRegistrationStats(Set<Long> candidateIds, List<Long> sourceCountryIds) {
+        return toRows(candidateRepository.countByCreatedDateOrderByCount(
+                sourceCountryIds, candidateIds));
+    }
+
+    @Override
+    public List<DataRow> computeSpokenLanguageLevelStats(Gender gender, String language, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds) {
+        return toRows(candidateRepository.
+                countBySpokenLanguageLevelByCount(genderStr(gender), language, 
+                        sourceCountryIds, dateFrom, dateTo));
+    }
+
+    @Override
+    public List<DataRow> computeSpokenLanguageLevelStats(Gender gender, String language, Set<Long> candidateIds, List<Long> sourceCountryIds) {
+        return toRows(candidateRepository.
+                countBySpokenLanguageLevelByCount(genderStr(gender), language,
+                        sourceCountryIds, candidateIds));
+    }
+
+    @Override
+    public List<DataRow> computeSurveyStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds) {
+        return toRows(candidateRepository.
+                countBySurveyOrderByCount(
+                        genderStr(gender), countryStr(country),
+                        sourceCountryIds, dateFrom, dateTo));
+    }
+
+    @Override
+    public List<DataRow> computeSurveyStats(Gender gender, String country, Set<Long> candidateIds, List<Long> sourceCountryIds) {
+        return toRows(candidateRepository.
+                countBySurveyOrderByCount(
+                        genderStr(gender), countryStr(country),
+                        sourceCountryIds, candidateIds));
     }
 
     @Override
@@ -1686,42 +1738,6 @@ public class CandidateServiceImpl implements CandidateService {
             countries = user.getSourceCountries();
         }
         return countries;
-    }
-
-    /**
-     * Get logged in user’s source country Ids, defaulting to all countries if empty
-     */
-    public List<Long> getDefaultSourceCountryIds(){
-        User user = userContext.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-
-        List<Long> listOfCountryIds;
-
-        if(CollectionUtils.isEmpty(user.getSourceCountries())){
-            listOfCountryIds = countryRepository.findAll().stream()
-                    .map(Country::getId)
-                    .collect(Collectors.toList());
-        } else {
-            listOfCountryIds = user.getSourceCountries().stream()
-                    .map(Country::getId)
-                    .collect(Collectors.toList());
-        }
-
-        return listOfCountryIds;
-    }
-
-    /**
-     * Convert null string to date default.
-     */
-    public CandidateStatsRequest convertDateRangeDefaults(CandidateStatsRequest request){
-        if (request.getDateFrom() == null) {
-            request.setDateFrom(LocalDate.parse("2000-01-01"));
-        }
-
-        if(request.getDateTo() == null) {
-            request.setDateTo(LocalDate.now());
-        }
-        return request;
     }
 
     @Override
