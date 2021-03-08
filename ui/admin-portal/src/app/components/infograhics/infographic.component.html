@@ -27,11 +27,21 @@
 
         <!-- SAVED LIST -->
         <div>
-          <label>Existing list</label>
+          <label>List</label>
           <ng-multiselect-dropdown formControlName="savedList"
-                                   id="savedLists"
+                                   id="savedList"
                                    [settings]="dropdownSettings"
                                    [data]="lists">
+          </ng-multiselect-dropdown>
+        </div>
+
+        <!-- SAVED SEARCH -->
+        <div>
+          <label>Search</label>
+          <ng-multiselect-dropdown formControlName="savedSearch"
+                                   id="savedSearch"
+                                   [settings]="dropdownSettings"
+                                   [data]="searches">
           </ng-multiselect-dropdown>
         </div>
 

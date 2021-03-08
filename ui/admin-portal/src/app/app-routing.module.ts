@@ -112,7 +112,12 @@ const routes: Routes = [
             pathMatch: 'full',
             component: InfographicComponent,
             data: {title: 'TBB Infographics'}
-          }
+          },
+          {
+            path: ':source/:id',
+            component: InfographicComponent,
+            data: {title: 'TBB Infographics'}
+          },
         ]
       },
 

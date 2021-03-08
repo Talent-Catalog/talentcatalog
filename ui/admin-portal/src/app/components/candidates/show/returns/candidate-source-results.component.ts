@@ -95,7 +95,7 @@ constructor(
     }
   }
 
-  openSource() {
+  onOpenSource() {
     //Open source at same page number
     let extras;
     if (this.pageNumber === 1) {
