@@ -5,7 +5,7 @@ First of all, thank you for considering contributing to TbbTalent.
 [Please read and abide by our Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Code Style ##
-
+### Java ###
 The style standard for this project is 
 [Google Java Style](http://google.github.io/styleguide/javaguide.html). 
 See, for example, [this posting](https://medium.com/swlh/configuring-google-style-guide-for-java-for-intellij-c727af4ef248) 
@@ -17,6 +17,15 @@ sparingly - primarily to make the code more readable by removing "boilerplate"
 and to help with debugging by supplying meaningful class 
 [toStrings](https://projectlombok.org/features/ToString).
 But we try not to get too clever with it!
+
+### Typescript ###
+
+We aspire to following the 
+[Google Typescript style](https://google.github.io/styleguide/tsguide.html).
+
+### Angular ###
+
+We aspire to following the [Angular style guide](https://angular.io/guide/styleguide).
 
 
 ## Standard tools
