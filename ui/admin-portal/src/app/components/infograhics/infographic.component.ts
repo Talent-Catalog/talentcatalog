@@ -21,10 +21,18 @@ import {
 } from "../../services/candidate-stat.service";
 import {StatReport} from "../../model/stat-report";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {SavedList, SearchSavedListRequest} from "../../model/saved-list";
+import {
+  SavedList,
+  SearchSavedListRequest
+} from "../../model/saved-list";
 import {SavedListService} from "../../services/saved-list.service";
 import {IDropdownSettings} from "ng-multiselect-dropdown";
 import {isArray} from "rxjs/internal-compatibility";
+import {ActivatedRoute} from "@angular/router";
+import {SavedSearch} from "../../model/saved-search";
+import {forkJoin} from "rxjs";
+import {SavedSearchService} from "../../services/saved-search.service";
+import {findHasId} from "../../model/base";
 
 @Component({
   selector: 'app-infographic',
@@ -37,6 +45,7 @@ export class InfographicComponent implements OnInit {
   dataLoaded: boolean = false;
   error: any;
   lists: SavedList[] = [];
+  searches: SavedSearch[] = [];
   statReports: StatReport[];
   statsFilter: FormGroup;
 
@@ -48,8 +57,10 @@ export class InfographicComponent implements OnInit {
     allowSearchFilter: true
   };
 
-  constructor(private statService: CandidateStatService,
+  constructor(private route: ActivatedRoute,
+              private statService: CandidateStatService,
               private savedListService: SavedListService,
+              private savedSearchService: SavedSearchService,
               private fb: FormBuilder) {
   }
 
@@ -58,11 +69,12 @@ export class InfographicComponent implements OnInit {
 
     this.statsFilter = this.fb.group({
       savedList: [null],
+      savedSearch: [null],
       dateFrom: ['', [Validators.required]],
       dateTo: ['', [Validators.required]]
     });
 
-    this.loadLists();
+    this.loadListsAndSearches();
   }
 
   get dateFrom(): string { return this.statsFilter.value.dateFrom; }
@@ -73,20 +85,33 @@ export class InfographicComponent implements OnInit {
     return savedList == null || isArray(savedList) && savedList.length === 0
       ? null : savedList[0].id;
   }
+  get savedSearchId(): number {
+    const savedSearch: SavedSearch = this.statsFilter.value.savedSearch;
+    //Control always returns an array
+    return savedSearch == null || isArray(savedSearch) && savedSearch.length === 0
+      ? null : savedSearch[0].id;
+  }
 
-  private loadLists() {
-    /*load all our non fixed lists */
+  private loadListsAndSearches() {
+    /*load all our visible lists and searches */
     this.loading = true;
     const request: SearchSavedListRequest = {
       owned: true,
       shared: true,
-      fixed: false
+      global: true
     };
 
-    this.savedListService.search(request).subscribe(
-      (results) => {
-        this.lists = results;
+
+    forkJoin( {
+      'lists': this.savedListService.search(request),
+      'searches': this.savedSearchService.search(request)
+    }).subscribe(
+      results => {
         this.loading = false;
+        this.lists = results['lists'];
+        this.searches = results['searches'];
+
+        this.initializeFilterFields();
       },
       (error) => {
         this.error = error;
@@ -95,18 +120,37 @@ export class InfographicComponent implements OnInit {
     );
   }
 
+  /**
+   * Initializes the saved list and saved search filters based on any url parameters that were
+   * supplied
+   */
+  private initializeFilterFields() {
+    this.route.paramMap.subscribe(params => {
+      const id: number = +params.get('id');
+      const isSavedSearchId = params.get('source') === 'search';
+      if (id != null) {
+        if (isSavedSearchId) {
+          this.statsFilter.controls['savedSearch'].patchValue([findHasId(id, this.searches)]);
+        } else {
+          this.statsFilter.controls['savedList'].patchValue([findHasId(id, this.lists)]);
+        }
+
+        //Auto run if we have an id
+        this.submitStatsRequest();
+      }
+    });
+  }
+
   submitStatsRequest(){
     this.loading = true;
 
-    //todo debug
-    const savedSearchId = 331;
-
     const request: CandidateStatsRequest = {
       listId: this.savedListId,
-      searchId: savedSearchId,  //todo debug
+      searchId: this.savedSearchId,
       dateFrom: this.dateFrom,
       dateTo: this.dateTo
     }
+
     this.statService.getAllStats(request).subscribe(result => {
         this.loading = false;
         this.statReports = result;
@@ -162,5 +206,4 @@ export class InfographicComponent implements OnInit {
       }
     }
   }
-
 }

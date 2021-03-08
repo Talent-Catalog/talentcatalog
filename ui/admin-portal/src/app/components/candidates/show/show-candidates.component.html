@@ -63,6 +63,9 @@
       <button class="btn" (click)="doSelectColumns()">
         <i class="fas fa-columns" title="Select columns to display"></i>
       </button>
+      <button class="btn" (click)="doRunStats()">
+        <i class="fas fa-chart-bar" title="Run stats"></i>
+      </button>
       <a *ngIf="candidateSource?.sfJoblink" target="_blank"
          [href]="candidateSource.sfJoblink">
         <i class="fab fa-salesforce" title="Associated Job Opportunity"></i>

@@ -93,6 +93,12 @@ export function getCandidateSourceNavigation(source: CandidateSource): any[] {
   return [urlSelector, source.id];
 }
 
+export function getCandidateSourceStatsNavigation(source: CandidateSource): any[] {
+  const statsUrl = "infographics";
+  const urlSelector: string = isSavedSearch(source) ? 'search' : 'list';
+  return [statsUrl, urlSelector, source.id];
+}
+
 export function getSavedSourceNavigation(source: SavedSearchRef): any[] {
   return ['search', source.id];
 }

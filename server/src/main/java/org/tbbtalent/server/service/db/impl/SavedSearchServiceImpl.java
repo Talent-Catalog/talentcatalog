@@ -133,6 +133,37 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
     @Override
+    public List<SavedSearch> search(SearchSavedSearchRequest request) {
+        final User loggedInUser = userContext.getLoggedInUser().orElse(null);
+
+        List<SavedSearch> savedSearches;
+        //If requesting watches
+        if (request.getWatched() != null && request.getWatched() ) {
+            Set<SavedSearch> watches;
+            if (loggedInUser == null) {
+                //Just provide empty set
+                watches = new HashSet<>();
+            } else {
+                watches = savedSearchRepository.findUserWatchedSearches(loggedInUser.getId());
+            }
+            savedSearches = new ArrayList<>(watches);
+        } else {
+            User userWithSharedSearches = loggedInUser == null ? null :
+                userRepository.findByIdLoadSharedSearches(
+                    loggedInUser.getId());
+            savedSearches = savedSearchRepository.findAll(
+                SavedSearchSpecification.buildSearchQuery(request, userWithSharedSearches));
+        }
+        log.info("Found " + savedSearches.size() + " savedSearches in search");
+
+        for (SavedSearch savedSearch: savedSearches) {
+            savedSearch.parseType();
+        }
+
+        return savedSearches;
+    }
+
+    @Override
     public Page<SavedSearch> searchPaged(SearchSavedSearchRequest request) {
         final User loggedInUser = userContext.getLoggedInUser().orElse(null);
 

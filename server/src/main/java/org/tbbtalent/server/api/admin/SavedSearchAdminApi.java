@@ -16,11 +16,10 @@
 
 package org.tbbtalent.server.api.admin;
 
+import java.util.List;
 import java.util.Map;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -91,6 +90,12 @@ public class SavedSearchAdminApi implements
     public @NotNull Map<String, Object> get(long id) throws NoSuchObjectException {
         SavedSearch savedSearch = this.savedSearchService.getSavedSearch(id);
         return savedSearchDtoExtended().build(savedSearch);
+    }
+
+    @Override
+    public @NotNull List<Map<String, Object>> search(@Valid SearchSavedSearchRequest request) {
+        List<SavedSearch> savedSearches = savedSearchService.search(request);
+        return savedSearchDto().buildList(savedSearches);
     }
 
     @Override

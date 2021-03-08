@@ -69,6 +69,20 @@ export interface HasId {
   id: number;
 }
 
+export function indexOfHasId(id: number, hasIds: HasId[]): number {
+  for (let i = 0; i < hasIds.length; i++) {
+    if (hasIds[i].id === id) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+export function findHasId(id: number, hasIds: HasId[]): HasId {
+  const idx = indexOfHasId(id, hasIds);
+  return idx < 0 ? null : hasIds[idx];
+}
+
 export interface Auditable extends HasId {
   createdBy?: User;
   createdDate?: number;
