@@ -4,6 +4,21 @@ First of all, thank you for considering contributing to TbbTalent.
 
 [Please read and abide by our Code of Conduct](CODE_OF_CONDUCT.md).
 
+## Code Style ##
+
+The style standard for this project is 
+[Google Java Style](http://google.github.io/styleguide/javaguide.html). 
+See, for example, [this posting](https://medium.com/swlh/configuring-google-style-guide-for-java-for-intellij-c727af4ef248) 
+for how to set up the Intellij IDE for that style.
+
+We also use [Lombok](https://projectlombok.org/setup/intellij) 
+sparingly - primarily to make the code more readable by removing "boilerplate"
+[Getters and Setters](https://projectlombok.org/features/GetterSetter), 
+and to help with debugging by supplying meaningful class 
+[toStrings](https://projectlombok.org/features/ToString).
+But we try not to get too clever with it!
+
+
 ## Standard tools
 
 See [the README for the standard tools we use for development](README.md).
@@ -13,6 +28,7 @@ its Git and GitHub integration. Our standard Intellij configuration is
 checked into version control which imposes many of our standards.
 It is certainly not necessary to use Intellij in order to contribute that is
 probably the simplest way to go.
+
 
 ## Where do I go from here?
 
