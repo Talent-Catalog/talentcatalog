@@ -28,6 +28,7 @@ export class RegistrationUploadFileComponent implements OnInit {
   ngOnInit() {
   }
 
+  //Final registration step method
   submit() {
     this.saving = true;
     this.candidateService.submitRegistration().subscribe(
@@ -41,7 +42,6 @@ export class RegistrationUploadFileComponent implements OnInit {
       }
     );
   }
-
 
   // Methods during registration process.
   next() {
