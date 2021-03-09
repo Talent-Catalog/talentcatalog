@@ -18,7 +18,6 @@ package org.tbbtalent.server.service.db.impl;
 
 import com.opencsv.CSVWriter;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.index.query.*;
@@ -1063,9 +1062,16 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         candidate.setAdditionalInfo(request.getAdditionalInfo());
         candidate.setLinkedInLink(request.getLinkedInLink());
-        if (BooleanUtils.isTrue(request.getSubmit()) && !candidate.getStatus().equals(CandidateStatus.pending)) {
-            updateCandidateStatus(candidate.getId(), new UpdateCandidateStatusRequest(CandidateStatus.pending, "Candidate submitted"));
+        candidate.setAuditFields(candidate.getUser());
+        return save(candidate, true);
+    }
 
+    @Override
+    public Candidate submitRegistration() {
+        Candidate candidate = getLoggedInCandidate()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        if (!candidate.getStatus().equals(CandidateStatus.pending)) {
+            updateCandidateStatus(candidate.getId(), new UpdateCandidateStatusRequest(CandidateStatus.pending, "Candidate submitted"));
             emailHelper.sendRegistrationEmail(candidate.getUser());
         }
         candidate.setAuditFields(candidate.getUser());

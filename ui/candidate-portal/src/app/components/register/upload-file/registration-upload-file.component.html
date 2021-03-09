@@ -72,5 +72,5 @@
 
 <app-registration-footer [type]="edit ? 'update' : 'submit'"
                          (backClicked)="edit ? cancel() : back() "
-                         (nextClicked)="next()">
+                         (nextClicked)="edit ? update() : submit()">
 </app-registration-footer>
