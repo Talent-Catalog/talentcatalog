@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormGroup} from "@angular/forms";
 import {RegistrationService} from "../../../services/registration.service";
+import {CandidateService} from "../../../services/candidate.service";
 
 @Component({
   selector: 'app-registration-upload-file',
@@ -9,7 +10,6 @@ import {RegistrationService} from "../../../services/registration.service";
 })
 export class RegistrationUploadFileComponent implements OnInit {
 
-  @Input() submitApplication: boolean = false;
   /* A flag to indicate if the component is being used on the profile component */
   @Input() edit: boolean = false;
 
@@ -21,28 +21,42 @@ export class RegistrationUploadFileComponent implements OnInit {
   saving: boolean;
 
 
-  constructor(public registrationService: RegistrationService) {
+  constructor(public registrationService: RegistrationService,
+              private candidateService: CandidateService) {
   }
 
   ngOnInit() {
   }
 
-
-
-  cancel() {
-    this.onSave.emit();
+  //Final registration step method
+  submit() {
+    this.saving = true;
+    this.candidateService.submitRegistration().subscribe(
+      (response) => {
+        this.saving = false;
+        this.next();
+      },
+      (error) => {
+        this.error = error;
+        this.saving = false;
+      }
+    );
   }
 
+  // Methods during registration process.
   next() {
-    this.onSave.emit();
     this.registrationService.next();
   }
-
-
-
   back() {
-    // Candidate data shouldn't be updated
     this.registrationService.back();
+  }
+
+  // Methods during edit process.
+  update() {
+    this.onSave.emit();
+  }
+  cancel() {
+    this.onSave.emit();
   }
 
 

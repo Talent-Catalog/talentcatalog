@@ -21,7 +21,6 @@ import {CandidateService} from "../../../services/candidate.service";
 import {RegistrationService} from "../../../services/registration.service";
 import {SurveyTypeService} from "../../../services/survey-type.service";
 import {SurveyType} from "../../../model/survey-type";
-import {linkedInUrl} from "../../../model/candidate";
 
 @Component({
   selector: 'app-registration-additional-info',
@@ -30,7 +29,6 @@ import {linkedInUrl} from "../../../model/candidate";
 })
 export class RegistrationAdditionalInfoComponent implements OnInit {
 
-  @Input() submitApplication: boolean = false;
   /* A flag to indicate if the component is being used on the profile component */
   @Input() edit: boolean = false;
 
@@ -49,8 +47,6 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
 
   surveyTypes: SurveyType[];
 
-  linkedInUrl = linkedInUrl;
-
   constructor(private fb: FormBuilder,
               private router: Router,
               private candidateService: CandidateService,
@@ -66,7 +62,6 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
       surveyTypeId: [null, Validators.required],
       surveyComment: [''],
       linkedInLink: ['', Validators.pattern(linkedInRegex)],
-      submit: this.submitApplication
     });
 
 
@@ -124,11 +119,6 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
   save(dir: string) {
     this.saving = true;
 
-    /* Don't submit the registration application if the user is going back */
-    if (dir === 'back') {
-      this.form.controls.submit.patchValue(false);
-    }
-    /* Update survey before updating additional info as that triggers confirmation email and registration complete*/
     this.candidateService.updateCandidateSurvey(this.form.value).subscribe(
       (response) => {
 

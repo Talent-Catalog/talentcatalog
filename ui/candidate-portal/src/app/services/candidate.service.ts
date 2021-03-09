@@ -113,4 +113,8 @@ export class CandidateService {
       return new Blob([res], { type: 'application/pdf', });
     }));
   }
+
+  submitRegistration(): Observable<Candidate> {
+    return this.http.post<Candidate>(`${this.apiUrl}/submit`, null);
+  }
 }

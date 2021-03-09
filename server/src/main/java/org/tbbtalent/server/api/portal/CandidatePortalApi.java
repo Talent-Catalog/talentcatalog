@@ -177,6 +177,12 @@ public class CandidatePortalApi {
         }
     }
 
+    @PostMapping("submit")
+    public Map<String, Object> submitRegistration() {
+        Candidate candidate = this.candidateService.submitRegistration();
+        return candidateStatusDto().build(candidate);
+    }
+
     private DtoBuilder candidateNumberDto() {
         return new DtoBuilder()
                 .add("candidateNumber")
