@@ -136,6 +136,10 @@ public interface CandidateService {
 
     Candidate updateCandidateSurvey(UpdateCandidateSurveyRequest request);
 
+    /**
+     * Returns a candidate once they have completed their registration
+     * <p/>
+     */
     Candidate submitRegistration();
 
     /**
