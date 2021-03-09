@@ -248,37 +248,37 @@ public interface CandidateService {
     void setCandidateContext(long savedSearchId, Iterable<Candidate> candidates);
 
     List<DataRow> computeGenderStats(LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
-    List<DataRow> computeGenderStats(Set<Long> candidateIds, List<Long> sourceCountryIds);
+    List<DataRow> computeGenderStats(LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
     List<DataRow> computeBirthYearStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
-    List<DataRow> computeBirthYearStats(Gender gender, Set<Long> candidateIds, List<Long> sourceCountryIds);
+    List<DataRow> computeBirthYearStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
     List<DataRow> computeRegistrationStats(LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
-    List<DataRow> computeRegistrationStats(Set<Long> candidateIds, List<Long> sourceCountryIds);
+    List<DataRow> computeRegistrationStats(LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
     List<DataRow> computeRegistrationOccupationStats(LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
-    List<DataRow> computeRegistrationOccupationStats(Set<Long> candidateIds, List<Long> sourceCountryIds);
+    List<DataRow> computeRegistrationOccupationStats(LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
     List<DataRow> computeLanguageStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
-    List<DataRow> computeLanguageStats(Gender gender, Set<Long> candidateIds, List<Long> sourceCountryIds);
+    List<DataRow> computeLanguageStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
     List<DataRow> computeOccupationStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
-    List<DataRow> computeOccupationStats(Gender gender, Set<Long> candidateIds, List<Long> sourceCountryIds);
+    List<DataRow> computeOccupationStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
     List<DataRow> computeMostCommonOccupationStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
-    List<DataRow> computeMostCommonOccupationStats(Gender gender, Set<Long> candidateIds, List<Long> sourceCountryIds);
+    List<DataRow> computeMostCommonOccupationStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
     List<DataRow> computeSpokenLanguageLevelStats(Gender gender, String language, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
-    List<DataRow> computeSpokenLanguageLevelStats(Gender gender, String language, Set<Long> candidateIds, List<Long> sourceCountryIds);
+    List<DataRow> computeSpokenLanguageLevelStats(Gender gender, String language, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
     List<DataRow> computeMaxEducationStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
-    List<DataRow> computeMaxEducationStats(Gender gender, Set<Long> candidateIds, List<Long> sourceCountryIds);
+    List<DataRow> computeMaxEducationStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
     List<DataRow> computeNationalityStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
-    List<DataRow> computeNationalityStats(Gender gender, String country, Set<Long> candidateIds, List<Long> sourceCountryIds);
+    List<DataRow> computeNationalityStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
     List<DataRow> computeSurveyStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
-    List<DataRow> computeSurveyStats(Gender gender, String country, Set<Long> candidateIds, List<Long> sourceCountryIds);
+    List<DataRow> computeSurveyStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
     Resource generateCv(Candidate candidate);
 
