@@ -807,8 +807,13 @@ public class CandidateServiceImpl implements CandidateService {
         candidate = save(candidate, true);
         if (!request.getStatus().equals(originalStatus)){
             candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(id, "Status change from " + originalStatus + " to " + request.getStatus(), request.getComment()));
+            if (originalStatus.equals(CandidateStatus.draft) && !request.getStatus().equals(CandidateStatus.deleted)) {
+                emailHelper.sendRegistrationEmail(candidate.getUser());
+                log.info("Registration email sent to " + candidate.getUser().getEmail());
+            }
             if (request.getStatus().equals(CandidateStatus.incomplete)) {
                 emailHelper.sendIncompleteApplication(candidate.getUser(), request.getCandidateMessage());
+                log.info("Incomplete email sent to " + candidate.getUser().getEmail());
             }
         }
         if (candidate.getStatus().equals(CandidateStatus.deleted)){
@@ -1072,7 +1077,6 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         if (!candidate.getStatus().equals(CandidateStatus.pending)) {
             updateCandidateStatus(candidate.getId(), new UpdateCandidateStatusRequest(CandidateStatus.pending, "Candidate submitted"));
-            emailHelper.sendRegistrationEmail(candidate.getUser());
         }
         candidate.setAuditFields(candidate.getUser());
         return save(candidate, true);
