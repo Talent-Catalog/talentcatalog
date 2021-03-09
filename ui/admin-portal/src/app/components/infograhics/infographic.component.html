@@ -25,50 +25,56 @@
     <form [formGroup]="statsFilter">
       <div class="form-row d-flex align-items-end">
 
-        <!-- SAVED LIST -->
         <div>
-          <label>List</label>
-          <!-- Disabled if saved search is entered -->
-          <ng-multiselect-dropdown formControlName="savedList"
-                                   id="savedList"
-                                   [settings]="dropdownSettings"
-                                   [disabled]="savedSearch != null"
-                                   [data]="lists">
-          </ng-multiselect-dropdown>
+          <!-- SAVED LIST -->
+          <div>
+            <label>List</label>
+            <!-- Disabled if saved search is entered -->
+            <ng-multiselect-dropdown formControlName="savedList"
+                                     id="savedList"
+                                     [settings]="dropdownSettings"
+                                     [disabled]="savedSearch != null"
+                                     [data]="lists">
+            </ng-multiselect-dropdown>
+          </div>
+
+          <!-- SAVED SEARCH -->
+          <div>
+            <label>Search</label>
+            <!-- Disabled if saved list is entered -->
+            <ng-multiselect-dropdown formControlName="savedSearch"
+                                     id="savedSearch"
+                                     [settings]="dropdownSettings"
+                                     [disabled]="savedList != null"
+                                     [data]="searches">
+            </ng-multiselect-dropdown>
+          </div>
         </div>
 
-        <!-- SAVED SEARCH -->
+
+
         <div>
-          <label>Search</label>
-          <!-- Disabled if saved list is entered -->
-          <ng-multiselect-dropdown formControlName="savedSearch"
-                                   id="savedSearch"
-                                   [settings]="dropdownSettings"
-                                   [disabled]="savedList != null"
-                                   [data]="searches">
-          </ng-multiselect-dropdown>
+          <!-- DATE FROM -->
+          <div class="form-group form-inline justify-content-end col-sm-12 col-md-5">
+            <label for="dateFrom">Date From:</label>
+            <input type="date" id="dateFrom" class="form-control" [formControlName]="'dateFrom'" datepicker-popup
+                   is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions"
+                   date-disabled="disabled(date, mode)" ng-required="true" close-text="Close"/>
+          </div>
+          <!-- DATE TO -->
+          <div class="form-group form-inline justify-content-end col-sm-12 col-md-5">
+            <label for="dateTo">Date To:</label>
+            <input type="date" id="dateTo" class="form-control" [formControlName]="'dateTo'" datepicker-popup
+                   is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions"
+                   date-disabled="disabled(date, mode)" ng-required="true" close-text="Close"/>
+          </div>
+          <div class="form-group form-inline justify-content-end col-sm-12 col-md-2">
+            <button class="btn btn-outline-secondary" (click)="submitStatsRequest()">
+              <i class="fas fa-calendar-alt"></i> Filter
+            </button>
+          </div>
         </div>
 
-
-        <!-- DATE FROM -->
-        <div class="form-group form-inline justify-content-end col-sm-12 col-md-5">
-          <label for="dateFrom">Date From:</label>
-          <input type="date" id="dateFrom" class="form-control" [formControlName]="'dateFrom'" datepicker-popup
-                 is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions"
-                 date-disabled="disabled(date, mode)" ng-required="true" close-text="Close"/>
-        </div>
-        <!-- DATE TO -->
-        <div class="form-group form-inline justify-content-end col-sm-12 col-md-5">
-          <label for="dateTo">Date To:</label>
-          <input type="date" id="dateTo" class="form-control" [formControlName]="'dateTo'" datepicker-popup
-                 is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions"
-                 date-disabled="disabled(date, mode)" ng-required="true" close-text="Close"/>
-        </div>
-        <div class="form-group form-inline justify-content-end col-sm-12 col-md-2">
-          <button class="btn btn-outline-secondary" (click)="submitStatsRequest()">
-            <i class="fas fa-calendar-alt"></i> Filter
-          </button>
-        </div>
       </div>
     </form>
   </div>
