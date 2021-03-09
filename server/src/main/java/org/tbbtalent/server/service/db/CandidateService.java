@@ -29,14 +29,15 @@ import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.candidate.*;
-import org.tbbtalent.server.request.candidate.stat.CandidateStatDateRequest;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.GeneralSecurityException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface CandidateService {
 

@@ -51,7 +51,6 @@ import org.tbbtalent.server.repository.db.*;
 import org.tbbtalent.server.repository.es.CandidateEsRepository;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.candidate.*;
-import org.tbbtalent.server.request.candidate.stat.CandidateStatDateRequest;
 import org.tbbtalent.server.request.note.CreateCandidateNoteRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.security.PasswordHelper;
