@@ -1276,10 +1276,10 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<DataRow> computeBirthYearStats(Gender gender, Set<Long> candidateIds, List<Long> sourceCountryIds) {
+    public List<DataRow> computeBirthYearStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds) {
         return toRows(candidateRepository.
                 countByBirthYearOrderByYear(
-                        genderStr(gender), sourceCountryIds, candidateIds));
+                        genderStr(gender), sourceCountryIds, dateFrom, dateTo, candidateIds));
     }
 
     @Override
@@ -1289,9 +1289,9 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<DataRow> computeGenderStats(Set<Long> candidateIds, List<Long> sourceCountryIds) {
+    public List<DataRow> computeGenderStats(LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds) {
         return toRows(candidateRepository.countByGenderOrderByCount(
-                sourceCountryIds, candidateIds));
+                sourceCountryIds, dateFrom, dateTo, candidateIds));
     }
 
     @Override
@@ -1303,10 +1303,10 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<DataRow> computeLanguageStats(Gender gender, Set<Long> candidateIds, List<Long> sourceCountryIds) {
+    public List<DataRow> computeLanguageStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds) {
         List<DataRow> rows = toRows(candidateRepository.
                 countByLanguageOrderByCount(
-                        genderStr(gender), sourceCountryIds, candidateIds));
+                        genderStr(gender), sourceCountryIds, dateFrom, dateTo, candidateIds));
         return limitRows(rows, 15);
     }
 
@@ -1318,10 +1318,10 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<DataRow> computeMaxEducationStats(Gender gender, Set<Long> candidateIds, List<Long> sourceCountryIds) {
+    public List<DataRow> computeMaxEducationStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds) {
         return toRows(candidateRepository.
                 countByMaxEducationLevelOrderByCount(
-                        genderStr(gender), sourceCountryIds, candidateIds));
+                        genderStr(gender), sourceCountryIds, dateFrom, dateTo, candidateIds));
     }
 
     @Override
@@ -1333,10 +1333,10 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<DataRow> computeMostCommonOccupationStats(Gender gender, Set<Long> candidateIds, List<Long> sourceCountryIds) {
+    public List<DataRow> computeMostCommonOccupationStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds) {
         List<DataRow> rows = toRows(candidateRepository.
                 countByMostCommonOccupationOrderByCount(
-                        genderStr(gender), sourceCountryIds, candidateIds));
+                        genderStr(gender), sourceCountryIds, dateFrom, dateTo, candidateIds));
         return limitRows(rows, 15);
     }
 
@@ -1350,11 +1350,11 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<DataRow> computeNationalityStats(Gender gender, String country, Set<Long> candidateIds, List<Long> sourceCountryIds) {
+    public List<DataRow> computeNationalityStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds) {
         List<DataRow> rows = toRows(candidateRepository.
                 countByNationalityOrderByCount(
                         genderStr(gender), countryStr(country),
-                        sourceCountryIds, candidateIds));
+                        sourceCountryIds, dateFrom, dateTo, candidateIds));
         return limitRows(rows, 15);
     }
 
@@ -1366,10 +1366,10 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<DataRow> computeOccupationStats(Gender gender, Set<Long> candidateIds, List<Long> sourceCountryIds) {
+    public List<DataRow> computeOccupationStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds) {
         return toRows(candidateRepository.
                 countByOccupationOrderByCount(
-                        genderStr(gender), sourceCountryIds, candidateIds));
+                        genderStr(gender), sourceCountryIds, dateFrom, dateTo, candidateIds));
     }
 
     @Override
@@ -1380,9 +1380,9 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<DataRow> computeRegistrationOccupationStats(Set<Long> candidateIds, List<Long> sourceCountryIds) {
+    public List<DataRow> computeRegistrationOccupationStats(LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds) {
         final List<DataRow> rows = toRows(candidateRepository.countByOccupationOrderByCount(
-                sourceCountryIds, candidateIds));
+                sourceCountryIds, dateFrom, dateTo, candidateIds));
         return limitRows(rows, 15);
     }
 
@@ -1393,9 +1393,9 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<DataRow> computeRegistrationStats(Set<Long> candidateIds, List<Long> sourceCountryIds) {
+    public List<DataRow> computeRegistrationStats(LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds) {
         return toRows(candidateRepository.countByCreatedDateOrderByCount(
-                sourceCountryIds, candidateIds));
+                sourceCountryIds, dateFrom, dateTo, candidateIds));
     }
 
     @Override
@@ -1406,10 +1406,10 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<DataRow> computeSpokenLanguageLevelStats(Gender gender, String language, Set<Long> candidateIds, List<Long> sourceCountryIds) {
+    public List<DataRow> computeSpokenLanguageLevelStats(Gender gender, String language, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds) {
         return toRows(candidateRepository.
                 countBySpokenLanguageLevelByCount(genderStr(gender), language,
-                        sourceCountryIds, candidateIds));
+                        sourceCountryIds, dateFrom, dateTo, candidateIds));
     }
 
     @Override
@@ -1421,11 +1421,11 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<DataRow> computeSurveyStats(Gender gender, String country, Set<Long> candidateIds, List<Long> sourceCountryIds) {
+    public List<DataRow> computeSurveyStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds) {
         return toRows(candidateRepository.
                 countBySurveyOrderByCount(
                         genderStr(gender), countryStr(country),
-                        sourceCountryIds, candidateIds));
+                        sourceCountryIds, dateFrom, dateTo, candidateIds));
     }
 
     @Override
