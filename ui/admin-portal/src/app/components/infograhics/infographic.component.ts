@@ -79,17 +79,17 @@ export class InfographicComponent implements OnInit {
 
   get dateFrom(): string { return this.statsFilter.value.dateFrom; }
   get dateTo(): string { return this.statsFilter.value.dateTo; }
-  get savedListId(): number {
+  get savedList(): SavedList {
     const savedList: SavedList = this.statsFilter.value.savedList;
     //Control always returns an array
-    return savedList == null || isArray(savedList) && savedList.length === 0
-      ? null : savedList[0].id;
+    return (savedList == null || (isArray(savedList) && savedList.length === 0)
+    || savedList[0] == null)  ? null : savedList[0];
   }
-  get savedSearchId(): number {
+  get savedSearch(): SavedSearch {
     const savedSearch: SavedSearch = this.statsFilter.value.savedSearch;
     //Control always returns an array
-    return savedSearch == null || isArray(savedSearch) && savedSearch.length === 0
-      ? null : savedSearch[0].id;
+    return (savedSearch == null || (isArray(savedSearch) && savedSearch.length === 0)
+      || savedSearch[0] == null)  ? null : savedSearch[0];
   }
 
   private loadListsAndSearches() {
@@ -128,7 +128,7 @@ export class InfographicComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       const id: number = +params.get('id');
       const isSavedSearchId = params.get('source') === 'search';
-      if (id != null) {
+      if (id) {
         if (isSavedSearchId) {
           this.statsFilter.controls['savedSearch'].patchValue([findHasId(id, this.searches)]);
         } else {
@@ -145,8 +145,8 @@ export class InfographicComponent implements OnInit {
     this.loading = true;
 
     const request: CandidateStatsRequest = {
-      listId: this.savedListId,
-      searchId: this.savedSearchId,
+      listId: this.savedList == null ? null : this.savedList.id,
+      searchId: this.savedSearch == null ? null : this.savedSearch.id,
       dateFrom: this.dateFrom,
       dateTo: this.dateTo
     }
@@ -176,6 +176,12 @@ export class InfographicComponent implements OnInit {
       csv.push('"' + 'Exported Date' + '","' + new Date().toUTCString() + '"\n');
       csv.push('"' + 'Date From' + '","' + this.statsFilter.value.dateFrom + '"\n')
       csv.push('"' + 'Date To' + '","' + this.statsFilter.value.dateTo + '"\n')
+      if (this.savedList) {
+        //todo
+      }
+      if (this.savedSearch) {
+        //todo
+      }
       csv.push('\n');
 
       // Add data to export csv

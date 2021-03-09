@@ -28,9 +28,11 @@
         <!-- SAVED LIST -->
         <div>
           <label>List</label>
+          <!-- Disabled if saved search is entered -->
           <ng-multiselect-dropdown formControlName="savedList"
                                    id="savedList"
                                    [settings]="dropdownSettings"
+                                   [disabled]="savedSearch != null"
                                    [data]="lists">
           </ng-multiselect-dropdown>
         </div>
@@ -38,9 +40,11 @@
         <!-- SAVED SEARCH -->
         <div>
           <label>Search</label>
+          <!-- Disabled if saved list is entered -->
           <ng-multiselect-dropdown formControlName="savedSearch"
                                    id="savedSearch"
                                    [settings]="dropdownSettings"
+                                   [disabled]="savedList != null"
                                    [data]="searches">
           </ng-multiselect-dropdown>
         </div>
