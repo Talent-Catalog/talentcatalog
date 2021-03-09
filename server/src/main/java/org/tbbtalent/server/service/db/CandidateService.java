@@ -16,14 +16,6 @@
 
 package org.tbbtalent.server.service.db;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.security.GeneralSecurityException;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,25 +28,15 @@ import org.tbbtalent.server.model.db.DataRow;
 import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.request.LoginRequest;
-import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
-import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
-import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
-import org.tbbtalent.server.request.candidate.CandidatePhoneSearchRequest;
-import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
-import org.tbbtalent.server.request.candidate.IHasSetOfSavedLists;
-import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
-import org.tbbtalent.server.request.candidate.SavedListGetRequest;
-import org.tbbtalent.server.request.candidate.SavedSearchGetRequest;
-import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateContactRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateEducationRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateLinksRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
+import org.tbbtalent.server.request.candidate.*;
+import org.tbbtalent.server.request.candidate.stat.CandidateStatDateRequest;
 import org.tbbtalent.server.util.dto.DtoBuilder;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.security.GeneralSecurityException;
+import java.util.List;
+import java.util.Optional;
 
 public interface CandidateService {
 
@@ -85,7 +67,7 @@ public interface CandidateService {
             Pageable pageable, boolean logTotal, boolean createElastic);
 
     /**
-     * Returns the requested page of candidates which match the attributes in 
+     * Returns the requested page of candidates which match the attributes in
      * the request.
      * @param request Request specifying which candidates to return
      * @return Page of candidates
@@ -175,6 +157,12 @@ public interface CandidateService {
     Candidate updateAdditionalInfo(UpdateCandidateAdditionalInfoRequest request);
 
     Candidate updateCandidateSurvey(UpdateCandidateSurveyRequest request);
+
+    /**
+     * Returns a candidate once they have completed their registration
+     * <p/>
+     */
+    Candidate submitRegistration();
 
     /**
      * Returns the currently logged in candidate entity preloaded with
