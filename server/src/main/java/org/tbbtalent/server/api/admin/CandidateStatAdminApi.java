@@ -18,13 +18,11 @@ package org.tbbtalent.server.api.admin;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -84,20 +82,28 @@ public class CandidateStatAdminApi {
         List<Long> sourceCountryIds = getDefaultSourceCountryIds();
 
         //Check whether the requested data to report on is from a set of candidates
-        Collection<Candidate> candidates = null;
+        Set<Long> candidateIds = null;
         if (request.getListId() != null) {
+            //Get candidates from list
             SavedList list = savedListService.get(request.getListId());
-            candidates = list.getCandidates();
+            Set<Candidate> candidates = list.getCandidates();
+
+            candidateIds = new HashSet<>();
+            for (Candidate candidate : candidates) {
+                candidateIds.add(candidate.getId());
+            }
+            
         } else if (request.getSearchId() != null) {
-            candidates = candidateService.searchCandidates(request.getSearchId());
+            //Get candidates from search
+            candidateIds = candidateService.searchCandidates(request.getSearchId());
         }
 
         convertDateRangeDefaults(request);
 
         //Report based on set of candidates or date range
         List<StatReport> statReports;
-        if (candidates != null) {
-            statReports = createReports(request.getDateFrom(), request.getDateTo(),candidates, sourceCountryIds);
+        if (candidateIds != null) {
+            statReports = createReports(request.getDateFrom(), request.getDateTo(),  candidateIds, sourceCountryIds);
         } else {
             statReports = createReports(request.getDateFrom(), request.getDateTo(), sourceCountryIds); 
         }
@@ -235,17 +241,12 @@ public class CandidateStatAdminApi {
     private List<StatReport> createReports(            
         LocalDate dateFrom,
         LocalDate dateTo,
-        Collection<Candidate> candidates, 
+        Set<Long> candidateIds, 
         List<Long> sourceCountryIds) {
         
         String language;
         String title;
         String chartType;
-
-        Set<Long> candidateIds = new HashSet<>();
-        for (Candidate candidate : candidates) {
-            candidateIds.add(candidate.getId());
-        }
         
         List<StatReport> statReports = new ArrayList<>();
         chartType = "bar";

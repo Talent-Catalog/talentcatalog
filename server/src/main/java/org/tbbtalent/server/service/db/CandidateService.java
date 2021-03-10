@@ -87,12 +87,12 @@ public interface CandidateService {
             throws NoSuchObjectException;
 
     /**
-     * Returns all candidates matching the given saved search.
+     * Returns a set of the ids of all candidates matching the given saved search.
      * @param savedSearchId ID of saved search
-     * @return Candidates matching  search
+     * @return Candidate ids (NOT candidateNumbers) of candidates matching search
      * @throws NoSuchObjectException is no saved search exists with given id.
      */
-    List<Candidate> searchCandidates(long savedSearchId)
+    Set<Long> searchCandidates(long savedSearchId)
             throws NoSuchObjectException;
 
     Page<Candidate> searchCandidates(CandidateEmailSearchRequest request);

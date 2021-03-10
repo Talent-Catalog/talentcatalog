@@ -427,123 +427,17 @@ public class CandidateServiceImpl implements CandidateService {
         String simpleQueryString = request.getSimpleQueryString();
         if (simpleQueryString != null && simpleQueryString.length() > 0) {
             //This is an elastic search request
+            BoolQueryBuilder boolQueryBuilder = computeElasticQuery(request,
+                simpleQueryString);
 
-            //Support sorting 
+            //Define sort from request 
             PageRequest req = CandidateEs.convertToElasticSortField(request);
-
-            /*
-               Constructing a filtered simple query that looks like this:
-               
-               GET /candidates/_search
-                {
-                  "query": {
-                    "bool": {
-                      "must": [
-                        { "simple_query_string": {"query":"the +jet+ engine"}}
-                      ],
-                      "filter": [
-                        { "term":  { "status": "pending" }},
-                        { "range":  { "minEnglishSpokenLevel": {"gte": 2}}}
-                      ]
-                    }
-                  }
-                }
-             */
-
-            //Create a simple query string builder from the given string 
-            SimpleQueryStringBuilder simpleQueryStringBuilder =
-                    QueryBuilders.simpleQueryStringQuery(simpleQueryString);
-
-            //The simple query will be part of a composite query containing
-            //filters.
-            BoolQueryBuilder boolQueryBuilder =
-                    QueryBuilders.boolQuery().must(simpleQueryStringBuilder);
-
-            //Add filters - each filter must return true for a hit
-            //(Note: Filters are different from "Must" entries only in that
-            //they don't affect the Elasticsearch score)
-
-            //Add a TermsQuery filter for each multiselect request - eg
-            //countries and nationalities. A match against any one of the 
-            //multiselected values will result in the filter returning true.
-            //There is also a TermQuery which takes only one value.
-
-            //English levels
-            Integer minSpokenLevel = request.getEnglishMinSpokenLevel();
-            if (minSpokenLevel != null) {
-                boolQueryBuilder =
-                        addElasticRangeFilter(boolQueryBuilder,
-                                "minEnglishSpokenLevel",
-                                minSpokenLevel, null);
-            }
-            Integer minWrittenLevel = request.getEnglishMinWrittenLevel();
-            if (minWrittenLevel != null) {
-                boolQueryBuilder =
-                        addElasticRangeFilter(boolQueryBuilder,
-                                "minEnglishWrittenLevel",
-                                minWrittenLevel, null);
-            }
-
-            //Countries
-            final List<Long> countryIds = request.getCountryIds();
-            if (countryIds != null) {
-                //Look up country names from ids.
-                List<String> reqCountries = new ArrayList<>();
-                for (Long countryId : countryIds) {
-                    final Country country = countryService.getCountry(countryId);
-                    reqCountries.add(country.getName());
-                }
-                boolQueryBuilder =
-                        addElasticTermFilter(boolQueryBuilder,
-                                null,"country.keyword", reqCountries);
-            }
-
-            //Nationalities
-            final List<Long> nationalityIds = request.getNationalityIds();
-            if (nationalityIds != null) {
-                //Look up names from ids.
-                List<String> reqNationalities = new ArrayList<>();
-                for (Long id : nationalityIds) {
-                    final Nationality nationality = nationalityService.getNationality(id);
-                    reqNationalities.add(nationality.getName());
-                }
-                boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
-                        request.getNationalitySearchType(),
-                        "nationality.keyword", reqNationalities);
-            }
-
-            //Statuses
-            List<CandidateStatus> statuses = request.getStatuses();
-            if (request.getIncludeDraftAndDeleted() != null
-                    && request.getIncludeDraftAndDeleted()) {
-                if (statuses == null) {
-                    statuses = new ArrayList<>();
-                }
-                statuses.add(CandidateStatus.draft);
-                statuses.add(CandidateStatus.deleted);
-            }
-            if (statuses != null) {
-                //Extract names from enums
-                List<String> reqStatuses = new ArrayList<>();
-                for (CandidateStatus status : statuses) {
-                    reqStatuses.add(status.name());
-                }
-                boolQueryBuilder =
-                        addElasticTermFilter(boolQueryBuilder,
-                                null,"status.keyword", reqStatuses);
-            }
-
-            //Gender
-            Gender gender = request.getGender();
-            if (gender != null) {
-                boolQueryBuilder = boolQueryBuilder.filter(
-                        QueryBuilders.termQuery("gender", gender.name()));
-            }
 
             NativeSearchQuery query = new NativeSearchQueryBuilder()
                     .withQuery(boolQueryBuilder)
                     .withPageable(req)
                     .build();
+
             SearchHits<CandidateEs> hits = elasticsearchOperations.search(
                     query, CandidateEs.class, IndexCoordinates.of("candidates"));
 
@@ -553,6 +447,7 @@ public class CandidateServiceImpl implements CandidateService {
             for (SearchHit<CandidateEs> hit : hits) {
                 candidateIds.add(hit.getContent().getMasterId());
             }
+
             //Now fetch those candidates from the normal database
             //They will come back in random order
             List<Candidate> unsorted = candidateRepository.findByIds(candidateIds);
@@ -579,6 +474,119 @@ public class CandidateServiceImpl implements CandidateService {
         return candidates;
     }
 
+    private BoolQueryBuilder computeElasticQuery(SearchCandidateRequest request,
+        String simpleQueryString) {
+    /*
+       Constructing a filtered simple query that looks like this:
+       
+       GET /candidates/_search
+        {
+          "query": {
+            "bool": {
+              "must": [
+                { "simple_query_string": {"query":"the +jet+ engine"}}
+              ],
+              "filter": [
+                { "term":  { "status": "pending" }},
+                { "range":  { "minEnglishSpokenLevel": {"gte": 2}}}
+              ]
+            }
+          }
+        }
+     */
+
+        //Create a simple query string builder from the given string 
+        SimpleQueryStringBuilder simpleQueryStringBuilder =
+                QueryBuilders.simpleQueryStringQuery(simpleQueryString);
+
+        //The simple query will be part of a composite query containing
+        //filters.
+        BoolQueryBuilder boolQueryBuilder =
+                QueryBuilders.boolQuery().must(simpleQueryStringBuilder);
+
+        //Add filters - each filter must return true for a hit
+        //(Note: Filters are different from "Must" entries only in that
+        //they don't affect the Elasticsearch score)
+
+        //Add a TermsQuery filter for each multiselect request - eg
+        //countries and nationalities. A match against any one of the 
+        //multiselected values will result in the filter returning true.
+        //There is also a TermQuery which takes only one value.
+
+        //English levels
+        Integer minSpokenLevel = request.getEnglishMinSpokenLevel();
+        if (minSpokenLevel != null) {
+            boolQueryBuilder =
+                    addElasticRangeFilter(boolQueryBuilder,
+                            "minEnglishSpokenLevel",
+                            minSpokenLevel, null);
+        }
+        Integer minWrittenLevel = request.getEnglishMinWrittenLevel();
+        if (minWrittenLevel != null) {
+            boolQueryBuilder =
+                    addElasticRangeFilter(boolQueryBuilder,
+                            "minEnglishWrittenLevel",
+                            minWrittenLevel, null);
+        }
+
+        //Countries
+        final List<Long> countryIds = request.getCountryIds();
+        if (countryIds != null) {
+            //Look up country names from ids.
+            List<String> reqCountries = new ArrayList<>();
+            for (Long countryId : countryIds) {
+                final Country country = countryService.getCountry(countryId);
+                reqCountries.add(country.getName());
+            }
+            boolQueryBuilder =
+                    addElasticTermFilter(boolQueryBuilder,
+                            null,"country.keyword", reqCountries);
+        }
+
+        //Nationalities
+        final List<Long> nationalityIds = request.getNationalityIds();
+        if (nationalityIds != null) {
+            //Look up names from ids.
+            List<String> reqNationalities = new ArrayList<>();
+            for (Long id : nationalityIds) {
+                final Nationality nationality = nationalityService.getNationality(id);
+                reqNationalities.add(nationality.getName());
+            }
+            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
+                    request.getNationalitySearchType(),
+                    "nationality.keyword", reqNationalities);
+        }
+
+        //Statuses
+        List<CandidateStatus> statuses = request.getStatuses();
+        if (request.getIncludeDraftAndDeleted() != null
+                && request.getIncludeDraftAndDeleted()) {
+            if (statuses == null) {
+                statuses = new ArrayList<>();
+            }
+            statuses.add(CandidateStatus.draft);
+            statuses.add(CandidateStatus.deleted);
+        }
+        if (statuses != null) {
+            //Extract names from enums
+            List<String> reqStatuses = new ArrayList<>();
+            for (CandidateStatus status : statuses) {
+                reqStatuses.add(status.name());
+            }
+            boolQueryBuilder =
+                    addElasticTermFilter(boolQueryBuilder,
+                            null,"status.keyword", reqStatuses);
+        }
+
+        //Gender
+        Gender gender = request.getGender();
+        if (gender != null) {
+            boolQueryBuilder = boolQueryBuilder.filter(
+                    QueryBuilders.termQuery("gender", gender.name()));
+        }
+        return boolQueryBuilder;
+    }
+
     @Override
     public Page<Candidate> searchCandidates(
             long savedSearchId, SavedSearchGetRequest request)
@@ -601,19 +609,44 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<Candidate> searchCandidates(long savedSearchId)
+    public Set<Long> searchCandidates(long savedSearchId)
             throws NoSuchObjectException {
         SearchCandidateRequest searchRequest =
                 this.savedSearchService.loadSavedSearch(savedSearchId);
 
-        //Compute the query
-        final Specification<Candidate> query = computeQuery(searchRequest);
+        Set<Long> candidateIds = new HashSet<>();
+        String simpleQueryString = searchRequest.getSimpleQueryString();
+        if (simpleQueryString != null && simpleQueryString.length() > 0) {
+            //This is an elastic search request.
+            
+            BoolQueryBuilder boolQueryBuilder = computeElasticQuery(searchRequest,
+                simpleQueryString);
 
-        List<Candidate> candidates = candidateRepository.findAll(query);
+            NativeSearchQuery query = new NativeSearchQueryBuilder()
+                .withQuery(boolQueryBuilder)
+                .build();
 
-        log.info("Found " + candidates.size() + " candidates in search");
+            SearchHits<CandidateEs> hits = elasticsearchOperations.search(
+                query, CandidateEs.class, IndexCoordinates.of("candidates"));
 
-        return candidates;
+            //Get candidate ids from the returned results            
+            for (SearchHit<CandidateEs> hit : hits) {
+                candidateIds.add(hit.getContent().getMasterId());
+            }
+        } else {
+            //Compute the normal query
+            final Specification<Candidate> query = computeQuery(searchRequest);
+
+            List<Candidate> candidates = candidateRepository.findAll(query);
+
+            for (Candidate candidate : candidates) {
+                candidateIds.add(candidate.getId());
+            }
+        }
+
+        log.info("Found " + candidateIds.size() + " candidates in search");
+
+        return candidateIds;
     }
 
     @Override
