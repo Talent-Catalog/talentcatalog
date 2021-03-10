@@ -15,7 +15,7 @@
  */
 
 import {Component, Input, OnInit} from '@angular/core';
-import {ChartType} from "chart.js";
+import {ChartOptions, ChartType} from "chart.js";
 import {Label, MultiDataSet} from "ng2-charts";
 import {DataRow} from "../../../model/data-row";
 
@@ -26,22 +26,36 @@ import {DataRow} from "../../../model/data-row";
 })
 export class ChartComponent implements OnInit {
 
-  @Input() chartData : DataRow[];
+  @Input() chartData: DataRow[];
   @Input() chartType: ChartType = 'doughnut';
   @Input() chartLegend: boolean;
 
   chartLabels: Label[];
+  chartOptions: ChartOptions = {};
   chartMultiData: MultiDataSet;
 
   constructor() { }
 
   ngOnInit() {
     if (this.chartData){
-      let amountArray = [];
+      const amountArray = [];
       this.chartLabels = [];
       for (let i = 0; i < this.chartData.length; i++) {
         this.chartLabels.push(this.chartData[i] ? this.chartData[i].label : '');
         amountArray.push(this.chartData[i] ? this.chartData[i].value : '');
+      }
+      if (this.chartType === "bar") {
+        this.chartOptions = {
+          scales: {
+            yAxes: [
+              {
+                ticks: {
+                  min: 0,
+                }
+              }
+            ]
+          }
+        };
       }
       this.chartMultiData = [amountArray];
     }
