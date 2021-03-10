@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormControl} from "@angular/forms";
+import {LanguageService} from "../../../services/language.service";
 
 @Component({
   selector: 'app-date-picker',
@@ -10,9 +11,10 @@ export class DatePickerComponent implements OnInit {
   @Input() control: FormControl;
   date;
 
-  constructor() { }
+  constructor(private languageService: LanguageService) { }
 
   ngOnInit(): void {
+    this.date = this.control.value;
   }
 
   update() {

@@ -3,7 +3,7 @@
     <input class="form-control" placeholder="yyyy-mm-dd"
            name="dp" ngbDatepicker
            #picker="ngbDatepicker"
-           [(ngModel)]="control.value"
+           [(ngModel)]="date"
            (ngModelChange)="update()"
            (dateSelect)="control.markAsDirty()"
            [autoClose]="true"
