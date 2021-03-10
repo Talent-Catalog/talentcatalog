@@ -111,7 +111,6 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
   }
 
   startDateBeforeEndDate(from: string, to: string) {
-    console.log(from, to);
     return (group: FormGroup): { [key: string]: any } => {
       let f = group.controls[from];
       let t = group.controls[to];
@@ -130,7 +129,6 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
 
   save() {
     this.saving = true;
-    console.log(this.form.value);
     if (this.form.value.id) {
       this.jobExperienceService.updateJobExperience(this.form.value).subscribe(
         (response) => this.emitSaveEvent(response),
