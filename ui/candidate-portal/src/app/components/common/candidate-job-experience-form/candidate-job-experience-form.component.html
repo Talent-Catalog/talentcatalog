@@ -73,7 +73,7 @@
       <label for="startDate">
         {{ 'FORM.JOBEXPERIENCE.LABEL.STARTDATE' | translate }} <sup>*</sup>
       </label>
-      <app-month-picker id="startDate" [control]="form.get('startDate')"></app-month-picker>
+      <app-date-picker id="startDate" [control]="form.controls.startDate"></app-date-picker>
       <app-form-control-error [control]="form.controls.startDate"></app-form-control-error>
         <small *ngIf="form.hasError('invalidDate')">
           {{ 'FORM.ERROR.INVALIDDATERANGE' | translate }}
@@ -87,7 +87,7 @@
       <label for="endDate">
         {{ 'FORM.JOBEXPERIENCE.LABEL.ENDDATE' | translate }}
       </label>
-      <app-month-picker id="endDate" [control]="form.get('endDate')"></app-month-picker>
+      <app-date-picker id="endDate" [control]="form.controls.endDate"></app-date-picker>
       <app-form-control-error [control]="form.controls.endDate"></app-form-control-error>
 
     </div>
