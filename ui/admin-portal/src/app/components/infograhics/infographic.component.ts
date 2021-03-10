@@ -170,17 +170,15 @@ export class InfographicComponent implements OnInit {
 
       const csv: string[] = [];
 
-      //todo Need to add list save search names in here
-
       // Add date filter to export csv
       csv.push('"' + 'Exported Date' + '","' + new Date().toUTCString() + '"\n');
       csv.push('"' + 'Date From' + '","' + this.statsFilter.value.dateFrom + '"\n')
       csv.push('"' + 'Date To' + '","' + this.statsFilter.value.dateTo + '"\n')
       if (this.savedList) {
-        //todo
+        csv.push('"' + 'List' + '","' + this.savedList.name + '(' + this.savedList.id + ')"\n')
       }
       if (this.savedSearch) {
-        //todo
+        csv.push('"' + 'Search' + '","' + this.savedSearch.name + '(' + this.savedSearch.id + ')"\n')
       }
       csv.push('\n');
 
