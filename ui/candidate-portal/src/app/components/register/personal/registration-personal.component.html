@@ -71,31 +71,7 @@
     <div class="col-12 col-md-6">
       <div class="form-group">
         <label for="dob">{{ 'REGISTRATION.PERSONAL.LABEL.DOB' | translate }} <sup>*</sup></label>
-
-        <app-date-picker id="dob" [control]="form.get('dob')"></app-date-picker>
-
-<!--        <div class="input-group">-->
-<!--          <input id="dob2" type="text" class="form-control" placeholder="YYYY-MM-DD"-->
-<!--                 ngbDatepicker #picker="ngbDatepicker"-->
-<!--                 [formControlName]="'dob'"-->
-<!--                 (dateSelect)="form.controls.dob.markAsDirty()"-->
-<!--                 [autoClose]="true"-->
-<!--                 [outsideDays]="'hidden'"-->
-<!--                 [container]="'#dob'">-->
-
-<!--          <div class="input-group-append">-->
-<!--            <small class="btn btn-link text-secondary" *ngIf="form.controls.dob.value"-->
-<!--                   (click)="form.controls.dob.patchValue(null); form.controls.dob.markAsDirty();">-->
-<!--              <span>{{ 'FORM.LABEL.CLEAR' | translate }}</span>-->
-<!--            </small>-->
-
-<!--            <div class="btn btn-link" *ngIf="!form.controls.dob.value"-->
-<!--                 (click)="picker.toggle()">-->
-<!--              <span>{{ 'FORM.LABEL.CHOOSE' | translate}}</span>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </div>-->
-
+        <app-date-picker id="dob" [control]="form.controls.dob"></app-date-picker>
         <app-form-control-error [control]="form.controls.dob"></app-form-control-error>
       </div>
     </div>
