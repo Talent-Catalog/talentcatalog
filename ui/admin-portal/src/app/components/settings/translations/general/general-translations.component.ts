@@ -395,7 +395,8 @@ const ALL_FIELDS = {
         "OPTIONAL": null,
         "CLEAR": null,
         "CHOOSE": null,
-        "SAVE": null
+        "SAVE": null,
+        "APPROX": null
       },
       "ERROR": {
         "REQUIRED": null,

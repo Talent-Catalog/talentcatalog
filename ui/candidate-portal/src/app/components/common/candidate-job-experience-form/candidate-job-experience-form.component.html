@@ -75,10 +75,14 @@
       </label>
       <app-date-picker id="startDate" [control]="form.controls.startDate"></app-date-picker>
       <app-form-control-error [control]="form.controls.startDate"></app-form-control-error>
-        <small *ngIf="form.hasError('invalidDate')">
-          {{ 'FORM.ERROR.INVALIDDATERANGE' | translate }}
-        </small>
+      <p class="small mt-2 mb-0">
+        {{ 'FORM.LABEL.APPROX' | translate }}
+      </p>
+      <small *ngIf="form.hasError('invalidDate')">
+        {{ 'FORM.ERROR.INVALIDDATERANGE' | translate }}
+      </small>
     </div>
+
   </div>
 
   <!-- END DATE -->
@@ -89,9 +93,12 @@
       </label>
       <app-date-picker id="endDate" [control]="form.controls.endDate"></app-date-picker>
       <app-form-control-error [control]="form.controls.endDate"></app-form-control-error>
-
+      <p class="small mt-2 mb-0">
+        {{ 'FORM.LABEL.APPROX' | translate }}
+      </p>
     </div>
   </div>
+
 
   <!-- JOB TITLE -->
   <div class="col-12">
