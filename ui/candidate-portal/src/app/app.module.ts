@@ -21,7 +21,13 @@ import {AppComponent} from './components/app.component';
 import {LandingComponent} from './components/landing/landing.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
-import {NgbDateAdapter, NgbDateParserFormatter, NgbDatepickerConfig, NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {
+  NgbDateAdapter,
+  NgbDateParserFormatter,
+  NgbDatepickerConfig,
+  NgbDatepickerI18n,
+  NgbModule
+} from '@ng-bootstrap/ng-bootstrap';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha';
 
@@ -74,6 +80,7 @@ import {LanguageLoader} from "./services/language.loader";
 import {faSpinner} from "@fortawesome/free-solid-svg-icons/faSpinner";
 import {RegistrationUploadFileComponent} from './components/register/upload-file/registration-upload-file.component';
 import {DatePickerComponent} from './components/common/date-picker/date-picker.component';
+import {CustomDatepickerI18n} from "./util/custom-date-picker";
 
 @NgModule({
   declarations: [
@@ -144,6 +151,7 @@ import {DatePickerComponent} from './components/common/date-picker/date-picker.c
     {provide: RECAPTCHA_V3_SITE_KEY, useValue: '6Lc_97cZAAAAAIDqR7gT3h_ROGU6P7Jif-wEk9Vu'},
     {provide: NgbDateAdapter, useClass: CustomDateAdapter},
     {provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter},
+    {provide: NgbDatepickerI18n, useClass: CustomDatepickerI18n}
 
   ],
   bootstrap: [AppComponent]
