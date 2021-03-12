@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Candidate} from "../../../../../model/candidate";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -46,6 +46,7 @@ export class EditCandidateSpecialLinksComponent implements OnInit {
         sflink: [candidate.sflink],
         folderlink: [candidate.folderlink],
         videolink: [candidate.videolink],
+        linkedInLink: [candidate.linkedInLink],
       });
       this.loading = false;
     });

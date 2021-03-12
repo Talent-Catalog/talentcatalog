@@ -18,7 +18,8 @@
   <app-candidate-source
           [candidateSource]="candidateSource" [seeMore]="false" [showMore]="true"
           [showOpen]="true" [showDelete]="true" [showEdit]="true" [showCopy]="true"
-          (openSource)="openSource()"
+          [showRunStats]="true"
+          (openSource)="onOpenSource()"
           (toggleWatch)="onToggleWatch($event)"
           (deleteSource)="onDeleteSource($event)"
           (editSource)="onEditSource($event)"
@@ -89,6 +90,9 @@
           </a>
           <a *ngIf="candidate.videolink" [href]="candidate.videolink" target="_blank">
             <i class="fas fa-video" title="Show candidate's one way video"></i>
+          </a>
+          <a *ngIf="candidate.linkedInLink" [href]="candidate.linkedInLink" target="_blank">
+            <i class="fab fa-linkedin" title="Show candidate's one way video"></i>
           </a>
           <app-cv-icon
             *ngIf="isCandidateNameViewable()"

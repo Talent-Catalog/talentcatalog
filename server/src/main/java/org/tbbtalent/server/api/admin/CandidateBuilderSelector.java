@@ -16,13 +16,13 @@
 
 package org.tbbtalent.server.api.admin;
 
-import javax.validation.constraints.NotNull;
-
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.util.dto.DtoBuilder;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * Utility for selecting the right DTO build based on the currently logged in
@@ -68,6 +68,7 @@ public class CandidateBuilderSelector {
                 .add("address1")
                 .add("yearOfArrival")
                 .add("additionalInfo")
+                .add("linkedInLink")
                 .add("candidateMessage")
                 .add("folderlink")
                 .add("sflink")

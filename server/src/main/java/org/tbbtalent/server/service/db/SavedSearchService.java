@@ -16,8 +16,8 @@
 
 package org.tbbtalent.server.service.db;
 
+import java.util.List;
 import javax.validation.constraints.NotNull;
-
 import org.springframework.data.domain.Page;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
@@ -36,7 +36,21 @@ import org.tbbtalent.server.request.search.UpdateWatchingRequest;
 
 public interface SavedSearchService {
 
-    Page<SavedSearch> searchSavedSearches(SearchSavedSearchRequest request);
+    /**
+     * Searches for saved searches whose name and other attributes match the
+     * given search request.
+     * @param request Attributes to search on
+     * @return Matching saved searches.
+     */
+    List<SavedSearch> search(SearchSavedSearchRequest request);
+
+    /**
+     * Searches for a page of saved searches whose name and other attributes match the
+     * given search request.
+     * @param request Attributes to search on - including paging details
+     * @return Requested page of matching saved searches.
+     */
+    Page<SavedSearch> searchPaged(SearchSavedSearchRequest request);
 
     SearchCandidateRequest loadSavedSearch(long id);
 

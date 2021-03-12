@@ -28,7 +28,7 @@ import {
   ClearSelectionRequest,
   getCandidateSourceBreadcrumb,
   getCandidateSourceExternalHref,
-  getCandidateSourceNavigation,
+  getCandidateSourceNavigation, getCandidateSourceStatsNavigation,
   getSavedSearchBreadcrumb,
   getSavedSourceNavigation,
   isSavedSearch,
@@ -1035,6 +1035,12 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     if (savedSearchSource != null) {
       this.router.navigate(getSavedSourceNavigation(savedSearchSource));
     }
+  }
+
+  doRunStats() {
+    //Navigate to the infographics requesting it to run stats on this source.
+    const urlCommands = getCandidateSourceStatsNavigation(this.candidateSource);
+    this.router.navigate(urlCommands);
   }
 
   doSelectColumns() {

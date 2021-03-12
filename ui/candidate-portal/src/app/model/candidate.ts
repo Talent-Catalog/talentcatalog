@@ -46,6 +46,7 @@ export interface Candidate {
   maxEducationLevel: EducationLevel;
   candidateEducations: CandidateEducation[];
   additionalInfo: string;
+  linkedInLink: string;
   candidateMessage: string;
   surveyType: SurveyType;
   surveyComment: string;
@@ -86,4 +87,10 @@ export class SendResetPasswordEmailRequest {
   email: string;
   reCaptchaV3Token: string;
 }
+
+/**
+ * Defines the start of a linkedIn profile URL.
+ * Defined here in case the link structure changes so only needs changing in one place.
+ */
+export const linkedInUrl: string = 'https://www.linkedin.com/in/';
 

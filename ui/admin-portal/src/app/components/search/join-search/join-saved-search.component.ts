@@ -37,6 +37,7 @@ import {SavedSearch} from '../../../model/saved-search';
 import {SavedSearchService} from "../../../services/saved-search.service";
 import {Router} from "@angular/router";
 import {Observable, of} from "rxjs";
+import {SearchCandidateSourcesRequest} from "../../../model/base";
 
 @Component({
   selector: 'app-join-saved-search',
@@ -82,17 +83,21 @@ export class JoinSavedSearchComponent implements OnInit, OnChanges {
           this.searching = true;
           this.error = null
         }),
-        switchMap(term =>
-          this.savedSearchService.searchPaged({keyword: term, global: true, owned: true, shared: true}).pipe(
-            tap(() => this.searchFailed = false),
-            map(result =>
-              // filter to avoid circular reference exception by removing the same search as the loaded search
-              result.content.filter(content =>
-                content.id !== this.currentSavedSearchId)),
-            catchError(() => {
-              this.searchFailed = true;
-              return of([]);
-            }))
+        switchMap(term => {
+            const request: SearchCandidateSourcesRequest = {
+              keyword: term, global: true, owned: true, shared: true
+            }
+            return this.savedSearchService.searchPaged(request).pipe(
+              tap(() => this.searchFailed = false),
+              map(result =>
+                // filter to avoid circular reference exception by removing the same search as the loaded search
+                result.content.filter(content =>
+                  content.id !== this.currentSavedSearchId)),
+              catchError(() => {
+                this.searchFailed = true;
+                return of([]);
+              }));
+          }
         ),
         tap(() => this.searching = false)
       );

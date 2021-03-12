@@ -16,8 +16,6 @@
 
 <div class="container">
 
-
-    <h5 class="mb-3">{{ 'REGISTRATION.ATTACHMENTS.TITLE' | translate }}</h5>
     <div class="d-lg-none alert-warning">
       <p>{{ 'REGISTRATION.ATTACHMENTS.WARN.MOBILE' | translate }}</p>
     </div>
@@ -74,5 +72,5 @@
 
 <app-registration-footer [type]="edit ? 'update' : 'submit'"
                          (backClicked)="edit ? cancel() : back() "
-                         (nextClicked)="next()">
+                         (nextClicked)="edit ? update() : submit()">
 </app-registration-footer>

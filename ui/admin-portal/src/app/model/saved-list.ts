@@ -15,7 +15,7 @@
  */
 
 import {
-  CandidateSource,
+  CandidateSource, HasId,
   PagedSearchRequest,
   SearchCandidateSourcesRequest
 } from "./base";
@@ -34,15 +34,6 @@ export interface SavedList extends CandidateSource {
 
 export function isSavedList(source: CandidateSource): source is SavedList {
   return !isSavedSearch(source);
-}
-
-export function indexOfSavedList(savedListID: number, savedLists: SavedList[]): number {
-  for (let i = 0; i < savedLists.length; i++) {
-    if (savedLists[i].id === savedListID) {
-      return i;
-    }
-  }
-  return -1;
 }
 
 export interface CreateSavedListRequest extends UpdateSavedListInfoRequest {

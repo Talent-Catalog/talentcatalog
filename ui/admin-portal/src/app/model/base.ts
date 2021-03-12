@@ -54,6 +54,12 @@ export const salesforceUrlPattern: string =
 
 export const salesforceUrlRegExp: RegExp = new RegExp(salesforceUrlPattern);
 
+/**
+ * Defines the start of a linkedIn profile URL.
+ * Defined here in case the link structure changes so only needs changing in one place.
+ */
+export const linkedInUrl: string = 'https://www.linkedin.com/in/';
+
 export const defaultReviewStatusFilter: string[] = [
   ReviewedStatus[ReviewedStatus.pending],
   ReviewedStatus[ReviewedStatus.verified]
@@ -61,6 +67,20 @@ export const defaultReviewStatusFilter: string[] = [
 
 export interface HasId {
   id: number;
+}
+
+export function indexOfHasId(id: number, hasIds: HasId[]): number {
+  for (let i = 0; i < hasIds.length; i++) {
+    if (hasIds[i].id === id) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+export function findHasId(id: number, hasIds: HasId[]): HasId {
+  const idx = indexOfHasId(id, hasIds);
+  return idx < 0 ? null : hasIds[idx];
 }
 
 export interface Auditable extends HasId {

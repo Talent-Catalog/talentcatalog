@@ -49,6 +49,22 @@
         </div>
       </ng-container>
 
+      <div class="form-group">
+        <div>
+          <label for="linkedInLink">
+            {{ 'REGISTRATION.SUBMIT.LINKEDIN.LABEL' | translate }}
+          </label>
+        </div>
+        <div class="d-flex align-items-center">
+          <input type="text" class="form-control" id="linkedInLink"
+                 formControlName="linkedInLink" placeholder="https://www.linkedin.com/in/...">
+        </div>
+      </div>
+      <div *ngIf="form.controls.linkedInLink.invalid && (form.controls.linkedInLink.dirty || form.controls.linkedInLink.touched)"
+           class="alert alert-danger">
+        {{ 'REGISTRATION.SUBMIT.LINKEDIN.WARN' | translate }}
+      </div>
+
     </form>
 
   </ng-container>

@@ -185,187 +185,319 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     /**
      * ADMIN PORTAL INFOGRAPHICS METHODS: includes source country restrictions.
      */
-    
+
+    String candidatesCondition = " and c.id in (:candidateIds)";
     String countingStandardFilter = "u.status = 'active' and c.status != 'draft'";
-    String dateFilter = "u.created_date >= (:dateFrom) and u.created_date <= (:dateTo)";
+    String dateConditionFilter = " and u.created_date >= (:dateFrom) and u.created_date <= (:dateTo)";
     
     //Note that I have been forced to go to native queries for these more 
     //complex queries. The non native queries seem a bit buggy.
     //Anyway - I couldn't get them working. Simpler to use normal SQL. JC.
-    @Query(value = " select gender, count(distinct c) as PeopleCount" +
-            " from candidate c left join users u on c.user_id = u.id" +
-            " where c.country_id in (:sourceCountryIds)" +
-            " and " + countingStandardFilter +
-            " and " + dateFilter +
-            " group by gender order by PeopleCount desc",
-            nativeQuery = true)
-    List<Object[]> countByGenderOrderByCount(@Param("sourceCountryIds") List<Long> sourceCountryIds,
-                                             @Param("dateFrom") LocalDate dateFrom,
-                                             @Param("dateTo") LocalDate dateTo);
 
-    @Query(value = "select cast(extract(year from dob) as bigint) as year, " +
-            " count(distinct c) as PeopleCount" +
-            " from candidate c left join users u on c.user_id = u.id" +
-            " where c.country_id in (:sourceCountryIds)" +
-            " and " + countingStandardFilter +
-            " and " + dateFilter +
-            " and gender like :gender" +
-            " and dob is not null and extract(year from dob) > 1940 " +
-            " group by year order by year asc",
-    nativeQuery = true)
+
+    /***************************************************************************
+     Count By Birth Year
+     **************************************************************************/
+    String countByBirthYearSelectSQL =
+            "select cast(extract(year from dob) as bigint) as year, " +
+                    " count(distinct c) as PeopleCount" +
+                    " from candidate c left join users u on c.user_id = u.id" +
+                    " where c.country_id in (:sourceCountryIds)" +
+                    " and " + countingStandardFilter + dateConditionFilter +
+                    " and gender like :gender" +
+                    " and dob is not null and extract(year from dob) > 1940 ";
+    String countByBirthYearGroupBySQL = " group by year order by year asc";
+    @Query(value = countByBirthYearSelectSQL +
+            countByBirthYearGroupBySQL, nativeQuery = true)
     List<Object[]> countByBirthYearOrderByYear(@Param("gender") String gender,
                                                @Param("sourceCountryIds") List<Long> sourceCountryIds,
                                                @Param("dateFrom") LocalDate dateFrom,
                                                @Param("dateTo") LocalDate dateTo);
 
-    @Query(value = "select n.name, count(distinct c) as PeopleCount" +
-            " from candidate c left join users u on c.user_id = u.id" +
-            " left join nationality n on c.nationality_id = n.id " +
-            " left join country on c.country_id = country.id " +
-            " where c.country_id in (:sourceCountryIds) " +
-            " and " + countingStandardFilter +
-            " and " + dateFilter +
-            " and gender like :gender" +
-            " and lower(country.name) like :country" +
-            " group by n.name order by PeopleCount desc",
-    nativeQuery = true)
-    List<Object[]> countByNationalityOrderByCount(@Param("gender") String gender,
-                                                  @Param("country") String country,
-                                                  @Param("sourceCountryIds") List<Long> sourceCountryIds,
+    @Query(value = countByBirthYearSelectSQL + candidatesCondition +
+            countByBirthYearGroupBySQL, nativeQuery = true)
+    List<Object[]> countByBirthYearOrderByYear(@Param("gender") String gender,
+                                               @Param("sourceCountryIds") List<Long> sourceCountryIds,
+                                               @Param("dateFrom") LocalDate dateFrom,
+                                               @Param("dateTo") LocalDate dateTo,
+                                               @Param("candidateIds") Set<Long> candidateIds);
+
+
+    /***************************************************************************
+     Count By Created Date
+     **************************************************************************/
+    String countByCreatedDateSelectSQL = "select DATE(u.created_date), count(distinct u.id) as PeopleCount from users u " +
+            "left join candidate c on u.id = c.user_id " +
+            "where c.country_id in (:sourceCountryIds) " + dateConditionFilter;
+    String countByCreatedDateGroupBySQL = "group by DATE(u.created_date) " +
+            "order by DATE(u.created_date) asc;";
+    @Query(value = countByCreatedDateSelectSQL +
+            countByCreatedDateGroupBySQL, nativeQuery = true)
+    List<Object[]> countByCreatedDateOrderByCount(@Param("sourceCountryIds") List<Long> sourceCountryIds,
                                                   @Param("dateFrom") LocalDate dateFrom,
                                                   @Param("dateTo") LocalDate dateTo);
 
-    @Query(value = "select s.name, count(distinct c) as PeopleCount" +
-            " from candidate c left join users u on c.user_id = u.id" +
-            " left join survey_type s on c.survey_type_id = s.id " +
-            " left join country on c.country_id = country.id " +
-            " where c.country_id in (:sourceCountryIds)" +
-            " and " + countingStandardFilter +
-            " and " + dateFilter +
-            " and gender like :gender" +
-            " and lower(country.name) like :country" +
-            " group by s.name order by PeopleCount desc",
-    nativeQuery = true)
-    List<Object[]> countBySurveyOrderByCount(@Param("gender") String gender,
-                                             @Param("country") String country,
-                                             @Param("sourceCountryIds") List<Long> sourceCountryIds,
-                                             @Param("dateFrom") LocalDate dateFrom,
-                                             @Param("dateTo") LocalDate dateTo);
+    @Query(value = countByCreatedDateSelectSQL + candidatesCondition +
+            countByCreatedDateGroupBySQL, nativeQuery = true)
+    List<Object[]> countByCreatedDateOrderByCount(@Param("sourceCountryIds") List<Long> sourceCountryIds,
+        @Param("dateFrom") LocalDate dateFrom,
+        @Param("dateTo") LocalDate dateTo,
+                                                  @Param("candidateIds") Set<Long> candidateIds);
 
-    @Query( value="select case when max_education_level_id is null then 'Unknown' " +
+
+    /***************************************************************************
+        Count By Gender
+     **************************************************************************/
+    String countByGenderSelectSQL = 
+            "select gender, count(distinct c) as PeopleCount" +
+            " from candidate c left join users u on c.user_id = u.id" +
+            " where c.country_id in (:sourceCountryIds)" +
+                    " and " + countingStandardFilter + dateConditionFilter;
+    String countByGenderGroupBySQL =
+                    " group by gender order by PeopleCount desc";
+    
+    @Query(value = countByGenderSelectSQL +
+            countByGenderGroupBySQL, nativeQuery = true)
+    List<Object[]> countByGenderOrderByCount(
+            @Param("sourceCountryIds") List<Long> sourceCountryIds,
+            @Param("dateFrom") LocalDate dateFrom,
+            @Param("dateTo") LocalDate dateTo);
+
+    @Query(value = countByGenderSelectSQL + candidatesCondition +
+            countByGenderGroupBySQL, nativeQuery = true)
+    List<Object[]> countByGenderOrderByCount(
+            @Param("sourceCountryIds") List<Long> sourceCountryIds,
+        @Param("dateFrom") LocalDate dateFrom,
+        @Param("dateTo") LocalDate dateTo,
+            @Param("candidateIds") Set<Long> candidateIds);
+
+
+    /***************************************************************************
+     Count By Language
+     **************************************************************************/
+    String countByLanguageSelectSQL = "select l.name, count(distinct c) as PeopleCount" +
+            " from candidate c left join users u on c.user_id = u.id" +
+            " left join candidate_language cl on c.id = cl.candidate_id" +
+            " left join language l on cl.language_id = l.id" +
+            " where c.country_id in (:sourceCountryIds)" +
+            " and " + countingStandardFilter + dateConditionFilter +
+            " and gender like :gender";
+    String countByLanguageGroupBySQL = " group by l.name order by PeopleCount desc";
+    @Query(value = countByLanguageSelectSQL +
+            countByLanguageGroupBySQL, nativeQuery = true)
+    List<Object[]> countByLanguageOrderByCount(@Param("gender") String gender,
+                                               @Param("sourceCountryIds") List<Long> sourceCountryIds,
+                                               @Param("dateFrom") LocalDate dateFrom,
+                                               @Param("dateTo") LocalDate dateTo);
+    @Query(value = countByLanguageSelectSQL + candidatesCondition +
+            countByLanguageGroupBySQL, nativeQuery = true)
+    List<Object[]> countByLanguageOrderByCount(@Param("gender") String gender,
+                                               @Param("sourceCountryIds") List<Long> sourceCountryIds,
+        @Param("dateFrom") LocalDate dateFrom,
+        @Param("dateTo") LocalDate dateTo,
+                                               @Param("candidateIds") Set<Long> candidateIds);
+
+
+    /***************************************************************************
+     Count By Max Education
+     **************************************************************************/
+    String countByMaxEducationSelectSQL = "select case when max_education_level_id is null then 'Unknown' " +
             "else el.name end as EducationLevel, " +
             "       count(distinct user_id) as PeopleCount " +
             "from candidate c left join users u on c.user_id = u.id " +
             "left join education_level el on c.max_education_level_id = el.id " +
             " where c.country_id in (:sourceCountryIds)" +
-            " and " + countingStandardFilter +
-            " and " + dateFilter +
-            " and gender like :gender " +
-            "group by EducationLevel " +
-            "order by PeopleCount desc;",
-    nativeQuery = true)
+            " and " + countingStandardFilter + dateConditionFilter +
+            " and gender like :gender ";
+    String countByMaxEducationGroupBySQL = "group by EducationLevel " +
+            "order by PeopleCount desc;";
+    @Query(value = countByMaxEducationSelectSQL +
+            countByMaxEducationGroupBySQL, nativeQuery = true)
     List<Object[]> countByMaxEducationLevelOrderByCount(@Param("gender") String gender,
                                                         @Param("sourceCountryIds") List<Long> sourceCountryIds,
                                                         @Param("dateFrom") LocalDate dateFrom,
                                                         @Param("dateTo") LocalDate dateTo);
+    @Query(value = countByMaxEducationSelectSQL + candidatesCondition +
+            countByMaxEducationGroupBySQL, nativeQuery = true)
+    List<Object[]> countByMaxEducationLevelOrderByCount(@Param("gender") String gender,
+                                                        @Param("sourceCountryIds") List<Long> sourceCountryIds,
+        @Param("dateFrom") LocalDate dateFrom,
+        @Param("dateTo") LocalDate dateTo,
+                                                        @Param("candidateIds") Set<Long> candidateIds);
 
-    @Query(value = "select l.name, count(distinct c) as PeopleCount" +
-            " from candidate c left join users u on c.user_id = u.id" +
-            " left join candidate_language cl on c.id = cl.candidate_id" +
-            " left join language l on cl.language_id = l.id" +
-            " where c.country_id in (:sourceCountryIds)" +
-            " and " + countingStandardFilter +
-            " and " + dateFilter +
-            " and gender like :gender" +
-            " group by l.name order by PeopleCount desc",
-            nativeQuery = true)
-    List<Object[]> countByLanguageOrderByCount(@Param("gender") String gender,
-                                               @Param("sourceCountryIds") List<Long> sourceCountryIds,
-                                               @Param("dateFrom") LocalDate dateFrom,
-                                               @Param("dateTo") LocalDate dateTo);
-
-    @Query(value = "select ll.name, count(distinct c) as PeopleCount" +
-            " from candidate c left join users u on c.user_id = u.id" +
-            " left join candidate_language cl on c.id = cl.candidate_id" +
-            " left join language l on cl.language_id = l.id" +
-            " left join language_level ll on cl.spoken_level_id = ll.id" +
-            " where c.country_id in (:sourceCountryIds)" +
-            " and " + countingStandardFilter +
-            " and " + dateFilter +
-            " and gender like :gender" +
-            " and lower(l.name) = lower(:language)" +
-            " group by ll.name order by PeopleCount desc",
-            nativeQuery = true)
-    List<Object[]> countBySpokenLanguageLevelByCount(@Param("gender") String gender,
-                                                     @Param("language") String language,
-                                                     @Param("sourceCountryIds") List<Long> sourceCountryIds,
-                                                     @Param("dateFrom") LocalDate dateFrom,
-                                                     @Param("dateTo") LocalDate dateTo);
-
-    @Query( value="select o.name, " +
+    /***************************************************************************
+     Count By Most Common Occupation
+     **************************************************************************/
+    String countByMostCommonOccupationSelectSQL = "select o.name, " +
             "       count(distinct c) as PeopleCount " +
             "from candidate c left join users u on c.user_id = u.id " +
             "left join candidate_occupation co on c.id = co.candidate_id " +
             "left join occupation o on co.occupation_id = o.id " +
             " where c.country_id in (:sourceCountryIds)" +
-            " and " + countingStandardFilter +
-            " and " + dateFilter +
+            " and " + countingStandardFilter + dateConditionFilter +
             " and gender like :gender " +
-            "group by o.name " +
-            "order by PeopleCount desc;",
-            nativeQuery = true)
-    List<Object[]> countByOccupationOrderByCount(@Param("gender") String gender,
-                                                 @Param("sourceCountryIds") List<Long> sourceCountryIds,
-                                                 @Param("dateFrom") LocalDate dateFrom,
-                                                 @Param("dateTo") LocalDate dateTo);
+            "and not lower(o.name) in ('undefined', 'unknown')";
+    String countByMostCommonOccupationGroupBySQL = "group by o.name " +
+            "order by PeopleCount desc;";
     /**
      * This is the same as countByOccupationOrderByCount except that it excludes
      * undefined or unknown occupations (which unfortunately are common)
      * @param gender Gender filter or % if all genders
      * @return List of occupation name and count
      */
-    @Query( value="select o.name, " +
-            "       count(distinct c) as PeopleCount " +
-            "from candidate c left join users u on c.user_id = u.id " +
-            "left join candidate_occupation co on c.id = co.candidate_id " +
-            "left join occupation o on co.occupation_id = o.id " +
-            " where c.country_id in (:sourceCountryIds)" +
-            " and " + countingStandardFilter +
-            " and " + dateFilter +
-            " and gender like :gender " +
-            "and not lower(o.name) in ('undefined', 'unknown')" +
-            "group by o.name " +
-            "order by PeopleCount desc;",
-            nativeQuery = true)
+    @Query(value = countByMostCommonOccupationSelectSQL +
+            countByMostCommonOccupationGroupBySQL, nativeQuery = true)
     List<Object[]> countByMostCommonOccupationOrderByCount(@Param("gender") String gender,
                                                            @Param("sourceCountryIds") List<Long> sourceCountryIds,
                                                            @Param("dateFrom") LocalDate dateFrom,
                                                            @Param("dateTo") LocalDate dateTo);
+    @Query(value = countByMostCommonOccupationSelectSQL + candidatesCondition +
+            countByMostCommonOccupationGroupBySQL, nativeQuery = true)
+    List<Object[]> countByMostCommonOccupationOrderByCount(@Param("gender") String gender,
+                                                           @Param("sourceCountryIds") List<Long> sourceCountryIds,
+        @Param("dateFrom") LocalDate dateFrom,
+        @Param("dateTo") LocalDate dateTo,
+                                                           @Param("candidateIds") Set<Long> candidateIds);
 
-    @Query( value="select DATE(u.created_date), count(distinct u.id) as PeopleCount from users u " +
-            "left join candidate c on u.id = c.user_id " +
-            "where c.country_id in (:sourceCountryIds) " +
-            "and " + dateFilter +
-            "group by DATE(u.created_date) " +
-            "order by DATE(u.created_date) asc;",
-            nativeQuery = true)
-    List<Object[]> countByCreatedDateOrderByCount(@Param("sourceCountryIds") List<Long> sourceCountryIds,
+    /***************************************************************************
+     Count By Nationality
+     **************************************************************************/
+    String countByNationalitySelectSQL = "select n.name, count(distinct c) as PeopleCount" +
+            " from candidate c left join users u on c.user_id = u.id" +
+            " left join nationality n on c.nationality_id = n.id " +
+            " left join country on c.country_id = country.id " +
+            " where c.country_id in (:sourceCountryIds) " +
+            " and " + countingStandardFilter + dateConditionFilter +
+            " and gender like :gender" +
+            " and lower(country.name) like :country";
+    String countByNationalityGroupBySQL = " group by n.name order by PeopleCount desc";
+    @Query(value = countByNationalitySelectSQL +
+            countByNationalityGroupBySQL, nativeQuery = true)
+    List<Object[]> countByNationalityOrderByCount(@Param("gender") String gender,
+                                                  @Param("country") String country,
+                                                  @Param("sourceCountryIds") List<Long> sourceCountryIds,
                                                   @Param("dateFrom") LocalDate dateFrom,
                                                   @Param("dateTo") LocalDate dateTo);
+    @Query(value = countByNationalitySelectSQL + candidatesCondition +
+            countByNationalityGroupBySQL, nativeQuery = true)
+    List<Object[]> countByNationalityOrderByCount(@Param("gender") String gender,
+                                                  @Param("country") String country,
+                                                  @Param("sourceCountryIds") List<Long> sourceCountryIds,
+        @Param("dateFrom") LocalDate dateFrom,
+        @Param("dateTo") LocalDate dateTo,
+                                                  @Param("candidateIds") Set<Long> candidateIds);
 
-    @Query( value="select o.name, " +
+
+
+    /***************************************************************************
+     Count By Occupation/Gender
+     **************************************************************************/
+    String countByOccupationGenderSelectSQL = "select o.name, " +
             "       count(distinct c) as PeopleCount " +
             "from candidate c left join users u on c.user_id = u.id " +
             "left join candidate_occupation co on c.id = co.candidate_id " +
             "left join occupation o on co.occupation_id = o.id " +
             " where c.country_id in (:sourceCountryIds)" +
-            " and " + countingStandardFilter +
-            " and " + dateFilter +
-            " group by o.name " +
-            "order by PeopleCount desc;",
-            nativeQuery = true)
+            " and " + countingStandardFilter + dateConditionFilter +
+            " and gender like :gender ";
+    String countByOccupationGenderGroupBySQL = "group by o.name " +
+            "order by PeopleCount desc;";
+    @Query(value = countByOccupationGenderSelectSQL +
+            countByOccupationGenderGroupBySQL, nativeQuery = true)
+    List<Object[]> countByOccupationOrderByCount(@Param("gender") String gender,
+                                                 @Param("sourceCountryIds") List<Long> sourceCountryIds,
+                                                 @Param("dateFrom") LocalDate dateFrom,
+                                                 @Param("dateTo") LocalDate dateTo);
+    @Query(value = countByOccupationGenderSelectSQL + candidatesCondition +
+            countByOccupationGenderGroupBySQL, nativeQuery = true)
+    List<Object[]> countByOccupationOrderByCount(@Param("gender") String gender,
+                                                 @Param("sourceCountryIds") List<Long> sourceCountryIds,
+        @Param("dateFrom") LocalDate dateFrom,
+        @Param("dateTo") LocalDate dateTo,
+                                                 @Param("candidateIds") Set<Long> candidateIds);
+
+
+
+    /***************************************************************************
+     Count By Occupation
+     **************************************************************************/
+    String countByOccupationSelectSQL = "select o.name, " +
+            "       count(distinct c) as PeopleCount " +
+            "from candidate c left join users u on c.user_id = u.id " +
+            "left join candidate_occupation co on c.id = co.candidate_id " +
+            "left join occupation o on co.occupation_id = o.id " +
+            " where c.country_id in (:sourceCountryIds)" +
+            " and " + countingStandardFilter + dateConditionFilter;
+    String countByOccupationGroupBySQL = " group by o.name " +
+            "order by PeopleCount desc;";
+    @Query(value = countByOccupationSelectSQL +
+            countByOccupationGroupBySQL, nativeQuery = true)
     List<Object[]> countByOccupationOrderByCount(@Param("sourceCountryIds") List<Long> sourceCountryIds,
                                                  @Param("dateFrom") LocalDate dateFrom,
                                                  @Param("dateTo") LocalDate dateTo);
+    @Query(value = countByOccupationSelectSQL + candidatesCondition +
+            countByOccupationGroupBySQL, nativeQuery = true)
+    List<Object[]> countByOccupationOrderByCount(@Param("sourceCountryIds") List<Long> sourceCountryIds,
+        @Param("dateFrom") LocalDate dateFrom,
+        @Param("dateTo") LocalDate dateTo,
+                                                 @Param("candidateIds") Set<Long> candidateIds);
 
+
+    /***************************************************************************
+     Count By Spoken Language
+     **************************************************************************/
+    String countBySpokenLanguageSelectSQL = "select ll.name, count(distinct c) as PeopleCount" +
+            " from candidate c left join users u on c.user_id = u.id" +
+            " left join candidate_language cl on c.id = cl.candidate_id" +
+            " left join language l on cl.language_id = l.id" +
+            " left join language_level ll on cl.spoken_level_id = ll.id" +
+            " where c.country_id in (:sourceCountryIds)" +
+            " and " + countingStandardFilter + dateConditionFilter +
+            " and gender like :gender" +
+            " and lower(l.name) = lower(:language)";
+    String countBySpokenLanguageGroupBySQL = " group by ll.name order by PeopleCount desc";
+    @Query(value = countBySpokenLanguageSelectSQL +
+            countBySpokenLanguageGroupBySQL, nativeQuery = true)
+    List<Object[]> countBySpokenLanguageLevelByCount(@Param("gender") String gender,
+                                                     @Param("language") String language,
+                                                     @Param("sourceCountryIds") List<Long> sourceCountryIds,
+                                                     @Param("dateFrom") LocalDate dateFrom,
+                                                     @Param("dateTo") LocalDate dateTo);
+    @Query(value = countBySpokenLanguageSelectSQL + candidatesCondition +
+            countBySpokenLanguageGroupBySQL, nativeQuery = true)
+    List<Object[]> countBySpokenLanguageLevelByCount(@Param("gender") String gender,
+                                                     @Param("language") String language,
+                                                     @Param("sourceCountryIds") List<Long> sourceCountryIds,
+        @Param("dateFrom") LocalDate dateFrom,
+        @Param("dateTo") LocalDate dateTo,
+                                                     @Param("candidateIds") Set<Long> candidateIds);
+
+
+    /***************************************************************************
+     Count By Survey
+     **************************************************************************/
+    String countBySurveySelectSQL = "select s.name, count(distinct c) as PeopleCount" +
+            " from candidate c left join users u on c.user_id = u.id" +
+            " left join survey_type s on c.survey_type_id = s.id " +
+            " left join country on c.country_id = country.id " +
+            " where c.country_id in (:sourceCountryIds)" +
+            " and " + countingStandardFilter + dateConditionFilter +
+            " and gender like :gender" +
+            " and lower(country.name) like :country";
+    String countBySurveyGroupBySQL = " group by s.name order by PeopleCount desc";
+    @Query(value = countBySurveySelectSQL +
+            countBySurveyGroupBySQL, nativeQuery = true)
+    List<Object[]> countBySurveyOrderByCount(@Param("gender") String gender,
+                                             @Param("country") String country,
+                                             @Param("sourceCountryIds") List<Long> sourceCountryIds,
+                                             @Param("dateFrom") LocalDate dateFrom,
+                                             @Param("dateTo") LocalDate dateTo);
+    @Query(value = countBySurveySelectSQL + candidatesCondition +
+            countBySurveyGroupBySQL, nativeQuery = true)
+    List<Object[]> countBySurveyOrderByCount(@Param("gender") String gender,
+                                             @Param("country") String country,
+                                             @Param("sourceCountryIds") List<Long> sourceCountryIds,
+        @Param("dateFrom") LocalDate dateFrom,
+        @Param("dateTo") LocalDate dateTo,
+                                             @Param("candidateIds") Set<Long> candidateIds);
 }

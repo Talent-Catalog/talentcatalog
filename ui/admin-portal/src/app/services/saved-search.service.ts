@@ -25,11 +25,12 @@ import {
   SavedSearchRequest,
   SavedSearchSubtype,
   SavedSearchType,
-  SaveSelectionRequest,
+  SaveSelectionRequest, SearchSavedSearchRequest,
   SelectCandidateInSearchRequest
 } from "../model/saved-search";
 import {map} from "rxjs/operators";
 import {SavedList} from "../model/saved-list";
+import {SearchCandidateSourcesRequest} from "../model/base";
 
 export interface CreateFromDefaultSavedSearchRequest {
   savedListId: number;
@@ -102,18 +103,28 @@ export class SavedSearchService {
     return this.savedSearchTypeInfos;
   }
 
-  searchPaged(request): Observable<SearchResults<SavedSearch>> {
-    return this.http.post<SearchResults<SavedSearch>>(`${this.apiUrl}/search-paged`, request)
+  search(request): Observable<SavedSearch[]> {
+    return this.http.post<SavedSearch[]>(`${this.apiUrl}/search`, request)
       .pipe(
         map(results => this.processPostResults(results))
       );
   }
 
-  processPostResults(results: SearchResults<SavedSearch>): SearchResults<SavedSearch> {
-    for (let savedSearch of results.content) {
+  searchPaged(request): Observable<SearchResults<SavedSearch>> {
+    return this.http.post<SearchResults<SavedSearch>>(`${this.apiUrl}/search-paged`, request)
+      .pipe(
+        map(results => {
+          results.content = this.processPostResults(results.content);
+          return results;
+        })
+      );
+  }
+
+  processPostResults(content: SavedSearch[]): SavedSearch[] {
+    for (let savedSearch of content) {
       savedSearch = SavedSearchService.convertSavedSearchEnums(savedSearch);
     }
-    return results;
+    return content;
   };
 
   load(id: number): Observable<any> {

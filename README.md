@@ -16,6 +16,12 @@ to the REST API endpoints under `/api/candidate` provided by the server.
 - **admin-portal**: the frontend module through which TBB staff are able to view, manage and annotate 
 candidate details. This is written in Angular and connects to the REST API endpoints under 
 `/api/admin` provided by the server.
+
+## Contributing ##
+
+Contributions are very welcome. Please see 
+[our contribution guidelines](CONTRIBUTING.md). 
+They should be submitted as pull request.
      
 ## How do I get set up? ##
 

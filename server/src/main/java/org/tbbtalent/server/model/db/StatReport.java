@@ -18,9 +18,38 @@ package org.tbbtalent.server.model.db;
 
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+/**
+ * A statistical report - in the form of a list of data points 
+ * - typically counts - in the form of {@link DataRow}s.
+ * <p/>
+ * Also includes a recommended chartType suited to displaying the data.
+ */
+@Getter
+@Setter
+@ToString
 public class StatReport {
+    /**
+     * Name of report
+     */
     String name;
+
+    /**
+     * Data points
+     */
     List<DataRow> rows;
+
+    /**
+     * Recommended chart type for display.
+     * <p/>
+     * Currently supported types are:
+     * 'line' | 'bar' | 'horizontalBar' | 'radar' | 'doughnut' | 'polarArea' | 'bubble' | 'pie' | 'scatter'
+     * These come from https://www.chartjs.org/ which is what is used to
+     * actually display the data on the Angular front end.
+     */
     String chartType;
 
     public StatReport(String name, List<DataRow> rows, String chartType) {
@@ -31,29 +60,5 @@ public class StatReport {
 
     public StatReport(String name, List<DataRow> rows) {
         this(name, rows, "doughnut");
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<DataRow> getRows() {
-        return rows;
-    }
-
-    public void setRows(List<DataRow> rows) {
-        this.rows = rows;
-    }
-
-    public String getChartType() {
-        return chartType;
-    }
-
-    public void setChartType(String chartType) {
-        this.chartType = chartType;
     }
 }

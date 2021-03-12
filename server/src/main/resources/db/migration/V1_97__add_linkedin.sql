@@ -14,28 +14,4 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
-import {environment} from '../../environments/environment';
-import {HttpClient} from '@angular/common/http';
-import {StatReport} from "../model/stat-report";
-
-export interface CandidateStatsRequest {
-  listId?: number;
-  searchId?: number;
-  dateFrom?: string;
-  dateTo?: string;
-}
-
-@Injectable({providedIn: 'root'})
-export class CandidateStatService {
-
-  private apiUrl = environment.apiUrl + '/candidate/stat';
-
-  constructor(private http: HttpClient) {}
-
-  getAllStats(details: CandidateStatsRequest): Observable<StatReport[]> {
-    return this.http.post<StatReport[]>(`${this.apiUrl}/all`, details);
-  }
-
-}
+alter table candidate add column linked_in_profile text;

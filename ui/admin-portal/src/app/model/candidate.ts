@@ -44,6 +44,7 @@ export interface Candidate {
   candidateReviewStatusItems: CandidateReviewStatusItem[];
   migrationEducationMajor: EducationMajor;
   additionalInfo: string;
+  linkedInLink: string;
   candidateMessage: string;
   maxEducationLevel: EducationLevel;
   folderlink: string;

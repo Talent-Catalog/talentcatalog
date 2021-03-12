@@ -51,7 +51,7 @@
                       (pageChange)="doSearch(true)">
       </ngb-pagination>
 
-      <button class="btn" (click)="doCopyLink()">
+      <button class="btn" *ngIf="!isDefaultSavedSearch()" (click)="doCopyLink()">
         <i class="fas fa-link" title="Get shareable link"></i>
       </button>
       <button class="btn" *ngIf="hasSavedSearchSource()" (click)="doShowSearch()">
@@ -62,6 +62,9 @@
       </button>
       <button class="btn" (click)="doSelectColumns()">
         <i class="fas fa-columns" title="Select columns to display"></i>
+      </button>
+      <button class="btn" *ngIf="!isDefaultSavedSearch()" (click)="doRunStats()">
+        <i class="fas fa-chart-bar" title="Run stats"></i>
       </button>
       <a *ngIf="candidateSource?.sfJoblink" target="_blank"
          [href]="candidateSource.sfJoblink">
@@ -198,6 +201,9 @@
               </a>
               <a *ngIf="candidate.videolink" [href]="candidate.videolink" target="_blank">
                 <i class="fas fa-video" title="Show candidate's one way video"></i>
+              </a>
+              <a *ngIf="candidate.linkedInLink" [href]="candidate.linkedInLink" target="_blank">
+                <i class="fab fa-linkedin" title="Show candidate's one way video"></i>
               </a>
               <app-cv-icon
                 *ngIf="isCandidateNameViewable()"

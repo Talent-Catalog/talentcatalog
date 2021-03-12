@@ -14,7 +14,7 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="row align-items-center">
+<div class="row align-items-center d-flex justify-content-between">
   <div class="col-sm-12 col-md-6">
     <button class="btn btn-outline-secondary" [disabled]="!dataLoaded" (click)="exportStats()">
       <i class="fas fa-file-excel"></i> Export
@@ -22,33 +22,69 @@
   </div>
 
   <div class="col-sm-12 col-md-6">
-    <form [formGroup]="dateFilter">
-      <div class="form-row d-flex align-items-end">
-        <!-- DATE FROM -->
-        <div class="form-group col-sm-12 col-md-5 mr-3">
-          <label for="dateFrom">Date From:</label>
-          <app-date-picker id="dateFrom" [control]="dateFilter.controls.dateFrom" [allowFuture]="false"></app-date-picker>
+    <form [formGroup]="statsFilter">
+
+      <div class="d-flex mb-2">
+        <!-- SAVED LIST -->
+        <div class="flex-fill mr-2">
+          <label>List</label>
+          <!-- Disabled if saved search is entered -->
+          <ng-multiselect-dropdown formControlName="savedList"
+                                   id="savedList"
+                                   [settings]="dropdownSettings"
+                                   [disabled]="savedSearch != null"
+                                   [data]="lists">
+          </ng-multiselect-dropdown>
         </div>
-        <!-- DATE TO -->
-        <div class="form-group col-sm-12 col-md-5">
-          <label for="dateTo">Date To:</label>
-          <app-date-picker id="dateTo" [control]="dateFilter.controls.dateTo" [allowFuture]="false"></app-date-picker>
-        </div>
-        <div class="form-group ">
-          <button class="btn btn-outline-secondary" (click)="submitDate()">
-            <i class="fas fa-calendar-alt"></i> Filter
-          </button>
+
+        <!-- SAVED SEARCH -->
+        <div class="flex-fill">
+          <label>Search</label>
+          <!-- Disabled if saved list is entered -->
+          <ng-multiselect-dropdown formControlName="savedSearch"
+                                   id="savedSearch"
+                                   [settings]="dropdownSettings"
+                                   [disabled]="savedList != null"
+                                   [data]="searches">
+          </ng-multiselect-dropdown>
         </div>
       </div>
+
+      <div class="d-flex mb-2">
+        <!-- DATE FROM -->
+        <div class="flex-fill mr-2">
+          <label for="dateFrom">Date From:</label>
+          <input type="date" id="dateFrom" class="form-control" [formControlName]="'dateFrom'" datepicker-popup
+                 is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions"
+                 date-disabled="disabled(date, mode)" ng-required="true" close-text="Close"/>
+        </div>
+        <!-- DATE TO -->
+        <div class="flex-fill">
+          <label for="dateTo">Date To:</label>
+          <input type="date" id="dateTo" class="form-control" [formControlName]="'dateTo'" datepicker-popup
+                 is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions"
+                 date-disabled="disabled(date, mode)" ng-required="true" close-text="Close"/>
+        </div>
+
+      </div>
+
+
     </form>
+    <div class="d-flex justify-content-between">
+      <div class="text-muted small">
+        <p>Notes: Either List or Search can be specified, but not both.
+          Default date filters go from start of registrations to today's date.</p>
+      </div>
+
+        <button class="btn btn-outline-secondary" (click)="submitStatsRequest()">
+          <i class="fas fa-calendar-alt"></i> Filter
+        </button>
+
+    </div>
   </div>
 
 </div>
-<div class="row">
-  <div class="col-12 text-right text-muted small">
-    <p>Note: Default filters go from start of registrations to today's date.</p>
-  </div>
-</div>
+
 
 <ng-container *ngIf="loading">
   <i class="fas fa-spinner fa-spin"></i>

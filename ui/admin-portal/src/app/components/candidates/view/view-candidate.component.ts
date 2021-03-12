@@ -88,7 +88,7 @@ export class ViewCandidateComponent implements OnInit {
   ngOnInit() {
     this.refreshCandidateInfo();
     this.loggedInUser = this.authService.getLoggedInUser();
-    this.selectDefaultTab()
+    this.selectDefaultTab();
   }
 
   refreshCandidateInfo() {

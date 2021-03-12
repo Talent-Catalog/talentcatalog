@@ -18,16 +18,37 @@ package org.tbbtalent.server.request.candidate.stat;
 
 import java.time.LocalDate;
 
-public class CandidateStatDateRequest {
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
+@Getter
+@Setter
+@ToString
+public class CandidateStatsRequest {
+
+    /**
+     * If not null, stats are computed on candidates in the corresponding list.
+     */
+    private Long listId;
+
+    /**
+     * If not null, stats are computed on candidates in the corresponding saved search.
+     */
+    private Long searchId;
+
+    /**
+     * Start date for stats.
+     * <p/>
+     * If null, then start from earliest data.
+     */
     private LocalDate dateFrom;
+
+    /**
+     * End date for stats.
+     * <p/>
+     * If null, then we report up to most recent data
+     */
     private LocalDate dateTo;
 
-    public LocalDate getDateFrom() { return dateFrom; }
-
-    public void setDateFrom(LocalDate dateFrom) { this.dateFrom = dateFrom; }
-
-    public LocalDate getDateTo() { return dateTo; }
-
-    public void setDateTo(LocalDate dateTo) { this.dateTo = dateTo; }
 }
