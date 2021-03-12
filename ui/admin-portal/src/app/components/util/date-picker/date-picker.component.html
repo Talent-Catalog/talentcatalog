@@ -1,0 +1,23 @@
+<div class="input-group">
+  <input class="form-control" placeholder="yyyy-mm-dd"
+         name="dp" ngbDatepicker
+         #picker="ngbDatepicker"
+         [(ngModel)]="date"
+         (ngModelChange)="update()"
+         (dateSelect)="control.markAsDirty()"
+         [autoClose]="true"
+         [outsideDays]="'hidden'"
+         [minDate]="minDate"
+         [maxDate]="maxDate">
+  <div class="input-group-append">
+    <small class="btn btn-link text-secondary"
+           (click)="clear()">
+      <span>Clear</span>
+    </small>
+
+    <div class="btn btn-link"
+         (click)="picker.toggle()">
+      <span>Choose</span>
+    </div>
+  </div>
+</div>
