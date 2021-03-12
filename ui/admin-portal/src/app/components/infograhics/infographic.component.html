@@ -54,35 +54,26 @@
         <!-- DATE FROM -->
         <div class="flex-fill mr-2">
           <label for="dateFrom">Date From:</label>
-          <input type="date" id="dateFrom" class="form-control" [formControlName]="'dateFrom'" datepicker-popup
-                 is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions"
-                 date-disabled="disabled(date, mode)" ng-required="true" close-text="Close"/>
+          <app-date-picker id="dateFrom" [control]="statsFilter.controls.dateFrom" [allowFuture]="false"></app-date-picker>
         </div>
         <!-- DATE TO -->
         <div class="flex-fill">
           <label for="dateTo">Date To:</label>
-          <input type="date" id="dateTo" class="form-control" [formControlName]="'dateTo'" datepicker-popup
-                 is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions"
-                 date-disabled="disabled(date, mode)" ng-required="true" close-text="Close"/>
+          <app-date-picker id="dateTo" [control]="statsFilter.controls.dateTo" [allowFuture]="false"></app-date-picker>
         </div>
 
       </div>
-
-
     </form>
-    <div class="d-flex justify-content-between">
-      <div class="text-muted small">
-        <p>Notes: Either List or Search can be specified, but not both.
-          Default date filters go from start of registrations to today's date.</p>
-      </div>
 
-        <button class="btn btn-outline-secondary" (click)="submitStatsRequest()">
-          <i class="fas fa-calendar-alt"></i> Filter
-        </button>
-
+    <div class="text-muted small">
+      <p>Notes: Either List or Search can be specified, but not both.
+        Default date filters go from start of registrations to today's date.</p>
     </div>
-  </div>
+    <button class="btn btn-outline-secondary" (click)="submitStatsRequest()">
+      <i class="fas fa-calendar-alt"></i> Filter
+    </button>
 
+  </div>
 </div>
 
 
