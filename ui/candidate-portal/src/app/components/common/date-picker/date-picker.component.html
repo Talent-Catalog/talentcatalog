@@ -6,7 +6,9 @@
          (ngModelChange)="update()"
          (dateSelect)="control.markAsDirty()"
          [autoClose]="true"
-         [outsideDays]="'hidden'">
+         [outsideDays]="'hidden'"
+         [minDate]="minDate"
+         [maxDate]="maxDate">
   <div class="input-group-append">
     <small class="btn btn-link text-secondary"
            (click)="clear()">

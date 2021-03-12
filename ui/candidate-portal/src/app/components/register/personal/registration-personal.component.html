@@ -71,7 +71,7 @@
     <div class="col-12 col-md-6">
       <div class="form-group">
         <label for="dob">{{ 'REGISTRATION.PERSONAL.LABEL.DOB' | translate }} <sup>*</sup></label>
-        <app-date-picker id="dob" [control]="form.controls.dob"></app-date-picker>
+        <app-date-picker id="dob" [control]="form.controls.dob" [allowFuture]="false"></app-date-picker>
         <app-form-control-error [control]="form.controls.dob"></app-form-control-error>
       </div>
     </div>
