@@ -25,20 +25,16 @@
     <form [formGroup]="dateFilter">
       <div class="form-row d-flex align-items-end">
         <!-- DATE FROM -->
-        <div class="form-group form-inline justify-content-end col-sm-12 col-md-5">
+        <div class="form-group col-sm-12 col-md-5 mr-3">
           <label for="dateFrom">Date From:</label>
-          <input type="date" id="dateFrom" class="form-control" [formControlName]="'dateFrom'" datepicker-popup
-                 is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions"
-                 date-disabled="disabled(date, mode)" ng-required="true" close-text="Close"/>
+          <app-date-picker id="dateFrom" [control]="dateFilter.controls.dateFrom" [allowFuture]="false"></app-date-picker>
         </div>
         <!-- DATE TO -->
-        <div class="form-group form-inline justify-content-end col-sm-12 col-md-5">
+        <div class="form-group col-sm-12 col-md-5">
           <label for="dateTo">Date To:</label>
-          <input type="date" id="dateTo" class="form-control" [formControlName]="'dateTo'" datepicker-popup
-                 is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions"
-                 date-disabled="disabled(date, mode)" ng-required="true" close-text="Close"/>
+          <app-date-picker id="dateTo" [control]="dateFilter.controls.dateTo" [allowFuture]="false"></app-date-picker>
         </div>
-        <div class="form-group form-inline justify-content-end col-sm-12 col-md-2">
+        <div class="form-group ">
           <button class="btn btn-outline-secondary" (click)="submitDate()">
             <i class="fas fa-calendar-alt"></i> Filter
           </button>

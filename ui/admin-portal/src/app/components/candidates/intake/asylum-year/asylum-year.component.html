@@ -28,29 +28,6 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <div class="input-group">
-      <input id="asylumYear" type="text" class="form-control read-only-white" placeholder="YYYY-MM-DD"
-             ngbDatepicker #picker="ngbDatepicker"
-             [formControlName]="'asylumYear'"
-             [readOnly]="true"
-             (dateSelect)="form.controls.asylumYear.markAsDirty()"
-             [autoClose]="true"
-             [outsideDays]="'hidden'"
-             [container]="'#asylumYear'"
-             [minDate]="{year: 1950, month: 1, day: 1}"
-             [maxDate]="maxDate">
-
-      <div class="input-group-append">
-        <small class="btn btn-link text-secondary" *ngIf="form.controls.asylumYear.value"
-               (click)="form.controls.asylumYear.patchValue(null); form.controls.asylumYear.markAsDirty();">
-          <span>Clear</span>
-        </small>
-
-        <div class="btn btn-link" *ngIf="!form.controls.asylumYear.value"
-             (click)="picker.toggle()">
-          <span>Choose</span>
-        </div>
-      </div>
-    </div>
+    <app-date-picker id="asylumYear" [control]="form.controls.asylumYear" [allowFuture]="false"></app-date-picker>
   </div>
 </form>

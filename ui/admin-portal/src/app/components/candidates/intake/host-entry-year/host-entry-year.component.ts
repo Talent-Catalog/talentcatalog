@@ -18,7 +18,6 @@ import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
-import {NgbDateStruct} from '@ng-bootstrap/ng-bootstrap';
 import {EnumOption, enumOptions} from '../../../../util/enum';
 import {YesNo} from '../../../../model/candidate';
 import {generateYearArray} from '../../../../util/year-helper';
@@ -35,8 +34,6 @@ export class HostEntryYearComponent extends IntakeComponentBase implements OnIni
 
   public hostBornOptions: EnumOption[] = enumOptions(YesNo);
 
-  public maxDate: NgbDateStruct;
-  public today: Date;
   years: number[];
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
@@ -45,8 +42,6 @@ export class HostEntryYearComponent extends IntakeComponentBase implements OnIni
 
   // Year is converted to string using the ngb-date-adapter file in the util folder (see app module providers)
   ngOnInit(): void {
-    this.today = new Date();
-    this.maxDate = {year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate()};
     this.years = generateYearArray(1950, true);
     this.form = this.fb.group({
       hostBorn: [this.candidateIntakeData?.hostBorn],

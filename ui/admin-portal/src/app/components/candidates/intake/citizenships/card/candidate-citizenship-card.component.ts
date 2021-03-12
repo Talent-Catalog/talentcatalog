@@ -22,7 +22,6 @@ import {CandidateService} from '../../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../../util/intake/IntakeComponentBase';
 import {Nationality} from '../../../../../model/nationality';
 import {CandidateCitizenshipService} from '../../../../../services/candidate-citizenship.service';
-import {NgbDateStruct} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-candidate-citizenship-card',
@@ -40,7 +39,6 @@ export class CandidateCitizenshipCardComponent extends IntakeComponentBase imple
   hasPassportOptions: EnumOption[] = enumOptions(HasPassport);
 
   today: Date;
-  minDate: NgbDateStruct;
 
   constructor(fb: FormBuilder, candidateService: CandidateService,
               private candidateCitizenshipService: CandidateCitizenshipService) {
@@ -57,7 +55,6 @@ export class CandidateCitizenshipCardComponent extends IntakeComponentBase imple
     });
 
     this.today = new Date();
-    this.minDate = {year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate()};
 
     //Subscribe to changes on the nationality id so that we can keep local
     //intake data up to date - used to filter ids on new records so that we

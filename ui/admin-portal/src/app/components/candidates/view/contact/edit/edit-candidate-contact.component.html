@@ -66,9 +66,7 @@
       <!-- DOB -->
       <div class="form-group">
         <label for="dob">Date of birth</label>
-        <input type="date" id="dob" class="form-control" [formControlName]="'dob'" datepicker-popup
-               is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions"
-               date-disabled="disabled(date, mode)" ng-required="true" close-text="Close"/>
+        <app-date-picker id="dob" [control]="candidateForm.controls.dob" [allowFuture]="false"></app-date-picker>
       </div>
 
       <!-- ADDRESS -->

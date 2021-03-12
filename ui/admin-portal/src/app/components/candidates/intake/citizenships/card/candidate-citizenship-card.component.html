@@ -57,28 +57,7 @@
         <div *ngIf="hasPassport === 'ValidPassport'">
           <div class="form-group">
             <label [for]="'passportExp'+myRecordIndex">Passport Expiry Date?</label>
-            <div class="input-group">
-              <input [id]="'passportExp'+myRecordIndex" type="text" class="form-control read-only-white" placeholder="YYYY-MM-DD"
-                     ngbDatepicker #picker="ngbDatepicker"
-                     [readOnly]="true"
-                     [formControlName]="'citizenPassportExp'"
-                     (dateSelect)="form.controls.citizenPassportExp.markAsDirty()"
-                     [autoClose]="true"
-                     [outsideDays]="'hidden'"
-                     [container]="'#passportExp'"
-                     [minDate]="minDate">
-
-              <div class="input-group-append">
-                <small class="btn btn-link text-secondary" *ngIf="form.controls.citizenPassportExp.value"
-                       (click)="form.controls.citizenPassportExp.patchValue(null); form.controls.citizenPassportExp.markAsDirty();">
-                  <span>Clear</span>
-                </small>
-                <div class="btn btn-link" *ngIf="!form.controls.citizenPassportExp.value"
-                     (click)="picker.toggle()">
-                  <span>Choose</span>
-                </div>
-              </div>
-            </div>
+            <app-date-picker [id]="'passportExp'+myRecordIndex" [control]="form.controls.citizenPassportExp" [allowPast]="false"></app-date-picker>
             <div *ngIf="dateDifference()"
                  class="alert alert-danger">
               This passport has expired since entry.

@@ -57,31 +57,7 @@
 
         <div class="form-group">
           <label [for]="'dependantDob'+myRecordIndex">DOB</label>
-          <div class="input-group">
-            <input [id]="'dependantDob'+myRecordIndex" type="text" class="form-control read-only-white"
-                   placeholder="YYYY-MM-DD"
-                   [readOnly]="true"
-                   ngbDatepicker #picker="ngbDatepicker"
-                   [formControlName]="'dependantDob'"
-                   (dateSelect)="form.controls.dependantDob.markAsDirty()"
-                   [autoClose]="true"
-                   [outsideDays]="'hidden'"
-                   [container]="'#dependantDob'"
-                   [minDate]="{year: 1950, month: 1, day: 1}"
-                   [maxDate]="maxDate">
-
-            <div class="input-group-append">
-              <small class="btn btn-link text-secondary" *ngIf="form.controls.dependantDob.value"
-                     (click)="form.controls.dependantDob.patchValue(null); form.controls.dependantDob.markAsDirty();">
-                <span>Clear</span>
-              </small>
-
-              <div class="btn btn-link" *ngIf="!form.controls.dependantDob.value"
-                   (click)="picker.toggle()">
-                <span>Choose</span>
-              </div>
-            </div>
-          </div>
+          <app-date-picker [id]="'dependantDob'+myRecordIndex" [control]="form.controls.dependantDob"></app-date-picker>
           <p class="small">Age: {{dependantAge}}</p>
         </div>
 

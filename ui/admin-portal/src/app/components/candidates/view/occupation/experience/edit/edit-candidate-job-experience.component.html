@@ -56,14 +56,13 @@
       <!-- START DATE -->
       <div class="form-group">
         <label for="startDate">Start Date *</label>
-        <app-month-picker id="startDate" [control]="candidateForm.get('startDate')"></app-month-picker>
+        <app-date-picker id="startDate" [control]="candidateForm.controls.startDate"></app-date-picker>
       </div>
 
       <!-- END DATE -->
       <div class="form-group">
         <label for="endDate">End Date</label>
-        <app-month-picker id="endDate" [control]="candidateForm.get('endDate')"></app-month-picker>
-
+        <app-date-picker id="endDate" [control]="candidateForm.controls.endDate"></app-date-picker>
       </div>
 
       <!-- FULL TIME -->

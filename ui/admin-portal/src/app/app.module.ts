@@ -16,11 +16,7 @@
 
 import {BrowserModule, Title} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
-import {
-  NgbDateAdapter,
-  NgbDateParserFormatter,
-  NgbModule
-} from '@ng-bootstrap/ng-bootstrap';
+import {NgbDateAdapter, NgbDateParserFormatter, NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {NgMultiSelectDropDownModule} from 'ng-multiselect-dropdown';
 import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha';
 import {DatePipe, TitleCasePipe} from '@angular/common';
@@ -161,10 +157,7 @@ import {WorkLegallyComponent} from './components/candidates/intake/work-legally/
 import {WorkStatusComponent} from './components/candidates/intake/work-status/work-status.component';
 import {HostEntryYearComponent} from './components/candidates/intake/host-entry-year/host-entry-year.component';
 import {CandidateVisaTabComponent} from './components/candidates/view/tab/candidate-visa-tab/candidate-visa-tab.component';
-import {
-  CustomDateAdapter,
-  CustomDateParserFormatter
-} from './util/date-adapter/ngb-date-adapter';
+import {CustomDateAdapter, CustomDateParserFormatter} from './util/date-adapter/ngb-date-adapter';
 import {RegistrationUnhcrComponent} from './components/candidates/intake/registration-unhcr/registration-unhcr.component';
 import {RegistrationUnrwaComponent} from './components/candidates/intake/registration-unrwa/registration-unrwa.component';
 import {HomeLocationComponent} from './components/candidates/intake/home-location/home-location.component';
@@ -204,6 +197,7 @@ import {DependantsComponent} from './components/candidates/intake/dependants/dep
 import {DependantsCardComponent} from './components/candidates/intake/dependants/card/dependants-card.component';
 import {LangAssessmentComponent} from './components/candidates/intake/lang-assessment/lang-assessment.component';
 import {ExtendDatePipe} from './util/date-adapter/extend-date-pipe';
+import {DatePickerComponent} from './components/util/date-picker/date-picker.component';
 
 @NgModule({
   declarations: [
@@ -377,7 +371,8 @@ import {ExtendDatePipe} from './util/date-adapter/extend-date-pipe';
     DependantsComponent,
     DependantsCardComponent,
     LangAssessmentComponent,
-    ExtendDatePipe
+    ExtendDatePipe,
+    DatePickerComponent
   ],
   imports: [
     BrowserModule,

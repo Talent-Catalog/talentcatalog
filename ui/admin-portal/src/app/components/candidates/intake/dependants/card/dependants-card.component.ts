@@ -21,7 +21,6 @@ import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../../services/candidate.service';
 import {CandidateDependantService} from '../../../../../services/candidate-dependant.service';
 import {IntakeComponentBase} from '../../../../util/intake/IntakeComponentBase';
-import {NgbDateStruct} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-dependants-card',
@@ -31,9 +30,6 @@ import {NgbDateStruct} from '@ng-bootstrap/ng-bootstrap';
 export class DependantsCardComponent extends IntakeComponentBase implements OnInit {
 
   @Output() delete = new EventEmitter();
-
-  public maxDate: NgbDateStruct;
-  public today: Date;
   public age: number;
 
   //Drop down values for enumeration
@@ -56,8 +52,6 @@ export class DependantsCardComponent extends IntakeComponentBase implements OnIn
       dependantHealthConcerns: [this.myRecord?.healthConcern],
       dependantNotes: [this.myRecord?.notes],
     });
-    this.today = new Date();
-    this.maxDate = {year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate()};
   }
 
   get hasHealthConcern(): string {
