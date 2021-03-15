@@ -18,7 +18,6 @@ package org.tbbtalent.server.repository.db;
 
 import io.jsonwebtoken.lang.Collections;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
@@ -28,7 +27,6 @@ import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import javax.persistence.criteria.*;
 import java.time.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.tbbtalent.server.repository.db.CandidateSpecificationUtil.getOrderByOrders;
@@ -59,13 +57,6 @@ public class CandidateSpecification {
                         candidate.get("createdDate"), 
                         getOffsetDateTime(
                                 request.getFromDate(),LocalTime.MIN, request.getTimezone()))
-                );
-            }
-            
-            if (BooleanUtils.isNotTrue(request.getIncludeDraftAndDeleted())) {
-                List<CandidateStatus> statuses = new ArrayList(Arrays.asList(CandidateStatus.draft, CandidateStatus.deleted) );
-                conjunction.getExpressions().add(
-                        candidate.get("status").in(statuses).not()
                 );
             }
 
@@ -208,10 +199,6 @@ public class CandidateSpecification {
             // STATUS SEARCH
             if (!Collections.isEmpty(request.getStatuses())) {
                 List<CandidateStatus> statuses = request.getStatuses();
-                if (BooleanUtils.isTrue(request.getIncludeDraftAndDeleted())) {
-                    statuses.add(CandidateStatus.draft);
-                    statuses.add(CandidateStatus.deleted);
-                }
                 conjunction.getExpressions().add(
                     builder.isTrue(candidate.get("status").in(statuses))
             );

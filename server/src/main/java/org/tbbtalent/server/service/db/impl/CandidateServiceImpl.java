@@ -559,14 +559,6 @@ public class CandidateServiceImpl implements CandidateService {
 
         //Statuses
         List<CandidateStatus> statuses = request.getStatuses();
-        if (request.getIncludeDraftAndDeleted() != null
-                && request.getIncludeDraftAndDeleted()) {
-            if (statuses == null) {
-                statuses = new ArrayList<>();
-            }
-            statuses.add(CandidateStatus.draft);
-            statuses.add(CandidateStatus.deleted);
-        }
         if (statuses != null) {
             //Extract names from enums
             List<String> reqStatuses = new ArrayList<>();
