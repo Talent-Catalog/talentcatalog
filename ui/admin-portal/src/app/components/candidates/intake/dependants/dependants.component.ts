@@ -1,40 +1,59 @@
-import {Component, OnInit} from '@angular/core';
-import {EnumOption, enumOptions} from '../../../../util/enum';
-import {YesNo} from '../../../../model/candidate';
-import {FormBuilder} from '@angular/forms';
-import {CandidateService} from '../../../../services/candidate.service';
-import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
+/*
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+import {Component, Input, OnInit} from '@angular/core';
+import {Candidate, CandidateIntakeData} from '../../../../model/candidate';
+import {Nationality} from '../../../../model/nationality';
+import {CandidateDependantService} from '../../../../services/candidate-dependant.service';
 
 @Component({
   selector: 'app-dependants',
   templateUrl: './dependants.component.html',
   styleUrls: ['./dependants.component.scss']
 })
-export class DependantsComponent extends IntakeComponentBase implements OnInit {
+export class DependantsComponent implements OnInit {
 
-  public dependantsOptions: EnumOption[] = enumOptions(YesNo);
+  @Input() candidate: Candidate;
+  @Input() candidateIntakeData: CandidateIntakeData;
+  error: boolean;
+  @Input() nationalities: Nationality[];
+  saving: boolean;
 
-  constructor(fb: FormBuilder, candidateService: CandidateService) {
-    super(fb, candidateService);
-  }
+  constructor(
+    private candidateDependantService: CandidateDependantService
+  ) {}
 
   ngOnInit(): void {
-    this.form = this.fb.group({
-      dependants: [this.candidateIntakeData?.dependants],
-      dependantsNotes: [this.candidateIntakeData?.dependantsNotes],
-    });
   }
 
-  get dependants(): string {
-    return this.form.value?.dependants;
+  addRecord() {
+    this.saving = true;
+    this.candidateDependantService.create(this.candidate.id, {}).subscribe(
+      (dependant) => {
+        this.candidateIntakeData.candidateDependants.push(dependant)
+        this.saving = false;
+      },
+      (error) => {
+        this.error = error;
+        this.saving = false;
+      });
   }
 
-  get hasDependants(): boolean {
-    let found: boolean = false;
-    if (this.form?.value) {
-      found = this.form.value?.dependants > 0;
-    }
-    return found;
+  deleteRecord(i: number) {
+    this.candidateIntakeData.candidateDependants.splice(i, 1);
   }
 
 }

@@ -1,3 +1,19 @@
+<!--
+  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <div *ngIf="error">
   {{error}}
 </div>
@@ -21,18 +37,30 @@
   </div>
   <div *ngIf="workAbroad === 'Yes'">
     <div class="form-group">
-      <label for="workAbroadLocId">Country</label>
-      <select class="form-control"
-              id="workAbroadLocId" [formControlName]="'workAbroadLocId'">
-        <option *ngFor="let country of countries" [value]="country.id">
-          {{country.name}}
-        </option>
-      </select>
+      <div class="form-group">
+        <label for="workAbroadCountryIds">
+          Countries you worked in
+        </label>
+        <ng-multiselect-dropdown
+          id="workAbroadCountryIds"
+          [settings]="dropdownSettings"
+          [data]="countries"
+          formControlName="selectedCountries"
+          (onSelect)="addIds()"
+          (onDeSelect)="addIds()">
+        </ng-multiselect-dropdown>
+      </div>
     </div>
     <div class="form-group">
       <label for="workAbroadYrs">How many years were you abroad?</label>
       <input type="number" class="form-control"
              id="workAbroadYrs" [formControlName]="'workAbroadYrs'">
+    </div>
+    <div class="form-group">
+      <label for="workAbroadNotes">What was the purpose of work/stay? Any additional information?</label>
+      <textarea type="text" class="md-textarea-auto form-control" rows="4"
+                id="workAbroadNotes" [formControlName]="'workAbroadNotes'"
+                placeholder="" ></textarea>
     </div>
   </div>
 </form>

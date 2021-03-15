@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
@@ -13,7 +29,6 @@ import {SurveyType} from "../../../model/survey-type";
 })
 export class RegistrationAdditionalInfoComponent implements OnInit {
 
-  @Input() submitApplication: boolean = false;
   /* A flag to indicate if the component is being used on the profile component */
   @Input() edit: boolean = false;
 
@@ -24,7 +39,8 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
   _loading = {
     surveyTypes: true,
     additionalInfo: true,
-    candidateSurvey: true
+    candidateSurvey: true,
+    linkedInLink: true
   };
   // Component states
   saving: boolean;
@@ -39,13 +55,15 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
   }
 
   ngOnInit() {
+    const linkedInRegex = /http(s)?:\/\/([\w]+\.)?linkedin\.com\/in\/[A-z0-9_-]+\/?/
     this.saving = false;
     this.form = this.fb.group({
       additionalInfo: [''],
       surveyTypeId: [null, Validators.required],
       surveyComment: [''],
-      submit: this.submitApplication
+      linkedInLink: ['', Validators.pattern(linkedInRegex)],
     });
+
 
     this.loadDropDownData();
 
@@ -53,12 +71,15 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
       (response) => {
         this.form.patchValue({
           additionalInfo: response.additionalInfo,
+          linkedInLink: response.linkedInLink
         });
         this._loading.additionalInfo = false;
+        this._loading.linkedInLink = false;
       },
       (error) => {
         this.error = error;
         this._loading.additionalInfo = false;
+        this._loading.linkedInLink = false;
       }
     );
 
@@ -98,11 +119,6 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
   save(dir: string) {
     this.saving = true;
 
-    /* Don't submit the registration application if the user is going back */
-    if (dir === 'back') {
-      this.form.controls.submit.patchValue(false);
-    }
-    /* Update survey before updating additional info as that triggers confirmation email and registration complete*/
     this.candidateService.updateCandidateSurvey(this.form.value).subscribe(
       (response) => {
 

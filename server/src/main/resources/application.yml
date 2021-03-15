@@ -2,16 +2,10 @@ tbb:
   cors:
     urls: ${TBB_CORS_URLS:http://localhost:4200,http://localhost:4201,https://tbbtalent-staging.herokuapp.com}
 
-  destinations: ${TBB_DESTINATIONS:Australia,Canada,New Zealand,United Kingdom} 
+  destinations: ${TBB_DESTINATIONS:Australia,Canada,New Zealand,United Kingdom}
+  partner-dbcopy-config: ${TBB_PARTNER_DBCOPY_CONFIG:data.sharing/tbbCopiesTest.xml}
 
 spring:
-  application:
-    name: TalentCatalog
-  security:
-    user:
-      name: client
-      password: client
-
   servlet:
     multipart:
       max-file-size: ${SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE:10MB}
@@ -23,6 +17,20 @@ spring:
       username: ${ELASTICSEARCH_USERNAME:}
       password: ${ELASTICSEARCH_PASSWORD:} 
   
+  data:
+    # We explicitly enable repositories with @EnableJpaRepositories and 
+    # @EnableElasticsearchRepositories.
+    # Turn off default enabling to avoid errors
+    # jpa has to be enabled otherwise unit tests fail
+    # - see https://stackoverflow.com/questions/47002094/spring-multiple-spring-data-modules-found-entering-strict-repository-configur 
+    jpa:
+      repositories:
+        enabled: true
+    elasticsearch:
+      repositories:
+        enabled: false
+
+
   datasource:
     driverClassName: org.postgresql.Driver
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/tbbtalent}
@@ -32,18 +40,6 @@ spring:
       maximum-pool-size: ${SPRING_DBPOOL_MAX:10}
       minimum-idle:  ${SPRING_DBPOOL_MIN:10}
       
-  boot:
-    admin:
-      client:
-#        url: ${SPRING_BOOT_ADMIN_CLIENT_URL:http://localhost:8081}
-        username: admin
-        password: admin
-        instance:
-          metadata:
-            user:
-              name: ${spring.security.user.name}
-              password: ${spring.security.user.password}
-
 #  To catch resource not found errors (404)
 #  See https://stackoverflow.com/questions/36733254/spring-boot-rest-how-to-configure-404-resource-not-found/36734193#36734193
   mvc:
@@ -61,29 +57,27 @@ spring:
         temp:
           use_jdbc_metadata_defaults: false
 
-
 management:
-   endpoints:
-     web:
-       exposure:
-         include: ${MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE:*}
-
-#Is this needed - not in Baeldung
-   endpoint:
-     loggers:
-       enabled: true
-   
-   health:
-     elasticsearch:
-       enabled: false
-
+  health:
+    elasticsearch:
+      enabled: false
 
 jwt:
   secret: ${JWT_SECRET:RX4bokONoSrrNLM6CMTij9iG9jHFG5VfsN1zIi9UqDGK3pQXASG7xMEga2VrAj3P1SNmywqnWRoTXnltuJ5l+A==}
   expirationInMs: 604800000
 
 salesforce:
-  privatekey: ${SALESFORCE_PRIVATEKEY:-----BEGIN PRIVATE KEY-----MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAMrBTtv5Yh0gn0MWufbANxrprRWlYaiS8aDVlT61F1pShyLysqeEjEYczwxQeCaBzDxYxdSRjnn0oQLI8bZSM6W1VGEpA2jXsoXoNyJRNTy0VvsgFijrv2DP+kmO5H9EFSlRC9rzllyRMyeu0WMWSvb1A5y6yQoomoKOvkv6G8xnAgMBAAECgYEAnVLJgd5LxxYc/c2QlmonV/ahmv4sfMUoQAf6OiIB8M/Ak9mFzn4G6hBIh+GYmSh19Q1c08ftqaurk6GgDDxUXYphrHHDIZZcilDtFuyd+zVgegXrrW4pthlqNBLIvJ9p4uuckhpPAbzxzKwTGFcMXwd/22E4ZKB/Sf4XJN1aWyECQQDpNZh+Ylf5s0OAf9RbAwwTeMTczCyvTMhz7k6MqGAP4ah1f5Et3RkBOytE5FDNT1wwVtWc4FEzDkMOHjPj5gorAkEA3pHPwe39834ZHf95z6tvVnvoI854EY94WKmLQ6fL9RRhUNPi4OxKXm8wJ/V3ZtJ0WQdhE/FFeEG1f18EWaHUtQJAQl86k12x5CMc5wl6ipyHZ1NL0/tYDFwyAKymNmoFTP/QTgCMdR0j7LHGUskYJhacCjXsfcVp1roMY4w9AHOMGQJABdyVOihIbec+Rhn6XUvIjOCKhpbjdqLuqnccodWDe5rjzTsnWIEgnEgVXpgKYvzb75RQLDRIfhhM7WPVO38VmQJBAKaPn7//eafJZMpvsfAiIgaeV5Is3SwBhTWtmZaC+DJx3GOPin7fQzXXvQz19+haQdhMGE16gb0l/65SHf4O8FM=-----END PRIVATE KEY-----}
+  # Security is set up using a self signed certificate generated using openssl:
+  # eg
+  # openssl req -x509 -newkey rsa:1024 -nodes -keyout key.pem -out cert.pem -days 36500 -subj "/O=Talent Beyond Boundaries/CN=www.talentbeyondboundaries.org"
+  # The key.pem becomes the private key below.
+  # The cert.pem needs to be uploaded to the Salesforce tbbtalent Connected App.
+  # (Note that you can only do the certificate upload from Setup|Apps|AppManager
+  # - then selecting Edit. Bizarrely, you can't do it from 
+  # Setup|Apps|ConnectedApps|Manage Connected Apps)
+  #
+  # For dev this should be set in tbb-secrets
+  privatekey: ${SALESFORCE_PRIVATEKEY:}
   tbb:
     jordanAccount: 0013l00002Jm1rRAAR
     lebanonAccount: 0013l00002Jm2sqAAB
@@ -107,14 +101,23 @@ flyway:
 
 google:
   drive:
-    candidateDataDriveId: ${GOOGLE_DRIVE_CANDIDATEDATADRIVEID:0AHvd4Bs-dSp4Uk9PVA}
-    candidateRootFolderId: ${GOOGLE_DRIVE_CANDIDATEROOTFOLDERID:1TdqTBpojT07qNPWTgU_wXWON1678beTn}
+  #  These are the credentials set up in the Google Drive API for the TalentCatalog project 
+  #  see https://console.developers.google.com/apis/api/drive.googleapis.com/
+    
     clientId: ${GOOGLE_DRIVE_CLIENTID:100905261598930740359}
     clientEmail: ${GOOGLE_DRIVE_CLIENTEMAIL:talentcatalogdrive@talentcatalog.iam.gserviceaccount.com}
-    privateKey: ${GOOGLE_DRIVE_PRIVATEKEY:-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCN1Ff9xKfx8+0n\nfsIKYnI+sX71oJ2XKQzht5S41Y1hiflhyTi6saGenlrUYSLxIO57gj3Z+NcBnDPt\nLUjRiVA9RZpyJf0btlvKjTAlxSn2VmAMwQEK9tgBCCZoy9xakS9T2WmOnY0byrpI\n5CDgQJ9e/phLOfw15KJak8E1JuyatoXnojotUp1QqrB/LWqMrCgJBZza3MyFB35n\nQBAnLiFzsqr4wK7F+oKHBDKwKD6gv487AE0Qab1Dpo9aUbOtVT5hGPhEoapht0d7\n0n2+FSz083Lz7cy0xSaBlR4PhhUVNh3W7gOIznTkgG5x3j+E7UFFLWaHEOAsmG/t\nUDWnGCZ3AgMBAAECggEANFKloYuWz7aHA56KVE1sSz+tEE3QRY9R3sWcurGh5l2B\n4HbdFFbqwns2FAq/2sgk4vCyA8N/AmuPZozhw9eOAAS5DSqBnWMhqvB6VjzOFcBY\nz+u2CEb3ei35CYlHwiu0k5DuFbx+7cVVAwYSMNj2UpPHOF1sc69ky9idmw/AkvR9\nhQJtp69RMO8HFo6kaLXdQ1WwwIYT1h4HNFrY8CYMlZmuONHyCNEhzILVF7LKQQIQ\nmIcn0APv5B1eps2ubumOCZFptfuPGoIHiLLQeREksN2YXJX3rpNl4JdvIr362pcy\nAVC5PfzzTOx85yEaJrUUmOQ2iy9GrfRWijNGdote1QKBgQDCEXL9qQYZZbrT/4xl\nDkW36ZpdOs0q9i/B+Z8lP+1H39PQHrMOPrv+U16riQ55zgdUUEE3slO2xRhviLHJ\nbpqWKS7rnGf+qH0Gj0xwBypBKIO1exJ1sr4KUvcO2lNcyYOl862TWZnd2AFm4ac+\nw5WbeAGKQCPWOzbv6xNmweS+3QKBgQC7FzalgSN4ibJLiwUGB6+Wgjrf7OcO1/j+\n93pUnLuLmnbaRlKcm5qWFCO5Y40DVWiKg5N7eCAd99ug1LJyiuxOcvM+EvgMbSIG\n6ccPGPmm7TBEDFaqOKsLeUnbvxw5Ux0fsnlZm5dSytRXflzil03cXRGxKDSqS7sq\n54fFo0DDYwKBgE2aqrASyhSX4Jjr5Nl4VprPuGG1pNucLMbVqjU8Fgea0tmznQiC\nP6zY68+OdBJzN+0YVqwODHnW4Qmg0O9q4jhP6apgFhn4iF56KSfXRadeqySEPYKB\nYotAV/lBhvpgvts60VtOBkB3I0Bf1gA8N/Q+jecZ9PqzHSndiBmcSXulAoGATmh6\nJH6sqPW8XWCT6GUMN524ouQcKeJlniWFhTRyfR1tNilGsg+ch81E84s/K+h9eZ+P\nDa3Yd/bKeurpJowGYRJX0uoMPtj168PKAw/KgSTil4I8R/ab6KEaTRgY8gVdLU2V\nAfLtRmtu9oQk1Wnn3bS7l21sNPqsJF0IT9INcFUCgYEAlcegl8wI0/jhRHmaEaYv\nwhbEQTKKlNtq1noa4Z1UGD/P85cejgTNkabM2N7Xob+4DVwcVlm1ehwfwRvv2OB5\nMJBg5E1Ztm92BezUhLJAwfU2SDTrKF7DvGoHxAQv8xo6ITRzw2yB47XFuB7UMEWp\nYnCdl5bKpv2aU8qU/rJ8xSk=\n-----END PRIVATE KEY-----\n}
-    privateKeyId: ${GOOGLE_DRIVE_PRIVATEKEYID:5754b1d225cbbc2b0ca301a79e17f27802cf83df}
     projectId: ${GOOGLE_DRIVE_PROJECTID:talentcatalog}
     tokenUri: ${GOOGLE_DRIVE_TOKENURI:https://oauth2.googleapis.com/token}
+    
+  # For dev these should be set in tbb-secrets    
+    privateKey: ${GOOGLE_DRIVE_PRIVATEKEY:}
+    privateKeyId: ${GOOGLE_DRIVE_PRIVATEKEYID:}
+
+  # We use a different Google Drive in dev than we do in production.
+  # The Drive and folder ids are the latter part of the url you see when you 
+  # go to that drive or folder.
+    candidateDataDriveId: ${GOOGLE_DRIVE_CANDIDATEDATADRIVEID:0AHvd4Bs-dSp4Uk9PVA}
+    candidateRootFolderId: ${GOOGLE_DRIVE_CANDIDATEROOTFOLDERID:1TdqTBpojT07qNPWTgU_wXWON1678beTn}
         
       
       
@@ -125,8 +128,9 @@ aws:
     max-size: 52428800
     upload-folder: temp
   credentials:
-    accessKey: ${AWS_CREDENTIALS_ACCESSKEY:AKIA6C7ESOA6FCQTELMN}
-    secretKey: ${AWS_CREDENTIALS_SECRETKEY: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}
+    # For dev this should be set in tbb-secrets    
+    accessKey: ${AWS_CREDENTIALS_ACCESSKEY:}
+    secretKey: ${AWS_CREDENTIALS_SECRETKEY:}
 
 #email:
 #   type: SMTP # STUB or SMTP
@@ -143,7 +147,9 @@ email:
   host: ${EMAIL_HOST:smtp.gmail.com}
   port: 587
   user: ${EMAIL_USER:tbbtalent@talentbeyondboundaries.org}
-  password: ${EMAIL_PASSWORD:TBB4Talent!now}
+
+  # For dev this should be set in tbb-secrets    
+  password: ${EMAIL_PASSWORD:}
   authenticated: true
   defaultEmail: ${EMAIL_DEFAULTEMAIL:tbbtalent@talentbeyondboundaries.org}
   testOverrideEmail: ${EMAIL_TESTOVERRIDEEMAIL:tbbtalent@talentbeyondboundaries.org}

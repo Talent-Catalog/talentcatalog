@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {User} from './user';
 import {Country} from './country';
 import {Nationality} from './nationality';
@@ -16,7 +32,7 @@ export interface Candidate {
   candidateNumber: string;
   status: string;
   gender: string;
-  dob: number;
+  dob: Date;
   address1: string;
   city: string;
   country: Country;
@@ -28,6 +44,7 @@ export interface Candidate {
   candidateReviewStatusItems: CandidateReviewStatusItem[];
   migrationEducationMajor: EducationMajor;
   additionalInfo: string;
+  linkedInLink: string;
   candidateMessage: string;
   maxEducationLevel: EducationLevel;
   folderlink: string;
@@ -47,10 +64,12 @@ export interface Candidate {
 export interface CandidateIntakeData {
   asylumYear?: string;
   availImmediate?: YesNoUnsure;
+  availImmediateJobOps?: string;
   availImmediateReason?: AvailImmediateReason;
   availImmediateNotes?: string;
 
   candidateCitizenships?: CandidateCitizenship[];
+  candidateDependants?: CandidateDependant[];
 
   candidateDestinations?: CandidateDestination[];
 
@@ -62,6 +81,8 @@ export interface CandidateIntakeData {
 
   children?: YesNo;
   childrenAge?: YesNo;
+
+  birthCountry?: Country;
 
   dependants?: number;
   dependantsNotes?: string;
@@ -85,37 +106,50 @@ export interface CandidateIntakeData {
   familyMove?: YesNo;
   familyMoveNotes?: string;
 
-  familyHealthConcern?: YesNo;
-  familyHealthConcernNotes?: string;
+  familyHealth?: YesNo;
+  familyHealthNotes?: string;
 
   homeLocation?: string;
 
   hostChallenges?: string;
   hostBorn?: YesNo;
-  hostEntryYear?: string;
+  hostEntryYear?: number;
   hostEntryLegally?: YesNo;
-  intProtection?: string;
+  hostEntryLegallyNotes?: string;
   intRecruitReasons?: IntRecruitReason[];
+  intRecruitOther?: string;
   intRecruitRural?: YesNoUnsure;
-  leftHomeReason?: LeftHomeReason[];
+  intRecruitRuralNotes?: string;
+  langAssessment?: string;
+  langAssessmentScore?: IeltsScore;
+  leftHomeReasons?: LeftHomeReason[];
   leftHomeOther?: string;
   militaryService?: YesNo;
+  militaryWanted?: YesNo;
+  militaryNotes?: string;
+  militaryStart?: string;
+  militaryEnd?: string;
   maritalStatus?: MaritalStatus;
   partnerRegistered?: YesNoUnsure;
   partnerCandidate?: Candidate;
   partnerEduLevel?: EducationLevel;
-  partnerProfession?: Occupation;
+  partnerEduLevelNotes?: string;
+  partnerOccupation?: Occupation;
+  partnerOccupationNotes?: string;
   partnerEnglish?: YesNo;
   partnerEnglishLevel?: LanguageLevel;
-  partnerIelts?: YesNoUnsure;
+  partnerIelts?: IeltsStatus;
   partnerIeltsScore?: IeltsScore;
+  partnerIeltsYr?: number;
   partnerCitizenship?: Nationality;
 
   returnedHome?: YesNoUnsure;
   returnedHomeNotes?: string;
   returnedHomeReason?: string;
+  returnedHomeReasonNo?: string;
 
   residenceStatus?: ResidenceStatus;
+  residenceStatusNotes?: string;
 
   returnHomeSafe?: YesNoUnsure;
 
@@ -126,22 +160,26 @@ export interface CandidateIntakeData {
   resettleThirdStatus?: string;
 
   workAbroad?: YesNo;
-  workAbroadLoc?: Country;
+  workAbroadCountryIds?: number[];
   workAbroadYrs?: number;
+  workAbroadNotes?: string;
   workPermit?: WorkPermitValidity;
   workPermitDesired?: YesNoUnsure;
-  workLegally?: YesNo;
-  workDesired?: WorkDesiredField;
+  workDesired?: YesNoUnemployed;
+  workDesiredNotes?: string;
+  unhcrRegistered?: YesNoUnsure;
   unhcrStatus?: UnhcrStatus;
   unhcrOldStatus?: UnhcrStatus;
   unhcrNumber?: string;
   unhcrFile?: number;
   unhcrNotes?: string;
   unhcrPermission?: YesNo;
+  unrwaRegistered?: YesNoUnsure;
   unrwaStatus?: UnrwaStatus;
   unrwaNumber?: string;
   unrwaNotes?: string;
   visaReject?: YesNoUnsure;
+  visaRejectNotes?: string;
   visaIssues?: VisaIssue[];
   visaIssuesNotes?: string;
 }
@@ -150,6 +188,17 @@ export interface CandidateCitizenship {
   id?: number;
   nationality?: {id};
   hasPassport?: HasPassport;
+  passportExp?: string;
+  notes?: string;
+}
+
+export interface CandidateDependant {
+  id?: number;
+  relation?: DependantRelations;
+  dob?: string;
+  name?: string;
+  registered?: string;
+  healthConcern?: string;
   notes?: string;
 }
 
@@ -158,6 +207,7 @@ export interface CandidateExam {
   exam?: Exam;
   otherExam?: string;
   score?: string;
+  year?: number;
 }
 
 export interface CandidateDestination {
@@ -172,37 +222,14 @@ export interface CandidateDestination {
 export interface CandidateVisaCheck {
   id?: number;
   country?: Country;
-  intProtection?: string;
-  healthAssessment: YesNo;
-  characterAssessment: YesNo;
-  securityAssessment: YesNo;
-  riskAssessment: YesNo;
-  travelDocument: string;
-  jobChecks?: CandidateJobCheck[]
   eligibility?: VisaEligibility;
   assessmentNotes?: string;
-  createdBy?: User;
-  createdDate?: number;
+  checkedBy?: User;
+  checkedDate?: string;
   updatedBy?: User;
   updatedDate?: number;
   protection?: YesNo;
   protectionGrounds?: string;
-  tbbEligibilityAssessment?: TBBEligibilityAssessment;
-}
-
-//todo rename to CandidateVisaRoleCheck? something like that. Role specific checks.
-export interface CandidateJobCheck {
-  id?: number;
-  name?: string;
-  sfJobLink?: string;
-  jobOccupation?: Occupation;
-  salaryTsmit?: YesNo;
-  regionalArea?: YesNo;
-  jobInterest?: YesNo;
-  jobFamilyAus?: YesNo;
-  jobEligibilityAssess?: YesNo;
-  eligibility?: VisaEligibility;
-  employer?: string;
   tbbEligibilityAssessment?: TBBEligibilityAssessment;
 }
 
@@ -227,7 +254,20 @@ export enum AvailImmediateReason {
 export enum FamilyRelations {
   NoResponse = "",
   NoRelation = "No relatives",
-  Parents = "Mother/Father",
+  Child = "Daughter/Son",
+  Parent = "Mother/Father",
+  Sibling = "Sister/Brother",
+  AuntUncle = "Aunt/Uncle",
+  Grandparent = "Grandmother/Grandfather",
+  Cousin = "First Cousin",
+  Other = "Other"
+}
+
+export enum DependantRelations {
+  NoResponse = "",
+  Partner = "Spouse/Partner",
+  Child = "Daughter/Son",
+  Parent = "Mother/Father",
   Sibling = "Sister/Brother",
   AuntUncle = "Aunt/Uncle",
   Grandparent = "Grandmother/Grandfather",
@@ -281,7 +321,8 @@ export enum UnhcrStatus {
   RegisteredAsylum = "Registered with UNHCR as asylum seeker",
   RegisteredStateless = "Registered with UNHCR as stateless",
   NotRegistered = "Not registered",
-  Unsure = "Unsure"
+  Unsure = "Unsure",
+  NA = "Not applicable"
 }
 
 export enum WorkPermitValidity {
@@ -291,7 +332,7 @@ export enum WorkPermitValidity {
   No = "No - I do not have a work permit",
 }
 
-export enum WorkDesiredField {
+export enum YesNoUnemployed {
   NoResponse = "",
   Yes = "Yes",
   No = "No",
@@ -311,12 +352,28 @@ export enum YesNoUnsure {
   Unsure = "Unsure"
 }
 
+export enum IeltsStatus {
+  NoResponse = "",
+  YesGeneral = "Yes - Ielts General",
+  YesAcademic = "Yes - Ielts Academic",
+  No = "No",
+  Unsure = "Unsure"
+}
+
+export enum YesNoUnsureLearn {
+  NoResponse = "",
+  Yes = "Yes",
+  No = "No",
+  Unsure = "Unsure - I need to learn more."
+}
+
 export enum UnrwaStatus {
   NoResponse = "",
   Registered = "Registered",
   WasRegistered = "No longer registered, but was registered previously.",
   NeverRegistered = "Never been registered",
-  Unsure = "Unsure"
+  Unsure = "Unsure",
+  NA = "Not applicable"
 }
 
 export enum Exam {
@@ -334,7 +391,6 @@ export enum ResidenceStatus {
 }
 
 export enum LeftHomeReason {
-  NoResponse = "",
   Safety = "Safety/Protection",
   Job = "Job Opportunities",
   Other = "Other"
@@ -344,7 +400,9 @@ export enum MaritalStatus {
   NoResponse = "",
   Married = "Married",
   Engaged = "Engaged",
-  Neither = "Not married or engaged"
+  Defacto = "Defacto",
+  Single = "Single",
+  Divorced = "Divorced"
 }
 
 export enum IeltsScore {
@@ -378,44 +436,13 @@ export enum DrivingLicenseStatus {
   None = "None"
 }
 
-export enum TravelDocumentStatus {
+export enum Registrations {
   NoResponse = "",
-  Valid = "Valid",
-  Expired = "Expired",
-  None = "None"
-}
-
-export enum RiskAssessment {
-  NoResponse = "",
-  Low = "Low Risk",
-  Medium = "Medium Risk",
-  High = "High Risk"
-}
-
-export enum TbbEligibility {
-  NoResponse = "",
-  Proceed = "Ready to proceed",
-  Discuss = "Needs discussion",
-  NotProceed = "Do not proceed"
-}
-
-export enum OtherVisas {
-  NoResponse = "",
-  TempSkilled = "482 temporary skilled (medium stream)",
-  SpecialHum = "202 (special humanitarian)",
-  OtherHum = "Other humanitarian (200, 201, 203)",
-  DirectEnt = "186 direct entry permanent stream",
-  PointsIndep = "189/190 points tested independant stream",
-}
-
-export enum Qualification {
-  NoResponse = "",
-  HighSchool = "High School",
-  Associates = "Associates",
-  Bachelors = "Bachelors",
-  Masters = "Masters",
-  PHD = "PHD",
-  Other = "Other",
+  UNHCR = "UNHCR only",
+  UNRWA = "UNRWA only",
+  UNHCRUNRWA = "UNHCR & UNRWA",
+  Neither = "Neither",
+  NA = "Not Applicable",
 }
 
 export function getCandidateNavigation(candidate: Candidate): any[] {

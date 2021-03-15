@@ -1,3 +1,19 @@
+<!--
+  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <div *ngIf="loading">
   <i class="fas fa-spinner fa-spin"></i> loading...
 </div>
@@ -20,13 +36,13 @@
       <div class="form-group col-sm-12 col-md-6">
         <label class="col-form-label">Account Created:</label>
         <div >
-          <span class="form-control-plaintext">{{user.createdDate | date: 'medium': 'GMT' }}</span>
+          <span class="form-control-plaintext">{{user.createdDate | date: 'customDateTime' }}</span>
         </div>
       </div>
       <div class="form-group col-sm-12 col-md-6">
         <label class="col-form-label">Last Logged In:</label>
         <div >
-          <span class="form-control-plaintext">{{user.lastLogin | date: 'medium': 'GMT' }}</span>
+          <span class="form-control-plaintext">{{user.lastLogin | date: 'customDateTime' }}</span>
         </div>
       </div>
     </div>

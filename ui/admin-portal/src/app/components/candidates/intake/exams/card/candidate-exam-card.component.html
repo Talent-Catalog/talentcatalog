@@ -1,3 +1,19 @@
+<!--
+  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <div *ngIf="error">
   {{error}}
 </div>
@@ -41,8 +57,16 @@
           <input type="text" class="form-control"
                  [id]="'examScore'+myRecordIndex" [formControlName]="'examScore'">
         </div>
+        <div class="form-group">
+          <label [for]="'examYear'+myRecordIndex">
+            In what year did you take the test?
+          </label>
+          <select [id]="'examYear'+myRecordIndex" class="form-control" [formControlName]="'examYear'">
+            <option value=""></option>
+            <option *ngFor="let year of years" [ngValue]="year">{{year}} </option>
+          </select>
+        </div>
       </div>
-
     </form>
   </div>
 </div>

@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
@@ -9,11 +25,12 @@ import {
   SavedSearchRequest,
   SavedSearchSubtype,
   SavedSearchType,
-  SaveSelectionRequest,
+  SaveSelectionRequest, SearchSavedSearchRequest,
   SelectCandidateInSearchRequest
 } from "../model/saved-search";
 import {map} from "rxjs/operators";
 import {SavedList} from "../model/saved-list";
+import {SearchCandidateSourcesRequest} from "../model/base";
 
 export interface CreateFromDefaultSavedSearchRequest {
   savedListId: number;
@@ -86,18 +103,28 @@ export class SavedSearchService {
     return this.savedSearchTypeInfos;
   }
 
-  searchPaged(request): Observable<SearchResults<SavedSearch>> {
-    return this.http.post<SearchResults<SavedSearch>>(`${this.apiUrl}/search-paged`, request)
+  search(request): Observable<SavedSearch[]> {
+    return this.http.post<SavedSearch[]>(`${this.apiUrl}/search`, request)
       .pipe(
         map(results => this.processPostResults(results))
       );
   }
 
-  processPostResults(results: SearchResults<SavedSearch>): SearchResults<SavedSearch> {
-    for (let savedSearch of results.content) {
+  searchPaged(request): Observable<SearchResults<SavedSearch>> {
+    return this.http.post<SearchResults<SavedSearch>>(`${this.apiUrl}/search-paged`, request)
+      .pipe(
+        map(results => {
+          results.content = this.processPostResults(results.content);
+          return results;
+        })
+      );
+  }
+
+  processPostResults(content: SavedSearch[]): SavedSearch[] {
+    for (let savedSearch of content) {
       savedSearch = SavedSearchService.convertSavedSearchEnums(savedSearch);
     }
-    return results;
+    return content;
   };
 
   load(id: number): Observable<any> {

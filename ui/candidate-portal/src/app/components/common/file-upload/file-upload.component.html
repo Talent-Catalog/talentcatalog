@@ -1,8 +1,24 @@
+<!--
+  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <app-error [error]="error"></app-error>
 
-<div class="upload-box card text-center" [class.hover]="hover">
+<div class="d-none d-lg-flex upload-box card text-center mb-3" [class.hover]="hover">
 
-  <input #input type="file" multiple hidden (change)="handleFileChanged($event)">
+  <input #input type="file" multiple hidden (change)="handleFileChanged($event, 'file')">
 
   <span>{{ 'FORM.ATTACHMENT.LABEL.DROP' | translate }}</span>
 
@@ -10,9 +26,35 @@
 
   <span>
     <button class="btn btn-primary" [disabled]="uploading" (click)="input.click()">
-      <ng-container *ngIf="!uploading">{{ 'FORM.ATTACHMENT.LABEL.BROWSE' | translate }}</ng-container>
+      <ng-container *ngIf="!uploading">{{ 'FORM.ATTACHMENT.LABEL.BROWSE.FILE' | translate }}</ng-container>
       <ng-container *ngIf="uploading">{{ 'FORM.ATTACHMENT.LABEL.UPLOADING' | translate }}</ng-container>
     </button>
   </span>
-
 </div>
+
+<div class="d-lg-none">
+  <div  *ngIf="!uploading" class="d-flex justify-content-between">
+    <div class="file-input">
+      <input #inputFile type="file" id="file" class="file" accept="image/*" (change)="handleFileChanged($event, 'file')">
+      <span>
+      <button class="btn btn-primary" [disabled]="uploading" (click)="inputFile.click()">
+        <ng-container *ngIf="!uploading">{{ 'FORM.ATTACHMENT.LABEL.BROWSE.IMAGE' | translate }}</ng-container>
+      </button>
+    </span>
+    </div>
+    <div class="file-input">
+      <input #inputPhoto type="file" id="camera" class="file" accept="image/*" capture="" (change)="handleFileChanged($event, 'camera')">
+      <div>
+        <button class="btn btn-primary" [disabled]="uploading" (click)="inputPhoto.click()">
+          <ng-container *ngIf="!uploading">{{ 'FORM.ATTACHMENT.LABEL.PHOTO' | translate }}</ng-container>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="uploading" class="d-flex justify-content-center">
+    <button class="btn btn-primary justify-content-center" [disabled]="uploading">
+      <ng-container>{{ 'FORM.ATTACHMENT.LABEL.UPLOADING' | translate }}</ng-container>
+    </button>
+  </div>
+</div>
+

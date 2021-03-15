@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {User} from './user';
 import {AuthService} from '../services/auth.service';
 
@@ -38,6 +54,12 @@ export const salesforceUrlPattern: string =
 
 export const salesforceUrlRegExp: RegExp = new RegExp(salesforceUrlPattern);
 
+/**
+ * Defines the start of a linkedIn profile URL.
+ * Defined here in case the link structure changes so only needs changing in one place.
+ */
+export const linkedInUrl: string = 'https://www.linkedin.com/in/';
+
 export const defaultReviewStatusFilter: string[] = [
   ReviewedStatus[ReviewedStatus.pending],
   ReviewedStatus[ReviewedStatus.verified]
@@ -45,6 +67,20 @@ export const defaultReviewStatusFilter: string[] = [
 
 export interface HasId {
   id: number;
+}
+
+export function indexOfHasId(id: number, hasIds: HasId[]): number {
+  for (let i = 0; i < hasIds.length; i++) {
+    if (hasIds[i].id === id) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+export function findHasId(id: number, hasIds: HasId[]): HasId {
+  const idx = indexOfHasId(id, hasIds);
+  return idx < 0 ? null : hasIds[idx];
 }
 
 export interface Auditable extends HasId {

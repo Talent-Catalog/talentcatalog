@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {BrowserModule, Title} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {NgbDateAdapter, NgbDateParserFormatter, NgbModule} from '@ng-bootstrap/ng-bootstrap';
@@ -135,7 +151,6 @@ import {FamilyComponent} from './components/candidates/intake/family/family.comp
 import {CandidateMiniIntakeTabComponent} from './components/candidates/view/tab/candidate-mini-intake-tab/candidate-mini-intake-tab.component';
 import {IntRecruitmentComponent} from './components/candidates/intake/int-recruitment/int-recruitment.component';
 import {RuralComponent} from './components/candidates/intake/rural/rural.component';
-import {FamilyHealthComponent} from './components/candidates/intake/family-health/family-health.component';
 import {ReturnHomeSafeComponent} from './components/candidates/intake/return-home-safe/return-home-safe.component';
 import {WorkPermitComponent} from './components/candidates/intake/work-permit/work-permit.component';
 import {WorkLegallyComponent} from './components/candidates/intake/work-legally/work-legally.component';
@@ -176,34 +191,13 @@ import {DragulaModule} from 'ng2-dragula';
 import {CandidateColumnSelectorComponent} from './components/util/candidate-column-selector/candidate-column-selector.component';
 import {CandidateNameNumSearchComponent} from './components/util/candidate-name-num-search/candidate-name-num-search.component';
 import {MilitaryServiceComponent} from './components/candidates/intake/military-service/military-service.component';
-import {ChildrenComponent} from './components/candidates/intake/children/children.component';
 import {VisaRejectComponent} from './components/candidates/intake/visa-reject/visa-reject.component';
 import {DrivingLicenseComponent} from './components/candidates/intake/driving-license/driving-license.component';
 import {DependantsComponent} from './components/candidates/intake/dependants/dependants.component';
-import {ConfirmVisaContactComponent} from './components/candidates/intake/confirm-visa-contact/confirm-visa-contact.component';
-import {IntProtectionComponent} from './components/candidates/intake/int-protection/int-protection.component';
-import {HealthAssessmentComponent} from './components/candidates/intake/health-assessment/health-assessment.component';
-import {CharacterAssessmentComponent} from './components/candidates/intake/character-assessment/character-assessment.component';
-import {SecurityAssessmentComponent} from './components/candidates/intake/security-assessment/security-assessment.component';
-import {TravelDocumentComponent} from './components/candidates/intake/travel-document/travel-document.component';
-import {RiskAssessmentComponent} from './components/candidates/intake/risk-assessment/risk-assessment.component';
-import {VisaJobAssessmentsComponent} from './components/candidates/intake/visa-job-assessments/visa-job-assessments.component';
-import {CreateVisaJobAssessementComponent} from './components/candidates/intake/visa-job-assessments/modal/create-visa-job-assessement.component';
-import {VisaJobAssessmentAuComponent} from './components/candidates/intake/visa-job-assessments/au/visa-job-assessment-au.component';
-import {VisaFinalAssessmentComponent} from './components/candidates/intake/visa-job-assessments/visa-final-assessment/visa-final-assessment.component';
-import {JobOccupationComponent} from './components/candidates/intake/visa-job-assessments/job-occupation/job-occupation.component';
-import {SalaryTsmitComponent} from './components/candidates/intake/visa-job-assessments/salary-tsmit/salary-tsmit.component';
-import {RegionalAreaComponent} from './components/candidates/intake/visa-job-assessments/regional-area/regional-area.component';
-import {JobInterestComponent} from './components/candidates/intake/visa-job-assessments/job-interest/job-interest.component';
-import {JobFamilyAusComponent} from './components/candidates/intake/visa-job-assessments/job-family-aus/job-family-aus.component';
-import {JobEligibilityAssessmentComponent} from './components/candidates/intake/visa-job-assessments/job-eligibility-assessment/job-eligibility-assessment.component';
-import {VisaFourNineFourComponent} from './components/candidates/intake/visa-job-assessments/visa-four-nine-four/visa-four-nine-four.component';
-import {VisaOneEightSixComponent} from './components/candidates/intake/visa-job-assessments/visa-one-eight-six/visa-one-eight-six.component';
-import {VisaOtherOptionsComponent} from './components/candidates/intake/visa-job-assessments/visa-other-options/visa-other-options.component';
-import {YearsRelevantExpComponent} from './components/candidates/intake/visa-job-assessments/years-relevant-exp/years-relevant-exp.component';
-import {IeltsLevelComponent} from './components/candidates/intake/visa-job-assessments/ielts-level/ielts-level.component';
-import {QualificationRelevantComponent} from './components/candidates/intake/visa-job-assessments/qualification-relevant/qualification-relevant.component';
-import {VisaJobAssessmentCaComponent} from './components/candidates/intake/visa-job-assessments/ca/visa-job-assessment-ca.component';
+import {DependantsCardComponent} from './components/candidates/intake/dependants/card/dependants-card.component';
+import {LangAssessmentComponent} from './components/candidates/intake/lang-assessment/lang-assessment.component';
+import {ExtendDatePipe} from './util/date-adapter/extend-date-pipe';
+import {DatePickerComponent} from './components/util/date-picker/date-picker.component';
 
 @NgModule({
   declarations: [
@@ -331,7 +325,6 @@ import {VisaJobAssessmentCaComponent} from './components/candidates/intake/visa-
     CandidateMiniIntakeTabComponent,
     IntRecruitmentComponent,
     RuralComponent,
-    FamilyHealthComponent,
     ReturnHomeSafeComponent,
     WorkPermitComponent,
     WorkLegallyComponent,
@@ -373,34 +366,13 @@ import {VisaJobAssessmentCaComponent} from './components/candidates/intake/visa-
     MaritalStatusComponent,
     CandidateNameNumSearchComponent,
     MilitaryServiceComponent,
-    ChildrenComponent,
     VisaRejectComponent,
     DrivingLicenseComponent,
     DependantsComponent,
-    ConfirmVisaContactComponent,
-    IntProtectionComponent,
-    HealthAssessmentComponent,
-    CharacterAssessmentComponent,
-    SecurityAssessmentComponent,
-    TravelDocumentComponent,
-    RiskAssessmentComponent,
-    VisaJobAssessmentsComponent,
-    CreateVisaJobAssessementComponent,
-    VisaJobAssessmentAuComponent,
-    VisaFinalAssessmentComponent,
-    JobOccupationComponent,
-    SalaryTsmitComponent,
-    RegionalAreaComponent,
-    JobInterestComponent,
-    JobFamilyAusComponent,
-    JobEligibilityAssessmentComponent,
-    VisaFourNineFourComponent,
-    VisaOneEightSixComponent,
-    VisaOtherOptionsComponent,
-    YearsRelevantExpComponent,
-    IeltsLevelComponent,
-    QualificationRelevantComponent,
-    VisaJobAssessmentCaComponent
+    DependantsCardComponent,
+    LangAssessmentComponent,
+    ExtendDatePipe,
+    DatePickerComponent
   ],
   imports: [
     BrowserModule,

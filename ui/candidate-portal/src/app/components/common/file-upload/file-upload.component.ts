@@ -1,11 +1,21 @@
-import {
-  Component,
-  EventEmitter,
-  HostListener,
-  Input,
-  OnInit,
-  Output
-} from '@angular/core';
+/*
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+import {Component, EventEmitter, HostListener, Input, OnInit, Output} from '@angular/core';
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-file-upload',
@@ -36,18 +46,21 @@ export class FileUploadComponent implements OnInit {
     evt.stopPropagation();
     this.hover = false;
     const fileChangeEvent = {target: {files: evt.dataTransfer.files}};
-    this.handleFileChanged(fileChangeEvent);
+    this.handleFileChanged(fileChangeEvent, 'file');
   }
 
-  @Output() uploadStarted = new EventEmitter();
+  @Output() uploadStarted = new EventEmitter<{files: File[], type: string}>();
 
   error: any;
   hover: boolean;
 
+  constructor(private modalService: NgbModal) {
+  }
+
   ngOnInit() {
   }
 
-  handleFileChanged(event: any) {
+  handleFileChanged(event: any, type: string) {
     const files: File[] = [...event.target.files];
 
     if (!!files && files.length) {
@@ -59,7 +72,7 @@ export class FileUploadComponent implements OnInit {
           return;
         }
       }
-      this.uploadStarted.emit(files);
+      this.uploadStarted.emit({files, type});
     }
   }
 
@@ -86,4 +99,5 @@ export class FileUploadComponent implements OnInit {
 
     return true;
   }
+
 }

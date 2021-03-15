@@ -1,14 +1,20 @@
 /*
- * Copyright (c) 2020 Talent Beyond Boundaries. All rights reserved.
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License 
+ * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.service.db;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.security.GeneralSecurityException;
-import java.util.List;
-import java.util.Optional;
 
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -22,26 +28,16 @@ import org.tbbtalent.server.model.db.DataRow;
 import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.request.LoginRequest;
-import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
-import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
-import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
-import org.tbbtalent.server.request.candidate.CandidatePhoneSearchRequest;
-import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
-import org.tbbtalent.server.request.candidate.IHasSetOfSavedLists;
-import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
-import org.tbbtalent.server.request.candidate.SavedListGetRequest;
-import org.tbbtalent.server.request.candidate.SavedSearchGetRequest;
-import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateContactRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateEducationRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateLinksRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
-import org.tbbtalent.server.request.candidate.stat.CandidateStatDateRequest;
+import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.util.dto.DtoBuilder;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.security.GeneralSecurityException;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 public interface CandidateService {
 
@@ -71,10 +67,32 @@ public interface CandidateService {
     int populateElasticCandidates(
             Pageable pageable, boolean logTotal, boolean createElastic);
 
+    /**
+     * Returns the requested page of candidates which match the attributes in
+     * the request.
+     * @param request Request specifying which candidates to return
+     * @return Page of candidates
+     */
     Page<Candidate> searchCandidates(SearchCandidateRequest request);
 
+    /**
+     * Returns the requested page of candidates of the given saved search.
+     * @param savedSearchId ID of saved search
+     * @param request Request specifying which candidates to return
+     * @return Page of candidates
+     * @throws NoSuchObjectException is no saved search exists with given id.
+     */
     Page<Candidate> searchCandidates(
             long savedSearchId, SavedSearchGetRequest request)
+            throws NoSuchObjectException;
+
+    /**
+     * Returns a set of the ids of all candidates matching the given saved search.
+     * @param savedSearchId ID of saved search
+     * @return Candidate ids (NOT candidateNumbers) of candidates matching search
+     * @throws NoSuchObjectException is no saved search exists with given id.
+     */
+    Set<Long> searchCandidates(long savedSearchId)
             throws NoSuchObjectException;
 
     Page<Candidate> searchCandidates(CandidateEmailSearchRequest request);
@@ -140,6 +158,12 @@ public interface CandidateService {
     Candidate updateAdditionalInfo(UpdateCandidateAdditionalInfoRequest request);
 
     Candidate updateCandidateSurvey(UpdateCandidateSurveyRequest request);
+
+    /**
+     * Returns a candidate once they have completed their registration
+     * <p/>
+     */
+    Candidate submitRegistration();
 
     /**
      * Returns the currently logged in candidate entity preloaded with
@@ -212,31 +236,40 @@ public interface CandidateService {
 
     void setCandidateContext(long savedSearchId, Iterable<Candidate> candidates);
 
-    List<DataRow> getGenderStats(CandidateStatDateRequest request);
+    List<DataRow> computeGenderStats(LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
+    List<DataRow> computeGenderStats(LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
-    List<DataRow> getBirthYearStats(Gender gender, CandidateStatDateRequest request);
+    List<DataRow> computeBirthYearStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
+    List<DataRow> computeBirthYearStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
-    List<DataRow> getRegistrationStats(CandidateStatDateRequest request);
+    List<DataRow> computeRegistrationStats(LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
+    List<DataRow> computeRegistrationStats(LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
-    List<DataRow> getRegistrationOccupationStats(CandidateStatDateRequest request);
+    List<DataRow> computeRegistrationOccupationStats(LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
+    List<DataRow> computeRegistrationOccupationStats(LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
-    List<DataRow> getLanguageStats(Gender gender, CandidateStatDateRequest request);
+    List<DataRow> computeLanguageStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
+    List<DataRow> computeLanguageStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
-    List<DataRow> getOccupationStats(Gender gender, CandidateStatDateRequest request);
+    List<DataRow> computeOccupationStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
+    List<DataRow> computeOccupationStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
-    List<DataRow> getMostCommonOccupationStats(Gender gender, CandidateStatDateRequest request);
+    List<DataRow> computeMostCommonOccupationStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
+    List<DataRow> computeMostCommonOccupationStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
-    List<DataRow> getSpokenLanguageLevelStats(Gender gender, String language, CandidateStatDateRequest request);
+    List<DataRow> computeSpokenLanguageLevelStats(Gender gender, String language, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
+    List<DataRow> computeSpokenLanguageLevelStats(Gender gender, String language, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
-    List<DataRow> getMaxEducationStats(Gender gender, CandidateStatDateRequest request);
+    List<DataRow> computeMaxEducationStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
+    List<DataRow> computeMaxEducationStats(Gender gender, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
-    List<DataRow> getNationalityStats(Gender gender, String country, CandidateStatDateRequest request);
+    List<DataRow> computeNationalityStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
+    List<DataRow> computeNationalityStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
-    List<DataRow> getSurveyStats(Gender gender, String country, CandidateStatDateRequest request);
+    List<DataRow> computeSurveyStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
+    List<DataRow> computeSurveyStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
     Resource generateCv(Candidate candidate);
-
-    void notifyWatchers();
 
     /**
      * IMPORTANT: Use this instead of {@link CandidateRepository#save} Saves

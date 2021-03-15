@@ -1,10 +1,26 @@
+/*
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Injectable} from '@angular/core';
-import {environment} from "../../environments/environment";
-import {HttpClient} from "@angular/common/http";
-import {Country} from "../model/country";
-import {Observable, of} from "rxjs";
-import {SearchResults} from "../model/search-results";
-import {tap} from "rxjs/operators";
+import {environment} from '../../environments/environment';
+import {HttpClient} from '@angular/common/http';
+import {Country} from '../model/country';
+import {Observable, of} from 'rxjs';
+import {SearchResults} from '../model/search-results';
+import {tap} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +29,7 @@ export class CountryService {
 
   private apiUrl: string = environment.apiUrl + '/country';
   private countries: Country[] = [];
+  private countriesRestricted: Country[] = [];
   private tbbDestinations: Country[] = [];
 
   constructor(private http: HttpClient) { }
@@ -27,6 +44,11 @@ export class CountryService {
           //Save data the first time we fetch it
           tap(data => {this.countries = data})
         );
+  }
+
+  listCountriesRestricted(): Observable<Country[]> {
+    //Get the restricted countries based on the users source countries
+    return this.http.get<Country[]>(`${this.apiUrl}/restricted`);
   }
 
   listTBBDestinations(): Observable<Country[]> {

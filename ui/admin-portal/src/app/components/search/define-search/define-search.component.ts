@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 
 import {Candidate} from '../../../model/candidate';
@@ -85,7 +101,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     singleSelection: false,
     selectAllText: 'Select All',
     unSelectAllText: 'Deselect All',
-    itemsShowLimit: 2,
     allowSearchFilter: true
   };
 
@@ -192,7 +207,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
 
     forkJoin({
       'nationalities': this.nationalityService.listNationalities(),
-      'countries': this.countryService.listCountries(),
+      'countriesRestricted': this.countryService.listCountriesRestricted(),
       'languages': this.languageService.listLanguages(),
       'languageLevels': this.languageLevelService.listLanguageLevels(),
       'educationLevels': this.educationLevelService.listEducationLevels(),
@@ -202,7 +217,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     }).subscribe(results => {
       this.loading = false;
       this.nationalities = results['nationalities'];
-      this.countries = results['countries'];
+      this.countries = results['countriesRestricted'];
       this.languages = results['languages'];
       this.languageLevels = results['languageLevels'];
       this.educationLevels = results['educationLevels'];

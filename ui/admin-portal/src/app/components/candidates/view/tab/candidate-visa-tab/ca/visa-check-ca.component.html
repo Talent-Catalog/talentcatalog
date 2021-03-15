@@ -1,53 +1,38 @@
+<!--
+  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <div *ngIf="loading">
   <i class="fas fa-spinner fa-spin"></i> loading...
 </div>
 <div *ngIf="error">
   {{error}}
 </div>
-<div *ngIf="!loading">
-  <div class="card">
-    <div class="card-header">
-      Confirmation Details
-    </div>
-    <div class="card-body">
-      <app-confirm-visa-contact
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-confirm-visa-contact>
-    </div>
+<div *ngIf="!loading" id="VisaCanada">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <h5>Visa Canada</h5>
+    <button class="btn btn-primary" (click)="exportAsPdf('VisaCanada')" [disabled]="saving">
+      <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
+      Export PDF
+    </button>
   </div>
 
-  <hr/>
-
-  <div class="card">
-    <div class="card-header">
-      Health Assessment
-    </div>
-    <div class="card-body">
-      <app-family-health
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [editable]="false">
-      </app-family-health>
-      <hr/>
-      <app-health-assessment
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-health-assessment>
-    </div>
-  </div>
-
-  <hr style="border-top: 5px solid #13b1dd; margin-top: 3em; margin-bottom: 3em;"/>
-
-  <app-visa-job-assessments
+  <app-visa-assessment
     [candidate]="candidate"
-    [visaRecord]="myRecord">
-  </app-visa-job-assessments>
-
-<!--  <app-visa-assessment-->
-<!--    [candidate]="candidate"-->
-<!--    [candidateIntakeData]="candidateIntakeData"-->
-<!--    [myRecordIndex]="selectedIndex"-->
-<!--  >-->
-<!--  </app-visa-assessment>-->
+    [candidateIntakeData]="candidateIntakeData"
+    [myRecordIndex]="selectedIndex"
+  >
+  </app-visa-assessment>
 </div>

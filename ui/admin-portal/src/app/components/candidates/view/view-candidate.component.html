@@ -1,3 +1,19 @@
+<!--
+  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <div *ngIf="loading">
   <i class="fas fa-spinner fa-spin"></i> loading...
 </div>
@@ -28,7 +44,7 @@
       <span class="small text-muted">
         {{candidate.candidateNumber}} -
           <a target="_blank" (click)="downloadCV()">
-              <i class="fas fa-file-download is-link" title="Download CV"></i>
+              <i class="fas fa-file-download is-link" title="Download TBB CV"></i>
           </a>
           <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]">
             <i class="fas fa-external-link-alt" title="Show candidate in new tab"></i>
@@ -41,6 +57,9 @@
           </a>
           <a *ngIf="candidate.videolink" [href]="candidate.videolink" target="_blank">
             <i class="fas fa-video" title="Show candidate's one way video"></i>
+          </a>
+          <a *ngIf="candidate.linkedInLink" [href]="candidate.linkedInLink" target="_blank">
+            <i class="fab fa-linkedin" title="Show candidate's linkedIn"></i>
           </a>
           <app-cv-icon
             *ngIf="isCVViewable()"
@@ -129,6 +148,7 @@
           <ng-template ngbTabContent>
             <app-candidate-mini-intake-tab
               [candidate]="candidate"
+
             >
             </app-candidate-mini-intake-tab>
           </ng-template>
@@ -162,20 +182,27 @@
           <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
             class="fas fa-arrow-{{sidePanelColWidth == 8 ? 'right' : 'left'}}"></i></button>
         </div>
+        <app-view-candidate-note
+          [candidate]="candidate"
+          [editable]="!loggedInUser.readOnly"
+          [characterLimit]="1000"
+          (onResize)="resizeSidePanel()">
+        </app-view-candidate-note>
 
-        <ngb-tabset>
 
-          <!--         HISTORY -->
-          <ngb-tab [title]="'History'">
-            <ng-template ngbTabContent>
-              <app-candidate-history-tab
-                [candidate]="candidate"
-                [characterLimit]="1000"
-                [editable]="!loggedInUser.readOnly"
-                (onResize)="resizeSidePanel()">
-              </app-candidate-history-tab>
-            </ng-template>
-          </ngb-tab>
+<!--        <ngb-tabset>-->
+
+<!--          &lt;!&ndash;         HISTORY &ndash;&gt;-->
+<!--          <ngb-tab [title]="'History'">-->
+<!--            <ng-template ngbTabContent>-->
+<!--              <app-candidate-history-tab-->
+<!--                [candidate]="candidate"-->
+<!--                [characterLimit]="1000"-->
+<!--                [editable]="!loggedInUser.readOnly"-->
+<!--                (onResize)="resizeSidePanel()">-->
+<!--              </app-candidate-history-tab>-->
+<!--            </ng-template>-->
+<!--          </ngb-tab>-->
 
           <!--         HISTORY -->
 <!--          <ngb-tab [title]="'Audit'">-->
@@ -184,7 +211,7 @@
             <!--          </ng-template>-->
 <!--          </ngb-tab>-->
 
-        </ngb-tabset>
+<!--        </ngb-tabset>-->
       </div>
     </div>
   </div>

@@ -1,16 +1,28 @@
 /*
- * Copyright (c) 2020 Talent Beyond Boundaries. All rights reserved.
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License 
+ * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.api.admin;
-
-import javax.validation.constraints.NotNull;
 
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.util.dto.DtoBuilder;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * Utility for selecting the right DTO build based on the currently logged in
@@ -38,11 +50,14 @@ public class CandidateIntakeDataBuilderSelector {
         return new DtoBuilder()
                 .add("asylumYear")
                 .add("availImmediate")
+                .add("availImmediateJobOps")
                 .add("availImmediateReason")
                 .add("availImmediateNotes")
+                .add("birthCountry", countryDto())
 
                 .add("candidateCitizenships", candidateCitizenshipDto())
 
+                .add("candidateDependants", candidateDependantDto())
                 .add("candidateDestinations", candidateDestinationDto())
 
                 .add("candidateExams", candidateExamDto())
@@ -51,17 +66,11 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("canDrive")
 
-                .add("children")
-                .add("childrenAge")
-
                 .add("conflict")
                 .add("conflictNotes")
 
                 .add("crimeConvict")
                 .add("crimeConvictNotes")
-
-                .add("dependants")
-                .add("dependantsNotes")
 
                 .add("destLimit")
                 .add("destLimitNotes")
@@ -75,37 +84,49 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("familyMove")
                 .add("familyMoveNotes")
-                .add("familyHealthConcern")
-                .add("familyHealthConcernNotes")
 
                 .add("homeLocation")
                 .add("hostChallenges")
                 .add("hostBorn")
                 .add("hostEntryYear")
                 .add("hostEntryLegally")
+                .add("hostEntryLegallyNotes")
                 .add("intRecruitReasons")
+                .add("intRecruitOther")
                 .add("intRecruitRural")
+                .add("intRecruitRuralNotes")
 
-                .add("leftHomeReason")
+                .add("langAssessment")
+                .add("langAssessmentScore")
+                .add("leftHomeReasons")
                 .add("leftHomeOther")
                 .add("militaryService")
+                .add("militaryWanted")
+                .add("militaryNotes")
+                .add("militaryStart")
+                .add("militaryEnd")
 
                 .add("maritalStatus")
                 .add("partnerRegistered")
                 .add("partnerCandidate", partnerCandidateDto())
                 .add("partnerEduLevel", englishLevelDto())
-                .add("partnerProfession", occupationDto())
+                .add("partnerEduLevelNotes")
+                .add("partnerOccupation", occupationDto())
+                .add("partnerOccupationNotes")
                 .add("partnerEnglish")
                 .add("partnerEnglishLevel", languageLevelDto())
                 .add("partnerIelts")
                 .add("partnerIeltsScore")
+                .add("partnerIeltsYr")
                 .add("partnerCitizenship", nationalityDto())
 
                 .add("residenceStatus")
+                .add("residenceStatusNotes")
 
                 .add("returnedHome")
                 .add("returnedHomeReason")
-                .add("returnedHomeNotes")
+                .add("returnedHomeReasonNo")
+
                 .add("returnHomeSafe")
                 .add("returnHomeFuture")
                 .add("returnHomeWhen")
@@ -113,6 +134,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("resettleThird")
                 .add("resettleThirdStatus")
 
+                .add("unhcrRegistered")
                 .add("unhcrStatus")
                 .add("unhcrOldStatus")
                 .add("unhcrNumber")
@@ -120,20 +142,24 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("unhcrNotes")
                 .add("unhcrPermission")
 
-                .add("unrwaStatus")
+                .add("unrwaRegistered")
                 .add("unrwaNumber")
                 .add("unrwaNotes")
 
                 .add("visaReject")
+                .add("visaRejectNotes")
                 .add("visaIssues")
                 .add("visaIssuesNotes")
 
                 .add("workAbroad")
-                .add("workAbroadLoc", countryDto())
+                .add("workAbroadCountryIds")
                 .add("workAbroadYrs")
+                .add("workAbroadNotes")
                 .add("workPermit")
                 .add("workPermitDesired")
-                .add("workLegally")
+                .add("workDesired")
+                .add("workDesiredNotes")
+
                 ;
     }
 
@@ -142,6 +168,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("id")
                 .add("nationality", nationalityDto())
                 .add("hasPassport")
+                .add("passportExp")
                 .add("notes")
                 ;
     }
@@ -152,9 +179,20 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("exam")
                 .add("otherExam")
                 .add("score")
+                .add("year")
                 ;
     }
 
+    private DtoBuilder candidateDependantDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("relation")
+                .add("dob")
+                .add("name")
+                .add("healthConcern")
+                .add("notes")
+                ;
+    }
     private DtoBuilder candidateDestinationDto() {
         return new DtoBuilder()
                 .add("id")

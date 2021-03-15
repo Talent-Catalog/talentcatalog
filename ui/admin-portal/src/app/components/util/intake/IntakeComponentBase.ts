@@ -1,5 +1,17 @@
 /*
- * Copyright (c) 2020 Talent Beyond Boundaries. All rights reserved.
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 import {AfterViewInit, Directive, Input, OnDestroy, OnInit} from '@angular/core';
@@ -179,6 +191,9 @@ export abstract class IntakeComponentBase implements AfterViewInit, OnDestroy, O
           enums.push(item.value);
         }
         formValue[key] = enums;
+      } else {
+        // If not enum it will be a list of ids.
+        return formValue;
       }
     }
     return formValue;

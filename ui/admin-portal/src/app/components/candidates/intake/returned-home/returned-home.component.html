@@ -1,3 +1,19 @@
+<!--
+  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <div *ngIf="error">
   {{error}}
 </div>
@@ -23,6 +39,14 @@
       <label for="returnedHomeReason">What was the reason for your return?</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="4"
                 id="returnedHomeReason" [formControlName]="'returnedHomeReason'"
+                placeholder="" ></textarea>
+    </div>
+  </div>
+  <div *ngIf="returnedHome === 'No'">
+    <div class="form-group">
+      <label for="returnedHomeReasonNo">What are the reasons you have not returned?</label>
+      <textarea type="text" class="md-textarea-auto form-control" rows="4"
+                id="returnedHomeReasonNo" [formControlName]="'returnedHomeReasonNo'"
                 placeholder="" ></textarea>
     </div>
   </div>

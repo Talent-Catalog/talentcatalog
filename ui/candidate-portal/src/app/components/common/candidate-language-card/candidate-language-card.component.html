@@ -1,3 +1,19 @@
+<!--
+  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <div class="text-right" *ngIf="!isEnglish(language.languageId) && !preview">
   <button class="btn btn-danger btn-card" (click)="delete()">&times;</button>
 </div>
@@ -11,7 +27,7 @@
   </select>
 
   <p class="m-0" *ngIf="preview">
-    {{language.language | translation :'language'}}
+    {{language.language.name | translate }}
   </p>
 </div>
 
@@ -26,7 +42,7 @@
   </select>
 
   <p class="m-0" *ngIf="preview">
-    {{language.spokenLevel | translation :'language_level'}}
+    {{language.spokenLevel.name | translate }}
   </p>
 </div>
 
@@ -41,6 +57,6 @@
   </select>
 
   <p class="m-0" *ngIf="preview">
-    {{language.writtenLevel | translation :'language_level'}}
+    {{language.writtenLevel.name | translate}}
   </p>
 </div>

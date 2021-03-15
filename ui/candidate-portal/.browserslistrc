@@ -2,10 +2,11 @@
 # For additional information regarding the format and rule options, please see:
 # https://github.com/browserslist/browserslist#queries
 #
-# For IE 9-11 support, please remove 'not' from the last line of the file and adjust as needed
+# You can see what browsers were selected by your queries by running:
+#   npx browserslist
 
 > 0.5%
 last 2 versions
 Firefox ESR
 not dead
-IE 9-11
+IE 11

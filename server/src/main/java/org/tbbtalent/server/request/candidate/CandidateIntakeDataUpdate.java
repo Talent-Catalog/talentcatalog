@@ -1,5 +1,17 @@
 /*
- * Copyright (c) 2020 Talent Beyond Boundaries. All rights reserved.
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License 
+ * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.request.candidate;
@@ -32,6 +44,7 @@ public class CandidateIntakeDataUpdate {
 
     private LocalDate asylumYear;
     private YesNoUnsure availImmediate;
+    private String availImmediateJobOps;
     private AvailImmediateReason availImmediateReason;
     private String availImmediateNotes;
 
@@ -39,12 +52,10 @@ public class CandidateIntakeDataUpdate {
     private Long citizenId;
     private Long citizenNationalityId;
     private HasPassport citizenHasPassport;
+    private LocalDate citizenPassportExp;
     private String citizenNotes;
 
     private YesNo canDrive;
-
-    private YesNo children;
-    private String childrenAge;
 
     private YesNo conflict;
     private String conflictNotes;
@@ -52,8 +63,16 @@ public class CandidateIntakeDataUpdate {
     private YesNoUnsure crimeConvict;
     private String crimeConvictNotes;
 
-    private Long dependants;
-    private String dependantsNotes;
+    private Long birthCountryId;
+
+    //Corresponds to CandidateDependant fields
+    private Long dependantId;
+    private DependantRelations dependantRelation;
+    private LocalDate dependantDob;
+    private String dependantName;
+    private Registration dependantRegistered;
+    private YesNo dependantHealthConcerns;
+    private String dependantNotes;
 
     //Corresponds to CandidateDestination fields
     private Long destinationId;
@@ -68,6 +87,7 @@ public class CandidateIntakeDataUpdate {
     private Exam examType;
     private String otherExam;
     private String examScore;
+    private Long examYear;
 
     private YesNo destLimit;
     private String destLimitNotes;
@@ -81,36 +101,48 @@ public class CandidateIntakeDataUpdate {
 
     private YesNo familyMove;
     private String familyMoveNotes;
-    private YesNo familyHealthConcern;
-    private String familyHealthConcernNotes;
+
     private String homeLocation;
     private String hostChallenges;
     private YesNo hostBorn;
-    private LocalDate hostEntryYear;
+    private Long hostEntryYear;
     private YesNo hostEntryLegally;
+    private String hostEntryLegallyNotes;
     private List<IntRecruitReason> intRecruitReasons;
+    private String intRecruitOther;
     private YesNoUnsure intRecruitRural;
+    private String intRecruitRuralNotes;
 
-    private LeftHomeReason leftHomeReason;
+    private String langAssessment;
+    private IeltsScore langAssessmentScore;
+    private List<LeftHomeReason> leftHomeReasons;
     private String leftHomeOther;
     private YesNo militaryService;
+    private YesNoUnsure militaryWanted;
+    private String militaryNotes;
+    private LocalDate militaryStart;
+    private LocalDate militaryEnd;
 
     private MaritalStatus maritalStatus;
     private YesNoUnsure partnerRegistered;
     private Long partnerCandId;
     private Long partnerEduLevelId;
-    private Long partnerProfessionId;
+    private String partnerEduLevelNotes;
+    private Long partnerOccupationId;
+    private String partnerOccupationNotes;
     private YesNo partnerEnglish;
     private Long partnerEnglishLevelId;
-    private YesNoUnsure partnerIelts;
+    private IeltsStatus partnerIelts;
     private IeltsScore partnerIeltsScore;
+    private Long partnerIeltsYr;
     private Long partnerCitizenshipId;
 
     private ResidenceStatus residenceStatus;
+    private String residenceStatusNotes;
 
     private YesNoUnsure returnedHome;
-    private String returnedHomeNotes;
     private String returnedHomeReason;
+    private String returnedHomeReasonNo;
     private YesNoUnsure returnHomeSafe;
     private YesNoUnsure returnHomeFuture;
     private String returnHomeWhen;
@@ -118,12 +150,14 @@ public class CandidateIntakeDataUpdate {
     private YesNo resettleThird;
     private String resettleThirdStatus;
 
+    private YesNoUnsure unhcrRegistered;
     private UnhcrStatus unhcrStatus;
     private UnhcrStatus unhcrOldStatus;
     private String unhcrNumber;
     private Long unhcrFile;
     private String unhcrNotes;
     private YesNo unhcrPermission;
+    private YesNoUnsure unrwaRegistered;
     private UnrwaStatus unrwaStatus;
     private String unrwaNumber;
     private String unrwaNotes;
@@ -140,14 +174,17 @@ public class CandidateIntakeDataUpdate {
     private TBBEligibilityAssessment visaTbbEligibilityAssessment;
 
     private YesNoUnsure visaReject;
+    private String visaRejectNotes;
     private List<VisaIssue> visaIssues;
     private String visaIssuesNotes;
     
     private YesNo workAbroad;
-    private Long workAbroadLocId;
+    private List<Long> workAbroadCountryIds;
     private Long workAbroadYrs;
+    private String workAbroadNotes;
     private WorkPermit workPermit;
     private YesNoUnsure workPermitDesired;
-    private YesNo workLegally;
+    private YesNoUnemployed workDesired;
+    private String workDesiredNotes;
 
 }

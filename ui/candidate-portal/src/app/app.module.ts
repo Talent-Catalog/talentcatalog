@@ -1,11 +1,33 @@
+/*
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './components/app.component';
 import {LandingComponent} from './components/landing/landing.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from '@angular/common/http';
-import {NgbDateAdapter, NgbDateParserFormatter, NgbDatepickerConfig, NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
+import {
+  NgbDateAdapter,
+  NgbDateParserFormatter,
+  NgbDatepickerConfig,
+  NgbDatepickerI18n,
+  NgbModule
+} from '@ng-bootstrap/ng-bootstrap';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha';
 
@@ -48,22 +70,17 @@ import {CustomDateAdapter, CustomDateParserFormatter} from './util/date-adapter/
 import {UserPipe} from './pipes/user.pipe';
 import {TrimPipe} from './pipes/trim.pipe';
 import {MonthPickerComponent} from './components/common/month-picker/month-picker.component';
-import {TranslationPipe} from './pipes/translation.pipe';
 import {FaIconLibrary, FontAwesomeModule} from '@fortawesome/angular-fontawesome';
-import {faEdit} from '@fortawesome/free-solid-svg-icons';
-import {Observable} from 'rxjs';
-import {environment} from '../environments/environment';
+import {faCalendar, faChevronDown, faChevronUp, faEdit, faEllipsisH} from '@fortawesome/free-solid-svg-icons';
 import {DeleteOccupationComponent} from './components/register/candidate-occupation/delete/delete-occupation.component';
 import {CandidateCertificationFormComponent} from './components/common/candidate-certification-form/candidate-certification-form.component';
 import {DownloadCvComponent} from './components/common/download-cv/download-cv.component';
-
-export function createTranslateLoader(http: HttpClient) {
-  return {
-    getTranslation(lang: string): Observable<any> {
-      return http.get(`${environment.apiUrl}/language/translations/file/${lang}`);
-    }
-  };
-}
+import {RedirectGuard} from './services/redirect.guard';
+import {LanguageLoader} from "./services/language.loader";
+import {faSpinner} from "@fortawesome/free-solid-svg-icons/faSpinner";
+import {RegistrationUploadFileComponent} from './components/register/upload-file/registration-upload-file.component';
+import {DatePickerComponent} from './components/common/date-picker/date-picker.component';
+import {CustomDatepickerI18n} from "./util/custom-date-picker";
 
 @NgModule({
   declarations: [
@@ -102,11 +119,12 @@ export function createTranslateLoader(http: HttpClient) {
     InputFilterDirective,
     UserPipe,
     TrimPipe,
-    TranslationPipe,
     MonthPickerComponent,
     DeleteOccupationComponent,
     CandidateCertificationFormComponent,
-    DownloadCvComponent
+    DownloadCvComponent,
+    RegistrationUploadFileComponent,
+    DatePickerComponent,
   ],
   imports: [
     BrowserModule,
@@ -121,21 +139,19 @@ export function createTranslateLoader(http: HttpClient) {
       storageType: 'localStorage'
     }),
     TranslateModule.forRoot({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: (createTranslateLoader),
-        deps: [HttpClient]
-      }
+      loader: {provide: TranslateLoader, useClass: LanguageLoader}
     }),
     FontAwesomeModule
   ],
   providers: [
+    {provide: RedirectGuard},
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: LanguageInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
     {provide: RECAPTCHA_V3_SITE_KEY, useValue: '6Lc_97cZAAAAAIDqR7gT3h_ROGU6P7Jif-wEk9Vu'},
     {provide: NgbDateAdapter, useClass: CustomDateAdapter},
     {provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter},
+    {provide: NgbDatepickerI18n, useClass: CustomDatepickerI18n}
 
   ],
   bootstrap: [AppComponent]
@@ -145,7 +161,13 @@ export class AppModule {
   constructor(private datepickerConfig: NgbDatepickerConfig, library: FaIconLibrary) {
     this.datepickerConfig.minDate = {year: 1950, month: 1, day: 1};
     library.addIcons(
-      faEdit
+      faEdit,
+      faSpinner,
+      faChevronDown,
+      faChevronUp,
+      faEllipsisH,
+      faCalendar
+
     );
   }
 }

@@ -1,11 +1,23 @@
 /*
- * Copyright (c) 2020 Talent Beyond Boundaries. All rights reserved.
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License 
+ * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.service.db;
 
+import java.util.List;
 import javax.validation.constraints.NotNull;
-
 import org.springframework.data.domain.Page;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
@@ -24,7 +36,21 @@ import org.tbbtalent.server.request.search.UpdateWatchingRequest;
 
 public interface SavedSearchService {
 
-    Page<SavedSearch> searchSavedSearches(SearchSavedSearchRequest request);
+    /**
+     * Searches for saved searches whose name and other attributes match the
+     * given search request.
+     * @param request Attributes to search on
+     * @return Matching saved searches.
+     */
+    List<SavedSearch> search(SearchSavedSearchRequest request);
+
+    /**
+     * Searches for a page of saved searches whose name and other attributes match the
+     * given search request.
+     * @param request Attributes to search on - including paging details
+     * @return Requested page of matching saved searches.
+     */
+    Page<SavedSearch> searchPaged(SearchSavedSearchRequest request);
 
     SearchCandidateRequest loadSavedSearch(long id);
 

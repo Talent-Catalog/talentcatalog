@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 
 import {Candidate} from '../../../model/candidate';
@@ -12,7 +28,7 @@ import {
   ClearSelectionRequest,
   getCandidateSourceBreadcrumb,
   getCandidateSourceExternalHref,
-  getCandidateSourceNavigation,
+  getCandidateSourceNavigation, getCandidateSourceStatsNavigation,
   getSavedSearchBreadcrumb,
   getSavedSourceNavigation,
   isSavedSearch,
@@ -1019,6 +1035,12 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     if (savedSearchSource != null) {
       this.router.navigate(getSavedSourceNavigation(savedSearchSource));
     }
+  }
+
+  doRunStats() {
+    //Navigate to the infographics requesting it to run stats on this source.
+    const urlCommands = getCandidateSourceStatsNavigation(this.candidateSource);
+    this.router.navigate(urlCommands);
   }
 
   doSelectColumns() {

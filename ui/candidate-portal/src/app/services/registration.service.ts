@@ -1,7 +1,23 @@
+/*
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Injectable} from '@angular/core';
-import {RegistrationStep} from "../components/register/registration-step";
-import {ActivatedRoute, Router} from "@angular/router";
-import {Subscription} from "rxjs";
+import {RegistrationStep} from '../components/register/registration-step';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Subscription} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,12 +27,6 @@ export class RegistrationService {
   private subscription: Subscription;
 
   public steps: RegistrationStep[] = [
-    {
-      key: 'landing',
-      title: '',
-      section: 0,
-      hideHeader: true
-    },
     {
       key: 'contact',
       title: 'How can we contact you?',
@@ -53,15 +63,20 @@ export class RegistrationService {
       section: 7
     },
     {
-      key: 'submit',
-      title: 'Are you ready to submit your application?',
+      key: 'additional',
+      title: 'How did you hear about us?',
       section: 8
+    },
+    {
+      key: 'upload',
+      title: 'Do you have any files to upload?',
+      section: 9
     },
     {
       key: 'complete',
       title: '',
       hideHeader: true,
-      section: 8
+      section: 9
     }
   ];
   public totalSections: number = Math.max(...this.steps.map(s => s.section));

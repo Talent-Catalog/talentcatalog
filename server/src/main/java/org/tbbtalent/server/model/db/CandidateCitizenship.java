@@ -1,23 +1,29 @@
 /*
- * Copyright (c) 2020 Talent Beyond Boundaries. All rights reserved.
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License 
+ * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.model.db;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-
-import org.springframework.lang.NonNull;
-import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
+import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
+
+import javax.persistence.*;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -32,6 +38,9 @@ public class CandidateCitizenship extends AbstractDomainObject<Long> {
 
     @Enumerated(EnumType.STRING)
     private HasPassport hasPassport;
+
+    @Nullable
+    private LocalDate passportExp;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "nationality_id")
@@ -52,6 +61,9 @@ public class CandidateCitizenship extends AbstractDomainObject<Long> {
         }
         if (data.getCitizenHasPassport() != null) {
             setHasPassport(data.getCitizenHasPassport());
+        }
+        if (data.getCitizenPassportExp() != null) {
+            setPassportExp(data.getCitizenPassportExp());
         }
     }
     

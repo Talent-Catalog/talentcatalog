@@ -1,3 +1,19 @@
+<!--
+  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <!--Only split if someone else (parent) is not managing splits
 (ie resizing themselves to make room for selected candidate details.-->
 <div [hidden]="loading"
@@ -35,7 +51,7 @@
                       (pageChange)="doSearch(true)">
       </ngb-pagination>
 
-      <button class="btn" (click)="doCopyLink()">
+      <button class="btn" *ngIf="!isDefaultSavedSearch()" (click)="doCopyLink()">
         <i class="fas fa-link" title="Get shareable link"></i>
       </button>
       <button class="btn" *ngIf="hasSavedSearchSource()" (click)="doShowSearch()">
@@ -47,6 +63,9 @@
       <button class="btn" (click)="doSelectColumns()">
         <i class="fas fa-columns" title="Select columns to display"></i>
       </button>
+      <button class="btn" *ngIf="!isDefaultSavedSearch()" (click)="doRunStats()">
+        <i class="fas fa-chart-bar" title="Run stats"></i>
+      </button>
       <a *ngIf="candidateSource?.sfJoblink" target="_blank"
          [href]="candidateSource.sfJoblink">
         <i class="fab fa-salesforce" title="Associated Job Opportunity"></i>
@@ -54,7 +73,7 @@
       <button class="btn" *ngIf="timestamp" (click)="doSearch(true)">
         <i class="fas fa-sync" title="Refresh search"></i>
       </button>
-      {{results?.totalElements}} candidates. Timestamp {{timestamp | date: 'yyyy-MM-dd HH:mm:ss'}}
+      {{results?.totalElements}} candidates. Timestamp {{timestamp | date: 'customDateTime'}}
 
       <button *ngIf="isShareable() && !isSharedWithMe() && !isGlobal()"
         class="btn btn-outline-secondary" (click)="addToSharedWithMe()">
@@ -182,6 +201,9 @@
               </a>
               <a *ngIf="candidate.videolink" [href]="candidate.videolink" target="_blank">
                 <i class="fas fa-video" title="Show candidate's one way video"></i>
+              </a>
+              <a *ngIf="candidate.linkedInLink" [href]="candidate.linkedInLink" target="_blank">
+                <i class="fab fa-linkedin" title="Show candidate's one way video"></i>
               </a>
               <app-cv-icon
                 *ngIf="isCandidateNameViewable()"

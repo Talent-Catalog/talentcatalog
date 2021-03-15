@@ -1,5 +1,17 @@
 /*
- * Copyright (c) 2020 Talent Beyond Boundaries. All rights reserved.
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License 
+ * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.model.db;
@@ -74,6 +86,10 @@ public class SavedList extends AbstractCandidateSource {
     private SavedSearch savedSearchSource;
 
     /**
+     * This is the set of all CandidateSavedList entities associated with this
+     * SavedList. There is one of these for each candidate in the list.
+     * @see #getCandidates() 
+     * <p/>
      * Even though we would prefer CascadeType.ALL with 'orphanRemoval' so that 
      * removing from the candidateSavedLists collection would automatically
      * cascade down to delete the corresponding entry in the 
@@ -124,6 +140,11 @@ public class SavedList extends AbstractCandidateSource {
         this.candidateSavedLists = candidateSavedLists;
     }
 
+    /**
+     * Get all candidates in this list.
+     * @return Set of candidates in this list (a candidate cannot appear more 
+     * than once in a given list).
+     */
     @Transient
     public Set<Candidate> getCandidates() {
         Set<Candidate> candidates = new HashSet<>();

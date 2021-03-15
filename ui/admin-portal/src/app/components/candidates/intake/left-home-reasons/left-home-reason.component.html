@@ -1,30 +1,45 @@
+<!--
+  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <div *ngIf="error">
   {{error}}
 </div>
 <form [formGroup]="form">
   <div class="form-group">
-    <label for="leftHomeReason">
+    <label for="leftHomeReasons">
       What are the primary reasons you left your home country and currently live in Lebanon or Jordan?
     </label>
-    <div *ngIf="editable" class="float-right">
+    <div class="float-right">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <select class="form-control"
-            id="leftHomeReason" [formControlName]="'leftHomeReason'" [class.not-editable]="!editable">
-      <option *ngFor="let opt of leftHomeReasonOptions" [value]="opt.value" [disabled]="!editable">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <ng-multiselect-dropdown
+      id="leftHomeReasons"
+      [settings]="dropdownSettings"
+      [data]="leftHomeReasonOptions"
+      formControlName="leftHomeReasons">
+    </ng-multiselect-dropdown>
   </div>
 
-  <div *ngIf="leftHomeReason === 'Other'">
+  <div *ngIf="hasOther">
     <div class="form-group">
       <label for="leftHomeOther">If other, please explain</label>
-      <input type="text" class="form-control" id="leftHomeOther"
-             [formControlName]="'leftHomeOther'" [readOnly]="!editable">
+      <input type="text" class="form-control" id="leftHomeOther" [formControlName]="'leftHomeOther'">
     </div>
   </div>
 </form>

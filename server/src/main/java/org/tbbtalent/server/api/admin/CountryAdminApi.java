@@ -1,10 +1,20 @@
+/*
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License 
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 package org.tbbtalent.server.api.admin;
-
-import java.util.List;
-import java.util.Map;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,6 +31,11 @@ import org.tbbtalent.server.request.country.UpdateCountryRequest;
 import org.tbbtalent.server.service.db.CountryService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.util.List;
+import java.util.Map;
+
 @RestController()
 @RequestMapping("/api/admin/country")
 public class CountryAdminApi implements 
@@ -33,7 +48,13 @@ public class CountryAdminApi implements
 
     @Override
     public @NotNull List<Map<String, Object>> list() {
-        List<Country> countries = countryService.listCountries();
+        List<Country> countries = countryService.listCountries(false);
+        return countryDto().buildList(countries);
+    }
+
+    @GetMapping("restricted")
+    public @NotNull List<Map<String, Object>> listRestricted() {
+        List<Country> countries = countryService.listCountries(true);
         return countryDto().buildList(countries);
     }
 

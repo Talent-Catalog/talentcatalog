@@ -1,3 +1,19 @@
+<!--
+  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <div class="container">
 
   <app-loading [loading]="loading"></app-loading>
@@ -33,32 +49,30 @@
         </div>
       </ng-container>
 
+      <div class="form-group">
+        <div>
+          <label for="linkedInLink">
+            {{ 'REGISTRATION.SUBMIT.LINKEDIN.LABEL' | translate }}
+          </label>
+        </div>
+        <div class="d-flex align-items-center">
+          <input type="text" class="form-control" id="linkedInLink"
+                 formControlName="linkedInLink" placeholder="https://www.linkedin.com/in/...">
+        </div>
+      </div>
+      <div *ngIf="form.controls.linkedInLink.invalid && (form.controls.linkedInLink.dirty || form.controls.linkedInLink.touched)"
+           class="alert alert-danger">
+        {{ 'REGISTRATION.SUBMIT.LINKEDIN.WARN' | translate }}
+      </div>
+
     </form>
-
-    <div>
-      <hr>
-      <h5 class="mb-3">{{ 'REGISTRATION.ATTACHMENTS.TITLE' | translate }}</h5>
-      <strong>{{ 'REGISTRATION.ATTACHMENTS.CV.NAME' | translate }}</strong>
-      <p>{{ 'REGISTRATION.ATTACHMENTS.CV.EXPLANATION' | translate }}</p>
-      <app-candidate-attachments
-        [cv]="true">
-      </app-candidate-attachments>
-      <br>
-      <strong>{{ 'REGISTRATION.ATTACHMENTS.OTHER.NAME' | translate }}</strong>
-      <p>{{ 'REGISTRATION.ATTACHMENTS.OTHER.EXPLANATION' | translate }}</p>
-      <app-candidate-attachments
-        [cv]="false">
-      </app-candidate-attachments>
-    </div>
-
-
 
   </ng-container>
 
 </div>
 
 <app-registration-footer [nextDisabled]="loading || saving || form?.invalid"
-                         [type]="edit ? 'update' : 'submit'"
+                         [type]="edit ? 'update' : 'step'"
                          (backClicked)="edit ? cancel() : save('back') "
                          (nextClicked)="save('next')">
 </app-registration-footer>

@@ -1,13 +1,20 @@
-package org.tbbtalent.server.service.db.impl;
+/*
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License 
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
-import java.util.UUID;
-import java.util.regex.Pattern;
+package org.tbbtalent.server.service.db.impl;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -23,11 +30,7 @@ import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.AttachmentType;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateAttachment;
-import org.tbbtalent.server.model.db.Role;
-import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.request.PagedSearchRequest;
@@ -42,6 +45,11 @@ import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
 import org.tbbtalent.server.util.filesystem.FileSystemFile;
 import org.tbbtalent.server.util.filesystem.FileSystemFolder;
 import org.tbbtalent.server.util.textExtract.TextExtractHelper;
+
+import java.io.*;
+import java.util.List;
+import java.util.UUID;
+import java.util.regex.Pattern;
 
 @Service
 public class CandidateAttachmentsServiceImpl implements CandidateAttachmentService {
@@ -302,13 +310,12 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     }
 
     @Override
-    public CandidateAttachment updateCandidateAttachment(
+    public CandidateAttachment updateCandidateAttachment(Long id,
             UpdateCandidateAttachmentRequest request) throws IOException {
         User user = userContext.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
-        CandidateAttachment candidateAttachment = 
-                getCandidateAttachment(request.getId()); 
+        CandidateAttachment candidateAttachment = getCandidateAttachment(id);
 
         final AttachmentType attachmentType = candidateAttachment.getType();
         

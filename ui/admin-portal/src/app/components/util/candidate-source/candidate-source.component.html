@@ -1,3 +1,19 @@
+<!--
+  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <div class="card">
 <!--  <div *ngIf="loading"><i class="fas fa-spinner fa-spin"></i></div>-->
   <div class="card-body">
@@ -29,6 +45,7 @@
              [href]="candidateSource.sfJoblink">
             <i class="fab fa-salesforce" title="Associated Job Opportunity"></i>
           </a>
+          <button class="btn" *ngIf="showRunStats" (click)="doRunStats()"><i class="fas fa-chart-bar" title="Run stats"></i></button>
           <button class="btn" *ngIf="showCopy && !isSavedSearch()" (click)="doCopySource()"><i class="fas fa-clone" title="Copy"></i></button>
           <button class="btn" *ngIf="showMore && isSavedSearch()" (click)="toggleShowMore()"><i class="fas fa-ellipsis-h" title="View details"></i></button>
           <button class="btn" *ngIf="showSelect" (click)="doSelectSource()"><i class="far fa-hand-pointer" title="Select"></i></button>

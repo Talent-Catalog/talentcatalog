@@ -1,6 +1,22 @@
+/*
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, Input, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../util/enum';
-import {Candidate, IeltsScore, MaritalStatus, YesNo, YesNoUnsure} from '../../../../model/candidate';
+import {Candidate, IeltsScore, IeltsStatus, MaritalStatus, YesNo, YesNoUnsure} from '../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
@@ -8,6 +24,7 @@ import {EducationLevel} from '../../../../model/education-level';
 import {Occupation} from '../../../../model/occupation';
 import {LanguageLevel} from '../../../../model/language-level';
 import {Nationality} from '../../../../model/nationality';
+import {generateYearArray} from '../../../../util/year-helper';
 
 @Component({
   selector: 'app-marital-status',
@@ -24,8 +41,9 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
   public maritalStatusOptions: EnumOption[] = enumOptions(MaritalStatus);
   public partnerRegisteredOptions: EnumOption[] = enumOptions(YesNoUnsure);
   public partnerEnglishOptions: EnumOption[] = enumOptions(YesNo);
-  public partnerIeltsOptions: EnumOption[] = enumOptions(YesNoUnsure);
+  public partnerIeltsOptions: EnumOption[] = enumOptions(IeltsStatus);
   public partnerIeltsScoreOptions: EnumOption[] = enumOptions(IeltsScore);
+  years: number[];
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
@@ -37,13 +55,17 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
       partnerRegistered: [this.candidateIntakeData?.partnerRegistered],
       partnerCandId: [this.candidateIntakeData?.partnerCandidate?.id],
       partnerEduLevelId: [this.candidateIntakeData?.partnerEduLevel?.id],
-      partnerProfessionId: [this.candidateIntakeData?.partnerProfession?.id],
+      partnerEduLevelNotes: [this.candidateIntakeData?.partnerEduLevelNotes],
+      partnerOccupationId: [this.candidateIntakeData?.partnerOccupation?.id],
+      partnerOccupationNotes: [this.candidateIntakeData?.partnerOccupationNotes],
       partnerEnglish: [this.candidateIntakeData?.partnerEnglish],
       partnerEnglishLevelId: [this.candidateIntakeData?.partnerEnglishLevel?.id],
       partnerIelts: [this.candidateIntakeData?.partnerIelts],
       partnerIeltsScore: [this.candidateIntakeData?.partnerIeltsScore],
+      partnerIeltsYr: [this.candidateIntakeData?.partnerIeltsYr],
       partnerCitizenshipId: [this.candidateIntakeData?.partnerCitizenship?.id],
     });
+    this.years = generateYearArray(1950, true);
   }
 
   get maritalStatus() {
@@ -67,12 +89,14 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
       this.candidateIntakeData.partnerCandidate : null;
   }
 
-  get isMarriedEngaged(): boolean {
+  get hasPartner(): boolean {
     let found: boolean = false;
     if (this.maritalStatus) {
       if (this.maritalStatus === 'Engaged') {
         found = true;
       } else if (this.maritalStatus === 'Married') {
+        found = true;
+      } else if (this.maritalStatus === 'Defacto'){
         found = true;
       }
     }
@@ -86,6 +110,30 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
       this.partnerCandidate.user.lastName = $event.user.lastName;
       this.partnerCandidate.candidateNumber = $event.candidateNumber;
     }
-
   }
+
+  get takenIelts(): boolean {
+    let ielts: boolean = false;
+    if (this.form?.value) {
+      if (this.form.value.partnerIelts === 'YesGeneral' || this.form.value.partnerIelts === 'YesAcademic') {
+        ielts = true;
+      }
+    }
+    return ielts;
+  }
+
+  get eduLevelSelected(): boolean {
+    let show: boolean = true;
+    if (this.form?.value?.partnerEduLevelId == null){
+      show = false;
+    } else if (this.form?.value?.partnerEduLevelId == 0) {
+      show = false;
+    }
+    return show;
+  }
+
+  get occupationSelected(): boolean {
+    return this.form?.value?.partnerOccupationId != null;
+  }
+
 }

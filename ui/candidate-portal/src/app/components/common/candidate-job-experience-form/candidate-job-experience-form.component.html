@@ -1,3 +1,19 @@
+<!--
+  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <span #top></span>
 
 <app-error [error]="error"></app-error>
@@ -57,12 +73,16 @@
       <label for="startDate">
         {{ 'FORM.JOBEXPERIENCE.LABEL.STARTDATE' | translate }} <sup>*</sup>
       </label>
-      <app-month-picker id="startDate" [control]="form.get('startDate')"></app-month-picker>
+      <app-date-picker id="startDate" [control]="form.controls.startDate"></app-date-picker>
       <app-form-control-error [control]="form.controls.startDate"></app-form-control-error>
-        <small *ngIf="form.hasError('invalidDate')">
-          {{ 'FORM.ERROR.INVALIDDATERANGE' | translate }}
-        </small>
+      <p class="small mt-2 mb-0">
+        {{ 'FORM.LABEL.APPROX' | translate }}
+      </p>
+      <small *ngIf="form.hasError('invalidDate')">
+        {{ 'FORM.ERROR.INVALIDDATERANGE' | translate }}
+      </small>
     </div>
+
   </div>
 
   <!-- END DATE -->
@@ -71,11 +91,14 @@
       <label for="endDate">
         {{ 'FORM.JOBEXPERIENCE.LABEL.ENDDATE' | translate }}
       </label>
-      <app-month-picker id="endDate" [control]="form.get('endDate')"></app-month-picker>
+      <app-date-picker id="endDate" [control]="form.controls.endDate"></app-date-picker>
       <app-form-control-error [control]="form.controls.endDate"></app-form-control-error>
-
+      <p class="small mt-2 mb-0">
+        {{ 'FORM.LABEL.APPROX' | translate }}
+      </p>
     </div>
   </div>
+
 
   <!-- JOB TITLE -->
   <div class="col-12">

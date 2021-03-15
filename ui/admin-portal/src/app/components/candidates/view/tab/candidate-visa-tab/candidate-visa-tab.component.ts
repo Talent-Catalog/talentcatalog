@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, OnInit} from '@angular/core';
 import {CandidateService} from '../../../../../services/candidate.service';
 import {NationalityService} from '../../../../../services/nationality.service';
@@ -13,13 +29,16 @@ import {CandidateVisaCheck} from '../../../../../model/candidate';
 import {EducationLevelService} from '../../../../../services/education-level.service';
 import {OccupationService} from '../../../../../services/occupation.service';
 import {LanguageLevelService} from '../../../../../services/language-level.service';
+import {CandidateNoteService} from '../../../../../services/candidate-note.service';
+import {AuthService} from '../../../../../services/auth.service';
 
 @Component({
   selector: 'app-candidate-visa-tab',
   templateUrl: './candidate-visa-tab.component.html',
   styleUrls: ['./candidate-visa-tab.component.scss']
 })
-export class CandidateVisaTabComponent extends IntakeComponentTabBase implements OnInit {
+export class CandidateVisaTabComponent
+  extends IntakeComponentTabBase implements OnInit {
   form: FormGroup;
   selectedIndex: number;
   selectedCountry: string;
@@ -30,10 +49,12 @@ export class CandidateVisaTabComponent extends IntakeComponentTabBase implements
               educationLevelService: EducationLevelService,
               occupationService: OccupationService,
               languageLevelService: LanguageLevelService,
+              noteService: CandidateNoteService,
+              authService: AuthService,
               private candidateVisaCheckService: CandidateVisaCheckService,
               private modalService: NgbModal,
               private fb: FormBuilder) {
-    super(candidateService, countryService, nationalityService, educationLevelService, occupationService, languageLevelService)
+    super(candidateService, countryService, nationalityService, educationLevelService, occupationService, languageLevelService, noteService, authService)
   }
 
   onDataLoaded(init: boolean) {
@@ -69,6 +90,7 @@ export class CandidateVisaTabComponent extends IntakeComponentTabBase implements
     }
   }
 
+
   addRecord() {
     const modal = this.modalService.open(HasNameSelectorComponent);
     modal.componentInstance.hasNames = this.filteredDestinations;
@@ -92,16 +114,16 @@ export class CandidateVisaTabComponent extends IntakeComponentTabBase implements
     };
     this.candidateVisaCheckService.create(this.candidate.id, request)
       .subscribe(
-        (visaCheck) => {
-          this.candidateIntakeData.candidateVisaChecks.push(visaCheck);
-          this.form.controls['visaCountry'].patchValue(this.candidateIntakeData.candidateVisaChecks.lastIndexOf(visaCheck));
-          this.changeVisaCountry(null)
-          this.loading = false;
-        },
-        (error) => {
-          this.error = error;
-          this.loading = false;
-        });
+      (visaCheck) => {
+        this.candidateIntakeData.candidateVisaChecks.push(visaCheck);
+        this.form.controls['visaCountry'].patchValue(this.candidateIntakeData.candidateVisaChecks.lastIndexOf(visaCheck));
+        this.changeVisaCountry(null)
+        this.loading = false;
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      });
 
   }
 

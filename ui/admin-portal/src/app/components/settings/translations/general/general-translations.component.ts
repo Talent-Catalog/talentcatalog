@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, Input, OnInit} from '@angular/core';
 import {TranslationService} from '../../../../services/translation.service';
 import {User} from '../../../../model/user';
@@ -86,7 +102,12 @@ const ALL_FIELDS = {
       "NAV": {
         "ACCOUNT": null,
         "LOGOUT": null,
-        "LOGIN": null
+        "LOGIN": null,
+        "PROFILE": null,
+        "UPLOAD": {
+          "FILE": null,
+          "PHOTO": null
+        }
       }
     },
     "LOADING": null,
@@ -180,6 +201,8 @@ const ALL_FIELDS = {
           "EDUCATION/SCHOOL": null,
           "LANGUAGE": null,
           "CERTIFICATIONS": null,
+          "ADDITIONAL": null,
+          "UPLOAD": null,
           "SUBMIT": null
         }
       },
@@ -275,8 +298,12 @@ const ALL_FIELDS = {
         "LABEL": {
           "ADDITIONALINFO": null,
           "SURVEY": null,
-          "COMMENT": null
-        }
+          "COMMENT": null,
+        },
+        "LINKEDIN": {
+          "LABEL": null,
+          "WARN": null
+        },
       },
       "COMPLETE": {
         "TITLE": null,
@@ -301,6 +328,9 @@ const ALL_FIELDS = {
         "OTHER": {
           "NAME": null,
           "EXPLANATION": null
+        },
+        "WARN": {
+          "MOBILE": null
         }
       }
     },
@@ -339,7 +369,13 @@ const ALL_FIELDS = {
       },
       "OTHER": {
         "TITLE": null,
-        "ADDITIONALINFO": null
+        "ADDITIONALINFO": null,
+        "SURVEY": null,
+        "SURVEYCOMMENT": null,
+        "LINKEDIN": null
+      },
+      "UPLOAD": {
+        "TITLE": null
       },
       "BUTTON": {
         "EDIT": null,
@@ -357,7 +393,8 @@ const ALL_FIELDS = {
         "EDUCATION": null,
         "LANGUAGES": null,
         "CERTIFICATIONS": null,
-        "OTHER": null
+        "ADDITIONAL": null,
+        "UPLOAD": null
       }
     },
     "FORM": {
@@ -365,7 +402,8 @@ const ALL_FIELDS = {
         "OPTIONAL": null,
         "CLEAR": null,
         "CHOOSE": null,
-        "SAVE": null
+        "SAVE": null,
+        "APPROX": null
       },
       "ERROR": {
         "REQUIRED": null,
@@ -415,8 +453,12 @@ const ALL_FIELDS = {
         "LABEL": {
           "DROP": null,
           "OR": null,
-          "BROWSE": null,
-          "UPLOADING": null
+          "BROWSE": {
+            "FILE": null,
+            "IMAGE": null,
+          },
+          "UPLOADING": null,
+          "PHOTO": null
         }
       }
     },

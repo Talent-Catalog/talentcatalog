@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {CandidateJobExperience} from "../../../model/candidate-job-experience";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
@@ -95,7 +111,6 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
   }
 
   startDateBeforeEndDate(from: string, to: string) {
-    console.log(from, to);
     return (group: FormGroup): { [key: string]: any } => {
       let f = group.controls[from];
       let t = group.controls[to];
@@ -114,7 +129,6 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
 
   save() {
     this.saving = true;
-    console.log(this.form.value);
     if (this.form.value.id) {
       this.jobExperienceService.updateJobExperience(this.form.value).subscribe(
         (response) => this.emitSaveEvent(response),

@@ -1,4 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT 
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License 
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <destinations>
     <!--
        Once a day a filtered copy of a subset of the master TBB candidate 
@@ -16,6 +32,229 @@
        Any existing data in the destination database is deleted, and replace by
        the new data.
     -->
+    <destination>
+        <country>au</country>
+        <database>
+            <!--            <url>jdbc:mysql://tbb-database.cicadkawaz3y.ap-southeast-2.rds.amazonaws.com:3306/TBBDatabase</url>-->
+            <!--            <user>admin</user>-->
+            <!--            <password>1212s1212ss</password>-->
+
+            <url>jdbc:mysql://mysql.refugeetalent.com:3306/GlobalTalentDb</url>
+            <user>GlobalTalentUser</user>
+            <password>d26OKew37IkE</password>
+
+            <!--
+                This filter is added as an AND condition to the WHERE clause
+                of the populate SQL 
+            -->
+            <filter>
+                <!--Exclude test users-->
+                users.username NOT LIKE 'TBB%'
+                AND
+                <!--Only look at Active users-->
+                candidate.status IN ('active', 'pending')
+                AND
+                <!--Located in Jordan or Lebanon only-->
+                (candidate.country_id IS NULL OR candidate.country_id IN (6288,6296))
+            </filter>
+            <tables>
+                <table>
+                    <name>jobseekers</name>
+                    <populate>
+                        SELECT
+                        CAST(candidate_number AS int) AS user_id,
+                        EXTRACT(year FROM dob) AS birth_year,
+                        country_id,
+                        nationality_id
+                        FROM candidate
+                        JOIN users ON candidate.user_id = users.id
+                        WHERE true
+                    </populate>
+                    <fields>
+                        user_id INT(11) NOT NULL,
+                        birth_year INT(11),
+                        country_id INT(11),
+                        nationality_id INT(11)
+                    </fields>
+                    <index>
+                        user_id
+                    </index>
+                </table>
+                <table>
+                    <name>jobseeker_certifications</name>
+                    <populate>
+                        SELECT
+                        CAST(candidate_number AS int) AS user_id,
+                        name as certification,
+                        institution,
+                        date_completed AS date
+                        FROM candidate
+                        JOIN users ON candidate.user_id = users.id
+                        JOIN candidate_certification ON candidate_certification.candidate_id = candidate.id
+                        WHERE
+                        <!-- Filter out anything with non ASCII (eg Arabic) characters -->
+                        candidate_certification.name = regexp_replace(candidate_certification.name, '[^[:ascii:]]', '', 'g')
+                        AND
+                        candidate_certification.institution = regexp_replace(candidate_certification.institution, '[^[:ascii:]]', '', 'g')
+                    </populate>
+                    <fields>
+                        user_id INT(11),
+                        certification VARCHAR(255),
+                        institution VARCHAR(255),
+                        date DATE
+                    </fields>
+                </table>
+                <table>
+                    <name>jobseeker_degrees</name>
+                    <populate>
+                        SELECT
+                        CAST(candidate_number AS int) AS user_id,
+                        education_type,
+                        course_name,
+                        education_major.name as major,
+                        year_completed AS graduation,
+                        candidate_education.country_id,
+                        institution
+                        FROM candidate
+                        JOIN users ON candidate.user_id = users.id
+                        JOIN candidate_education on candidate.id = candidate_education.candidate_id
+                        JOIN education_major ON candidate.migration_education_major_id = education_major.id
+                        WHERE
+                        <!--Filter out anything with non ASCII (eg Arabic) characters-->
+                        education_major.name = regexp_replace(education_major.name, '[^[:ascii:]]', '', 'g')
+                    </populate>
+                    <fields>
+                        user_id INT(11) NOT NULL,
+                        education_type VARCHAR(255),
+                        course_name VARCHAR(255),
+                        major VARCHAR(255),
+                        graduation INT(11),
+                        country_id INT(11),
+                        institution VARCHAR(255)
+                    </fields>
+                </table>
+                <table>
+                    <name>jobseeker_jobs</name>
+                    <populate>
+                        SELECT
+                        CAST(candidate_number AS int) AS user_id,
+                        candidate_job_experience.role as position_title,
+                        company_name,
+                        start_date,
+                        end_date,
+                        description,
+                        candidate_occupation_id as occupation_id,
+                        candidate_job_experience.country_id
+                        FROM candidate
+                        JOIN users ON candidate.user_id = users.id
+                        JOIN candidate_job_experience on candidate.id = candidate_job_experience.candidate_id
+                        WHERE
+                        <!--Filter out anything with non ASCII (eg Arabic) characters-->
+                        company_name = regexp_replace(company_name, '[^[:ascii:]]', '', 'g')
+                        AND
+                        candidate_job_experience.role = regexp_replace(candidate_job_experience.role, '[^[:ascii:]]', '', 'g')
+                    </populate>
+                    <fields>
+                        user_id INT(11) NOT NULL,
+                        position_title VARCHAR(1023),
+                        company_name VARCHAR(1023),
+                        start_date DATE,
+                        end_date DATE,
+                        description TEXT,
+                        occupation_id INT(11),
+                        country_id INT(11)
+                    </fields>
+                </table>
+                <table>
+                    <name>jobseeker_skills</name>
+                    <populate>
+                        SELECT
+                        CAST(candidate_number AS int) AS user_id,
+                        skill,
+                        time_period
+                        FROM candidate
+                        JOIN users ON candidate.user_id = users.id
+                        JOIN candidate_skill on candidate.id = candidate_skill.candidate_id
+                        WHERE
+                        <!-- Filter out anything with non ASCII (eg Arabic) characters -->
+                        skill = regexp_replace(skill, '[^[:ascii:]]', '', 'g')
+                    </populate>
+                    <fields>
+                        user_id INT(11) NOT NULL,
+                        skill VARCHAR(255),
+                        time_period VARCHAR(255)
+                    </fields>
+                </table>
+            </tables>
+            <stringtables>
+                <table>
+                    <name>country</name>
+                    <populate>
+                        SELECT id, name FROM country WHERE status = 'active'
+                    </populate>
+                    <fields>
+                        id INT(11) NOT NULL,
+                        name TEXT NOT NULL
+                    </fields>
+                    <index>
+                        id
+                    </index>
+                </table>
+                <table>
+                    <name>education_major</name>
+                    <populate>
+                        SELECT id, name FROM education_major WHERE status = 'active'
+                    </populate>
+                    <fields>
+                        id INT(11) NOT NULL,
+                        name TEXT NOT NULL
+                    </fields>
+                    <index>
+                        id
+                    </index>
+                </table>
+                <table>
+                    <name>industry</name>
+                    <populate>
+                        SELECT id, name FROM industry WHERE status = 'active'
+                    </populate>
+                    <fields>
+                        id INT(11) NOT NULL,
+                        name TEXT NOT NULL
+                    </fields>
+                    <index>
+                        id
+                    </index>
+                </table>
+                <table>
+                    <name>nationality</name>
+                    <populate>
+                        SELECT id, name FROM nationality WHERE status = 'active'
+                    </populate>
+                    <fields>
+                        id INT(11) NOT NULL,
+                        name TEXT NOT NULL
+                    </fields>
+                    <index>
+                        id
+                    </index>
+                </table>
+                <table>
+                    <name>occupation</name>
+                    <populate>
+                        SELECT id, name FROM occupation WHERE status = 'active'
+                    </populate>
+                    <fields>
+                        id INT(11) NOT NULL,
+                        name TEXT NOT NULL
+                    </fields>
+                    <index>
+                        id
+                    </index>
+                </table>
+            </stringtables>
+        </database>
+    </destination>
     <!--    <destination>-->
     <!--        <country>nr</country>-->
     <!--        <database>-->
@@ -161,227 +400,4 @@
     <!--            </tables>-->
     <!--        </database>-->
     <!--    </destination>-->
-    <destination>
-        <country>au</country>
-        <database>
-            <!--            <url>jdbc:mysql://tbb-database.cicadkawaz3y.ap-southeast-2.rds.amazonaws.com:3306/TBBDatabase</url>-->
-            <!--            <user>admin</user>-->
-            <!--            <password>1212s1212ss</password>-->
-
-            <url>jdbc:mysql://mysql.refugeetalent.com:3306/GlobalTalentDb</url>
-            <user>GlobalTalentUser</user>
-            <password>d26OKew37IkE</password>
-
-            <!--
-                This filter is added as an AND condition to the WHERE clause
-                of the populate SQL 
-            -->
-            <filter>
-                <!--Exclude test users-->
-                users.username NOT LIKE 'TBB%'
-                AND
-                <!--Only look at Active users-->
-                candidate.status IN ('active', 'pending')
-                AND
-                <!--Located in Jordan or Lebanon only-->
-                (candidate.country_id IS NULL OR candidate.country_id IN (6288,6296))
-            </filter>
-            <tables>
-                <table>
-                    <name>jobseekers</name>
-                    <populate>
-                        SELECT
-                        CAST(candidate_number AS int) AS user_id,
-                        EXTRACT(year FROM dob) AS birth_year,
-                        country_id,
-                        nationality_id
-                        FROM candidate
-                        JOIN users ON candidate.user_id = users.id
-                        WHERE true
-                    </populate>
-                    <fields>
-                        user_id INT(11) NOT NULL,
-                        birth_year INT(11),
-                        country_id INT(11),
-                        nationality_id INT(11)
-                    </fields>
-                    <index>
-                        CREATE UNIQUE INDEX jobseeker_user_id_uindex ON jobseekers (user_id)
-                    </index>
-                </table>
-                <table>
-                    <name>jobseeker_certifications</name>
-                    <populate>
-                        SELECT
-                        CAST(candidate_number AS int) AS user_id,
-                        name as certification,
-                        institution,
-                        date_completed AS date
-                        FROM candidate
-                        JOIN users ON candidate.user_id = users.id
-                        JOIN candidate_certification ON candidate_certification.candidate_id = candidate.id
-                        WHERE
-                        <!-- Filter out anything with non ASCII (eg Arabic) characters -->
-                        candidate_certification.name = regexp_replace(candidate_certification.name, '[^[:ascii:]]', '', 'g')
-                        AND
-                        candidate_certification.institution = regexp_replace(candidate_certification.institution, '[^[:ascii:]]', '', 'g')
-                    </populate>
-                    <fields>
-                        user_id INT(11),
-                        certification VARCHAR(255),
-                        institution VARCHAR(255),
-                        date DATE
-                    </fields>
-                </table>
-                <table>
-                    <name>jobseeker_degrees</name>
-                    <populate>
-                        SELECT
-                        CAST(candidate_number AS int) AS user_id,
-                        education_type,
-                        course_name,
-                        education_major.name as major,
-                        year_completed AS graduation,
-                        candidate_education.country_id,
-                        institution
-                        FROM candidate
-                        JOIN users ON candidate.user_id = users.id
-                        JOIN candidate_education on candidate.id = candidate_education.candidate_id
-                        JOIN education_major ON candidate.migration_education_major_id = education_major.id
-                        WHERE
-                        <!--Filter out anything with non ASCII (eg Arabic) characters-->
-                        education_major.name = regexp_replace(education_major.name, '[^[:ascii:]]', '', 'g')
-                    </populate>
-                    <fields>
-                        user_id INT(11) NOT NULL,
-                        education_type VARCHAR(255),
-                        course_name VARCHAR(255),
-                        major VARCHAR(255),
-                        graduation INT(11),
-                        country_id INT(11),
-                        institution VARCHAR(255)
-                    </fields>
-                </table>
-                <table>
-                    <name>jobseeker_jobs</name>
-                    <populate>
-                        SELECT
-                        CAST(candidate_number AS int) AS user_id,
-                        candidate_job_experience.role as position_title,
-                        company_name,
-                        start_date,
-                        end_date,
-                        description,
-                        candidate_occupation_id as occupation_id,
-                        candidate_job_experience.country_id
-                        FROM candidate
-                        JOIN users ON candidate.user_id = users.id
-                        JOIN candidate_job_experience on candidate.id = candidate_job_experience.candidate_id
-                        WHERE
-                        <!--Filter out anything with non ASCII (eg Arabic) characters-->
-                        company_name = regexp_replace(company_name, '[^[:ascii:]]', '', 'g')
-                        AND
-                        candidate_job_experience.role = regexp_replace(candidate_job_experience.role, '[^[:ascii:]]', '', 'g')
-                    </populate>
-                    <fields>
-                        user_id INT(11) NOT NULL,
-                        position_title VARCHAR(1023),
-                        company_name VARCHAR(1023),
-                        start_date DATE,
-                        end_date DATE,
-                        description TEXT,
-                        occupation_id INT(11),
-                        country_id INT(11)
-                    </fields>
-                </table>
-                <table>
-                    <name>jobseeker_skills</name>
-                    <populate>
-                        SELECT
-                        CAST(candidate_number AS int) AS user_id,
-                        skill,
-                        time_period
-                        FROM candidate
-                        JOIN users ON candidate.user_id = users.id
-                        JOIN candidate_skill on candidate.id = candidate_skill.candidate_id
-                        WHERE
-                        <!-- Filter out anything with non ASCII (eg Arabic) characters -->
-                        skill = regexp_replace(skill, '[^[:ascii:]]', '', 'g')
-                    </populate>
-                    <fields>
-                        user_id INT(11) NOT NULL,
-                        skill VARCHAR(255),
-                        time_period VARCHAR(255)
-                    </fields>
-                </table>
-            </tables>
-            <stringtables>
-                <table>
-                    <name>country</name>
-                    <populate>
-                        SELECT id, name FROM country WHERE status = 'active'
-                    </populate>
-                    <fields>
-                        id INT(11) NOT NULL,
-                        name TEXT NOT NULL
-                    </fields>
-                    <index>
-                        CREATE UNIQUE INDEX country_id_uindex ON country (id)
-                    </index>
-                </table>
-                <table>
-                    <name>education_major</name>
-                    <populate>
-                        SELECT id, name FROM education_major WHERE status = 'active'
-                    </populate>
-                    <fields>
-                        id INT(11) NOT NULL,
-                        name TEXT NOT NULL
-                    </fields>
-                    <index>
-                        CREATE UNIQUE INDEX education_major_id_uindex ON education_major (id)
-                    </index>
-                </table>
-                <table>
-                    <name>industry</name>
-                    <populate>
-                        SELECT id, name FROM industry WHERE status = 'active'
-                    </populate>
-                    <fields>
-                        id INT(11) NOT NULL,
-                        name TEXT NOT NULL
-                    </fields>
-                    <index>
-                        CREATE UNIQUE INDEX industry_id_uindex ON industry (id)
-                    </index>
-                </table>
-                <table>
-                    <name>nationality</name>
-                    <populate>
-                        SELECT id, name FROM nationality WHERE status = 'active'
-                    </populate>
-                    <fields>
-                        id INT(11) NOT NULL,
-                        name TEXT NOT NULL
-                    </fields>
-                    <index>
-                        CREATE UNIQUE INDEX nationality_id_uindex ON nationality (id)
-                    </index>
-                </table>
-                <table>
-                    <name>occupation</name>
-                    <populate>
-                        SELECT id, name FROM occupation WHERE status = 'active'
-                    </populate>
-                    <fields>
-                        id INT(11) NOT NULL,
-                        name TEXT NOT NULL
-                    </fields>
-                    <index>
-                        CREATE UNIQUE INDEX occupation_id_uindex ON occupation (id)
-                    </index>
-                </table>
-            </stringtables>
-        </database>
-    </destination>
 </destinations>

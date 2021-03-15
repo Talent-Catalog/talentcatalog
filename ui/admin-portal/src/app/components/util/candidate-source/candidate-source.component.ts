@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {
   Component,
   EventEmitter,
@@ -8,7 +24,7 @@ import {
   SimpleChanges
 } from '@angular/core';
 import {
-  getCandidateSourceExternalHref,
+  getCandidateSourceExternalHref, getCandidateSourceNavigation, getCandidateSourceStatsNavigation,
   getSavedSourceNavigation,
   isSavedSearch,
   SavedSearch,
@@ -23,6 +39,14 @@ import {Location} from '@angular/common';
 import {copyToClipboard} from '../../../util/clipboard';
 import {isSavedList} from "../../../model/saved-list";
 
+/**
+ * This just displays the basic details about a source plus some icons.
+ * <p/>
+ * It does not display the candidates associated with that source.
+ * For that reason some of the events (from clicking on the icons) may have to be passed up to
+ * a parent who does managed the associated displayed candidates because actioning the event
+ * may require knowledge of, for example, what is the current page of candidates being displayed.
+ */
 @Component({
   selector: 'app-candidate-source',
   templateUrl: './candidate-source.component.html',
@@ -42,6 +66,7 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
   @Input() showLink: boolean = true;
   @Input() showMore: boolean = true;
   @Input() showOpen: boolean = true;
+  @Input() showRunStats: boolean = true;
   @Input() showWatch: boolean = true;
   @Input() showSelect: boolean = false;
   @Input() showCopy: boolean = false;
@@ -98,6 +123,12 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
 
   doOpenSource(){
     this.openSource.emit(this.candidateSource);
+  }
+
+  doRunStats() {
+    //Navigate to the infographics requesting it to run stats on this source.
+    const urlCommands = getCandidateSourceStatsNavigation(this.candidateSource);
+    this.router.navigate(urlCommands);
   }
 
   doSelectSource(){
@@ -177,7 +208,6 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
       return null;
     }
   }
-
 
   hasSavedSearchSource(): boolean {
     return this.getSavedSearchSource() != null;

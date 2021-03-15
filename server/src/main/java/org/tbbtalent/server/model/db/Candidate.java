@@ -1,5 +1,17 @@
 /*
- * Copyright (c) 2020 Talent Beyond Boundaries. All rights reserved.
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License 
+ * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.model.db;
@@ -37,6 +49,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private Integer yearOfArrival;
     private String additionalInfo;
     private String candidateMessage;
+    private String linkedInLink;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "survey_type_id")
@@ -154,6 +167,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private List<CandidateCitizenship> candidateCitizenships;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    private List<CandidateDependant> candidateDependants;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     private List<CandidateDestination> candidateDestinations;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
@@ -167,10 +183,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private YesNoUnsure returnedHome;
 
     @Nullable
-    private String returnedHomeNotes;
+    private String returnedHomeReason;
 
     @Nullable
-    private String returnedHomeReason;
+    private String returnedHomeReasonNo;
     
     @Convert(converter = VisaIssuesConverter.class)
     @Nullable
@@ -182,6 +198,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Enumerated(EnumType.STRING)
     @Nullable
     private YesNoUnsure availImmediate;
+
+    @Nullable
+    private String availImmediateJobOps;
 
     @Enumerated(EnumType.STRING)
     @Nullable
@@ -197,20 +216,19 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private String familyMoveNotes;
 
-    @Enumerated(EnumType.STRING)
-    @Nullable
-    private YesNo familyHealthConcern;
-
-    @Nullable
-    private String familyHealthConcernNotes;
-
     @Convert(converter = IntRecruitReasonConverter.class)
     @Nullable
     private List<IntRecruitReason> intRecruitReasons;
 
+    @Nullable
+    private String intRecruitOther;
+
     @Enumerated(EnumType.STRING)
     @Nullable
     private YesNoUnsure intRecruitRural;
+
+    @Nullable
+    private String intRecruitRuralNotes;
 
     @Enumerated(EnumType.STRING)
     @Nullable
@@ -226,10 +244,17 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Enumerated(EnumType.STRING)
     @Nullable
-    private YesNo workLegally;
+    private YesNoUnemployed workDesired;
 
     @Nullable
-    private LocalDate hostEntryYear;
+    private String workDesiredNotes;
+
+    @Nullable
+    private Long hostEntryYear;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNoUnsure unhcrRegistered;
 
     @Enumerated(EnumType.STRING)
     @Nullable
@@ -251,6 +276,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Enumerated(EnumType.STRING)
     @Nullable
     private YesNo unhcrPermission;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNoUnsure unrwaRegistered;
 
     @Enumerated(EnumType.STRING)
     @Nullable
@@ -300,25 +329,33 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private ResidenceStatus residenceStatus;
 
+    @Nullable
+    private String residenceStatusNotes;
+
     @Enumerated(EnumType.STRING)
     @Nullable
     private YesNo workAbroad;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "work_abroad_loc")
+    @Convert(converter = ModelConverter.class)
     @Nullable
-    private Country workAbroadLoc;
+    private List<Long> workAbroadCountryIds;
 
     @Nullable
     private Long workAbroadYrs;
+
+    @Nullable
+    private String workAbroadNotes;
 
     @Enumerated(EnumType.STRING)
     @Nullable
     private YesNo hostEntryLegally;
 
-    @Enumerated(EnumType.STRING)
     @Nullable
-    private LeftHomeReason leftHomeReason;
+    private String hostEntryLegallyNotes;
+
+    @Convert(converter = LeftHomeReasonsConverter.class)
+    @Nullable
+    private List<LeftHomeReason> leftHomeReasons;
 
     @Nullable
     private String leftHomeOther;
@@ -358,10 +395,16 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private EducationLevel partnerEduLevel;
 
+    @Nullable
+    private String partnerEduLevelNotes;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "partner_occupation_id")
     @Nullable
-    private Occupation partnerProfession;
+    private Occupation partnerOccupation;
+
+    @Nullable
+    private String partnerOccupationNotes;
 
     @Enumerated(EnumType.STRING)
     @Nullable
@@ -374,11 +417,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Enumerated(EnumType.STRING)
     @Nullable
-    private YesNoUnsure partnerIelts;
+    private IeltsStatus partnerIelts;
 
     @Enumerated(EnumType.STRING)
     @Nullable
     private IeltsScore partnerIeltsScore;
+
+    @Nullable
+    private Long partnerIeltsYr;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "partner_citizenship_id")
@@ -391,14 +437,23 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Enumerated(EnumType.STRING)
     @Nullable
-    private YesNo children;
+    private YesNoUnsure militaryWanted;
 
     @Nullable
-    private String childrenAge;
+    private String militaryNotes;
+
+    @Nullable
+    private LocalDate militaryStart;
+
+    @Nullable
+    private LocalDate militaryEnd;
 
     @Enumerated(EnumType.STRING)
     @Nullable
     private YesNoUnsure visaReject;
+
+    @Nullable
+    private String visaRejectNotes;
 
     @Enumerated(EnumType.STRING)
     @Nullable
@@ -421,10 +476,16 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private Country drivingLicenseCountry;
 
     @Nullable
-    private Long dependants;
+    private String langAssessment;
 
+    @Enumerated(EnumType.STRING)
     @Nullable
-    private String dependantsNotes;
+    private IeltsScore langAssessmentScore;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "birth_country_id")
+    @Nullable
+    private Country birthCountry;
 
     public Candidate() {
     }
@@ -563,6 +624,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setCandidateMessage(String candidateMessage) {
         this.candidateMessage = candidateMessage;
     }
+
+    public String getLinkedInLink() { return linkedInLink; }
+
+    public void setLinkedInLink(String linkedInLink) { this.linkedInLink = linkedInLink; }
 
     public SurveyType getSurveyType() { return surveyType; }
 
@@ -735,22 +800,16 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setReturnedHome(@Nullable YesNoUnsure returnedHome) { this.returnedHome = returnedHome; }
 
     @Nullable
-    public String getReturnedHomeNotes() {
-        return returnedHomeNotes;
-    }
-
-    public void setReturnedHomeNotes(@Nullable String returnedHomeNotes) {
-        this.returnedHomeNotes = returnedHomeNotes;
-    }
-
-    @Nullable
     public String getReturnedHomeReason() {
         return returnedHomeReason;
     }
 
-    public void setReturnedHomeReason(@Nullable String returnedHomeReason) {
-        this.returnedHomeReason = returnedHomeReason;
-    }
+    public void setReturnedHomeReason(@Nullable String returnedHomeReason) { this.returnedHomeReason = returnedHomeReason; }
+
+    @Nullable
+    public String getReturnedHomeReasonNo() { return returnedHomeReasonNo; }
+
+    public void setReturnedHomeReasonNo(@Nullable String returnedHomeReasonNo) { this.returnedHomeReasonNo = returnedHomeReasonNo; }
 
     @Nullable
     public List<VisaIssue> getVisaIssues() {
@@ -776,6 +835,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setAvailImmediate(@Nullable YesNoUnsure availImmediate) { this.availImmediate = availImmediate; }
 
     @Nullable
+    public String getAvailImmediateJobOps() { return availImmediateJobOps; }
+
+    public void setAvailImmediateJobOps(@Nullable String availImmediateJobOps) { this.availImmediateJobOps = availImmediateJobOps; }
+
+    @Nullable
     public String getAvailImmediateNotes() { return availImmediateNotes; }
 
     public void setAvailImmediateNotes(@Nullable String availImmediateNotes) { this.availImmediateNotes = availImmediateNotes; }
@@ -796,24 +860,24 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setFamilyMoveNotes(@Nullable String familyMoveNotes) { this.familyMoveNotes = familyMoveNotes; }
 
     @Nullable
-    public YesNo getFamilyHealthConcern() { return familyHealthConcern; }
-
-    public void setFamilyHealthConcern(@Nullable YesNo familyHealthConcern) { this.familyHealthConcern = familyHealthConcern; }
-
-    @Nullable
-    public String getFamilyHealthConcernNotes() { return familyHealthConcernNotes; }
-
-    public void setFamilyHealthConcernNotes(@Nullable String familyHealthConcernNotes) { this.familyHealthConcernNotes = familyHealthConcernNotes; }
-
-    @Nullable
     public List<IntRecruitReason> getIntRecruitReasons() { return intRecruitReasons; }
 
     public void setIntRecruitReasons(@Nullable List<IntRecruitReason> intRecruitReasons) { this.intRecruitReasons = intRecruitReasons; }
 
     @Nullable
+    public String getIntRecruitOther() { return intRecruitOther; }
+
+    public void setIntRecruitOther(@Nullable String intRecruitOther) { this.intRecruitOther = intRecruitOther; }
+
+    @Nullable
     public YesNoUnsure getIntRecruitRural() { return intRecruitRural; }
 
     public void setIntRecruitRural(@Nullable YesNoUnsure intRecruitRural) { this.intRecruitRural = intRecruitRural; }
+
+    @Nullable
+    public String getIntRecruitRuralNotes() { return intRecruitRuralNotes; }
+
+    public void setIntRecruitRuralNotes(@Nullable String intRecruitRuralNotes) { this.intRecruitRuralNotes = intRecruitRuralNotes; }
 
     @Nullable
     public YesNoUnsure getReturnHomeSafe() { return returnHomeSafe; }
@@ -831,14 +895,24 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setWorkPermitDesired(@Nullable YesNoUnsure workPermitDesired) { this.workPermitDesired = workPermitDesired; }
 
     @Nullable
-    public YesNo getWorkLegally() { return workLegally; }
+    public YesNoUnemployed getWorkDesired() { return workDesired; }
 
-    public void setWorkLegally(@Nullable YesNo workLegally) { this.workLegally = workLegally; }
+    public void setWorkDesired(@Nullable YesNoUnemployed workDesired) { this.workDesired = workDesired; }
 
     @Nullable
-    public LocalDate getHostEntryYear() { return hostEntryYear; }
+    public String getWorkDesiredNotes() { return workDesiredNotes; }
 
-    public void setHostEntryYear(@Nullable LocalDate hostEntryYear) { this.hostEntryYear = hostEntryYear; }
+    public void setWorkDesiredNotes(@Nullable String workDesiredNotes) { this.workDesiredNotes = workDesiredNotes; }
+
+    @Nullable
+    public Long getHostEntryYear() { return hostEntryYear; }
+
+    public void setHostEntryYear(@Nullable Long hostEntryYear) { this.hostEntryYear = hostEntryYear; }
+
+    @Nullable
+    public YesNoUnsure getUnhcrRegistered() { return unhcrRegistered; }
+
+    public void setUnhcrRegistered(@Nullable YesNoUnsure unhcrRegistered) { this.unhcrRegistered = unhcrRegistered; }
 
     @Nullable
     public UnhcrStatus getUnhcrStatus() { return unhcrStatus; }
@@ -871,6 +945,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setUnhcrPermission(@Nullable YesNo unhcrPermission) { this.unhcrPermission = unhcrPermission; }
 
     @Nullable
+    public YesNoUnsure getUnrwaRegistered() { return unrwaRegistered; }
+
+    public void setUnrwaRegistered(@Nullable YesNoUnsure unrwaRegistered) { this.unrwaRegistered = unrwaRegistered; }
+
+    @Nullable
     public UnrwaStatus getUnrwaStatus() { return unrwaStatus; }
 
     public void setUnrwaStatus(@Nullable UnrwaStatus unrwaStatus) { this.unrwaStatus = unrwaStatus; }
@@ -894,6 +973,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public LocalDate getAsylumYear() { return asylumYear; }
 
     public void setAsylumYear(@Nullable LocalDate asylumYear) { this.asylumYear = asylumYear; }
+
+    @Nullable
+    public List<CandidateDependant> getCandidateDependants() { return candidateDependants; }
+
+    public void setCandidateDependants(List<CandidateDependant> candidateDependants) { this.candidateDependants = candidateDependants; }
 
     public List<CandidateDestination> getCandidateDestinations() {
         candidateDestinations.sort(null);
@@ -952,14 +1036,19 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setResidenceStatus(@Nullable ResidenceStatus residenceStatus) { this.residenceStatus = residenceStatus; }
 
     @Nullable
+    public String getResidenceStatusNotes() { return residenceStatusNotes; }
+
+    public void setResidenceStatusNotes(@Nullable String residenceStatusNotes) { this.residenceStatusNotes = residenceStatusNotes; }
+
+    @Nullable
     public YesNo getWorkAbroad() { return workAbroad; }
 
     public void setWorkAbroad(@Nullable YesNo workAbroad) { this.workAbroad = workAbroad; }
 
     @Nullable
-    public Country getWorkAbroadLoc() { return workAbroadLoc; }
+    public List<Long> getWorkAbroadCountryIds() { return workAbroadCountryIds; }
 
-    public void setWorkAbroadLoc(@Nullable Country workAbroadLoc) { this.workAbroadLoc = workAbroadLoc; }
+    public void setWorkAbroadCountryIds(@Nullable List<Long> workAbroadCountryIds) { this.workAbroadCountryIds = workAbroadCountryIds; }
 
     @Nullable
     public Long getWorkAbroadYrs() { return workAbroadYrs; }
@@ -967,14 +1056,24 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setWorkAbroadYrs(@Nullable Long workAbroadYrs) { this.workAbroadYrs = workAbroadYrs; }
 
     @Nullable
+    public String getWorkAbroadNotes() { return workAbroadNotes; }
+
+    public void setWorkAbroadNotes(@Nullable String workAbroadNotes) { this.workAbroadNotes = workAbroadNotes; }
+
+    @Nullable
     public YesNo getHostEntryLegally() { return hostEntryLegally; }
 
     public void setHostEntryLegally(@Nullable YesNo hostEntryLegally) { this.hostEntryLegally = hostEntryLegally; }
 
     @Nullable
-    public LeftHomeReason getLeftHomeReason() { return leftHomeReason; }
+    public String getHostEntryLegallyNotes() { return hostEntryLegallyNotes; }
 
-    public void setLeftHomeReason(@Nullable LeftHomeReason leftHomeReason) { this.leftHomeReason = leftHomeReason; }
+    public void setHostEntryLegallyNotes(@Nullable String hostEntryLegallyNotes) { this.hostEntryLegallyNotes = hostEntryLegallyNotes; }
+
+    @Nullable
+    public List<LeftHomeReason> getLeftHomeReasons() { return leftHomeReasons; }
+
+    public void setLeftHomeReasons(@Nullable List<LeftHomeReason> leftHomeReasons) { this.leftHomeReasons = leftHomeReasons; }
 
     @Nullable
     public String getLeftHomeOther() { return leftHomeOther; }
@@ -1027,9 +1126,19 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setPartnerEduLevel(@Nullable EducationLevel partnerEduLevel) { this.partnerEduLevel = partnerEduLevel; }
 
     @Nullable
-    public Occupation getPartnerProfession() { return partnerProfession; }
+    public String getPartnerEduLevelNotes() { return partnerEduLevelNotes; }
 
-    public void setPartnerProfession(@Nullable Occupation partnerProfession) { this.partnerProfession = partnerProfession; }
+    public void setPartnerEduLevelNotes(@Nullable String partnerEduLevelNotes) { this.partnerEduLevelNotes = partnerEduLevelNotes; }
+
+    @Nullable
+    public Occupation getPartnerOccupation() { return partnerOccupation; }
+
+    public void setPartnerOccupation(@Nullable Occupation partnerOccupation) { this.partnerOccupation = partnerOccupation; }
+
+    @Nullable
+    public String getPartnerOccupationNotes() { return partnerOccupationNotes; }
+
+    public void setPartnerOccupationNotes(@Nullable String partnerOccupationNotes) { this.partnerOccupationNotes = partnerOccupationNotes; }
 
     @Nullable
     public YesNo getPartnerEnglish() { return partnerEnglish; }
@@ -1042,14 +1151,19 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setPartnerEnglishLevel(@Nullable LanguageLevel partnerEnglishLevel) { this.partnerEnglishLevel = partnerEnglishLevel; }
 
     @Nullable
-    public YesNoUnsure getPartnerIelts() { return partnerIelts; }
+    public IeltsStatus getPartnerIelts() { return partnerIelts; }
 
-    public void setPartnerIelts(@Nullable YesNoUnsure partnerIelts) { this.partnerIelts = partnerIelts; }
+    public void setPartnerIelts(@Nullable IeltsStatus partnerIelts) { this.partnerIelts = partnerIelts; }
 
     @Nullable
     public IeltsScore getPartnerIeltsScore() { return partnerIeltsScore; }
 
     public void setPartnerIeltsScore(@Nullable IeltsScore partnerIeltsScore) { this.partnerIeltsScore = partnerIeltsScore; }
+
+    @Nullable
+    public Long getPartnerIeltsYr() { return partnerIeltsYr; }
+
+    public void setPartnerIeltsYr(@Nullable Long partnerIeltsYr) { this.partnerIeltsYr = partnerIeltsYr; }
 
     @Nullable
     public Nationality getPartnerCitizenship() { return partnerCitizenship; }
@@ -1062,19 +1176,34 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setMilitaryService(@Nullable YesNo militaryService) { this.militaryService = militaryService; }
 
     @Nullable
-    public YesNo getChildren() { return children; }
+    public YesNoUnsure getMilitaryWanted() { return militaryWanted; }
 
-    public void setChildren(@Nullable YesNo children) { this.children = children; }
+    public void setMilitaryWanted(@Nullable YesNoUnsure militaryWanted) { this.militaryWanted = militaryWanted; }
 
     @Nullable
-    public String getChildrenAge() { return childrenAge; }
+    public String getMilitaryNotes() { return militaryNotes; }
 
-    public void setChildrenAge(@Nullable String childrenAge) { this.childrenAge = childrenAge; }
+    public void setMilitaryNotes(@Nullable String militaryNotes) { this.militaryNotes = militaryNotes; }
+
+    @Nullable
+    public LocalDate getMilitaryStart() { return militaryStart; }
+
+    public void setMilitaryStart(@Nullable LocalDate militaryStart) { this.militaryStart = militaryStart; }
+
+    @Nullable
+    public LocalDate getMilitaryEnd() { return militaryEnd; }
+
+    public void setMilitaryEnd(@Nullable LocalDate militaryEnd) { this.militaryEnd = militaryEnd; }
 
     @Nullable
     public YesNoUnsure getVisaReject() { return visaReject; }
 
     public void setVisaReject(@Nullable YesNoUnsure visaReject) { this.visaReject = visaReject; }
+
+    @Nullable
+    public String getVisaRejectNotes() { return visaRejectNotes; }
+
+    public void setVisaRejectNotes(@Nullable String visaRejectNotes) { this.visaRejectNotes = visaRejectNotes; }
 
     @Nullable
     public YesNo getHostBorn() { return hostBorn; }
@@ -1102,14 +1231,19 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setDrivingLicenseCountry(@Nullable Country drivingLicenseCountry) { this.drivingLicenseCountry = drivingLicenseCountry; }
 
     @Nullable
-    public Long getDependants() { return dependants; }
+    public String getLangAssessment() { return langAssessment; }
 
-    public void setDependants(@Nullable Long dependants) { this.dependants = dependants; }
+    public void setLangAssessment(@Nullable String langAssessment) { this.langAssessment = langAssessment; }
 
     @Nullable
-    public String getDependantsNotes() { return dependantsNotes; }
+    public IeltsScore getLangAssessmentScore() { return langAssessmentScore; }
 
-    public void setDependantsNotes(@Nullable String dependantsNotes) { this.dependantsNotes = dependantsNotes; }
+    public void setLangAssessmentScore(@Nullable IeltsScore langAssessmentScore) { this.langAssessmentScore = langAssessmentScore; }
+
+    @Nullable
+    public Country getBirthCountry() { return birthCountry; }
+
+    public void setBirthCountry(@Nullable Country birthCountry) { this.birthCountry = birthCountry; }
 
     public boolean isSelected() {
         return selected;
@@ -1173,18 +1307,21 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     }
 
     public void populateIntakeData(CandidateIntakeDataUpdate data,
-                                   @Nullable Country workAbroadLoc,
                                    @Nullable Candidate partnerCandidate,
                                    @Nullable EducationLevel partnerEduLevel,
-                                   @Nullable Occupation partnerProfession,
+                                   @Nullable Occupation partnerOccupation,
                                    @Nullable LanguageLevel partnerEnglishLevel,
                                    @Nullable Nationality partnerCitizenship,
-                                   @Nullable Country drivingLicenseCountry) {
+                                   @Nullable Country drivingLicenseCountry,
+                                   @Nullable Country birthCountry) {
         if (data.getAsylumYear() != null) {
             setAsylumYear(data.getAsylumYear());
         }
         if (data.getAvailImmediate() != null) {
             setAvailImmediate(data.getAvailImmediate());
+        }
+        if (data.getAvailImmediateJobOps() != null) {
+            setAvailImmediateJobOps(data.getAvailImmediateJobOps());
         }
         if (data.getAvailImmediateReason() != null) {
             setAvailImmediateReason(data.getAvailImmediateReason());
@@ -1192,14 +1329,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getAvailImmediateNotes() != null) {
             setAvailImmediateNotes(data.getAvailImmediateNotes());
         }
+        if (data.getBirthCountryId() != null) {
+            setBirthCountry(birthCountry);
+        }
         if (data.getCanDrive() != null) {
             setCanDrive(data.getCanDrive());
-        }
-        if (data.getChildren() != null) {
-            setChildren(data.getChildren());
-        }
-        if (data.getChildrenAge() != null) {
-            setChildrenAge(data.getChildrenAge());
         }
         if (data.getConflict() != null) {
             setConflict(data.getConflict());
@@ -1212,12 +1346,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getCrimeConvictNotes() != null) {
             setCrimeConvictNotes(data.getCrimeConvictNotes());
-        }
-        if (data.getDependants() != null) {
-            setDependants(data.getDependants());
-        }
-        if (data.getDependantsNotes() != null) {
-            setDependantsNotes(data.getDependantsNotes());
         }
         if (data.getDestLimit() != null) {
             setDestLimit(data.getDestLimit());
@@ -1246,12 +1374,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getFamilyMoveNotes() != null) {
             setFamilyMoveNotes(data.getFamilyMoveNotes());
         }
-        if (data.getFamilyHealthConcern() != null) {
-            setFamilyHealthConcern(data.getFamilyHealthConcern());
-        }
-        if (data.getFamilyHealthConcernNotes() != null) {
-            setFamilyHealthConcernNotes(data.getFamilyHealthConcernNotes());
-        }
         if (data.getHomeLocation() != null) {
             setHomeLocation(data.getHomeLocation());
         }
@@ -1267,20 +1389,47 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getHostEntryLegally() != null) {
             setHostEntryLegally(data.getHostEntryLegally());
         }
+        if (data.getHostEntryLegallyNotes() != null) {
+            setHostEntryLegallyNotes(data.getHostEntryLegallyNotes());
+        }
         if (data.getIntRecruitReasons() != null) {
             setIntRecruitReasons(data.getIntRecruitReasons());
+        }
+        if (data.getIntRecruitOther() != null) {
+            setIntRecruitOther(data.getIntRecruitOther());
         }
         if (data.getIntRecruitRural() != null) {
             setIntRecruitRural(data.getIntRecruitRural());
         }
-        if (data.getLeftHomeReason() != null) {
-            setLeftHomeReason(data.getLeftHomeReason());
+        if (data.getIntRecruitRuralNotes() != null) {
+            setIntRecruitRuralNotes(data.getIntRecruitRuralNotes());
+        }
+        if (data.getLangAssessment() != null) {
+            setLangAssessment(data.getLangAssessment());
+        }
+        if (data.getLangAssessmentScore() != null) {
+            setLangAssessmentScore(data.getLangAssessmentScore());
+        }
+        if (data.getLeftHomeReasons() != null) {
+            setLeftHomeReasons(data.getLeftHomeReasons());
         }
         if (data.getLeftHomeOther() != null) {
             setLeftHomeOther(data.getLeftHomeOther());
         }
         if (data.getMilitaryService() != null) {
             setMilitaryService(data.getMilitaryService());
+        }
+        if (data.getMilitaryWanted() != null) {
+            setMilitaryWanted(data.getMilitaryWanted());
+        }
+        if (data.getMilitaryNotes() != null) {
+            setMilitaryNotes(data.getMilitaryNotes());
+        }
+        if (data.getMilitaryStart() != null) {
+            setMilitaryStart(data.getMilitaryStart());
+        }
+        if (data.getMilitaryEnd() != null) {
+            setMilitaryEnd(data.getMilitaryEnd());
         }
         if (data.getMaritalStatus() != null) {
             setMaritalStatus(data.getMaritalStatus());
@@ -1294,8 +1443,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getPartnerEduLevelId() != null) {
             setPartnerEduLevel(partnerEduLevel);
         }
-        if (data.getPartnerProfessionId() != null) {
-            setPartnerProfession(partnerProfession);
+        if (data.getPartnerEduLevelNotes() != null) {
+            setPartnerEduLevelNotes(data.getPartnerEduLevelNotes());
+        }
+        if (data.getPartnerOccupationId() != null) {
+            setPartnerOccupation(partnerOccupation);
+        }
+        if (data.getPartnerOccupationNotes() != null) {
+            setPartnerOccupationNotes(data.getPartnerOccupationNotes());
         }
         if (data.getPartnerEnglish() != null) {
             setPartnerEnglish(data.getPartnerEnglish());
@@ -1309,20 +1464,26 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getPartnerIeltsScore() != null) {
             setPartnerIeltsScore(data.getPartnerIeltsScore());
         }
+        if (data.getPartnerIeltsYr() != null) {
+            setPartnerIeltsYr(data.getPartnerIeltsYr());
+        }
         if (data.getPartnerCitizenshipId() != null) {
             setPartnerCitizenship(partnerCitizenship);
         }
         if (data.getResidenceStatus() != null) {
             setResidenceStatus(data.getResidenceStatus());
         }
+        if (data.getResidenceStatusNotes() != null) {
+            setResidenceStatusNotes(data.getResidenceStatusNotes());
+        }
         if (data.getReturnedHome() != null) {
             setReturnedHome(data.getReturnedHome());
         }
-        if (data.getReturnedHomeNotes() != null) {
-            setReturnedHomeNotes(data.getReturnedHomeNotes());
-        }
         if (data.getReturnedHomeReason() != null) {
             setReturnedHomeReason(data.getReturnedHomeReason());
+        }
+        if (data.getReturnedHomeReasonNo() != null) {
+            setReturnedHomeReasonNo(data.getReturnedHomeReasonNo());
         }
         if (data.getReturnHomeSafe() != null) {
             setReturnHomeSafe(data.getReturnHomeSafe());
@@ -1338,6 +1499,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getResettleThirdStatus() != null) {
             setResettleThirdStatus(data.getResettleThirdStatus());
+        }
+        if (data.getUnhcrRegistered() != null) {
+            setUnhcrRegistered(data.getUnhcrRegistered());
         }
         if (data.getUnhcrStatus() != null) {
             setUnhcrStatus(data.getUnhcrStatus());
@@ -1357,6 +1521,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getUnhcrPermission() != null) {
             setUnhcrPermission(data.getUnhcrPermission());
         }
+        if (data.getUnrwaRegistered() != null) {
+            setUnrwaRegistered(data.getUnrwaRegistered());
+        }
         if (data.getUnrwaStatus() != null) {
             setUnrwaStatus(data.getUnrwaStatus());
         }
@@ -1369,6 +1536,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getVisaReject() != null) {
             setVisaReject(data.getVisaReject());
         }
+        if (data.getVisaRejectNotes() != null) {
+            setVisaRejectNotes(data.getVisaRejectNotes());
+        }
         if (data.getVisaIssues() != null) {
             setVisaIssues(data.getVisaIssues());
         }
@@ -1378,11 +1548,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getWorkAbroad() != null) {
             setWorkAbroad(data.getWorkAbroad());
         }
-        if (data.getWorkAbroadLocId() != null) {
-            setWorkAbroadLoc(workAbroadLoc);
+        if (data.getWorkAbroadCountryIds() != null) {
+            setWorkAbroadCountryIds(data.getWorkAbroadCountryIds());
         }
         if (data.getWorkAbroadYrs() != null) {
             setWorkAbroadYrs(data.getWorkAbroadYrs());
+        }
+        if (data.getWorkAbroadNotes() != null) {
+            setWorkAbroadNotes(data.getWorkAbroadNotes());
         }
         if (data.getWorkPermit() != null) {
             setWorkPermit(data.getWorkPermit());
@@ -1390,8 +1563,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getWorkPermitDesired() != null) {
             setWorkPermitDesired(data.getWorkPermitDesired());
         }
-        if (data.getWorkLegally() != null) {
-            setWorkLegally(data.getWorkLegally());
+        if (data.getWorkDesired() != null) {
+            setWorkDesired(data.getWorkDesired());
+        }
+        if (data.getWorkDesiredNotes() != null) {
+            setWorkDesiredNotes(data.getWorkDesiredNotes());
         }
 
     }

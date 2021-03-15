@@ -1,18 +1,39 @@
+/*
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {LandingComponent} from "./components/landing/landing.component";
-import {HomeComponent} from "./components/home/home.component";
+import {LandingComponent} from './components/landing/landing.component';
+import {HomeComponent} from './components/home/home.component';
 import {ResetPasswordComponent} from './components/account/reset-password/reset-password.component';
 import {ChangePasswordComponent} from './components/account/change-password/change-password.component';
-import {RegisterComponent} from "./components/register/register.component";
-import {CandidateProfileComponent} from "./components/profile/view/candidate-profile.component";
-import {AuthGuard} from "./services/auth.guard";
-import {EditCandidateComponent} from "./components/profile/edit/edit-candidate.component";
+import {RegisterComponent} from './components/register/register.component';
+import {CandidateProfileComponent} from './components/profile/view/candidate-profile.component';
+import {AuthGuard} from './services/auth.guard';
+import {EditCandidateComponent} from './components/profile/edit/edit-candidate.component';
+import {RedirectGuard} from './services/redirect.guard';
 
 const routes: Routes = [
   {
     path: '',
-    component: LandingComponent
+    canActivate: [RedirectGuard],
+    component: RedirectGuard,
+    data: {
+      externalUrl: 'https://www.talentbeyondboundaries.org/talentcatalog/'
+    }
   },
   {
     path: 'reset-password',
@@ -21,6 +42,10 @@ const routes: Routes = [
   {
     path: 'reset-password/:token',
     component: ChangePasswordComponent
+  },
+  {
+    path: 'login',
+    component: LandingComponent
   },
   {
     path: 'register',

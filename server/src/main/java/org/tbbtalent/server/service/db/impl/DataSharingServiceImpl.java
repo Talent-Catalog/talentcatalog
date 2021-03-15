@@ -1,5 +1,17 @@
 /*
- * Copyright (c) 2020 Talent Beyond Boundaries. All rights reserved.
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License 
+ * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.service.db.impl;
@@ -33,6 +45,35 @@ import org.tbbtalent.server.service.db.email.EmailSender;
 import org.tbbtalent.server.service.db.util.PartnerDatabaseDefinition;
 import org.tbbtalent.server.service.db.util.PartnerTableDefinition;
 
+/**
+ * Data is shared with destination partners by copying to their own databases, 
+ * as configured in an XML configuration file stored in resources who path is 
+ * specified in tbb.partner-dbcopy-config in application.yml.
+ * <p/>
+ * The configuration file contains a different configuration for each partner
+ * (typically by country - eg Australian partner, UK partner etc).
+ * <p/>
+ * Each destination configuration defines the structure of destination tables
+ * which are populated from the TBB database.
+ * <p/>
+ * In this implementation data is copied in two stages. First a local 
+ * "in memory" copy of the destination database is created on this server
+ * (using an H2 in memory database). This involves reading a subset of data from 
+ * the normal TBB data base (as defined in the "populate" elements of the xml 
+ * configuration) and inserting it into the appropriate fields of the 
+ * destination tables (as defined in the "fields" elements for each destination 
+ * table in the xml configuration).
+ * <p/>
+ * Once the first stage is completed, there is an exact copy of the tables
+ * we want the destination partner to have in our in memory H2 database.
+ * All that remains is to copy all those tables up to the destination partner's
+ * database - replacing any existing content.
+ * This is done in the {@link #exportImport} method in an slightly unusual
+ * way for performance reasons - using an Export/Import method which first
+ * exports all table data in the form of a CSV file which is then imported
+ * into the destination database using "LOAD DATA LOCAL INFILE" statements.
+ * See https://dev.mysql.com/doc/refman/8.0/en/load-data.html
+ */
 @Service
 public class DataSharingServiceImpl implements DataSharingService {
     private static final Logger log = LoggerFactory.getLogger(DataSharingServiceImpl.class);
@@ -45,6 +86,9 @@ public class DataSharingServiceImpl implements DataSharingService {
 
     @Value("${spring.datasource.password}")
     private String masterPwd;
+    
+    @Value("${tbb.partner-dbcopy-config}")
+    private String partnerDbcopyConfig = "data.sharing/tbbCopies.xml";
 
     //Need to set zeroDateTimeBehavior because of all the null Dates in the
     //database. Otherwise cannot process those dates.
@@ -229,20 +273,25 @@ public class DataSharingServiceImpl implements DataSharingService {
                     ")";
             exportSt.execute(s);
             try (final Statement importSt = tbbRemoteCopy.createStatement()) {
-                //Drop and recreate existing table
-                importSt.executeUpdate(def.getDropTableSQL());
-                importSt.executeUpdate(def.getCreateTableSQL());
+                //Create a new table
+                importSt.executeUpdate(def.getCreateTableSQLAsNew());
                 //Create index if we have one
-                String createIndexSQL = def.getCreateTableIndexSQL();
+                String createIndexSQL = def.getCreateTableIndexSQLAsNew();
                 if (createIndexSQL != null) {
                     importSt.executeUpdate(createIndexSQL);
                 }
-                //Now do import
+                //Now do import into new table
                 importSt.execute("LOAD DATA LOCAL INFILE '" +
                         exportFilePath +
-                        "' INTO TABLE " + tableName +
+                        "' INTO TABLE " + def.getNewTableName() +
                         " FIELDS TERMINATED BY ',' ENCLOSED BY '\"' " +
                         " LINES TERMINATED BY '\n' IGNORE 1 LINES");
+                
+                //Rename current to old, and new to current
+                importSt.executeUpdate(def.getRenameSQL());
+                
+                //Finally drop the old table
+                importSt.executeUpdate(def.getDropTableSQLAsOld());
             }
         } catch (Exception ex) {
             reportError("Exception exporting " + tableName, ex);
@@ -254,7 +303,7 @@ public class DataSharingServiceImpl implements DataSharingService {
         List<PartnerDatabaseDefinition> defs = new ArrayList<>();
 
         ClassLoader cl = this.getClass().getClassLoader();
-        InputStream in = cl.getResourceAsStream("data.sharing/tbbCopies.xml");
+        InputStream in = cl.getResourceAsStream(partnerDbcopyConfig);
 
         //Parse the XML input stream.
         SAXBuilder builder = new SAXBuilder();
@@ -313,10 +362,10 @@ public class DataSharingServiceImpl implements DataSharingService {
             String fields = getValue(fieldsEl);
 
             Element indexEl = tableEl.getChild("index");
-            String indexSQL = getValue(indexEl);
+            String indexField = getValue(indexEl);
 
             tableDefs.add(new PartnerTableDefinition(
-                    filter, name, fields, populateSQL, indexSQL));
+                    filter, name, fields, populateSQL, indexField));
         }
         return tableDefs;
     }

@@ -1,11 +1,26 @@
+<!--
+  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <div *ngIf="error">
   {{error}}
 </div>
 <form [formGroup]="form">
-
   <div class="form-group">
-    <label for="unrwaStatus">
-      Registered with UNRWA?
+    <label for="unrwaRegistered">
+      Are you registered with UNRWA?
     </label>
     <div class="float-right">
       <app-autosave-status
@@ -14,25 +29,42 @@
       </app-autosave-status>
     </div>
     <select class="form-control"
-            id="unrwaStatus" [formControlName]="'unrwaStatus'">
-      <option *ngFor="let opt of unrwaStatusOptions" [value]="opt.value">
+            id="unrwaRegistered" [formControlName]="'unrwaRegistered'">
+      <option *ngFor="let opt of unrwaRegisteredOptions" [value]="opt.value">
         {{opt.displayText}}
       </option>
     </select>
   </div>
-  <div  *ngIf="showUnrwaNumber()">
-    <div class="form-group">
-      <label for="unrwaNumber">What is your UNRWA number?</label>
-      <input type="text" class="form-control"
-             id="unrwaNumber" [formControlName]="'unrwaNumber'">
+  <div *ngIf="showAll">
+    <div *ngIf="unrwaRegistered == 'Yes'">
+      <div class="form-group">
+        <label for="unrwaStatus">
+          What is your registration status with UNRWA?
+        </label>
+        <select class="form-control"
+                id="unrwaStatus" [formControlName]="'unrwaStatus'">
+          <option *ngFor="let opt of unrwaStatusOptions" [value]="opt.value">
+            {{opt.displayText}}
+          </option>
+        </select>
+      </div>
+      <div  *ngIf="showUnrwaNumber()">
+        <div class="form-group">
+          <label for="unrwaNumber">What is your UNRWA number?</label>
+          <input type="text" class="form-control"
+                 id="unrwaNumber" [formControlName]="'unrwaNumber'">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="unrwaNotes">Notes</label>
+        <textarea type="text" class="md-textarea-auto form-control" rows="3"
+                  id="unrwaNotes" [formControlName]="'unrwaNotes'"
+                  placeholder="" ></textarea>
+      </div>
     </div>
   </div>
-  <div class="form-group">
-    <label for="unrwaNotes">Notes</label>
-    <textarea type="text" class="md-textarea-auto form-control" rows="3"
-              id="unrwaNotes" [formControlName]="'unrwaNotes'"
-              placeholder="" ></textarea>
-  </div>
+
+
 
 </form>
 

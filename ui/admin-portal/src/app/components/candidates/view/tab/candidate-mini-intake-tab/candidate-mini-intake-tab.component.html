@@ -1,14 +1,53 @@
+<!--
+  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <div *ngIf="loading">
   <i class="fas fa-spinner fa-spin"></i> loading...
 </div>
 <div *ngIf="error">
   {{error}}
 </div>
-<div class="h6 py-2 text-right">
-  Date of mini intake: xxxx. Completed by xxxx.
-</div>
 
-<div *ngIf="!loading">
+<div *ngIf="!loading" id="MiniIntakeForm">
+  <div class="d-flex justify-content-between mb-2 ml-2">
+    <div class="d-flex flex-column">
+      <button class="btn btn-sm btn-primary mb-3" (click)="exportAsPdf('MiniIntakeForm')" [disabled]="saving">
+        <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
+        Export PDF
+      </button>
+      <h5>Mini Intake</h5>
+    </div>
+    <div class="d-flex align-items-end flex-column justify-content-between">
+      <div class="d-flex float-right">
+        <button class="btn btn-sm btn-outline-success mr-1" (click)="createIntakeNote('Mini Intake', false, $event.target)" [disabled]="saving">
+          <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
+          Start Intake
+        </button>
+        <button class="btn btn-sm btn-outline-secondary ml-1" (click)="createIntakeNote('Mini Intake', true, $event.target)" [disabled]="saving">
+          <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
+          Update Intake
+        </button>
+      </div>
+      <div>
+        <div class="text-muted small text-right">Before starting or updating the interview, please click appropriate button.</div>
+        <div class="text-muted small text-right">This will create a note on the right to help track changes.</div>
+      </div>
+
+    </div>
+  </div>
 
   <div class="card">
     <div class="card-header">
@@ -76,7 +115,8 @@
     <div class="card-body">
       <app-host-entry-year
         [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
+        [candidateIntakeData]="candidateIntakeData"
+        [countries]="countries">
       </app-host-entry-year>
       <app-asylum-year
         [candidate]="candidate"
@@ -112,6 +152,23 @@
 
   <div class="card">
     <div class="card-header">
+      English Assessment
+      <span class="small ml-2">
+        Only complete if never taken IELTS or TOEFL.
+      </span>
+    </div>
+    <div class="card-body">
+      <app-lang-assessment
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-lang-assessment>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="card">
+    <div class="card-header">
       Registration
     </div>
     <div class="card-body">
@@ -120,16 +177,20 @@
       </div>
       <app-registration-unhcr
         [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
+        [candidateIntakeData]="candidateIntakeData"
+        [showAll]="false">
       </app-registration-unhcr>
       <div class="card-title h6">
         UNRWA
       </div>
       <app-registration-unrwa
         [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
+        [candidateIntakeData]="candidateIntakeData"
+        [showAll]="false">
       </app-registration-unrwa>
     </div>
   </div>
 
 </div>
+
+

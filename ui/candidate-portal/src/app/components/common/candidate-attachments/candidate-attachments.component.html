@@ -1,21 +1,48 @@
-<p class="text-muted" *ngIf="!loading && !attachments.length">
+<!--
+  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<p class="text-muted" *ngIf="!loading && !attachments.length && !uploading">
   {{ 'REGISTRATION.ATTACHMENTS.EMPTYSTATE' | translate }}
 </p>
+
+<!-- If CV & Mobile device don't display by adding bootstrap classes d-none & d-lg-block if CV is true -->
+<div [class.d-none]="cv" [class.d-lg-block]="cv">
+  <app-file-upload *ngIf="!preview && !loading" [uploading]="uploading" (uploadStarted)="startServerUpload($event)"></app-file-upload>
+</div>
 
 <div class="attachments">
   <div class="mb-3" *ngFor="let attachment of attachments; let i = index;" [class.card]="!preview">
 
     <div class="text-right" *ngIf="!preview && attachment.createdBy.id == user?.id">
+      <button class="btn btn-secondary btn-card"
+              (click)="editCandidateAttachment(attachment)">
+        <fa-icon class="d-flex" icon="edit" size="xs"></fa-icon></button>
+
       <button class="btn btn-danger btn-card"
               [disabled]="deleting"
               (click)="deleteAttachment(attachment)">&times;</button>
+
+
     </div>
 
     <div class="row">
 
       <div class="col-12">
 
-        <div class="form-group">
+        <div *ngIf="editTarget?.id !== attachment.id" class="form-group">
           <label>{{ 'REGISTRATION.ATTACHMENTS.LABEL.NAME' | translate }}
             <span *ngIf="downloading">
                 ...
@@ -39,6 +66,23 @@
             </a>
           </p>
         </div>
+
+        <div *ngIf="editTarget?.id == attachment.id" class="form-group">
+          <label for="courseName">Change name? </label>
+          <div class="d-flex">
+            <input type="text" class="form-control" placeholder="" id="courseName" [(ngModel)]="attachment.name">
+            <div>
+              <button class="btn btn-sm"
+                      (click)="updateAttachmentName(attachment, i)">
+                <span *ngIf="!saving">Save</span>
+                <fa-icon *ngIf="saving" [spin]="true" icon="spinner"></fa-icon>
+              </button>
+
+            </div>
+          </div>
+        </div>
+
+
 
       </div>
 
@@ -71,7 +115,6 @@
 
 <app-error [error]="error"></app-error>
 
-<app-file-upload *ngIf="!preview && !loading" [uploading]="uploading" (uploadStarted)="startServerUpload($event)"></app-file-upload>
 
 
 

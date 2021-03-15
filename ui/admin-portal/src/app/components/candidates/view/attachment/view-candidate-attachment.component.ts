@@ -1,26 +1,30 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
+/*
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from '../../../../model/candidate';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {
-  AttachmentType,
-  CandidateAttachment
-} from '../../../../model/candidate-attachment';
+import {AttachmentType, CandidateAttachment} from '../../../../model/candidate-attachment';
 import {CandidateAttachmentService} from '../../../../services/candidate-attachment.service';
 import {environment} from '../../../../../environments/environment';
 import {CreateCandidateAttachmentComponent} from './create/create-candidate-attachment.component';
 import {ConfirmationComponent} from '../../../util/confirm/confirmation.component';
 import {EditCandidateAttachmentComponent} from './edit/edit-candidate-attachment.component';
 import {User} from '../../../../model/user';
-import {saveBlob} from "../../../../util/file";
 
 @Component({
   selector: 'app-view-candidate-attachment',
@@ -176,9 +180,8 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
   downloadCandidateAttachment(attachment: CandidateAttachment) {
     this.error = null;
     this.loading = true;
-    this.candidateAttachmentService.downloadAttachment(attachment.id).subscribe(
-      (resp: Blob) => {
-        saveBlob(resp, attachment.name);
+    this.candidateAttachmentService.downloadAttachment(attachment.id, attachment.name).subscribe(
+      () => {
         this.loading = false;
       },
       (error) => {

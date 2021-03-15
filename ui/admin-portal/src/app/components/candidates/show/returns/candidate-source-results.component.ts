@@ -1,18 +1,21 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
-import {
-  getCandidateSourceNavigation,
-  isSavedSearch,
-  SavedSearchGetRequest
-} from '../../../../model/saved-search';
+/*
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
+import {getCandidateSourceNavigation, isSavedSearch, SavedSearchGetRequest} from '../../../../model/saved-search';
 import {Subscription} from 'rxjs';
 import {CandidateService} from '../../../../services/candidate.service';
 import {Candidate} from '../../../../model/candidate';
@@ -23,10 +26,7 @@ import {
   CachedSourceResults,
   CandidateSourceResultsCacheService
 } from '../../../../services/candidate-source-results-cache.service';
-import {
-  CandidateSource,
-  defaultReviewStatusFilter
-} from '../../../../model/base';
+import {CandidateSource, defaultReviewStatusFilter} from '../../../../model/base';
 import {CandidateSourceCandidateService} from '../../../../services/candidate-source-candidate.service';
 import {SavedListGetRequest} from '../../../../model/saved-list';
 import {AuthService} from '../../../../services/auth.service';
@@ -95,7 +95,7 @@ constructor(
     }
   }
 
-  openSource() {
+  onOpenSource() {
     //Open source at same page number
     let extras;
     if (this.pageNumber === 1) {

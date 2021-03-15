@@ -1,21 +1,24 @@
+<!--
+  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <div class="container">
 
-  <div class="row">
+  <div class="d-flex justify-content-center mt-4">
 
-    <div class="col-12 col-md-6 mb-4">
-
-      <h1>{{ 'LANDING.TITLE' | translate }}</h1>
-
-      <p [innerHTML]="'LANDING.PARA1' | translate"></p>
-
-      <h5>{{ 'LANDING.HEADING2' | translate }}</h5>
-
-      <p [innerHTML]="'LANDING.PARA2' | translate"></p>
-
-
-    </div>
-
-    <div class="col-12 col-md-6 mb-4">
+    <div class="col-sm-12 col-lg-6">
 
       <div class="card">
 
@@ -29,13 +32,18 @@
 
       </div>
 
+      <hr/>
+
+      <h5>{{ 'LANDING.HEADING3' | translate }}</h5>
+
+      <p [innerHTML]="'LANDING.PARA3' | translate"></p>
+
     </div>
+
 
   </div>
 
-  <h5>{{ 'LANDING.HEADING3' | translate }}</h5>
 
-  <p [innerHTML]="'LANDING.PARA3' | translate"></p>
 
 <!--  <h5>{{ 'LANDING.HEADING4' | translate }}</h5>-->
 

@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License 
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 package org.tbbtalent.server.service.db.impl;
 
 import java.time.OffsetDateTime;
@@ -117,7 +133,38 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
     @Override
-    public Page<SavedSearch> searchSavedSearches(SearchSavedSearchRequest request) {
+    public List<SavedSearch> search(SearchSavedSearchRequest request) {
+        final User loggedInUser = userContext.getLoggedInUser().orElse(null);
+
+        List<SavedSearch> savedSearches;
+        //If requesting watches
+        if (request.getWatched() != null && request.getWatched() ) {
+            Set<SavedSearch> watches;
+            if (loggedInUser == null) {
+                //Just provide empty set
+                watches = new HashSet<>();
+            } else {
+                watches = savedSearchRepository.findUserWatchedSearches(loggedInUser.getId());
+            }
+            savedSearches = new ArrayList<>(watches);
+        } else {
+            User userWithSharedSearches = loggedInUser == null ? null :
+                userRepository.findByIdLoadSharedSearches(
+                    loggedInUser.getId());
+            savedSearches = savedSearchRepository.findAll(
+                SavedSearchSpecification.buildSearchQuery(request, userWithSharedSearches));
+        }
+        log.info("Found " + savedSearches.size() + " savedSearches in search");
+
+        for (SavedSearch savedSearch: savedSearches) {
+            savedSearch.parseType();
+        }
+
+        return savedSearches;
+    }
+
+    @Override
+    public Page<SavedSearch> searchPaged(SearchSavedSearchRequest request) {
         final User loggedInUser = userContext.getLoggedInUser().orElse(null);
 
         Page<SavedSearch> savedSearches;

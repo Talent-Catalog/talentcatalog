@@ -1,5 +1,17 @@
 /*
- * Copyright (c) 2020 Talent Beyond Boundaries. All rights reserved.
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License 
+ * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tbbtalent.server.configuration;
@@ -9,6 +21,8 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import org.elasticsearch.client.RestHighLevelClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,6 +51,8 @@ public class ElasticsearchConfiguration extends AbstractElasticsearchConfigurati
     @Value("${spring.elasticsearch.rest.password}")
     private String password;
 
+    private static final Logger log = LoggerFactory.getLogger(ElasticsearchConfiguration.class);
+
     @Override
     @Bean
     public @NonNull RestHighLevelClient elasticsearchClient() {
@@ -46,6 +62,8 @@ public class ElasticsearchConfiguration extends AbstractElasticsearchConfigurati
                 String hostAndPort = uri.getAuthority();
                 String protocol = uri.getScheme();
                 boolean useSsl = "https".equals(protocol);
+                
+                log.info("Connecting to Elasticsearch at " + hostAndPort);
                 
                 ClientConfiguration.MaybeSecureClientConfigurationBuilder x
                         = ClientConfiguration.builder().connectedTo(hostAndPort);

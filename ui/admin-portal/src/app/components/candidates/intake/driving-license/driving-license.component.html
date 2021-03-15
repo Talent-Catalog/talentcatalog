@@ -1,3 +1,19 @@
+<!--
+  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <div *ngIf="error">
   {{error}}
 </div>
@@ -40,26 +56,7 @@
         <label for="drivingLicenseExp">
           Expiry Date
         </label>
-        <div class="input-group">
-          <input id="drivingLicenseExp" type="text" class="form-control" placeholder="YYYY-MM-DD"
-                 ngbDatepicker #picker="ngbDatepicker"
-                 [formControlName]="'drivingLicenseExp'"
-                 (dateSelect)="form.controls.drivingLicenseExp.markAsDirty()"
-                 [autoClose]="true"
-                 [outsideDays]="'hidden'"
-                 [container]="'#drivingLicenseExp'">
-
-          <div class="input-group-append">
-            <small class="btn btn-link text-secondary" *ngIf="form.controls.drivingLicenseExp.value"
-                   (click)="form.controls.drivingLicenseExp.patchValue(null); form.controls.drivingLicenseExp.markAsDirty();">
-              <span>Clear</span>
-            </small>
-            <div class="btn btn-link" *ngIf="!form.controls.drivingLicenseExp.value"
-                 (click)="picker.toggle()">
-              <span>Choose</span>
-            </div>
-          </div>
-        </div>
+        <app-date-picker id="drivingLicenseExp" [control]="form.controls.drivingLicenseExp"></app-date-picker>
       </div>
       <div class="form-group">
         <label for="drivingLicenseCountryId">

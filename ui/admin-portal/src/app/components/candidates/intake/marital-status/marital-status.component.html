@@ -1,3 +1,19 @@
+<!--
+  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <div *ngIf="error">
   {{error}}
 </div>
@@ -24,7 +40,7 @@
       we will also discuss in further detail the process related to family.</p>
   </div>
 
-  <div *ngIf="isMarriedEngaged">
+  <div *ngIf="hasPartner">
     <div class="form-group">
       <label for="partnerRegistered">
         Is your partner registered with TBB?
@@ -56,25 +72,47 @@
       </label>
       <select class="form-control"
               id="partnerEduLevelId" [formControlName]="'partnerEduLevelId'">
+        <option value="0"></option>
         <option *ngFor="let opt of educationLevels" [value]="opt.id">
           {{opt.name}}
         </option>
       </select>
     </div>
+    <div *ngIf="eduLevelSelected">
+      <div class="form-group">
+        <label for="partnerEduLevelNotes">
+          Notes
+        </label>
+        <textarea type="text" class="md-textarea-auto form-control" rows="4"
+                  id="partnerEduLevelNotes" [formControlName]="'partnerEduLevelNotes'"
+                  placeholder="" ></textarea>
+      </div>
+    </div>
     <div class="form-group">
-      <label for="partnerProfessionId">
+      <label for="partnerOccupationId">
         What is your partner’s profession?
       </label>
       <select class="form-control"
-              id="partnerProfessionId" [formControlName]="'partnerProfessionId'">
+              id="partnerOccupationId" [formControlName]="'partnerOccupationId'">
         <option *ngFor="let opt of occupations" [value]="opt.id">
           {{opt.name}}
         </option>
+        <option value="0">Other</option>
       </select>
+    </div>
+    <div *ngIf="occupationSelected">
+      <div class="form-group">
+        <label for="partnerOccupationNotes">
+          Notes
+        </label>
+        <textarea type="text" class="md-textarea-auto form-control" rows="4"
+                  id="partnerOccupationNotes" [formControlName]="'partnerOccupationNotes'"
+                  placeholder="" ></textarea>
+      </div>
     </div>
     <div class="form-group">
       <label for="partnerEnglish">
-        Does your spouse speak English?
+        Does your partner speak English?
       </label>
       <select class="form-control"
               id="partnerEnglish" [formControlName]="'partnerEnglish'">
@@ -86,7 +124,7 @@
     <div *ngIf="partnerEnglish === 'Yes'">
       <div class="form-group">
         <label for="partnerEnglishLevelId">
-          What level of English does your spouse speak?
+          What level of English does your partner speak?
         </label>
         <select class="form-control"
                 id="partnerEnglishLevelId" [formControlName]="'partnerEnglishLevelId'">
@@ -97,7 +135,7 @@
       </div>
       <div class="form-group">
         <label for="partnerIelts">
-          Has he/she completed IELTS?
+          Has your partner completed IELTS?
         </label>
         <select class="form-control"
                 id="partnerIelts" [formControlName]="'partnerIelts'">
@@ -106,10 +144,10 @@
           </option>
         </select>
       </div>
-      <div *ngIf="partnerIelts === 'Yes'">
+      <div *ngIf="takenIelts">
         <div class="form-group">
           <label for="partnerIeltsScore">
-            What was his/her score?
+            What was your partner's score?
           </label>
           <select class="form-control"
                   id="partnerIeltsScore" [formControlName]="'partnerIeltsScore'">
@@ -118,8 +156,18 @@
             </option>
           </select>
         </div>
+        <div class="form-group">
+          <label for="partnerIeltsYr">
+            In what year did your partner take the test?
+          </label>
+          <select id="partnerIeltsYr" class="form-control" [formControlName]="'partnerIeltsYr'">
+            <option value=""></option>
+            <option *ngFor="let year of years" [ngValue]="year">{{year}} </option>
+          </select>
+        </div>
       </div>
     </div>
+
     <div class="form-group">
       <label for="partnerCitizenshipId">
         What is your partners current citizenship?

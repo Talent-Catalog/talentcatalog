@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {
   Component,
   EventEmitter,
@@ -21,6 +37,7 @@ import {SavedSearch} from '../../../model/saved-search';
 import {SavedSearchService} from "../../../services/saved-search.service";
 import {Router} from "@angular/router";
 import {Observable, of} from "rxjs";
+import {SearchCandidateSourcesRequest} from "../../../model/base";
 
 @Component({
   selector: 'app-join-saved-search',
@@ -66,17 +83,21 @@ export class JoinSavedSearchComponent implements OnInit, OnChanges {
           this.searching = true;
           this.error = null
         }),
-        switchMap(term =>
-          this.savedSearchService.searchPaged({keyword: term, global: true, owned: true, shared: true}).pipe(
-            tap(() => this.searchFailed = false),
-            map(result =>
-              // filter to avoid circular reference exception by removing the same search as the loaded search
-              result.content.filter(content =>
-                content.id !== this.currentSavedSearchId)),
-            catchError(() => {
-              this.searchFailed = true;
-              return of([]);
-            }))
+        switchMap(term => {
+            const request: SearchCandidateSourcesRequest = {
+              keyword: term, global: true, owned: true, shared: true
+            }
+            return this.savedSearchService.searchPaged(request).pipe(
+              tap(() => this.searchFailed = false),
+              map(result =>
+                // filter to avoid circular reference exception by removing the same search as the loaded search
+                result.content.filter(content =>
+                  content.id !== this.currentSavedSearchId)),
+              catchError(() => {
+                this.searchFailed = true;
+                return of([]);
+              }));
+          }
         ),
         tap(() => this.searching = false)
       );

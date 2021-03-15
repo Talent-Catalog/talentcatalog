@@ -16,36 +16,65 @@ to the REST API endpoints under `/api/candidate` provided by the server.
 - **admin-portal**: the frontend module through which TBB staff are able to view, manage and annotate 
 candidate details. This is written in Angular and connects to the REST API endpoints under 
 `/api/admin` provided by the server.
+
+## Contributing ##
+
+Contributions are very welcome. Please see 
+[our contribution guidelines](CONTRIBUTING.md). 
+They should be submitted as pull request.
      
 ## How do I get set up? ##
 
 ### Install the tools ###
 
-Download and install the latest of the following tools: 
+Download and install the latest of the following tools.
 
-- Java JDK8 [https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html]()
-     -     $ brew cask install java
+IMPORTANT NOTE FOR MAC Users:
+
+On a Mac, installing with Homebrew usually works well. eg "brew install xxx".
+However, Flyway and Postgres don't install with Homebrew, and the book
+"Angular Up & Running" notes that installing Node.js using Homebrew
+can also have problems. Googling you can still see lots of people having
+problems installing Node using brew.
+
+It is also probably easier to install Java directly rather than using brew.
+
+
+- Java JDK8
+   - See [https://stackoverflow.com/questions/24342886/how-to-install-java-8-on-mac]()
+    
+
 - Gradle [https://gradle.org/install/]()
-     -     $ brew install gradle
-- NodeJS [https://nodejs.org/en/]()
-     -     $ brew install node
+  > brew install gradle
+- NodeJS: Install as described here [https://nodejs.org/en/]()
+
+
 - Angular CLI [https://angular.io/cli]()
-     -     $ npm install -g @angular/cli
-- Flyway [https://flywaydb.org/]()
-     -     $ brew install flyway
+  > npm install -g @angular/cli
+
 - cURL (for database migrations, can also use Postman) 
-    -      $ brew install curl
-- Elasticsearch (for text search) [https://www.elastic.co/guide/en/elasticsearch/reference/7.8/brew.html] 
-    -      $ brew tap elastic/tap
-    -      $ brew install elastic/tap/elasticsearch-full 
+  > brew install curl
+
+- Docker (we are moving to a container architecture, so want to start
+  using Docker technology - in particular for running Elasticsearch - 
+  see below)
+    - Install Docker Desktop for Mac - 
+      see [https://hub.docker.com/editions/community/docker-ce-desktop-mac/]()
+
+
+- Elasticsearch (for text search)
+    - Install Docker image. 
+      See [https://www.elastic.co/guide/en/elasticsearch/reference/7.10/docker.html]()
+      Just pull the image to install. See later for how to run.
+
+- Kibana (for monitoring Elasticsearch)
+    - Install Docker image.
+      See [https://www.elastic.co/guide/en/kibana/current/docker.html]()
+      Just pull the image to install. See later for how to run.
+
 - Git [https://git-scm.com/downloads]()
 - PostgreSQL [https://www.postgresql.org/download/]()
 - IntelliJ IDEA (or the IDE of your choice) [https://www.jetbrains.com/idea/download/]()
-
-(On a Mac, installing with Homebrew works well. eg "brew install xxx". 
-However, Flyway and Postgres don't install with Homebrew, and the book 
-"Angular Up & Running" book notes that installing Node.js using Homebrew on a 
-can also have problems.)
 
 ### Setup your local database ###
 
@@ -67,26 +96,50 @@ full privileges
 
 ### Download and edit the code ###
 
-- Clone [the repository](https://bitbucket.org/johncameron/tbbtalentv2/src/master/) to your local system
+- Clone [the repository](https://github.com/talentbeyondboundaries/tbbtalentv2.git) to your local system
 - Open the root folder in IntelliJ IDEA (it should auto detect gradle and self-configure)
 
 ### Run Elasticsearch ###
 
-    $ elasticsearch
+Can run from Docker desktop for Mac, or...
 
-Elasticsearch will run listening on port 9200. You can verify this by running:
+> docker rm elasticsearch
 
-    $ curl -X GET "localhost:9200"
+> docker run --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.10.2
+
+Elasticsearch will run listening on port 9200. 
+You can verify this by going to [localhost:9200]() in your browser
+
+### Run Kibana (optional) ###
+
+Can run from Docker desktop for Mac, or...
+
+> docker rm kibana
+
+> docker run --name kibana --link elasticsearch -p 5601:5601 docker.elastic.co/kibana/kibana:7.10.2
+
+Kibana runs listening on port 5601. 
+You can verify this by going to [localhost:5601]() in your browser 
 
 ### Run the server ###
 
-- Create a new Run Profile for `org.tbbtalent.server.TbbTalentApplication`
+- Some secret information such as passwords and private keys are set in 
+  environment variables - including programmatic access to TBB's Amazon AWS, 
+  Google and Salesforce accounts. If these environment variables are not set
+  the application should still run in your development environment, but it may
+  not have access to these integrations. Contact TBB if you need access to these
+  "secrets". They are stored in a tbb_secrets.txt file which you can hook into
+  your start up to set the relevant environment variables.
+- Create a new Run Profile for `org.tbbtalent.server.TbbTalentApplication`. 
+  In the Environment Variables section of Intellij, check the 
+  "Include system environment variables" checkbox.
 - Run the new profile, you should see something similar to this in the logs: 
 ```
 Started TbbTalentApplication in 2.217 seconds (JVM running for 2.99)
 ```
-- your server will be running on port 8080 
-(can be overriden by setting server.port and updating environment.ts in portals)
+- your server will be running on port 8080 (default for Spring Boot) 
+(can be overridden by setting server.port in application.yml, or Intellij Run 
+  Configuration, and updating environment.ts in portals)
 - To test it open a browser to [http://localhost:8080/test]()
 
 
@@ -185,15 +238,18 @@ directory.
 
 ## Version Control ##
 
-We use Bitbucket - [https://bitbucket.org/dashboard/overview]()
+We use GitHub. Our repository is called tbbtalentv2 - 
+[https://github.com/talentbeyondboundaries/tbbtalentv2]()
 
-Our repository is called tbbtalentv2 - John Cameron is the owner.
+See the [GitHub wiki](https://github.com/talentbeyondboundaries/tbbtalentv2/wiki) 
+for additional documentation.
 
 ### Master branch ###
 
 The main branch is "master". We only merge and push into "master" when we are 
-deploying to production (deployment to production is automatic, triggered by any 
-push to "master" - see Deployment section below).
+ready to deploy to production (rebuild and upload of build artifacts to the 
+production environment is automatic, triggered by any push to "master". 
+See Deployment section below).
 
 Master should only be accessed directly when staging
 is merged into it, triggering deployment to production. You should not
@@ -235,42 +291,11 @@ You should feel comfortable pushing regularly - often doing Commit and Push
 at the same time. Pushing is effectively saving your work into the "cloud"
 rather having changes just saved on your computer.
   
-## Deployment ##
+## Deployment and Monitoring ##
 
-### Production ###
-Deployment to production is triggered by pushing to the master branch on our
-Bitbucket version control. See Version Control section above.
+See the Deployment and Monitoring pages on the 
+[GitHub wiki](https://github.com/talentbeyondboundaries/tbbtalentv2/wiki).
 
-The "master" branch is associated with a pipeline which automatically builds
-and deploys (to AWS). This build process is controlled by 
-bitbucket-pipelines.yml.
-
-Deployment can take around 10 minutes during which time the production software
-is unavailable. People trying to access the software during deployment
-will see an error on their browser saying something like "520 Bad Gateway".
-
-### Test ###
-We use Heroku to host deployments to a test system.
-
-John Cameron has a Heroku account where there is a server called 
-tbbtalent-staging - [https://tbbtalent-staging.herokuapp.com/]()
-
-
-Once you have installed the Heroku command line 
-[https://devcenter.heroku.com/articles/heroku-cli]()
- 
-... you can add the Heroku remote to your local repository (once only) with 
-this command:
-
-> heroku git:remote -a tbbtalent-staging
-  
-... then you can push your local staging branch any time to Heroku's master branch 
-with this command:
-
-> git push heroku staging:master
-
-That will automatically build and deploy to our Heroku test server at
-[https://tbbtalent-staging.herokuapp.com/]().
-
- 
+## License
+[GNU AGPLv3](https://choosealicense.com/licenses/agpl-3.0/)
 

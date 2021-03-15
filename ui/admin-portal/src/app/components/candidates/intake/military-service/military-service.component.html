@@ -1,3 +1,19 @@
+<!--
+  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <div *ngIf="error">
   {{error}}
 </div>
@@ -13,6 +29,44 @@
     <select class="form-control"
             id="militaryService" [formControlName]="'militaryService'" [class.not-editable]="!editable">
       <option *ngFor="let opt of militaryServiceOptions" [value]="opt.value" [disabled]="!editable">
+        {{opt.displayText}}
+      </option>
+    </select>
+  </div>
+  <div *ngIf="served">
+    <div>
+        <div>What were your dates of service?</div>
+      <!-- START DATE -->
+      <div class="d-flex flex-row">
+        <div class="form-group flex-fill mr-2">
+          <label class="small" for="startDate">Start Date *</label>
+          <app-month-picker id="startDate" [control]="form.get('militaryStart')"></app-month-picker>
+        </div>
+
+        <!-- END DATE -->
+        <div class="form-group flex-fill ml-2">
+          <label class="small" for="endDate">End Date</label>
+          <app-month-picker id="endDate" [control]="form.get('militaryEnd')"></app-month-picker>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div *ngIf="serviceSelected">
+    <div class="form-group">
+      <label for="militaryNotes">Notes (e.g. is the candidate exempted from service, paid it off etc).</label>
+      <textarea type="text" class="md-textarea-auto form-control" rows="4"
+                id="militaryNotes" [formControlName]="'militaryNotes'"
+                placeholder="" ></textarea>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="militaryWanted">
+      Are you now wanted for military backup?
+    </label>
+    <select class="form-control"
+            id="militaryWanted" [formControlName]="'militaryWanted'">
+      <option *ngFor="let opt of militaryWantedOptions" [value]="opt.value">
         {{opt.displayText}}
       </option>
     </select>

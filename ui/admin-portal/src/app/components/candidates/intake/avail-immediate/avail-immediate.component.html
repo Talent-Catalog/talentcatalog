@@ -1,9 +1,25 @@
+<!--
+  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <div *ngIf="error">
   {{error}}
 </div>
 <form [formGroup]="form">
   <div class="form-group">
-    <label for="availImmediate">Available in immediate future for international work?</label>
+    <label for="availImmediate">Are you interested in international employment opportunities now?</label>
     <div class="float-right">
       <app-autosave-status
         [saving]="saving"
@@ -18,6 +34,15 @@
     </select>
   </div>
 
+  <div *ngIf="availImmediate === 'Yes'|| availImmediate == 'Unsure'">
+    <div class="form-group">
+      <label for="availImmediateJobOps">What type of opportunities are you looking for?</label>
+      <textarea type="text" class="md-textarea-auto form-control" rows="4"
+                id="availImmediateJobOps" [formControlName]="'availImmediateJobOps'"
+                placeholder="" ></textarea>
+    </div>
+  </div>
+
   <div *ngIf="availImmediate === 'No'|| availImmediate == 'Unsure'">
     <div class="form-group">
       <label for="availImmediateReason">Factors preventing immediate availability for international work.</label>
@@ -30,7 +55,7 @@
     </div>
     <div class="form-group">
       <label for="availImmediateNotes">If Other, or if you have additional notes please describe here.</label>
-      <textarea type="text" class="md-textarea-auto form-control" rows="6"
+      <textarea type="text" class="md-textarea-auto form-control" rows="4"
                 id="availImmediateNotes" [formControlName]="'availImmediateNotes'"
                 placeholder="" ></textarea>
     </div>

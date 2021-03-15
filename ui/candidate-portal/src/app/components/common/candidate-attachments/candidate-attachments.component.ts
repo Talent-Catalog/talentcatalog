@@ -1,9 +1,25 @@
+/*
+ * Copyright (c) 2021 Talent Beyond Boundaries.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, Input, OnInit} from '@angular/core';
-import {CandidateAttachmentService} from '../../../services/candidate-attachment.service';
 import {
-  AttachmentType,
-  CandidateAttachment
-} from '../../../model/candidate-attachment';
+  CandidateAttachmentService,
+  UpdateCandidateAttachmentRequest
+} from '../../../services/candidate-attachment.service';
+import {AttachmentType, CandidateAttachment} from '../../../model/candidate-attachment';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {environment} from '../../../../environments/environment';
 import {CandidateService} from '../../../services/candidate.service';
@@ -27,7 +43,8 @@ export class CandidateAttachmentsComponent implements OnInit {
   _loading = {
     candidate: true,
     attachments: true,
-    user: true
+    user: true,
+    saving: false
   };
   deleting: boolean;
   uploading: boolean;
@@ -38,6 +55,8 @@ export class CandidateAttachmentsComponent implements OnInit {
   attachments: CandidateAttachment[] = [];
   candidateNumber: string;
   user: User;
+
+  editTarget: CandidateAttachment;
 
   constructor(private fb: FormBuilder,
               private candidateService: CandidateService,
@@ -51,6 +70,7 @@ export class CandidateAttachmentsComponent implements OnInit {
   ngOnInit() {
     this._loading.candidate = true;
     this._loading.user = true;
+    this.editTarget = null;
 
     this.candidateService.getCandidateNumber().subscribe(
       (response) => {
@@ -97,6 +117,11 @@ export class CandidateAttachmentsComponent implements OnInit {
     return l.attachments || l.candidate;
   }
 
+  get saving() {
+    const l = this._loading;
+    return l.saving;
+  }
+
   getAttachmentUrl(att: CandidateAttachment) {
     if (att.type === AttachmentType.file) {
       return this.s3BucketUrl + '/candidate/' + (att.migrated ? 'migrated' : this.candidateNumber) + '/' + att.location;
@@ -117,16 +142,20 @@ export class CandidateAttachmentsComponent implements OnInit {
       });
   }
 
-  startServerUpload(files: File[]) {
+  startServerUpload($event) {
     this.error = null;
     this.uploading = true;
     this.attachments = [];
 
     const uploads: Observable<CandidateAttachment>[] = [];
-    for (const file of files) {
+    for (const file of $event.files) {
       const formData: FormData = new FormData();
-      formData.append('file', file);
-
+      if ($event.type === 'camera') {
+        // If a camera upload create new file name
+        formData.append('file', file, 'CameraUpload_' + new Date().toLocaleDateString() + '_' + new Date().toLocaleTimeString() + '.jpg');
+      } else {
+        formData.append('file', file);
+      }
       uploads.push(this.candidateAttachmentService
         .uploadAttachment(this.cv, formData));
     }
@@ -156,6 +185,29 @@ export class CandidateAttachmentsComponent implements OnInit {
         this.error = error;
         this.downloading = false;
       });
+  }
 
+  editCandidateAttachment(attachment: CandidateAttachment) {
+    if (this.editTarget) {
+      this.editTarget = null;
+    } else {
+      this.editTarget = attachment;
+    }
+  }
+
+  updateAttachmentName(attachment: CandidateAttachment, i) {
+    this._loading.saving = true;
+    const request: UpdateCandidateAttachmentRequest = {
+      name: attachment.name
+    };
+    this.candidateAttachmentService.updateAttachment(attachment.id, request).subscribe(
+      (response) => {
+        this.attachments[i] = attachment;
+        this.editTarget = null;
+        this._loading.saving = false;
+      }, (error) => {
+        this.error = error;
+      }
+    )
   }
 }
