@@ -16,7 +16,7 @@ export class IntProtectionComponent extends IntakeComponentBase implements OnIni
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      intProtection: [this.candidateIntakeData?.intProtection],
+      intProtection: [null],
     });
   }
 

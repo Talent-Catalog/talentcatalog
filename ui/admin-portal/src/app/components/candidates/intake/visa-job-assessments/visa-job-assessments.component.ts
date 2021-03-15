@@ -13,6 +13,8 @@ import {NationalityService} from '../../../../services/nationality.service';
 import {EducationLevelService} from '../../../../services/education-level.service';
 import {OccupationService} from '../../../../services/occupation.service';
 import {LanguageLevelService} from '../../../../services/language-level.service';
+import {CandidateNoteService} from "../../../../services/candidate-note.service";
+import {AuthService} from "../../../../services/auth.service";
 
 @Component({
   selector: 'app-visa-job-assessments',
@@ -39,10 +41,12 @@ export class VisaJobAssessmentsComponent extends IntakeComponentTabBase {
              educationLevelService: EducationLevelService,
              occupationService: OccupationService,
              languageLevelService: LanguageLevelService,
+             noteService: CandidateNoteService,
+             authService: AuthService,
              private candidateVisaCheckService: CandidateVisaCheckService,
              private modalService: NgbModal,
              private fb: FormBuilder) {
-    super(candidateService, countryService, nationalityService, educationLevelService, occupationService, languageLevelService)
+    super(candidateService, countryService, nationalityService, educationLevelService, occupationService, languageLevelService, noteService, authService)
   }
 
   onDataLoaded(init: boolean) {

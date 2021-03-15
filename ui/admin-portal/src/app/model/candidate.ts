@@ -222,10 +222,17 @@ export interface CandidateDestination {
 export interface CandidateVisaCheck {
   id?: number;
   country?: Country;
+  intProtection?: string;
+  healthAssessment: YesNo;
+  characterAssessment: YesNo;
+  securityAssessment: YesNo;
+  riskAssessment: YesNo;
+  travelDocument: string;
+  jobChecks?: CandidateJobCheck[]
   eligibility?: VisaEligibility;
   assessmentNotes?: string;
-  checkedBy?: User;
-  checkedDate?: string;
+  createdBy?: User;
+  createdDate?: number;
   updatedBy?: User;
   updatedDate?: number;
   protection?: YesNo;
@@ -233,6 +240,21 @@ export interface CandidateVisaCheck {
   tbbEligibilityAssessment?: TBBEligibilityAssessment;
 }
 
+//todo rename to CandidateVisaRoleCheck? something like that. Role specific checks.
+export interface CandidateJobCheck {
+  id?: number;
+  name?: string;
+  sfJobLink?: string;
+  jobOccupation?: Occupation;
+  salaryTsmit?: YesNo;
+  regionalArea?: YesNo;
+  jobInterest?: YesNo;
+  jobFamilyAus?: YesNo;
+  jobEligibilityAssess?: YesNo;
+  eligibility?: VisaEligibility;
+  employer?: string;
+  tbbEligibilityAssessment?: TBBEligibilityAssessment;
+}
 /*
   Enumerations. These should match equivalent enumerations on the server (Java)
   side.
@@ -443,6 +465,46 @@ export enum Registrations {
   UNHCRUNRWA = "UNHCR & UNRWA",
   Neither = "Neither",
   NA = "Not Applicable",
+}
+
+export enum TravelDocumentStatus {
+  NoResponse = "",
+  Valid = "Valid",
+  Expired = "Expired",
+  None = "None"
+}
+
+export enum RiskAssessment {
+  NoResponse = "",
+  Low = "Low Risk",
+  Medium = "Medium Risk",
+  High = "High Risk"
+}
+
+export enum TbbEligibility {
+  NoResponse = "",
+  Proceed = "Ready to proceed",
+  Discuss = "Needs discussion",
+  NotProceed = "Do not proceed"
+}
+
+export enum OtherVisas {
+  NoResponse = "",
+  TempSkilled = "482 temporary skilled (medium stream)",
+  SpecialHum = "202 (special humanitarian)",
+  OtherHum = "Other humanitarian (200, 201, 203)",
+  DirectEnt = "186 direct entry permanent stream",
+  PointsIndep = "189/190 points tested independant stream",
+}
+
+export enum Qualification {
+  NoResponse = "",
+  HighSchool = "High School",
+  Associates = "Associates",
+  Bachelors = "Bachelors",
+  Masters = "Masters",
+  PHD = "PHD",
+  Other = "Other"
 }
 
 export function getCandidateNavigation(candidate: Candidate): any[] {

@@ -20,7 +20,10 @@ import {NationalityService} from '../../../../../services/nationality.service';
 import {IntakeComponentTabBase} from '../../../../util/intake/IntakeComponentTabBase';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {CountryService} from '../../../../../services/country.service';
-import {CandidateVisaCheckService, CreateCandidateVisaCheckRequest} from '../../../../../services/candidate-visa-check.service';
+import {
+  CandidateVisaCheckService,
+  CreateCandidateVisaCheckRequest
+} from '../../../../../services/candidate-visa-check.service';
 import {Country} from '../../../../../model/country';
 import {HasNameSelectorComponent} from '../../../../util/has-name-selector/has-name-selector.component';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
@@ -37,8 +40,7 @@ import {AuthService} from '../../../../../services/auth.service';
   templateUrl: './candidate-visa-tab.component.html',
   styleUrls: ['./candidate-visa-tab.component.scss']
 })
-export class CandidateVisaTabComponent
-  extends IntakeComponentTabBase implements OnInit {
+export class CandidateVisaTabComponent extends IntakeComponentTabBase implements OnInit {
   form: FormGroup;
   selectedIndex: number;
   selectedCountry: string;
