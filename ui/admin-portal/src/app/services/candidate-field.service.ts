@@ -160,6 +160,13 @@ export class CandidateFieldService {
     return role !== 'limited';
   }
 
+  isIntakeTabsViewable(): boolean {
+    const loggedInUser =
+      this.authService ? this.authService.getLoggedInUser() : null;
+    const role = loggedInUser ? loggedInUser.role : null;
+    return role !== 'semilimited' && role !== 'limited';
+  }
+
   isDefault(fieldPaths: string[], longFormat: boolean) {
     if (fieldPaths == null) {
       return false;

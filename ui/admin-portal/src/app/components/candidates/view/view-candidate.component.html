@@ -144,32 +144,31 @@
         </ngb-tab>
 
         <!-- Mini Intake -->
-        <ngb-tab id="MiniIntake" [title]="'Mini Intake'">
+        <ngb-tab id="MiniIntake" [title]="'Mini Intake'" *ngIf="isIntakeTabsViewable()">
           <ng-template ngbTabContent>
             <app-candidate-mini-intake-tab
               [candidate]="candidate"
-
             >
             </app-candidate-mini-intake-tab>
           </ng-template>
         </ngb-tab>
 
         <!-- Intake -->
-        <ngb-tab id="Intake" [title]="'Intake'">
+        <ngb-tab id="Intake" [title]="'Intake'" *ngIf="isIntakeTabsViewable()">
           <ng-template ngbTabContent>
             <app-candidate-intake-tab
               [candidate]="candidate"
-              >
+            >
             </app-candidate-intake-tab>
           </ng-template>
         </ngb-tab>
 
         <!-- Visa eligibility -->
-        <ngb-tab id="Visa" [title]="'Visa'">
+        <ngb-tab id="Visa" [title]="'Visa'" *ngIf="isIntakeTabsViewable()">
           <ng-template ngbTabContent>
             <app-candidate-visa-tab
               [candidate]="candidate"
-              >
+            >
             </app-candidate-visa-tab>
           </ng-template>
         </ngb-tab>
