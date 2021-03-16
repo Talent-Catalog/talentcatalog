@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {IntakeComponentBase} from '../../../../util/intake/IntakeComponentBase';
 import {Occupation} from '../../../../../model/occupation';
-import {CandidateJobCheck, CandidateVisaCheck} from '../../../../../model/candidate';
+import {CandidateRoleCheck, CandidateVisaCheck} from '../../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../../services/candidate.service';
 
@@ -27,7 +27,7 @@ export class JobOccupationComponent extends IntakeComponentBase implements OnIni
     console.log(this.myRecord);
   }
 
-  private get myRecord(): CandidateJobCheck {
+  private get myRecord(): CandidateRoleCheck {
     return this.visaRecord ?
       this.visaRecord.jobChecks[this.selectedIndex]
       : null;

@@ -6,7 +6,7 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
-import {CandidateJobCheck} from '../model/candidate';
+import {CandidateRoleCheck} from '../model/candidate';
 
 export interface CreateCandidateVisaJobRequest {
   name: string;
@@ -21,8 +21,8 @@ export class CandidateVisaJobService {
   constructor(private http: HttpClient) {}
 
   create(candidateId: number, candidateVisaJobRequest: CreateCandidateVisaJobRequest):
-    Observable<CandidateJobCheck>  {
-    return this.http.post<CandidateJobCheck>(
+    Observable<CandidateRoleCheck>  {
+    return this.http.post<CandidateRoleCheck>(
       `${this.apiUrl}/${candidateId}`, candidateVisaJobRequest);
   }
 

@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {Candidate, CandidateIntakeData, CandidateJobCheck, CandidateVisaCheck} from '../../../../model/candidate';
+import {Candidate, CandidateIntakeData, CandidateRoleCheck, CandidateVisaCheck} from '../../../../model/candidate';
 import {Nationality} from '../../../../model/nationality';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {CandidateVisaCheckService} from '../../../../services/candidate-visa-check.service';
@@ -31,7 +31,7 @@ export class VisaJobAssessmentsComponent extends IntakeComponentTabBase {
   @Input() nationalities: Nationality[];
   saving: boolean;
   jobIndex: number;
-  selectedJobCheck: CandidateJobCheck;
+  selectedJobCheck: CandidateRoleCheck;
   currentYear: string;
   birthYear: string;
 
@@ -67,7 +67,7 @@ export class VisaJobAssessmentsComponent extends IntakeComponentTabBase {
         jobName: [this.jobIndex]
       });
 
-      this.changeJobOpp(null);
+      //this.changeJobOpp(null);
     }
   }
 

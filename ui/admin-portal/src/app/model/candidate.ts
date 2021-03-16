@@ -228,7 +228,7 @@ export interface CandidateVisaCheck {
   securityAssessment: YesNo;
   riskAssessment: YesNo;
   travelDocument: string;
-  jobChecks?: CandidateJobCheck[]
+  jobChecks?: CandidateRoleCheck[]
   eligibility?: VisaEligibility;
   assessmentNotes?: string;
   createdBy?: User;
@@ -241,7 +241,7 @@ export interface CandidateVisaCheck {
 }
 
 //todo rename to CandidateVisaRoleCheck? something like that. Role specific checks.
-export interface CandidateJobCheck {
+export interface CandidateRoleCheck {
   id?: number;
   name?: string;
   sfJobLink?: string;
