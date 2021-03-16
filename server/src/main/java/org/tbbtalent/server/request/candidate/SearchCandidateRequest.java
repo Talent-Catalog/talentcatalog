@@ -71,7 +71,6 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     private List<Long> educationMajorIds;
     private List<ReviewStatus> reviewStatusFilter;
     private boolean includeNew;
-    private Boolean includeDraftAndDeleted;
     private Boolean includeUploadedFiles;
     private LocalDate fromDate;
     private List<SearchJoinRequest> searchJoinRequests;
