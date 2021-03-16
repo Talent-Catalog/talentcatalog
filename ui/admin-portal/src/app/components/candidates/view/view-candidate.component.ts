@@ -37,6 +37,7 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 import {environment} from '../../../../environments/environment';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {CreateUpdateListComponent} from '../../list/create-update/create-update-list.component';
+import {CandidateFieldService} from "../../../services/candidate-field.service";
 
 @Component({
   selector: 'app-view-candidate',
@@ -83,6 +84,7 @@ export class ViewCandidateComponent implements OnInit {
               private modalService: NgbModal,
               private titleService: Title,
               private authService: AuthService,
+              private candidateFieldService: CandidateFieldService,
               private fb: FormBuilder) { }
 
   ngOnInit() {
@@ -281,5 +283,9 @@ export class ViewCandidateComponent implements OnInit {
   isCVViewable(): boolean {
     const role = this.loggedInUser ? this.loggedInUser.role : null;
     return role !== 'semilimited' && role !== 'limited';
+  }
+
+  isAnAdmin(): boolean {
+    return this.candidateFieldService.isAnAdmin();
   }
 }
