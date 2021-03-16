@@ -31,7 +31,7 @@
   </nav>
 
   <div>
-    <div class="float-right" *ngIf="loggedInUser.role === 'admin'">
+    <div class="float-right" *ngIf="isAnAdmin()">
       <div class="input-group">
         <input type="text" class="form-control" id="status" title="{{candidate.candidateMessage}}"
                value="{{candidate.status | titlecase}}" disabled>
@@ -145,7 +145,7 @@
         </ngb-tab>
 
         <!-- Mini Intake -->
-        <ngb-tab id="MiniIntake" [title]="'Mini Intake'" *ngIf="isIntakeTabsViewable()">
+        <ngb-tab id="MiniIntake" [title]="'Mini Intake'" *ngIf="isAnAdmin()">
           <ng-template ngbTabContent>
             <app-candidate-mini-intake-tab
               [candidate]="candidate"
@@ -155,7 +155,7 @@
         </ngb-tab>
 
         <!-- Intake -->
-        <ngb-tab id="Intake" [title]="'Intake'" *ngIf="isIntakeTabsViewable()">
+        <ngb-tab id="Intake" [title]="'Intake'" *ngIf="isAnAdmin()">
           <ng-template ngbTabContent>
             <app-candidate-intake-tab
               [candidate]="candidate"
@@ -165,7 +165,7 @@
         </ngb-tab>
 
         <!-- Visa eligibility -->
-        <ngb-tab id="Visa" [title]="'Visa'" *ngIf="isIntakeTabsViewable()">
+        <ngb-tab id="Visa" [title]="'Visa'" *ngIf="isAnAdmin()">
           <ng-template ngbTabContent>
             <app-candidate-visa-tab
               [candidate]="candidate"

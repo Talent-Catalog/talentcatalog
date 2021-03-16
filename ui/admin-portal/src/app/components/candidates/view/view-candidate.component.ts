@@ -285,7 +285,7 @@ export class ViewCandidateComponent implements OnInit {
     return role !== 'semilimited' && role !== 'limited';
   }
 
-  isIntakeTabsViewable(): boolean {
-    return this.candidateFieldService.isIntakeTabsViewable();
+  isAnAdmin(): boolean {
+    return this.candidateFieldService.isAnAdmin();
   }
 }

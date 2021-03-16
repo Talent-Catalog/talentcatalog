@@ -160,7 +160,7 @@ export class CandidateFieldService {
     return role !== 'limited';
   }
 
-  isIntakeTabsViewable(): boolean {
+  isAnAdmin(): boolean {
     const loggedInUser =
       this.authService ? this.authService.getLoggedInUser() : null;
     const role = loggedInUser ? loggedInUser.role : null;
