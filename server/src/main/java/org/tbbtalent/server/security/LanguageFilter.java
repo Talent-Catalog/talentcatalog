@@ -56,8 +56,8 @@ public class LanguageFilter extends OncePerRequestFilter {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication != null) {
                 Object principal = authentication.getPrincipal();
-                if (principal instanceof AuthenticatedUser) {
-                    User user = ((AuthenticatedUser) principal).getUser();
+                if (principal instanceof TbbUserDetails) {
+                    User user = ((TbbUserDetails) principal).getUser();
                     user.setSelectedLanguage(selectedLanguage);
                 }
             }
