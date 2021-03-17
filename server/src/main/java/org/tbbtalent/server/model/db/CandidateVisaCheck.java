@@ -23,6 +23,7 @@ import org.springframework.lang.Nullable;
 import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Getter
 @Setter
@@ -31,8 +32,6 @@ import javax.persistence.*;
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_visa_id_seq", allocationSize = 1)
 public class CandidateVisaCheck extends AbstractAuditableDomainObject<Long>
         implements Comparable<CandidateVisaCheck> {
-    
-    private String assessmentNotes;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_id")
@@ -52,6 +51,36 @@ public class CandidateVisaCheck extends AbstractAuditableDomainObject<Long>
 
     @Enumerated(EnumType.STRING)
     private TBBEligibilityAssessment tbbEligibilityAssessment;
+
+    @Enumerated(EnumType.STRING)
+    private YesNo healthAssessment;
+
+    private String healthAssessmentNotes;
+
+    @Enumerated(EnumType.STRING)
+    private YesNo characterAssessment;
+
+    private String characterAssessmentNotes;
+
+    @Enumerated(EnumType.STRING)
+    private YesNo securityRisk;
+
+    private String securityRiskNotes;
+
+    @Enumerated(EnumType.STRING)
+    private YesNo validTravelDocs;
+
+    private String validTravelDocsNotes;
+
+    @Enumerated(EnumType.STRING)
+    private RiskLevel overallRisk;
+
+    private String overallRiskNotes;
+
+    private String assessmentNotes;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate_role", cascade = CascadeType.ALL)
+    private List<CandidateRoleCheck> candidateRoleChecks;
 
     public CandidateVisaCheck() {
     }
