@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {IntakeComponentTabBase} from '../../../../../util/intake/IntakeComponentTabBase';
 import {CandidateVisaCheck} from '../../../../../../model/candidate';
 
@@ -23,9 +23,21 @@ import {CandidateVisaCheck} from '../../../../../../model/candidate';
   templateUrl: './visa-check-au.component.html',
   styleUrls: ['./visa-check-au.component.scss']
 })
-export class VisaCheckAuComponent extends IntakeComponentTabBase {
+export class VisaCheckAuComponent extends IntakeComponentTabBase implements OnInit {
   @Input() selectedIndex: number;
   @Input() visaRecord: CandidateVisaCheck;
+
+  ngOnInit() {
+    // this.form = this.fb.group({
+    //   dependantId: [this.myRecord?.id],
+    //   dependantRelation: [this.myRecord?.relation],
+    //   dependantDob: [this.myRecord?.dob],
+    //   dependantName: [this.myRecord?.name],
+    //   dependantRegistered: [this.myRecord?.registered],
+    //   dependantHealthConcerns: [this.myRecord?.healthConcern],
+    //   dependantNotes: [this.myRecord?.notes],
+    // });
+  }
 
   private get myRecord(): CandidateVisaCheck {
     return this.candidateIntakeData.candidateVisaChecks ?

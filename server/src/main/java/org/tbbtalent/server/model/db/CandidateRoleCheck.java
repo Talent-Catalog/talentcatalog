@@ -35,9 +35,10 @@ public class CandidateRoleCheck extends AbstractAuditableDomainObject<Long> {
     @JoinColumn(name = "candidate_id")
     private Candidate candidate;
 
+    //todo rename column to candidate visa id in a flyway
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_visa_id")
-    private CandidateVisaCheck candidateVisaChecks;
+    private CandidateVisaCheck candidateVisa;
 
     @Enumerated(EnumType.STRING)
     private YesNo interest;

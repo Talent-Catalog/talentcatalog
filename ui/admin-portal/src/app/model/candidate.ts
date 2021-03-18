@@ -222,22 +222,28 @@ export interface CandidateDestination {
 export interface CandidateVisaCheck {
   id?: number;
   country?: Country;
-  intProtection?: string;
-  healthAssessment: YesNo;
-  characterAssessment: YesNo;
-  securityAssessment: YesNo;
-  riskAssessment: YesNo;
-  travelDocument: string;
-  jobChecks?: CandidateRoleCheck[]
   eligibility?: VisaEligibility;
   assessmentNotes?: string;
+  protection?: YesNo;
+  protectionGrounds?: string;
+  tbbEligibilityAssessment?: TBBEligibilityAssessment;
+  healthAssessment: YesNo;
+  healthAssessmentNotes: string;
+  characterAssessment: YesNo;
+  characterAssessmentNotes: string;
+  securityRisk: YesNo;
+  securityRiskNotes: string;
+  validTravelDocs: YesNo;
+  validTravelDocsNotes: string;
+  overallRisk: string;
+  overallRiskNotes: string;
+  jobChecks?: CandidateRoleCheck[]
+  intProtection?: string;
   createdBy?: User;
   createdDate?: number;
   updatedBy?: User;
   updatedDate?: number;
-  protection?: YesNo;
-  protectionGrounds?: string;
-  tbbEligibilityAssessment?: TBBEligibilityAssessment;
+
 }
 
 //todo rename to CandidateVisaRoleCheck? something like that. Role specific checks.

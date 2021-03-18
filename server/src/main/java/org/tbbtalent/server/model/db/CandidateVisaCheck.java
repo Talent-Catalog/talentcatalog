@@ -79,7 +79,7 @@ public class CandidateVisaCheck extends AbstractAuditableDomainObject<Long>
 
     private String assessmentNotes;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate_role", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidateVisa", cascade = CascadeType.ALL)
     private List<CandidateRoleCheck> candidateRoleChecks;
 
     public CandidateVisaCheck() {
