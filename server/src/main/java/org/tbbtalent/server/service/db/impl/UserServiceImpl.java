@@ -477,10 +477,10 @@ public class UserServiceImpl implements UserService {
         User user = getLoggedInUser();
         if (user.getUsingMfa()) {
             if (mfaCode == null || mfaCode.length() == 0) {
-                throw new InvalidCredentialsException("You need to enter an MFA code for this user");
+                throw new InvalidCredentialsException("You need to enter a TOTP code for this user");
             }
             if (!totpVerifier.isValidCode(user.getMfaSecret(), mfaCode)) {
-                throw new InvalidCredentialsException("Incorrect MFA code - try again");
+                throw new InvalidCredentialsException("Incorrect TOTP code - try again");
             }
         }
     }
