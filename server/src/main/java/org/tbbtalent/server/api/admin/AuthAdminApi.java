@@ -52,16 +52,20 @@ public class AuthAdminApi {
             throws AccountLockedException, PasswordExpiredException, InvalidCredentialsException,
             InvalidPasswordFormatException {
 
-        final String reCaptchaV3Token = request.getReCaptchaV3Token();
-        if (reCaptchaV3Token != null) {
-            //Do check for automated logins. Throws exception if it looks
-            //automated.
-            captchaService.processCaptchaV3Token(reCaptchaV3Token, "login");
-        }
-
         JwtAuthenticationResponse response = this.userService.login(request);
 
-        userService.mfaVerify(request.getTotpToken());
+        //If we are using mfa don't worry about Captcha stuff
+        //It is sometimes not reliable (especially in test from localhost) - and unnecessary with MFA
+        if (response.getUser().getUsingMfa()) {
+            userService.mfaVerify(request.getTotpToken());
+        } else {
+            final String reCaptchaV3Token = request.getReCaptchaV3Token();
+            if (reCaptchaV3Token != null) {
+                //Do check for automated logins. Throws exception if it looks
+                //automated.
+                captchaService.processCaptchaV3Token(reCaptchaV3Token, "login");
+            }
+        }
 
         return jwtDto().build(response);
     }
