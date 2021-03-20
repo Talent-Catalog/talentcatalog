@@ -198,6 +198,7 @@ import {DependantsCardComponent} from './components/candidates/intake/dependants
 import {LangAssessmentComponent} from './components/candidates/intake/lang-assessment/lang-assessment.component';
 import {ExtendDatePipe} from './util/date-adapter/extend-date-pipe';
 import {DatePickerComponent} from './components/util/date-picker/date-picker.component';
+import { ShowQrCodeComponent } from './components/util/qr/show-qr-code/show-qr-code.component';
 
 @NgModule({
   declarations: [
@@ -372,7 +373,8 @@ import {DatePickerComponent} from './components/util/date-picker/date-picker.com
     DependantsCardComponent,
     LangAssessmentComponent,
     ExtendDatePipe,
-    DatePickerComponent
+    DatePickerComponent,
+    ShowQrCodeComponent
   ],
   imports: [
     BrowserModule,

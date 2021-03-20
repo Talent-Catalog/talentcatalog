@@ -29,6 +29,11 @@ import {
   tap
 } from "rxjs/operators";
 import {User} from "../../model/user";
+import {CreateUpdateListComponent} from "../list/create-update/create-update-list.component";
+import {SavedList} from "../../model/saved-list";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {ShowQrCodeComponent} from "../util/qr/show-qr-code/show-qr-code.component";
+import {EncodedQrImage} from "../../util/qr";
 
 @Component({
   selector: 'app-header',
@@ -49,6 +54,7 @@ export class HeaderComponent implements OnInit {
 
   constructor(private authService: AuthService,
               private candidateService: CandidateService,
+              private modalService: NgbModal,
               private router: Router) { }
 
   ngOnInit() {
@@ -146,4 +152,18 @@ export class HeaderComponent implements OnInit {
     return role === 'semilimited' || role === 'limited';
   }
 
+  mfaSetup() {
+    this.authService.mfaSetup().subscribe(
+      (qr: EncodedQrImage) => { this.showQrCode(qr)}
+    )
+
+  }
+
+  showQrCode(qr: EncodedQrImage) {
+    const modal = this.modalService.open(ShowQrCodeComponent);
+    modal.componentInstance.qr = qr;
+    modal.result
+    .then(() => {})
+    .catch(() => {});
+  }
 }

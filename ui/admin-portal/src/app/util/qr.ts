@@ -14,22 +14,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Country} from "./country";
-
-export interface User {
-  id: number;
-  username: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: string;
-  readOnly: boolean;
-  sourceCountries: Country[];
-  status: string;
-  createdDate: number;
-  updatedDate: number;
-  lastLogin: number;
-  usingMfa: boolean;
+/**
+ * QR code image, encoded as Base64 string.
+ * <p/>
+ * Can be displayed as described here:
+ * https://www.w3docs.com/snippets/html/how-to-display-base64-images-in-html.html
+ *
+ * @author John Cameron
+ */
+export interface EncodedQrImage {
+  base64Encoding: string;
 }
-
-

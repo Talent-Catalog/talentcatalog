@@ -47,7 +47,8 @@ export class LoginComponent implements OnInit {
 
     this.loginForm = this.builder.group({
       username: ['', Validators.required],
-      password: ['', Validators.required]
+      password: ['', Validators.required],
+      totpToken: ['']
     })
   }
 
@@ -57,6 +58,10 @@ export class LoginComponent implements OnInit {
 
   get password(): string {
     return this.loginForm.value.password;
+  }
+
+  get totpToken(): string {
+    return this.loginForm.value.totpToken;
   }
 
   login() {
@@ -84,6 +89,7 @@ export class LoginComponent implements OnInit {
     const req: LoginRequest = new LoginRequest();
     req.username = this.username;
     req.password = this.password;
+    req.totpToken = this.totpToken;
     req.reCaptchaV3Token = token;
 
     this.authService.login(req)

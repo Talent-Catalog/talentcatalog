@@ -17,9 +17,7 @@
 package org.tbbtalent.server.api.admin;
 
 import java.util.Map;
-
 import javax.security.auth.login.AccountLockedException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +32,7 @@ import org.tbbtalent.server.response.JwtAuthenticationResponse;
 import org.tbbtalent.server.service.db.CaptchaService;
 import org.tbbtalent.server.service.db.UserService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
+import org.tbbtalent.server.util.qr.EncodedQrImage;
 
 @RestController()
 @RequestMapping("/api/admin/auth")
@@ -61,6 +60,9 @@ public class AuthAdminApi {
         }
 
         JwtAuthenticationResponse response = this.userService.login(request);
+
+        userService.mfaVerify(request.getTotpToken());
+
         return jwtDto().build(response);
     }
 
@@ -70,6 +72,26 @@ public class AuthAdminApi {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Sets up Multi Factor Authentication (MFA) in the form of a 
+     * Time based One Time Password (TOTP).
+     * <p/>
+     * Generates a new secret key (hence POST rather than GET) and returns a Base64 encoded 
+     * QRCode image which can be displayed as described here:
+     * https://www.w3docs.com/snippets/html/how-to-display-base64-images-in-html.html
+     * @return EncodedQrImage
+     */
+    @PostMapping("mfa-setup")
+    public Map<String, Object> mfaSetup() {
+        EncodedQrImage qr = userService.mfaSetup();
+        return qrDto().build(qr);
+    }
+
+    DtoBuilder qrDto() {
+        return new DtoBuilder()
+                .add("base64Encoding")
+                ;
+    }
 
     DtoBuilder jwtDto() {
         return new DtoBuilder()
@@ -88,6 +110,7 @@ public class AuthAdminApi {
                 .add("readOnly")
                 .add("firstName")
                 .add("lastName")
+                .add("usingMfa")
                 ;
     }
 }
