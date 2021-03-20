@@ -90,7 +90,7 @@ export class SearchUsersComponent implements OnInit {
 /* SEARCH FORM */
   search() {
     this.loading = true;
-    let request = this.searchForm.value;
+    const request = this.searchForm.value;
     request.pageNumber = this.pageNumber - 1;
     request.pageSize =  this.pageSize;
     this.userService.search(request).subscribe(results => {
@@ -119,11 +119,11 @@ export class SearchUsersComponent implements OnInit {
     editUserModal.componentInstance.userId = user.id;
 
     editUserModal.result
-      .then((user) => {
+      .then((updatedUser) => {
         this.search()
         // UPDATES VIEW IF LOGGED IN ADMIN USER CHANGES ROLE THEMSELVES
-        if(this.loggedInUser.id === user.id){
-          this.authService.setNewLoggedInUser(user);
+        if (this.loggedInUser.id === updatedUser.id){
+          this.authService.setNewLoggedInUser(updatedUser);
           this.getLoggedInUser();
         }
       })
@@ -136,13 +136,13 @@ export class SearchUsersComponent implements OnInit {
       backdrop: 'static'
     });
 
-    deleteUserModal.componentInstance.message = 'Are you sure you want to delete '+user.username;
+    deleteUserModal.componentInstance.message = 'Are you sure you want to delete ' + user.username;
 
     deleteUserModal.result
       .then((result) => {
         if (result === true) {
           this.userService.delete(user.id).subscribe(
-            (user) => {
+            (done) => {
               this.loading = false;
               this.search();
             },
@@ -165,7 +165,7 @@ export class SearchUsersComponent implements OnInit {
     updatePasswordModal.componentInstance.user = user;
 
     updatePasswordModal.result
-      .then((user) => console.log('password updated'))
+      .then(() => console.log('password updated'))
       .catch(() => { /* Isn't possible */ });
 
   }
@@ -179,7 +179,7 @@ export class SearchUsersComponent implements OnInit {
     updateUsernameModal.componentInstance.user = user;
 
     updateUsernameModal.result
-      .then((user) => {
+      .then(() => {
           this.loading = false;
           this.search();
         },
