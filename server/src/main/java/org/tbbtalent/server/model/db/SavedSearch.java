@@ -79,7 +79,6 @@ public class SavedSearch extends AbstractCandidateSource {
     private Integer minEducationLevel;
     private String educationMajorIds;
 
-    private Boolean includeDraftAndDeleted;
     private Boolean reviewable = false;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "savedSearch", cascade = CascadeType.MERGE)
@@ -457,14 +456,6 @@ public class SavedSearch extends AbstractCandidateSource {
                 log.error("Bad type '" + type + "' of saved search " + getId(), ex);
             }
         }
-    }
-
-    public Boolean getIncludeDraftAndDeleted() {
-        return includeDraftAndDeleted;
-    }
-
-    public void setIncludeDraftAndDeleted(Boolean includeDraftAndDeleted) {
-        this.includeDraftAndDeleted = includeDraftAndDeleted;
     }
     
     public Boolean getReviewable() {

@@ -126,11 +126,13 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
   notElastic;
 
   statuses: { id: string, name: string }[] = [
-    {id: 'pending', name: 'pending'},
-    {id: 'incomplete', name: 'incomplete'},
-    {id: 'employed', name: 'employed'},
-    {id: 'active', name: 'active'},
-    {id: 'inactive', name: 'inactive'},
+    {id: 'pending', name: 'Pending'},
+    {id: 'incomplete', name: 'Incomplete'},
+    {id: 'employed', name: 'Employed'},
+    {id: 'active', name: 'Active'},
+    {id: 'inactive', name: 'Inactive'},
+    {id: 'draft', name: 'Draft'},
+    {id: 'deleted', name: 'Deleted'},
   ];
 
   selectedCandidate: Candidate;
@@ -193,7 +195,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       educationMajors: [[]],
       nationalities: [[]],
       statusesDisplay: [[]],
-      includeDraftAndDeleted: [false],
       includeUploadedFiles: [false]}, {validator: this.validateDuplicateSearches('savedSearchId')});
   }
 
