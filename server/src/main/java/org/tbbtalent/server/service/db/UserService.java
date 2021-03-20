@@ -62,8 +62,6 @@ public interface UserService {
 
     User removeFromSharedWithUser(long id, UpdateSharingRequest request);
 
-    //TODO JC Admins need to be able to enable/disable mfa for a user
-    
     /**
      * Sets up a Multi Factor Authorization (MFA) using Time based One Time Password (TOTP),
      * creating a new secret and its corresponding QR Code to be displayed to a user.
