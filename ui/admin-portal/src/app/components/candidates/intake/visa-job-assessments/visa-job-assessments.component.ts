@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {Candidate, CandidateIntakeData, CandidateRoleCheck, CandidateVisaCheck} from '../../../../model/candidate';
+import {Candidate, CandidateIntakeData, CandidateVisa, CandidateVisaJob} from '../../../../model/candidate';
 import {Nationality} from '../../../../model/nationality';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {CandidateVisaCheckService} from '../../../../services/candidate-visa-check.service';
@@ -25,13 +25,13 @@ export class VisaJobAssessmentsComponent extends IntakeComponentTabBase {
 
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
-  @Input() visaRecord: CandidateVisaCheck;
+  @Input() visaRecord: CandidateVisa;
   loading: boolean;
   form: FormGroup;
   @Input() nationalities: Nationality[];
   saving: boolean;
   jobIndex: number;
-  selectedJobCheck: CandidateRoleCheck;
+  selectedJobCheck: CandidateVisaJob;
   currentYear: string;
   birthYear: string;
 
@@ -51,21 +51,23 @@ export class VisaJobAssessmentsComponent extends IntakeComponentTabBase {
 
   onDataLoaded(init: boolean) {
     if (init) {
-       this.visaRecord.jobChecks = [{
-         name: 'Accountant - NAB'
-       }, {
-         name: 'Chartered Accountant - Comm Bank'
-       }]
-      this.currentYear = new Date().getFullYear().toString();
-      this.birthYear = this.candidate.dob.toString().slice(0, 4);
+      if (this.visaRecord) {
+        this.visaRecord.jobChecks = [{
+          name: 'Accountant - NAB'
+        }, {
+          name: 'Chartered Accountant - Comm Bank'
+        }]
+        this.currentYear = new Date().getFullYear().toString();
+        this.birthYear = this.candidate.dob.toString().slice(0, 4);
 
-      //If we have some visa checks, select the first one
-      if (this.visaRecord?.jobChecks.length > 0) {
-        this.jobIndex = 0;
+        //If we have some visa checks, select the first one
+        if (this.visaRecord?.jobChecks.length > 0) {
+          this.jobIndex = 0;
+        }
+        this.form = this.fb.group({
+          jobName: [this.jobIndex]
+        });
       }
-      this.form = this.fb.group({
-        jobName: [this.jobIndex]
-      });
 
       //this.changeJobOpp(null);
     }
@@ -107,7 +109,7 @@ export class VisaJobAssessmentsComponent extends IntakeComponentTabBase {
 
   deleteRecord(i: number) {
     const confirmationModal = this.modalService.open(ConfirmationComponent);
-    const visaCheck: CandidateVisaCheck = this.candidateIntakeData.candidateVisaChecks[i];
+    const visaCheck: CandidateVisa = this.candidateIntakeData.candidateVisaChecks[i];
 
     confirmationModal.componentInstance.message =
       "Are you sure you want to delete the visa check for " + visaCheck.country.name;
@@ -120,7 +122,7 @@ export class VisaJobAssessmentsComponent extends IntakeComponentTabBase {
       .catch(() => {});
   }
 
-  private doDelete(i: number, visaCheck: CandidateVisaCheck) {
+  private doDelete(i: number, visaCheck: CandidateVisa) {
     this.loading = true;
     // this.candidateVisaCheckService.delete(visaCheck.id).subscribe(
     //   (done) => {

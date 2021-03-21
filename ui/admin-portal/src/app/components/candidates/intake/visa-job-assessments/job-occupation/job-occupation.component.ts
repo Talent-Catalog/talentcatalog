@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {IntakeComponentBase} from '../../../../util/intake/IntakeComponentBase';
 import {Occupation} from '../../../../../model/occupation';
-import {CandidateRoleCheck, CandidateVisaCheck} from '../../../../../model/candidate';
+import {CandidateVisa, CandidateVisaJob} from '../../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../../services/candidate.service';
 
@@ -14,7 +14,7 @@ export class JobOccupationComponent extends IntakeComponentBase implements OnIni
 
   @Input() occupations: Occupation[];
   @Input() selectedIndex: number;
-  @Input() visaRecord: CandidateVisaCheck;
+  @Input() visaRecord: CandidateVisa;
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
@@ -27,7 +27,7 @@ export class JobOccupationComponent extends IntakeComponentBase implements OnIni
     console.log(this.myRecord);
   }
 
-  private get myRecord(): CandidateRoleCheck {
+  private get myRecord(): CandidateVisaJob {
     return this.visaRecord ?
       this.visaRecord.jobChecks[this.selectedIndex]
       : null;

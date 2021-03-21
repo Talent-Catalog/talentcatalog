@@ -1817,10 +1817,10 @@ public class CandidateServiceImpl implements CandidateService {
 
         //If there is a non null visa country, that means that this
         //is a visa check update.
-        final Long visaCountryId = data.getVisaCountryId();
-        if (visaCountryId != null) {
+        final Long visaId = data.getVisaId();
+        if (visaId != null) {
             candidateVisaService
-                    .updateIntakeData(visaCountryId, candidate, data);
+                    .updateIntakeData(visaId, candidate, data);
         }
 
         //If there is a non null exam type, that means that this

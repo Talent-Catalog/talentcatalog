@@ -22,7 +22,6 @@ import lombok.ToString;
 import org.tbbtalent.server.model.db.*;
 
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.util.List;
 
 /**
@@ -164,14 +163,20 @@ public class CandidateIntakeDataUpdate {
 
     //Corresponds to CandidateVisaCheck fields
     private Long visaId;
-    private String visaAssessmentNotes;
     private Long visaCountryId;
-    private VisaEligibility visaEligibility;
-    private OffsetDateTime visaCreatedDate;
-    private Long visaCreatedById;
     private YesNo visaProtection;
     private String visaProtectionGrounds;
     private TBBEligibilityAssessment visaTbbEligibilityAssessment;
+    private YesNo visaHealthAssessment;
+    private String visaHealthAssessmentNotes;
+    private YesNo visaCharacterAssessment;
+    private String visaCharacterAssessmentNotes;
+    private YesNo visaSecurityRisk;
+    private String visaSecurityRiskNotes;
+    private YesNo visaValidTravelDocs;
+    private String visaValidTravelDocsNotes;
+    private YesNo visaOverallRisk;
+    private String visaOverallRiskNotes;
 
     private YesNoUnsure visaReject;
     private String visaRejectNotes;

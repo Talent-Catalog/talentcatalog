@@ -12,7 +12,7 @@
     <div *ngIf="error">
       {{error}}
     </div>
-    <div *ngIf="visaRecord.jobChecks">
+    <div *ngIf="visaRecord?.jobChecks">
         <form [formGroup]="form">
           <div *ngFor="let jobOpportunity of visaRecord.jobChecks; let i = index;">
             <div class="form-group align-items-center">

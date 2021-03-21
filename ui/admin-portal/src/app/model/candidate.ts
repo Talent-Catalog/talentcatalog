@@ -73,7 +73,7 @@ export interface CandidateIntakeData {
 
   candidateDestinations?: CandidateDestination[];
 
-  candidateVisaChecks?: CandidateVisaCheck[];
+  candidateVisaChecks?: CandidateVisa[];
 
   candidateExams?: CandidateExam[];
 
@@ -219,7 +219,7 @@ export interface CandidateDestination {
   notes?: string;
 }
 
-export interface CandidateVisaCheck {
+export interface CandidateVisa {
   id?: number;
   country?: Country;
   eligibility?: VisaEligibility;
@@ -237,7 +237,7 @@ export interface CandidateVisaCheck {
   validTravelDocsNotes: string;
   overallRisk: string;
   overallRiskNotes: string;
-  jobChecks?: CandidateRoleCheck[]
+  jobChecks?: CandidateVisaJob[]
   intProtection?: string;
   createdBy?: User;
   createdDate?: number;
@@ -247,7 +247,7 @@ export interface CandidateVisaCheck {
 }
 
 //todo rename to CandidateVisaRoleCheck? something like that. Role specific checks.
-export interface CandidateRoleCheck {
+export interface CandidateVisaJob {
   id?: number;
   name?: string;
   sfJobLink?: string;

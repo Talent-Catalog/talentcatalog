@@ -87,11 +87,11 @@ public class CandidateVisaServiceImpl implements CandidateVisaService {
 
     @Override
     public void updateIntakeData(
-            Long countryId, @NonNull Candidate candidate, 
+            Long visaId, @NonNull Candidate candidate,
             CandidateIntakeDataUpdate data) throws NoSuchObjectException {
-        if (countryId != null) {
-            Country country = countryRepository.findById(countryId)
-                    .orElseThrow(() -> new NoSuchObjectException(Country.class, countryId));
+        if (data.getVisaCountryId() != null) {
+            Country country = countryRepository.findById(data.getVisaCountryId())
+                    .orElseThrow(() -> new NoSuchObjectException(Country.class, data.getVisaCountryId()));
 
             User createdBy = null;
             final Long createdById = data.getVisaCreatedById();
@@ -101,9 +101,8 @@ public class CandidateVisaServiceImpl implements CandidateVisaService {
             }
             
             CandidateVisaCheck cv;
-            Long id = data.getVisaId();
-            cv = candidateVisaRepository.findById(id)
-                    .orElseThrow(() -> new NoSuchObjectException(CandidateVisaCheck.class, id));
+            cv = candidateVisaRepository.findById(visaId)
+                    .orElseThrow(() -> new NoSuchObjectException(CandidateVisaCheck.class, visaId));
             cv.populateIntakeData(candidate, country, data, createdBy);
             candidateVisaRepository.save(cv);
         }

@@ -29,36 +29,15 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @Entity
-@Table(name = "candidate_visa")
-@SequenceGenerator(name = "seq_gen", sequenceName = "candidate_visa_id_seq", allocationSize = 1)
-public class CandidateVisaCheck extends CandidateVisaCheckBase {
+@Table(name = "candidate_role")
+@SequenceGenerator(name = "seq_gen", sequenceName = "candidate_role_id_seq", allocationSize = 1)
+public class CandidateVisaJobCheck extends CandidateVisaJobCheckBase {
 
     public void populateIntakeData(
             @NonNull Candidate candidate, @NonNull Country country,
             CandidateIntakeDataUpdate data, @Nullable User createdBy) {
         setCandidate(candidate);
-        setCountry(country);
-        if (createdBy != null) {
-            setCreatedBy(createdBy);
-        }
-        if (data.getVisaAssessmentNotes() != null) {
-            setAssessmentNotes(data.getVisaAssessmentNotes());
-        }
-        if (data.getVisaTbbEligibilityAssessment() != null) {
-            setTbbEligibilityAssessment(data.getVisaTbbEligibilityAssessment());
-        }
-        if (data.getVisaCreatedDate() != null) {
-            setCreatedDate(data.getVisaCreatedDate());
-        }
-        if (data.getVisaProtection() != null) {
-            setProtection(data.getVisaProtection());
-        }
-        if (data.getVisaProtectionGrounds() != null) {
-            setProtectionGrounds(data.getVisaProtectionGrounds());
-        }
-        if (data.getVisaTbbEligibilityAssessment() != null) {
-            setTbbEligibilityAssessment(data.getVisaTbbEligibilityAssessment());
-        }
+
     }
     
 }

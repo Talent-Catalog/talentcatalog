@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CandidateRoleCheck, CandidateVisaCheck} from '../../../../../model/candidate';
+import {CandidateVisa, CandidateVisaJob} from '../../../../../model/candidate';
 import {IntakeComponentTabBase} from '../../../../util/intake/IntakeComponentTabBase';
 
 @Component({
@@ -10,7 +10,7 @@ import {IntakeComponentTabBase} from '../../../../util/intake/IntakeComponentTab
 export class VisaJobAssessmentCaComponent extends IntakeComponentTabBase implements OnInit {
 
   @Input() jobIndex: number;
-  @Input() visaRecord: CandidateVisaCheck;
+  @Input() visaRecord: CandidateVisa;
 
   get currentYear(): string {
     return new Date().getFullYear().toString();
@@ -20,7 +20,7 @@ export class VisaJobAssessmentCaComponent extends IntakeComponentTabBase impleme
     return this.candidate.dob.toString().slice(0, 4);
   }
 
-  get myRecord(): CandidateRoleCheck {
+  get myRecord(): CandidateVisaJob {
     return this.visaRecord.jobChecks ? this.visaRecord.jobChecks[this.jobIndex] : null;
   }
 }

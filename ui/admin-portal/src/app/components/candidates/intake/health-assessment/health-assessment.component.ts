@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../util/enum';
-import {CandidateVisaCheck, YesNo} from '../../../../model/candidate';
+import {CandidateVisa, YesNo} from '../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
@@ -23,13 +23,13 @@ export class HealthAssessmentComponent extends IntakeComponentBase implements On
     this.form = this.fb.group({
       visaId: [this.myRecord?.id],
       visaCountryId: [this.myRecord?.country?.id],
-      healthAssessment: [this.myRecord?.eligibility],
+      healthAssessment: [this.myRecord?.healthAssessment],
       visaAssessmentNotes: [this.myRecord?.assessmentNotes],
     });
   }
 
-  private get myRecord(): CandidateVisaCheck {
-    return this.candidateIntakeData.candidateVisaChecks ?
+  private get myRecord(): CandidateVisa {
+    return this.candidateIntakeData?.candidateVisaChecks ?
       this.candidateIntakeData.candidateVisaChecks[this.myRecordIndex]
       : null;
   }

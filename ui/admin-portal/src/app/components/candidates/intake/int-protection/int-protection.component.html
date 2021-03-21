@@ -3,7 +3,7 @@
 </div>
 <form [formGroup]="form">
   <div class="form-group">
-    <label for="intProtection">Is candidate in need of international protection? On what grounds? (refer to <a href="https://drive.google.com/file/d/1U1KjoOXlITTWaucNvJXQSh9movNWEPTu/view" target="_blank">TBB eligibility policy</a>)</label>
+    <label for="visaProtectionGrounds">Is candidate in need of international protection? On what grounds? (refer to <a href="https://drive.google.com/file/d/1U1KjoOXlITTWaucNvJXQSh9movNWEPTu/view" target="_blank">TBB eligibility policy</a>)</label>
     <div class="float-right">
       <app-autosave-status
         [saving]="saving"
@@ -11,7 +11,7 @@
       </app-autosave-status>
     </div>
     <textarea type="text" class="md-textarea-auto form-control" rows="4"
-              id="intProtection" [formControlName]="'intProtection'"
+              id="visaProtectionGrounds" [formControlName]="'visaProtectionGrounds'"
               placeholder="" ></textarea>
   </div>
 </form>

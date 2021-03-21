@@ -28,7 +28,7 @@ import {Country} from '../../../../../model/country';
 import {HasNameSelectorComponent} from '../../../../util/has-name-selector/has-name-selector.component';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ConfirmationComponent} from '../../../../util/confirm/confirmation.component';
-import {CandidateVisaCheck} from '../../../../../model/candidate';
+import {CandidateVisa} from '../../../../../model/candidate';
 import {EducationLevelService} from '../../../../../services/education-level.service';
 import {OccupationService} from '../../../../../services/occupation.service';
 import {LanguageLevelService} from '../../../../../services/language-level.service';
@@ -131,7 +131,7 @@ export class CandidateVisaTabComponent extends IntakeComponentTabBase implements
 
   deleteRecord(i: number) {
     const confirmationModal = this.modalService.open(ConfirmationComponent);
-    const visaCheck: CandidateVisaCheck = this.candidateIntakeData.candidateVisaChecks[i];
+    const visaCheck: CandidateVisa = this.candidateIntakeData.candidateVisaChecks[i];
 
     confirmationModal.componentInstance.message =
       "Are you sure you want to delete the visa check for " + visaCheck.country.name;
@@ -144,7 +144,7 @@ export class CandidateVisaTabComponent extends IntakeComponentTabBase implements
       .catch(() => {});
   }
 
-  private doDelete(i: number, visaCheck: CandidateVisaCheck) {
+  private doDelete(i: number, visaCheck: CandidateVisa) {
     this.loading = true;
     this.candidateVisaCheckService.delete(visaCheck.id).subscribe(
       (done) => {
@@ -162,6 +162,10 @@ export class CandidateVisaTabComponent extends IntakeComponentTabBase implements
     this.selectedIndex = this.form.controls.visaCountry.value;
     this.selectedCountry = this.candidateIntakeData
       .candidateVisaChecks[this.selectedIndex]?.country?.name;
+  }
+
+  getVisaCheck(countryName: string): CandidateVisa {
+    return this.candidateIntakeData?.candidateVisaChecks?.find(check => check.country.name == countryName);
   }
 
 }

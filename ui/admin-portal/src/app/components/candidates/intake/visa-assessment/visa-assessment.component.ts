@@ -18,7 +18,7 @@ import {Component, OnInit} from '@angular/core';
 import {IntakeComponentBase} from "../../../util/intake/IntakeComponentBase";
 import {FormBuilder} from "@angular/forms";
 import {CandidateService} from "../../../../services/candidate.service";
-import {CandidateVisaCheck, VisaEligibility} from "../../../../model/candidate";
+import {CandidateVisa, VisaEligibility} from "../../../../model/candidate";
 import {EnumOption, enumOptions} from "../../../../util/enum";
 
 @Component({
@@ -44,7 +44,7 @@ export class VisaAssessmentComponent extends IntakeComponentBase implements OnIn
     });
   }
 
-  private get myRecord(): CandidateVisaCheck {
+  private get myRecord(): CandidateVisa {
     return this.candidateIntakeData.candidateVisaChecks ?
       this.candidateIntakeData.candidateVisaChecks[this.myRecordIndex]
       : null;

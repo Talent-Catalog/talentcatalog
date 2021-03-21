@@ -16,7 +16,7 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {IntakeComponentTabBase} from '../../../../../util/intake/IntakeComponentTabBase';
-import {CandidateVisaCheck} from '../../../../../../model/candidate';
+import {CandidateVisa} from '../../../../../../model/candidate';
 
 @Component({
   selector: 'app-visa-check-au',
@@ -25,23 +25,10 @@ import {CandidateVisaCheck} from '../../../../../../model/candidate';
 })
 export class VisaCheckAuComponent extends IntakeComponentTabBase implements OnInit {
   @Input() selectedIndex: number;
-  @Input() visaRecord: CandidateVisaCheck;
+  @Input() visaRecord: CandidateVisa;
 
   ngOnInit() {
-    // this.form = this.fb.group({
-    //   dependantId: [this.myRecord?.id],
-    //   dependantRelation: [this.myRecord?.relation],
-    //   dependantDob: [this.myRecord?.dob],
-    //   dependantName: [this.myRecord?.name],
-    //   dependantRegistered: [this.myRecord?.registered],
-    //   dependantHealthConcerns: [this.myRecord?.healthConcern],
-    //   dependantNotes: [this.myRecord?.notes],
-    // });
+    console.log(this.selectedIndex)
   }
 
-  private get myRecord(): CandidateVisaCheck {
-    return this.candidateIntakeData.candidateVisaChecks ?
-      this.candidateIntakeData.candidateVisaChecks[this.selectedIndex]
-      : null;
-  }
 }

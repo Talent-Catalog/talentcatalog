@@ -16,7 +16,9 @@ export class IntProtectionComponent extends IntakeComponentBase implements OnIni
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      intProtection: [null],
+      visaId: [this.visaCheckRecord?.id],
+      visaCountryId: [this.visaCheckRecord?.country.id],
+      visaProtectionGrounds: [this.visaCheckRecord?.protectionGrounds],
     });
   }
 
