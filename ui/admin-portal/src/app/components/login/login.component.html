@@ -22,8 +22,8 @@
   </div>
 
   <input class="form-control" type="text" formControlName="username" placeholder="Username">
-  <input class="form-control" type="password" formControlName="password" placeholder="password">
-  <input class="form-control" type="text" formControlName="totpToken" placeholder="TOTP code">
+  <input class="form-control" type="password" formControlName="password" placeholder="Password">
+  <input class="form-control" type="text" formControlName="totpToken" placeholder="Authentication code">
 
   <button class="btn btn-primary" type="submit" [disabled]="loading || !loginForm.valid">
     <span *ngIf="!loading">Login</span>

@@ -16,7 +16,7 @@
 
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {User} from "../../../../model/user";
+import {UpdateUserRequest, User} from "../../../../model/user";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {UserService} from "../../../../services/user.service";
 import {AuthService} from "../../../../services/auth.service";
@@ -67,7 +67,8 @@ export class EditUserComponent implements OnInit {
         status: [user.status, Validators.required],
         role: [user.role, Validators.required],
         sourceCountries: [user.sourceCountries],
-        readOnly: [user.readOnly]
+        readOnly: [user.readOnly],
+        usingMfa: [user.usingMfa]
       });
       this.loading = false;
     });

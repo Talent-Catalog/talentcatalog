@@ -188,4 +188,16 @@ export class SearchUsersComponent implements OnInit {
           this.loading = false;
         });
   }
+
+  resetAuthentication(user: User) {
+    this.loading = true;
+    this.userService.resetMfa(user.id).subscribe(
+      () => {
+        this.loading = false;
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      });
+  }
 }

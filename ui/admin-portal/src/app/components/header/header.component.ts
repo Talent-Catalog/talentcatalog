@@ -54,7 +54,6 @@ export class HeaderComponent implements OnInit {
 
   constructor(private authService: AuthService,
               private candidateService: CandidateService,
-              private modalService: NgbModal,
               private router: Router) { }
 
   ngOnInit() {
@@ -150,20 +149,5 @@ export class HeaderComponent implements OnInit {
   isUserLimited(): boolean {
     const role = this.loggedInUser ? this.loggedInUser.role : null;
     return role === 'semilimited' || role === 'limited';
-  }
-
-  mfaSetup() {
-    this.authService.mfaSetup().subscribe(
-      (qr: EncodedQrImage) => { this.showQrCode(qr)}
-    )
-
-  }
-
-  showQrCode(qr: EncodedQrImage) {
-    const modal = this.modalService.open(ShowQrCodeComponent);
-    modal.componentInstance.qr = qr;
-    modal.result
-    .then(() => {})
-    .catch(() => {});
   }
 }

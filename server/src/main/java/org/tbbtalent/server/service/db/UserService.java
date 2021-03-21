@@ -19,6 +19,7 @@ package org.tbbtalent.server.service.db;
 import javax.security.auth.login.AccountLockedException;
 import org.springframework.data.domain.Page;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
+import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.LoginRequest;
@@ -61,6 +62,15 @@ public interface UserService {
     User addToSharedWithUser(long id, UpdateSharingRequest request);
 
     User removeFromSharedWithUser(long id, UpdateSharingRequest request);
+
+    /**
+     * Clears the mfaSecret for the given user.
+     * <p/>
+     * The next time they login they will be prompted to setup again
+     * @param id id of user.
+     * @throws NoSuchObjectException if no such user exists           
+     */
+    void mfaReset(long id) throws NoSuchObjectException;
 
     /**
      * Sets up a Multi Factor Authorization (MFA) using Time based One Time Password (TOTP),

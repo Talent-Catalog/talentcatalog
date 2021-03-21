@@ -19,7 +19,7 @@ import {Observable} from 'rxjs/index';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
-import {User} from '../model/user';
+import {UpdateUserRequest, User} from '../model/user';
 import {UpdateSharingRequest} from '../model/saved-search';
 
 @Injectable({providedIn: 'root'})
@@ -41,7 +41,7 @@ export class UserService {
     return this.http.post<User>(`${this.apiUrl}`, details);
   }
 
-  update(id: number, details): Observable<User>  {
+  update(id: number, details: UpdateUserRequest): Observable<User>  {
     return this.http.put<User>(`${this.apiUrl}/${id}`, details);
   }
 
@@ -55,6 +55,10 @@ export class UserService {
 
   delete(id: number): Observable<boolean>  {
     return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
+  }
+
+  resetMfa(id: number): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/mfa-reset/${id}`, null);
   }
 
   addToSharedSearches(id: number, request: UpdateSharingRequest): Observable<User> {

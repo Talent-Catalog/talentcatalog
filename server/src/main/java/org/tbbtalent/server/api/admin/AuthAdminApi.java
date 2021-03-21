@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.InvalidPasswordFormatException;
 import org.tbbtalent.server.exception.PasswordExpiredException;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.response.JwtAuthenticationResponse;
 import org.tbbtalent.server.service.db.CaptchaService;
@@ -56,8 +57,13 @@ public class AuthAdminApi {
 
         //If we are using mfa don't worry about Captcha stuff
         //It is sometimes not reliable (especially in test from localhost) - and unnecessary with MFA
-        if (response.getUser().getUsingMfa()) {
-            userService.mfaVerify(request.getTotpToken());
+        User user = response.getUser(); 
+        if (user.getUsingMfa()) {
+            //If they are not yet configured we skip verification but they will be required
+            //to set up mfa as soon as they log in.
+            if (user.getMfaConfigured()) {
+                userService.mfaVerify(request.getTotpToken());
+            }
         } else {
             final String reCaptchaV3Token = request.getReCaptchaV3Token();
             if (reCaptchaV3Token != null) {
@@ -115,6 +121,7 @@ public class AuthAdminApi {
                 .add("firstName")
                 .add("lastName")
                 .add("usingMfa")
+                .add("mfaConfigured")
                 ;
     }
 }
