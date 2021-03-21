@@ -210,6 +210,7 @@ public class UserServiceImpl implements UserService {
         user.setEmail(request.getEmail());
         user.setStatus(request.getStatus());
         user.setRole(request.getRole());
+        user.setUsingMfa(request.getUsingMfa());
 
         return userRepository.save(user);
     }
@@ -441,6 +442,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void mfaReset(long id) throws NoSuchObjectException {
+        User user = this.userRepository.findById(id)
+            .orElseThrow(() -> new NoSuchObjectException(User.class, id));
+
+        user.setMfaSecret(null);
+
+        userRepository.save(user);
+    }
+
+    @Override
     public EncodedQrImage mfaSetup() {
 
         User user = getLoggedInUser();
@@ -477,10 +488,10 @@ public class UserServiceImpl implements UserService {
         User user = getLoggedInUser();
         if (user.getUsingMfa()) {
             if (mfaCode == null || mfaCode.length() == 0) {
-                throw new InvalidCredentialsException("You need to enter a TOTP code for this user");
+                throw new InvalidCredentialsException("You need to enter an authentication code for this user");
             }
             if (!totpVerifier.isValidCode(user.getMfaSecret(), mfaCode)) {
-                throw new InvalidCredentialsException("Incorrect TOTP code - try again");
+                throw new InvalidCredentialsException("Incorrect authentication code - try again. Or contact a TBB administrator.");
             }
         }
     }

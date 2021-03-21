@@ -237,6 +237,10 @@ public class User extends AbstractAuditableDomainObject<Long> {
         this.usingMfa = usingMFA;
     }
 
+    public boolean getMfaConfigured() {
+        return mfaSecret != null;
+    }
+
     public String getMfaSecret() {
         return mfaSecret;
     }

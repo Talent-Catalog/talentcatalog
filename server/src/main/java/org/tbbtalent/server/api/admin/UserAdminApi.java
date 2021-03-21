@@ -106,6 +106,11 @@ public class UserAdminApi {
         this.userService.updateUserPassword(id, request);
     }
 
+    @PutMapping("/mfa-reset/{id}")
+    public void mfaReset(@PathVariable("id") long id) {
+        this.userService.mfaReset(id);
+    }
+
     @DeleteMapping("{id}")
     public void delete(@PathVariable("id") long id) {
         this.userService.deleteUser(id);
@@ -125,6 +130,8 @@ public class UserAdminApi {
                 .add("status")
                 .add("createdDate")
                 .add("lastLogin")
+                .add("usingMfa")
+                .add("mfaConfigured")
                 ;
     }
 
@@ -142,6 +149,8 @@ public class UserAdminApi {
                 .add("status")
                 .add("createdDate")
                 .add("lastLogin")
+                .add("usingMfa")
+                .add("mfaConfigured")
                 ;
     }
 

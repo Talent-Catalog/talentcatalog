@@ -20,6 +20,10 @@ import {AuthService} from "../../services/auth.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {LoginRequest} from "../../model/base";
 import {ReCaptchaV3Service} from "ng-recaptcha";
+import {User} from "../../model/user";
+import {EncodedQrImage} from "../../util/qr";
+import {ShowQrCodeComponent} from "../util/qr/show-qr-code/show-qr-code.component";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-login',
@@ -35,6 +39,7 @@ export class LoginComponent implements OnInit {
 
   constructor(private builder: FormBuilder,
               private authService: AuthService,
+              private modalService: NgbModal,
               private reCaptchaV3Service: ReCaptchaV3Service,
               private route: ActivatedRoute,
               private router: Router) {
@@ -95,13 +100,41 @@ export class LoginComponent implements OnInit {
     this.authService.login(req)
       .subscribe(() => {
         this.loading = false;
-        this.router.navigateByUrl(this.returnUrl);
+        this.checkMfaSetup();
       }, error => {
         // console.log(error);
         this.error = error;
         this.loading = false;
       });
 
+  }
+
+  private checkMfaSetup() {
+    const user: User = this.authService.getLoggedInUser();
+    if (!user.usingMfa || user.mfaConfigured) {
+      this.router.navigateByUrl(this.returnUrl);
+    } else {
+      //User needs to configure mfa before proceeding further.
+      this.mfaSetup();
+    }
+  }
+
+  mfaSetup() {
+    this.authService.mfaSetup().subscribe(
+      (qr: EncodedQrImage) => { this.showQrCode(qr)}
+    )
+  }
+
+  private showQrCode(qr: EncodedQrImage) {
+    const modal = this.modalService.open(ShowQrCodeComponent);
+    modal.componentInstance.qr = qr;
+    modal.result
+    .then(() => {
+      this.router.navigateByUrl(this.returnUrl);
+    })
+    .catch(() => {
+      this.router.navigateByUrl(this.returnUrl);
+    });
   }
 }
 

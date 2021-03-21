@@ -30,6 +30,18 @@ export interface User {
   updatedDate: number;
   lastLogin: number;
   usingMfa: boolean;
+  mfaConfigured: boolean;
 }
 
+export interface UpdateUserRequest {
+  email: string;
+  firstName: string;
+  lastName: string;
+  readOnly: boolean;
+  role: string;
+  sourceCountries: Country[];
+  status: string;
+  username: string;
+  usingMfa: boolean;
+}
 
