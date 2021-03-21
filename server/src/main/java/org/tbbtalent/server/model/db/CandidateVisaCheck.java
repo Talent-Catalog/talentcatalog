@@ -41,14 +41,8 @@ public class CandidateVisaCheck extends CandidateVisaCheckBase {
         if (createdBy != null) {
             setCreatedBy(createdBy);
         }
-        if (data.getVisaAssessmentNotes() != null) {
-            setAssessmentNotes(data.getVisaAssessmentNotes());
-        }
         if (data.getVisaTbbEligibilityAssessment() != null) {
             setTbbEligibilityAssessment(data.getVisaTbbEligibilityAssessment());
-        }
-        if (data.getVisaCreatedDate() != null) {
-            setCreatedDate(data.getVisaCreatedDate());
         }
         if (data.getVisaProtection() != null) {
             setProtection(data.getVisaProtection());
