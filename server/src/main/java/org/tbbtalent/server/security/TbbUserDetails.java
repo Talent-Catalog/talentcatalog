@@ -22,18 +22,26 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.User;
 
-public class AuthenticatedUser implements UserDetails {
+/**
+ * Tbb's implementation of Spring's {@link UserDetails}, retrieving user data from database, setting
+ * authorities based on the user's {@link Role} and exposing the corresponding underlying 
+ * {@link User} object through {@link #getUser()}.
+ * <p/>
+ * Note that this is what is returned by {@link Authentication#getPrincipal()}
+ */
+public class TbbUserDetails implements UserDetails {
 
     private User user;
     private List<GrantedAuthority> authorities;
 
-    public AuthenticatedUser(@NotNull User user) {
+    public TbbUserDetails(@NotNull User user) {
         this.user = user;
         this.authorities = new ArrayList<>();
 

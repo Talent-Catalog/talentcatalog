@@ -17,9 +17,7 @@
 package org.tbbtalent.server.api.admin;
 
 import java.util.Map;
-
 import javax.security.auth.login.AccountLockedException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,11 +27,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.InvalidPasswordFormatException;
 import org.tbbtalent.server.exception.PasswordExpiredException;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.response.JwtAuthenticationResponse;
 import org.tbbtalent.server.service.db.CaptchaService;
 import org.tbbtalent.server.service.db.UserService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
+import org.tbbtalent.server.util.qr.EncodedQrImage;
 
 @RestController()
 @RequestMapping("/api/admin/auth")
@@ -53,14 +53,26 @@ public class AuthAdminApi {
             throws AccountLockedException, PasswordExpiredException, InvalidCredentialsException,
             InvalidPasswordFormatException {
 
-        final String reCaptchaV3Token = request.getReCaptchaV3Token();
-        if (reCaptchaV3Token != null) {
-            //Do check for automated logins. Throws exception if it looks
-            //automated.
-            captchaService.processCaptchaV3Token(reCaptchaV3Token, "login");
+        JwtAuthenticationResponse response = this.userService.login(request);
+
+        //If we are using mfa don't worry about Captcha stuff
+        //It is sometimes not reliable (especially in test from localhost) - and unnecessary with MFA
+        User user = response.getUser(); 
+        if (user.getUsingMfa()) {
+            //If they are not yet configured we skip verification but they will be required
+            //to set up mfa as soon as they log in.
+            if (user.getMfaConfigured()) {
+                userService.mfaVerify(request.getTotpToken());
+            }
+        } else {
+            final String reCaptchaV3Token = request.getReCaptchaV3Token();
+            if (reCaptchaV3Token != null) {
+                //Do check for automated logins. Throws exception if it looks
+                //automated.
+                captchaService.processCaptchaV3Token(reCaptchaV3Token, "login");
+            }
         }
 
-        JwtAuthenticationResponse response = this.userService.login(request);
         return jwtDto().build(response);
     }
 
@@ -70,6 +82,26 @@ public class AuthAdminApi {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Sets up Multi Factor Authentication (MFA) in the form of a 
+     * Time based One Time Password (TOTP).
+     * <p/>
+     * Generates a new secret key (hence POST rather than GET) and returns a Base64 encoded 
+     * QRCode image which can be displayed as described here:
+     * https://www.w3docs.com/snippets/html/how-to-display-base64-images-in-html.html
+     * @return EncodedQrImage
+     */
+    @PostMapping("mfa-setup")
+    public Map<String, Object> mfaSetup() {
+        EncodedQrImage qr = userService.mfaSetup();
+        return qrDto().build(qr);
+    }
+
+    DtoBuilder qrDto() {
+        return new DtoBuilder()
+                .add("base64Encoding")
+                ;
+    }
 
     DtoBuilder jwtDto() {
         return new DtoBuilder()
@@ -88,6 +120,8 @@ public class AuthAdminApi {
                 .add("readOnly")
                 .add("firstName")
                 .add("lastName")
+                .add("usingMfa")
+                .add("mfaConfigured")
                 ;
     }
 }

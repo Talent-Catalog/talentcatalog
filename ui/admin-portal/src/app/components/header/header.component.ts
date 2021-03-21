@@ -29,6 +29,11 @@ import {
   tap
 } from "rxjs/operators";
 import {User} from "../../model/user";
+import {CreateUpdateListComponent} from "../list/create-update/create-update-list.component";
+import {SavedList} from "../../model/saved-list";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {ShowQrCodeComponent} from "../util/qr/show-qr-code/show-qr-code.component";
+import {EncodedQrImage} from "../../util/qr";
 
 @Component({
   selector: 'app-header',
@@ -145,5 +150,4 @@ export class HeaderComponent implements OnInit {
     const role = this.loggedInUser ? this.loggedInUser.role : null;
     return role === 'semilimited' || role === 'limited';
   }
-
 }

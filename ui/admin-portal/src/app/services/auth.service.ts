@@ -24,6 +24,9 @@ import {HttpClient} from "@angular/common/http";
 import {LocalStorageService} from "angular-2-local-storage";
 import {User} from "../model/user";
 import {LoginRequest} from "../model/base";
+import {Observable} from "rxjs/index";
+import {Candidate} from "../model/candidate";
+import {EncodedQrImage} from "../util/qr";
 
 @Injectable({
   providedIn: 'root'
@@ -94,6 +97,10 @@ export class AuthService {
     this.http.post(`${this.apiUrl}/logout`, null);
     this.localStorageService.remove('user');
     this.localStorageService.remove('access-token');
+  }
+
+  mfaSetup(): Observable<EncodedQrImage> {
+    return this.http.post<EncodedQrImage>(`${this.apiUrl}/mfa-setup`, null);
   }
 
   private storeCredentials(response: JwtResponse) {

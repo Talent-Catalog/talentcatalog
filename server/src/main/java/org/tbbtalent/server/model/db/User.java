@@ -16,10 +16,11 @@
 
 package org.tbbtalent.server.model.db;
 
+import dev.samstevens.totp.secret.DefaultSecretGenerator;
+import dev.samstevens.totp.secret.SecretGenerator;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,7 +34,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
 import org.apache.commons.lang3.StringUtils;
 
 @Entity
@@ -66,6 +66,10 @@ public class User extends AbstractAuditableDomainObject<Long> {
     
     @Column(name = "password_updated_date")
     private OffsetDateTime passwordUpdatedDate;
+    
+    private Boolean usingMfa;
+    
+    private String mfaSecret;
 
     @OneToOne(mappedBy = "user")
     private Candidate candidate;
@@ -112,6 +116,8 @@ public class User extends AbstractAuditableDomainObject<Long> {
         this.email = email;
         this.role = role;
         this.status = Status.active;
+        SecretGenerator secretGenerator = new DefaultSecretGenerator();
+        this.mfaSecret = secretGenerator.generate();
         this.setCreatedDate(OffsetDateTime.now());
     }
 
@@ -221,6 +227,26 @@ public class User extends AbstractAuditableDomainObject<Long> {
 
     public void setSelectedLanguage(String selectedLanguage) {
         this.selectedLanguage = selectedLanguage;
+    }
+
+    public Boolean getUsingMfa() {
+        return usingMfa;
+    }
+
+    public void setUsingMfa(Boolean usingMFA) {
+        this.usingMfa = usingMFA;
+    }
+
+    public boolean getMfaConfigured() {
+        return mfaSecret != null;
+    }
+
+    public String getMfaSecret() {
+        return mfaSecret;
+    }
+
+    public void setMfaSecret(String totpSecret) {
+        this.mfaSecret = totpSecret;
     }
 
     public Set<SavedList> getSharedLists() {

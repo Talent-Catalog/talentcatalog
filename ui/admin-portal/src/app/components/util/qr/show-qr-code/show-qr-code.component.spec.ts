@@ -14,34 +14,28 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Country} from "./country";
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-export interface User {
-  id: number;
-  username: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: string;
-  readOnly: boolean;
-  sourceCountries: Country[];
-  status: string;
-  createdDate: number;
-  updatedDate: number;
-  lastLogin: number;
-  usingMfa: boolean;
-  mfaConfigured: boolean;
-}
+import { ShowQrCodeComponent } from './show-qr-code.component';
 
-export interface UpdateUserRequest {
-  email: string;
-  firstName: string;
-  lastName: string;
-  readOnly: boolean;
-  role: string;
-  sourceCountries: Country[];
-  status: string;
-  username: string;
-  usingMfa: boolean;
-}
+describe('ShowQrCodeComponent', () => {
+  let component: ShowQrCodeComponent;
+  let fixture: ComponentFixture<ShowQrCodeComponent>;
 
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      declarations: [ ShowQrCodeComponent ]
+    })
+    .compileComponents();
+  }));
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(ShowQrCodeComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

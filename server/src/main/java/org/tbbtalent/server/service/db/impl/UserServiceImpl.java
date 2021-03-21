@@ -16,32 +16,71 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import static dev.samstevens.totp.util.Utils.getDataUriForImage;
+
+import dev.samstevens.totp.code.CodeVerifier;
+import dev.samstevens.totp.exceptions.QrGenerationException;
+import dev.samstevens.totp.qr.QrData;
+import dev.samstevens.totp.qr.QrDataFactory;
+import dev.samstevens.totp.qr.QrGenerator;
+import dev.samstevens.totp.secret.SecretGenerator;
+import java.time.OffsetDateTime;
+import java.util.UUID;
+import javax.security.auth.login.AccountLockedException;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.security.authentication.*;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.CredentialsExpiredException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tbbtalent.server.exception.*;
-import org.tbbtalent.server.model.db.*;
-import org.tbbtalent.server.repository.db.*;
+import org.tbbtalent.server.exception.EmailSendFailedException;
+import org.tbbtalent.server.exception.ExpiredTokenException;
+import org.tbbtalent.server.exception.InvalidCredentialsException;
+import org.tbbtalent.server.exception.InvalidPasswordTokenException;
+import org.tbbtalent.server.exception.InvalidSessionException;
+import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.exception.PasswordExpiredException;
+import org.tbbtalent.server.exception.PasswordMatchException;
+import org.tbbtalent.server.exception.ServiceException;
+import org.tbbtalent.server.exception.UserDeactivatedException;
+import org.tbbtalent.server.exception.UsernameTakenException;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.Country;
+import org.tbbtalent.server.model.db.SavedSearch;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.repository.db.CandidateRepository;
+import org.tbbtalent.server.repository.db.CountryRepository;
+import org.tbbtalent.server.repository.db.SavedSearchRepository;
+import org.tbbtalent.server.repository.db.UserRepository;
+import org.tbbtalent.server.repository.db.UserSpecification;
 import org.tbbtalent.server.request.LoginRequest;
-import org.tbbtalent.server.request.user.*;
+import org.tbbtalent.server.request.user.CheckPasswordResetTokenRequest;
+import org.tbbtalent.server.request.user.CreateUserRequest;
+import org.tbbtalent.server.request.user.ResetPasswordRequest;
+import org.tbbtalent.server.request.user.SearchUserRequest;
+import org.tbbtalent.server.request.user.SendResetPasswordEmailRequest;
+import org.tbbtalent.server.request.user.UpdateSharingRequest;
+import org.tbbtalent.server.request.user.UpdateUserPasswordRequest;
+import org.tbbtalent.server.request.user.UpdateUserRequest;
+import org.tbbtalent.server.request.user.UpdateUsernameRequest;
 import org.tbbtalent.server.response.JwtAuthenticationResponse;
 import org.tbbtalent.server.security.JwtTokenProvider;
 import org.tbbtalent.server.security.PasswordHelper;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.UserService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
-
-import javax.security.auth.login.AccountLockedException;
-import java.time.OffsetDateTime;
-import java.util.UUID;
+import org.tbbtalent.server.util.qr.EncodedQrImage;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -60,6 +99,19 @@ public class UserServiceImpl implements UserService {
 
     @Value("${web.portal}")
     private String portalUrl;
+
+    
+    //Multi factor authentication (MFA) is implemented using TOTP (Time based One Time Password) 
+    //tools
+    @Autowired
+    private SecretGenerator totpSecretGenerator;
+    @Autowired
+    private QrDataFactory totpQrDataFactory;
+    @Autowired
+    private QrGenerator totpQrGenerator;
+    @Autowired
+    private CodeVerifier totpVerifier;
+    
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
@@ -158,6 +210,7 @@ public class UserServiceImpl implements UserService {
         user.setEmail(request.getEmail());
         user.setStatus(request.getStatus());
         user.setRole(request.getRole());
+        user.setUsingMfa(request.getUsingMfa());
 
         return userRepository.save(user);
     }
@@ -385,6 +438,61 @@ public class UserServiceImpl implements UserService {
             user.setResetTokenIssuedDate(null);
             user.setResetToken(null);
             userRepository.save(user);
+        }
+    }
+
+    @Override
+    public void mfaReset(long id) throws NoSuchObjectException {
+        User user = this.userRepository.findById(id)
+            .orElseThrow(() -> new NoSuchObjectException(User.class, id));
+
+        user.setMfaSecret(null);
+
+        userRepository.save(user);
+    }
+
+    @Override
+    public EncodedQrImage mfaSetup() {
+
+        User user = getLoggedInUser();
+
+        // Generate and store the secret
+        String secret = totpSecretGenerator.generate();
+        //Store with user
+        user.setMfaSecret(secret);
+        userRepository.save(user);
+
+        QrData data = totpQrDataFactory.newBuilder()
+            .label(user.getEmail())
+            .secret(secret)
+            .issuer("TBB")
+            .build();
+
+        // Generate the QR code image data as a base64 string which
+        // can be used in an <img> tag
+        // See https://www.w3docs.com/snippets/html/how-to-display-base64-images-in-html.html
+        try {
+            String qrCodeImage = getDataUriForImage(
+                totpQrGenerator.generate(data),
+                totpQrGenerator.getImageMimeType()
+            );
+    
+            return new EncodedQrImage(qrCodeImage);
+        } catch (QrGenerationException ex) {
+            throw new ServiceException("qr_error", "Error generating QR code", ex);
+        }
+    }
+
+    @Override
+    public void mfaVerify(String mfaCode) throws InvalidCredentialsException {
+        User user = getLoggedInUser();
+        if (user.getUsingMfa()) {
+            if (mfaCode == null || mfaCode.length() == 0) {
+                throw new InvalidCredentialsException("You need to enter an authentication code for this user");
+            }
+            if (!totpVerifier.isValidCode(user.getMfaSecret(), mfaCode)) {
+                throw new InvalidCredentialsException("Incorrect authentication code - try again. Or contact a TBB administrator.");
+            }
         }
     }
 }

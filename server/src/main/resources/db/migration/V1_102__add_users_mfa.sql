@@ -14,24 +14,5 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.request;
-
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
-@Getter
-@Setter
-@ToString
-public class LoginRequest {
-
-    private String username;
-    private String password;
-    private String reCaptchaV3Token;
-
-    /**
-     * Time based One Time Password (TOTP) used for multi factor authentication
-     */
-    private String totpToken;
-
-}
+alter table users add column using_mfa boolean default false not null;
+alter table users add column mfa_secret text;

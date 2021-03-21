@@ -34,8 +34,8 @@ public class UserContext {
      */
     public Optional<User> getLoggedInUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getPrincipal() instanceof AuthenticatedUser) {
-            return Optional.of(((AuthenticatedUser) auth.getPrincipal()).getUser());
+        if (auth != null && auth.getPrincipal() instanceof TbbUserDetails) {
+            return Optional.of(((TbbUserDetails) auth.getPrincipal()).getUser());
         }
         return Optional.empty();
     }

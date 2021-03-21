@@ -84,6 +84,11 @@
         <input type="checkbox" formControlName="readOnly" id="readOnly">
       </div>
 
+      <div class="form-group">
+        <label for="usingMfa">Authentication app?</label>
+        <input type="checkbox" formControlName="usingMfa" id="usingMfa">
+      </div>
+
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="onSave()"
                 [disabled]="userForm.invalid || loading || saving">

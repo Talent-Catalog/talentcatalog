@@ -25,30 +25,32 @@ import org.springframework.stereotype.Component;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.repository.db.UserRepository;
 
+/**
+ * TBB's implementation of Spring's {@link UserDetailsService}, returning {@link TbbUserDetails}
+ * objects.
+ */
 @Component
-public class CandidateUserDetailsService implements UserDetailsService {
+public class TbbUserDetailsService implements UserDetailsService {
 
-    private static final Logger log = LoggerFactory.getLogger(CandidateUserDetailsService.class);
+    private static final Logger log = LoggerFactory.getLogger(TbbUserDetailsService.class);
 
     private final UserRepository userRepository;
 
     @Autowired
-    public CandidateUserDetailsService(UserRepository userRepository) {
+    public TbbUserDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     @Override
-    public AuthenticatedUser loadUserByUsername(String username) throws UsernameNotFoundException {
+    public TbbUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        /* Handle JWT token parsing */
         User user = userRepository.findByUsernameIgnoreCase(username);
-        /* Handle authentication */
         if (user == null) {
             throw new UsernameNotFoundException("No user found for: " + username);
         }
 
-        log.debug("Found candidate with ID {} for username '{}'", user.getId(), username);
-        return new AuthenticatedUser(user);
+        log.debug("Found user with ID {} for username '{}'", user.getId(), username);
+        return new TbbUserDetails(user);
     }
 
 }

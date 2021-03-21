@@ -14,34 +14,21 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Country} from "./country";
+import { Component, OnInit } from '@angular/core';
+import {EncodedQrImage} from "../../../../util/qr";
 
-export interface User {
-  id: number;
-  username: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: string;
-  readOnly: boolean;
-  sourceCountries: Country[];
-  status: string;
-  createdDate: number;
-  updatedDate: number;
-  lastLogin: number;
-  usingMfa: boolean;
-  mfaConfigured: boolean;
+@Component({
+  selector: 'app-show-qr-code',
+  templateUrl: './show-qr-code.component.html',
+  styleUrls: ['./show-qr-code.component.scss']
+})
+export class ShowQrCodeComponent implements OnInit {
+
+  public qr: EncodedQrImage;
+
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+
 }
-
-export interface UpdateUserRequest {
-  email: string;
-  firstName: string;
-  lastName: string;
-  readOnly: boolean;
-  role: string;
-  sourceCountries: Country[];
-  status: string;
-  username: string;
-  usingMfa: boolean;
-}
-

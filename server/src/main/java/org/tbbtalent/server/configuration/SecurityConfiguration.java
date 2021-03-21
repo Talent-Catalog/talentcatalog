@@ -16,6 +16,11 @@
 
 package org.tbbtalent.server.configuration;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -36,13 +41,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.tbbtalent.server.security.*;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import static org.springframework.security.config.Customizer.withDefaults;
+import org.tbbtalent.server.security.JwtAuthenticationEntryPoint;
+import org.tbbtalent.server.security.JwtAuthenticationFilter;
+import org.tbbtalent.server.security.LanguageFilter;
+import org.tbbtalent.server.security.TbbAuthenticationProvider;
+import org.tbbtalent.server.security.TbbUserDetailsService;
 
 @Configuration
 @EnableWebSecurity
@@ -56,7 +59,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private Environment env;
 
     @Autowired
-    private CandidateUserDetailsService userDetailsService;
+    private TbbUserDetailsService userDetailsService;
 
     @Autowired
     private JwtAuthenticationEntryPoint unauthorizedHandler;

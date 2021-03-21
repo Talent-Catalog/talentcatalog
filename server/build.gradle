@@ -76,6 +76,9 @@ dependencies {
     //See https://mvnrepository.com/artifact/org.springframework.data/spring-data-elasticsearch
     implementation 'org.springframework.data:spring-data-elasticsearch'
 
+    //See https://github.com/samdjstevens/java-totp/tree/master/totp-spring-boot-starter 
+    implementation 'dev.samstevens.totp:totp-spring-boot-starter:1.7.1'
+
     implementation 'com.google.guava:guava:23.5-jre'
     implementation("io.jsonwebtoken:jjwt-api:0.11.2")
     implementation 'com.google.api-client:google-api-client:1.30.10'

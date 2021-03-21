@@ -134,6 +134,11 @@ export class LoginRequest {
   username: string;
   password: string;
   reCaptchaV3Token: string;
+
+  /**
+   * Time based One Time Password (TOTP) used for multi factor authentication
+   */
+  totpToken: string;
 }
 
 export function isMine(source: CandidateSource, auth: AuthService) {

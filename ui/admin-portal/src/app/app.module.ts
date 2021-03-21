@@ -222,6 +222,7 @@ import {JobOccupationComponent} from "./components/candidates/intake/visa-job-as
 import {RiskAssessmentComponent} from "./components/candidates/intake/risk-assessment/risk-assessment.component";
 import {HealthAssessmentComponent} from "./components/candidates/intake/health-assessment/health-assessment.component";
 import {VisaJobAssessmentCaComponent} from "./components/candidates/intake/visa-job-assessments/ca/visa-job-assessment-ca.component";
+import { ShowQrCodeComponent } from './components/util/qr/show-qr-code/show-qr-code.component';
 
 @NgModule({
   declarations: [
@@ -420,7 +421,9 @@ import {VisaJobAssessmentCaComponent} from "./components/candidates/intake/visa-
     YearsRelevantExpComponent,
     IeltsLevelComponent,
     QualificationRelevantComponent,
-    VisaJobAssessmentCaComponent
+    VisaJobAssessmentCaComponent,
+    DatePickerComponent,
+    ShowQrCodeComponent
   ],
   imports: [
     BrowserModule,

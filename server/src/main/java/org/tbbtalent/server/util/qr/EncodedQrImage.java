@@ -14,24 +14,23 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.request;
+package org.tbbtalent.server.util.qr;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
+/**
+ * QR code image, encoded as Base64 string.
+ * <p/>
+ * Can be displayed as described here:
+ * https://www.w3docs.com/snippets/html/how-to-display-base64-images-in-html.html
+ *
+ * @author John Cameron
+ */
 @Getter
 @Setter
-@ToString
-public class LoginRequest {
-
-    private String username;
-    private String password;
-    private String reCaptchaV3Token;
-
-    /**
-     * Time based One Time Password (TOTP) used for multi factor authentication
-     */
-    private String totpToken;
-
+@AllArgsConstructor
+public class EncodedQrImage {
+  private String base64Encoding;
 }

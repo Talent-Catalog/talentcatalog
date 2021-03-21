@@ -72,8 +72,8 @@ public class JwtTokenProvider implements InitializingBean {
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
         String subject = "";
 
-        if (authentication.getPrincipal() instanceof AuthenticatedUser) {
-            AuthenticatedUser user = (AuthenticatedUser) authentication.getPrincipal();
+        if (authentication.getPrincipal() instanceof TbbUserDetails) {
+            TbbUserDetails user = (TbbUserDetails) authentication.getPrincipal();
             subject = user.getUsername();
         }
 
