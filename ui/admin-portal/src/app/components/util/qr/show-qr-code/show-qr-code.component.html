@@ -21,8 +21,15 @@
   Recommend Authy - link to downloads page and article saying why
   https://arstechnica.com/information-technology/2020/05/choosing-2fa-authenticator-apps-can-be-hard-ars-did-it-so-you-dont-have-to/
 -->
-<p>
-  Scan this QR code with your phone's authenticator app (for example
-  Google Authenticator)
-</p>
-<img [src]="qr.base64Encoding"/>
+<div class="modal-header">
+  <h4 class="modal-title">Set up Authentication</h4>
+</div>
+<div class="modal-body">
+  <p class="mb-0">
+    Scan this QR code with your phone's authenticator app (for example
+    <a href="https://support.google.com/accounts/answer/1066447" target="_blank">Google Authenticator</a>)
+  </p>
+  <div class="text-center">
+    <img [src]="qr.base64Encoding"/>
+  </div>
+</div>
