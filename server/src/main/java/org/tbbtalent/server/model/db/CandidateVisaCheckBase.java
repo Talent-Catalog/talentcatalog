@@ -20,10 +20,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Set;
 
 @Getter
 @Setter
+@MappedSuperclass
 public class CandidateVisaCheckBase extends AbstractAuditableDomainObject<Long> implements Comparable<CandidateVisaCheck> {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -69,7 +69,7 @@ public class CandidateVisaCheckBase extends AbstractAuditableDomainObject<Long> 
 
     private String assessmentNotes;
 
-    private Set visaJobChecks;
+    //private Set visaJobChecks;
 
     public int compareTo(CandidateVisaCheck o) {
         if (country == null) {
