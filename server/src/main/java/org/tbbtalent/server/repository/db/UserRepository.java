@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.repository.db;
 
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -63,4 +64,9 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
             + " and u.role != 'user'")
     Page<User> searchAdminUsersName(@Param("usersName") String usersName, Pageable pageable);
 
+    @Query("select u from User u " 
+        + "where u.usingMfa = false " 
+        + "and u.role != 'user' " 
+        + "and u.status != 'deleted'")
+    List<User> searchStaffNotUsingMfa();
 }
