@@ -505,9 +505,7 @@ public class UserServiceImpl implements UserService {
     }
 
     //10pm Sunday night GMT
-    //todo Comment this back in
-//    @Scheduled(cron = "0 0 22 * * SUN", zone = "GMT")
-    @Scheduled(cron = "0 0 5 * * ?", zone = "GMT")
+    @Scheduled(cron = "0 0 22 * * SUN", zone = "GMT")
     public void checkMfaUsers() {
         List<User> users = searchStaffNotUsingMfa();
         if (users.size() > 0) {
