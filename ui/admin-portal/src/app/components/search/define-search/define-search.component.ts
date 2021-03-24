@@ -122,17 +122,17 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
   candidateOccupations: Occupation[];
   languageLevels: LanguageLevel[];
 
-  //Data entry classes
   notElastic;
 
   statuses: { id: string, name: string }[] = [
-    {id: 'pending', name: 'Pending'},
-    {id: 'incomplete', name: 'Incomplete'},
-    {id: 'employed', name: 'Employed'},
     {id: 'active', name: 'Active'},
-    {id: 'inactive', name: 'Inactive'},
-    {id: 'draft', name: 'Draft'},
     {id: 'deleted', name: 'Deleted'},
+    {id: 'draft', name: 'Draft'},
+    {id: 'employed', name: 'Employed'},
+    {id: 'incomplete', name: 'Incomplete'},
+    {id: 'ineligible', name: 'Ineligible'},
+    {id: 'pending', name: 'Pending'},
+    {id: 'unreachable', name: 'Unreachable'},
   ];
 
   selectedCandidate: Candidate;
