@@ -110,7 +110,7 @@ public class CandidateEs {
 
     @Field(type = FieldType.Keyword)
     @Enumerated(EnumType.STRING)
-    private DrivingLicenseStatus drivingLicense;
+    private DocumentStatus drivingLicense;
 
     /**
      * Id of matching Candidate record in database

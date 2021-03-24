@@ -94,7 +94,7 @@ public class CandidateIntakeDataUpdate {
     private YesNo destJob;
     private String destJobNotes;
 
-    private DrivingLicenseStatus drivingLicense;
+    private DocumentStatus drivingLicense;
     private LocalDate drivingLicenseExp;
     private Long drivingLicenseCountryId;
 
@@ -173,10 +173,10 @@ public class CandidateIntakeDataUpdate {
     private String visaCharacterAssessmentNotes;
     private YesNo visaSecurityRisk;
     private String visaSecurityRiskNotes;
-    private YesNo visaValidTravelDocs;
-    private String visaValidTravelDocsNotes;
     private RiskLevel visaOverallRisk;
     private String visaOverallRiskNotes;
+    private DocumentStatus visaValidTravelDocs;
+    private String visaValidTravelDocsNotes;
     private String visaCreatedById;
 
     private YesNoUnsure visaReject;

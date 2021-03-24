@@ -465,7 +465,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Enumerated(EnumType.STRING)
     @Nullable
-    private DrivingLicenseStatus drivingLicense;
+    private DocumentStatus drivingLicense;
 
     @Nullable
     private LocalDate drivingLicenseExp;
@@ -1216,9 +1216,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setCanDrive(@Nullable YesNo canDrive) { this.canDrive = canDrive; }
 
     @Nullable
-    public DrivingLicenseStatus getDrivingLicense() { return drivingLicense; }
+    public DocumentStatus getDrivingLicense() { return drivingLicense; }
 
-    public void setDrivingLicense(@Nullable DrivingLicenseStatus drivingLicense) { this.drivingLicense = drivingLicense; }
+    public void setDrivingLicense(@Nullable DocumentStatus drivingLicense) { this.drivingLicense = drivingLicense; }
 
     @Nullable
     public LocalDate getDrivingLicenseExp() { return drivingLicenseExp; }

@@ -4,7 +4,7 @@
 
 <form [formGroup]="form">
   <div class="form-group">
-    <label for="travelDocument">Has valid travel document?</label>
+    <label for="visaValidTravelDocs">Has valid travel document?</label>
     <div class="float-right">
       <app-autosave-status
         [saving]="saving"
@@ -12,10 +12,16 @@
       </app-autosave-status>
     </div>
     <select class="form-control"
-            id="travelDocument" formControlName="travelDocument">
+            id="visaValidTravelDocs" formControlName="visaValidTravelDocs">
       <option *ngFor="let opt of travelDocumentOptions" [value]="opt.value">
         {{opt.displayText}}
       </option>
     </select>
+  </div>
+  <div *ngIf="hasNotes" class="form-group">
+    <label for="visaValidTravelDocsNotes">Notes</label>
+    <textarea type="text" class="md-textarea-auto form-control" rows="4"
+              id="visaValidTravelDocsNotes" [formControlName]="'visaValidTravelDocsNotes'"
+              placeholder="" ></textarea>
   </div>
 </form>

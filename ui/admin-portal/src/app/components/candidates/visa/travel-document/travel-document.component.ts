@@ -30,14 +30,14 @@ export class TravelDocumentComponent extends IntakeComponentBase implements OnIn
 
   get hasNotes(): boolean {
     let found: boolean = false;
-    if (this.form.value.visaOverallRisk) {
-      if (this.form.value.visaOverallRisk === 'Low') {
+    if (this.form.value.visaValidTravelDocs) {
+      if (this.form.value.visaValidTravelDocs === 'Valid') {
         found = true
       }
-      if (this.form.value.visaOverallRisk === 'Medium') {
+      if (this.form.value.visaValidTravelDocs === 'Expired') {
         found = true
       }
-      if (this.form.value.visaOverallRisk === 'High') {
+      if (this.form.value.visaValidTravelDocs === 'None') {
         found = true
       }
     }

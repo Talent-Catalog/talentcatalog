@@ -16,7 +16,7 @@
 
 package org.tbbtalent.server.model.db;
 
-public enum DrivingLicenseStatus {
+public enum DocumentStatus {
     NoResponse,
     Valid,
     Expired,
