@@ -187,10 +187,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Nullable
     private String returnedHomeReasonNo;
-    
-    @Convert(converter = VisaIssuesConverter.class)
+
+    @Enumerated(EnumType.STRING)
     @Nullable
-    private List<VisaIssue> visaIssues;
+    private YesNoUnsure visaIssues;
     
     @Nullable
     private String visaIssuesNotes;
@@ -812,11 +812,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setReturnedHomeReasonNo(@Nullable String returnedHomeReasonNo) { this.returnedHomeReasonNo = returnedHomeReasonNo; }
 
     @Nullable
-    public List<VisaIssue> getVisaIssues() {
+    public YesNoUnsure getVisaIssues() {
         return visaIssues;
     }
 
-    public void setVisaIssues(@Nullable List<VisaIssue> visaIssues) {
+    public void setVisaIssues(@Nullable YesNoUnsure visaIssues) {
         this.visaIssues = visaIssues;
     }
 

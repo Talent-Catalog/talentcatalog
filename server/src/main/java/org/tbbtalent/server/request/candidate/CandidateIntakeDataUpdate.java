@@ -181,7 +181,7 @@ public class CandidateIntakeDataUpdate {
 
     private YesNoUnsure visaReject;
     private String visaRejectNotes;
-    private List<VisaIssue> visaIssues;
+    private YesNoUnsure visaIssues;
     private String visaIssuesNotes;
     
     private YesNo workAbroad;

@@ -19,26 +19,25 @@
 </div>
 <form [formGroup]="form">
   <div class="form-group">
-    <label for="visaIssues" ngbTooltip="Tooltip on top">Is there anything about your background that could
-      be of concern in the visa process?</label>
+    <label for="visaIssues">Is there anything else about your background that could
+      be of concern in the visa process? (e.g. work for foreign government)</label>
     <div *ngIf="editable" class="float-right">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <ng-multiselect-dropdown
-      id="visaIssues"
-      [settings]="dropdownSettings"
-      [data]="visaIssueOptions"
-      formControlName="visaIssues"
-      [disabled]="!editable">
-    </ng-multiselect-dropdown>
+    <select class="form-control"
+            id="visaIssues" formControlName="visaIssues">
+      <option *ngFor="let opt of visaIssueOptions" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
   </div>
 
-  <div *ngIf="haveIssues">
+  <div *ngIf="hasNotes">
     <div class="form-group">
-      <label for="visaIssuesNotes">Please explain each issue</label>
+      <label for="visaIssuesNotes">Please explain concerns further</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="4"
                 id="visaIssuesNotes" [formControlName]="'visaIssuesNotes'"
                 placeholder="" [readOnly]="!editable"></textarea>
