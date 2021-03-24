@@ -80,7 +80,11 @@ Downside == upside : standard appearance of same question
       Health Assessment
     </div>
     <div class="card-body intake-data">
-      <div class="mb-3">
+      <app-health-issues
+        [candidate]="candidate"
+        [candidateIntakeData]="candidateIntakeData">
+      </app-health-issues>
+      <div>
         <p class="mb-1">Do any dependants have health concerns?</p>
         <ul>
           <div *ngFor="let dependant of candidateIntakeData.candidateDependants; let i = index;">
@@ -88,10 +92,6 @@ Downside == upside : standard appearance of same question
           </div>
         </ul>
       </div>
-      <app-visa-issues
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-visa-issues>
     </div>
     <div class="card-body">
       <app-health-assessment
@@ -161,7 +161,8 @@ Downside == upside : standard appearance of same question
     <div class="card-body">
       <app-risk-assessment
         [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
+        [candidateIntakeData]="candidateIntakeData"
+        [visaCheckRecord]="visaRecord">
       </app-risk-assessment>
     </div>
   </div>
@@ -175,7 +176,8 @@ Downside == upside : standard appearance of same question
     <div class="card-body">
       <app-travel-document
         [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
+        [candidateIntakeData]="candidateIntakeData"
+        [visaCheckRecord]="visaRecord">
       </app-travel-document>
     </div>
   </div>

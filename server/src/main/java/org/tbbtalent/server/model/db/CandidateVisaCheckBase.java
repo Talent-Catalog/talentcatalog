@@ -58,14 +58,14 @@ public class CandidateVisaCheckBase extends AbstractAuditableDomainObject<Long> 
     private String securityRiskNotes;
 
     @Enumerated(EnumType.STRING)
-    private YesNo validTravelDocs;
-
-    private String validTravelDocsNotes;
-
-    @Enumerated(EnumType.STRING)
     private RiskLevel overallRisk;
 
     private String overallRiskNotes;
+
+    @Enumerated(EnumType.STRING)
+    private YesNo validTravelDocs;
+
+    private String validTravelDocsNotes;
 
     private String assessmentNotes;
 

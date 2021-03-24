@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from "../../../../util/enum";
-import {CandidateVisa, RiskAssessment} from "../../../../model/candidate";
+import {RiskLevel} from "../../../../model/candidate";
 import {FormBuilder} from "@angular/forms";
 import {CandidateService} from "../../../../services/candidate.service";
 import {IntakeComponentBase} from "../../../util/intake/IntakeComponentBase";
@@ -13,7 +13,7 @@ import {IntakeComponentBase} from "../../../util/intake/IntakeComponentBase";
 export class RiskAssessmentComponent extends IntakeComponentBase implements OnInit {
 
 //Drop down values for enumeration
-  riskAssessmentOptions: EnumOption[] = enumOptions(RiskAssessment);
+  riskLevelOptions: EnumOption[] = enumOptions(RiskLevel);
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
@@ -21,17 +21,27 @@ export class RiskAssessmentComponent extends IntakeComponentBase implements OnIn
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      visaId: [this.myRecord?.id],
-      visaCountryId: [this.myRecord?.country?.id],
-      riskAssessment: [this.myRecord?.eligibility],
-      visaAssessmentNotes: [this.myRecord?.assessmentNotes],
+      visaId: [this.visaCheckRecord?.id],
+      visaCountryId: [this.visaCheckRecord?.country?.id],
+      visaOverallRisk: [this.visaCheckRecord?.overallRisk],
+      visaOverallRiskNotes: [this.visaCheckRecord?.overallRiskNotes],
     });
   }
 
-  private get myRecord(): CandidateVisa {
-    return this.candidateIntakeData?.candidateVisaChecks ?
-      this.candidateIntakeData.candidateVisaChecks[this.myRecordIndex]
-      : null;
+  get hasNotes(): boolean {
+    let found: boolean = false;
+    if (this.form.value.visaOverallRisk) {
+      if (this.form.value.visaOverallRisk === 'Low') {
+        found = true
+      }
+      if (this.form.value.visaOverallRisk === 'Medium') {
+        found = true
+      }
+      if (this.form.value.visaOverallRisk === 'High') {
+        found = true
+      }
+    }
+    return found;
   }
 
 }

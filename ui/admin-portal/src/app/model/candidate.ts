@@ -483,7 +483,7 @@ export enum TravelDocumentStatus {
   None = "None"
 }
 
-export enum RiskAssessment {
+export enum RiskLevel {
   NoResponse = "",
   Low = "Low Risk",
   Medium = "Medium Risk",

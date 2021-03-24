@@ -61,6 +61,12 @@ public class CandidateVisaCheck extends CandidateVisaCheckBase {
         if (data.getVisaSecurityRiskNotes() != null) {
             setSecurityRiskNotes(data.getVisaSecurityRiskNotes());
         }
+        if (data.getVisaOverallRisk() != null) {
+            setOverallRisk(data.getVisaOverallRisk());
+        }
+        if (data.getVisaOverallRiskNotes() != null) {
+            setOverallRiskNotes(data.getVisaOverallRiskNotes());
+        }
 
 
         if (data.getVisaTbbEligibilityAssessment() != null) {

@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from "../../../../util/enum";
-import {CandidateVisa, TravelDocumentStatus} from "../../../../model/candidate";
+import {TravelDocumentStatus} from "../../../../model/candidate";
 import {FormBuilder} from "@angular/forms";
 import {CandidateService} from "../../../../services/candidate.service";
 import {IntakeComponentBase} from "../../../util/intake/IntakeComponentBase";
@@ -21,17 +21,27 @@ export class TravelDocumentComponent extends IntakeComponentBase implements OnIn
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      visaId: [this.myRecord?.id],
-      visaCountryId: [this.myRecord?.country?.id],
-      travelDocument: [this.myRecord?.eligibility],
-      visaAssessmentNotes: [this.myRecord?.assessmentNotes],
+      visaId: [this.visaCheckRecord?.id],
+      visaCountryId: [this.visaCheckRecord?.country?.id],
+      visaValidTravelDocs: [this.visaCheckRecord?.validTravelDocs],
+      visaValidTravelDocsNotes: [this.visaCheckRecord?.validTravelDocsNotes],
     });
   }
 
-  private get myRecord(): CandidateVisa {
-    return this.candidateIntakeData?.candidateVisaChecks ?
-      this.candidateIntakeData.candidateVisaChecks[this.myRecordIndex]
-      : null;
+  get hasNotes(): boolean {
+    let found: boolean = false;
+    if (this.form.value.visaOverallRisk) {
+      if (this.form.value.visaOverallRisk === 'Low') {
+        found = true
+      }
+      if (this.form.value.visaOverallRisk === 'Medium') {
+        found = true
+      }
+      if (this.form.value.visaOverallRisk === 'High') {
+        found = true
+      }
+    }
+    return found;
   }
 
 }
