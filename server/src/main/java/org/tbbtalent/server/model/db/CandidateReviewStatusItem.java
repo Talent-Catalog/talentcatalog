@@ -25,6 +25,17 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+/**
+ * This indicates whether a candidate who turns up in a saved search really belongs in that search.
+ * <p/>
+ * For example a candidate may have recorded in his profile that their favourite film is the
+ * "The Fabulous Baker Boys". That could mean that the candidate will appear in the
+ * saved search for bakers! You could just modify the candidate's profile to remove that movie
+ * preference - but you may not want to do that. Another way is to note that the candidate does
+ * not really belong in the "Baker" saved search. You can do that by creating one of these objects
+ * - setting the reviewStatus to {@link ReviewStatus#rejected}. Then the candidate will not longer
+ * appear in the search (unless you explicitly ask to see candidates rejected from the search).
+ */
 @Entity
 @Table(name = "candidate_review_item")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_review_item_id_seq", allocationSize = 1)

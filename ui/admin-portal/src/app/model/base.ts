@@ -26,8 +26,8 @@ export enum CandidateSourceType {
   SavedSearch
 }
 
-export enum ReviewedStatus {
-  pending,
+export enum ReviewStatus {
+  unverified,
   verified,
   rejected
 }
@@ -61,8 +61,8 @@ export const salesforceUrlRegExp: RegExp = new RegExp(salesforceUrlPattern);
 export const linkedInUrl: string = 'https://www.linkedin.com/in/';
 
 export const defaultReviewStatusFilter: string[] = [
-  ReviewedStatus[ReviewedStatus.pending],
-  ReviewedStatus[ReviewedStatus.verified]
+  ReviewStatus[ReviewStatus.unverified],
+  ReviewStatus[ReviewStatus.verified]
 ];
 
 export interface HasId {

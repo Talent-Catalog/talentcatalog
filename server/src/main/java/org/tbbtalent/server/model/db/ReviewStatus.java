@@ -18,7 +18,7 @@ package org.tbbtalent.server.model.db;
 
 public enum ReviewStatus {
 
-    pending,
+    unverified,
     verified,
     rejected
 
