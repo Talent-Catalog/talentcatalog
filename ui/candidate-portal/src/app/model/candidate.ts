@@ -54,13 +54,14 @@ export interface Candidate {
 }
 
 export enum CandidateStatus {
-  draft = 'draft',
   active = 'active',
-  inactive = 'inactive',
-  pending = 'pending',
-  incomplete = 'incomplete',
+  deleted = 'deleted',
+  draft = 'draft',
   employed = 'employed',
-  deleted = 'deleted'
+  incomplete = 'incomplete',
+  ineligible = 'ineligible',
+  pending = 'pending',
+  unreachable = 'unreachable',
 }
 
 export class BaseCandidateContactRequest {
