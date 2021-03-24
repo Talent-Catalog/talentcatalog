@@ -43,7 +43,7 @@ export class DependantsComponent implements OnInit {
     this.saving = true;
     this.candidateDependantService.create(this.candidate.id, {}).subscribe(
       (dependant) => {
-        this.candidateIntakeData.candidateDependants.push(dependant)
+        this.candidateIntakeData?.candidateDependants.push(dependant)
         this.saving = false;
       },
       (error) => {
@@ -53,7 +53,7 @@ export class DependantsComponent implements OnInit {
   }
 
   deleteRecord(i: number) {
-    this.candidateIntakeData.candidateDependants.splice(i, 1);
+    this.candidateIntakeData?.candidateDependants.splice(i, 1);
   }
 
 }

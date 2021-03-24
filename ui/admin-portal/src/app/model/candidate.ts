@@ -109,6 +109,9 @@ export interface CandidateIntakeData {
   familyHealth?: YesNo;
   familyHealthNotes?: string;
 
+  healthIssues?: string;
+  healthIssuesNotes?: string;
+
   homeLocation?: string;
 
   hostChallenges?: string;
@@ -180,7 +183,7 @@ export interface CandidateIntakeData {
   unrwaNotes?: string;
   visaReject?: YesNoUnsure;
   visaRejectNotes?: string;
-  visaIssues?: VisaIssue[];
+  visaIssues?: YesNoUnsure;
   visaIssuesNotes?: string;
 }
 

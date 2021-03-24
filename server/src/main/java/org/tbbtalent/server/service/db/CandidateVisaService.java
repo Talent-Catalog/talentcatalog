@@ -55,7 +55,7 @@ public interface CandidateVisaService {
     /**
      * Updates the candidate visa intake data associated with the given 
      * country and given candidate.
-     * @param countryId ID of country - If null this method does nothing 
+     * @param visaId ID of visa entity - If null this method does nothing
      * @param candidate Candidate
      * @param data Partially populated CandidateIntakeData record. Null data
      *             fields are ignored. Only non null fields are updated.
@@ -63,6 +63,6 @@ public interface CandidateVisaService {
      * given id or no CandidateVisa record with the id given in the data  
      */
     void updateIntakeData(
-            @Nullable Long countryId, @NonNull Candidate candidate, 
+            @Nullable Long visaId, @NonNull Candidate candidate,
             CandidateIntakeDataUpdate data) throws NoSuchObjectException;
 }

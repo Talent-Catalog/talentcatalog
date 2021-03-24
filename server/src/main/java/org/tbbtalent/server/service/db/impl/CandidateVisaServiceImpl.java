@@ -24,7 +24,6 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateVisaCheck;
 import org.tbbtalent.server.model.db.Country;
-import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.CandidateVisaRepository;
 import org.tbbtalent.server.repository.db.CountryRepository;
@@ -89,22 +88,17 @@ public class CandidateVisaServiceImpl implements CandidateVisaService {
     public void updateIntakeData(
             Long visaId, @NonNull Candidate candidate,
             CandidateIntakeDataUpdate data) throws NoSuchObjectException {
-        if (data.getVisaCountryId() != null) {
-            Country country = countryRepository.findById(data.getVisaCountryId())
-                    .orElseThrow(() -> new NoSuchObjectException(Country.class, data.getVisaCountryId()));
-
-            User createdBy = null;
-            //final Long createdById = data.getVisaCreatedById();
-//            if (createdById != null) {
-//                createdBy = userRepository.findById(createdById)
-//                    .orElseThrow(() -> new NoSuchObjectException(User.class, createdById));
-//            }
-            
             CandidateVisaCheck cv;
             cv = candidateVisaRepository.findById(visaId)
                     .orElseThrow(() -> new NoSuchObjectException(CandidateVisaCheck.class, visaId));
-            cv.populateIntakeData(candidate, country, data, createdBy);
+
+            Country country = null;
+            if (data.getVisaCountryId() != null) {
+                country = countryRepository.findById(data.getVisaCountryId())
+                        .orElseThrow(() -> new NoSuchObjectException(Country.class, data.getVisaCountryId()));
+            }
+            cv.populateIntakeData(candidate, country, data);
             candidateVisaRepository.save(cv);
-        }
+
     }
 }

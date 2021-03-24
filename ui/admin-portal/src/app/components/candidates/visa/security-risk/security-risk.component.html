@@ -1,0 +1,27 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+
+<form [formGroup]="form">
+  <div class="form-group">
+    <label for="visaSecurityRisk">Meets security requirement? (e.g. military, prior visa cancellation)</label>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
+    <select class="form-control"
+            id="visaSecurityRisk" formControlName="visaSecurityRisk">
+      <option *ngFor="let opt of securityRiskOptions" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+  </div>
+  <div *ngIf="hasNotes" class="form-group">
+    <label for="visaSecurityRiskNotes">Notes</label>
+    <textarea type="text" class="md-textarea-auto form-control" rows="4"
+              id="visaSecurityRiskNotes" [formControlName]="'visaSecurityRiskNotes'"
+              placeholder="" ></textarea>
+  </div>
+</form>

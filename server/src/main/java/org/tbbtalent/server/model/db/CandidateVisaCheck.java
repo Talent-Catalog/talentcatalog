@@ -19,7 +19,6 @@ package org.tbbtalent.server.model.db;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 
 import javax.persistence.Entity;
@@ -35,20 +34,37 @@ public class CandidateVisaCheck extends CandidateVisaCheckBase {
 
     public void populateIntakeData(
             @NonNull Candidate candidate, @NonNull Country country,
-            CandidateIntakeDataUpdate data, @Nullable User createdBy) {
+            CandidateIntakeDataUpdate data) {
         setCandidate(candidate);
         setCountry(country);
-        if (createdBy != null) {
-            setCreatedBy(createdBy);
-        }
-        if (data.getVisaTbbEligibilityAssessment() != null) {
-            setTbbEligibilityAssessment(data.getVisaTbbEligibilityAssessment());
-        }
         if (data.getVisaProtection() != null) {
             setProtection(data.getVisaProtection());
         }
         if (data.getVisaProtectionGrounds() != null) {
             setProtectionGrounds(data.getVisaProtectionGrounds());
+        }
+        if (data.getVisaHealthAssessment() != null) {
+            setHealthAssessment(data.getVisaHealthAssessment());
+        }
+        if (data.getVisaHealthAssessmentNotes() != null) {
+            setHealthAssessmentNotes(data.getVisaHealthAssessmentNotes());
+        }
+        if (data.getVisaCharacterAssessment() != null) {
+            setCharacterAssessment(data.getVisaCharacterAssessment());
+        }
+        if (data.getVisaCharacterAssessmentNotes() != null) {
+            setCharacterAssessmentNotes(data.getVisaCharacterAssessmentNotes());
+        }
+        if (data.getVisaSecurityRisk() != null) {
+            setSecurityRisk(data.getVisaSecurityRisk());
+        }
+        if (data.getVisaSecurityRiskNotes() != null) {
+            setSecurityRiskNotes(data.getVisaSecurityRiskNotes());
+        }
+
+
+        if (data.getVisaTbbEligibilityAssessment() != null) {
+            setTbbEligibilityAssessment(data.getVisaTbbEligibilityAssessment());
         }
         if (data.getVisaTbbEligibilityAssessment() != null) {
             setTbbEligibilityAssessment(data.getVisaTbbEligibilityAssessment());

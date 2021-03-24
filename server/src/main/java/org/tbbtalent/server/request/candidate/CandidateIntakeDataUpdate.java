@@ -177,6 +177,7 @@ public class CandidateIntakeDataUpdate {
     private String visaValidTravelDocsNotes;
     private YesNo visaOverallRisk;
     private String visaOverallRiskNotes;
+    private String visaCreatedById;
 
     private YesNoUnsure visaReject;
     private String visaRejectNotes;

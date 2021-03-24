@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from "../../../../util/enum";
-import {CandidateVisa, YesNo} from "../../../../model/candidate";
+import {YesNo} from "../../../../model/candidate";
 import {FormBuilder} from "@angular/forms";
 import {CandidateService} from "../../../../services/candidate.service";
 import {IntakeComponentBase} from "../../../util/intake/IntakeComponentBase";
@@ -21,17 +21,24 @@ export class CharacterAssessmentComponent extends IntakeComponentBase implements
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      visaId: [this.myRecord?.id],
-      visaCountryId: [this.myRecord?.country?.id],
-      characterAssessment: [this.myRecord?.characterAssessment],
-      visaAssessmentNotes: [this.myRecord?.assessmentNotes],
+      visaId: [this.visaCheckRecord?.id],
+      visaCountryId: [this.visaCheckRecord?.country?.id],
+      visaCharacterAssessment: [this.visaCheckRecord?.characterAssessment],
+      visaCharacterAssessmentNotes: [this.visaCheckRecord?.characterAssessmentNotes],
     });
   }
 
-  private get myRecord(): CandidateVisa {
-    return this.candidateIntakeData?.candidateVisaChecks ?
-      this.candidateIntakeData.candidateVisaChecks[this.myRecordIndex]
-      : null;
+  get hasNotes(): boolean {
+    let found: boolean = false;
+    if (this.form.value.visaCharacterAssessment) {
+      if (this.form.value.visaCharacterAssessment === 'Yes') {
+        found = true
+      }
+      if (this.form.value.visaCharacterAssessment === 'No') {
+        found = true
+      }
+    }
+    return found;
   }
 
 }
