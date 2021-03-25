@@ -23,12 +23,15 @@ import javax.persistence.*;
 
 @Getter
 @Setter
+@MappedSuperclass
 public class CandidateVisaJobCheckBase extends AbstractDomainObject<Long> {
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "candidate_id")
     private Candidate candidate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "candidate_visa_id")
+    @JoinColumn(name = "candidate_visa_check_id")
     private CandidateVisaCheck candidateVisaCheck;
 
     @Enumerated(EnumType.STRING)
@@ -38,8 +41,12 @@ public class CandidateVisaJobCheckBase extends AbstractDomainObject<Long> {
 
     private Long workExperienceYrs;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "education_level_id")
     private EducationLevel qualification;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "occupation_id")
     private Occupation occupation;
 
     private String occupationNotes;

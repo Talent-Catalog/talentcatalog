@@ -20,6 +20,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -71,7 +72,7 @@ public class CandidateVisaCheckBase extends AbstractAuditableDomainObject<Long> 
     private String assessmentNotes;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidateVisaCheck", cascade = CascadeType.MERGE)
-    private Set<CandidateVisaJobCheck> candidateVisaJobChecks;
+    private Set<CandidateVisaJobCheck> candidateVisaJobChecks = new HashSet<>();
 
     public int compareTo(CandidateVisaCheck o) {
         if (country == null) {

@@ -28,8 +28,8 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @Entity
-@Table(name = "candidate_role")
-@SequenceGenerator(name = "seq_gen", sequenceName = "candidate_role_id_seq", allocationSize = 1)
+@Table(name = "candidate_visa_job_check")
+@SequenceGenerator(name = "seq_gen", sequenceName = "candidate_visa_job_check_id_seq", allocationSize = 1)
 public class CandidateVisaJobCheck extends CandidateVisaJobCheckBase {
 
     public void populateIntakeData(
