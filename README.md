@@ -64,7 +64,7 @@ It is also probably easier to install Java directly rather than using brew.
 
 - Elasticsearch (for text search)
     - Install Docker image. 
-      See [https://www.elastic.co/guide/en/elasticsearch/reference/7.10/docker.html]()
+      See [https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html]()
       Just pull the image to install. See later for how to run.
 
 - Kibana (for monitoring Elasticsearch)
@@ -101,22 +101,22 @@ full privileges
 
 ### Run Elasticsearch ###
 
-Can run from Docker desktop for Mac, or...
+Can run from Docker desktop for Mac, or (replacing appropriate version number)...
 
 > docker rm elasticsearch
 
-> docker run --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.10.2
+> docker run --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.12.0
 
 Elasticsearch will run listening on port 9200. 
 You can verify this by going to [localhost:9200]() in your browser
 
 ### Run Kibana (optional) ###
 
-Can run from Docker desktop for Mac, or...
+Can run from Docker desktop for Mac, or (replacing appropriate version number)...
 
 > docker rm kibana
 
-> docker run --name kibana --link elasticsearch -p 5601:5601 docker.elastic.co/kibana/kibana:7.10.2
+> docker run --name kibana --link elasticsearch -p 5601:5601 docker.elastic.co/kibana/kibana:7.12.0
 
 Kibana runs listening on port 5601. 
 You can verify this by going to [localhost:5601]() in your browser 
