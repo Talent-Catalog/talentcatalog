@@ -16,7 +16,7 @@
 
 import {Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 
-import {Candidate} from '../../../model/candidate';
+import {Candidate, CandidateStatus, VisaIssue} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
 import {Country} from '../../../model/country';
 import {CountryService} from '../../../services/country.service';
@@ -62,6 +62,12 @@ import {canEditSource} from '../../../model/base';
 import {ConfirmationComponent} from '../../util/confirm/confirmation.component';
 import {User} from '../../../model/user';
 import {AuthService} from '../../../services/auth.service';
+import {
+  enumKeysToEnumOptions,
+  enumMultiSelectSettings,
+  EnumOption,
+  enumOptions
+} from "../../../util/enum";
 
 
 @Component({
@@ -124,16 +130,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
 
   notElastic;
 
-  statuses: { id: string, name: string }[] = [
-    {id: 'active', name: 'Active'},
-    {id: 'deleted', name: 'Deleted'},
-    {id: 'draft', name: 'Draft'},
-    {id: 'employed', name: 'Employed'},
-    {id: 'incomplete', name: 'Incomplete'},
-    {id: 'ineligible', name: 'Ineligible'},
-    {id: 'pending', name: 'Pending'},
-    {id: 'unreachable', name: 'Unreachable'},
-  ];
+  statusDropdownSettings: IDropdownSettings = enumMultiSelectSettings;
+  candidateStatusOptions: EnumOption[] = enumOptions(CandidateStatus);
 
   selectedCandidate: Candidate;
   englishLanguageModel: LanguageLevelFormControlModel;
@@ -347,7 +345,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     if (request.statusesDisplay != null) {
-      request.statuses = request.statusesDisplay.map(s => s.id);
+      request.statuses = request.statusesDisplay.map(s => s.value);
       delete request.statusesDisplay;
     }
 
@@ -475,9 +473,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     // For the multiselects we have to set the corresponding id/name object
 
     /* STATUSES */
-    let statuses = [];
-    if (request.statuses && this.statuses) {
-      statuses = this.statuses.filter(s => request.statuses.indexOf(s.id) !== -1);
+
+    let statuses: EnumOption[] = [];
+    if (request.statuses) {
+      statuses = enumKeysToEnumOptions(request.statuses, CandidateStatus);
     }
     this.searchForm.controls['statusesDisplay'].patchValue(statuses);
 

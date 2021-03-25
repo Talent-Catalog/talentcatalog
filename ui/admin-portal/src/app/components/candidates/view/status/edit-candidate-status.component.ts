@@ -18,7 +18,8 @@ import {Component, OnInit} from '@angular/core';
 import {CandidateService} from '../../../../services/candidate.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {Candidate} from "../../../../model/candidate";
+import {Candidate, CandidateStatus, MaritalStatus} from "../../../../model/candidate";
+import {EnumOption, enumOptions} from "../../../../util/enum";
 
 @Component({
   selector: 'app-edit-candidate',
@@ -32,6 +33,8 @@ export class EditCandidateStatusComponent implements OnInit {
   error;
   loading: boolean;
   saving: boolean;
+
+  candidateStatusOptions: EnumOption[] = enumOptions(CandidateStatus);
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,

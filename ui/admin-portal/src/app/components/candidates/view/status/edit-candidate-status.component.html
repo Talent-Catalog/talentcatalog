@@ -37,17 +37,12 @@
       <div class="form-group">
         <label for="status">Status</label>
         <select class="form-control" name="status" id="status" [formControlName]="'status'">
-          <option value=""></option>
-          <option value="active">Active</option>
-          <option value="deleted">Deleted</option>
-          <option value="draft">Draft</option>
-          <option value="employed">Employed</option>
-          <option value="incomplete">Incomplete</option>
-          <option value="ineligible">Ineligible</option>
-          <option value="pending">Pending</option>
-          <option value="unreachable">Unreachable</option>
+          <option *ngFor="let opt of candidateStatusOptions" [value]="opt.value">
+            {{opt.displayText}}
+          </option>
         </select>
       </div>
+
       <div class="form-group">
         <label for="comment">Admin Note</label>
         <ngx-wig id="comment" formControlName="comment"></ngx-wig>

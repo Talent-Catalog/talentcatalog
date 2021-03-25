@@ -251,6 +251,17 @@ export enum AvailImmediateReason {
   Other = "Other"
 }
 
+export enum CandidateStatus {
+  active = "active",
+  deleted = "deleted",
+  draft = "draft",
+  employed = "employed",
+  incomplete = "incomplete",
+  ineligible = "ineligible",
+  pending = "pending",
+  unreachable = "unreachable"
+}
+
 export enum FamilyRelations {
   NoResponse = "",
   NoRelation = "No relatives",
