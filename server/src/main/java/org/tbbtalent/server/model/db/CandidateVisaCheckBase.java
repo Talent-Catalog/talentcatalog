@@ -20,6 +20,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -69,7 +70,8 @@ public class CandidateVisaCheckBase extends AbstractAuditableDomainObject<Long> 
 
     private String assessmentNotes;
 
-    //private Set visaJobChecks;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidateVisaCheck", cascade = CascadeType.MERGE)
+    private Set<CandidateVisaJobCheck> candidateVisaJobChecks;
 
     public int compareTo(CandidateVisaCheck o) {
         if (country == null) {

@@ -16,14 +16,14 @@ export interface CreateCandidateVisaJobRequest {
 @Injectable({providedIn: 'root'})
 export class CandidateVisaJobService {
 
-  private apiUrl = environment.apiUrl + '/candidate-visa-check';
+  private apiUrl = environment.apiUrl + '/candidate-visa-job';
 
   constructor(private http: HttpClient) {}
 
-  create(candidateId: number, candidateVisaJobRequest: CreateCandidateVisaJobRequest):
+  create(visaId: number, candidateVisaJobRequest: CreateCandidateVisaJobRequest):
     Observable<CandidateVisaJob>  {
     return this.http.post<CandidateVisaJob>(
-      `${this.apiUrl}/${candidateId}`, candidateVisaJobRequest);
+      `${this.apiUrl}/${visaId}`, candidateVisaJobRequest);
   }
 
   delete(id: number): Observable<boolean>  {

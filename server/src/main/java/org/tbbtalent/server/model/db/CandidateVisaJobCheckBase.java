@@ -19,16 +19,17 @@ package org.tbbtalent.server.model.db;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.*;
 
 @Getter
 @Setter
-public class CandidateVisaJobCheckBase extends AbstractAuditableDomainObject<Long>{
+public class CandidateVisaJobCheckBase extends AbstractDomainObject<Long> {
 
     private Candidate candidate;
 
-    private CandidateVisaCheck candidateVisa;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "candidate_visa_id")
+    private CandidateVisaCheck candidateVisaCheck;
 
     @Enumerated(EnumType.STRING)
     private YesNo interest;

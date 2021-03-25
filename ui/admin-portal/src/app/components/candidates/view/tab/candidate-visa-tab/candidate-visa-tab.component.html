@@ -38,7 +38,7 @@
           <input type="radio" [value]="i"
                  name="visaCountry" formControlName="visaCountry"
                  (change)="changeVisaCountry($event)">
-          {{visaCheck.country.name}}
+          {{visaCheck?.country?.name}}
           <button class="float-right btn" (click)="deleteRecord(i)">
             <span class="align-top">
               <i class="fas fa-trash"></i>

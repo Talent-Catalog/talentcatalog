@@ -2,7 +2,6 @@ import {Component, Input} from '@angular/core';
 import {Candidate, CandidateIntakeData, CandidateVisa, CandidateVisaJob} from '../../../../model/candidate';
 import {Nationality} from '../../../../model/nationality';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {CandidateVisaCheckService} from '../../../../services/candidate-visa-check.service';
 import {ConfirmationComponent} from '../../../util/confirm/confirmation.component';
 import {CreateVisaJobAssessementComponent} from './modal/create-visa-job-assessement.component';
 import {FormBuilder, FormGroup} from '@angular/forms';
@@ -15,6 +14,7 @@ import {OccupationService} from '../../../../services/occupation.service';
 import {LanguageLevelService} from '../../../../services/language-level.service';
 import {CandidateNoteService} from "../../../../services/candidate-note.service";
 import {AuthService} from "../../../../services/auth.service";
+import {CandidateVisaJobService, CreateCandidateVisaJobRequest} from "../../../../services/candidate-visa-job.service";
 
 @Component({
   selector: 'app-visa-job-assessments',
@@ -43,7 +43,7 @@ export class VisaJobAssessmentsComponent extends IntakeComponentTabBase {
              languageLevelService: LanguageLevelService,
              noteService: CandidateNoteService,
              authService: AuthService,
-             private candidateVisaCheckService: CandidateVisaCheckService,
+             private candidateVisaJobService: CandidateVisaJobService,
              private modalService: NgbModal,
              private fb: FormBuilder) {
     super(candidateService, countryService, nationalityService, educationLevelService, occupationService, languageLevelService, noteService, authService)
@@ -52,11 +52,6 @@ export class VisaJobAssessmentsComponent extends IntakeComponentTabBase {
   onDataLoaded(init: boolean) {
     if (init) {
       if (this.visaRecord) {
-        this.visaRecord.jobChecks = [{
-          name: 'Accountant - NAB'
-        }, {
-          name: 'Chartered Accountant - Comm Bank'
-        }]
         this.currentYear = new Date().getFullYear().toString();
         this.birthYear = this.candidate.dob.toString().slice(0, 4);
 
@@ -64,9 +59,6 @@ export class VisaJobAssessmentsComponent extends IntakeComponentTabBase {
         if (this.visaRecord?.jobChecks.length > 0) {
           this.jobIndex = 0;
         }
-        this.form = this.fb.group({
-          jobName: [this.jobIndex]
-        });
       }
 
       //this.changeJobOpp(null);
@@ -77,11 +69,9 @@ export class VisaJobAssessmentsComponent extends IntakeComponentTabBase {
     const modal = this.modalService.open(CreateVisaJobAssessementComponent);
 
     modal.result
-      .then((selection: string) => {
-        if (selection) {
-          this.visaRecord.jobChecks.push({
-            name: selection
-          });
+      .then((request: CreateCandidateVisaJobRequest) => {
+        if (request) {
+          this.createRecord(request)
         }
       })
       .catch(() => {
@@ -89,21 +79,18 @@ export class VisaJobAssessmentsComponent extends IntakeComponentTabBase {
       });
   }
 
-  createRecord(selection: string) {
+  createRecord(request: CreateCandidateVisaJobRequest) {
     this.loading = true;
-    this.visaRecord.jobChecks.push({
-      name: selection
-    });
-    // this.candidateVisaCheckService.create(this.candidate.id, request)
-    //   .subscribe(
-    //     (visaCheck) => {
-    //       this.candidateIntakeData.candidateVisaChecks.push(visaCheck)
-    //       this.loading = false;
-    //     },
-    //     (error) => {
-    //       this.error = error;
-    //       this.loading = false;
-    //     });
+    this.candidateVisaJobService.create(this.visaRecord.id, request)
+      .subscribe(
+        (jobCheck) => {
+          this.visaRecord.jobChecks.push(jobCheck)
+          this.loading = false;
+        },
+        (error) => {
+          this.error = error;
+          this.loading = false;
+        });
 
   }
 

@@ -14,28 +14,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.model.db;
+package org.tbbtalent.server.repository.db;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.lang.NonNull;
-import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.tbbtalent.server.model.db.CandidateVisaJobCheck;
 
-import javax.persistence.Entity;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-
-@Getter
-@Setter
-@Entity
-@Table(name = "candidate_role")
-@SequenceGenerator(name = "seq_gen", sequenceName = "candidate_role_id_seq", allocationSize = 1)
-public class CandidateVisaJobCheck extends CandidateVisaJobCheckBase {
-
-    public void populateIntakeData(
-            @NonNull Candidate candidate, CandidateIntakeDataUpdate data) {
-        setCandidate(candidate);
-
-    }
+public interface CandidateVisaJobRepository
+        extends JpaRepository<CandidateVisaJobCheck, Long> {
     
 }

@@ -21,9 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.CandidateVisaCheck;
-import org.tbbtalent.server.request.candidate.visa.CreateCandidateVisaCheckRequest;
-import org.tbbtalent.server.service.db.CandidateVisaService;
+import org.tbbtalent.server.model.db.CandidateVisaJobCheck;
+import org.tbbtalent.server.request.candidate.visa.job.CreateCandidateVisaJobCheckRequest;
+import org.tbbtalent.server.service.db.CandidateVisaJobCheckService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 import javax.validation.Valid;
@@ -31,21 +31,21 @@ import javax.validation.constraints.NotNull;
 import java.util.Map;
 
 @RestController()
-@RequestMapping("/api/admin/candidate-visa-check")
-public class CandidateVisaCheckAdminApi 
-        implements IJoinedTableApi<CreateCandidateVisaCheckRequest,
-        CreateCandidateVisaCheckRequest, CreateCandidateVisaCheckRequest> {
-    private final CandidateVisaService candidateVisaService;
+@RequestMapping("/api/admin/candidate-visa-job")
+public class CandidateVisaJobCheckAdminApi
+        implements IJoinedTableApi<CreateCandidateVisaJobCheckRequest,
+        CreateCandidateVisaJobCheckRequest, CreateCandidateVisaJobCheckRequest> {
+    private final CandidateVisaJobCheckService candidateVisaJobCheckService;
 
-    public CandidateVisaCheckAdminApi(
-            CandidateVisaService candidateVisaService) {
-        this.candidateVisaService = candidateVisaService;
+    public CandidateVisaJobCheckAdminApi(
+            CandidateVisaJobCheckService candidateVisaJobCheckService) {
+        this.candidateVisaJobCheckService = candidateVisaJobCheckService;
     }
 
     /**
      * Creates a new candidate visa check record from the data in the given 
      * request. 
-     * @param candidateId ID of candidate
+     * @param visaId ID of visa
      * @param request Request containing visa check details
      * @return Created record - including database id of visa check record
      * @throws NoSuchObjectException if the there is no Candidate record with 
@@ -53,11 +53,9 @@ public class CandidateVisaCheckAdminApi
      */
     @Override
     public @NotNull Map<String, Object> create(
-            long candidateId, @Valid CreateCandidateVisaCheckRequest request) 
+            long visaId, @Valid CreateCandidateVisaJobCheckRequest request)
             throws NoSuchObjectException {
-        CandidateVisaCheck candidateVisaCheck = 
-                this.candidateVisaService
-                        .createVisaCheck(candidateId, request);
+        CandidateVisaJobCheck candidateVisaCheck = this.candidateVisaJobCheckService.createVisaJobCheck(visaId, request);
         return candidateVisaDto().build(candidateVisaCheck);
     }
 
@@ -72,13 +70,14 @@ public class CandidateVisaCheckAdminApi
     @Override
     public boolean delete(long id) 
             throws EntityReferencedException, InvalidRequestException {
-        return candidateVisaService.deleteVisaCheck(id);
+        return candidateVisaJobCheckService.deleteVisaJobCheck(id);
     }
     
     private DtoBuilder candidateVisaDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("country", countryDto())
+                .add("eligibility")
                 .add("assessmentNotes")
                 ;
     }
