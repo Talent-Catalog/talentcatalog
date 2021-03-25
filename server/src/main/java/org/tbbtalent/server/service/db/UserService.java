@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.service.db;
 
+import java.util.List;
 import javax.security.auth.login.AccountLockedException;
 import org.springframework.data.domain.Page;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
@@ -86,4 +87,10 @@ public interface UserService {
      * @throws InvalidCredentialsException if verification fails                
      */
     void mfaVerify(String mfaCode) throws InvalidCredentialsException;
+
+    /**
+     * Returns all staff users (ie not candidates) who are not using multi factor authentication.
+     * @return Users not using mfa.
+     */
+    List<User> searchStaffNotUsingMfa();
 }

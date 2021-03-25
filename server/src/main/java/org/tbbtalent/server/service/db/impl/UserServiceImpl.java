@@ -25,7 +25,9 @@ import dev.samstevens.totp.qr.QrDataFactory;
 import dev.samstevens.totp.qr.QrGenerator;
 import dev.samstevens.totp.secret.SecretGenerator;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.security.auth.login.AccountLockedException;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -33,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
@@ -495,4 +498,24 @@ public class UserServiceImpl implements UserService {
             }
         }
     }
+
+    @Override
+    public List<User> searchStaffNotUsingMfa() {
+        return userRepository.searchStaffNotUsingMfa();
+    }
+
+    //10pm Sunday night GMT
+    @Scheduled(cron = "0 0 22 * * SUN", zone = "GMT")
+    public void checkMfaUsers() {
+        List<User> users = searchStaffNotUsingMfa();
+        if (users.size() > 0) {
+            String s = users.stream()
+                .map(User::getUsername)
+                .collect(Collectors.joining(","));
+            final String mess = "The following staff members have MFA disabled: " + s;
+            log.warn(mess);
+            emailHelper.sendAlert(mess);
+        }
+    }
+
 }

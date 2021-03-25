@@ -14,32 +14,4 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.model.db;
-
-/**
- * Different user roles.
- * <p/>
- * There are two broad categories of user: Candidates and Staff.
- * <p/>
- * Candidates interact with the "front end" of the software: the "candidate portal".
- * Staff interact with the "back end": the "admin portal".
- * <p/>
- * All candidates have Role.user.
- * <p/>
- * Staff have different roles (not Role.user) based on their level of access to the data and system 
- * configuration.
- */
-public enum Role {
-
-    admin,
-
-    /**
-     * All candidates have Role.user.
-     */
-    user,
-    
-    sourcepartneradmin,
-    semilimited,
-    limited,
-    readonly
-}
+update candidate set status = 'unreachable' where status = 'inactive';

@@ -16,13 +16,53 @@
 
 package org.tbbtalent.server.model.db;
 
+/**
+ * Every candidate can only be in one status at a time.
+ * <p/>
+ * Only candidates with CandidateStatus.active are made visible to potential employers
+ */
 public enum CandidateStatus {
-    draft,
+
+    /**
+     * The candidate's data is ready to be shared with prospective employers.
+     */
     active,
-    inactive,
-    pending,
-    incomplete,
+
+    /**
+     * Candidate has been deleted. (The status of the candidate's corresponding User object should
+     * also be set to deleted - ie {@link Status#deleted} 
+     */
+    deleted,
+
+    /**
+     * Candidate has started registration but has not submitted - ie they are still in the
+     * middle of completing their registration.
+     */
+    draft,
+
+    /**
+     * Candidate is no longer looking for placement through TBB.
+     */
     employed,
-    deleted
+
+    /**
+     * Candidate's registration is not complete enough to be considered active.
+     */
+    incomplete,
+
+    /**
+     * The candidate is not eligible for TBB's support
+     */
+    ineligible,
+
+    /**
+     * Candidate has completed registration but TBB staff have not yet reviewed the registration. 
+     */
+    pending,
+
+    /**
+     * We cannot contact candidate
+     */
+    unreachable
 
 }

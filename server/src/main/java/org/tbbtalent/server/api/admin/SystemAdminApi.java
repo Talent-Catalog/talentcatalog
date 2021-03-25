@@ -1369,11 +1369,11 @@ public class SystemAdminApi {
             case 4:
             case 5:
             case 6:
-                return CandidateStatus.inactive.name();
+                return CandidateStatus.unreachable.name();
             case 7:
                 return CandidateStatus.incomplete.name();
             case 8:
-                return CandidateStatus.inactive.name();
+                return CandidateStatus.unreachable.name();
             case 9:
                 return CandidateStatus.pending.name();
             case 10:
