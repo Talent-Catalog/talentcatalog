@@ -17,4 +17,23 @@
 package org.tbbtalent.server.request.candidate.visa.job;
 
 public class CreateCandidateVisaJobCheckRequest {
+    private String name;
+
+    private String sfJobLink;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSfJobLink() {
+        return sfJobLink;
+    }
+
+    public void setSfJobLink(String sfJobLink) {
+        this.sfJobLink = sfJobLink;
+    }
 }

@@ -179,6 +179,22 @@ public class CandidateIntakeDataUpdate {
     private String visaValidTravelDocsNotes;
     private String visaCreatedById;
 
+    //Corresponds to CandidateVisaJobCheck fields
+    private Long visaJobId;
+    private Long visaJobOccupationId;
+    private YesNo visaJobInterest;
+    private YesNo visaJobSalaryTsmit;
+    private YesNo visaJobRegional;
+    private YesNo visaJobFamilyAus;
+    private YesNo visaJobEligible494;
+    private String visaJobEligible494Notes;
+    private YesNo visaJobEligible186;
+    private String visaJobEligible186Notes;
+    private OtherVisas visaJobEligibleOther;
+    private String visaJobEligibleOtherNotes;
+    private VisaEligibility visaJobPutForward;
+    private String visaJobNotes;
+
     private YesNoUnsure visaReject;
     private String visaRejectNotes;
     private YesNoUnsure visaIssues;

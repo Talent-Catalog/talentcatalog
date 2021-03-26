@@ -19,7 +19,7 @@
 </div>
 <form [formGroup]="form">
   <div class="form-group">
-    <label for="visaEligibility">Put candidate forward to employer?</label>
+    <label for="visaJobPutForward">Put candidate forward to employer?</label>
     <div class="float-right">
       <app-autosave-status
         [saving]="saving"
@@ -27,16 +27,16 @@
       </app-autosave-status>
     </div>
     <select class="form-control"
-            id="visaEligibility" formControlName="visaEligibility">
+            id="visaJobPutForward" formControlName="visaJobPutForward">
       <option *ngFor="let opt of visaEligibilityOptions" [value]="opt.value">
         {{opt.displayText}}
       </option>
     </select>
   </div>
   <div class="form-group">
-    <label for="visaAssessmentNotes">Notes</label>
+    <label for="visaJobNotes">Notes</label>
     <textarea type="text" class="md-textarea-auto form-control" rows="4"
-              id="visaAssessmentNotes" formControlName="visaAssessmentNotes"
+              id="visaJobNotes" formControlName="visaJobNotes"
               placeholder="" ></textarea>
   </div>
 </form>

@@ -240,26 +240,34 @@ export interface CandidateVisa {
   validTravelDocsNotes: string;
   overallRisk: string;
   overallRiskNotes: string;
-  jobChecks?: CandidateVisaJob[]
   intProtection?: string;
   createdBy?: User;
   createdDate?: number;
   updatedBy?: User;
   updatedDate?: number;
+  candidateVisaJobChecks?: CandidateVisaJobCheck[];
 
 }
 
-//todo rename to CandidateVisaRoleCheck? something like that. Role specific checks.
-export interface CandidateVisaJob {
+export interface CandidateVisaJobCheck {
   id?: number;
   name?: string;
   sfJobLink?: string;
-  jobOccupation?: Occupation;
+  occupation?: Occupation;
   salaryTsmit?: YesNo;
-  regionalArea?: YesNo;
-  jobInterest?: YesNo;
-  jobFamilyAus?: YesNo;
-  jobEligibilityAssess?: YesNo;
+  regional?: YesNo;
+  interest?: YesNo;
+  familyAus?: YesNo;
+  eligible_494?: YesNo;
+  eligible_494_Notes?: String;
+  eligible_186?: YesNo;
+  eligible_186_Notes?: String;
+  eligibleOther?: YesNo;
+  eligibleOtherNotes?: String;
+  putForward?: VisaEligibility;
+  notes?: String;
+
+  eligibilityAssess?: YesNo;
   eligibility?: VisaEligibility;
   employer?: string;
   tbbEligibilityAssessment?: TBBEligibilityAssessment;
@@ -322,11 +330,11 @@ export enum TBBEligibilityAssessment {
 
 export enum VisaEligibility {
   NoResponse = "",
-  No = "No",
+  Yes = "Yes",
+  YesBut = "Yes (but manage expectations about visa pathway)",
   DiscussFurther = "Discuss further",
   SeekAdvice = "Seek advice",
-  Yes = "Yes",
-  YesBut = "Yes (but manage expectations about visa pathway)"
+  No = "No"
 }
 
 export enum VisaIssue {

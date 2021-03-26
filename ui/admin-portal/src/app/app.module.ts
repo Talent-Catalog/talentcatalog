@@ -203,27 +203,29 @@ import {IntProtectionComponent} from "./components/candidates/visa/int-protectio
 import {CharacterAssessmentComponent} from "./components/candidates/visa/character-assessment/character-assessment.component";
 import {SecurityRiskComponent} from "./components/candidates/visa/security-risk/security-risk.component";
 import {TravelDocumentComponent} from "./components/candidates/visa/travel-document/travel-document.component";
-import {VisaJobAssessmentsComponent} from "./components/candidates/intake/visa-job-assessments/visa-job-assessments.component";
-import {CreateVisaJobAssessementComponent} from "./components/candidates/intake/visa-job-assessments/modal/create-visa-job-assessement.component";
-import {SalaryTsmitComponent} from "./components/candidates/intake/visa-job-assessments/salary-tsmit/salary-tsmit.component";
-import {RegionalAreaComponent} from "./components/candidates/intake/visa-job-assessments/regional-area/regional-area.component";
-import {JobInterestComponent} from "./components/candidates/intake/visa-job-assessments/job-interest/job-interest.component";
-import {JobFamilyAusComponent} from "./components/candidates/intake/visa-job-assessments/job-family-aus/job-family-aus.component";
-import {JobEligibilityAssessmentComponent} from "./components/candidates/intake/visa-job-assessments/job-eligibility-assessment/job-eligibility-assessment.component";
-import {VisaFourNineFourComponent} from "./components/candidates/intake/visa-job-assessments/visa-four-nine-four/visa-four-nine-four.component";
-import {VisaOneEightSixComponent} from "./components/candidates/intake/visa-job-assessments/visa-one-eight-six/visa-one-eight-six.component";
-import {VisaOtherOptionsComponent} from "./components/candidates/intake/visa-job-assessments/visa-other-options/visa-other-options.component";
-import {YearsRelevantExpComponent} from "./components/candidates/intake/visa-job-assessments/years-relevant-exp/years-relevant-exp.component";
-import {IeltsLevelComponent} from "./components/candidates/intake/visa-job-assessments/ielts-level/ielts-level.component";
-import {QualificationRelevantComponent} from "./components/candidates/intake/visa-job-assessments/qualification-relevant/qualification-relevant.component";
-import {VisaJobAssessmentAuComponent} from "./components/candidates/intake/visa-job-assessments/au/visa-job-assessment-au.component";
-import {VisaFinalAssessmentComponent} from "./components/candidates/intake/visa-job-assessments/visa-final-assessment/visa-final-assessment.component";
-import {JobOccupationComponent} from "./components/candidates/intake/visa-job-assessments/job-occupation/job-occupation.component";
+import {VisaJobAssessmentsComponent} from "./components/candidates/visa/visa-job-assessments/visa-job-assessments.component";
+import {CreateVisaJobAssessementComponent} from "./components/candidates/visa/visa-job-assessments/modal/create-visa-job-assessement.component";
+import {SalaryTsmitComponent} from "./components/candidates/visa/visa-job-assessments/salary-tsmit/salary-tsmit.component";
+import {RegionalAreaComponent} from "./components/candidates/visa/visa-job-assessments/regional-area/regional-area.component";
+import {JobInterestComponent} from "./components/candidates/visa/visa-job-assessments/job-interest/job-interest.component";
+import {JobFamilyAusComponent} from "./components/candidates/visa/visa-job-assessments/job-family-aus/job-family-aus.component";
+import {JobEligibilityAssessmentComponent} from "./components/candidates/visa/visa-job-assessments/job-eligibility-assessment/job-eligibility-assessment.component";
+import {VisaFourNineFourComponent} from "./components/candidates/visa/visa-job-assessments/visa-four-nine-four/visa-four-nine-four.component";
+import {VisaOneEightSixComponent} from "./components/candidates/visa/visa-job-assessments/visa-one-eight-six/visa-one-eight-six.component";
+import {VisaOtherOptionsComponent} from "./components/candidates/visa/visa-job-assessments/visa-other-options/visa-other-options.component";
+import {YearsRelevantExpComponent} from "./components/candidates/visa/visa-job-assessments/years-relevant-exp/years-relevant-exp.component";
+import {IeltsLevelComponent} from "./components/candidates/visa/visa-job-assessments/ielts-level/ielts-level.component";
+import {QualificationRelevantComponent} from "./components/candidates/visa/visa-job-assessments/qualification-relevant/qualification-relevant.component";
+import {VisaJobAssessmentAuComponent} from "./components/candidates/visa/visa-job-assessments/au/visa-job-assessment-au.component";
+import {VisaFinalAssessmentComponent} from "./components/candidates/visa/visa-job-assessments/visa-final-assessment/visa-final-assessment.component";
+import {JobOccupationComponent} from "./components/candidates/visa/visa-job-assessments/job-occupation/job-occupation.component";
 import {RiskAssessmentComponent} from "./components/candidates/visa/risk-assessment/risk-assessment.component";
 import {HealthAssessmentComponent} from "./components/candidates/visa/health-assessment/health-assessment.component";
-import {VisaJobAssessmentCaComponent} from "./components/candidates/intake/visa-job-assessments/ca/visa-job-assessment-ca.component";
+import {VisaJobAssessmentCaComponent} from "./components/candidates/visa/visa-job-assessments/ca/visa-job-assessment-ca.component";
 import {ShowQrCodeComponent} from './components/util/qr/show-qr-code/show-qr-code.component';
 import {HealthIssuesComponent} from './components/candidates/intake/health-issues/health-issues.component';
+import {VisaJobPutForwardComponent} from './components/candidates/visa/visa-job-assessments/put-forward/visa-job-put-forward.component';
+import {VisaJobNotesComponent} from './components/candidates/visa/visa-job-assessments/visa-job-notes/visa-job-notes.component';
 
 @NgModule({
   declarations: [
@@ -425,7 +427,9 @@ import {HealthIssuesComponent} from './components/candidates/intake/health-issue
     VisaJobAssessmentCaComponent,
     DatePickerComponent,
     ShowQrCodeComponent,
-    HealthIssuesComponent
+    HealthIssuesComponent,
+    VisaJobPutForwardComponent,
+    VisaJobNotesComponent
   ],
   imports: [
     BrowserModule,

@@ -14,11 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {IntakeComponentBase} from "../../../util/intake/IntakeComponentBase";
 import {FormBuilder} from "@angular/forms";
 import {CandidateService} from "../../../../services/candidate.service";
-import {CandidateVisa, VisaEligibility} from "../../../../model/candidate";
+import {CandidateVisaJobCheck, VisaEligibility} from "../../../../model/candidate";
 import {EnumOption, enumOptions} from "../../../../util/enum";
 
 @Component({
@@ -28,6 +28,7 @@ import {EnumOption, enumOptions} from "../../../../util/enum";
 })
 export class VisaAssessmentComponent extends IntakeComponentBase implements OnInit {
 
+  @Input() selectedJobCheck: CandidateVisaJobCheck;
   //Drop down values for enumeration
   visaEligibilityOptions: EnumOption[] = enumOptions(VisaEligibility);
 
@@ -37,17 +38,10 @@ export class VisaAssessmentComponent extends IntakeComponentBase implements OnIn
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      visaId: [this.myRecord?.id],
-      visaCountryId: [this.myRecord?.country?.id],
-      visaEligibility: [this.myRecord?.eligibility],
-      visaAssessmentNotes: [this.myRecord?.assessmentNotes],
+      visaJobId: [this.selectedJobCheck?.id],
+      visaJobPutForward: [this.selectedJobCheck?.putForward],
+      visaJobNotes: [this.selectedJobCheck?.notes],
     });
-  }
-
-  private get myRecord(): CandidateVisa {
-    return this.candidateIntakeData.candidateVisaChecks ?
-      this.candidateIntakeData.candidateVisaChecks[this.myRecordIndex]
-      : null;
   }
 
 }

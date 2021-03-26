@@ -55,8 +55,8 @@ public class CandidateVisaJobCheckAdminApi
     public @NotNull Map<String, Object> create(
             long visaId, @Valid CreateCandidateVisaJobCheckRequest request)
             throws NoSuchObjectException {
-        CandidateVisaJobCheck candidateVisaCheck = this.candidateVisaJobCheckService.createVisaJobCheck(visaId, request);
-        return candidateVisaDto().build(candidateVisaCheck);
+        CandidateVisaJobCheck candidateVisaJobCheck = this.candidateVisaJobCheckService.createVisaJobCheck(visaId, request);
+        return candidateVisaJobDto().build(candidateVisaJobCheck);
     }
 
     /**
@@ -73,19 +73,11 @@ public class CandidateVisaJobCheckAdminApi
         return candidateVisaJobCheckService.deleteVisaJobCheck(id);
     }
     
-    private DtoBuilder candidateVisaDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("country", countryDto())
-                .add("eligibility")
-                .add("assessmentNotes")
-                ;
-    }
-
-    private DtoBuilder countryDto() {
+    private DtoBuilder candidateVisaJobDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("name")
+                .add("sfJobLink")
                 ;
     }
     

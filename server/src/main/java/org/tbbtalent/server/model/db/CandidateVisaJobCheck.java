@@ -33,8 +33,41 @@ import javax.persistence.Table;
 public class CandidateVisaJobCheck extends CandidateVisaJobCheckBase {
 
     public void populateIntakeData(
-            @NonNull Candidate candidate, CandidateIntakeDataUpdate data) {
-        setCandidate(candidate);
+            @NonNull Occupation occupation, CandidateIntakeDataUpdate data) {
+        setOccupation(occupation);
+        if (data.getVisaJobSalaryTsmit() != null) {
+            setSalaryTsmit(data.getVisaJobSalaryTsmit());
+        }
+        if (data.getVisaJobRegional() != null) {
+            setRegional(data.getVisaJobRegional());
+        }
+        if (data.getVisaJobInterest() != null) {
+            setRegional(data.getVisaJobRegional());
+        }
+        if (data.getVisaJobEligible494() != null) {
+            setEligible_494(data.getVisaJobEligible494());
+        }
+        if (data.getVisaJobEligible494Notes() != null) {
+            setEligible_494_Notes(data.getVisaJobEligible494Notes());
+        }
+        if (data.getVisaJobEligible186() != null) {
+            setEligible_186(data.getVisaJobEligible186());
+        }
+        if (data.getVisaJobEligible186Notes() != null) {
+            setEligible_186_Notes(data.getVisaJobEligible186Notes());
+        }
+        if (data.getVisaJobEligibleOther() != null) {
+            setEligibleOther(data.getVisaJobEligibleOther());
+        }
+        if (data.getVisaJobEligibleOtherNotes() != null) {
+            setEligibleOtherNotes(data.getVisaJobEligibleOtherNotes());
+        }
+        if (data.getVisaJobPutForward() != null) {
+            setPutForward(data.getVisaJobPutForward());
+        }
+        if (data.getVisaJobNotes() != null) {
+            setNotes(data.getVisaJobNotes());
+        }
 
     }
     

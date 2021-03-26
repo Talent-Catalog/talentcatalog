@@ -207,6 +207,7 @@ public class CandidateIntakeDataBuilderSelector {
     private DtoBuilder candidateVisaCheckDto() {
         return new DtoBuilder()
                 .add("id")
+                .add("candidateVisaJobChecks", visaJobCheckDto())
                 .add("country", countryDto())
                 .add("protection")
                 .add("protectionGrounds")
@@ -226,6 +227,27 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("createdDate")
                 .add("updatedBy", userDto())
                 .add("updatedDate")
+                ;
+    }
+
+    private DtoBuilder visaJobCheckDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("name")
+                .add("sfJobLink")
+                .add("interest")
+                .add("regional")
+                .add("salaryTsmit")
+                .add("interest")
+                .add("eligible_494")
+                .add("eligible_494_Notes")
+                .add("eligible_186")
+                .add("eligible_186_Notes")
+                .add("eligibleOther")
+                .add("eligibleOtherNotes")
+                .add("putForward")
+                .add("notes")
+                .add("occupation", occupationDto())
                 ;
     }
 

@@ -98,6 +98,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final CandidateNoteService candidateNoteService;
     private final CandidateCitizenshipService candidateCitizenshipService;
     private final CandidateVisaService candidateVisaService;
+    private final CandidateVisaJobCheckService candidateVisaJobCheckService;
     private final CandidateDependantService candidateDependantService;
     private final CandidateDestinationService candidateDestinationService;
     private final CandidateExamService candidateExamService;
@@ -130,6 +131,7 @@ public class CandidateServiceImpl implements CandidateService {
                                 CandidateDependantService candidateDependantService,
                                 CandidateDestinationService candidateDestinationService,
                                 CandidateVisaService candidateVisaService,
+                                CandidateVisaJobCheckService candidateVisaJobCheckService,
                                 CandidateExamService candidateExamService,
                                 SurveyTypeRepository surveyTypeRepository,
                                 OccupationRepository occupationRepository,
@@ -155,6 +157,7 @@ public class CandidateServiceImpl implements CandidateService {
         this.candidateDependantService = candidateDependantService;
         this.candidateDestinationService = candidateDestinationService;
         this.candidateVisaService = candidateVisaService;
+        this.candidateVisaJobCheckService = candidateVisaJobCheckService;
         this.candidateExamService = candidateExamService;
         this.surveyTypeRepository = surveyTypeRepository;
         this.occupationRepository = occupationRepository;
@@ -1815,12 +1818,20 @@ public class CandidateServiceImpl implements CandidateService {
                     .updateIntakeData(destinationCountryId, candidate, data);
         }
 
-        //If there is a non null visa country, that means that this
+        //If there is a non null visa id, that means that this
         //is a visa check update.
         final Long visaId = data.getVisaId();
         if (visaId != null) {
             candidateVisaService
                     .updateIntakeData(visaId, candidate, data);
+        }
+
+        //If there is a non null visa job id, that means that this
+        //is a visa job check update.
+        final Long visaJobId = data.getVisaJobId();
+        if (visaJobId != null) {
+            candidateVisaJobCheckService
+                    .updateIntakeData(visaJobId, candidate, data);
         }
 
         //If there is a non null exam type, that means that this

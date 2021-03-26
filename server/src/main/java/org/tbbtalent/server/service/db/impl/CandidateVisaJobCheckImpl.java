@@ -24,9 +24,11 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateVisaCheck;
 import org.tbbtalent.server.model.db.CandidateVisaJobCheck;
+import org.tbbtalent.server.model.db.Occupation;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.CandidateVisaJobRepository;
 import org.tbbtalent.server.repository.db.CandidateVisaRepository;
+import org.tbbtalent.server.repository.db.OccupationRepository;
 import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tbbtalent.server.request.candidate.visa.job.CreateCandidateVisaJobCheckRequest;
 import org.tbbtalent.server.service.db.CandidateVisaJobCheckService;
@@ -38,14 +40,17 @@ public class CandidateVisaJobCheckImpl implements CandidateVisaJobCheckService {
     private final CandidateVisaJobRepository candidateVisaJobRepository;
     private final CandidateRepository candidateRepository;
     private final CandidateVisaRepository candidateVisaRepository;
+    private final OccupationRepository occupationRepository;
 
     public CandidateVisaJobCheckImpl(
             CandidateVisaJobRepository candidateVisaJobRepository,
             CandidateRepository candidateRepository,
-            CandidateVisaRepository candidateVisaRepository) {
+            CandidateVisaRepository candidateVisaRepository,
+            OccupationRepository occupationRepository) {
         this.candidateVisaJobRepository = candidateVisaJobRepository;
         this.candidateRepository = candidateRepository;
         this.candidateVisaRepository = candidateVisaRepository;
+        this.occupationRepository = occupationRepository;
 
     }
 
@@ -59,15 +64,8 @@ public class CandidateVisaJobCheckImpl implements CandidateVisaJobCheckService {
 
         CandidateVisaJobCheck jobCheck = new CandidateVisaJobCheck();
         jobCheck.setCandidateVisaCheck(visaCheck);
-
-//        final Long countryId = request.getCountryId();
-//        if (countryId != null) {
-//            Country country = countryRepository.findById(countryId)
-//                    .orElseThrow(() -> new NoSuchObjectException(Country.class, countryId));
-//            cv.setCountry(country);
-//        }
-//        //cv.setEligibility(request.getEligibility());
-//        cv.setAssessmentNotes(request.getAssessmentNotes());
+        jobCheck.setName(request.getName());
+        jobCheck.setSfJobLink(request.getSfJobLink());
 
         return candidateVisaJobRepository.save(jobCheck);
     }
@@ -81,18 +79,18 @@ public class CandidateVisaJobCheckImpl implements CandidateVisaJobCheckService {
 
     @Override
     public void updateIntakeData(
-            Long visaId, @NonNull Candidate candidate,
+            Long visaJobId, @NonNull Candidate candidate,
             CandidateIntakeDataUpdate data) throws NoSuchObjectException {
         CandidateVisaJobCheck cv;
-        cv = candidateVisaJobRepository.findById(visaId)
-                .orElseThrow(() -> new NoSuchObjectException(CandidateVisaJobCheck.class, visaId));
+        cv = candidateVisaJobRepository.findById(visaJobId)
+                .orElseThrow(() -> new NoSuchObjectException(CandidateVisaJobCheck.class, visaJobId));
 
-//        Country country = null;
-//        if (data.getVisaCountryId() != null) {
-//            country = countryRepository.findById(data.getVisaCountryId())
-//                    .orElseThrow(() -> new NoSuchObjectException(Country.class, data.getVisaCountryId()));
-//        }
-        cv.populateIntakeData(candidate, data);
+        Occupation occupation = null;
+        if (data.getVisaJobOccupationId() != null) {
+            occupation = occupationRepository.findById(data.getVisaJobOccupationId())
+                    .orElseThrow(() -> new NoSuchObjectException(Occupation.class, data.getVisaJobOccupationId()));
+        }
+        cv.populateIntakeData(occupation, data);
         candidateVisaJobRepository.save(cv);
 
     }
