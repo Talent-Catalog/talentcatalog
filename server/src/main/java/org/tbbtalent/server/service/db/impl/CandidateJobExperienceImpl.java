@@ -22,22 +22,20 @@ import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateJobExperience;
-import org.tbbtalent.server.model.db.CandidateOccupation;
-import org.tbbtalent.server.model.db.Country;
-import org.tbbtalent.server.model.db.Role;
-import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.repository.db.CandidateJobExperienceRepository;
 import org.tbbtalent.server.repository.db.CandidateOccupationRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.CountryRepository;
 import org.tbbtalent.server.request.work.experience.CreateJobExperienceRequest;
+import org.tbbtalent.server.request.work.experience.ListJobExperienceRequest;
 import org.tbbtalent.server.request.work.experience.SearchJobExperienceRequest;
 import org.tbbtalent.server.request.work.experience.UpdateJobExperienceRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.CandidateJobExperienceService;
 import org.tbbtalent.server.service.db.CandidateService;
+
+import java.util.List;
 
 @Service
 public class CandidateJobExperienceImpl implements CandidateJobExperienceService {
@@ -208,5 +206,10 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
     private CandidateOccupation getCandidateOccupation(Long candidateOccupationId) {
         return candidateOccupationRepository.findById(candidateOccupationId)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateOccupation.class, candidateOccupationId));
+    }
+
+    @Override
+    public List<CandidateJobExperience> listCandidateJobExperiences(ListJobExperienceRequest request) {
+        return candidateJobExperienceRepository.findExperienceByIds(request.getCandidateId(), request.getOccupationId());
     }
 }

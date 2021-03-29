@@ -16,27 +16,22 @@
 
 package org.tbbtalent.server.api.admin;
 
-import java.util.Map;
-
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.model.db.CandidateJobExperience;
 import org.tbbtalent.server.request.work.experience.CreateJobExperienceRequest;
+import org.tbbtalent.server.request.work.experience.ListJobExperienceRequest;
 import org.tbbtalent.server.request.work.experience.SearchJobExperienceRequest;
 import org.tbbtalent.server.request.work.experience.UpdateJobExperienceRequest;
 import org.tbbtalent.server.service.db.CandidateJobExperienceService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
+
+import javax.validation.Valid;
+import java.util.List;
+import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate-job-experience")
@@ -47,6 +42,12 @@ public class CandidateJobExperienceAdminApi {
     @Autowired
     public CandidateJobExperienceAdminApi(CandidateJobExperienceService candidateJobExperienceService) {
         this.candidateJobExperienceService = candidateJobExperienceService;
+    }
+
+    @PostMapping("list")
+    public List<Map<String, Object>> get(@RequestBody ListJobExperienceRequest request) {
+        List<CandidateJobExperience> candidateJobExperiences = this.candidateJobExperienceService.listCandidateJobExperiences(request);
+        return candidateJobExperienceDto().buildList(candidateJobExperiences);
     }
 
     @PostMapping("search")

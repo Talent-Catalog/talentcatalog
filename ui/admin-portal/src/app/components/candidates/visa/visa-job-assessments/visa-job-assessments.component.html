@@ -33,9 +33,8 @@
     <hr/>
 
     <div [ngSwitch]="selectedCountry" *ngIf="selectedCountry != undefined">
-      <app-visa-job-assessment-au *ngSwitchCase="'Australia'"
-                                  #jobCheck
-                                  [candidate]="candidate"
+
+      <app-visa-job-assessment-au [candidate]="candidate"
                                   [selectedJobCheck]="selectedJobCheck"
                                   [visaRecord]="visaRecord">
       </app-visa-job-assessment-au>

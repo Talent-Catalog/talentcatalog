@@ -61,7 +61,8 @@
   <div class="card-header">
     Candidate Visa Eligibility
   </div>
-  <div class="card-body">
+  <div class="card-body intake-data">
+    <!-- Display Age   -->
     <app-fixed-input
       [question]="'Age: '"
       [answer]="currentYear - birthYear">
@@ -69,18 +70,33 @@
     <div class="form-group">
       <small>50 year cutoff for 494; 55 for 186.</small>
     </div>
-    <!--          <app-view-candidate-job-experience-->
-    <!--            [candidate]="candidate"-->
-    <!--            [candidateOccupation]="">-->
-    <!--          </app-view-candidate-job-experience>-->
+
+    <!--  Display Estimated IELTS Assessment   -->
+    <app-fixed-input
+      *ngIf="this.candidateIntakeData?.langAssessmentScore"
+      [question]="'Estimated IELTS Assessment: '"
+      [answer]="this.candidateIntakeData?.langAssessmentScore">
+    </app-fixed-input>
+
+    <!--  Display English Exams  -->
+      <div *ngFor="let e of this.candidateIntakeData?.candidateExams">
+        <app-fixed-input
+          [question]="e.exam"
+          [answer]="e.score">
+        </app-fixed-input>
+      </div>
+    <div *ngIf="experiences">
+      <app-fixed-input
+        [question]="'Years relevant experience'"
+        [answer]="experiences">
+      </app-fixed-input>
+    </div>
+  </div>
+  <div class="card-body">
     <app-years-relevant-exp
       [candidate]="candidate"
       [selectedIndex]="jobIndex">
     </app-years-relevant-exp>
-    <app-ielts-level
-      [candidate]="candidate"
-      [selectedIndex]="jobIndex">
-    </app-ielts-level>
     <app-qualification-relevant
       [candidate]="candidate"
       [selectedIndex]="jobIndex">

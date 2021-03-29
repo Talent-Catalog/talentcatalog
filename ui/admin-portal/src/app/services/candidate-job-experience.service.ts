@@ -19,17 +19,27 @@ import {Observable} from 'rxjs/index';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {CandidateJobExperience} from "../model/candidate-job-experience";
-import { SearchResults } from '../model/search-results';
+import {SearchResults} from '../model/search-results';
+
+export interface CandidateJobExperienceSearchRequest {
+    candidateId?: number,
+    candidateOccupationId?: number,
+    occupationId?: number,
+    pageSize?: number,
+    pageNumber?: number,
+    sortDirection?: string,
+    sortFields?: string[]
+}
 
 @Injectable({providedIn: 'root'})
 export class CandidateJobExperienceService {
 
   private apiUrl = environment.apiUrl + '/candidate-job-experience';
 
-  constructor(private http:HttpClient) {}
+  constructor(private http: HttpClient) {}
 
-  list(id: number): Observable<CandidateJobExperience[]> {
-    return this.http.get<CandidateJobExperience[]>(`${this.apiUrl}/${id}/list`);
+  list(request: CandidateJobExperienceSearchRequest): Observable<CandidateJobExperience[]> {
+    return this.http.post<CandidateJobExperience[]>(`${this.apiUrl}/list`, request);
   }
 
   create(id: number, details): Observable<CandidateJobExperience>  {

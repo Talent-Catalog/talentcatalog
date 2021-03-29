@@ -2,6 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../../util/intake/IntakeComponentBase';
+import {CandidateExam} from "../../../../../model/candidate";
 
 @Component({
   selector: 'app-ielts-level',
@@ -22,4 +23,7 @@ export class IeltsLevelComponent extends IntakeComponentBase implements OnInit {
     });
   }
 
+  get englishExams(): CandidateExam[] {
+    return this.candidateIntakeData?.candidateExams;
+  }
 }
