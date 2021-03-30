@@ -262,6 +262,16 @@ export enum CandidateStatus {
   unreachable = "unreachable"
 }
 
+export interface UpdateCandidateStatusInfo {
+  status: CandidateStatus;
+  comment?: string;
+  candidateMessage?: string;
+}
+
+export interface UpdateCandidateStatusRequest extends UpdateCandidateStatusInfo {
+  candidateIds: number[];
+}
+
 export enum FamilyRelations {
   NoResponse = "",
   NoRelation = "No relatives",

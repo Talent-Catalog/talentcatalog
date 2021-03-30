@@ -139,7 +139,7 @@ public interface CandidateService {
 
     Candidate updateCandidateSurvey(long id, UpdateCandidateSurveyRequest request);
 
-    Candidate updateCandidateStatus(long id, UpdateCandidateStatusRequest request);
+    Candidate updateCandidateStatus(UpdateCandidateStatusRequest request);
 
     Candidate updateCandidateLinks(long id, UpdateCandidateLinksRequest request);
 

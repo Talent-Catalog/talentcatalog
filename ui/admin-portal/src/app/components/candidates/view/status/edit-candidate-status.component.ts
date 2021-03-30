@@ -18,7 +18,12 @@ import {Component, OnInit} from '@angular/core';
 import {CandidateService} from '../../../../services/candidate.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {Candidate, CandidateStatus, MaritalStatus} from "../../../../model/candidate";
+import {
+  Candidate,
+  CandidateStatus,
+  MaritalStatus,
+  UpdateCandidateStatusRequest
+} from "../../../../model/candidate";
 import {EnumOption, enumOptions} from "../../../../util/enum";
 
 @Component({
@@ -53,7 +58,19 @@ export class EditCandidateStatusComponent implements OnInit {
       });
   }
 
-   onSave() {
+  get candidateMessage(): string {
+    return this.candidateForm.value?.candidateMessage;
+  }
+
+  get comment(): string {
+    return this.candidateForm.value?.comment;
+  }
+
+  get status(): CandidateStatus {
+    return this.candidateForm.value?.status;
+  }
+
+  onSave() {
     this.error = null;
 
     const val = this.candidateForm.value;
@@ -63,7 +80,13 @@ export class EditCandidateStatusComponent implements OnInit {
     }
 
     this.saving = true;
-    this.candidateService.updateStatus(this.candidateId, this.candidateForm.value).subscribe(
+    const request: UpdateCandidateStatusRequest = {
+      candidateIds: [this.candidateId],
+      candidateMessage: this.candidateMessage,
+      comment: this.comment,
+      status: this.status
+    };
+    this.candidateService.updateStatus(request).subscribe(
       (candidate) => {
         this.saving = false;
         this.closeModal(candidate);

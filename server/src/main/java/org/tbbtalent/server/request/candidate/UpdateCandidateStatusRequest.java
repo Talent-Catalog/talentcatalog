@@ -16,58 +16,24 @@
 
 package org.tbbtalent.server.request.candidate;
 
+import java.util.List;
 import javax.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-import org.tbbtalent.server.model.db.CandidateStatus;
+/**
+ * Request to update the status of one or more candidates.
+ */
+@Getter
+@Setter
+@ToString
+public class UpdateCandidateStatusRequest extends UpdateCandidateStatusInfo {
 
-public class UpdateCandidateStatusRequest {
-
+    /**
+     * Candidate(s) whose status should be updated
+     */
     @NotNull
-    private Long candidateId;
-    @NotNull
-    private CandidateStatus status;
+    private List<Long> candidateIds;
 
-    private String comment;
-    private String candidateMessage;
-
-    public UpdateCandidateStatusRequest() {
-    }
-
-    public UpdateCandidateStatusRequest(@NotNull CandidateStatus status, String comment) {
-        this.candidateId = candidateId;
-        this.status = status;
-        this.comment = comment;
-    }
-
-    public Long getCandidateId() {
-        return candidateId;
-    }
-
-    public void setCandidateId(Long candidateId) {
-        this.candidateId = candidateId;
-    }
-
-    public CandidateStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(CandidateStatus status) {
-        this.status = status;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    public String getCandidateMessage() {
-        return candidateMessage;
-    }
-
-    public void setCandidateMessage(String candidateMessage) {
-        this.candidateMessage = candidateMessage;
-    }
 }

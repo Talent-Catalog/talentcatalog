@@ -125,10 +125,10 @@ public class CandidateAdminApi {
         return builder.build(candidate);
     }
 
-    @PutMapping("{id}/status")
-    public Map<String, Object> update(@PathVariable("id") long id,
-                            @RequestBody UpdateCandidateStatusRequest request) {
-        Candidate candidate = this.candidateService.updateCandidateStatus(id, request);
+    //TODO JC Don't return anything, no path variable, pick up id(s) from request. 
+    @PutMapping("status")
+    public Map<String, Object> updateStatus(@RequestBody UpdateCandidateStatusRequest request) {
+        Candidate candidate = this.candidateService.updateCandidateStatus(request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
     }

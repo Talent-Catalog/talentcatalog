@@ -15,7 +15,7 @@
  */
 
 import {Injectable} from '@angular/core';
-import {Candidate, CandidateIntakeData} from '../model/candidate';
+import {Candidate, CandidateIntakeData, UpdateCandidateStatusRequest} from '../model/candidate';
 import {Observable} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
@@ -65,8 +65,8 @@ export class CandidateService {
     return this.http.put<Candidate>(`${this.apiUrl}/${id}/links`, details);
   }
 
-  updateStatus(id: number, details): Observable<Candidate>  {
-    return this.http.put<Candidate>(`${this.apiUrl}/${id}/status`, details);
+  updateStatus(details: UpdateCandidateStatusRequest): Observable<Candidate>  {
+    return this.http.put<Candidate>(`${this.apiUrl}/status`, details);
   }
 
   updateInfo(id: number, details): Observable<Candidate>  {

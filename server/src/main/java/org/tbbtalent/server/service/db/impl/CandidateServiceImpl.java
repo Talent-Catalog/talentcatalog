@@ -844,11 +844,15 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     @Transactional
-    public Candidate updateCandidateStatus(long id, UpdateCandidateStatusRequest request) {
+    public Candidate updateCandidateStatus(UpdateCandidateStatusRequest request) {
         User loggedInUser = userContext.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
+        
+        //todo needs to deal with array of ids.
+        Long id = request.getCandidateIds().get(0);
+        
         Candidate candidate = this.candidateRepository.findByIdLoadUser(id, sourceCountries)
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
         CandidateStatus originalStatus = candidate.getStatus();
@@ -1127,7 +1131,10 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         // Don't update status to pending if status is already pending
         if (!candidate.getStatus().equals(CandidateStatus.pending)) {
-            updateCandidateStatus(candidate.getId(), new UpdateCandidateStatusRequest(CandidateStatus.pending, "Candidate submitted"));
+            final UpdateCandidateStatusRequest request = new UpdateCandidateStatusRequest();
+            request.setStatus(CandidateStatus.pending);
+            request.setComment("Candidate submitted");
+            updateCandidateStatus(request);
         }
         candidate.setAuditFields(candidate.getUser());
         return save(candidate, true);
