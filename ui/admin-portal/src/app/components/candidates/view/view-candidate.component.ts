@@ -156,7 +156,9 @@ export class ViewCandidateComponent implements OnInit {
     const modal = this.modalService.open(EditCandidateStatusComponent);
     modal.componentInstance.candidateId = this.candidate.id;
     modal.result
-      .then(result => {this.setCandidate(result); } )
+      .then(result => {
+        //todo Need to update candidates with new status
+      } )
       .catch(() => { /* Isn't possible */ });
   }
 

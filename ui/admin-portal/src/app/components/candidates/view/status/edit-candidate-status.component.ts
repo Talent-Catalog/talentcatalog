@@ -89,7 +89,7 @@ export class EditCandidateStatusComponent implements OnInit {
     this.candidateService.updateStatus(request).subscribe(
       (candidate) => {
         this.saving = false;
-        this.closeModal(candidate);
+        this.closeModal();
       },
       (error) => {
         this.error = error;
@@ -97,8 +97,9 @@ export class EditCandidateStatusComponent implements OnInit {
       });
   }
 
-  closeModal(candidate: Candidate) {
-    this.activeModal.close(candidate);
+  closeModal() {
+    //todo Need to change this to pass back an UpdateStatusInfo - and save done externally
+    this.activeModal.close();
   }
 
   cancel() {

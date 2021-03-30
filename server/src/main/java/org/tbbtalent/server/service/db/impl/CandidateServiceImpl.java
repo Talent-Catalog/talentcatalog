@@ -844,38 +844,47 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     @Transactional
-    public Candidate updateCandidateStatus(UpdateCandidateStatusRequest request) {
+    public void updateCandidateStatus(UpdateCandidateStatusRequest request) {
         User loggedInUser = userContext.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
         
-        //todo needs to deal with array of ids.
-        Long id = request.getCandidateIds().get(0);
-        
-        Candidate candidate = this.candidateRepository.findByIdLoadUser(id, sourceCountries)
-                .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
-        CandidateStatus originalStatus = candidate.getStatus();
-        candidate.setStatus(request.getStatus());
-        candidate.setCandidateMessage(request.getCandidateMessage());
-        candidate = save(candidate, true);
-        if (!request.getStatus().equals(originalStatus)){
-            candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(id, "Status change from " + originalStatus + " to " + request.getStatus(), request.getComment()));
-            if (originalStatus.equals(CandidateStatus.draft) && !request.getStatus().equals(CandidateStatus.deleted)) {
-                emailHelper.sendRegistrationEmail(candidate.getUser());
-                log.info("Registration email sent to " + candidate.getUser().getEmail());
+        //Update status for all given ids
+        List<Long> ids = request.getCandidateIds();
+        for (Long id : ids) {
+            Candidate candidate = this.candidateRepository.findByIdLoadUser(id, sourceCountries)
+                .orElse(null);
+            if (candidate == null) {
+                log.error("updateCandidateStatus: No candidate exists for id " + id);
+            } else {
+                CandidateStatus originalStatus = candidate.getStatus();
+                candidate.setStatus(request.getStatus());
+                candidate.setCandidateMessage(request.getCandidateMessage());
+                candidate = save(candidate, true);
+                if (!request.getStatus().equals(originalStatus)) {
+                    candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(id,
+                        "Status change from " + originalStatus + " to " + request.getStatus(),
+                        request.getComment()));
+                    if (originalStatus.equals(CandidateStatus.draft) && !request.getStatus()
+                        .equals(CandidateStatus.deleted)) {
+                        emailHelper.sendRegistrationEmail(candidate.getUser());
+                        log.info("Registration email sent to " + candidate.getUser().getEmail());
+                    }
+                    if (request.getStatus().equals(CandidateStatus.incomplete)) {
+                        emailHelper.sendIncompleteApplication(candidate.getUser(),
+                            request.getCandidateMessage());
+                        log.info("Incomplete email sent to " + candidate.getUser().getEmail());
+                    }
+                }
+                if (candidate.getStatus().equals(CandidateStatus.deleted)) {
+                    User user = candidate.getUser();
+                    user.setStatus(Status.deleted);
+                    userRepository.save(user);
+                }
             }
-            if (request.getStatus().equals(CandidateStatus.incomplete)) {
-                emailHelper.sendIncompleteApplication(candidate.getUser(), request.getCandidateMessage());
-                log.info("Incomplete email sent to " + candidate.getUser().getEmail());
-            }
+            
         }
-        if (candidate.getStatus().equals(CandidateStatus.deleted)){
-            User user = candidate.getUser();
-            user.setStatus(Status.deleted);
-            userRepository.save(user);
-        }
-        return candidate;
     }
 
     @Override

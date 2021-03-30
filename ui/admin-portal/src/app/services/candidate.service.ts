@@ -65,8 +65,8 @@ export class CandidateService {
     return this.http.put<Candidate>(`${this.apiUrl}/${id}/links`, details);
   }
 
-  updateStatus(details: UpdateCandidateStatusRequest): Observable<Candidate>  {
-    return this.http.put<Candidate>(`${this.apiUrl}/status`, details);
+  updateStatus(details: UpdateCandidateStatusRequest): Observable<void>  {
+    return this.http.put<void>(`${this.apiUrl}/status`, details);
   }
 
   updateInfo(id: number, details): Observable<Candidate>  {
