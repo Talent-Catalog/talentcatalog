@@ -66,8 +66,12 @@ public class User extends AbstractAuditableDomainObject<Long> {
     
     @Column(name = "password_updated_date")
     private OffsetDateTime passwordUpdatedDate;
-    
-    private Boolean usingMfa;
+
+    /**
+     * Use boolean rather than Boolean so that default value is false, not null.
+     * Null is not allowed in Db definition
+     */
+    private boolean usingMfa;
     
     private String mfaSecret;
 
