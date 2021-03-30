@@ -21,7 +21,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {
   Candidate,
   CandidateStatus,
-  MaritalStatus,
+  MaritalStatus, UpdateCandidateStatusInfo,
   UpdateCandidateStatusRequest
 } from "../../../../model/candidate";
 import {EnumOption, enumOptions} from "../../../../util/enum";
@@ -33,11 +33,8 @@ import {EnumOption, enumOptions} from "../../../../util/enum";
 })
 export class EditCandidateStatusComponent implements OnInit {
 
-  candidateId: number;
   candidateForm: FormGroup;
-  error;
-  loading: boolean;
-  saving: boolean;
+  error: string;
 
   candidateStatusOptions: EnumOption[] = enumOptions(CandidateStatus);
 
@@ -47,15 +44,11 @@ export class EditCandidateStatusComponent implements OnInit {
   }
 
   ngOnInit() {
-      this.loading = true;
-      this.candidateService.get(this.candidateId).subscribe(candidate => {
-        this.candidateForm = this.fb.group({
-          status: [candidate.status, Validators.required],
-          comment: [null, Validators.required],
-          candidateMessage: [candidate.candidateMessage || ''],
-        });
-        this.loading = false;
-      });
+    this.candidateForm = this.fb.group({
+      status: [null, Validators.required],
+      comment: [null, Validators.required],
+      candidateMessage: [null],
+    });
   }
 
   get candidateMessage(): string {
@@ -71,35 +64,19 @@ export class EditCandidateStatusComponent implements OnInit {
   }
 
   onSave() {
-    this.error = null;
-
     const val = this.candidateForm.value;
     if (this.showCandidateMessage && (!val.candidateMessage || val.candidateMessage.length < 1)) {
       this.error = 'Please enter a message for the candidate about what they need to complete';
       return;
     }
 
-    this.saving = true;
-    const request: UpdateCandidateStatusRequest = {
-      candidateIds: [this.candidateId],
+    const info: UpdateCandidateStatusInfo = {
       candidateMessage: this.candidateMessage,
       comment: this.comment,
       status: this.status
     };
-    this.candidateService.updateStatus(request).subscribe(
-      (candidate) => {
-        this.saving = false;
-        this.closeModal();
-      },
-      (error) => {
-        this.error = error;
-        this.saving = false;
-      });
-  }
 
-  closeModal() {
-    //todo Need to change this to pass back an UpdateStatusInfo - and save done externally
-    this.activeModal.close();
+    this.activeModal.close(info);
   }
 
   cancel() {
@@ -107,7 +84,7 @@ export class EditCandidateStatusComponent implements OnInit {
   }
 
   get showCandidateMessage() {
-    if (this.loading || !this.candidateForm) {
+    if (!this.candidateForm) {
       return false;
     }
     return this.candidateForm.controls.status.value === 'incomplete';

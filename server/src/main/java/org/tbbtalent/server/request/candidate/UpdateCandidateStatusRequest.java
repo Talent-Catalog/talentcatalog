@@ -16,9 +16,11 @@
 
 package org.tbbtalent.server.request.candidate;
 
+import java.util.Arrays;
 import java.util.List;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -28,7 +30,8 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class UpdateCandidateStatusRequest extends UpdateCandidateStatusInfo {
+@NoArgsConstructor
+public class UpdateCandidateStatusRequest {
 
     /**
      * Candidate(s) whose status should be updated
@@ -36,4 +39,20 @@ public class UpdateCandidateStatusRequest extends UpdateCandidateStatusInfo {
     @NotNull
     private List<Long> candidateIds;
 
+    /**
+     * New status and associated other information
+     */
+    @NotNull
+    private UpdateCandidateStatusInfo info;
+
+    public UpdateCandidateStatusRequest(Long... candidateIds) {
+        this.candidateIds = Arrays.asList(candidateIds);
+    }
+
+    public UpdateCandidateStatusInfo getInfo() {
+        if (info == null) {
+            info = new UpdateCandidateStatusInfo();
+        }
+        return info;
+    }
 }

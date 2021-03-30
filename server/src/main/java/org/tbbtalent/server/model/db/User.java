@@ -49,7 +49,11 @@ public class User extends AbstractAuditableDomainObject<Long> {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    private Boolean readOnly;
+    /**
+     * Use boolean rather than Boolean so that default value is false, not null.
+     * Null is not allowed in Db definition
+     */
+    private boolean readOnly;
     
     private String passwordEnc;
     
@@ -165,9 +169,9 @@ public class User extends AbstractAuditableDomainObject<Long> {
         this.role = role;
     }
 
-    public Boolean getReadOnly() { return readOnly; }
+    public boolean getReadOnly() { return readOnly; }
 
-    public void setReadOnly(Boolean readOnly) { this.readOnly = readOnly; }
+    public void setReadOnly(boolean readOnly) { this.readOnly = readOnly; }
 
     public String getPasswordEnc() {
         return passwordEnc;
@@ -233,11 +237,11 @@ public class User extends AbstractAuditableDomainObject<Long> {
         this.selectedLanguage = selectedLanguage;
     }
 
-    public Boolean getUsingMfa() {
+    public boolean getUsingMfa() {
         return usingMfa;
     }
 
-    public void setUsingMfa(Boolean usingMFA) {
+    public void setUsingMfa(boolean usingMFA) {
         this.usingMfa = usingMFA;
     }
 

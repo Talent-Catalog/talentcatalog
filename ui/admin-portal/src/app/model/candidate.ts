@@ -268,8 +268,9 @@ export interface UpdateCandidateStatusInfo {
   candidateMessage?: string;
 }
 
-export interface UpdateCandidateStatusRequest extends UpdateCandidateStatusInfo {
+export interface UpdateCandidateStatusRequest {
   candidateIds: number[];
+  info: UpdateCandidateStatusInfo;
 }
 
 export enum FamilyRelations {

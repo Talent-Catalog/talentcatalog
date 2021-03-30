@@ -16,7 +16,11 @@
 
 import {Component, OnInit} from '@angular/core';
 import {CandidateService} from '../../../services/candidate.service';
-import {Candidate} from '../../../model/candidate';
+import {
+  Candidate,
+  UpdateCandidateStatusInfo,
+  UpdateCandidateStatusRequest
+} from '../../../model/candidate';
 import {ActivatedRoute, Router} from '@angular/router';
 import {NgbModal, NgbTabChangeEvent} from '@ng-bootstrap/ng-bootstrap';
 import {DeleteCandidateComponent} from './delete/delete-candidate.component';
@@ -154,12 +158,30 @@ export class ViewCandidateComponent implements OnInit {
 
   editCandidate() {
     const modal = this.modalService.open(EditCandidateStatusComponent);
-    modal.componentInstance.candidateId = this.candidate.id;
     modal.result
-      .then(result => {
-        //todo Need to update candidates with new status
+      .then((info: UpdateCandidateStatusInfo) => {
+        this.updateCandidateStatus(info);
       } )
       .catch(() => { /* Isn't possible */ });
+  }
+
+  private updateCandidateStatus(info: UpdateCandidateStatusInfo) {
+    this.error = null;
+    this.loading = true;
+    const request: UpdateCandidateStatusRequest = {
+      candidateIds: [this.candidate.id],
+      info: info
+    };
+    this.candidateService.updateStatus(request).subscribe(
+      () => {
+        this.loading = false;
+        //Update candidate with new status
+        this.candidate.status = info.status;
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      });
   }
 
   resizeSidePanel() {

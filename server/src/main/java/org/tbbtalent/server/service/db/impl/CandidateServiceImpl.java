@@ -812,9 +812,6 @@ public class CandidateServiceImpl implements CandidateService {
                 request.getEmail(),
                 Role.user);
 
-        // set Read Only to default false
-        user.setReadOnly(false);
-
         User existing = userRepository.findByUsernameAndRole(user.getUsername(), Role.user);
         if (existing != null) {
             throw new UsernameTakenException("A user already exists with username: " + existing.getUsername());
@@ -858,22 +855,23 @@ public class CandidateServiceImpl implements CandidateService {
             if (candidate == null) {
                 log.error("updateCandidateStatus: No candidate exists for id " + id);
             } else {
+                UpdateCandidateStatusInfo info = request.getInfo();
                 CandidateStatus originalStatus = candidate.getStatus();
-                candidate.setStatus(request.getStatus());
-                candidate.setCandidateMessage(request.getCandidateMessage());
+                candidate.setStatus(info.getStatus());
+                candidate.setCandidateMessage(info.getCandidateMessage());
                 candidate = save(candidate, true);
-                if (!request.getStatus().equals(originalStatus)) {
+                if (!info.getStatus().equals(originalStatus)) {
                     candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(id,
-                        "Status change from " + originalStatus + " to " + request.getStatus(),
-                        request.getComment()));
-                    if (originalStatus.equals(CandidateStatus.draft) && !request.getStatus()
+                        "Status change from " + originalStatus + " to " + info.getStatus(),
+                        info.getComment()));
+                    if (originalStatus.equals(CandidateStatus.draft) && !info.getStatus()
                         .equals(CandidateStatus.deleted)) {
                         emailHelper.sendRegistrationEmail(candidate.getUser());
                         log.info("Registration email sent to " + candidate.getUser().getEmail());
                     }
-                    if (request.getStatus().equals(CandidateStatus.incomplete)) {
+                    if (info.getStatus().equals(CandidateStatus.incomplete)) {
                         emailHelper.sendIncompleteApplication(candidate.getUser(),
-                            request.getCandidateMessage());
+                            info.getCandidateMessage());
                         log.info("Incomplete email sent to " + candidate.getUser().getEmail());
                     }
                 }
@@ -883,7 +881,6 @@ public class CandidateServiceImpl implements CandidateService {
                     userRepository.save(user);
                 }
             }
-            
         }
     }
 
@@ -1140,9 +1137,12 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         // Don't update status to pending if status is already pending
         if (!candidate.getStatus().equals(CandidateStatus.pending)) {
-            final UpdateCandidateStatusRequest request = new UpdateCandidateStatusRequest();
-            request.setStatus(CandidateStatus.pending);
-            request.setComment("Candidate submitted");
+            final UpdateCandidateStatusRequest request = 
+                new UpdateCandidateStatusRequest(candidate.getId());
+            UpdateCandidateStatusInfo info = request.getInfo();
+            info.setStatus(CandidateStatus.pending);
+            info.setComment("Candidate submitted");
+            
             updateCandidateStatus(request);
         }
         candidate.setAuditFields(candidate.getUser());
