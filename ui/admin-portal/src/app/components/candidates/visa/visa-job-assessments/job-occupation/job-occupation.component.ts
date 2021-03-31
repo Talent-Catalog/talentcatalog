@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {IntakeComponentBase} from '../../../../util/intake/IntakeComponentBase';
 import {Occupation} from '../../../../../model/occupation';
 import {CandidateVisaJobCheck} from '../../../../../model/candidate';
@@ -10,7 +10,7 @@ import {CandidateService} from '../../../../../services/candidate.service';
   templateUrl: './job-occupation.component.html',
   styleUrls: ['./job-occupation.component.scss']
 })
-export class JobOccupationComponent extends IntakeComponentBase implements OnInit, OnChanges {
+export class JobOccupationComponent extends IntakeComponentBase implements OnInit {
 
   @Input() occupations: Occupation[];
   @Input() selectedIndex: number;
@@ -21,20 +21,18 @@ export class JobOccupationComponent extends IntakeComponentBase implements OnIni
   }
 
   ngOnInit(): void {
-    console.log(this.visaCheckRecord)
+    console.log(this.selectedJobCheck.occupation.id)
     this.form = this.fb.group({
       visaJobId: [this.selectedJobCheck?.id],
       visaJobOccupationId: [this.selectedJobCheck?.occupation?.id],
     });
-  }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes && changes.selectedJobCheck && changes.selectedJobCheck.previousValue !== changes.selectedJobCheck.currentValue) {
-      // this.selectedJobCheck = changes.selectedJobCheck.currentValue;
-      // console.log(this.selectedJobCheck);
-      // todo don't want to change the form data, want to reload the data.
-      //this.form?.controls?.visaJobOccupationId?.patchValue(this.selectedJobCheck?.occupation?.id);
-    }
+    this.form.controls['visaJobOccupationId']?.valueChanges.subscribe(
+      change => {
+        //Update my existingRecord
+        this.selectedJobCheck.occupation = {id: +change};
+      }
+    );
   }
 
   get occupationId(): number {

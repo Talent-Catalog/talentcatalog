@@ -19,11 +19,8 @@ package org.tbbtalent.server.service.db;
 import org.springframework.data.domain.Page;
 import org.tbbtalent.server.model.db.CandidateJobExperience;
 import org.tbbtalent.server.request.work.experience.CreateJobExperienceRequest;
-import org.tbbtalent.server.request.work.experience.ListJobExperienceRequest;
 import org.tbbtalent.server.request.work.experience.SearchJobExperienceRequest;
 import org.tbbtalent.server.request.work.experience.UpdateJobExperienceRequest;
-
-import java.util.List;
 
 public interface CandidateJobExperienceService {
 
@@ -36,6 +33,4 @@ public interface CandidateJobExperienceService {
     CandidateJobExperience updateCandidateJobExperience(Long candidateId, UpdateJobExperienceRequest request);
 
     void deleteCandidateJobExperience(Long id);
-
-    List<CandidateJobExperience> listCandidateJobExperiences (ListJobExperienceRequest request);
 }

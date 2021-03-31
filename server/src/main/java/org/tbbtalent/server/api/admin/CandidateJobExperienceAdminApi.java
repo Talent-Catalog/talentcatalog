@@ -45,7 +45,7 @@ public class CandidateJobExperienceAdminApi {
     }
 
     @PostMapping("list")
-    public List<Map<String, Object>> get(@RequestBody ListJobExperienceRequest request) {
+    public List<Map<String, Object>> list(@RequestBody ListJobExperienceRequest request) {
         List<CandidateJobExperience> candidateJobExperiences = this.candidateJobExperienceService.listCandidateJobExperiences(request);
         return candidateJobExperienceDto().buildList(candidateJobExperiences);
     }

@@ -53,15 +53,18 @@ Downside == upside : standard appearance of same question
     <div class="card-body intake-data">
       <app-left-home-reason
         [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
+        [candidateIntakeData]="candidateIntakeData"
+        [editable]="false">
       </app-left-home-reason>
       <app-return-home-safe
         [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
+        [candidateIntakeData]="candidateIntakeData"
+        [editable]="false">
       </app-return-home-safe>
       <app-host-challenges
         [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
+        [candidateIntakeData]="candidateIntakeData"
+        [editable]="false">
       </app-host-challenges>
     </div>
     <div class="card-body">
@@ -82,7 +85,8 @@ Downside == upside : standard appearance of same question
     <div class="card-body intake-data">
       <app-health-issues
         [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
+        [candidateIntakeData]="candidateIntakeData"
+        [editable]="false">
       </app-health-issues>
       <div>
         <p class="mb-1">Do any dependants have health concerns?</p>
@@ -111,7 +115,8 @@ Downside == upside : standard appearance of same question
     <div class="card-body intake-data">
       <app-crime
         [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
+        [candidateIntakeData]="candidateIntakeData"
+        [editable]="false">
       </app-crime>
     </div>
     <div class="card-body">
@@ -132,15 +137,18 @@ Downside == upside : standard appearance of same question
     <div class="card-body intake-data">
       <app-military-service
         [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
+        [candidateIntakeData]="candidateIntakeData"
+        [editable]="false">
       </app-military-service>
       <app-visa-reject
         [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
+        [candidateIntakeData]="candidateIntakeData"
+        [editable]="false">
       </app-visa-reject>
       <app-visa-issues
         [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
+        [candidateIntakeData]="candidateIntakeData"
+        [editable]="false">
       </app-visa-issues>
     </div>
     <div class="card-body">
@@ -184,10 +192,53 @@ Downside == upside : standard appearance of same question
 
   <hr style="border-top: 5px solid #13b1dd; margin-top: 3em; margin-bottom: 3em;"/>
 
-  //todo have switch statement
-  <app-visa-job-assessments
-    [candidate]="candidate"
-    [visaRecord]="visaRecord">
-  </app-visa-job-assessments>
+  <div class="card">
+    <div class="card-header">
+      Job Specific Assessment
+      <div class="float-right">
+        <button type="button" class="btn btn-primary btn-sm" (click)="addRecord()">
+          <i class="fas fa-plus"></i>
+        </button>
+      </div>
+    </div>
+    <div class="card-body" *ngIf="!loading">
+      <div *ngIf="error">
+        {{error}}
+      </div>
+      <div *ngIf="visaRecord?.candidateVisaJobChecks">
+        <form [formGroup]="form">
+          <div *ngFor="let jobOpportunity of visaRecord.candidateVisaJobChecks; let i = index;">
+            <div class="form-group align-items-center">
+              <input type="radio" [value]="i"
+                     name="jobIndex" formControlName="jobIndex"
+                     (change)="changeJobOpp($event)">
+              {{jobOpportunity.name}}
+              <button class="float-right btn" (click)="deleteRecord(i)">
+              <span class="align-top">
+                <i class="fas fa-trash"></i>
+              </span>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <hr/>
+
+      <!--  Some clever code to add/delete/select current job -->
+
+      <!--  Generate all job entries - but only one is enabled at a time-->
+      <div *ngFor="let job of visaRecord.candidateVisaJobChecks;">
+        <app-visa-job-check-au *ngIf="job == selectedJobCheck"
+                               [selectedJobCheck]="job"
+                               [candidate]="candidate"
+                               [candidateIntakeData]="candidateIntakeData"
+        ></app-visa-job-check-au>
+      </div>
+
+
+    </div>
+  </div>
+
 
 </div>

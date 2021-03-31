@@ -29,7 +29,7 @@
       </app-autosave-status>
     </div>
     <select class="form-control"
-            id="crimeConvict" [formControlName]="'crimeConvict'" [class.not-editable]="!editable">
+            id="crimeConvict" [formControlName]="'crimeConvict'">
       <option *ngFor="let opt of crimeConvictOptions" [value]="opt.value" [disabled]="!editable">
         {{opt.displayText}}
       </option>
@@ -39,7 +39,7 @@
     <label for="crimeConvictNotes">If yes, when and where? Can you briefly explain the circumstances?</label>
     <textarea type="text" class="md-textarea-auto form-control" rows="4"
               id="crimeConvictNotes" [formControlName]="'crimeConvictNotes'"
-              placeholder="" [readOnly]="!editable"></textarea>
+              placeholder=""></textarea>
   </div>
 </form>
 

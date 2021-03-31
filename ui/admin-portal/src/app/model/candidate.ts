@@ -253,7 +253,7 @@ export interface CandidateVisaJobCheck {
   id?: number;
   name?: string;
   sfJobLink?: string;
-  occupation?: Occupation;
+  occupation?: {id};
   salaryTsmit?: YesNo;
   regional?: YesNo;
   interest?: YesNo;

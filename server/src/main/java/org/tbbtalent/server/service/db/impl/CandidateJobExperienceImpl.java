@@ -28,14 +28,11 @@ import org.tbbtalent.server.repository.db.CandidateOccupationRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.CountryRepository;
 import org.tbbtalent.server.request.work.experience.CreateJobExperienceRequest;
-import org.tbbtalent.server.request.work.experience.ListJobExperienceRequest;
 import org.tbbtalent.server.request.work.experience.SearchJobExperienceRequest;
 import org.tbbtalent.server.request.work.experience.UpdateJobExperienceRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.CandidateJobExperienceService;
 import org.tbbtalent.server.service.db.CandidateService;
-
-import java.util.List;
 
 @Service
 public class CandidateJobExperienceImpl implements CandidateJobExperienceService {
@@ -110,7 +107,7 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
 
         //Save the candidate
         candidateService.save(candidate, true);
-        
+
         return jobExperience;
     }
 
@@ -155,7 +152,7 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
         candidateJobExperience.setPaid(request.getPaid());
         candidateJobExperience.setDescription(request.getDescription());
         candidateJobExperience.setCandidateOccupation(candidateOccupation);
-        
+
         // Save the candidate experience
         candidateJobExperience = candidateJobExperienceRepository.save(candidateJobExperience);
 
@@ -183,7 +180,7 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
             if (candidate == null) {
                 throw new InvalidSessionException("Not logged in");
             }
-            
+
             // Check that the user is deleting their own attachment
             if (!candidate.getId().equals(candidateJobExperience.getCandidate().getId())) {
                 throw new InvalidCredentialsException("You do not have permission to perform that action");
@@ -206,10 +203,5 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
     private CandidateOccupation getCandidateOccupation(Long candidateOccupationId) {
         return candidateOccupationRepository.findById(candidateOccupationId)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateOccupation.class, candidateOccupationId));
-    }
-
-    @Override
-    public List<CandidateJobExperience> listCandidateJobExperiences(ListJobExperienceRequest request) {
-        return candidateJobExperienceRepository.findExperienceByIds(request.getCandidateId(), request.getOccupationId());
     }
 }

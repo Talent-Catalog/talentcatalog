@@ -27,7 +27,7 @@
       </app-autosave-status>
     </div>
     <select class="form-control"
-            id="militaryService" [formControlName]="'militaryService'" [class.not-editable]="!editable">
+            id="militaryService" [formControlName]="'militaryService'">
       <option *ngFor="let opt of militaryServiceOptions" [value]="opt.value" [disabled]="!editable">
         {{opt.displayText}}
       </option>

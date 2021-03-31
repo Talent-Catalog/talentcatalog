@@ -23,7 +23,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tbbtalent.server.model.db.CandidateJobExperience;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface CandidateJobExperienceRepository extends JpaRepository<CandidateJobExperience, Long> {
@@ -50,9 +49,4 @@ public interface CandidateJobExperienceRepository extends JpaRepository<Candidat
             + " where c.id = :candidateId")
     Page<CandidateJobExperience> findByCandidateId(@Param("candidateId") Long candidateId, Pageable request);
 
-    @Query(" select w from CandidateJobExperience w "
-            + " where w.candidate.id = :candidateId"
-            + " and w.candidateOccupation.occupation.id = :occupationId")
-    List<CandidateJobExperience> findExperienceByIds(@Param("candidateId") Long candidateId,
-                                                   @Param("occupationId") Long occupationId);
 }

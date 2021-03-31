@@ -226,6 +226,7 @@ import {ShowQrCodeComponent} from './components/util/qr/show-qr-code/show-qr-cod
 import {HealthIssuesComponent} from './components/candidates/intake/health-issues/health-issues.component';
 import {VisaJobPutForwardComponent} from './components/candidates/visa/visa-job-assessments/put-forward/visa-job-put-forward.component';
 import {VisaJobNotesComponent} from './components/candidates/visa/visa-job-assessments/visa-job-notes/visa-job-notes.component';
+import {VisaJobCheckAuComponent} from './components/candidates/view/tab/candidate-visa-tab/au/job/visa-job-check-au.component';
 
 @NgModule({
   declarations: [
@@ -429,7 +430,8 @@ import {VisaJobNotesComponent} from './components/candidates/visa/visa-job-asses
     ShowQrCodeComponent,
     HealthIssuesComponent,
     VisaJobPutForwardComponent,
-    VisaJobNotesComponent
+    VisaJobNotesComponent,
+    VisaJobCheckAuComponent
   ],
   imports: [
     BrowserModule,

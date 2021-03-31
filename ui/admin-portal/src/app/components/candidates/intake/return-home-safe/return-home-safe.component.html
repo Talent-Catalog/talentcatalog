@@ -27,7 +27,7 @@
       </app-autosave-status>
     </div>
     <select class="form-control"
-            id="returnHomeSafe" [formControlName]="'returnHomeSafe'" [class.not-editable]="!editable">
+            id="returnHomeSafe" [formControlName]="'returnHomeSafe'">
       <option *ngFor="let opt of homeSafeOptions" [value]="opt.value" [disabled]="!editable">
         {{opt.displayText}}
       </option>
