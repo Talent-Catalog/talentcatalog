@@ -1,0 +1,176 @@
+<div class="card">
+  <div class="card-header">
+    Employer Eligibility {{selectedJobCheck?.name}}
+  </div>
+  <div class="card-body">
+    <app-job-occupation
+      [candidate]="candidate"
+      [occupations]="occupations"
+      [candidateIntakeData]="candidateIntakeData"
+      [visaCheckRecord]="visaRecord"
+      [selectedJobCheck]="selectedJobCheck">
+    </app-job-occupation>
+    <app-salary-tsmit
+      [candidate]="candidate"
+      [candidateIntakeData]="candidateIntakeData"
+      [visaCheckRecord]="visaRecord"
+      [selectedJobCheck]="selectedJobCheck">
+    </app-salary-tsmit>
+    <app-regional-area
+      [candidate]="candidate"
+      [candidateIntakeData]="candidateIntakeData"
+      [visaCheckRecord]="visaRecord"
+      [selectedJobCheck]="selectedJobCheck">
+    </app-regional-area>
+  </div>
+</div>
+
+<hr/>
+
+<div class="card">
+  <div class="card-header">
+    TBB Eligibility
+  </div>
+  <div class="card-body">
+    <app-job-interest
+      [candidate]="candidate"
+      [candidateIntakeData]="candidateIntakeData"
+      [selectedIndex]="jobIndex"
+      [visaCheckRecord]="visaRecord"
+      [selectedJobCheck]="selectedJobCheck">
+    </app-job-interest>
+  </div>
+  <div class="card-body intake-data">
+    <!-- Display Family in Aus   -->
+    <div class="display">
+      <app-fixed-input
+        [question]="'Family in Australia that may impact this: '"
+        [answer]="ausDest?.family + ' in ' + ausDest?.location + '.'">
+      </app-fixed-input>
+    </div>
+  </div>
+
+  <div class="card-body">
+
+    <app-job-eligibility-assessment
+      [candidate]="candidate"
+      [candidateIntakeData]="candidateIntakeData"
+      [selectedIndex]="jobIndex"
+      [visaCheckRecord]="visaRecord"
+      [selectedJobCheck]="selectedJobCheck">
+    </app-job-eligibility-assessment>
+  </div>
+</div>
+
+<hr/>
+
+<div class="card">
+  <div class="card-header">
+    Candidate Visa Eligibility
+  </div>
+  <div class="card-body intake-data">
+
+    <!-- Display Age   -->
+    <div class="display">
+      <app-fixed-input
+        [question]="'Age: '"
+        [answer]="currentYear - birthYear">
+      </app-fixed-input>
+      <div>
+        <small>50 year cutoff for 494; 55 for 186.</small>
+      </div>
+    </div>
+
+    <!--  Display Estimated IELTS Assessment   -->
+    <div class="display">
+      <app-fixed-input
+        *ngIf="this.candidateIntakeData?.langAssessmentScore"
+        [question]="'Estimated IELTS Assessment: '"
+        [answer]="this.candidateIntakeData?.langAssessmentScore">
+      </app-fixed-input>
+    </div>
+
+    <!--  Display English Exams  -->
+    <div class="display">
+      <div *ngFor="let e of this.candidateIntakeData?.candidateExams">
+        <app-fixed-input
+          [question]="e.exam"
+          [answer]="e.score">
+        </app-fixed-input>
+      </div>
+    </div>
+
+    <!-- Display Years Experience in Occupation   -->
+    <div class="display">
+      <app-fixed-input
+        *ngIf="selectedOccupations"
+        [question]="'Years relevant experience in ' + selectedOccupations.occupation.name"
+        [answer]="selectedOccupations.yearsExperience">
+      </app-fixed-input>
+    </div>
+  </div>
+</div>
+
+<hr/>
+
+<div class="card">
+  <div class="card-header">
+    Qualifications
+  </div>
+  <div class="card-body intake-data">
+    <!-- Display All Candidate Qualifications   -->
+    <div class="display" *ngFor="let edu of candQualifications">
+      <app-fixed-input
+        [question]="'Qualification in ' + edu.educationMajor.name"
+        [answer]="edu.educationType">
+      </app-fixed-input>
+    </div>
+  </div>
+  <div class="card-body">
+    <app-qualification-relevant
+      [candidate]="candidate"
+      [candidateIntakeData]="candidateIntakeData"
+      [selectedIndex]="jobIndex"
+      [visaCheckRecord]="visaRecord"
+      [selectedJobCheck]="selectedJobCheck">
+    </app-qualification-relevant>
+  </div>
+</div>
+
+<hr/>
+
+<div class="card">
+  <div class="card-header">
+    Final Assessment
+  </div>
+  <div class="card-body">
+    <app-visa-four-nine-four
+      [candidate]="candidate"
+      [selectedIndex]="jobIndex"
+      [visaCheckRecord]="visaRecord"
+      [selectedJobCheck]="selectedJobCheck">
+    </app-visa-four-nine-four>
+    <app-visa-one-eight-six
+      [candidate]="candidate"
+      [selectedIndex]="jobIndex"
+      [visaCheckRecord]="visaRecord"
+      [selectedJobCheck]="selectedJobCheck">
+    </app-visa-one-eight-six>
+    <app-visa-other-options
+      [candidate]="candidate"
+      [selectedIndex]="jobIndex"
+      [visaCheckRecord]="visaRecord"
+      [selectedJobCheck]="selectedJobCheck">
+    </app-visa-other-options>
+    <app-visa-job-put-forward
+      [candidate]="candidate"
+      [visaCheckRecord]="visaRecord"
+      [selectedJobCheck]="selectedJobCheck">
+    </app-visa-job-put-forward>
+    <app-visa-job-notes
+      [candidate]="candidate"
+      [visaCheckRecord]="visaRecord"
+      [selectedJobCheck]="selectedJobCheck">
+    </app-visa-job-notes>
+  </div>
+</div>
