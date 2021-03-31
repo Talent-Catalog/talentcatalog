@@ -71,6 +71,7 @@ export class VisaJobCheckAuComponent extends IntakeComponentTabBase implements O
       }
     )
     // Get the candidate Australia destinations
+    //todo make the value not undefined if no family is there (e.g. put 'No family') instead of undefined in undefined
     this.ausDest = this.candidateIntakeData.candidateDestinations.find(d => d.country.name === 'Australia')
   }
 
