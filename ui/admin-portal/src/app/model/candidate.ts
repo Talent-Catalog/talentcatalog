@@ -265,12 +265,8 @@ export interface CandidateVisaJobCheck {
   eligibleOther?: YesNo;
   eligibleOtherNotes?: String;
   putForward?: VisaEligibility;
+  tbbEligibility?: TBBEligibilityAssessment;
   notes?: String;
-
-  eligibilityAssess?: YesNo;
-  eligibility?: VisaEligibility;
-  employer?: string;
-  tbbEligibilityAssessment?: TBBEligibilityAssessment;
 }
 /*
   Enumerations. These should match equivalent enumerations on the server (Java)

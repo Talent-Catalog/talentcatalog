@@ -166,7 +166,6 @@ public class CandidateIntakeDataUpdate {
     private Long visaCountryId;
     private YesNo visaProtection;
     private String visaProtectionGrounds;
-    private TBBEligibilityAssessment visaTbbEligibilityAssessment;
     private YesNo visaHealthAssessment;
     private String visaHealthAssessmentNotes;
     private YesNo visaCharacterAssessment;
@@ -193,6 +192,7 @@ public class CandidateIntakeDataUpdate {
     private OtherVisas visaJobEligibleOther;
     private String visaJobEligibleOtherNotes;
     private VisaEligibility visaJobPutForward;
+    private TBBEligibilityAssessment visaJobTbbEligibility;
     private String visaJobNotes;
 
     private YesNoUnsure visaReject;

@@ -211,7 +211,6 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("country", countryDto())
                 .add("protection")
                 .add("protectionGrounds")
-                .add("tbbEligibilityAssessment")
                 .add("healthAssessment")
                 .add("healthAssessmentNotes")
                 .add("characterAssessment")
@@ -246,6 +245,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("eligibleOther")
                 .add("eligibleOtherNotes")
                 .add("putForward")
+                .add("tbbEligibility")
                 .add("notes")
                 .add("occupation", occupationDto())
                 ;

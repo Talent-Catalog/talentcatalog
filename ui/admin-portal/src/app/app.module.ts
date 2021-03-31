@@ -203,7 +203,6 @@ import {IntProtectionComponent} from "./components/candidates/visa/int-protectio
 import {CharacterAssessmentComponent} from "./components/candidates/visa/character-assessment/character-assessment.component";
 import {SecurityRiskComponent} from "./components/candidates/visa/security-risk/security-risk.component";
 import {TravelDocumentComponent} from "./components/candidates/visa/travel-document/travel-document.component";
-import {VisaJobAssessmentsComponent} from "./components/candidates/visa/visa-job-assessments/visa-job-assessments.component";
 import {CreateVisaJobAssessementComponent} from "./components/candidates/visa/visa-job-assessments/modal/create-visa-job-assessement.component";
 import {SalaryTsmitComponent} from "./components/candidates/visa/visa-job-assessments/salary-tsmit/salary-tsmit.component";
 import {RegionalAreaComponent} from "./components/candidates/visa/visa-job-assessments/regional-area/regional-area.component";
@@ -216,7 +215,6 @@ import {VisaOtherOptionsComponent} from "./components/candidates/visa/visa-job-a
 import {YearsRelevantExpComponent} from "./components/candidates/visa/visa-job-assessments/years-relevant-exp/years-relevant-exp.component";
 import {IeltsLevelComponent} from "./components/candidates/visa/visa-job-assessments/ielts-level/ielts-level.component";
 import {QualificationRelevantComponent} from "./components/candidates/visa/visa-job-assessments/qualification-relevant/qualification-relevant.component";
-import {VisaJobAssessmentAuComponent} from "./components/candidates/visa/visa-job-assessments/au/visa-job-assessment-au.component";
 import {VisaFinalAssessmentComponent} from "./components/candidates/visa/visa-job-assessments/visa-final-assessment/visa-final-assessment.component";
 import {JobOccupationComponent} from "./components/candidates/visa/visa-job-assessments/job-occupation/job-occupation.component";
 import {RiskAssessmentComponent} from "./components/candidates/visa/risk-assessment/risk-assessment.component";
@@ -409,9 +407,7 @@ import {VisaJobCheckAuComponent} from './components/candidates/view/tab/candidat
     SecurityRiskComponent,
     TravelDocumentComponent,
     RiskAssessmentComponent,
-    VisaJobAssessmentsComponent,
     CreateVisaJobAssessementComponent,
-    VisaJobAssessmentAuComponent,
     VisaFinalAssessmentComponent,
     JobOccupationComponent,
     SalaryTsmitComponent,

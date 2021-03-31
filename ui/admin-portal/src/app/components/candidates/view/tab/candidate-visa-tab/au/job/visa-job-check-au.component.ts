@@ -88,7 +88,7 @@ export class VisaJobCheckAuComponent extends IntakeComponentTabBase implements O
 
   get selectedOccupations(): CandidateOccupation {
     if (this.candOccupations) {
-      this.yrsExp = this.candOccupations?.find(occ => occ.occupation.id === this.selectedJobCheck?.occupation.id);
+      this.yrsExp = this.candOccupations?.find(occ => occ.occupation.id === this.selectedJobCheck?.occupation?.id);
       return this.yrsExp;
     }
   }

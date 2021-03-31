@@ -75,5 +75,8 @@ public class CandidateVisaJobCheckBase extends AbstractDomainObject<Long> {
     @Enumerated(EnumType.STRING)
     private VisaEligibility putForward;
 
+    @Enumerated(EnumType.STRING)
+    private TBBEligibilityAssessment tbbEligibility;
+
     private String notes;
 }

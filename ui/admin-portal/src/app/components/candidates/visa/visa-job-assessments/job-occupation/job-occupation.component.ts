@@ -21,7 +21,7 @@ export class JobOccupationComponent extends IntakeComponentBase implements OnIni
   }
 
   ngOnInit(): void {
-    console.log(this.selectedJobCheck.occupation.id)
+    console.log(this.selectedJobCheck?.occupation?.id)
     this.form = this.fb.group({
       visaJobId: [this.selectedJobCheck?.id],
       visaJobOccupationId: [this.selectedJobCheck?.occupation?.id],
@@ -30,7 +30,9 @@ export class JobOccupationComponent extends IntakeComponentBase implements OnIni
     this.form.controls['visaJobOccupationId']?.valueChanges.subscribe(
       change => {
         //Update my existingRecord
-        this.selectedJobCheck.occupation = {id: +change};
+        if (this.selectedJobCheck.occupation) {
+          this.selectedJobCheck.occupation.id = +change;
+        }
       }
     );
   }

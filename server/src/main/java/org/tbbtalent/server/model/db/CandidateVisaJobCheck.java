@@ -42,7 +42,7 @@ public class CandidateVisaJobCheck extends CandidateVisaJobCheckBase {
             setRegional(data.getVisaJobRegional());
         }
         if (data.getVisaJobInterest() != null) {
-            setRegional(data.getVisaJobRegional());
+            setInterest(data.getVisaJobInterest());
         }
         if (data.getVisaJobEligible494() != null) {
             setEligible_494(data.getVisaJobEligible494());
@@ -67,6 +67,9 @@ public class CandidateVisaJobCheck extends CandidateVisaJobCheckBase {
         }
         if (data.getVisaJobNotes() != null) {
             setNotes(data.getVisaJobNotes());
+        }
+        if (data.getVisaJobTbbEligibility() != null) {
+            setTbbEligibility(data.getVisaJobTbbEligibility());
         }
 
     }

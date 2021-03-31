@@ -3,7 +3,7 @@
 </div>
 <form [formGroup]="form">
   <div *ngIf="editable" class="form-group">
-    <label for="visaJobEligibilityAssess">TBB Eligibility Assessment?</label>
+    <label for="visaJobTbbEligibility">TBB Eligibility Assessment?</label>
     <div class="float-right">
       <app-autosave-status
         [saving]="saving"
@@ -11,7 +11,7 @@
       </app-autosave-status>
     </div>
     <select class="form-control"
-            id="visaJobEligibilityAssess" [formControlName]="'visaJobEligibilityAssess'">
+            id="visaJobTbbEligibility" [formControlName]="'visaJobTbbEligibility'">
       <option *ngFor="let opt of jobEligibilityAssessOptions" [value]="opt.value">
         {{opt.displayText}}
       </option>

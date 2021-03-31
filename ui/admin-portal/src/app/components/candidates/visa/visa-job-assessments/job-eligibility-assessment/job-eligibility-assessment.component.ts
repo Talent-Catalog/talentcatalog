@@ -23,7 +23,7 @@ export class JobEligibilityAssessmentComponent extends IntakeComponentBase imple
   ngOnInit(): void {
     this.form = this.fb.group({
       visaJobId: [this.selectedJobCheck?.id],
-      visaJobEligibilityAssess: [null],
+      visaJobTbbEligibility: [this.selectedJobCheck?.tbbEligibility],
     });
   }
 
