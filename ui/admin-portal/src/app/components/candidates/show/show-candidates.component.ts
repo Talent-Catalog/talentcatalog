@@ -16,7 +16,11 @@
 
 import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 
-import {Candidate} from '../../../model/candidate';
+import {
+  Candidate,
+  UpdateCandidateStatusInfo,
+  UpdateCandidateStatusRequest
+} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
 import {SearchResults} from '../../../model/search-results';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
@@ -62,6 +66,7 @@ import {ConfirmationComponent} from '../../util/confirm/confirmation.component';
 import {CandidateColumnSelectorComponent} from '../../util/candidate-column-selector/candidate-column-selector.component';
 import {CandidateFieldInfo} from '../../../model/candidate-field-info';
 import {CandidateFieldService} from '../../../services/candidate-field.service';
+import {EditCandidateStatusComponent} from "../view/status/edit-candidate-status.component";
 
 interface CachedTargetList {
   sourceID: number;
@@ -96,6 +101,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   searching: boolean;
   exporting: boolean;
   updating: boolean;
+  updatingStatuses: boolean;
   savingSelection: boolean;
   searchForm: FormGroup;
 
@@ -122,8 +128,9 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     allowSearchFilter: true
   };
 
+  //todo REname this to "current" candidate
   selectedCandidate: Candidate;
-  selectedListCandidates: number[];
+  private selectedCandidates: Candidate[];
   loggedInUser: User;
   targetListName: string;
   targetListId: number;
@@ -160,7 +167,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
     this.setSelectedCandidate(null);
     this.loggedInUser = this.authService.getLoggedInUser();
-    this.selectedListCandidates = [];
+    this.selectedCandidates = [];
 
     this.statuses = [];
     for (const key in ReviewStatus) {
@@ -212,7 +219,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
           this.restoreTargetListFromCache();
           this.doSearch(true);
           // Set the selected candidates (List only) to null when changing candidate source.
-          this.selectedListCandidates = [];
+          this.selectedCandidates = [];
 
         }
       }
@@ -612,6 +619,13 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     //Update cache
     this.cacheResults();
 
+    //Always maintain local candidate selections - saved search or not
+    if (selected) {
+      this.selectedCandidates.push(candidate);
+    } else {
+      this.selectedCandidates = this.selectedCandidates.filter(c => c.id !== candidate.id);
+    }
+
     if (isSavedSearch(this.candidateSource)) {
       //Saved search selection change
 
@@ -650,13 +664,6 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       } else {
         this.savedSearchSelectionChange = selected;
         this.doSavedSearchSelection(candidate, selected);
-      }
-    } else {
-      // If selections coming from a list, create a list of the candidateIds selected
-      if (selected) {
-        this.selectedListCandidates.push(candidate.id);
-      } else {
-        this.selectedListCandidates = this.selectedListCandidates.filter(id => id !== candidate.id);
       }
     }
   }
@@ -757,7 +764,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       //Pick up ids info - including source list id
       const ids: IHasSetOfCandidates = {
         sourceListId: this.candidateSource.id,
-        candidateIds: this.selectedListCandidates
+        candidateIds: this.selectedCandidates.map(c => c.id)
       };
       // If request has a savedListId, merge or replace. Otherwise create a new list.
       if (request.savedListId > 0) {
@@ -880,10 +887,9 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
           this.error = err;
         });
     } else {
-      this.selectedListCandidates = [];
       this.doSearch(true);
     }
-
+    this.selectedCandidates = [];
   }
 
   /**
@@ -1059,5 +1065,41 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   isCandidateNameViewable() {
     return this.candidateFieldService.isCandidateNameViewable()
+  }
+
+  updateStatusOfSelection() {
+    const modal = this.modalService.open(EditCandidateStatusComponent);
+    const nCandidates = this.selectedCandidates.length;
+    if (nCandidates > 5) {
+      modal.componentInstance.text = "WARNING: You are about to modify the statuses of " +
+        nCandidates + " candidates. This can only be undone manually, one by one.";
+    }
+    modal.result
+    .then((info: UpdateCandidateStatusInfo) => {
+      this.updateCandidateStatuses(info);
+    } )
+    .catch(() => { /* Isn't possible */ });
+  }
+
+  private updateCandidateStatuses(info: UpdateCandidateStatusInfo) {
+    this.updatingStatuses = true;
+    this.error = null;
+    const request: UpdateCandidateStatusRequest = {
+      candidateIds: this.selectedCandidates.map(c => c.id),
+      info: info
+    };
+    this.candidateService.updateStatus(request).subscribe(
+      () => {
+        //Update local candidates with new status
+        for (const candidate of this.selectedCandidates) {
+          candidate.status = info.status;
+        }
+        this.updatingStatuses = false;
+      },
+      (error) => {
+        this.error = error;
+        this.updatingStatuses = false;
+      });
+
   }
 }

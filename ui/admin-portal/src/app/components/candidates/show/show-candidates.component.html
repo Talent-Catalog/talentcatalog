@@ -114,6 +114,12 @@
         Save Selection
       </button>
 
+      <button class="btn btn-outline-secondary"
+              (click)="updateStatusOfSelection()">
+        <i class="fas fa-spinner fa-spin" *ngIf=updatingStatuses></i>
+        Update Statuses of Selection
+      </button>
+
       <button class="btn btn-outline-secondary" (click)="exportCandidates()">
         <i class="fas fa-spinner fa-spin" *ngIf=exporting></i>
         <i class="fas fa-file-excel"></i> Export

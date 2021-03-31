@@ -26,7 +26,9 @@
   <div class="alert alert-danger" *ngIf="error">
     {{error}}
   </div>
-
+  <div *ngIf="text">
+    {{text}}
+  </div>
   <div>
     <form [formGroup]="candidateForm" (ngSubmit)="onSave()">
 

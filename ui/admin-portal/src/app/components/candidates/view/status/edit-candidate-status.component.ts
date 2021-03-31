@@ -35,6 +35,7 @@ export class EditCandidateStatusComponent implements OnInit {
 
   candidateForm: FormGroup;
   error: string;
+  text: string;
 
   candidateStatusOptions: EnumOption[] = enumOptions(CandidateStatus);
 
