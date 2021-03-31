@@ -31,6 +31,15 @@
   <div class="card-header">
     TBB Eligibility
   </div>
+  <div class="card-body intake-data">
+    <!-- Display Family in Aus   -->
+    <div class="display">
+      <app-fixed-input
+        [question]="'Family in Australia that may impact offer'"
+        [answer]="ausDest?.family + ' in ' + ausDest?.location + '.'">
+      </app-fixed-input>
+    </div>
+  </div>
   <div class="card-body">
     <app-job-interest
       [candidate]="candidate"
@@ -39,18 +48,6 @@
       [visaCheckRecord]="visaRecord"
       [selectedJobCheck]="selectedJobCheck">
     </app-job-interest>
-  </div>
-  <div class="card-body intake-data">
-    <!-- Display Family in Aus   -->
-    <div class="display">
-      <app-fixed-input
-        [question]="'Family in Australia that may impact this: '"
-        [answer]="ausDest?.family + ' in ' + ausDest?.location + '.'">
-      </app-fixed-input>
-    </div>
-  </div>
-
-  <div class="card-body">
 
     <app-job-eligibility-assessment
       [candidate]="candidate"
@@ -70,43 +67,42 @@
   </div>
   <div class="card-body intake-data">
 
-    <!-- Display Age   -->
-    <div class="display">
-      <app-fixed-input
-        [question]="'Age: '"
-        [answer]="currentYear - birthYear">
-      </app-fixed-input>
-      <div>
+    <div class="d-flex justify-content-between">
+      <!-- Display Age   -->
+      <div class="display">
+        <app-fixed-input
+          [question]="'Age'"
+          [answer]="currentYear - birthYear">
+        </app-fixed-input>
         <small>50 year cutoff for 494; 55 for 186.</small>
       </div>
-    </div>
 
-    <!--  Display Estimated IELTS Assessment   -->
-    <div class="display">
-      <app-fixed-input
-        *ngIf="this.candidateIntakeData?.langAssessmentScore"
-        [question]="'Estimated IELTS Assessment: '"
-        [answer]="this.candidateIntakeData?.langAssessmentScore">
-      </app-fixed-input>
-    </div>
-
-    <!--  Display English Exams  -->
-    <div class="display">
-      <div *ngFor="let e of this.candidateIntakeData?.candidateExams">
+      <!--  Display Estimated IELTS Assessment   -->
+      <div *ngIf="this.candidateIntakeData?.langAssessmentScore" class="display">
         <app-fixed-input
-          [question]="e.exam"
-          [answer]="e.score">
+          [question]="'Estimated IELTS Assessment'"
+          [answer]="this.candidateIntakeData?.langAssessmentScore">
         </app-fixed-input>
       </div>
-    </div>
 
-    <!-- Display Years Experience in Occupation   -->
-    <div class="display">
-      <app-fixed-input
-        *ngIf="selectedOccupations"
-        [question]="'Years relevant experience in ' + selectedOccupations.occupation.name"
-        [answer]="selectedOccupations.yearsExperience">
-      </app-fixed-input>
+      <!--  Display English Exams  -->
+      <div class="display">
+        <div *ngFor="let e of this.candidateIntakeData?.candidateExams">
+          <app-fixed-input
+            [question]="e.exam"
+            [answer]="e.score">
+          </app-fixed-input>
+        </div>
+      </div>
+
+      <!-- Display Years Experience in Occupation   -->
+      <div *ngIf="selectedOccupations" class="display">
+        <app-fixed-input
+          [question]="'Experience as ' + selectedOccupations.occupation.name"
+          [answer]="selectedOccupations.yearsExperience + ' years'">
+        </app-fixed-input>
+      </div>
+
     </div>
   </div>
 </div>
@@ -121,7 +117,7 @@
     <!-- Display All Candidate Qualifications   -->
     <div class="display" *ngFor="let edu of candQualifications">
       <app-fixed-input
-        [question]="'Qualification in ' + edu.educationMajor.name"
+        [question]="edu.educationMajor.name"
         [answer]="edu.educationType">
       </app-fixed-input>
     </div>

@@ -17,39 +17,39 @@
 <div class="row">
   <div class="col-4">
     <app-fixed-input
-      [question]="'Full name?'"
+      [question]="'Full name'"
       [answer]="candidate.user?.firstName + ' ' + candidate.user?.lastName">
     </app-fixed-input>
     <app-fixed-input
-      [question]="'TBB ID number?'"
+      [question]="'TBB ID number'"
       [answer]="candidate.candidateNumber">
     </app-fixed-input>
     <app-fixed-input
-      [question]="'Date of birth?'"
+      [question]="'Date of birth'"
       [answer]="date">
     </app-fixed-input>
   </div>
   <div class="col-4">
     <app-fixed-input
-      [question]="'Nationality?'"
+      [question]="'Nationality'"
       [answer]="candidate.nationality?.name">
     </app-fixed-input>
     <app-fixed-input
-      [question]="'Phone?'"
+      [question]="'Phone'"
       [answer]="candidate.phone">
     </app-fixed-input>
     <app-fixed-input
-      [question]="'Whatsapp/Viber?'"
+      [question]="'Whatsapp/Viber'"
       [answer]="candidate.whatsapp">
     </app-fixed-input>
   </div>
   <div class="col-4">
     <app-fixed-input
-      [question]="'Email?'"
+      [question]="'Email'"
       [answer]="candidate.user?.email">
     </app-fixed-input>
     <app-fixed-input
-      [question]="'How did you hear about us?'"
+      [question]="'How did you hear about us'"
       [answer]="candidate.surveyType?.name + ' ' + candidate.surveyComment">
     </app-fixed-input>
   </div>
