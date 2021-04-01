@@ -115,11 +115,13 @@
   </div>
   <div class="card-body intake-data">
     <!-- Display All Candidate Qualifications   -->
-    <div class="display" *ngFor="let edu of candQualifications">
-      <app-fixed-input
-        [question]="edu.educationMajor.name"
-        [answer]="edu.educationType">
-      </app-fixed-input>
+    <div *ngIf="candQualifications?.length > 0">
+      <div class="display" *ngFor="let edu of candQualifications" >
+        <app-fixed-input
+          [question]="edu.educationMajor?.name"
+          [answer]="edu.educationType">
+        </app-fixed-input>
+      </div>
     </div>
   </div>
   <div class="card-body">

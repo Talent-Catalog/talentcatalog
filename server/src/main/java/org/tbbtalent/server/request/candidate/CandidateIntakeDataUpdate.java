@@ -181,6 +181,7 @@ public class CandidateIntakeDataUpdate {
     //Corresponds to CandidateVisaJobCheck fields
     private Long visaJobId;
     private Long visaJobOccupationId;
+    private EducationType visaJobQualification;
     private YesNo visaJobInterest;
     private YesNo visaJobSalaryTsmit;
     private YesNo visaJobRegional;

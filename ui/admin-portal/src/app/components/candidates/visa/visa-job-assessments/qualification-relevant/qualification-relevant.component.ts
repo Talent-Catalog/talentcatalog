@@ -22,7 +22,7 @@ export class QualificationRelevantComponent extends IntakeComponentBase implemen
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      relevantQualification: [null],
+      visaJobQualification: [this.selectedJobCheck?.qualification],
     });
   }
 

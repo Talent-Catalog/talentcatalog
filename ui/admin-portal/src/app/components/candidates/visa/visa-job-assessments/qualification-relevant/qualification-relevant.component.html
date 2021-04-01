@@ -3,7 +3,7 @@
 </div>
 <form [formGroup]="form">
   <div *ngIf="editable" class="form-group">
-    <label for="relevantQualification">Relevant qualification?</label>
+    <label for="visaJobQualification">Relevant qualification?</label>
     <div class="float-right">
       <app-autosave-status
         [saving]="saving"
@@ -11,7 +11,7 @@
       </app-autosave-status>
     </div>
     <select class="form-control"
-            id="relevantQualification" [formControlName]="'relevantQualification'">
+            id="visaJobQualification" [formControlName]="'visaJobQualification'">
       <option *ngFor="let opt of relevantQualificationOptions" [value]="opt.value">
         {{opt.displayText}}
       </option>

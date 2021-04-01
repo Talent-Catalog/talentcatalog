@@ -254,6 +254,7 @@ export interface CandidateVisaJobCheck {
   name?: string;
   sfJobLink?: string;
   occupation?: Occupation;
+  qualification?: Qualification;
   salaryTsmit?: YesNo;
   regional?: YesNo;
   interest?: YesNo;

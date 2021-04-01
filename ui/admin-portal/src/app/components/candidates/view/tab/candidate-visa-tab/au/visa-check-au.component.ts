@@ -72,7 +72,7 @@ export class VisaCheckAuComponent extends IntakeComponentTabBase implements OnIn
     if (init) {
       if (this.visaRecord) {
         this.currentYear = new Date().getFullYear().toString();
-        this.birthYear = this.candidate.dob.toString().slice(0, 4);
+        this.birthYear = this.candidate?.dob?.toString().slice(0, 4);
 
         //If we have some visa checks, select the first one
         if (this.visaRecord?.candidateVisaJobChecks?.length > 0) {
