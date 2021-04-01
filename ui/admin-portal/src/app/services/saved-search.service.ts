@@ -31,6 +31,7 @@ import {
 import {map} from "rxjs/operators";
 import {SavedList} from "../model/saved-list";
 import {SearchCandidateSourcesRequest} from "../model/base";
+import {UpdateCandidateStatusInfo} from "../model/candidate";
 
 export interface CreateFromDefaultSavedSearchRequest {
   savedListId: number;
@@ -202,5 +203,9 @@ export class SavedSearchService {
 
   saveSelection(id: number, request: SaveSelectionRequest): Observable<SavedList> {
     return this.http.put<SavedList>(`${this.apiUrl}/save-selection/${id}`, request);
+  }
+
+  updateSelectedStatuses(id: number, request: UpdateCandidateStatusInfo): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/update-selected-statuses/${id}`, request);
   }
 }

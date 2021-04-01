@@ -16,29 +16,46 @@
 
 package org.tbbtalent.server.api.admin;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.EntityReferencedException;
 import org.tbbtalent.server.exception.InvalidRequestException;
+import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.SavedSearch;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
+import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.list.HasSetOfCandidatesImpl;
-import org.tbbtalent.server.request.search.*;
+import org.tbbtalent.server.request.search.ClearSelectionRequest;
+import org.tbbtalent.server.request.search.CreateFromDefaultSavedSearchRequest;
+import org.tbbtalent.server.request.search.SaveSelectionRequest;
+import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
+import org.tbbtalent.server.request.search.SelectCandidateInSearchRequest;
+import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
+import org.tbbtalent.server.request.search.UpdateSharingRequest;
+import org.tbbtalent.server.request.search.UpdateWatchingRequest;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.service.db.SavedSearchService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.util.List;
-import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/saved-search")
@@ -173,6 +190,35 @@ public class SavedSearchAdminApi implements
                 savedListService.copy(selectionList.getId(), request);
 
         return savedListBuilderSelector.selectBuilder().build(targetList);
+    }
+
+    /**
+     * Updates the status of each selected candidate in the logged in user's selection for the
+     * given saved search.
+     * <p/>
+     * The status and related information are specified in the given request.
+     * @param id ID of saved search
+     * @param request Request containing the new status and other information relating to the 
+     *                status change.
+     * @throws InvalidRequestException if not authorized
+     * @throws NoSuchObjectException if there is no such saved search or user
+     * with the given ids
+     * @throws InvalidSessionException if no user is logged in
+     */
+    @PutMapping("/update-selected-statuses/{id}")
+    public void updateSelectedStatuses(@PathVariable("id") long id,
+                              @Valid @RequestBody UpdateCandidateStatusInfo request)
+            throws InvalidRequestException, NoSuchObjectException, InvalidSessionException {
+        
+        //Get the selection list for this user and saved search.
+        SavedList selectionList = savedSearchService.getSelectionListForLoggedInUser(id);
+        
+        UpdateCandidateStatusRequest ucsr = new UpdateCandidateStatusRequest();
+        List<Long> candidateIds = 
+            selectionList.getCandidates().stream().map(Candidate::getId).collect(Collectors.toList());
+        ucsr.setCandidateIds(candidateIds);
+        ucsr.setInfo(request);
+        candidateService.updateCandidateStatus(ucsr);
     }
 
     /**

@@ -619,13 +619,6 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     //Update cache
     this.cacheResults();
 
-    //Always maintain local candidate selections - saved search or not
-    if (selected) {
-      this.selectedCandidates.push(candidate);
-    } else {
-      this.selectedCandidates = this.selectedCandidates.filter(c => c.id !== candidate.id);
-    }
-
     if (isSavedSearch(this.candidateSource)) {
       //Saved search selection change
 
@@ -664,6 +657,13 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       } else {
         this.savedSearchSelectionChange = selected;
         this.doSavedSearchSelection(candidate, selected);
+      }
+    } else {
+      //For lists maintain local candidate selections
+      if (selected) {
+        this.selectedCandidates.push(candidate);
+      } else {
+        this.selectedCandidates = this.selectedCandidates.filter(c => c.id !== candidate.id);
       }
     }
   }
@@ -1068,10 +1068,11 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   updateStatusOfSelection() {
+    //todo If it is a saved search, query length of selection list
     const modal = this.modalService.open(EditCandidateStatusComponent);
     const nCandidates = this.selectedCandidates.length;
     if (nCandidates > 5) {
-      modal.componentInstance.text = "WARNING: You are about to modify the statuses of " +
+      modal.componentInstance.text = "WARNING: You are about to set the status of " +
         nCandidates + " candidates. This can only be undone manually, one by one.";
     }
     modal.result
@@ -1084,22 +1085,36 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   private updateCandidateStatuses(info: UpdateCandidateStatusInfo) {
     this.updatingStatuses = true;
     this.error = null;
-    const request: UpdateCandidateStatusRequest = {
-      candidateIds: this.selectedCandidates.map(c => c.id),
-      info: info
-    };
-    this.candidateService.updateStatus(request).subscribe(
-      () => {
-        //Update local candidates with new status
-        for (const candidate of this.selectedCandidates) {
-          candidate.status = info.status;
-        }
-        this.updatingStatuses = false;
-      },
-      (error) => {
-        this.error = error;
-        this.updatingStatuses = false;
-      });
+
+    if (isSavedSearch(this.candidateSource)) {
+      this.savedSearchService.updateSelectedStatuses(this.candidateSource.id, info).subscribe(
+        () => {
+          //todo how do we refresh display
+          this.doSearch(true);
+          this.updatingStatuses = false;
+        },
+        (error) => {
+          this.error = error;
+          this.updatingStatuses = false;
+        });
+    } else {
+      const request: UpdateCandidateStatusRequest = {
+        candidateIds: this.selectedCandidates.map(c => c.id),
+        info: info
+      };
+      this.candidateService.updateStatus(request).subscribe(
+        () => {
+          //Update local candidates with new status
+          for (const candidate of this.selectedCandidates) {
+            candidate.status = info.status;
+          }
+          this.updatingStatuses = false;
+        },
+        (error) => {
+          this.error = error;
+          this.updatingStatuses = false;
+        });
+    }
 
   }
 }

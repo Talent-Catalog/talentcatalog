@@ -27,6 +27,7 @@ import {Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {TargetListSelection} from '../components/list/select/select-list.component';
 import {getExternalHref} from '../util/url';
+import {UpdateCandidateStatusInfo} from "./candidate";
 
 export enum SavedSearchType {
   profession,

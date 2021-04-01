@@ -846,6 +846,8 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
+
+        UpdateCandidateStatusInfo info = request.getInfo();
         
         //Update status for all given ids
         List<Long> ids = request.getCandidateIds();
@@ -855,7 +857,6 @@ public class CandidateServiceImpl implements CandidateService {
             if (candidate == null) {
                 log.error("updateCandidateStatus: No candidate exists for id " + id);
             } else {
-                UpdateCandidateStatusInfo info = request.getInfo();
                 CandidateStatus originalStatus = candidate.getStatus();
                 candidate.setStatus(info.getStatus());
                 candidate.setCandidateMessage(info.getCandidateMessage());

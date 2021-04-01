@@ -21,6 +21,7 @@ import javax.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
+import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.SavedSearch;
@@ -150,6 +151,18 @@ public interface SavedSearchService {
      */
     @NotNull SavedList getSelectionList(long id, Long userId) 
             throws NoSuchObjectException;
+
+    /**
+     * Returns a selection saved list for the given saved search and the currently logged in user,
+     * creating one if necessary (there should only ever be one)
+     * @param id Saved search ID
+     * @return A saved list to be used by the given user for selecting candidates
+     * associated with the given saved list.
+     * @throws NoSuchObjectException if there is no such saved search.
+     * @throws InvalidSessionException if there is no logged in user.
+     */
+    @NotNull SavedList getSelectionListForLoggedInUser(long id) 
+            throws NoSuchObjectException, InvalidSessionException;
 
     /**
      * Updates a candidate context note associated with the given saved search.

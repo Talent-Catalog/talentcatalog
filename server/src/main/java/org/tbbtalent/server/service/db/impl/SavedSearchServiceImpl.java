@@ -522,6 +522,16 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
     @Override
+    public @NotNull SavedList getSelectionListForLoggedInUser(long id) 
+        throws InvalidSessionException {
+
+        final User loggedInUser = userContext.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+        return getSelectionList(id, loggedInUser.getId());
+    }
+
+    @Override
     public void updateCandidateContextNote(long id, UpdateCandidateContextNoteRequest request) {
         final User loggedInUser = userContext.getLoggedInUser().orElse(null);
         if (loggedInUser != null) {
