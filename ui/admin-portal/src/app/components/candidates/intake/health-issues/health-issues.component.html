@@ -7,7 +7,7 @@
     <label for="healthIssues">
       Do you have any health issues?
     </label>
-    <div class="float-right">
+    <div *ngIf="editable" class="float-right">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">

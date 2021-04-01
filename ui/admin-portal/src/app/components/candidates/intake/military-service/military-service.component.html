@@ -18,9 +18,9 @@
   {{error}}
 </div>
 <form [formGroup]="form">
-  <div *ngIf="editable" class="form-group">
+  <div class="form-group">
     <label for="militaryService">Have you ever completed military service?</label>
-    <div class="float-right">
+    <div *ngIf="editable" class="float-right">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
