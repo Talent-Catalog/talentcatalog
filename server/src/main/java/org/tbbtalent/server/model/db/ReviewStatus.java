@@ -16,10 +16,26 @@
 
 package org.tbbtalent.server.model.db;
 
+/**
+ * Records whether a candidate's inclusion in a saved search has been reviewed or not.
+ * @see CandidateReviewStatusItem
+ */
 public enum ReviewStatus {
 
-    pending,
+    /**
+     * The status of the candidate in a saved search has not been reviewed
+     */
+    unverified,
+
+    /**
+     * It has been verified that the candidate does belong in the saved search
+     */
     verified,
+
+    /**
+     * The candidate does not really belong in the saved search even though the search will find
+     * them.
+     */
     rejected
 
 }

@@ -136,7 +136,7 @@ public class CandidateSpecification {
             if (request.getSavedSearchId() != null) {
                 if (CollectionUtils.isNotEmpty(request.getReviewStatusFilter())) {
                     Predicate pendingPredicate = null;
-                    if (request.getReviewStatusFilter().contains(ReviewStatus.pending)) {
+                    if (request.getReviewStatusFilter().contains(ReviewStatus.unverified)) {
                         Subquery<Candidate> sq = query.subquery(Candidate.class);
                         Root<Candidate> subCandidate = sq.from(Candidate.class);
                         /*

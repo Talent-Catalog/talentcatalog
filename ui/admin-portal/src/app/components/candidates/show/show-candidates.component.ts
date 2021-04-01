@@ -39,7 +39,7 @@ import {
   SearchCandidateRequestPaged,
   SelectCandidateInSearchRequest
 } from '../../../model/saved-search';
-import {CandidateSource, canEditSource, defaultReviewStatusFilter, isMine, isSharedWithMe, ReviewedStatus} from '../../../model/base';
+import {CandidateSource, canEditSource, defaultReviewStatusFilter, isMine, isSharedWithMe, ReviewStatus} from '../../../model/base';
 import {CachedSourceResults, CandidateSourceResultsCacheService} from '../../../services/candidate-source-results-cache.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {IDropdownSettings} from 'ng-multiselect-dropdown';
@@ -163,7 +163,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.selectedListCandidates = [];
 
     this.statuses = [];
-    for (const key in ReviewedStatus) {
+    for (const key in ReviewStatus) {
       if (isNaN(Number(key))) {
         this.statuses.push(key);
       }
