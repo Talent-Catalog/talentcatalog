@@ -219,7 +219,6 @@ import {VisaFinalAssessmentComponent} from "./components/candidates/visa/visa-jo
 import {JobOccupationComponent} from "./components/candidates/visa/visa-job-assessments/job-occupation/job-occupation.component";
 import {RiskAssessmentComponent} from "./components/candidates/visa/risk-assessment/risk-assessment.component";
 import {HealthAssessmentComponent} from "./components/candidates/visa/health-assessment/health-assessment.component";
-import {VisaJobAssessmentCaComponent} from "./components/candidates/visa/visa-job-assessments/ca/visa-job-assessment-ca.component";
 import {ShowQrCodeComponent} from './components/util/qr/show-qr-code/show-qr-code.component';
 import {HealthIssuesComponent} from './components/candidates/intake/health-issues/health-issues.component';
 import {VisaJobPutForwardComponent} from './components/candidates/visa/visa-job-assessments/put-forward/visa-job-put-forward.component';
@@ -421,7 +420,6 @@ import {VisaJobCheckAuComponent} from './components/candidates/view/tab/candidat
     YearsRelevantExpComponent,
     IeltsLevelComponent,
     QualificationRelevantComponent,
-    VisaJobAssessmentCaComponent,
     DatePickerComponent,
     ShowQrCodeComponent,
     HealthIssuesComponent,

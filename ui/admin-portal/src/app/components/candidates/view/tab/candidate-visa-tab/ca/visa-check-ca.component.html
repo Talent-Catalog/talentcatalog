@@ -28,39 +28,11 @@
       Export PDF
     </button>
   </div>
-
-  <div class="card">
-    <div class="card-header">
-      Confirmation Details
-    </div>
-    <div class="card-body">
-      <app-confirm-visa-contact
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-confirm-visa-contact>
-    </div>
-  </div>
-
-  <hr/>
-
-  <div class="card">
-    <div class="card-header">
-      Health Assessment
-    </div>
-    <div class="card-body">
-      <app-family-health
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [editable]="false">
-      </app-family-health>
-      <hr/>
-      <app-health-assessment
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-health-assessment>
-    </div>
-  </div>
-
-  <hr style="border-top: 5px solid #13b1dd; margin-top: 3em; margin-bottom: 3em;"/>
+  <app-visa-assessment
+    [candidate]="candidate"
+    [candidateIntakeData]="candidateIntakeData"
+    [myRecordIndex]="selectedIndex"
+  >
+  </app-visa-assessment>
 
 </div>

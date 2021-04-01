@@ -61,4 +61,8 @@ export class CreateVisaJobAssessementComponent implements OnInit {
     this.activeModal.close(request);
   }
 
+  dismiss() {
+    this.activeModal.dismiss(false);
+  }
+
 }
