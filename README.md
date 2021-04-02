@@ -129,7 +129,10 @@ You can verify this by going to [localhost:5601](http://localhost:5601) in your 
   the application should still run in your development environment, but it may
   not have access to these integrations. Contact TBB if you need access to these
   "secrets". They are stored in a tbb_secrets.txt file which you can hook into
-  your start up to set the relevant environment variables.
+  your start up to set the relevant environment variables. 
+  For example add "source ~/tbb_secrets.txt" to .bash_profile or .zshenv
+  depending on whether you are running bash or zsh.
+
 - Create a new Run Profile for `org.tbbtalent.server.TbbTalentApplication`. 
   In the Environment Variables section of Intellij, check the 
   "Include system environment variables" checkbox.
