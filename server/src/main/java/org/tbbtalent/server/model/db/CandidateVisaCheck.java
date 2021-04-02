@@ -19,76 +19,59 @@ package org.tbbtalent.server.model.db;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "candidate_visa")
-@SequenceGenerator(name = "seq_gen", sequenceName = "candidate_visa_id_seq", allocationSize = 1)
-public class CandidateVisaCheck extends AbstractAuditableDomainObject<Long>
-        implements Comparable<CandidateVisaCheck> {
-    
-    private String assessmentNotes;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "candidate_id")
-    private Candidate candidate;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "country_id")
-    private Country country;
-
-    @Enumerated(EnumType.STRING)
-    private VisaEligibility eligibility;
-
-    @Enumerated(EnumType.STRING)
-    private YesNo protection;
-    
-    private String protectionGrounds;
-
-    @Enumerated(EnumType.STRING)
-    private TBBEligibilityAssessment tbbEligibilityAssessment;
-
-    public CandidateVisaCheck() {
-    }
-
-    @Override
-    public int compareTo(CandidateVisaCheck o) {
-        if (country == null) {
-            return o.country == null ? 0 : -1;
-        }
-        return country.compareTo(o.country);
-    }
+@Table(name = "candidate_visa_check")
+@SequenceGenerator(name = "seq_gen", sequenceName = "candidate_visa_check_id_seq", allocationSize = 1)
+public class CandidateVisaCheck extends CandidateVisaCheckBase {
 
     public void populateIntakeData(
             @NonNull Candidate candidate, @NonNull Country country,
-            CandidateIntakeDataUpdate data, @Nullable User createdBy) {
+            CandidateIntakeDataUpdate data) {
         setCandidate(candidate);
         setCountry(country);
-        if (createdBy != null) {
-            setCreatedBy(createdBy);
-        }
-        if (data.getVisaAssessmentNotes() != null) {
-            setAssessmentNotes(data.getVisaAssessmentNotes());
-        }
-        if (data.getVisaEligibility() != null) {
-            setEligibility(data.getVisaEligibility());
-        }
-        if (data.getVisaCreatedDate() != null) {
-            setCreatedDate(data.getVisaCreatedDate());
-        }
         if (data.getVisaProtection() != null) {
             setProtection(data.getVisaProtection());
         }
         if (data.getVisaProtectionGrounds() != null) {
             setProtectionGrounds(data.getVisaProtectionGrounds());
         }
-        if (data.getVisaTbbEligibilityAssessment() != null) {
-            setTbbEligibilityAssessment(data.getVisaTbbEligibilityAssessment());
+        if (data.getVisaHealthAssessment() != null) {
+            setHealthAssessment(data.getVisaHealthAssessment());
+        }
+        if (data.getVisaHealthAssessmentNotes() != null) {
+            setHealthAssessmentNotes(data.getVisaHealthAssessmentNotes());
+        }
+        if (data.getVisaCharacterAssessment() != null) {
+            setCharacterAssessment(data.getVisaCharacterAssessment());
+        }
+        if (data.getVisaCharacterAssessmentNotes() != null) {
+            setCharacterAssessmentNotes(data.getVisaCharacterAssessmentNotes());
+        }
+        if (data.getVisaSecurityRisk() != null) {
+            setSecurityRisk(data.getVisaSecurityRisk());
+        }
+        if (data.getVisaSecurityRiskNotes() != null) {
+            setSecurityRiskNotes(data.getVisaSecurityRiskNotes());
+        }
+        if (data.getVisaOverallRisk() != null) {
+            setOverallRisk(data.getVisaOverallRisk());
+        }
+        if (data.getVisaOverallRiskNotes() != null) {
+            setOverallRiskNotes(data.getVisaOverallRiskNotes());
+        }
+        if (data.getVisaValidTravelDocs() != null) {
+            setValidTravelDocs(data.getVisaValidTravelDocs());
+        }
+        if (data.getVisaValidTravelDocsNotes() != null) {
+            setValidTravelDocsNotes(data.getVisaValidTravelDocsNotes());
         }
     }
     

@@ -1,0 +1,30 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+  <div class="form-group">
+    <label for="visaProtection">
+      Is the candidate in need of international protection?
+    </label>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
+    <select class="form-control"
+            id="visaProtection" [formControlName]="'visaProtection'">
+      <option *ngFor="let opt of visaProtectionOptions" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+  </div>
+  <div *ngIf="form.controls.visaProtection.value === 'Yes'" class="form-group">
+    <label for="visaProtectionGrounds">If yes, on what grounds? (refer to <a href="https://drive.google.com/file/d/1U1KjoOXlITTWaucNvJXQSh9movNWEPTu/view" target="_blank">TBB eligibility policy</a>)</label>
+    <textarea type="text" class="md-textarea-auto form-control" rows="4"
+              id="visaProtectionGrounds" [formControlName]="'visaProtectionGrounds'"
+              placeholder="" ></textarea>
+  </div>
+</form>
+
+

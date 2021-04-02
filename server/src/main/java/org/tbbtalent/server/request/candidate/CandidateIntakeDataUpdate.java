@@ -22,7 +22,6 @@ import lombok.ToString;
 import org.tbbtalent.server.model.db.*;
 
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.util.List;
 
 /**
@@ -95,7 +94,7 @@ public class CandidateIntakeDataUpdate {
     private YesNo destJob;
     private String destJobNotes;
 
-    private DrivingLicenseStatus drivingLicense;
+    private DocumentStatus drivingLicense;
     private LocalDate drivingLicenseExp;
     private Long drivingLicenseCountryId;
 
@@ -164,18 +163,42 @@ public class CandidateIntakeDataUpdate {
 
     //Corresponds to CandidateVisaCheck fields
     private Long visaId;
-    private String visaAssessmentNotes;
     private Long visaCountryId;
-    private VisaEligibility visaEligibility;
-    private OffsetDateTime visaCreatedDate;
-    private Long visaCreatedById;
     private YesNo visaProtection;
     private String visaProtectionGrounds;
-    private TBBEligibilityAssessment visaTbbEligibilityAssessment;
+    private YesNo visaHealthAssessment;
+    private String visaHealthAssessmentNotes;
+    private YesNo visaCharacterAssessment;
+    private String visaCharacterAssessmentNotes;
+    private YesNo visaSecurityRisk;
+    private String visaSecurityRiskNotes;
+    private RiskLevel visaOverallRisk;
+    private String visaOverallRiskNotes;
+    private DocumentStatus visaValidTravelDocs;
+    private String visaValidTravelDocsNotes;
+    private String visaCreatedById;
+
+    //Corresponds to CandidateVisaJobCheck fields
+    private Long visaJobId;
+    private Long visaJobOccupationId;
+    private EducationType visaJobQualification;
+    private YesNo visaJobInterest;
+    private YesNo visaJobSalaryTsmit;
+    private YesNo visaJobRegional;
+    private YesNo visaJobFamilyAus;
+    private YesNo visaJobEligible494;
+    private String visaJobEligible494Notes;
+    private YesNo visaJobEligible186;
+    private String visaJobEligible186Notes;
+    private OtherVisas visaJobEligibleOther;
+    private String visaJobEligibleOtherNotes;
+    private VisaEligibility visaJobPutForward;
+    private TBBEligibilityAssessment visaJobTbbEligibility;
+    private String visaJobNotes;
 
     private YesNoUnsure visaReject;
     private String visaRejectNotes;
-    private List<VisaIssue> visaIssues;
+    private YesNoUnsure visaIssues;
     private String visaIssuesNotes;
     
     private YesNo workAbroad;

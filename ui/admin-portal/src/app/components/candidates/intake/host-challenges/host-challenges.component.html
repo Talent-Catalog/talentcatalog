@@ -20,7 +20,7 @@
 <form [formGroup]="form">
   <div class="form-group">
     <label for="hostChallenges">What have been the major challenges for you in {{candidate.country.name}}? </label>
-    <div class="float-right">
+    <div *ngIf="editable" class="float-right">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
@@ -28,7 +28,7 @@
     </div>
     <textarea type="text" class="md-textarea-auto form-control" rows="4"
               id="hostChallenges" [formControlName]="'hostChallenges'"
-              placeholder="" ></textarea>
+              placeholder=""></textarea>
   </div>
 </form>
 

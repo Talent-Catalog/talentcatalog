@@ -24,7 +24,6 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateVisaCheck;
 import org.tbbtalent.server.model.db.Country;
-import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.CandidateVisaRepository;
 import org.tbbtalent.server.repository.db.CountryRepository;
@@ -72,7 +71,7 @@ public class CandidateVisaServiceImpl implements CandidateVisaService {
                     .orElseThrow(() -> new NoSuchObjectException(Country.class, countryId));
             cv.setCountry(country);
         }
-        cv.setEligibility(request.getEligibility());
+        //cv.setEligibility(request.getEligibility());
         cv.setAssessmentNotes(request.getAssessmentNotes());
 
         return candidateVisaRepository.save(cv);
@@ -87,25 +86,19 @@ public class CandidateVisaServiceImpl implements CandidateVisaService {
 
     @Override
     public void updateIntakeData(
-            Long countryId, @NonNull Candidate candidate, 
+            Long visaId, @NonNull Candidate candidate,
             CandidateIntakeDataUpdate data) throws NoSuchObjectException {
-        if (countryId != null) {
-            Country country = countryRepository.findById(countryId)
-                    .orElseThrow(() -> new NoSuchObjectException(Country.class, countryId));
-
-            User createdBy = null;
-            final Long createdById = data.getVisaCreatedById();
-            if (createdById != null) {
-                createdBy = userRepository.findById(createdById)
-                    .orElseThrow(() -> new NoSuchObjectException(User.class, createdById));
-            }
-            
             CandidateVisaCheck cv;
-            Long id = data.getVisaId();
-            cv = candidateVisaRepository.findById(id)
-                    .orElseThrow(() -> new NoSuchObjectException(CandidateVisaCheck.class, id));
-            cv.populateIntakeData(candidate, country, data, createdBy);
+            cv = candidateVisaRepository.findById(visaId)
+                    .orElseThrow(() -> new NoSuchObjectException(CandidateVisaCheck.class, visaId));
+
+            Country country = null;
+            if (data.getVisaCountryId() != null) {
+                country = countryRepository.findById(data.getVisaCountryId())
+                        .orElseThrow(() -> new NoSuchObjectException(Country.class, data.getVisaCountryId()));
+            }
+            cv.populateIntakeData(candidate, country, data);
             candidateVisaRepository.save(cv);
-        }
+
     }
 }

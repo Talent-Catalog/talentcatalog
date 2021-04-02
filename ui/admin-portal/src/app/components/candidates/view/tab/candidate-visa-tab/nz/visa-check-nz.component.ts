@@ -16,6 +16,7 @@
 
 import {Component, Input} from '@angular/core';
 import {IntakeComponentTabBase} from "../../../../../util/intake/IntakeComponentTabBase";
+import {CandidateVisa} from "../../../../../../model/candidate";
 
 @Component({
   selector: 'app-visa-check-nz',
@@ -24,4 +25,5 @@ import {IntakeComponentTabBase} from "../../../../../util/intake/IntakeComponent
 })
 export class VisaCheckNzComponent extends IntakeComponentTabBase {
   @Input() selectedIndex: number;
+  @Input() visaRecord: CandidateVisa;
 }

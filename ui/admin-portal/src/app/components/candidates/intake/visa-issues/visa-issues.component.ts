@@ -18,13 +18,8 @@ import {Component, OnInit} from '@angular/core';
 import {IntakeComponentBase} from "../../../util/intake/IntakeComponentBase";
 import {FormBuilder} from "@angular/forms";
 import {CandidateService} from "../../../../services/candidate.service";
-import {
-  enumKeysToEnumOptions,
-  enumMultiSelectSettings,
-  EnumOption,
-  enumOptions
-} from "../../../../util/enum";
-import {VisaIssue} from "../../../../model/candidate";
+import {enumMultiSelectSettings, EnumOption, enumOptions} from "../../../../util/enum";
+import {YesNoUnsure} from "../../../../model/candidate";
 import {IDropdownSettings} from "ng-multiselect-dropdown";
 
 @Component({
@@ -35,22 +30,33 @@ import {IDropdownSettings} from "ng-multiselect-dropdown";
 export class VisaIssuesComponent extends IntakeComponentBase implements OnInit {
 
   public dropdownSettings: IDropdownSettings = enumMultiSelectSettings;
-  public visaIssueOptions: EnumOption[] = enumOptions(VisaIssue);
+  public visaIssueOptions: EnumOption[] = enumOptions(YesNoUnsure);
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService)
   }
 
   ngOnInit(): void {
-    const options: EnumOption[] =
-      enumKeysToEnumOptions(this.candidateIntakeData?.visaIssues, VisaIssue);
+    //const options: EnumOption[] = enumKeysToEnumOptions(this.candidateIntakeData?.visaIssues, VisaIssue);
     this.form = this.fb.group({
-      visaIssues: [options],
+      visaIssues: [this.candidateIntakeData?.visaIssues],
       visaIssuesNotes: [this.candidateIntakeData?.visaIssuesNotes],
     });
   }
 
-  get haveIssues(): boolean {
-    return this.form.value.visaIssues?.length > 0;
+  get hasNotes(): boolean {
+    let found: boolean = false;
+    if (this.form.value.visaIssues) {
+      if (this.form.value.visaIssues === 'Yes') {
+        found = true
+      }
+      if (this.form.value.visaIssues === 'No') {
+        found = true
+      }
+      if (this.form.value.visaIssues === 'Unsure') {
+        found = true
+      }
+    }
+    return found;
   }
 }

@@ -41,15 +41,15 @@ It is also probably easier to install Java directly rather than using brew.
 
 
 - Java JDK8
-   - See [https://stackoverflow.com/questions/24342886/how-to-install-java-8-on-mac]()
+   - See [this post](https://stackoverflow.com/questions/24342886/how-to-install-java-8-on-mac)
     
 
-- Gradle [https://gradle.org/install/]()
+- Gradle [https://gradle.org/install/](https://gradle.org/install/)
   > brew install gradle
-- NodeJS: Install as described here [https://nodejs.org/en/]()
+- NodeJS: Install as described here [https://nodejs.org/en/](https://nodejs.org/en/)
 
 
-- Angular CLI [https://angular.io/cli]()
+- Angular CLI [https://angular.io/cli](https://angular.io/cli)
   > npm install -g @angular/cli
 
 - cURL (for database migrations, can also use Postman) 
@@ -59,22 +59,22 @@ It is also probably easier to install Java directly rather than using brew.
   using Docker technology - in particular for running Elasticsearch - 
   see below)
     - Install Docker Desktop for Mac - 
-      see [https://hub.docker.com/editions/community/docker-ce-desktop-mac/]()
+      see [docker website](https://hub.docker.com/editions/community/docker-ce-desktop-mac/)
 
 
 - Elasticsearch (for text search)
     - Install Docker image. 
-      See [https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html]()
+      See [Elastic search website](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html)
       Just pull the image to install. See later for how to run.
 
 - Kibana (for monitoring Elasticsearch)
     - Install Docker image.
-      See [https://www.elastic.co/guide/en/kibana/current/docker.html]()
+      See [Elastic search website](https://www.elastic.co/guide/en/kibana/current/docker.html)
       Just pull the image to install. See later for how to run.
 
-- Git [https://git-scm.com/downloads]()
-- PostgreSQL [https://www.postgresql.org/download/]()
-- IntelliJ IDEA (or the IDE of your choice) [https://www.jetbrains.com/idea/download/]()
+- Git - [see Git website](https://git-scm.com/downloads)
+- PostgreSQL - [Postgres website](https://www.postgresql.org/download/)
+- IntelliJ IDEA (or the IDE of your choice) - [Intellij website](https://www.jetbrains.com/idea/download/)
 
 ### Setup your local database ###
 
@@ -108,7 +108,7 @@ Can run from Docker desktop for Mac, or (replacing appropriate version number)..
 > docker run --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.12.0
 
 Elasticsearch will run listening on port 9200. 
-You can verify this by going to [localhost:9200]() in your browser
+You can verify this by going to [localhost:9200](http://localhost:9200) in your browser
 
 ### Run Kibana (optional) ###
 
@@ -119,7 +119,7 @@ Can run from Docker desktop for Mac, or (replacing appropriate version number)..
 > docker run --name kibana --link elasticsearch -p 5601:5601 docker.elastic.co/kibana/kibana:7.12.0
 
 Kibana runs listening on port 5601. 
-You can verify this by going to [localhost:5601]() in your browser 
+You can verify this by going to [localhost:5601](http://localhost:5601) in your browser 
 
 ### Run the server ###
 
@@ -140,7 +140,7 @@ Started TbbTalentApplication in 2.217 seconds (JVM running for 2.99)
 - your server will be running on port 8080 (default for Spring Boot) 
 (can be overridden by setting server.port in application.yml, or Intellij Run 
   Configuration, and updating environment.ts in portals)
-- To test it open a browser to [http://localhost:8080/test]()
+- To test it open a browser to [http://localhost:8080/test](http://localhost:8080/test)
 
 
 ### Run the Candidate Portal ###
@@ -180,7 +180,7 @@ i ｢wdm｣: Compiled successfully.
 
 The Candidate Portal is now running locally and you can open a browser (chrome preferred) to: 
 
-[http://localhost:4200]()
+[http://localhost:4200](http://localhost:4200)
 
 
 __Note:__ _this is for development mode only. In production, the Candidate Portal module will be bundled 
@@ -209,9 +209,9 @@ chunk {vendor} vendor.js, vendor.js.map (vendor) 3.55 MB [initial] [rendered]
 i ｢wdm｣: Compiled successfully.
 ```
 
-The Admin Portal is now running locally and you can open a browser (chrome preferred)to: 
+The Admin Portal is now running locally and you can open a browser (chrome preferred) to: 
 
-[http://localhost:4201]()
+[http://localhost:4201](http://localhost:4201)
 
 
 __Note:__ _this is for development mode only. In production, the Admin Portal module will be bundled 
@@ -239,7 +239,7 @@ directory.
 ## Version Control ##
 
 We use GitHub. Our repository is called tbbtalentv2 - 
-[https://github.com/talentbeyondboundaries/tbbtalentv2]()
+[https://github.com/talentbeyondboundaries/tbbtalentv2](https://github.com/talentbeyondboundaries/tbbtalentv2)
 
 See the [GitHub wiki](https://github.com/talentbeyondboundaries/tbbtalentv2/wiki) 
 for additional documentation.

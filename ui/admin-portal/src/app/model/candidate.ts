@@ -73,7 +73,7 @@ export interface CandidateIntakeData {
 
   candidateDestinations?: CandidateDestination[];
 
-  candidateVisaChecks?: CandidateVisaCheck[];
+  candidateVisaChecks?: CandidateVisa[];
 
   candidateExams?: CandidateExam[];
 
@@ -108,6 +108,9 @@ export interface CandidateIntakeData {
 
   familyHealth?: YesNo;
   familyHealthNotes?: string;
+
+  healthIssues?: string;
+  healthIssuesNotes?: string;
 
   homeLocation?: string;
 
@@ -180,7 +183,7 @@ export interface CandidateIntakeData {
   unrwaNotes?: string;
   visaReject?: YesNoUnsure;
   visaRejectNotes?: string;
-  visaIssues?: VisaIssue[];
+  visaIssues?: YesNoUnsure;
   visaIssuesNotes?: string;
 }
 
@@ -219,20 +222,53 @@ export interface CandidateDestination {
   notes?: string;
 }
 
-export interface CandidateVisaCheck {
+export interface CandidateVisa {
   id?: number;
   country?: Country;
   eligibility?: VisaEligibility;
   assessmentNotes?: string;
-  checkedBy?: User;
-  checkedDate?: string;
-  updatedBy?: User;
-  updatedDate?: number;
   protection?: YesNo;
   protectionGrounds?: string;
   tbbEligibilityAssessment?: TBBEligibilityAssessment;
+  healthAssessment: YesNo;
+  healthAssessmentNotes: string;
+  characterAssessment: YesNo;
+  characterAssessmentNotes: string;
+  securityRisk: YesNo;
+  securityRiskNotes: string;
+  validTravelDocs: YesNo;
+  validTravelDocsNotes: string;
+  overallRisk: string;
+  overallRiskNotes: string;
+  intProtection?: string;
+  createdBy?: User;
+  createdDate?: number;
+  updatedBy?: User;
+  updatedDate?: number;
+  candidateVisaJobChecks?: CandidateVisaJobCheck[];
+
 }
 
+export interface CandidateVisaJobCheck {
+  id?: number;
+  name?: string;
+  sfJobLink?: string;
+  occupation?: Occupation;
+  qualification?: Qualification;
+  salaryTsmit?: YesNo;
+  regional?: YesNo;
+  interest?: YesNo;
+  familyAus?: YesNo;
+  eligible_494?: YesNo;
+  eligible_494_Notes?: String;
+  eligible_186?: YesNo;
+  eligible_186_Notes?: String;
+  eligibleOther?: YesNo;
+  eligibleOtherNotes?: String;
+  putForward?: VisaEligibility;
+  tbbEligibility?: TBBEligibilityAssessment;
+  notes?: String;
+}
 /*
   Enumerations. These should match equivalent enumerations on the server (Java)
   side.
@@ -313,11 +349,11 @@ export enum TBBEligibilityAssessment {
 
 export enum VisaEligibility {
   NoResponse = "",
-  No = "No",
+  Yes = "Yes",
+  YesBut = "Yes (but manage expectations about visa pathway)",
   DiscussFurther = "Discuss further",
   SeekAdvice = "Seek advice",
-  Yes = "Yes",
-  YesBut = "Yes (but manage expectations about visa pathway)"
+  No = "No"
 }
 
 export enum VisaIssue {
@@ -465,6 +501,46 @@ export enum Registrations {
   UNHCRUNRWA = "UNHCR & UNRWA",
   Neither = "Neither",
   NA = "Not Applicable",
+}
+
+export enum TravelDocumentStatus {
+  NoResponse = "",
+  Valid = "Valid",
+  Expired = "Expired",
+  None = "None"
+}
+
+export enum RiskLevel {
+  NoResponse = "",
+  Low = "Low Risk",
+  Medium = "Medium Risk",
+  High = "High Risk"
+}
+
+export enum TbbEligibility {
+  NoResponse = "",
+  Proceed = "Ready to proceed",
+  Discuss = "Needs discussion",
+  NotProceed = "Do not proceed"
+}
+
+export enum OtherVisas {
+  NoResponse = "",
+  TempSkilled = "482 temporary skilled (medium stream)",
+  SpecialHum = "202 (special humanitarian)",
+  OtherHum = "Other humanitarian (200, 201, 203)",
+  DirectEnt = "186 direct entry permanent stream",
+  PointsIndep = "189/190 points tested independant stream",
+}
+
+export enum Qualification {
+  NoResponse = "",
+  HighSchool = "High School",
+  Associates = "Associates",
+  Bachelors = "Bachelors",
+  Masters = "Masters",
+  PHD = "PHD",
+  Other = "Other"
 }
 
 export function getCandidateNavigation(candidate: Candidate): any[] {

@@ -15,7 +15,7 @@
   -->
 
 <!-- EXISTING RECORDS -->
-<div class="card">
+<div class="card visa-intake">
   <div class="card-header">
     Visa checks
     <span *ngIf="loading">
@@ -38,7 +38,7 @@
           <input type="radio" [value]="i"
                  name="visaCountry" formControlName="visaCountry"
                  (change)="changeVisaCountry($event)">
-          {{visaCheck.country.name}}
+          {{visaCheck?.country?.name}}
           <button class="float-right btn" (click)="deleteRecord(i)">
             <span class="align-top">
               <i class="fas fa-trash"></i>
@@ -53,24 +53,28 @@
     <div [ngSwitch]="selectedCountry" *ngIf="selectedCountry != undefined">
       <app-visa-check-au *ngSwitchCase="'Australia'"
                          [candidate]="candidate"
-                         [selectedIndex]="selectedIndex"
+                         [candidateIntakeData]="candidateIntakeData"
+                         [visaRecord]="getVisaCheck('Australia')"
       >
       </app-visa-check-au>
 
       <app-visa-check-ca *ngSwitchCase="'Canada'"
                          [candidate]="candidate"
+                         [visaRecord]="getVisaCheck('Canada')"
                          [selectedIndex]="selectedIndex"
       >
       </app-visa-check-ca>
 
       <app-visa-check-nz *ngSwitchCase="'New Zealand'"
                          [candidate]="candidate"
+                         [visaRecord]="getVisaCheck('New Zealand')"
                          [selectedIndex]="selectedIndex"
       >
       </app-visa-check-nz>
 
       <app-visa-check-uk *ngSwitchCase="'United Kingdom'"
                          [candidate]="candidate"
+                         [visaRecord]="getVisaCheck('United Kingdom')"
                          [selectedIndex]="selectedIndex"
       >
       </app-visa-check-uk>

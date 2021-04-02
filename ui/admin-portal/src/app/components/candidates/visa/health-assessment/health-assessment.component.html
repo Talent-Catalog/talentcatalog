@@ -1,0 +1,27 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+
+<form [formGroup]="form">
+  <div class="form-group">
+    <label for="visaHealthAssessment">Meets health requirement? (e.g. no major health issues)</label>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
+    <select class="form-control"
+            id="visaHealthAssessment" [formControlName]="'visaHealthAssessment'">
+      <option *ngFor="let opt of healthAssessmentOptions" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+  </div>
+  <div *ngIf="hasNotes" class="form-group">
+    <label for="visaHealthAssessmentNotes">Notes</label>
+    <textarea type="text" class="md-textarea-auto form-control" rows="4"
+              id="visaHealthAssessmentNotes" [formControlName]="'visaHealthAssessmentNotes'"
+              placeholder="" ></textarea>
+  </div>
+</form>

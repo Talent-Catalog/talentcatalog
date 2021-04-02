@@ -18,7 +18,7 @@ import {AfterViewInit, Directive, Input, OnDestroy, OnInit} from '@angular/core'
 import {catchError, debounceTime, map, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {Subject} from 'rxjs';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {Candidate, CandidateIntakeData} from '../../../model/candidate';
+import {Candidate, CandidateIntakeData, CandidateVisa} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
 
 /**
@@ -67,6 +67,11 @@ export abstract class IntakeComponentBase implements AfterViewInit, OnDestroy, O
   @Input() myRecordIndex: number;
 
   /**
+   * Visa Check Object for selected country.
+   */
+  @Input() visaCheckRecord: CandidateVisa;
+
+  /**
    * True when a save is underway. Should be used to show the user when a save
    * is happening.
    */
@@ -82,6 +87,8 @@ export abstract class IntakeComponentBase implements AfterViewInit, OnDestroy, O
    * @see ngOnDestroy
    */
   private unsubscribe = new Subject<void>()
+
+  @Input() editable: boolean = true;
 
   /**
    * Inject in a FormBuilder to create the form and CandidateService

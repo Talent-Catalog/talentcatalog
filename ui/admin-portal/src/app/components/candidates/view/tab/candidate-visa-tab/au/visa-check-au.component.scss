@@ -14,3 +14,21 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+.body-dark {
+  background-color: #efefef;
+}
+
+.intake-data {
+  backdrop-filter: contrast(100%);
+  filter: contrast(0.9);
+  //background-color: #a7e2f41f;
+  border-bottom: 1px solid #ced4da;
+  pointer-events: none;
+  .form-control {
+    border: 2px solid red;
+  }
+}
+
+//:host-context(.visa-intake) .card-body {
+//  background-color: pink;
+//}

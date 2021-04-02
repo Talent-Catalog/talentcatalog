@@ -1,0 +1,26 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+  <div *ngIf="editable" class="form-group">
+    <label for="visaJobEligibleOther">Other Visa Options?</label>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
+    <select class="form-control"
+            id="visaJobEligibleOther" [formControlName]="'visaJobEligibleOther'">
+      <option *ngFor="let opt of visaOtherOptions" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+  </div>
+  <div *ngIf="hasNotes" class="form-group">
+    <label for="visaJobEligibleOtherNotes">Notes</label>
+    <textarea type="text" class="md-textarea-auto form-control" rows="4"
+              id="visaJobEligibleOtherNotes" [formControlName]="'visaJobEligibleOtherNotes'"
+              placeholder=""></textarea>
+  </div>
+</form>

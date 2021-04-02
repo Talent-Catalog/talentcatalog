@@ -187,10 +187,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Nullable
     private String returnedHomeReasonNo;
-    
-    @Convert(converter = VisaIssuesConverter.class)
+
+    @Enumerated(EnumType.STRING)
     @Nullable
-    private List<VisaIssue> visaIssues;
+    private YesNoUnsure visaIssues;
     
     @Nullable
     private String visaIssuesNotes;
@@ -465,7 +465,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Enumerated(EnumType.STRING)
     @Nullable
-    private DrivingLicenseStatus drivingLicense;
+    private DocumentStatus drivingLicense;
 
     @Nullable
     private LocalDate drivingLicenseExp;
@@ -812,11 +812,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setReturnedHomeReasonNo(@Nullable String returnedHomeReasonNo) { this.returnedHomeReasonNo = returnedHomeReasonNo; }
 
     @Nullable
-    public List<VisaIssue> getVisaIssues() {
+    public YesNoUnsure getVisaIssues() {
         return visaIssues;
     }
 
-    public void setVisaIssues(@Nullable List<VisaIssue> visaIssues) {
+    public void setVisaIssues(@Nullable YesNoUnsure visaIssues) {
         this.visaIssues = visaIssues;
     }
 
@@ -1216,9 +1216,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setCanDrive(@Nullable YesNo canDrive) { this.canDrive = canDrive; }
 
     @Nullable
-    public DrivingLicenseStatus getDrivingLicense() { return drivingLicense; }
+    public DocumentStatus getDrivingLicense() { return drivingLicense; }
 
-    public void setDrivingLicense(@Nullable DrivingLicenseStatus drivingLicense) { this.drivingLicense = drivingLicense; }
+    public void setDrivingLicense(@Nullable DocumentStatus drivingLicense) { this.drivingLicense = drivingLicense; }
 
     @Nullable
     public LocalDate getDrivingLicenseExp() { return drivingLicenseExp; }

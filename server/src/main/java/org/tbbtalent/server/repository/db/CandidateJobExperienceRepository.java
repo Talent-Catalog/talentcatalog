@@ -16,14 +16,14 @@
 
 package org.tbbtalent.server.repository.db;
 
-import java.util.Optional;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tbbtalent.server.model.db.CandidateJobExperience;
+
+import java.util.Optional;
 
 public interface CandidateJobExperienceRepository extends JpaRepository<CandidateJobExperience, Long> {
 
@@ -48,4 +48,5 @@ public interface CandidateJobExperienceRepository extends JpaRepository<Candidat
             + " left join w.candidate c "
             + " where c.id = :candidateId")
     Page<CandidateJobExperience> findByCandidateId(@Param("candidateId") Long candidateId, Pageable request);
+
 }

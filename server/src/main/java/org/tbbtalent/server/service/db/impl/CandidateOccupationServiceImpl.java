@@ -16,12 +16,6 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,11 +24,7 @@ import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateOccupation;
-import org.tbbtalent.server.model.db.Occupation;
-import org.tbbtalent.server.model.db.Role;
-import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.repository.db.CandidateJobExperienceRepository;
 import org.tbbtalent.server.repository.db.CandidateOccupationRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
@@ -48,6 +38,12 @@ import org.tbbtalent.server.service.db.CandidateNoteService;
 import org.tbbtalent.server.service.db.CandidateOccupationService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class CandidateOccupationServiceImpl implements CandidateOccupationService {
@@ -292,4 +288,9 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         return candidateOccupationRepository.save(candidateOccupation);
 
     }
+//
+//    @Override
+//    public CandidateOccupation getCandidateOccupation(ListJobExperienceRequest request) {
+//        return candidateOccupationRepository.findByCandidateIdAAndOccupationId(request.getCandidateId(), request.getOccupationId());
+//    }
 }

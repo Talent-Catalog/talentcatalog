@@ -22,7 +22,7 @@
     <label for="leftHomeReasons">
       What are the primary reasons you left your home country and currently live in Lebanon or Jordan?
     </label>
-    <div class="float-right">
+    <div *ngIf="editable" class="float-right">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">

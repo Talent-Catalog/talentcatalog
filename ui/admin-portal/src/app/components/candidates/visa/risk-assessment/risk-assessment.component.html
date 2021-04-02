@@ -1,0 +1,27 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+
+<form [formGroup]="form">
+  <div class="form-group">
+    <label for="visaOverallRisk">Overall risk assessment? (health/character/security)</label>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
+    <select class="form-control"
+            id="visaOverallRisk" formControlName="visaOverallRisk">
+      <option *ngFor="let opt of riskLevelOptions" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+  </div>
+  <div *ngIf="hasNotes" class="form-group">
+    <label for="visaOverallRiskNotes">Notes</label>
+    <textarea type="text" class="md-textarea-auto form-control" rows="4"
+              id="visaOverallRiskNotes" [formControlName]="'visaOverallRiskNotes'"
+              placeholder="" ></textarea>
+  </div>
+</form>

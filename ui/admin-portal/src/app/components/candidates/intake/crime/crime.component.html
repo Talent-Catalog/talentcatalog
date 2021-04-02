@@ -22,7 +22,7 @@
     <label for="crimeConvict">
       Have you ever been convicted of a crime?
     </label>
-    <div class="float-right">
+    <div *ngIf="editable" class="float-right">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
@@ -30,7 +30,7 @@
     </div>
     <select class="form-control"
             id="crimeConvict" [formControlName]="'crimeConvict'">
-      <option *ngFor="let opt of crimeConvictOptions" [value]="opt.value">
+      <option *ngFor="let opt of crimeConvictOptions" [value]="opt.value" [disabled]="!editable">
         {{opt.displayText}}
       </option>
     </select>
@@ -39,7 +39,7 @@
     <label for="crimeConvictNotes">If yes, when and where? Can you briefly explain the circumstances?</label>
     <textarea type="text" class="md-textarea-auto form-control" rows="4"
               id="crimeConvictNotes" [formControlName]="'crimeConvictNotes'"
-              placeholder="" ></textarea>
+              placeholder=""></textarea>
   </div>
 </form>
 

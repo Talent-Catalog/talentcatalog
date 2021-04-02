@@ -15,7 +15,9 @@
  */
 
 import {Component, Input} from '@angular/core';
-import {IntakeComponentTabBase} from "../../../../../util/intake/IntakeComponentTabBase";
+import {IntakeComponentTabBase} from '../../../../../util/intake/IntakeComponentTabBase';
+import {CandidateVisa} from '../../../../../../model/candidate';
+import {FormGroup} from '@angular/forms';
 
 @Component({
   selector: 'app-visa-check-ca',
@@ -24,4 +26,12 @@ import {IntakeComponentTabBase} from "../../../../../util/intake/IntakeComponent
 })
 export class VisaCheckCaComponent extends IntakeComponentTabBase {
   @Input() selectedIndex: number;
+  @Input() visaRecord: CandidateVisa;
+  form: FormGroup;
+
+  private get myRecord(): CandidateVisa {
+    return this.candidateIntakeData.candidateVisaChecks ?
+      this.candidateIntakeData.candidateVisaChecks[this.selectedIndex]
+      : null;
+  }
 }

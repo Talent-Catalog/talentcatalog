@@ -1,0 +1,27 @@
+<div *ngIf="error">
+  {{error}}
+</div>
+
+<form [formGroup]="form">
+  <div class="form-group">
+    <label for="visaCharacterAssessment">Meets character requirement? (e.g. no criminal record)</label>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
+    <select class="form-control"
+            id="visaCharacterAssessment" formControlName="visaCharacterAssessment">
+      <option *ngFor="let opt of characterAssessmentOptions" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+  </div>
+  <div *ngIf="hasNotes" class="form-group">
+    <label for="visaCharacterAssessmentNotes">Notes</label>
+    <textarea type="text" class="md-textarea-auto form-control" rows="4"
+              id="visaCharacterAssessmentNotes" [formControlName]="'visaCharacterAssessmentNotes'"
+              placeholder="" ></textarea>
+  </div>
+</form>

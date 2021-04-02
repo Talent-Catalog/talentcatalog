@@ -22,12 +22,7 @@ import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateJobExperience;
-import org.tbbtalent.server.model.db.CandidateOccupation;
-import org.tbbtalent.server.model.db.Country;
-import org.tbbtalent.server.model.db.Role;
-import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.repository.db.CandidateJobExperienceRepository;
 import org.tbbtalent.server.repository.db.CandidateOccupationRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
@@ -112,7 +107,7 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
 
         //Save the candidate
         candidateService.save(candidate, true);
-        
+
         return jobExperience;
     }
 
@@ -157,7 +152,7 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
         candidateJobExperience.setPaid(request.getPaid());
         candidateJobExperience.setDescription(request.getDescription());
         candidateJobExperience.setCandidateOccupation(candidateOccupation);
-        
+
         // Save the candidate experience
         candidateJobExperience = candidateJobExperienceRepository.save(candidateJobExperience);
 
@@ -185,7 +180,7 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
             if (candidate == null) {
                 throw new InvalidSessionException("Not logged in");
             }
-            
+
             // Check that the user is deleting their own attachment
             if (!candidate.getId().equals(candidateJobExperience.getCandidate().getId())) {
                 throw new InvalidCredentialsException("You do not have permission to perform that action");

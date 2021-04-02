@@ -16,11 +16,6 @@
 
 package org.tbbtalent.server.api.admin;
 
-import java.util.Map;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.EntityReferencedException;
@@ -30,6 +25,10 @@ import org.tbbtalent.server.model.db.CandidateVisaCheck;
 import org.tbbtalent.server.request.candidate.visa.CreateCandidateVisaCheckRequest;
 import org.tbbtalent.server.service.db.CandidateVisaService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate-visa-check")
@@ -80,7 +79,6 @@ public class CandidateVisaCheckAdminApi
         return new DtoBuilder()
                 .add("id")
                 .add("country", countryDto())
-                .add("eligibility")
                 .add("assessmentNotes")
                 ;
     }

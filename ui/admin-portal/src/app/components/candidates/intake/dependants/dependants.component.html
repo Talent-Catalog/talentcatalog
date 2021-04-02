@@ -29,7 +29,7 @@
     <div *ngIf="error">
       {{error}}
     </div>
-    <div *ngFor="let citizenship of candidateIntakeData.candidateDependants; let i = index;" class="citizenship-card">
+    <div *ngFor="let dependant of candidateIntakeData.candidateDependants; let i = index;" class="citizenship-card">
       <app-dependants-card
         [candidate]="candidate"
         [candidateIntakeData]="candidateIntakeData"

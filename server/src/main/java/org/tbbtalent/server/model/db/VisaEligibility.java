@@ -18,9 +18,9 @@ package org.tbbtalent.server.model.db;
 
 public enum VisaEligibility {
     NoResponse,
-    No,
+    Yes,
+    YesBut,
     DiscussFurther,
     SeekAdvice,
-    Yes,
-    YesBut
+    No,
 }
