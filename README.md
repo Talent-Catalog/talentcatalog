@@ -54,6 +54,10 @@ It is also probably easier to install Java directly rather than using brew.
 
 - cURL (for database migrations, can also use Postman) 
   > brew install curl
+  > 
+  > or...
+  > 
+  > brew install --cask postman
 
 - Docker (we are moving to a container architecture, so want to start
   using Docker technology - in particular for running Elasticsearch - 
