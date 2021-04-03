@@ -25,12 +25,11 @@ import {
   SavedSearchRequest,
   SavedSearchSubtype,
   SavedSearchType,
-  SaveSelectionRequest, SearchSavedSearchRequest,
+  SaveSelectionRequest,
   SelectCandidateInSearchRequest
 } from "../model/saved-search";
 import {map} from "rxjs/operators";
 import {SavedList} from "../model/saved-list";
-import {SearchCandidateSourcesRequest} from "../model/base";
 import {UpdateCandidateStatusInfo} from "../model/candidate";
 
 export interface CreateFromDefaultSavedSearchRequest {
@@ -128,6 +127,7 @@ export class SavedSearchService {
     return content;
   };
 
+  //todo Shoud be a SearchCandidateRequest but typing it causes errors
   load(id: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/${id}/load`);
   }
@@ -207,5 +207,9 @@ export class SavedSearchService {
 
   updateSelectedStatuses(id: number, request: UpdateCandidateStatusInfo): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/update-selected-statuses/${id}`, request);
+  }
+
+  getSelectionCount(id: number): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/get-selection-count/${id}`);
   }
 }

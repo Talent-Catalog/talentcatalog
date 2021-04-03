@@ -1068,18 +1068,44 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   updateStatusOfSelection() {
-    //todo If it is a saved search, query length of selection list
+    this.error = null;
+
+    const noCandidatesMessage = "No candidates are selected";
+
+    if (isSavedSearch(this.candidateSource)) {
+      this.savedSearchService.getSelectionCount(this.candidateSource.id).subscribe(
+        (nSelections: number) => {
+          if (nSelections === 0) {
+            this.error = noCandidatesMessage;
+          } else {
+            this.requestNewStatusInfo(nSelections);
+          }
+        },
+        (error) => {
+          this.error = error;
+        });
+    } else {
+      const nSelections = this.selectedCandidates.length;
+      if (nSelections === 0) {
+        this.error = noCandidatesMessage;
+      } else {
+        this.requestNewStatusInfo(nSelections);
+      }
+    }
+  }
+
+  private requestNewStatusInfo(nSelections: number) {
     const modal = this.modalService.open(EditCandidateStatusComponent);
-    const nCandidates = this.selectedCandidates.length;
-    if (nCandidates > 5) {
+    if (nSelections > 1) {
       modal.componentInstance.text = "WARNING: You are about to set the status of " +
-        nCandidates + " candidates. This can only be undone manually, one by one.";
+        nSelections + " candidates. This can only be undone manually, one by one.";
     }
     modal.result
     .then((info: UpdateCandidateStatusInfo) => {
       this.updateCandidateStatuses(info);
     } )
-    .catch(() => { /* Isn't possible */ });
+    .catch(() => { /* Isn't possible */ }
+    );
   }
 
   private updateCandidateStatuses(info: UpdateCandidateStatusInfo) {

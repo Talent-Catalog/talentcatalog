@@ -222,6 +222,22 @@ public class SavedSearchAdminApi implements
     }
 
     /**
+     * Returns the number of candidates in the logged in user's selection for the
+     * given saved search.
+     *
+     * @param id ID of saved search
+     * @return Number of candidates selected by logged in user
+     * @throws NoSuchObjectException if there is no such saved search.
+     * @throws InvalidSessionException if there is no logged in user.
+     */
+    @GetMapping("/get-selection-count/{id}")
+    public long getSelectionCount(@PathVariable("id") long id) 
+        throws NoSuchObjectException, InvalidSessionException {
+        SavedList selectionList = savedSearchService.getSelectionListForLoggedInUser(id);
+        return selectionList.getCandidates().size();        
+    }
+
+    /**
      * Update the record with the given id from the data in the given request.
      * @param id ID of saved search
      * @param request Request contains the user making the selection and the
