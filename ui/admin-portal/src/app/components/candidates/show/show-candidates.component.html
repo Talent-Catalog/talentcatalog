@@ -88,12 +88,13 @@
 
     <div class="filter-results text-muted" *ngIf="!searching">
 
-      <button class="btn btn-outline-secondary" (click)="clearSelection()">
-        Clear Selection
+      <button class="btn btn-outline-secondary" (click)="clearSelection()"
+              title="Clear Selection">
+        <i class="fas fa-user-check"></i> clear
       </button>
 
       <div *ngIf="haveTargetList()">
-        {{(targetListReplace ? "Replace list " : "Save to list ")}}
+        <i class="fas fa-user-check"></i> to
         <a [routerLink]="['/list',targetListId]">
           {{targetListName}}
         </a>
@@ -109,15 +110,17 @@
       </div>
 
       <button class="btn btn-outline-secondary"
-              (click)="saveSelection()">
+              (click)="saveSelection()" title="Save Selection">
         <i class="fas fa-spinner fa-spin" *ngIf=savingSelection></i>
-        Save Selection
+        <i class="fas fa-user-check"></i> to
+        <i class="fas fa-list"></i>
       </button>
 
       <button class="btn btn-outline-secondary"
-              (click)="updateStatusOfSelection()">
+              (click)="updateStatusOfSelection()" title="Update Statuses of Selection">
         <i class="fas fa-spinner fa-spin" *ngIf=updatingStatuses></i>
-        Update Statuses of Selection
+        <i class="fas fa-user-check"></i> status
+        <i class="fas fa-edit"></i>
       </button>
 
       <button class="btn btn-outline-secondary" (click)="exportCandidates()">
