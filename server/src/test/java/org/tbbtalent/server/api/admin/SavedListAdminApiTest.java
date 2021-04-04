@@ -16,9 +16,12 @@
 
 package org.tbbtalent.server.api.admin;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.when;
+
 import java.util.List;
 import java.util.Map;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,10 +36,6 @@ import org.tbbtalent.server.request.list.SearchSavedListRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.service.db.impl.SavedListServiceImpl;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class SavedListAdminApiTest {
@@ -62,7 +61,7 @@ class SavedListAdminApiTest {
         SavedListService savedListService = new SavedListServiceImpl(
                 candidateRepository, savedListRepository, null, null, userRepository, 
                 userContext);
-        savedListAdminApi = new SavedListAdminApi(savedListService, null);
+        savedListAdminApi = new SavedListAdminApi(savedListService, null, null);
     }
 
     @Transactional

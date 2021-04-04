@@ -853,7 +853,7 @@ public class CandidateServiceImpl implements CandidateService {
         UpdateCandidateStatusInfo info = request.getInfo();
         
         //Update status for all given ids
-        List<Long> ids = request.getCandidateIds();
+        Collection<Long> ids = request.getCandidateIds();
         for (Long id : ids) {
             Candidate candidate = this.candidateRepository.findByIdLoadUser(id, sourceCountries)
                 .orElse(null);
@@ -886,6 +886,17 @@ public class CandidateServiceImpl implements CandidateService {
                 }
             }
         }
+    }
+
+    @Override
+    public void updateCandidateStatus(SavedList savedList, UpdateCandidateStatusInfo info) {
+        UpdateCandidateStatusRequest ucsr = new UpdateCandidateStatusRequest();
+        List<Long> candidateIds =
+            savedList.getCandidates().stream().map(Candidate::getId).collect(Collectors.toList());
+        ucsr.setCandidateIds(candidateIds);
+        ucsr.setInfo(info);
+
+        updateCandidateStatus(ucsr);
     }
 
     @Override

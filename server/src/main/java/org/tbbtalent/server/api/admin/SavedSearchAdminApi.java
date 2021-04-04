@@ -189,6 +189,12 @@ public class SavedSearchAdminApi implements
         SavedList targetList = 
                 savedListService.copy(selectionList.getId(), request);
 
+        //Update all candidate statuses if requested.
+        final UpdateCandidateStatusInfo info = request.getStatusUpdateInfo();
+        if (info != null) {
+            candidateService.updateCandidateStatus(targetList, info);
+        }
+
         return savedListBuilderSelector.selectBuilder().build(targetList);
     }
 

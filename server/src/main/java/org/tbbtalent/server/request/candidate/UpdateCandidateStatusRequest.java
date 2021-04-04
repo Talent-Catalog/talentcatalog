@@ -17,7 +17,7 @@
 package org.tbbtalent.server.request.candidate;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,7 +37,7 @@ public class UpdateCandidateStatusRequest {
      * Candidate(s) whose status should be updated
      */
     @NotNull
-    private List<Long> candidateIds;
+    private Collection<Long> candidateIds;
 
     /**
      * New status and associated other information

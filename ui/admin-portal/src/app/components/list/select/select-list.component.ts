@@ -21,6 +21,7 @@ import {SavedList, SearchSavedListRequest} from '../../../model/saved-list';
 import {IDropdownSettings} from 'ng-multiselect-dropdown';
 import {SavedListService} from '../../../services/saved-list.service';
 import {JoblinkValidationEvent} from '../../util/joblink/joblink.component';
+import {CandidateStatus, UpdateCandidateStatusInfo} from "../../../model/candidate";
 
 
 export interface TargetListSelection {
@@ -35,6 +36,11 @@ export interface TargetListSelection {
   replace: boolean;
 
   sfJoblink?: string;
+
+  /**
+   * If present, the statuses of all candidates in list are set according to this.
+   */
+  statusUpdateInfo?: UpdateCandidateStatusInfo;
 }
 
 
@@ -76,10 +82,16 @@ export class SelectListComponent implements OnInit {
       newList: [false],
       savedList: [null],
       replace: [false],
+      makeActive: [false],
+      activeComment: [null],
+      activeCandidateMessage: [null],
     });
     this.loadLists();
   }
 
+  get makeActive(): boolean { return this.form.value.makeActive; }
+  get activeComment(): string { return this.form.value.activeComment; }
+  get activeCandidateMessage(): string { return this.form.value.activeCandidateMessage; }
   get newListNameControl() { return this.form.get('newListName'); }
   get newListName(): string { return this.form.value.newListName; }
   get newList(): boolean { return this.form.value.newList; }
@@ -117,6 +129,14 @@ export class SelectListComponent implements OnInit {
       newListName: this.newList ? this.newListName : null,
       replace: this.replace,
       sfJoblink: this.sfJoblink ? this.sfJoblink : null
+    }
+    if (this.makeActive) {
+      const info: UpdateCandidateStatusInfo = {
+        status: CandidateStatus.active,
+        comment: this.activeComment,
+        candidateMessage: this.activeCandidateMessage
+      }
+      selection.statusUpdateInfo = info;
     }
     this.activeModal.close(selection);
   }

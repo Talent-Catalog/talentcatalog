@@ -21,6 +21,7 @@ import org.springframework.lang.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
 
 /**
  * Specifies the list used for saving a selection of candidates 
@@ -54,4 +55,10 @@ public class TargetListSelection {
      */
     @Nullable
     String sfJoblink;
+
+    /**
+     * If present, the statuses of all candidates in list should be set according to this.
+     */
+    @Nullable
+    UpdateCandidateStatusInfo statusUpdateInfo;
 }

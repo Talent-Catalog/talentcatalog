@@ -18,10 +18,8 @@ package org.tbbtalent.server.api.admin;
 
 import java.util.List;
 import java.util.Map;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,6 +32,7 @@ import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.list.CreateSavedListRequest;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
@@ -41,6 +40,7 @@ import org.tbbtalent.server.request.list.TargetListSelection;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
+import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -49,12 +49,15 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
 public class SavedListAdminApi implements 
         ITableApi<SearchSavedListRequest, CreateSavedListRequest, UpdateSavedListInfoRequest> {
 
+    private final CandidateService candidateService;
     private final SavedListService savedListService;
     private final CandidateSavedListService candidateSavedListService;
     private final SavedListBuilderSelector builderSelector = new SavedListBuilderSelector();
 
     @Autowired
-    public SavedListAdminApi(SavedListService savedListService, CandidateSavedListService candidateSavedListService) {
+    public SavedListAdminApi(SavedListService savedListService, 
+        CandidateService candidateService, CandidateSavedListService candidateSavedListService) {
+        this.candidateService = candidateService;
         this.savedListService = savedListService;
         this.candidateSavedListService = candidateSavedListService;
     }
@@ -168,6 +171,13 @@ public class SavedListAdminApi implements
             @RequestBody TargetListSelection request) 
             throws EntityExistsException, NoSuchObjectException {
         SavedList targetList = this.savedListService.copy(id, request);
+        
+        //Update all candidate statuses if requested.
+        final UpdateCandidateStatusInfo info = request.getStatusUpdateInfo();
+        if (info != null) {
+            candidateService.updateCandidateStatus(targetList, info);
+        }
+        
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(targetList);
     }
