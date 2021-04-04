@@ -798,6 +798,11 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
           this.savingSelection = false;
 
+          if (request.statusUpdateInfo != null) {
+            //Refresh display tp see updated statuses
+            this.doSearch(true);
+          }
+
         },
         err => {
           this.error = err;
@@ -1115,7 +1120,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     if (isSavedSearch(this.candidateSource)) {
       this.savedSearchService.updateSelectedStatuses(this.candidateSource.id, info).subscribe(
         () => {
-          //todo how do we refresh display
+          //Refresh display tp see updated statuses
           this.doSearch(true);
           this.updatingStatuses = false;
         },
