@@ -44,9 +44,9 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.list.HasSetOfCandidatesImpl;
+import org.tbbtalent.server.request.list.TargetListSelection;
 import org.tbbtalent.server.request.search.ClearSelectionRequest;
 import org.tbbtalent.server.request.search.CreateFromDefaultSavedSearchRequest;
-import org.tbbtalent.server.request.search.SaveSelectionRequest;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
 import org.tbbtalent.server.request.search.SelectCandidateInSearchRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
@@ -178,12 +178,11 @@ public class SavedSearchAdminApi implements
      */
     @PutMapping("/save-selection/{id}")
     public Map<String, Object> saveSelection(@PathVariable("id") long id,
-                              @Valid @RequestBody SaveSelectionRequest request)
+                              @Valid @RequestBody TargetListSelection request)
             throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
 
         //Get the selection list for this user and saved search.
-        SavedList selectionList =
-                savedSearchService.getSelectionList(id, request.getUserId());
+        SavedList selectionList = savedSearchService.getSelectionListForLoggedInUser(id);
 
         //Copy to the target list.
         SavedList targetList = 

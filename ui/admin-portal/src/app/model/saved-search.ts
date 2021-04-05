@@ -25,9 +25,7 @@ import {
 } from './base';
 import {Router} from '@angular/router';
 import {Location} from '@angular/common';
-import {TargetListSelection} from '../components/list/select/select-list.component';
 import {getExternalHref} from '../util/url';
-import {UpdateCandidateStatusInfo} from "./candidate";
 
 export enum SavedSearchType {
   profession,
@@ -183,11 +181,6 @@ export interface SavedSearchRequest {
 export interface ClearSelectionRequest {
   //User making the selections
   userId: number;
-}
-
-export interface SaveSelectionRequest extends TargetListSelection{
-  //User making the selections
-  userId?: number;
 }
 
 export interface UpdateSharingRequest {

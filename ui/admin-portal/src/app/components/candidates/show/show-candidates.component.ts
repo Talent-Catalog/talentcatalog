@@ -39,7 +39,6 @@ import {
   SavedSearch,
   SavedSearchGetRequest,
   SavedSearchRef,
-  SaveSelectionRequest,
   SearchCandidateRequestPaged,
   SelectCandidateInSearchRequest
 } from '../../../model/saved-search';
@@ -699,9 +698,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
     modal.result
       .then((selection: TargetListSelection) => {
-        const request: SaveSelectionRequest = selection;
-        request.userId = this.loggedInUser.id;
-        this.doSaveSelection(request);
+        this.doSaveSelection(selection);
       })
       .catch(() => { /* Isn't possible */
       });
@@ -709,15 +706,14 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   saveSelectionAgain() {
-    const request: SaveSelectionRequest = {
-      userId: this.loggedInUser.id,
+    const request: TargetListSelection = {
       savedListId: this.targetListId,
       replace: this.targetListReplace
     };
     this.doSaveSelection(request);
   }
 
-  private doSaveSelection(request: SaveSelectionRequest) {
+  private doSaveSelection(request: TargetListSelection) {
     //Save selection as specified in request
     this.savingSelection = true;
     this.error = null;
@@ -761,6 +757,11 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
     } else {
       // LIST
+
+// TODO: 4/4/21 Then create SaveListSelectionRequest which subclasses above plus adds
+// current IHasSetOfCandidates - ie adds source list and ids.
+// That should allow statusUpdateInfo to get sent as well
+      //todo Why isn't this using SaveSelectionRequest?
       //Pick up ids info - including source list id
       const ids: IHasSetOfCandidates = {
         sourceListId: this.candidateSource.id,
@@ -777,7 +778,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private saveSavedSearchSelection(
-    savedSearch: SavedSearch, request: SaveSelectionRequest) {
+    savedSearch: SavedSearch, request: TargetListSelection) {
 
     this.savedSearchService.saveSelection(savedSearch.id, request)
       .subscribe(
@@ -799,7 +800,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
           this.savingSelection = false;
 
           if (request.statusUpdateInfo != null) {
-            //Refresh display tp see updated statuses
+            //Refresh display to see updated statuses
             this.doSearch(true);
           }
 
