@@ -43,8 +43,8 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
-import org.tbbtalent.server.request.list.HasSetOfCandidatesImpl;
-import org.tbbtalent.server.request.list.TargetListSelection;
+import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
+import org.tbbtalent.server.request.list.UpdateExplicitSavedListContentsRequest;
 import org.tbbtalent.server.request.search.ClearSelectionRequest;
 import org.tbbtalent.server.request.search.CreateFromDefaultSavedSearchRequest;
 import org.tbbtalent.server.request.search.SearchSavedSearchRequest;
@@ -158,7 +158,7 @@ public class SavedSearchAdminApi implements
                 .createFromDefaultSavedSearch(request);
         return savedSearchDto().build(savedSearch);
     }
-    
+
     /**
      * Saves the given user's selections for the given saved search to either
      * the specified existing list, or to a newly created list if existing list
@@ -178,20 +178,19 @@ public class SavedSearchAdminApi implements
      */
     @PutMapping("/save-selection/{id}")
     public Map<String, Object> saveSelection(@PathVariable("id") long id,
-                              @Valid @RequestBody TargetListSelection request)
+                              @Valid @RequestBody CopySourceContentsRequest request)
             throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
 
         //Get the selection list for this user and saved search.
         SavedList selectionList = savedSearchService.getSelectionListForLoggedInUser(id);
 
         //Copy to the target list.
-        SavedList targetList = 
-                savedListService.copy(selectionList.getId(), request);
+        SavedList targetList = savedListService.copy(selectionList, request);
 
         //Update all candidate statuses if requested.
         final UpdateCandidateStatusInfo info = request.getStatusUpdateInfo();
         if (info != null) {
-            candidateService.updateCandidateStatus(targetList, info);
+            candidateService.updateCandidateStatus(selectionList, info);
         }
 
         return savedListBuilderSelector.selectBuilder().build(targetList);
@@ -261,7 +260,7 @@ public class SavedSearchAdminApi implements
                 savedSearchService.getSelectionList(id, request.getUserId());
         
         //Create a list request containing our candidate id.
-        HasSetOfCandidatesImpl listRequest = new HasSetOfCandidatesImpl();
+        UpdateExplicitSavedListContentsRequest listRequest = new UpdateExplicitSavedListContentsRequest();
         listRequest.addCandidateId(request.getCandidateId());
         
         //Add or remove candidate depending on selection.

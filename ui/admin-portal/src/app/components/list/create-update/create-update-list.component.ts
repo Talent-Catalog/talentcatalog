@@ -16,7 +16,10 @@
 
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {CreateSavedListRequest, SavedList, UpdateSavedListInfoRequest} from '../../../model/saved-list';
+import {
+  SavedList,
+  UpdateSavedListInfoRequest
+} from '../../../model/saved-list';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {SavedListService} from '../../../services/saved-list.service';
 import {JoblinkValidationEvent} from '../../util/joblink/joblink.component';
@@ -64,12 +67,12 @@ export class CreateUpdateListComponent implements OnInit {
   save() {
     this.saving = true;
 
+    const request: UpdateSavedListInfoRequest = {
+      name: this.name,
+      fixed: this.fixed,
+      sfJoblink: this.sfJoblink ? this.sfJoblink : null
+    };
     if (this.create) {
-      const request: CreateSavedListRequest = {
-        name: this.name,
-        fixed: this.fixed,
-        sfJoblink: this.sfJoblink
-      };
       this.savedListService.create(request).subscribe(
         (savedList) => {
           this.closeModal(savedList);
@@ -80,11 +83,6 @@ export class CreateUpdateListComponent implements OnInit {
           this.saving = false;
         });
     } else {
-      const request: UpdateSavedListInfoRequest = {
-        name: this.name,
-        fixed: this.fixed,
-        sfJoblink: this.sfJoblink ? this.sfJoblink : null
-      };
       this.savedListService.update(this.savedList.id, request).subscribe(
         (savedList) => {
           this.closeModal(savedList);

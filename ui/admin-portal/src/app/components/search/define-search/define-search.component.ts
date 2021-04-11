@@ -16,7 +16,7 @@
 
 import {Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 
-import {Candidate, CandidateStatus, VisaIssue} from '../../../model/candidate';
+import {Candidate, CandidateStatus} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
 import {Country} from '../../../model/country';
 import {CountryService} from '../../../services/country.service';
@@ -68,7 +68,6 @@ import {
   EnumOption,
   enumOptions
 } from "../../../util/enum";
-
 
 @Component({
   selector: 'app-define-search',
@@ -381,7 +380,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     this.selectedBaseJoin = null;
 
     this.savedSearchService.load(id).subscribe(
-      request => {
+      //todo This is really a SearchCandidateRequest but typing it causes errors. What is it?
+      (request) => {
         this.populateFormWithSavedSearch(request);
         this.loading = false;
       },
@@ -464,6 +464,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       .catch(() => { });
   }
 
+  //todo This request is really a SearchCandidateRequest - but typing it introduces errors. What is it?
   populateFormWithSavedSearch(request) {
     /* Do a blanket patch of all form fields */
     Object.keys(this.searchForm.controls).forEach(name => {

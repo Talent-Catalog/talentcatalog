@@ -49,6 +49,10 @@ public class UpdateCandidateStatusRequest {
         this.candidateIds = Arrays.asList(candidateIds);
     }
 
+    public UpdateCandidateStatusRequest(Collection<Long> candidateIds) {
+        this.candidateIds = candidateIds;
+    }
+
     public UpdateCandidateStatusInfo getInfo() {
         if (info == null) {
             info = new UpdateCandidateStatusInfo();

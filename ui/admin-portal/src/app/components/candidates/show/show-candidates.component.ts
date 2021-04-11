@@ -14,7 +14,17 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Output,
+  SimpleChanges,
+  ViewChild
+} from '@angular/core';
 
 import {
   Candidate,
@@ -24,7 +34,10 @@ import {
 import {CandidateService} from '../../../services/candidate.service';
 import {SearchResults} from '../../../model/search-results';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {CreateFromDefaultSavedSearchRequest, SavedSearchService} from '../../../services/saved-search.service';
+import {
+  CreateFromDefaultSavedSearchRequest,
+  SavedSearchService
+} from '../../../services/saved-search.service';
 import {Observable, of, Subscription} from 'rxjs';
 import {CandidateReviewStatusItem} from '../../../model/candidate-review-status-item';
 import {HttpClient} from '@angular/common/http';
@@ -32,7 +45,8 @@ import {
   ClearSelectionRequest,
   getCandidateSourceBreadcrumb,
   getCandidateSourceExternalHref,
-  getCandidateSourceNavigation, getCandidateSourceStatsNavigation,
+  getCandidateSourceNavigation,
+  getCandidateSourceStatsNavigation,
   getSavedSearchBreadcrumb,
   getSavedSourceNavigation,
   isSavedSearch,
@@ -42,15 +56,31 @@ import {
   SearchCandidateRequestPaged,
   SelectCandidateInSearchRequest
 } from '../../../model/saved-search';
-import {CandidateSource, canEditSource, defaultReviewStatusFilter, isMine, isSharedWithMe, ReviewStatus} from '../../../model/base';
-import {CachedSourceResults, CandidateSourceResultsCacheService} from '../../../services/candidate-source-results-cache.service';
+import {
+  CandidateSource,
+  canEditSource,
+  defaultReviewStatusFilter,
+  isMine,
+  isSharedWithMe,
+  ReviewStatus
+} from '../../../model/base';
+import {
+  CachedSourceResults,
+  CandidateSourceResultsCacheService
+} from '../../../services/candidate-source-results-cache.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {IDropdownSettings} from 'ng-multiselect-dropdown';
 import {User} from '../../../model/user';
 import {AuthService} from '../../../services/auth.service';
 import {UserService} from '../../../services/user.service';
 import {SelectListComponent, TargetListSelection} from '../../list/select/select-list.component';
-import {CreateSavedListRequest, IHasSetOfCandidates, isSavedList, SavedListGetRequest} from '../../../model/saved-list';
+import {
+  ContentUpdateType,
+  CopySourceContentsRequest,
+  IHasSetOfCandidates,
+  isSavedList,
+  SavedListGetRequest, UpdateExplicitSavedListContentsRequest
+} from '../../../model/saved-list';
 import {CandidateSourceCandidateService} from '../../../services/candidate-source-candidate.service';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {EditCandidateReviewStatusItemComponent} from '../../util/candidate-review/edit/edit-candidate-review-status-item.component';
@@ -127,8 +157,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     allowSearchFilter: true
   };
 
-  //todo REname this to "current" candidate
-  selectedCandidate: Candidate;
+  currentCandidate: Candidate;
   private selectedCandidates: Candidate[];
   loggedInUser: User;
   targetListName: string;
@@ -164,7 +193,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnInit() {
 
-    this.setSelectedCandidate(null);
+    this.setCurrentCandidate(null);
     this.loggedInUser = this.authService.getLoggedInUser();
     this.selectedCandidates = [];
 
@@ -394,8 +423,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       this.reviewStatusFilter.toString() === defaultReviewStatusFilter.toString();
   }
 
-  setSelectedCandidate(candidate: Candidate) {
-    this.selectedCandidate = candidate;
+  setCurrentCandidate(candidate: Candidate) {
+    this.currentCandidate = candidate;
     if (candidate && isSavedSearch(this.candidateSource)) {
       this.savedSearchSelectionChange = candidate.selected;
     }
@@ -403,7 +432,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   viewCandidate(candidate: Candidate) {
-    this.setSelectedCandidate(candidate);
+    this.setCurrentCandidate(candidate);
   }
 
   onReviewStatusChange() {
@@ -713,7 +742,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.doSaveSelection(request);
   }
 
-  private doSaveSelection(request: TargetListSelection) {
+  private doSaveSelection(targetListSelection: TargetListSelection) {
     //Save selection as specified in request
     this.savingSelection = true;
     this.error = null;
@@ -725,21 +754,21 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       if (!savedSearch.defaultSearch) {
 
         //If the search is already saved, just save the selection
-        this.saveSavedSearchSelection(savedSearch, request);
+        this.saveSavedSearchSelection(savedSearch, targetListSelection);
 
       } else {
 
         //If default search, auto save the search, then save the selection
 
         const ssCreateRequest: CreateFromDefaultSavedSearchRequest = {
-          savedListId: request.savedListId,
-          name: request.newListName,
-          sfJoblink: request.sfJoblink
+          savedListId: targetListSelection.savedListId,
+          name: targetListSelection.newListName,
+          sfJoblink: targetListSelection.sfJoblink
         };
         this.savedSearchService.createFromDefaultSearch(ssCreateRequest).subscribe(
           (newSavedSearch) => {
 
-            this.saveSavedSearchSelection(newSavedSearch, request);
+            this.saveSavedSearchSelection(newSavedSearch, targetListSelection);
 
             //Navigate away from the default saved search to the newly created
             //search.
@@ -751,35 +780,41 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
             this.error = error;
 
             //Even if auto saved search failed, we still want to save the selection
-            this.saveSavedSearchSelection(savedSearch, request);
+            this.saveSavedSearchSelection(savedSearch, targetListSelection);
           });
       }
 
     } else {
       // LIST
 
-// TODO: 4/4/21 Then create SaveListSelectionRequest which subclasses above plus adds
-// current IHasSetOfCandidates - ie adds source list and ids.
-// That should allow statusUpdateInfo to get sent as well
-      //todo Why isn't this using SaveSelectionRequest?
-      //Pick up ids info - including source list id
-      const ids: IHasSetOfCandidates = {
-        sourceListId: this.candidateSource.id,
-        candidateIds: this.selectedCandidates.map(c => c.id)
+      const savedListId = targetListSelection.savedListId;
+      const request: UpdateExplicitSavedListContentsRequest = {
+        name: targetListSelection.newListName,
+        statusUpdateInfo: targetListSelection.statusUpdateInfo,
+        updateType: targetListSelection.replace ? ContentUpdateType.replace : ContentUpdateType.add,
+        sfJoblink: targetListSelection.sfJoblink,
+        candidateIds: this.selectedCandidates.map(c => c.id),
+        sourceListId: this.candidateSource.id
       };
       // If request has a savedListId, merge or replace. Otherwise create a new list.
-      if (request.savedListId > 0) {
-        this.replaceOrMergeList(request.savedListId, ids, request.replace);
+      if (savedListId > 0) {
+        this.replaceOrMergeList(savedListId, request);
       } else {
         // create new saved list
-        this.createList(request.newListName, ids, request.replace, request.sfJoblink);
+        this.createList(request);
       }
     }
   }
 
-  private saveSavedSearchSelection(
-    savedSearch: SavedSearch, request: TargetListSelection) {
+  private saveSavedSearchSelection(savedSearch: SavedSearch, targetChoice: TargetListSelection) {
+    const request: CopySourceContentsRequest = {
+      savedListId: targetChoice.savedListId,
+      newListName: targetChoice.newListName,
+      updateType: targetChoice.replace ? ContentUpdateType.replace : ContentUpdateType.add,
+      sfJoblink: targetChoice.sfJoblink,
+      statusUpdateInfo: targetChoice.statusUpdateInfo,
 
+    }
     this.savedSearchService.saveSelection(savedSearch.id, request)
       .subscribe(
         savedListResult => {
@@ -788,7 +823,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
           //Save the target list
           this.targetListId = savedListResult.id;
           this.targetListName = savedListResult.name;
-          this.targetListReplace = request.replace;
+          this.targetListReplace = targetChoice.replace;
 
           //Associate current target list with this source.
           this.cacheTargetList(savedSearch);
@@ -799,7 +834,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
           this.savingSelection = false;
 
-          if (request.statusUpdateInfo != null) {
+          if (targetChoice.statusUpdateInfo != null) {
             //Refresh display to see updated statuses
             this.doSearch(true);
           }
@@ -811,64 +846,38 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         });
   }
 
-  private replaceOrMergeList(savedListId: number, ids: IHasSetOfCandidates, replace: boolean) {
+  private replaceOrMergeList(savedListId: number, request: UpdateExplicitSavedListContentsRequest) {
     //Get saved list
     this.savedListService.get(savedListId).subscribe(
       (savedList) => {
         this.targetListName = savedList.name;
       }
     )
-    if (replace) {
-      this.savedListCandidateService.replace(savedListId, ids).subscribe(
-        () => {
-          this.savingSelection = false;
-          //Save the target list
-          this.targetListId = savedListId;
-          this.targetListReplace = true;
-          //Invalidate the cache for this list (so that user does not need
-          //to refresh in order to see latest list contents)
-          this.candidateSourceResultsCacheService.removeFromCache(this.candidateSource);
+    this.savedListCandidateService.saveSelection(savedListId, request).subscribe(
+      () => {
+        this.savingSelection = false;
+        //Save the target list
+        this.targetListId = savedListId;
+        this.targetListReplace = true;
+        //Invalidate the cache for this list (so that user does not need
+        //to refresh in order to see latest list contents)
+        this.candidateSourceResultsCacheService.removeFromCache(this.candidateSource);
 
-        },
-        (error) => {
-          this.error = error;
-        }
-      );
-    } else {
-      this.savedListCandidateService.merge(savedListId, ids).subscribe(
-        () => {
-          this.savingSelection = false;
-          //Save the target list
-          this.targetListId = savedListId;
-          this.targetListReplace = false;
-          //Invalidate the cache for this list (so that user does not need
-          //to refresh in order to see latest list contents)
-          this.candidateSourceResultsCacheService.removeFromCache(this.candidateSource);
-
-        },
-        (error) => {
-          this.error = error;
-        }
-      );
-    }
+      },
+      (error) => {
+        this.error = error;
+      }
+    );
   }
 
-  private createList(newListName: string, ids: IHasSetOfCandidates,
-                     replace: boolean, sfJobLink: string) {
-    const createSavedListRequest: CreateSavedListRequest = {
-      sourceListId: ids.sourceListId,
-      candidateIds: ids.candidateIds,
-      fixed: null,
-      name: newListName,
-      sfJoblink: sfJobLink,
-    }
-    this.savedListService.create(createSavedListRequest).subscribe(
+  private createList(request: UpdateExplicitSavedListContentsRequest) {
+    this.savedListCandidateService.create(request).subscribe(
       savedListResult => {
         this.savingSelection = false;
         //Save the target list
         this.targetListId = savedListResult.id;
         this.targetListName = savedListResult.name;
-        this.targetListReplace = replace;
+        this.targetListReplace = request.updateType === ContentUpdateType.replace;
 
         //Remember the target list for this source so that the user does not
         //have type in details each time they want to save

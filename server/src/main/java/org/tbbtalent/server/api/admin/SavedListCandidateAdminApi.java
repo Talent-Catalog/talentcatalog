@@ -19,11 +19,9 @@ package org.tbbtalent.server.api.admin;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
@@ -33,11 +31,16 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.ExportFailedException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.request.candidate.SavedListGetRequest;
-import org.tbbtalent.server.request.list.HasSetOfCandidatesImpl;
+import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
+import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
+import org.tbbtalent.server.request.list.ContentUpdateType;
+import org.tbbtalent.server.request.list.UpdateExplicitSavedListContentsRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.SavedListService;
@@ -64,7 +67,8 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
  */
 @RestController()
 @RequestMapping("/api/admin/saved-list-candidate")
-public class SavedListCandidateAdminApi implements IManyToManyApi<SavedListGetRequest, HasSetOfCandidatesImpl> {
+public class SavedListCandidateAdminApi implements 
+    IManyToManyApi<SavedListGetRequest, UpdateExplicitSavedListContentsRequest> {
 
     private final CandidateService candidateService;
     private final SavedListService savedListService;
@@ -80,19 +84,19 @@ public class SavedListCandidateAdminApi implements IManyToManyApi<SavedListGetRe
     }
 
     @Override
-    public void merge(long savedListId, @Valid HasSetOfCandidatesImpl request) 
+    public void merge(long savedListId, @Valid UpdateExplicitSavedListContentsRequest request) 
             throws NoSuchObjectException {
         savedListService.mergeSavedList(savedListId, request);
     }
 
     @Override
-    public void remove(long savedListId, @Valid HasSetOfCandidatesImpl request) 
+    public void remove(long savedListId, @Valid UpdateExplicitSavedListContentsRequest request) 
             throws NoSuchObjectException {
         savedListService.removeFromSavedList(savedListId, request);
     }
 
     @Override
-    public void replace(long savedListId, @Valid HasSetOfCandidatesImpl request) 
+    public void replace(long savedListId, @Valid UpdateExplicitSavedListContentsRequest request) 
             throws NoSuchObjectException {
         savedListService.clearSavedList(savedListId);
         savedListService.mergeSavedList(savedListId, request);
@@ -109,6 +113,35 @@ public class SavedListCandidateAdminApi implements IManyToManyApi<SavedListGetRe
 
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.buildPage(candidates);
+    }
+
+    /**
+     * Creates a new SavedList and initializes it's contents.
+     * <p>
+     *   If {@link UpdateExplicitSavedListContentsRequest#getCandidateIds()} is not null then
+     *   it initializes the contents of the list, otherwise the list is
+     *   initialized as empty.
+     * </p>
+     * @param request Request defining new list plus optional initial contents.
+     * @return The details about the list - but not the contents.  
+     * @throws EntityExistsException if a list with this name already exists.
+     */
+    @PostMapping
+    public @NotNull Map<String, Object> create(
+        @Valid UpdateExplicitSavedListContentsRequest request) throws EntityExistsException {
+        SavedList savedList = savedListService.createSavedList(request);
+
+        //Now copy any contents across
+        savedListService.copyContents(request, savedList);
+
+        //Update all candidate statuses if requested.
+        final UpdateCandidateStatusInfo info = request.getStatusUpdateInfo();
+        if (info != null) {
+            candidateService.updateCandidateStatus(savedList, info);
+        }
+
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.build(savedList);
     }
 
     /**
@@ -138,5 +171,31 @@ public class SavedListCandidateAdminApi implements IManyToManyApi<SavedListGetRe
             throws NoSuchObjectException, GeneralSecurityException {
         savedListService.createUpdateSalesforce(savedListId);
     }
-    
+
+    /**
+     * Adds or replaces the given candidates to a given existing list.
+     * <p/>
+     * Can have side effects as described in the request.
+     * @param request Request defines the list to be updated, and the candidates to be added as well
+     *                as other side effects.
+     * @throws NoSuchObjectException If no list is specified or the list does not exist.
+     */
+    @PutMapping(value = "{id}/save-selection")
+    public void saveSelection(@PathVariable("id") long savedListId, 
+        @Valid @RequestBody UpdateExplicitSavedListContentsRequest request) throws NoSuchObjectException {
+        
+        if (request.getUpdateType() == ContentUpdateType.replace) {
+            savedListService.clearSavedList(savedListId);
+        }
+        savedListService.mergeSavedList(savedListId, request);
+
+        final UpdateCandidateStatusInfo statusUpdateInfo = 
+            request.getStatusUpdateInfo();
+        if (statusUpdateInfo != null) {
+            UpdateCandidateStatusRequest ucsr = 
+                new UpdateCandidateStatusRequest(request.getCandidateIds());
+            ucsr.setInfo(statusUpdateInfo);
+            candidateService.updateCandidateStatus(ucsr);
+        }
+    }
 }

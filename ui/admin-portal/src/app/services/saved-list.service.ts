@@ -21,7 +21,6 @@ import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
 import {SavedSearch} from "../model/saved-search";
 import {
-  CreateSavedListRequest,
   SavedList,
   SearchSavedListRequest,
   UpdateSavedListInfoRequest
@@ -37,7 +36,7 @@ export class SavedListService {
   constructor(private http: HttpClient) {
   }
 
-  create(request: CreateSavedListRequest): Observable<SavedList>  {
+  create(request: UpdateSavedListInfoRequest): Observable<SavedList>  {
     return this.http.post<SavedList>(`${this.apiUrl}`, request);
   }
 

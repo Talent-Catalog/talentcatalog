@@ -18,7 +18,10 @@ import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {IHasSetOfCandidates} from "../model/saved-list";
+import {
+  SavedList,
+  UpdateExplicitSavedListContentsRequest
+} from "../model/saved-list";
 
 @Injectable({
   providedIn: 'root'
@@ -30,15 +33,19 @@ export class SavedListCandidateService {
   constructor(private http: HttpClient) {
   }
 
-  merge(id: number, request: IHasSetOfCandidates): Observable<void> {
+  create(request: UpdateExplicitSavedListContentsRequest): Observable<SavedList>  {
+    return this.http.post<SavedList>(`${this.apiUrl}`, request);
+  }
+
+  merge(id: number, request: UpdateExplicitSavedListContentsRequest): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/${id}/merge`, request);
   }
 
-  remove(id: number, request: IHasSetOfCandidates): Observable<void> {
+  remove(id: number, request: UpdateExplicitSavedListContentsRequest): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/${id}/remove`, request);
   }
 
-  replace(id: number, request: IHasSetOfCandidates): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${id}/replace`, request);
+  saveSelection(id: number, request: UpdateExplicitSavedListContentsRequest): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}/save-selection`, request);
   }
 }

@@ -16,14 +16,14 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import static org.springframework.data.jpa.domain.Specification.where;
+
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.validation.constraints.NotNull;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -47,18 +47,18 @@ import org.tbbtalent.server.repository.db.GetSavedListsQuery;
 import org.tbbtalent.server.repository.db.SavedListRepository;
 import org.tbbtalent.server.repository.db.UserRepository;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
-import org.tbbtalent.server.request.list.CreateSavedListRequest;
+import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
+import org.tbbtalent.server.request.list.ContentUpdateType;
 import org.tbbtalent.server.request.list.IHasSetOfCandidates;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
-import org.tbbtalent.server.request.list.TargetListSelection;
+import org.tbbtalent.server.request.list.UpdateExplicitSavedListContentsRequest;
+import org.tbbtalent.server.request.list.UpdateSavedListContentsRequest;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.SavedListService;
-
-import static org.springframework.data.jpa.domain.Specification.where;
 
 /**
  * Saved List service
@@ -106,23 +106,25 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
-    public SavedList copy(long id, TargetListSelection request) 
+    public SavedList copy(long id, CopySourceContentsRequest request) 
             throws EntityExistsException, NoSuchObjectException {
         SavedList sourceList = savedListRepository.findByIdLoadCandidates(id)
                 .orElseThrow(() -> new NoSuchObjectException(SavedList.class, id));
+        return copy(sourceList, request);
+    }
 
+    @Override
+    public SavedList copy(SavedList sourceList, CopySourceContentsRequest request)
+        throws EntityExistsException, NoSuchObjectException {
         SavedList targetList;
         final Long targetId = request.getSavedListId();
         boolean newList = targetId == 0;
         if (newList) {
             //Request is to create a new list
-            CreateSavedListRequest createRequest = new CreateSavedListRequest();
-            createRequest.setName(request.getNewListName());
-            createRequest.setFixed(false);
-            targetList = createSavedList(createRequest);
+            targetList = createSavedList(request);
         } else {
             targetList = savedListRepository.findByIdLoadCandidates(targetId)
-                    .orElseThrow(() -> new NoSuchObjectException(SavedList.class, targetId));
+                .orElseThrow(() -> new NoSuchObjectException(SavedList.class, targetId));
         }
 
 
@@ -130,9 +132,10 @@ public class SavedListServiceImpl implements SavedListService {
         if (request.getSfJoblink() != null) {
             targetList.setSfJoblink(request.getSfJoblink());
         }
-        
+
+        boolean replace = request.getUpdateType() == ContentUpdateType.replace;
         //New or replaced list inherits source's savedSearchSource, if any
-        if (newList || request.isReplace()) {
+        if (newList || replace) {
             final SavedSearch savedSearchSource = sourceList.getSavedSearchSource();
             if (savedSearchSource != null) {
                 targetList.setSavedSearchSource(savedSearchSource);
@@ -140,7 +143,7 @@ public class SavedListServiceImpl implements SavedListService {
         }
 
         //Copy across list contents (which includes context notes)
-        copyContents(sourceList, targetList, request.isReplace());
+        copyContents(sourceList, targetList, replace);
 
         return targetList;
     }
@@ -151,7 +154,7 @@ public class SavedListServiceImpl implements SavedListService {
         //Get candidates in source list
         final Set<Candidate> candidates = source.getCandidates();
 
-        //Add or replace them to desintation as requested.
+        //Add or replace them to destination as requested.
         if (replace) {
             clearSavedList(destination.getId());
         }
@@ -161,8 +164,37 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
+    public void copyContents(UpdateExplicitSavedListContentsRequest request,
+        SavedList destination) {
+        
+        if (request.getUpdateType() == ContentUpdateType.replace) {
+            clearSavedList(destination.getId());
+        }
+
+        //Retrieve source list, if any
+        SavedList sourceList = fetchSourceList(request);
+
+        //New list inherits source's savedSearchSource, if any
+        if (sourceList != null) {
+            final SavedSearch savedSearchSource = sourceList.getSavedSearchSource();
+            if (savedSearchSource != null) {
+                destination.setSavedSearchSource(savedSearchSource);
+            }
+        }
+
+        //Retrieve candidates
+        Set<Candidate> candidates = fetchCandidates(request);
+
+        //Add candidates to created list, together with any context if source 
+        //list was supplied.
+        destination.addCandidates(candidates, sourceList);
+
+        saveIt(destination);
+    }
+
+    @Override
     @Transactional
-    public SavedList createSavedList(CreateSavedListRequest request) 
+    public SavedList createSavedList(UpdateSavedListInfoRequest request) 
             throws EntityExistsException {
         final User loggedInUser = userContext.getLoggedInUser().orElse(null);
         if (loggedInUser != null) {
@@ -172,26 +204,6 @@ public class SavedListServiceImpl implements SavedListService {
         request.populateFromRequest(savedList);
         
         //Save created list so that we get its id from the database
-        savedList = saveIt(savedList);
-
-        //Retrieve source list, if any
-        SavedList sourceList = fetchSourceList(request);
-
-        //New list inherits source's savedSearchSource, if any
-        if (sourceList != null) {
-            final SavedSearch savedSearchSource = sourceList.getSavedSearchSource();
-            if (savedSearchSource != null) {
-                savedList.setSavedSearchSource(savedSearchSource);
-            }
-        }
-
-        //Retrieve candidates
-        Set<Candidate> candidates = fetchCandidates(request);
-
-        //Add candidates to created list, together with any context if source 
-        //list was supplied.
-        savedList.addCandidates(candidates, sourceList);
-
         return saveIt(savedList);
     }
 
@@ -233,8 +245,8 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
-    public boolean mergeSavedList(long savedListId, 
-                                    IHasSetOfCandidates request) {
+    public boolean mergeSavedList(long savedListId,
+        UpdateExplicitSavedListContentsRequest request) {
         SavedList savedList = savedListRepository.findByIdLoadCandidates(savedListId)
                 .orElse(null);
 
@@ -252,8 +264,8 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
-    public boolean removeFromSavedList(long savedListId, 
-                                    IHasSetOfCandidates request) {
+    public boolean removeFromSavedList(long savedListId,
+        UpdateExplicitSavedListContentsRequest request) {
         SavedList savedList = savedListRepository.findByIdLoadCandidates(savedListId)
                 .orElse(null);
 
@@ -440,7 +452,7 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Nullable
-    private SavedList fetchSourceList(IHasSetOfCandidates request) 
+    private SavedList fetchSourceList(UpdateSavedListContentsRequest request) 
             throws NoSuchObjectException {
         SavedList sourceList = null;
         Long sourceListId = request.getSourceListId();

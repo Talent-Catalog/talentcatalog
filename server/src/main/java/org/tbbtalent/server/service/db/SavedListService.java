@@ -18,7 +18,6 @@ package org.tbbtalent.server.service.db;
 
 import java.security.GeneralSecurityException;
 import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.exception.EntityExistsException;
@@ -26,10 +25,9 @@ import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
-import org.tbbtalent.server.request.list.CreateSavedListRequest;
-import org.tbbtalent.server.request.list.IHasSetOfCandidates;
+import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
-import org.tbbtalent.server.request.list.TargetListSelection;
+import org.tbbtalent.server.request.list.UpdateExplicitSavedListContentsRequest;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
 
@@ -59,7 +57,21 @@ public interface SavedListService {
      * @throws NoSuchObjectException if there is no saved list matching the id
      * or the target list id. 
      */
-    SavedList copy(long id, TargetListSelection request)
+    SavedList copy(long id, CopySourceContentsRequest request)
+            throws EntityExistsException, NoSuchObjectException;
+
+    /**
+     * Copies the given list to the list specified in the given request (which
+     * may be a requested new list).
+     * @param sourceList List to be copied
+     * @param request Defines the target list and also whether copy is a 
+     *                replace or an add.
+     * @return The target list                
+     * @throws EntityExistsException If a new list needs to be created but the
+     * list name already exists.
+     * @throws NoSuchObjectException if there is no saved list matching the target list id. 
+     */
+    SavedList copy(SavedList sourceList, CopySourceContentsRequest request)
             throws EntityExistsException, NoSuchObjectException;
 
     /**
@@ -73,12 +85,21 @@ public interface SavedListService {
     void copyContents(SavedList source, SavedList destination, boolean replace);
 
     /**
+     * Copies the contents (candidates plus any context notes) from the 
+     * candidates specified in the request to the destination.
+     * @param request Contains the candidates to be copied including where those
+     *                candidates came from. Also may contain updateStatusInfo.
+     * @param destination List to copy to
+     */
+    void copyContents(UpdateExplicitSavedListContentsRequest request, SavedList destination);
+
+    /**
      * Create a new SavedList 
      * @param request Create request
      * @return Created saved list
      * @throws EntityExistsException if a list with this name already exists.
      */
-    SavedList createSavedList(CreateSavedListRequest request) 
+    SavedList createSavedList(UpdateSavedListInfoRequest request) 
             throws EntityExistsException;
 
     /**
@@ -127,7 +148,7 @@ public interface SavedListService {
      * @param request Request containing the contents to be merged into the list
      * @return False if no saved list with that id was found, otherwise true.
      */
-    boolean mergeSavedList(long savedListId, IHasSetOfCandidates request);  
+    boolean mergeSavedList(long savedListId, UpdateExplicitSavedListContentsRequest request);  
 
     /**
      * Remove the candidates indicated in the given request from the SavedList 
@@ -136,7 +157,7 @@ public interface SavedListService {
      * @param request Request containing the new list contents
      * @return False if no saved list with that id was found, otherwise true.
      */
-    boolean removeFromSavedList(long savedListId, IHasSetOfCandidates request); 
+    boolean removeFromSavedList(long savedListId, UpdateExplicitSavedListContentsRequest request); 
 
     /**
      * Return a page of SavedList's that match the given request, ordered by

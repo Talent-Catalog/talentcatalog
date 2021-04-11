@@ -34,9 +34,8 @@ import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
-import org.tbbtalent.server.request.list.CreateSavedListRequest;
+import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
-import org.tbbtalent.server.request.list.TargetListSelection;
 import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
@@ -47,7 +46,7 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
 @RestController()
 @RequestMapping("/api/admin/saved-list")
 public class SavedListAdminApi implements 
-        ITableApi<SearchSavedListRequest, CreateSavedListRequest, UpdateSavedListInfoRequest> {
+        ITableApi<SearchSavedListRequest, UpdateSavedListInfoRequest, UpdateSavedListInfoRequest> {
 
     private final CandidateService candidateService;
     private final SavedListService savedListService;
@@ -68,19 +67,15 @@ public class SavedListAdminApi implements
     
     /**
      * Creates a new SavedList.
-     * <p>
-     *   If {@link CreateSavedListRequest#getCandidateIds()} is not null then
-     *   it initializes the contents of the list, otherwise the list is
-     *   initialized as empty.
-     * </p>
-     * @param request Request defining new list plus optional initial contents.
-     * @return The details about the list - but not the contents.  
+     * @param request Request defining new list.
+     * @return The details about the list.  
      * @throws EntityExistsException if a list with this name already exists.
      */
     @Override
     public @NotNull Map<String, Object> create(
-            @Valid CreateSavedListRequest request) throws EntityExistsException {
+            @Valid UpdateSavedListInfoRequest request) throws EntityExistsException {
         SavedList savedList = savedListService.createSavedList(request);
+        
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(savedList);
     }
@@ -157,7 +152,7 @@ public class SavedListAdminApi implements
     /**
      * Copies the given list to the list specified in the given request (which
      * may be a requested new list).
-     * @param id ID of list to be copied
+     * @param sourceListId ID of list to be copied
      * @param request Defines the target list and also whether copy is a 
      *                replace or an add.
      * @return The target list                
@@ -167,15 +162,19 @@ public class SavedListAdminApi implements
      * or the target list id. 
      */
     @PutMapping("/copy/{id}")
-    public @NotNull Map<String, Object> copy(@PathVariable("id") long id,
-            @RequestBody TargetListSelection request) 
+    public @NotNull Map<String, Object> copy(@PathVariable("id") long sourceListId,
+            @RequestBody CopySourceContentsRequest request) 
             throws EntityExistsException, NoSuchObjectException {
-        SavedList targetList = this.savedListService.copy(id, request);
-        
+
+        SavedList sourceList = this.savedListService.get(sourceListId);
+
+        //Copy to the target list.
+        SavedList targetList = this.savedListService.copy(sourceList, request);
+
         //Update all candidate statuses if requested.
         final UpdateCandidateStatusInfo info = request.getStatusUpdateInfo();
         if (info != null) {
-            candidateService.updateCandidateStatus(targetList, info);
+            candidateService.updateCandidateStatus(sourceList, info);
         }
         
         DtoBuilder builder = builderSelector.selectBuilder();

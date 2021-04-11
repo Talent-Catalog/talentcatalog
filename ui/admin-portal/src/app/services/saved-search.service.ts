@@ -28,9 +28,11 @@ import {
   SelectCandidateInSearchRequest
 } from "../model/saved-search";
 import {map} from "rxjs/operators";
-import {SavedList} from "../model/saved-list";
+import {
+  CopySourceContentsRequest,
+  SavedList
+} from "../model/saved-list";
 import {UpdateCandidateStatusInfo} from "../model/candidate";
-import {TargetListSelection} from "../components/list/select/select-list.component";
 
 export interface CreateFromDefaultSavedSearchRequest {
   savedListId: number;
@@ -201,7 +203,7 @@ export class SavedSearchService {
     return this.http.put<void>(`${this.apiUrl}/clear-selection/${id}`, request);
   }
 
-  saveSelection(id: number, request: TargetListSelection): Observable<SavedList> {
+  saveSelection(id: number, request: CopySourceContentsRequest): Observable<SavedList> {
     return this.http.put<SavedList>(`${this.apiUrl}/save-selection/${id}`, request);
   }
 

@@ -15,17 +15,25 @@
  */
 
 import {
-  CandidateSource, HasId,
+  CandidateSource,
   PagedSearchRequest,
   SearchCandidateSourcesRequest
 } from "./base";
 import {isSavedSearch, SavedSearchRef} from "./saved-search";
+import {TargetListSelection} from "../components/list/select/select-list.component";
+import {UpdateCandidateStatusInfo} from "./candidate";
 
 export enum SearchBy {
   type,
   all,
   mine,
   sharedWithMe
+}
+
+export enum ContentUpdateType {
+  add,
+  delete,
+  replace
 }
 
 export interface SavedList extends CandidateSource {
@@ -36,15 +44,29 @@ export function isSavedList(source: CandidateSource): source is SavedList {
   return !isSavedSearch(source);
 }
 
-export interface CreateSavedListRequest extends UpdateSavedListInfoRequest {
-  sourceListId?: number;
-  candidateIds?: number[];
-}
-
 export interface UpdateSavedListInfoRequest {
-  name: string;
+  name?: string;
   fixed?: boolean;
   sfJoblink?: string;
+}
+
+export interface UpdateSavedListContentsRequest extends UpdateSavedListInfoRequest {
+
+  sourceListId?: number;
+
+  statusUpdateInfo?: UpdateCandidateStatusInfo;
+
+  updateType?: ContentUpdateType;
+
+}
+
+export interface UpdateExplicitSavedListContentsRequest extends UpdateSavedListContentsRequest {
+  candidateIds: number[];
+}
+
+export interface CopySourceContentsRequest extends UpdateSavedListContentsRequest {
+  savedListId: number;
+  newListName?: string;
 }
 
 export interface IHasSetOfSavedLists {
@@ -54,6 +76,9 @@ export interface IHasSetOfSavedLists {
 export interface IHasSetOfCandidates {
   sourceListId?: number;
   candidateIds: number[];
+}
+export interface SaveListSelectionRequest extends IHasSetOfCandidates {
+  targetListSelection: TargetListSelection;
 }
 
 export class SearchSavedListRequest extends SearchCandidateSourcesRequest {

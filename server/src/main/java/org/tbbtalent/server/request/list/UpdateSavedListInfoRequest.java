@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.request.list;
 
+import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.request.candidate.AbstractUpdateCandidateSourceRequest;
 
 import lombok.Getter;
@@ -23,11 +24,19 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * Request for modifying the info associated with a SavedList 
+ * Request for modifying just the info associated with a SavedList (not the content) 
  * - eg changing the name
  */
 @Getter
 @Setter
 @ToString(callSuper = true)
 public class UpdateSavedListInfoRequest extends AbstractUpdateCandidateSourceRequest {
+
+  /**
+   * Populates the given SavedList from this request
+   * @param savedList List to be populated
+   */
+  public void populateFromRequest(SavedList savedList) {
+    super.populateFromRequest(savedList);
+  }
 }

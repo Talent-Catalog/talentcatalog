@@ -18,6 +18,7 @@ package org.tbbtalent.server.request.candidate;
 
 import javax.validation.constraints.NotBlank;
 
+import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.AbstractCandidateSource;
 
 import lombok.Getter;
@@ -34,9 +35,22 @@ import lombok.ToString;
 @Setter
 @ToString
 public abstract class AbstractUpdateCandidateSourceRequest {
+
+    /**
+     * @see AbstractCandidateSource
+     */
     @NotBlank
     private String name;
+
+    /**
+     * @see AbstractCandidateSource
+     */
     private Boolean fixed;
+
+    /**
+     * @see AbstractCandidateSource
+     */
+    @Nullable
     private String sfJoblink;
 
     public void populateFromRequest(AbstractCandidateSource candidateSource) {

@@ -30,7 +30,11 @@ import {AuthService} from '../../../services/auth.service';
 import {User} from '../../../model/user';
 import {IDropdownSettings} from 'ng-multiselect-dropdown';
 import {ListItem} from 'ng-multiselect-dropdown/multiselect.model';
-import {IHasSetOfCandidates, SavedList, SearchSavedListRequest} from '../../../model/saved-list';
+import {
+  IHasSetOfCandidates,
+  SavedList,
+  SearchSavedListRequest
+} from '../../../model/saved-list';
 import {SavedListService} from '../../../services/saved-list.service';
 import {CandidateSavedListService} from '../../../services/candidate-saved-list.service';
 import {SavedListCandidateService} from '../../../services/saved-list-candidate.service';
@@ -253,7 +257,6 @@ export class ViewCandidateComponent implements OnInit {
           (error) => {
             this.error = error;
           }
-
     );
   }
 

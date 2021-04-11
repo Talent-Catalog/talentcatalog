@@ -17,7 +17,7 @@
 <!--Only split if someone else (parent) is not managing splits
 (ie resizing themselves to make room for selected candidate details.-->
 <div [hidden]="loading"
-     [class.split]="manageScreenSplits && !!selectedCandidate">
+     [class.split]="manageScreenSplits && !!currentCandidate">
 
   <ng-content></ng-content>
 
@@ -194,7 +194,7 @@
 
           <tbody *ngIf="!searching">
           <tr *ngFor="let candidate of results?.content" (click)="viewCandidate(candidate)"
-              [ngClass]="{'selected': selectedCandidate?.id == candidate.id}">
+              [ngClass]="{'selected': currentCandidate?.id == candidate.id}">
             <td>
               <a [routerLink]="['/candidate',candidate.candidateNumber]">
                 {{candidate.candidateNumber}}
@@ -259,13 +259,13 @@
       </div>
 
       <app-candidate-search-card class="profile"
-                                 *ngIf="selectedCandidate"
+                                 *ngIf="currentCandidate"
                                  [candidateSource]="candidateSource"
                                  [sourceType]="pluralType"
-                                 [candidate]="selectedCandidate"
+                                 [candidate]="currentCandidate"
                                  [loggedInUser]="loggedInUser"
                                  [savedSearchSelectionChange]="savedSearchSelectionChange"
-                                 (closeEvent)="setSelectedCandidate(null)">
+                                 (closeEvent)="setCurrentCandidate(null)">
       </app-candidate-search-card>
 
     </div>
