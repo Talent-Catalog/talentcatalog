@@ -22,6 +22,9 @@
 # Working directory looks like a dangerous setting
 .idea/**/watcherTasks.xml
 
+# Introduced with Intellij 2021.1 Doesn't look like it needs to be shared across users
+.idea/libraries-with-intellij-classes.xml 
+
 ### END John Camerons extra changes
 
 
