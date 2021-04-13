@@ -77,9 +77,6 @@ export interface IHasSetOfCandidates {
   sourceListId?: number;
   candidateIds: number[];
 }
-export interface SaveListSelectionRequest extends IHasSetOfCandidates {
-  targetListSelection: TargetListSelection;
-}
 
 export class SearchSavedListRequest extends SearchCandidateSourcesRequest {
 

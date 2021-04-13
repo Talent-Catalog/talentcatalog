@@ -865,6 +865,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
       },
       (error) => {
+        this.savingSelection = false;
         this.error = error;
       }
     );
@@ -886,6 +887,10 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         //Invalidate the cache for this list (so that user does not need
         //to refresh in order to see latest list contents)
         this.candidateSourceResultsCacheService.removeFromCache(savedListResult);
+      },
+      (error) => {
+        this.savingSelection = false;
+        this.error = error;
       })
   }
 

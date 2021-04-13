@@ -16,14 +16,11 @@
 
 package org.tbbtalent.server.request.candidate;
 
-import javax.validation.constraints.NotBlank;
-
-import org.springframework.lang.Nullable;
-import org.tbbtalent.server.model.db.AbstractCandidateSource;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.lang.Nullable;
+import org.tbbtalent.server.model.db.AbstractCandidateSource;
 
 /**
  * Base class for any Update/Create requests on candidate sources 
@@ -39,12 +36,13 @@ public abstract class AbstractUpdateCandidateSourceRequest {
     /**
      * @see AbstractCandidateSource
      */
-    @NotBlank
+    @Nullable
     private String name;
 
     /**
      * @see AbstractCandidateSource
      */
+    @Nullable
     private Boolean fixed;
 
     /**

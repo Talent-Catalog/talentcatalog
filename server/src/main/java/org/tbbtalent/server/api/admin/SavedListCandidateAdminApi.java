@@ -128,7 +128,7 @@ public class SavedListCandidateAdminApi implements
      */
     @PostMapping
     public @NotNull Map<String, Object> create(
-        @Valid UpdateExplicitSavedListContentsRequest request) throws EntityExistsException {
+        @Valid @RequestBody UpdateExplicitSavedListContentsRequest request) throws EntityExistsException {
         SavedList savedList = savedListService.createSavedList(request);
 
         //Now copy any contents across
