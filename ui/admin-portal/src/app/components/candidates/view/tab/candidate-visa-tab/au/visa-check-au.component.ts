@@ -107,7 +107,8 @@ export class VisaCheckAuComponent extends IntakeComponentTabBase implements OnIn
     this.candidateVisaJobService.create(this.visaRecord.id, request)
       .subscribe(
         (jobCheck) => {
-          this.visaRecord?.candidateVisaJobChecks?.push(jobCheck)
+          this.visaRecord?.candidateVisaJobChecks?.push(jobCheck);
+          this.selectedJobCheck = jobCheck;
           this.loading = false;
         },
         (error) => {
