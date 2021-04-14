@@ -235,6 +235,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("name")
                 .add("sfJobLink")
                 .add("interest")
+                .add("interestNotes")
                 .add("regional")
                 .add("salaryTsmit")
                 .add("interest")

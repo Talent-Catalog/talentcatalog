@@ -27,4 +27,17 @@ export class JobInterestComponent extends IntakeComponentBase implements OnInit 
       visaJobInterestNotes: [this.selectedJobCheck?.interestNotes],
     });
   }
+
+  get hasNotes(): boolean {
+    let found: boolean = false;
+    if (this.form.value.visaJobInterest) {
+      if (this.form.value.visaJobInterest === 'Yes') {
+        found = true
+      }
+      if (this.form.value.visaJobInterest === 'No') {
+        found = true
+      }
+    }
+    return found;
+  }
 }

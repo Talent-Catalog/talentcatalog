@@ -18,7 +18,7 @@ package org.tbbtalent.server.model.db;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 
 import javax.persistence.Entity;
@@ -33,8 +33,11 @@ import javax.persistence.Table;
 public class CandidateVisaJobCheck extends CandidateVisaJobCheckBase {
 
     public void populateIntakeData(
-            @NonNull Occupation occupation, CandidateIntakeDataUpdate data) {
-        setOccupation(occupation);
+            @Nullable Occupation occupation, CandidateIntakeDataUpdate data) {
+        if (data.getVisaJobOccupationId() != null) {
+            setOccupation(occupation);
+        }
+
         if (data.getVisaJobSalaryTsmit() != null) {
             setSalaryTsmit(data.getVisaJobSalaryTsmit());
         }
