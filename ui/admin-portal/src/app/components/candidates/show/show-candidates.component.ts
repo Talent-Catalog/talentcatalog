@@ -79,7 +79,8 @@ import {
   CopySourceContentsRequest,
   IHasSetOfCandidates,
   isSavedList,
-  SavedListGetRequest, UpdateExplicitSavedListContentsRequest
+  SavedListGetRequest,
+  UpdateExplicitSavedListContentsRequest
 } from '../../../model/saved-list';
 import {CandidateSourceCandidateService} from '../../../services/candidate-source-candidate.service';
 import {LocalStorageService} from 'angular-2-local-storage';
@@ -858,10 +859,15 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         this.savingSelection = false;
         //Save the target list
         this.targetListId = savedListId;
-        this.targetListReplace = true;
+        this.targetListReplace = request.updateType === ContentUpdateType.replace;
         //Invalidate the cache for this list (so that user does not need
         //to refresh in order to see latest list contents)
         this.candidateSourceResultsCacheService.removeFromCache(this.candidateSource);
+
+        if (request.statusUpdateInfo != null) {
+          //Refresh display to see updated statuses
+          this.doSearch(true);
+        }
 
       },
       (error) => {
@@ -887,6 +893,11 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         //Invalidate the cache for this list (so that user does not need
         //to refresh in order to see latest list contents)
         this.candidateSourceResultsCacheService.removeFromCache(savedListResult);
+
+        if (request.statusUpdateInfo != null) {
+          //Refresh display to see updated statuses
+          this.doSearch(true);
+        }
       },
       (error) => {
         this.savingSelection = false;

@@ -72,15 +72,15 @@ public class SavedListCandidateAdminApi implements
 
     private final CandidateService candidateService;
     private final SavedListService savedListService;
-    private final CandidateBuilderSelector builderSelector;
-
+    private final CandidateBuilderSelector candidateBuilderSelector;
+    private final SavedListBuilderSelector savedListBuilderSelector = new SavedListBuilderSelector();
     @Autowired
     public SavedListCandidateAdminApi(
             CandidateService candidateService, SavedListService savedListService, 
             UserContext userContext) {
         this.candidateService = candidateService;
         this.savedListService = savedListService;
-        builderSelector = new CandidateBuilderSelector(userContext);
+        candidateBuilderSelector = new CandidateBuilderSelector(userContext);
     }
 
     @Override
@@ -111,7 +111,7 @@ public class SavedListCandidateAdminApi implements
         
         setCandidateContext(savedListId, candidates);
 
-        DtoBuilder builder = builderSelector.selectBuilder();
+        DtoBuilder builder = candidateBuilderSelector.selectBuilder();
         return builder.buildPage(candidates);
     }
 
@@ -140,7 +140,8 @@ public class SavedListCandidateAdminApi implements
             candidateService.updateCandidateStatus(savedList, info);
         }
 
-        DtoBuilder builder = builderSelector.selectBuilder();
+        DtoBuilder builder = savedListBuilderSelector.selectBuilder();
+        
         return builder.build(savedList);
     }
 
