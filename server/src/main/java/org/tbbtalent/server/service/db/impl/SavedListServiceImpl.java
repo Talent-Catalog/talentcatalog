@@ -121,6 +121,9 @@ public class SavedListServiceImpl implements SavedListService {
         boolean newList = targetId == 0;
         if (newList) {
             //Request is to create a new list
+            //Name for this new list will be in the newListName field - copy that down to the
+            //name field which is where the standard createSavedList is expecting to find the name.
+            request.setName(request.getNewListName());
             targetList = createSavedList(request);
         } else {
             targetList = savedListRepository.findByIdLoadCandidates(targetId)
