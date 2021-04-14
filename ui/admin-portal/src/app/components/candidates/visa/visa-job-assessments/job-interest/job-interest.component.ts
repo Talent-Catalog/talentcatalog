@@ -24,6 +24,7 @@ export class JobInterestComponent extends IntakeComponentBase implements OnInit 
     this.form = this.fb.group({
       visaJobId: [this.selectedJobCheck?.id],
       visaJobInterest: [this.selectedJobCheck?.interest],
+      visaJobInterestNotes: [this.selectedJobCheck?.interestNotes],
     });
   }
 }

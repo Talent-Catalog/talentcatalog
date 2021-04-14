@@ -238,6 +238,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("regional")
                 .add("salaryTsmit")
                 .add("interest")
+                .add("interestNotes")
                 .add("eligible_494")
                 .add("eligible_494_Notes")
                 .add("eligible_186")

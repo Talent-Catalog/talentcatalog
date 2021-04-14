@@ -183,6 +183,7 @@ public class CandidateIntakeDataUpdate {
     private Long visaJobOccupationId;
     private EducationType visaJobQualification;
     private YesNo visaJobInterest;
+    private String visaJobInterestNotes;
     private YesNo visaJobSalaryTsmit;
     private YesNo visaJobRegional;
     private YesNo visaJobFamilyAus;

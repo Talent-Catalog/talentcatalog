@@ -37,7 +37,7 @@ public class CandidateVisaJobCheckBase extends AbstractDomainObject<Long> {
     @Enumerated(EnumType.STRING)
     private YesNo interest;
 
-    private String interestnotes;
+    private String interestNotes;
 
     private Long workExpYrs;
 

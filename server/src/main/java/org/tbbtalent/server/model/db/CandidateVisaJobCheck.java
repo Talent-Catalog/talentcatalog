@@ -44,6 +44,9 @@ public class CandidateVisaJobCheck extends CandidateVisaJobCheckBase {
         if (data.getVisaJobInterest() != null) {
             setInterest(data.getVisaJobInterest());
         }
+        if (data.getVisaJobInterestNotes() != null) {
+            setInterestNotes(data.getVisaJobInterestNotes());
+        }
         if (data.getVisaJobEligible494() != null) {
             setEligible_494(data.getVisaJobEligible494());
         }
