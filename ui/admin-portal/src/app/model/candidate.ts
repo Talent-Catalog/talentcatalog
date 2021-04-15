@@ -258,6 +258,7 @@ export interface CandidateVisaJobCheck {
   salaryTsmit?: YesNo;
   regional?: YesNo;
   interest?: YesNo;
+  interestNotes?: String;
   familyAus?: YesNo;
   eligible_494?: YesNo;
   eligible_494_Notes?: String;

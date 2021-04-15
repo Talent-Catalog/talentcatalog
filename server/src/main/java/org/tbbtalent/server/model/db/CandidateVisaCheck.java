@@ -37,6 +37,7 @@ public class CandidateVisaCheck extends CandidateVisaCheckBase {
             CandidateIntakeDataUpdate data) {
         setCandidate(candidate);
         setCountry(country);
+
         if (data.getVisaProtection() != null) {
             setProtection(data.getVisaProtection());
         }

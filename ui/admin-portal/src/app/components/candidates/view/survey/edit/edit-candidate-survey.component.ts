@@ -50,7 +50,7 @@ export class EditCandidateSurveyComponent implements OnInit {
 
     this.candidateService.get(this.candidateId).subscribe(candidate => {
       this.candidateForm = this.fb.group({
-        surveyTypeId: [candidate.surveyType.id],
+        surveyTypeId: [candidate.surveyType?.id],
         surveyComment: [candidate.surveyComment]
       });
       this.loading = false;
@@ -61,8 +61,12 @@ export class EditCandidateSurveyComponent implements OnInit {
     /* Load the survey types  */
     this.surveyTypeService.listSurveyTypes().subscribe(
       (response) => {
+        /* Sort order with 'Other' showing last */
+        const sortOrder = [1, 2, 3, 4, 5, 6, 7, 9, 8];
         this.surveyTypes = response
-          .sort((a, b) => a.id > b.id ? 1 : -1) // Order by surveyType id
+          .sort((a, b) => {
+            return sortOrder.indexOf(a.id) - sortOrder.indexOf(b.id);
+          })
       },
       (error) => {
         this.error = error;
