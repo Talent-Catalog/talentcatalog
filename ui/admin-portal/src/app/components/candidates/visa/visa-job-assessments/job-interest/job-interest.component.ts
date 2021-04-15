@@ -24,6 +24,20 @@ export class JobInterestComponent extends IntakeComponentBase implements OnInit 
     this.form = this.fb.group({
       visaJobId: [this.selectedJobCheck?.id],
       visaJobInterest: [this.selectedJobCheck?.interest],
+      visaJobInterestNotes: [this.selectedJobCheck?.interestNotes],
     });
+  }
+
+  get hasNotes(): boolean {
+    let found: boolean = false;
+    if (this.form.value.visaJobInterest) {
+      if (this.form.value.visaJobInterest === 'Yes') {
+        found = true
+      }
+      if (this.form.value.visaJobInterest === 'No') {
+        found = true
+      }
+    }
+    return found;
   }
 }
