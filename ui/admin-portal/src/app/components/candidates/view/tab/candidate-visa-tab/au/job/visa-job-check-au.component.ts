@@ -87,6 +87,20 @@ export class VisaJobCheckAuComponent extends IntakeComponentTabBase implements O
     return this.candidate?.dob.toString().slice(0, 4);
   }
 
+  get familyInAus(): string {
+    let answer: string = 'No Family'
+    if (this.ausDest?.family) {
+      if (this.ausDest?.location) {
+        answer = this.ausDest?.family + ' in ' + this.ausDest?.location;
+      } else {
+        answer = this.ausDest?.family;
+      }
+      return answer;
+    } else {
+
+    }
+  }
+
   get selectedOccupations(): CandidateOccupation {
     if (this.candOccupations) {
       this.yrsExp = this.candOccupations?.find(occ => occ.occupation.id === this.selectedJobCheck?.occupation?.id);
