@@ -73,7 +73,7 @@
       </div>
 
       <div *ngIf="makeActive" class="form-group">
-        <label for="activeComment">Admin Note</label>
+        <label>Admin Note</label>
         <ngx-wig id="activeComment" formControlName="activeComment"></ngx-wig>
       </div>
 
@@ -88,7 +88,7 @@
 
 <div class="modal-footer">
   <button type="button" class="btn btn-primary" (click)="select()"
-          [disabled]="form?.invalid || saving">
+          [disabled]="saving">
     <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
     {{action}}
   </button>
