@@ -94,7 +94,7 @@
 
       <div class="d-flex flex-column align-items-center">
         <div>
-          <button class="btn btn-sm btn-secondary"
+          <button class="btn btn-sm btn-secondary" [disabled]="!isSelection()"
                   (click)="saveSelection()" title="Save Selection">
             <i class="fas fa-spinner fa-spin" *ngIf=savingSelection></i>
             <i class="fas fa-user-check"></i> to
@@ -103,25 +103,29 @@
         </div>
       </div>
 
-      <button class="btn btn-sm btn-secondary"
+      <button class="btn btn-sm btn-secondary" [disabled]="!isSelection()"
               (click)="updateStatusOfSelection()" title="Update Statuses of Selection">
         <i class="fas fa-spinner fa-spin" *ngIf=updatingStatuses></i>
         <i class="fas fa-user-check"></i>
         Update statuses
       </button>
 
-      <button class="btn btn-sm btn-secondary" (click)="clearSelection()"
+      <button class="btn btn-sm btn-secondary" [disabled]="!isSelection()"
+              (click)="clearSelection()"
               title="Clear Selection">
         Clear <i class="fas fa-user-check"></i>
       </button>
 
-      <button class="btn btn-sm btn-secondary" (click)="exportCandidates()">
+      <button class="btn btn-sm btn-secondary" (click)="exportCandidates()"
+              title="Export candidates">
         <i class="fas fa-spinner fa-spin" *ngIf=exporting></i>
         Export <i class="fas fa-file-excel"></i>
       </button>
 
       <button *ngIf="isSalesforceUpdatable()" class="btn btn-sm btn-secondary"
-              (click)="createUpdateSalesforce()">
+              (click)="createUpdateSalesforce()"
+              title="Create or update candidates in Salesforce"
+      >
         <i class="fas fa-spinner fa-spin" *ngIf=updating></i>
         Create/update <i class="fab fa-salesforce"></i>
       </button>

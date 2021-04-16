@@ -168,6 +168,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   private reviewStatusFilter: string[] = defaultReviewStatusFilter;
   savedSearchSelectionChange: boolean;
 
+  private noCandidatesMessage = "No candidates are selected";
 
   constructor(private http: HttpClient,
               private fb: FormBuilder,
@@ -261,6 +262,18 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         }
       }
     }
+  }
+
+  isSelection(): boolean {
+    let isSelection: boolean;
+    if (isSavedSearch(this.candidateSource)) {
+      //Saved searches handle selections differently - they need a server request to check
+      //selections - so we need to manage that a bit more efficiently.
+      isSelection = true;
+    } else {
+      isSelection = this.selectedCandidates != null && this.selectedCandidates.length > 0;
+    }
+    return isSelection;
   }
 
   private loadSelectedFields() {
@@ -700,6 +713,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   private doSavedSearchSelection(candidate: Candidate, selected: boolean) {
     //Record change on server
     //Candidate is added/removed from this users selection list for this saved search
+    this.error = null;
     const request: SelectCandidateInSearchRequest = {
       userId: this.loggedInUser.id,
       candidateId: candidate.id,
@@ -715,6 +729,31 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   saveSelection() {
+    this.error = null;
+
+    if (isSavedSearch(this.candidateSource)) {
+      this.savedSearchService.getSelectionCount(this.candidateSource.id).subscribe(
+        (nSelections: number) => {
+          if (nSelections === 0) {
+            this.error = this.noCandidatesMessage;
+          } else {
+            this.requestSaveSelection();
+          }
+        },
+        (error) => {
+          this.error = error;
+        });
+    } else {
+      const nSelections = this.selectedCandidates.length;
+      if (nSelections === 0) {
+        this.error = this.noCandidatesMessage;
+      } else {
+        this.requestSaveSelection();
+      }
+    }
+  }
+
+  private requestSaveSelection() {
     //Show modal allowing for list selection
     const modal = this.modalService.open(SelectListComponent);
     modal.componentInstance.action = "Save";
@@ -727,12 +766,11 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     modal.result
-      .then((selection: TargetListSelection) => {
-        this.doSaveSelection(selection);
-      })
-      .catch(() => { /* Isn't possible */
-      });
-
+    .then((selection: TargetListSelection) => {
+      this.doSaveSelection(selection);
+    })
+    .catch(() => { /* Isn't possible */
+    });
   }
 
   saveSelectionAgain() {
@@ -1101,13 +1139,11 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   updateStatusOfSelection() {
     this.error = null;
 
-    const noCandidatesMessage = "No candidates are selected";
-
     if (isSavedSearch(this.candidateSource)) {
       this.savedSearchService.getSelectionCount(this.candidateSource.id).subscribe(
         (nSelections: number) => {
           if (nSelections === 0) {
-            this.error = noCandidatesMessage;
+            this.error = this.noCandidatesMessage;
           } else {
             this.requestNewStatusInfo(nSelections);
           }
@@ -1118,7 +1154,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       const nSelections = this.selectedCandidates.length;
       if (nSelections === 0) {
-        this.error = noCandidatesMessage;
+        this.error = this.noCandidatesMessage;
       } else {
         this.requestNewStatusInfo(nSelections);
       }
