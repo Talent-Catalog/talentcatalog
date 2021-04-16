@@ -127,7 +127,7 @@
       </button>
 
 
-      <div *ngIf="isContentModifiable()" class="form-group">
+      <div *ngIf="isContentModifiable()">
         <input id="quickNumberOrNameSearch"
                type="text" class="form-control" #input
                [ngbTypeahead]="doNumberOrNameSearch"
