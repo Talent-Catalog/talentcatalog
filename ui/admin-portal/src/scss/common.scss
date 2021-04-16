@@ -90,6 +90,27 @@ table {
 }
 
 .card-header {
-  background-color: $color-text-inactive !important;
+  background-color: $color-secondary-lighter !important;
 }
 
+.custom-primary .multiselect-dropdown .dropdown-btn .selected-item {
+  background-color: $color-primary-dark !important;
+  border: 1px solid $color-primary-dark !important;
+}
+
+.custom-primary .multiselect-item-checkbox input[type=checkbox]:checked + div:before {
+  background-color: $color-primary-dark !important;
+  border: 2px solid $color-primary-dark !important;
+}
+
+.custom-primary .multiselect-item-checkbox input[type=checkbox] + div:before {
+  border: 2px solid $color-primary-dark !important;
+}
+
+input[type=checkbox]:checked + div:before {
+    background-color: $color-primary !important;
+}
+
+input[type=checkbox]:checked + div:after {
+  background-color: $color-primary !important;
+}

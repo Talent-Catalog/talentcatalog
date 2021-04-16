@@ -106,7 +106,7 @@
             <label>Status</label>
             <ng-multiselect-dropdown
               id="statuses"
-              class="scroll-select"
+              class="scroll-select custom-primary"
               [settings]="statusDropdownSettings"
               [data]="candidateStatusOptions"
               formControlName="statusesDisplay"
@@ -142,7 +142,7 @@
                 <label>Occupation</label>
                 <ng-multiselect-dropdown
                   id="occupationIds"
-                  class="scroll-select"
+                  class="scroll-select custom-primary"
                   [settings]="multiSelectSettings"
                   [data]="candidateOccupations"
                   formControlName="occupations"
@@ -238,6 +238,7 @@
                 <label>Education Level (minimum)</label>
                 <ng-multiselect-dropdown
                   id="minEducationLevel"
+                  class="custom-primary"
                   [settings]="educationLevelSettings"
                   [data]="educationLevels"
                   formControlName="minEducationLevelObj"
@@ -251,7 +252,7 @@
                 <label>Education major</label>
                 <ng-multiselect-dropdown
                   id="educationMajorIds"
-                  class="scroll-select"
+                  class="scroll-select custom-primary"
                   [settings]="multiSelectSettings"
                   [data]="educationMajors"
                   formControlName="educationMajors"
@@ -293,7 +294,7 @@
 
             <ng-multiselect-dropdown
               id="selectedNationalities"
-              class="scroll-select"
+              class="scroll-select custom-primary"
               [settings]="multiSelectSettings"
               [data]="nationalities"
               formControlName="nationalities"
@@ -306,7 +307,7 @@
             <label>Country</label>
             <ng-multiselect-dropdown
               id="country"
-              class="scroll-select"
+              class="scroll-select custom-primary"
               [settings]="multiSelectSettings"
               [data]="countries"
               formControlName="countries"

@@ -39,7 +39,7 @@
   cursor: pointer;
   position: relative;
   left: 0;
-  background-color: $color-text-inactive;
+  background-color: $color-secondary-lighter;
   margin: .5em;
   margin-left: 0;
   padding: 0.1em .4em;
@@ -50,7 +50,7 @@
   left: .1em;
 }
 .searches li.selected {
-  background-color: $color-text-secondary;
+  background-color: $color-secondary-light;
   color: white;
 }
 .searches li.selected:hover {

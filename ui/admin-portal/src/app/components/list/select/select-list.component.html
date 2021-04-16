@@ -36,6 +36,7 @@
         <label>Existing list</label>
         <ng-multiselect-dropdown formControlName="savedList"
                                  id="savedLists"
+                                 class="custom-primary"
                                  [settings]="dropdownSettings"
                                  [data]="lists"
                                  (onSelect)="disableNew()"
