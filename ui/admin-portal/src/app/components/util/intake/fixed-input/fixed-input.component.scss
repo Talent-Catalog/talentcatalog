@@ -14,8 +14,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+@import "~src/scss/variables";
+
 .answer {
-  color: #272b2b;
+  color: $color-text-primary;
   font-weight: 300;
 }
 

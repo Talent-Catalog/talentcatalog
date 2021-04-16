@@ -31,6 +31,7 @@
           <!-- Disabled if saved search is entered -->
           <ng-multiselect-dropdown formControlName="savedList"
                                    id="savedList"
+                                   class="custom-primary"
                                    [settings]="dropdownSettings"
                                    [disabled]="savedSearch != null"
                                    [data]="lists">
@@ -43,6 +44,7 @@
           <!-- Disabled if saved list is entered -->
           <ng-multiselect-dropdown formControlName="savedSearch"
                                    id="savedSearch"
+                                   class="custom-primary"
                                    [settings]="dropdownSettings"
                                    [disabled]="savedList != null"
                                    [data]="searches">

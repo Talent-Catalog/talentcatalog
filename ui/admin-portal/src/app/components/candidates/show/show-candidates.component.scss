@@ -14,15 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+@import "~src/scss/variables";
+
 :host {
   ::ng-deep .dropdown-btn {
     background-color: #fff;
   }
 }
 
-td {
-  padding-bottom: 0;
-  padding-top: 0;
+.table-hover> tbody> tr:hover{
+  background-color: fade-out($color-primary, 0.8)
 }
 
 label {
@@ -52,9 +53,12 @@ label {
 }
 
 .selected {
-  background-color: rgba(0, 0, 0, 0.03);
+  background-color: fade-out($color-primary, 0.8)
 }
 
+tr.selected-row {
+  background-color: fade-out($color-secondary-lighter, 0.7)
+}
 
 .filter-group {
   background: #CCCCCC;
@@ -65,7 +69,7 @@ label {
 .filter-results {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end;
   padding: 1em;
 
   ::ng-deep ul.pagination {

@@ -66,15 +66,19 @@
       <button class="btn" *ngIf="!isDefaultSavedSearch()" (click)="doRunStats()">
         <i class="fas fa-chart-bar" title="Run stats"></i>
       </button>
-      <a *ngIf="candidateSource?.sfJoblink" target="_blank"
-         [href]="candidateSource.sfJoblink">
-        <i class="fab fa-salesforce" title="Associated Job Opportunity"></i>
-      </a>
+      <div *ngIf="candidateSource?.sfJoblink">
+        <a target="_blank"
+           [href]="candidateSource.sfJoblink">
+          <i class="fab fa-salesforce" title="Associated Job Opportunity"></i>
+        </a>
+      </div>
       <button class="btn" *ngIf="timestamp" (click)="doSearch(true)">
         <i class="fas fa-sync" title="Refresh search"></i>
       </button>
-      {{results?.totalElements}} candidates. Timestamp {{timestamp | date: 'customDateTime'}}
-
+      <div class="text-right">
+        {{results?.totalElements}} candidates returned<br/>
+        Timestamp {{timestamp | date: 'customDateTime'}}
+      </div>
       <button *ngIf="isShareable() && !isSharedWithMe() && !isGlobal()"
         class="btn btn-outline-secondary" (click)="addToSharedWithMe()">
         <i class="far fa-handshake"></i> Add to {{pluralType}} shared with me
@@ -88,50 +92,38 @@
 
     <div class="filter-results text-muted" *ngIf="!searching">
 
-      <button class="btn btn-outline-secondary" (click)="clearSelection()"
-              title="Clear Selection">
-        <i class="fas fa-user-check"></i> clear
-      </button>
-
-      <div *ngIf="haveTargetList()">
-        <i class="fas fa-user-check"></i> to
-        <a [routerLink]="['/list',targetListId]">
-          {{targetListName}}
-        </a>
-        <a target="_blank" [routerLink]="['/list',targetListId]">
-          <i class="fas fa-external-link-alt" title="Show list in new tab"></i>
-        </a>
-
-        <button class="btn btn-outline-secondary"
-                 (click)="saveSelectionAgain()">
-          <i class="fas fa-spinner fa-spin" *ngIf=savingSelection></i>
-          {{(targetListReplace ? "Replace" : "Save")}} Again
-        </button>
+      <div class="d-flex flex-column align-items-center">
+        <div>
+          <button class="btn btn-sm btn-secondary"
+                  (click)="saveSelection()" title="Save Selection">
+            <i class="fas fa-spinner fa-spin" *ngIf=savingSelection></i>
+            <i class="fas fa-user-check"></i> to
+            <i class="fas fa-list"></i>
+          </button>
+        </div>
       </div>
 
-      <button class="btn btn-outline-secondary"
-              (click)="saveSelection()" title="Save Selection">
-        <i class="fas fa-spinner fa-spin" *ngIf=savingSelection></i>
-        <i class="fas fa-user-check"></i> to
-        <i class="fas fa-list"></i>
-      </button>
-
-      <button class="btn btn-outline-secondary"
+      <button class="btn btn-sm btn-secondary"
               (click)="updateStatusOfSelection()" title="Update Statuses of Selection">
         <i class="fas fa-spinner fa-spin" *ngIf=updatingStatuses></i>
-        <i class="fas fa-user-check"></i> status
-        <i class="fas fa-edit"></i>
+        <i class="fas fa-user-check"></i>
+        Update statuses
       </button>
 
-      <button class="btn btn-outline-secondary" (click)="exportCandidates()">
+      <button class="btn btn-sm btn-secondary" (click)="clearSelection()"
+              title="Clear Selection">
+        Clear <i class="fas fa-user-check"></i>
+      </button>
+
+      <button class="btn btn-sm btn-secondary" (click)="exportCandidates()">
         <i class="fas fa-spinner fa-spin" *ngIf=exporting></i>
-        <i class="fas fa-file-excel"></i> Export
+        Export <i class="fas fa-file-excel"></i>
       </button>
 
-      <button *ngIf="isSalesforceUpdatable()" class="btn btn-outline-secondary"
+      <button *ngIf="isSalesforceUpdatable()" class="btn btn-sm btn-secondary"
               (click)="createUpdateSalesforce()">
         <i class="fas fa-spinner fa-spin" *ngIf=updating></i>
-        <i class="fab fa-salesforce"></i> Create/update Salesforce
+        Create/update <i class="fab fa-salesforce"></i>
       </button>
 
 
@@ -151,12 +143,32 @@
 
     </div>
 
+    <div class="filter-results text-muted pt-0" *ngIf="!searching">
+      <div *ngIf="haveTargetList()" class="d-flex pt-1 align-items-center">
+        <button class="btn btn-sm btn-outline-secondary mr-2"
+                (click)="saveSelectionAgain()">
+          <i class="fas fa-spinner fa-spin" *ngIf=savingSelection></i>
+          {{(targetListReplace ? "Replace" : "Save")}} Again
+        </button>
+        <div>
+          <i class="fas fa-user-check"></i>&nbsp;to&nbsp;
+          <a target="_blank" [routerLink]="['/list',targetListId]">
+            {{targetListName}} <i class="fas fa-external-link-alt" title="Show list in new tab"></i>
+          </a>
+        </div>
+
+
+      </div>
+    </div>
+
+
     <form class="filter-form" [formGroup]="searchForm">
 
       <!-- REVIEW STATUS FILTER -->
       <div *ngIf="isReviewable()" class="form-group col-12">
         <ng-multiselect-dropdown
           id="reviewStatus"
+          class="custom-primary"
           [placeholder]="'Review status: Empty displays everything'"
           [settings]="dropdownSettings"
           [data]="statuses"
@@ -172,9 +184,9 @@
     <div class="split-view">
 
       <div class="table-wrapper">
-        <table class="table">
+        <table class="table table-hover">
 
-          <thead>
+          <thead class="thead-light">
           <tr>
             <th class="candidate-number-row" (click)="toggleSort('id')">
               <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
@@ -194,7 +206,7 @@
 
           <tbody *ngIf="!searching">
           <tr *ngFor="let candidate of results?.content" (click)="viewCandidate(candidate)"
-              [ngClass]="{'selected': currentCandidate?.id == candidate.id}">
+              [ngClass]="{'selected': currentCandidate?.id == candidate.id, 'selected-row': candidate.selected}">
             <td>
               <a [routerLink]="['/candidate',candidate.candidateNumber]">
                 {{candidate.candidateNumber}}
@@ -220,16 +232,17 @@
               </app-cv-icon>
             </td>
             <td>
-              <input type="checkbox" class="custom-checkbox" id="selected"
+              <input type="checkbox" class="custom-checkbox" id="selected" data-onstyle="primary"
                      (ngModelChange)="onSelectionChange(candidate, $event)"
-                     [ngModel]="candidate.selected" >
+                     [ngModel]="candidate.selected"
+                     [checked]="candidate.selected">
             </td>
             <td *ngFor="let field of selectedFields">
               {{field.getValue(candidate)}}
             </td>
             <td>
               <div ngbDropdown placement="bottom-right" (click)="$event.stopPropagation();" container="body">
-                <button class="btn btn-xs hide-after" ngbDropdownToggle>
+                <button class="btn btn-xs hide-after py-0" ngbDropdownToggle>
                   <i class="fas fa-ellipsis-h"></i>
                 </button>
                 <ul ngbDropdownMenu>
