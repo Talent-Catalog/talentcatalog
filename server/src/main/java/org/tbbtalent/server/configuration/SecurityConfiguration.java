@@ -160,6 +160,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // PUT: SELECT CANDIDATE SAVED SEARCHES
                 .antMatchers(HttpMethod.PUT, "/api/admin/saved-search/select-candidate/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
+                // GET: SELECTION COUNT SAVED SEARCHES
+                .antMatchers(HttpMethod.GET, "/api/admin/saved-search/get-selection-count/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
                 // PUT: SAVE SELECTION SAVED SEARCHES
                 .antMatchers(HttpMethod.PUT, "/api/admin/saved-search/save-selection/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
