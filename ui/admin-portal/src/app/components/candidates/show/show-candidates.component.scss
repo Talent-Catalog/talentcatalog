@@ -69,7 +69,6 @@ tr.selected-row {
 .filter-results {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
   padding: 1em;
 
   ::ng-deep ul.pagination {

@@ -41,7 +41,7 @@
       <i class="fas fa-spinner fa-spin"></i> Loading...
     </div>
 
-    <div class="filter-results text-muted" *ngIf="!searching">
+    <div class="filter-results text-muted align-items-center" *ngIf="!searching">
 
       <ngb-pagination [boundaryLinks]="true"
                       [pageSize]="pageSize"
@@ -76,8 +76,8 @@
         <i class="fas fa-sync" title="Refresh search"></i>
       </button>
       <div class="text-right">
-        {{results?.totalElements}} candidates returned<br/>
-        Timestamp {{timestamp | date: 'customDateTime'}}
+        <span>{{results?.totalElements}} candidates returned</span><br/>
+        <span class="small">Timestamp {{timestamp | date: 'customDateTime'}}</span>
       </div>
       <button *ngIf="isShareable() && !isSharedWithMe() && !isGlobal()"
         class="btn btn-outline-secondary" (click)="addToSharedWithMe()">
@@ -90,7 +90,7 @@
       </button>
     </div>
 
-    <div class="filter-results text-muted" *ngIf="!searching">
+    <div class="filter-results align-items-end text-muted" *ngIf="!searching">
 
       <div class="d-flex flex-column align-items-center">
         <div>
@@ -127,7 +127,7 @@
       </button>
 
 
-      <div *ngIf="isContentModifiable()" class="form-group">
+      <div *ngIf="isContentModifiable()">
         <input id="quickNumberOrNameSearch"
                type="text" class="form-control" #input
                [ngbTypeahead]="doNumberOrNameSearch"
@@ -151,13 +151,14 @@
           {{(targetListReplace ? "Replace" : "Save")}} Again
         </button>
         <div>
-          <i class="fas fa-user-check"></i>&nbsp;to&nbsp;
+          <i class="fas fa-user-check"></i> to
+          <a [routerLink]="['/list',targetListId]">
+            {{targetListName}}
+          </a>
           <a target="_blank" [routerLink]="['/list',targetListId]">
-            {{targetListName}} <i class="fas fa-external-link-alt" title="Show list in new tab"></i>
+            <i class="fas fa-external-link-alt" title="Show list in new tab"></i>
           </a>
         </div>
-
-
       </div>
     </div>
 
