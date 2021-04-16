@@ -107,10 +107,21 @@ table {
   border: 2px solid $color-primary-dark !important;
 }
 
-input[type=checkbox]:checked + div:before {
-    background-color: $color-primary !important;
+.col-form-label i {
+  margin-right: 0.70em;
 }
 
-input[type=checkbox]:checked + div:after {
-  background-color: $color-primary !important;
+.form-control-plaintext {
+  font-weight: 300;
+  padding-top: 0;
+  font-size: inherit;
+}
+
+.card-body {
+  p {
+    font-weight: 300;
+  }
+  span {
+    font-weight: 300;
+  }
 }

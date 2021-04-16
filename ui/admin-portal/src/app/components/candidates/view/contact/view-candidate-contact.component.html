@@ -34,7 +34,7 @@
 
     <div class="row">
 
-      <div *ngIf="candidate.address1 || candidate.city || candidate.country" class="form-group col-8">
+      <div *ngIf="candidate.address1 || candidate.city || candidate.country" class="form-group col-sm-12 col-md-4">
         <label class="col-form-label">
           <i class="fas fa-map-marker"></i>
           Address
@@ -63,14 +63,6 @@
         </div>
       </div>
 
-      <div *ngIf="candidate.phone" class="form-group col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fas fa-phone"></i>Phone</label>
-
-        <div class="form-control-plaintext">
-          <span>{{candidate.phone}}</span>
-        </div>
-      </div>
-
       <div class="form-group col-sm-12 col-md-4">
         <label class="col-form-label"><i class="fas fa-gift"></i>D.O.B.</label>
 
@@ -79,19 +71,19 @@
         </div>
       </div>
 
+      <div *ngIf="candidate.phone" class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fas fa-phone"></i>Phone</label>
+
+        <div class="form-control-plaintext">
+          <span>{{candidate.phone}}</span>
+        </div>
+      </div>
+
       <div *ngIf="candidate.whatsapp" class="form-group col-sm-12 col-md-4">
         <label class="col-form-label"><i class="fab fa-whatsapp"></i>Whatsapp</label>
 
         <div class="form-control-plaintext">
           <span>{{candidate.whatsapp}}</span>
-        </div>
-      </div>
-
-      <div *ngIf="candidate.user.email" class="form-group col-sm-12 col-md-4">
-        <label class="col-form-label"><i class="fas fa-envelope"></i>Email</label>
-
-        <div class="form-control-plaintext">
-          <span>{{candidate.user.email}}</span>
         </div>
       </div>
 
@@ -109,6 +101,14 @@
         <div class="form-control-plaintext">
           <span *ngIf="candidate.yearOfArrival; else notApplicable">{{candidate.yearOfArrival}}</span>
           <ng-template #notApplicable>n/a</ng-template>
+        </div>
+      </div>
+
+      <div *ngIf="candidate.user.email" class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="fas fa-envelope"></i>Email</label>
+
+        <div class="form-control-plaintext">
+          <span>{{candidate.user.email}}</span>
         </div>
       </div>
 
