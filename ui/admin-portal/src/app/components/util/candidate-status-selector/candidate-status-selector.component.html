@@ -1,0 +1,21 @@
+<form [formGroup]="candidateStatusInfoForm">
+
+  <div class="form-group">
+    <label for="status">Status</label>
+    <select class="form-control" name="status" id="status" [formControlName]="'status'">
+      <option *ngFor="let opt of candidateStatusOptions" [value]="opt.value">
+        {{opt.displayText}}
+      </option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="comment">Admin Note</label>
+    <ngx-wig id="comment" formControlName="comment"></ngx-wig>
+  </div>
+
+  <div class="form-group">
+    <label for="candidateMessage">Please provide a message to the candidate (visible to them)</label>
+    <textarea  class="form-control"  id="candidateMessage" [formControlName]="'candidateMessage'"></textarea>
+  </div>
+</form>

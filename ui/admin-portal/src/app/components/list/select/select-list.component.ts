@@ -71,6 +71,8 @@ export class SelectListComponent implements OnInit {
     allowSearchFilter: true
   };
 
+  private statusUpdateInfo: UpdateCandidateStatusInfo;
+
   constructor(
     private savedListService: SavedListService,
     private activeModal: NgbActiveModal,
@@ -82,21 +84,20 @@ export class SelectListComponent implements OnInit {
       newList: [false],
       savedList: [null],
       replace: [false],
-      makeActive: [false],
-      activeComment: [null],
-      activeCandidateMessage: [null],
+      changeStatuses: [false],
     });
     this.loadLists();
   }
 
-  get makeActive(): boolean { return this.form.value.makeActive; }
-  get activeComment(): string { return this.form.value.activeComment; }
-  get activeCandidateMessage(): string { return this.form.value.activeCandidateMessage; }
+  get changeStatuses(): boolean { return this.form.value.changeStatuses; }
   get newListNameControl() { return this.form.get('newListName'); }
   get newListName(): string { return this.form.value.newListName; }
   get newList(): boolean { return this.form.value.newList; }
   get replace(): boolean { return this.form.value.replace; }
   get savedList(): SavedList { return this.form.value.savedList; }
+  get CandidateStatus() {
+    return CandidateStatus;
+  }
 
   private loadLists() {
     /*load all our non fixed lists */
@@ -130,13 +131,9 @@ export class SelectListComponent implements OnInit {
       replace: this.replace,
       sfJoblink: this.sfJoblink ? this.sfJoblink : null
     }
-    if (this.makeActive) {
-      const info: UpdateCandidateStatusInfo = {
-        status: CandidateStatus.active,
-        comment: this.activeComment,
-        candidateMessage: this.activeCandidateMessage
-      }
-      selection.statusUpdateInfo = info;
+
+    if (this.changeStatuses) {
+      selection.statusUpdateInfo = this.statusUpdateInfo;
     }
     this.activeModal.close(selection);
   }
@@ -164,5 +161,9 @@ export class SelectListComponent implements OnInit {
       this.sfJoblink = null;
       this.jobName = null;
     }
+  }
+
+  onStatusInfoUpdate(info: UpdateCandidateStatusInfo) {
+    this.statusUpdateInfo = info;
   }
 }

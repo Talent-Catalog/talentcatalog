@@ -14,80 +14,38 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
-import {CandidateService} from '../../../../services/candidate.service';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {Component} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {
-  Candidate,
-  CandidateStatus,
-  MaritalStatus, UpdateCandidateStatusInfo,
-  UpdateCandidateStatusRequest
-} from "../../../../model/candidate";
-import {EnumOption, enumOptions} from "../../../../util/enum";
+import {CandidateStatus, UpdateCandidateStatusInfo} from "../../../../model/candidate";
 
 @Component({
-  selector: 'app-edit-candidate',
+  selector: 'app-edit-candidate-status',
   templateUrl: './edit-candidate-status.component.html',
   styleUrls: ['./edit-candidate-status.component.scss']
 })
-export class EditCandidateStatusComponent implements OnInit {
+export class EditCandidateStatusComponent {
 
-  candidateForm: FormGroup;
-  error: string;
+  candidateStatus: CandidateStatus;
   text: string;
 
-  candidateStatusOptions: EnumOption[] = enumOptions(CandidateStatus);
+  private candidateStatusInfo: UpdateCandidateStatusInfo;
 
-  constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder,
-              private candidateService: CandidateService) {
+  constructor(private activeModal: NgbActiveModal) {
   }
 
-  ngOnInit() {
-    this.candidateForm = this.fb.group({
-      status: [null, Validators.required],
-      comment: [null, Validators.required],
-      candidateMessage: [null],
-    });
-  }
-
-  get candidateMessage(): string {
-    return this.candidateForm.value?.candidateMessage;
-  }
-
-  get comment(): string {
-    return this.candidateForm.value?.comment;
-  }
-
-  get status(): CandidateStatus {
-    return this.candidateForm.value?.status;
+  getInitialStatus(): CandidateStatus {
+    return this.candidateStatus ? this.candidateStatus : CandidateStatus.active;
   }
 
   onSave() {
-    const val = this.candidateForm.value;
-    if (this.showCandidateMessage && (!val.candidateMessage || val.candidateMessage.length < 1)) {
-      this.error = 'Please enter a message for the candidate about what they need to complete';
-      return;
-    }
-
-    const info: UpdateCandidateStatusInfo = {
-      candidateMessage: this.candidateMessage,
-      comment: this.comment,
-      status: this.status
-    };
-
-    this.activeModal.close(info);
+    this.activeModal.close(this.candidateStatusInfo);
   }
 
   cancel() {
     this.activeModal.dismiss();
   }
 
-  get showCandidateMessage() {
-    if (!this.candidateForm) {
-      return false;
-    }
-    return this.candidateForm.controls.status.value === 'incomplete';
+  onStatusInfoUpdate(candidateStatusInfo: UpdateCandidateStatusInfo) {
+    this.candidateStatusInfo = candidateStatusInfo;
   }
 }

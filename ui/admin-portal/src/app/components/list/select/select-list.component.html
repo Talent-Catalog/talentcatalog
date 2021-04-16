@@ -68,20 +68,17 @@
       </div>
 
       <div class="form-inline">
-        <label>Set status to active for all candidates in list?</label>
-        <input type="checkbox" class="form-control" formControlName="makeActive">
+        <label>Change status for all candidates in list?</label>
+        <input type="checkbox" class="form-control" formControlName="changeStatuses">
       </div>
 
-      <div *ngIf="makeActive" class="form-group">
-        <label>Admin Note</label>
-        <ngx-wig id="activeComment" formControlName="activeComment"></ngx-wig>
+      <div *ngIf="changeStatuses" class="form-group">
+        <app-candidate-status-selector
+          [candidateStatus]="CandidateStatus.active"
+          (statusInfoUpdate)="onStatusInfoUpdate($event)"
+        >
+        </app-candidate-status-selector>
       </div>
-
-      <div *ngIf="makeActive" class="form-group">
-        <label for="activeCandidateMessage">Please provide a message to the candidates (visible to them)</label>
-        <textarea  class="form-control"  id="activeCandidateMessage" formControlName="activeCandidateMessage"></textarea>
-      </div>
-
     </div>
   </form>
 </div>

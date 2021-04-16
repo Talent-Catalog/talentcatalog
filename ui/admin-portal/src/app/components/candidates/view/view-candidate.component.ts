@@ -162,6 +162,10 @@ export class ViewCandidateComponent implements OnInit {
 
   editCandidate() {
     const modal = this.modalService.open(EditCandidateStatusComponent);
+
+    //Initialize status with candidate's current status
+    modal.componentInstance.candidateStatus = this.candidate.status;
+
     modal.result
       .then((info: UpdateCandidateStatusInfo) => {
         this.updateCandidateStatus(info);
