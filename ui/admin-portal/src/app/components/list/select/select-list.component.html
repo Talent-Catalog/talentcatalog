@@ -52,6 +52,9 @@
       <div *ngIf="newList">
         <label>Name</label>
         <input type="text" class="form-control" formControlName="newListName" [readOnly]="loading">
+        <div *ngIf="form.errors?.invalidName" class="alert alert-danger" >
+          {{form.errors.invalidName}}
+        </div>
 
         <app-joblink [joblink]="sfJoblink"
                      (updateError)="error=$event"
@@ -86,7 +89,7 @@
 
 <div class="modal-footer">
   <button type="button" class="btn btn-primary" (click)="select()"
-          [disabled]="saving">
+          [disabled]="saving || form.errors">
     <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
     {{action}}
   </button>

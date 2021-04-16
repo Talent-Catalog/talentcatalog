@@ -85,7 +85,9 @@ export class SelectListComponent implements OnInit {
       savedList: [null],
       replace: [false],
       changeStatuses: [false],
-    });
+    },
+      {validator: this.nonBlankListName()}
+    );
     this.loadLists();
   }
 
@@ -165,5 +167,18 @@ export class SelectListComponent implements OnInit {
 
   onStatusInfoUpdate(info: UpdateCandidateStatusInfo) {
     this.statusUpdateInfo = info;
+  }
+
+  private nonBlankListName() {
+    return (group: FormGroup): { [key: string]: any } => {
+      const newList: boolean = group.controls['newList'].value;
+      if (newList) {
+        const newListName: string = group.controls['newListName'].value;
+        if (!newListName) {
+          return { invalidName: "Name can't be blank" }
+        }
+      }
+      return {}
+    }
   }
 }
