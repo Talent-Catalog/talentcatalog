@@ -1,5 +1,5 @@
 <div class="input-group">
-  <input class="form-control" placeholder="yyyy-mm-dd"
+  <input class="form-control readonly-white" placeholder="yyyy-mm-dd"
          name="dp" ngbDatepicker
          #picker="ngbDatepicker"
          [(ngModel)]="date"
@@ -8,7 +8,9 @@
          [autoClose]="true"
          [outsideDays]="'hidden'"
          [minDate]="minDate"
-         [maxDate]="maxDate">
+         [maxDate]="maxDate"
+         (click)="picker.toggle()"
+         [readOnly]="true">
   <div class="input-group-append">
     <small class="btn btn-link text-secondary"
            (click)="clear()">

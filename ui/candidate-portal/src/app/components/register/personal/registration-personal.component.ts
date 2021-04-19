@@ -71,7 +71,7 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
       firstName: [null, Validators.required],
       lastName: [null, Validators.required],
       gender: [null, Validators.required],
-      dob: [null],
+      dob: [null, Validators.required],
       /* LOCATION */
       countryId: ['', Validators.required],
       city: [''],
