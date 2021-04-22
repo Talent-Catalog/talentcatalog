@@ -16,13 +16,12 @@
 
 package org.tbbtalent.server.request.user;
 
-import java.util.List;
+import org.tbbtalent.server.model.db.Country;
+import org.tbbtalent.server.model.db.Role;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
-import org.tbbtalent.server.model.db.Country;
-import org.tbbtalent.server.model.db.Role;
+import java.util.List;
 
 public class CreateUserRequest {
 
@@ -42,6 +41,8 @@ public class CreateUserRequest {
     private List<Country> sourceCountries;
 
     private Boolean readOnly;
+
+    private Boolean usingMfa;
 
 
     public String getFirstName() {
@@ -87,4 +88,8 @@ public class CreateUserRequest {
     public Boolean getReadOnly() { return readOnly; }
 
     public void setReadOnly(Boolean readOnly) { this.readOnly = readOnly; }
+
+    public Boolean getUsingMfa() { return usingMfa; }
+
+    public void setUsingMfa(Boolean usingMfa) { this.usingMfa = usingMfa; }
 }

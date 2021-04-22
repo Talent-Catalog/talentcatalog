@@ -62,7 +62,8 @@ export class CreateUserComponent implements OnInit {
       lastName: [null, Validators.required],
       role: [null, Validators.required],
       sourceCountries: [null],
-      readOnly: [false]
+      readOnly: [false],
+      usingMfa: [true]
     });
 
     this.countryService.listCountries().subscribe(
