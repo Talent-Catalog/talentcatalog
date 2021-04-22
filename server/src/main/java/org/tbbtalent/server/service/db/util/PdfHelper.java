@@ -16,10 +16,6 @@
 
 package org.tbbtalent.server.service.db.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.UnsupportedEncodingException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +29,11 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.w3c.tidy.Tidy;
 import org.xhtmlrenderer.pdf.ITextRenderer;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.regex.Pattern;
 
 /**
  * Service for generating PDFs using Flying Saucer and Thymeleaf templates. 
@@ -69,6 +70,9 @@ public class PdfHelper {
 
             String renderedHtmlContent = pdfTemplateEngine.process("template", context);
             String xHtml = convertToXhtml(renderedHtmlContent);
+
+            // Remove any null bytes to avoid an invalid XML character (Unicode: 0x0) error
+            xHtml = Pattern.compile("\\x00").matcher(xHtml).replaceAll("");
 
             ITextRenderer renderer = new ITextRenderer();
 
