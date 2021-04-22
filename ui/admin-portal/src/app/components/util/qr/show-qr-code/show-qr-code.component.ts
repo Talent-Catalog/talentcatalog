@@ -14,8 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {EncodedQrImage} from "../../../../util/qr";
+import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-show-qr-code',
@@ -25,10 +26,16 @@ import {EncodedQrImage} from "../../../../util/qr";
 export class ShowQrCodeComponent implements OnInit {
 
   public qr: EncodedQrImage;
+  checked: boolean = false;
 
-  constructor() { }
+  constructor(private activeModal: NgbActiveModal) { }
 
   ngOnInit(): void {
   }
+
+  closeModal() {
+    this.activeModal.close();
+  }
+
 
 }

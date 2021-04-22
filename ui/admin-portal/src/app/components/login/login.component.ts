@@ -126,7 +126,7 @@ export class LoginComponent implements OnInit {
   }
 
   private showQrCode(qr: EncodedQrImage) {
-    const modal = this.modalService.open(ShowQrCodeComponent);
+    const modal = this.modalService.open(ShowQrCodeComponent, { backdrop: 'static' });
     modal.componentInstance.qr = qr;
     modal.result
     .then(() => {

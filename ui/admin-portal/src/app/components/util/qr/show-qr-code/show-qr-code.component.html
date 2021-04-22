@@ -28,4 +28,14 @@
   <div class="text-center">
     <img [src]="qr.base64Encoding"/>
   </div>
+  <div class="modal-footer">
+    <div class="form-group d-flex align-items-center">
+      <input type="checkbox" id="confirm" [ngModel]="checked" (change)="checked = !checked">
+      <label for="confirm" class="ml-3">I have scanned the QR code with an authenticator app, and have a digit code saved for my login.</label>
+    </div>
+    <p class="small">Note: If you don't get the digit code with the authenticator, you won't be able to login next time.</p>
+    <button type="button" class="btn btn-primary" (click)="closeModal()" [disabled]="!checked">
+      Confirm
+    </button>
+  </div>
 </div>
