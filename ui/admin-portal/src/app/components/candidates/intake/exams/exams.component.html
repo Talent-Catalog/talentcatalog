@@ -15,30 +15,38 @@
   -->
 
 <!-- EXISTING RECORDS -->
-<div class="card">
-  <div class="card-header">
-    English Exams
-    <span *ngIf="saving">
-          <i class="fas fa-spinner fa-spin"></i>
-    </span>
-    <div class="float-right">
-      <button type="button" class="btn btn-primary btn-sm" (click)="addRecord()">
-        <i class="fas fa-plus"></i>
-      </button>
-    </div>
-  </div>
-  <div class="card-body">
-    <div *ngIf="error">
-      {{error}}
-    </div>
-    <div *ngFor="let exam of candidateIntakeData.candidateExams; let i = index;" class="exam-card">
-      <app-candidate-exam-card
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [myRecordIndex]="i"
-        (delete)="deleteRecord(i)">
-      </app-candidate-exam-card>
-      <hr/>
-    </div>
-  </div>
-</div>
+<ngb-accordion #a="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+  <ngb-panel id="intake-exams">
+    <ng-template ngbPanelHeader let-opened="opened">
+      <div class="d-flex align-items-center justify-content-between" [ngClass]="{'opened' : opened}">
+        English Exams
+        <div class="d-flex">
+          <button type="button" class="btn btn-primary btn-sm" (click)="addRecord()">
+            <i class="fas fa-plus"></i>
+          </button>
+          <button ngbPanelToggle class="btn btn-link p-0 ml-4 btn-outline-none">
+            <i *ngIf="opened" class="d-flex fas fa-chevron-up"></i>
+            <i *ngIf="!opened" class="d-flex fas fa-chevron-down"></i>
+          </button>
+        </div>
+      </div>
+    </ng-template>
+    <ng-template ngbPanelContent>
+      <div *ngIf="error">
+        {{error}}
+      </div>
+      <div *ngIf="candidateIntakeData.candidateExams.length == 0">
+        <p class="mb-0">No Exams Added</p>
+      </div>
+      <div *ngFor="let exam of candidateIntakeData.candidateExams; let i = index;" class="exam-card">
+        <app-candidate-exam-card
+          [candidate]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [myRecordIndex]="i"
+          (delete)="deleteRecord(i)">
+        </app-candidate-exam-card>
+        <hr/>
+      </div>
+    </ng-template>
+  </ngb-panel>
+</ngb-accordion>

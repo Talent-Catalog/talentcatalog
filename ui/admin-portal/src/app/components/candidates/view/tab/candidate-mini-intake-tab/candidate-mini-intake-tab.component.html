@@ -49,6 +49,8 @@
     </div>
   </div>
 
+  <hr/>
+
   <div class="card">
     <div class="card-header">
       Confirm General Information
@@ -63,39 +65,55 @@
 
   <hr/>
 
-  <div class="card">
-    <div class="card-header">
-      Interest in International Recruitment
-    </div>
-    <div class="card-body">
-      <app-avail-immediate
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-avail-immediate>
-    </div>
-  </div>
+  <ngb-accordion #a="ngbAccordion" activeIds="intake-int-recruit" [destroyOnHide]="false">
+    <ngb-panel id="intake-int-recruit">
+      <ng-template ngbPanelHeader let-opened="opened">
+        <div class="d-flex align-items-center justify-content-between" [ngClass]="{'opened' : opened}">
+          Interest in International Recruitment
+          <button ngbPanelToggle class="btn btn-link p-0 ml-4 btn-outline-none">
+            <i *ngIf="opened" class="d-flex fas fa-chevron-up"></i>
+            <i *ngIf="!opened" class="d-flex fas fa-chevron-down"></i>
+          </button>
+        </div>
+      </ng-template>
+      <ng-template ngbPanelContent>
+        <app-avail-immediate
+          [candidate]="candidate"
+          [candidateIntakeData]="candidateIntakeData">
+        </app-avail-immediate>
+      </ng-template>
+    </ngb-panel>
+  </ngb-accordion>
 
   <hr/>
 
-  <div class="card">
-    <div class="card-header">
-      Destinations
-    </div>
-    <div class="card-body">
-      <app-destinations
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-destinations>
-      <app-destination-limit
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-destination-limit>
-      <app-destination-job
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-destination-job>
-    </div>
-  </div>
+  <ngb-accordion #a="ngbAccordion" activeIds="intake-destinations" [destroyOnHide]="false">
+    <ngb-panel id="intake-destinations">
+      <ng-template ngbPanelHeader let-opened="opened">
+        <div class="d-flex align-items-center justify-content-between" [ngClass]="{'opened' : opened}">
+          Destinations
+          <button ngbPanelToggle class="btn btn-link p-0 ml-4 btn-outline-none">
+            <i *ngIf="opened" class="d-flex fas fa-chevron-up"></i>
+            <i *ngIf="!opened" class="d-flex fas fa-chevron-down"></i>
+          </button>
+        </div>
+      </ng-template>
+      <ng-template ngbPanelContent>
+        <app-destinations
+          [candidate]="candidate"
+          [candidateIntakeData]="candidateIntakeData">
+        </app-destinations>
+        <app-destination-limit
+          [candidate]="candidate"
+          [candidateIntakeData]="candidateIntakeData">
+        </app-destination-limit>
+        <app-destination-job
+          [candidate]="candidate"
+          [candidateIntakeData]="candidateIntakeData">
+        </app-destination-job>
+      </ng-template>
+    </ngb-panel>
+  </ngb-accordion>
 
   <hr/>
 
@@ -108,38 +126,46 @@
 
   <hr/>
 
-  <div class="card">
-    <div class="card-header">
-      Personal Status / Program Eligibility
-    </div>
-    <div class="card-body">
-      <app-host-entry-year
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [countries]="countries">
-      </app-host-entry-year>
-      <app-asylum-year
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-asylum-year>
-      <app-residence-status
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-residence-status>
-      <app-crime
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-crime>
-      <app-conflict
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-conflict>
-      <app-family
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-family>
-    </div>
-  </div>
+  <ngb-accordion #a="ngbAccordion" activeIds="intake-personal-status" [destroyOnHide]="false">
+    <ngb-panel id="intake-personal-status">
+      <ng-template ngbPanelHeader let-opened="opened">
+        <div class="d-flex align-items-center justify-content-between" [ngClass]="{'opened' : opened}">
+          Personal Status / Program Eligibility
+          <button ngbPanelToggle class="btn btn-link p-0 ml-4 btn-outline-none">
+            <i *ngIf="opened" class="d-flex fas fa-chevron-up"></i>
+            <i *ngIf="!opened" class="d-flex fas fa-chevron-down"></i>
+          </button>
+        </div>
+      </ng-template>
+      <ng-template ngbPanelContent>
+        <app-host-entry-year
+          [candidate]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [countries]="countries">
+        </app-host-entry-year>
+        <app-asylum-year
+          [candidate]="candidate"
+          [candidateIntakeData]="candidateIntakeData">
+        </app-asylum-year>
+        <app-residence-status
+          [candidate]="candidate"
+          [candidateIntakeData]="candidateIntakeData">
+        </app-residence-status>
+        <app-crime
+          [candidate]="candidate"
+          [candidateIntakeData]="candidateIntakeData">
+        </app-crime>
+        <app-conflict
+          [candidate]="candidate"
+          [candidateIntakeData]="candidateIntakeData">
+        </app-conflict>
+        <app-family
+          [candidate]="candidate"
+          [candidateIntakeData]="candidateIntakeData">
+        </app-family>
+      </ng-template>
+    </ngb-panel>
+  </ngb-accordion>
 
   <hr/>
 
@@ -150,46 +176,62 @@
 
   <hr/>
 
-  <div class="card">
-    <div class="card-header">
-      English Assessment
-      <span class="small ml-2">
-        Only complete if never taken IELTS or TOEFL.
-      </span>
-    </div>
-    <div class="card-body">
-      <app-lang-assessment
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData">
-      </app-lang-assessment>
-    </div>
-  </div>
+  <ngb-accordion #a="ngbAccordion" activeIds="intake-english-assessment" [destroyOnHide]="false">
+    <ngb-panel id="intake-english-assessment">
+      <ng-template ngbPanelHeader let-opened="opened">
+        <div class="d-flex align-items-center justify-content-between" [ngClass]="{'opened' : opened}">
+          <div>
+            English Assessment
+            <span class="small ml-2">Only complete if never taken IELTS or TOEFL.</span>
+          </div>
+          <button ngbPanelToggle class="btn btn-link p-0 ml-4 btn-outline-none">
+            <i *ngIf="opened" class="d-flex fas fa-chevron-up"></i>
+            <i *ngIf="!opened" class="d-flex fas fa-chevron-down"></i>
+          </button>
+        </div>
+      </ng-template>
+      <ng-template ngbPanelContent>
+        <app-lang-assessment
+          [candidate]="candidate"
+          [candidateIntakeData]="candidateIntakeData">
+        </app-lang-assessment>
+      </ng-template>
+    </ngb-panel>
+  </ngb-accordion>
 
   <hr/>
 
-  <div class="card">
-    <div class="card-header">
-      Registration
-    </div>
-    <div class="card-body">
-      <div class="card-title h6">
-        UNHCR
-      </div>
-      <app-registration-unhcr
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [showAll]="false">
-      </app-registration-unhcr>
-      <div class="card-title h6">
-        UNRWA
-      </div>
-      <app-registration-unrwa
-        [candidate]="candidate"
-        [candidateIntakeData]="candidateIntakeData"
-        [showAll]="false">
-      </app-registration-unrwa>
-    </div>
-  </div>
+  <ngb-accordion #a="ngbAccordion" activeIds="intake-registration" [destroyOnHide]="false">
+    <ngb-panel id="intake-registration">
+      <ng-template ngbPanelHeader let-opened="opened">
+        <div class="d-flex align-items-center justify-content-between" [ngClass]="{'opened' : opened}">
+          Registration
+          <button ngbPanelToggle class="btn btn-link p-0 ml-4 btn-outline-none">
+            <i *ngIf="opened" class="d-flex fas fa-chevron-up"></i>
+            <i *ngIf="!opened" class="d-flex fas fa-chevron-down"></i>
+          </button>
+        </div>
+      </ng-template>
+      <ng-template ngbPanelContent>
+        <div class="card-title h6">
+          UNHCR
+        </div>
+        <app-registration-unhcr
+          [candidate]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [showAll]="false">
+        </app-registration-unhcr>
+        <div class="card-title h6">
+          UNRWA
+        </div>
+        <app-registration-unrwa
+          [candidate]="candidate"
+          [candidateIntakeData]="candidateIntakeData"
+          [showAll]="false">
+        </app-registration-unrwa>
+      </ng-template>
+    </ngb-panel>
+  </ngb-accordion>
 
 </div>
 

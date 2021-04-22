@@ -20,54 +20,77 @@
 <div *ngIf="error">
   {{error}}
 </div>
-<div class="card" *ngIf="!loading">
 
-  <!-- HEADER -->
-  <div class="card-header">Languages</div>
-
-  <!-- BODY -->
-  <div class="card-body">
-
-    <!-- EMPTY STATE -->
-    <p class="m-0" *ngIf="!candidateLanguages?.length">
-      No language data has been entered by this candidate.
-    </p>
-
-    <!-- LANGUAGE CARDS -->
-    <ng-container *ngFor="let language of candidateLanguages; let i = index;">
-
-      <div class="row">
-
-        <div class="col-sm-11">
-          {{language.language.name}}
+<div *ngIf="!accordion">
+  <div class="card" *ngIf="!loading">
+    <!-- HEADER -->
+    <div class="card-header">Languages</div>
+    <!-- BODY -->
+    <div class="card-body">
+      <!-- EMPTY STATE -->
+      <p class="m-0" *ngIf="!candidateLanguages?.length">
+        No language data has been entered by this candidate.
+      </p>
+      <!-- LANGUAGE CARDS -->
+      <ng-container *ngFor="let language of candidateLanguages; let i = index;">
+        <div class="row">
+          <div class="col-sm-11">
+            {{language.language.name}}
+          </div>
+          <div class="col-1">
+            <button class="btn btn-default"
+                    *ngIf="editable"
+                    (click)="editCandidateLanguage(language)">
+              <i class="fas fa-edit"></i>
+            </button>
+          </div>
+          <div class="col-12" *ngIf="language.migrationLanguage">
+            Migrated Language: {{language.migrationLanguage}}
+          </div>
+          <div class="col-sm-12 col-md-6">
+            <span>Speaking: {{language.spokenLevel.name}}</span>
+          </div>
+          <div class="col-sm-12 col-md-6">
+            <span>Reading and Writing: {{language.writtenLevel.name}}</span>
+          </div>
         </div>
+        <hr *ngIf="i < candidateLanguages?.length - 1">
+      </ng-container>
+    </div>
+  </div>
+</div>
 
-        <div class="col-1">
-          <button class="btn btn-default"
-                  *ngIf="editable"
-                  (click)="editCandidateLanguage(language)">
-            <i class="fas fa-edit"></i>
+<div *ngIf="accordion">
+  <ngb-accordion #a="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+    <ngb-panel id="intake-language">
+      <ng-template ngbPanelHeader let-opened="opened">
+        <div class="d-flex align-items-center justify-content-between" [ngClass]="{'opened' : opened}">
+          Languages
+          <button ngbPanelToggle class="btn btn-link p-0 ml-4 btn-outline-none">
+            <i *ngIf="opened" class="d-flex fas fa-chevron-up"></i>
+            <i *ngIf="!opened" class="d-flex fas fa-chevron-down"></i>
           </button>
         </div>
-
-        <div class="col-12" *ngIf="language.migrationLanguage">
-          Migrated Language: {{language.migrationLanguage}}
-        </div>
-
-        <div class="col-sm-12 col-md-6">
-          <span>Speaking: {{language.spokenLevel.name}}</span>
-        </div>
-
-        <div class="col-sm-12 col-md-6">
-          <span>Reading and Writing: {{language.writtenLevel.name}}</span>
-        </div>
-
-      </div>
-
-      <hr *ngIf="i < candidateLanguages?.length - 1">
-
-    </ng-container>
-
-  </div>
-
+      </ng-template>
+      <ng-template ngbPanelContent>
+        <ng-container *ngFor="let language of candidateLanguages; let i = index;">
+          <div class="row">
+            <div class="col-sm-11">
+              {{language.language.name}}
+            </div>
+            <div class="col-12" *ngIf="language.migrationLanguage">
+              Migrated Language: {{language.migrationLanguage}}
+            </div>
+            <div class="col-sm-12 col-md-6">
+              <span>Speaking: {{language.spokenLevel.name}}</span>
+            </div>
+            <div class="col-sm-12 col-md-6">
+              <span>Reading and Writing: {{language.writtenLevel.name}}</span>
+            </div>
+          </div>
+          <hr *ngIf="i < candidateLanguages?.length - 1">
+        </ng-container>
+      </ng-template>
+    </ngb-panel>
+  </ngb-accordion>
 </div>
