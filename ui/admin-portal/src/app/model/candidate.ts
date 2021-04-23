@@ -446,7 +446,8 @@ export enum Exam {
 export enum ResidenceStatus {
   NoResponse = "",
   LegalRes = "Legal Residency",
-  IllegalRes = "Illegal Residency"
+  IllegalRes = "Illegal Residency",
+  Other = "Other"
 }
 
 export enum LeftHomeReason {
