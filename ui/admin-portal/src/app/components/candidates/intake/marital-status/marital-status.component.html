@@ -182,5 +182,16 @@
 
   </div>
 
+  <div *ngIf="hasNotes">
+    <div class="form-group">
+      <label for="maritalStatusNotes">
+        Notes
+      </label>
+      <textarea type="text" class="md-textarea-auto form-control" rows="4"
+                id="maritalStatusNotes" [formControlName]="'maritalStatusNotes'"
+                placeholder="" ></textarea>
+    </div>
+  </div>
+
 </form>
 

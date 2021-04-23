@@ -107,6 +107,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("militaryEnd")
 
                 .add("maritalStatus")
+                .add("maritalStatusNotes")
                 .add("partnerRegistered")
                 .add("partnerCandidate", partnerCandidateDto())
                 .add("partnerEduLevel", englishLevelDto())

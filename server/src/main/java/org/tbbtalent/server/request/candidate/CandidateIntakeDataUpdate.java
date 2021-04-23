@@ -123,6 +123,7 @@ public class CandidateIntakeDataUpdate {
     private LocalDate militaryEnd;
 
     private MaritalStatus maritalStatus;
+    private String maritalStatusNotes;
     private YesNoUnsure partnerRegistered;
     private Long partnerCandId;
     private Long partnerEduLevelId;
