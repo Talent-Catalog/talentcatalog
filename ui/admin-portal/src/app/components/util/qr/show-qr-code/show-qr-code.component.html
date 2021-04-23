@@ -29,11 +29,15 @@
     <img [src]="qr.base64Encoding"/>
   </div>
   <div class="modal-footer">
-    <div class="form-group d-flex align-items-center">
+    <div class="form-group d-flex align-items-baseline">
       <input type="checkbox" id="confirm" [ngModel]="checked" (change)="checked = !checked">
-      <label for="confirm" class="ml-3">I have scanned the QR code with an authenticator app, and have a digit code saved for my login.</label>
+      <label for="confirm" class="ml-3 mb-0">I have scanned the QR code with an authenticator app.</label>
     </div>
-    <p class="small">Note: If you don't get the digit code with the authenticator, you won't be able to login next time.</p>
+    <p class="small text-muted mb-3">
+      Note: If you don't do this you won't be able to login again.
+      If you have any problems, ask a Talent Catalog admin to reset your authentication.
+    </p>
+    <hr/>
     <button type="button" class="btn btn-primary" (click)="closeModal()" [disabled]="!checked">
       Confirm
     </button>
