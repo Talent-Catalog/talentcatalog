@@ -154,7 +154,6 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("workAbroad")
                 .add("workAbroadCountryIds")
-                .add("workAbroadYrs")
                 .add("workAbroadNotes")
                 .add("workPermit")
                 .add("workPermitDesired")

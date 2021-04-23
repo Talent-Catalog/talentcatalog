@@ -165,7 +165,6 @@ export interface CandidateIntakeData {
 
   workAbroad?: YesNo;
   workAbroadCountryIds?: number[];
-  workAbroadYrs?: number;
   workAbroadNotes?: string;
   workPermit?: WorkPermitValidity;
   workPermitDesired?: YesNoUnsure;

@@ -341,9 +341,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private List<Long> workAbroadCountryIds;
 
     @Nullable
-    private Long workAbroadYrs;
-
-    @Nullable
     private String workAbroadNotes;
 
     @Enumerated(EnumType.STRING)
@@ -1054,11 +1051,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setWorkAbroadCountryIds(@Nullable List<Long> workAbroadCountryIds) { this.workAbroadCountryIds = workAbroadCountryIds; }
 
     @Nullable
-    public Long getWorkAbroadYrs() { return workAbroadYrs; }
-
-    public void setWorkAbroadYrs(@Nullable Long workAbroadYrs) { this.workAbroadYrs = workAbroadYrs; }
-
-    @Nullable
     public String getWorkAbroadNotes() { return workAbroadNotes; }
 
     public void setWorkAbroadNotes(@Nullable String workAbroadNotes) { this.workAbroadNotes = workAbroadNotes; }
@@ -1561,9 +1553,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getWorkAbroadCountryIds() != null) {
             setWorkAbroadCountryIds(data.getWorkAbroadCountryIds());
-        }
-        if (data.getWorkAbroadYrs() != null) {
-            setWorkAbroadYrs(data.getWorkAbroadYrs());
         }
         if (data.getWorkAbroadNotes() != null) {
             setWorkAbroadNotes(data.getWorkAbroadNotes());
