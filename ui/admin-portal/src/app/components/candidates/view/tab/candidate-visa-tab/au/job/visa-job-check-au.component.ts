@@ -88,7 +88,7 @@ export class VisaJobCheckAuComponent extends IntakeComponentTabBase implements O
   }
 
   get familyInAus(): string {
-    let answer: string = 'No Family'
+    let answer: string = 'No family entered'
     if (this.ausDest?.family) {
       if (this.ausDest?.location) {
         answer = this.ausDest?.family + ' in ' + this.ausDest?.location;
@@ -96,9 +96,8 @@ export class VisaJobCheckAuComponent extends IntakeComponentTabBase implements O
         answer = this.ausDest?.family;
       }
       return answer;
-    } else {
-
     }
+    return answer;
   }
 
   get selectedOccupations(): CandidateOccupation {

@@ -89,10 +89,13 @@ Downside == upside : standard appearance of same question
         [editable]="false">
       </app-health-issues>
       <div>
-        <p class="mb-1">Do any dependants have health concerns?</p>
+        <label class="mb-1">Do any dependants have health concerns?</label>
+        <div *ngIf="candidateIntakeData.candidateDependants.length == 0">
+          <p>No dependants entered</p>
+        </div>
         <ul>
           <div *ngFor="let dependant of candidateIntakeData.candidateDependants; let i = index;">
-            <li><p class="mb-0">{{dependant.relation}}: {{dependant.healthConcern}}<span *ngIf="dependant.notes">,</span> {{dependant.notes}}</p></li>
+              <li><p class="mb-0">{{dependant?.relation}}: {{dependant?.healthConcern}}<span *ngIf="dependant.notes">,</span> {{dependant.notes}}</p></li>
           </div>
         </ul>
       </div>

@@ -118,10 +118,19 @@
     <div *ngIf="candQualifications?.length > 0">
       <div class="display" *ngFor="let edu of candQualifications" >
         <app-fixed-input
-          [question]="edu.educationMajor?.name"
+          *ngIf="edu.educationMajor"
+          [question]="edu.educationMajor?.name + ' ' + edu.courseName"
+          [answer]="edu.educationType">
+        </app-fixed-input>
+        <app-fixed-input
+          *ngIf="edu.educationMajor == null && edu.courseName"
+          [question]="edu.courseName"
           [answer]="edu.educationType">
         </app-fixed-input>
       </div>
+    </div>
+    <div *ngIf="candQualifications?.length == 0">
+      <p>No qualifications entered</p>
     </div>
   </div>
   <div class="card-body">
