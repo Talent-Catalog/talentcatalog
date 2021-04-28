@@ -189,14 +189,16 @@ export abstract class IntakeComponentTabBase implements OnInit {
   public exportAsPdf(formName: string) {
     // parent div is the html element which has to be converted to PDF
     this.saving = true;
-    html2canvas(document.querySelector('#' + formName)).then(canvas => {
+    const element = document.getElementById(formName);
+    html2canvas(element, {scrollY: -window.scrollY, scale: 1}).then(canvas => {
       const heightRatio = canvas.height / canvas.width;
-      const width = 1084;
-      const height = 1084 * heightRatio;
+      //jsPdf has a max height of 14440 so set the height less than this
+      const height = 14000;
+      const width = height / heightRatio;
       let pdf;
       if (canvas.height > canvas.width) {
-        // Make the PDF the same size as the canvas content
-        pdf = new jsPDF('p', 'pt', [width, height]);
+          // Make the PDF the same size as the canvas content
+          pdf = new jsPDF('p', 'pt', [width, height]);
       } else {
         // Make the PDF a generic size.
         pdf = new jsPDF('p', 'pt', [width, 2500]);
@@ -205,7 +207,8 @@ export abstract class IntakeComponentTabBase implements OnInit {
       pdf.addImage(imgData, 0, 0, width, height);
       pdf.save(formName + '_' + this.candidate.user.firstName + '_' + this.candidate.user.lastName + '.pdf');
       this.saving = false;
-    })};
+    })
+  };
 
   /**
    * Called when Start button on intake forms is clicked. Creates a start note with user/time.
