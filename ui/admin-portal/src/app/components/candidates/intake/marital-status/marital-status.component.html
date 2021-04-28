@@ -81,7 +81,7 @@
     <div *ngIf="eduLevelSelected">
       <div class="form-group">
         <label for="partnerEduLevelNotes">
-          Notes
+          Additional notes about partner's education level
         </label>
         <textarea type="text" class="md-textarea-auto form-control" rows="4"
                   id="partnerEduLevelNotes" [formControlName]="'partnerEduLevelNotes'"
@@ -90,7 +90,7 @@
     </div>
     <div class="form-group">
       <label for="partnerOccupationId">
-        What is your partner’s profession?
+        What is your partner’s occupation?
       </label>
       <select class="form-control"
               id="partnerOccupationId" [formControlName]="'partnerOccupationId'">
@@ -103,7 +103,7 @@
     <div *ngIf="occupationSelected">
       <div class="form-group">
         <label for="partnerOccupationNotes">
-          Notes
+          Additional notes about partner's occupation
         </label>
         <textarea type="text" class="md-textarea-auto form-control" rows="4"
                   id="partnerOccupationNotes" [formControlName]="'partnerOccupationNotes'"
@@ -185,7 +185,7 @@
   <div *ngIf="hasNotes">
     <div class="form-group">
       <label for="maritalStatusNotes">
-        Notes
+        Additional notes about marital status
       </label>
       <textarea type="text" class="md-textarea-auto form-control" rows="4"
                 id="maritalStatusNotes" [formControlName]="'maritalStatusNotes'"
