@@ -107,4 +107,11 @@ export class VisaJobCheckAuComponent extends IntakeComponentTabBase implements O
     }
   }
 
+  get candidateAge(): number {
+    if (this.candidate?.dob) {
+      const timeDiff = Math.abs(Date.now() - new Date(this.candidate?.dob).getTime());
+      return Math.floor(timeDiff / (1000 * 3600 * 24) / 365.25);
+    }
+  }
+
 }
