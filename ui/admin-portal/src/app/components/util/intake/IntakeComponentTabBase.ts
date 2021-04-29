@@ -192,16 +192,21 @@ export abstract class IntakeComponentTabBase implements OnInit {
     const element = document.getElementById(formName);
     html2canvas(element, {scrollY: -window.scrollY, scale: 1}).then(canvas => {
       const heightRatio = canvas.height / canvas.width;
+      //const widthRadio = canvas.width / canvas.height;
       //jsPdf has a max height of 14440 so set the height less than this
-      const height = 14000;
-      const width = height / heightRatio;
       let pdf;
+      let height;
+      let width;
       if (canvas.height > canvas.width) {
-          // Make the PDF the same size as the canvas content
+        // Make the PDF the same size as the canvas content
+        height = 14000;
+        width = height / heightRatio;
           pdf = new jsPDF('p', 'pt', [width, height]);
       } else {
-        // Make the PDF a generic size.
-        pdf = new jsPDF('p', 'pt', [width, 2500]);
+        // Make the PDF a landscape size.
+        width = canvas.width / heightRatio;
+        height = width * heightRatio;
+        pdf = new jsPDF('l', 'pt', [width, height]);
       }
       const imgData  = canvas.toDataURL("image/jpeg", 1.0);
       pdf.addImage(imgData, 0, 0, width, height);
