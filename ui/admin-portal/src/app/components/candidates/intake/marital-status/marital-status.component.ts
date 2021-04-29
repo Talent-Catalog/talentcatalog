@@ -52,6 +52,7 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
   ngOnInit(): void {
     this.form = this.fb.group({
       maritalStatus: [this.candidateIntakeData?.maritalStatus],
+      maritalStatusNotes: [this.candidateIntakeData?.maritalStatusNotes],
       partnerRegistered: [this.candidateIntakeData?.partnerRegistered],
       partnerCandId: [this.candidateIntakeData?.partnerCandidate?.id],
       partnerEduLevelId: [this.candidateIntakeData?.partnerEduLevel?.id],
@@ -134,6 +135,14 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
 
   get occupationSelected(): boolean {
     return this.form?.value?.partnerOccupationId != null;
+  }
+
+  get hasNotes(): boolean {
+    if (this.form.value?.maritalStatus == null || this.form.value?.maritalStatus === 'NoResponse') {
+      return false;
+    } else {
+      return true;
+    }
   }
 
 }

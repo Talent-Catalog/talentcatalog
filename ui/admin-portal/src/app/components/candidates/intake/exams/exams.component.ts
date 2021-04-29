@@ -27,6 +27,7 @@ export class ExamsComponent implements OnInit {
 
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
+  @Input() collapse: boolean;
   error: boolean;
   saving: boolean;
 
@@ -35,6 +36,14 @@ export class ExamsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+  }
+
+  get activeIds(): string {
+    if (this.collapse) {
+      return '';
+    } else {
+      return 'intake-exams';
+    }
   }
 
   addRecord() {

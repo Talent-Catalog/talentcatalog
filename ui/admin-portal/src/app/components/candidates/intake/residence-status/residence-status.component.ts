@@ -41,11 +41,11 @@ export class ResidenceStatusComponent extends IntakeComponentBase implements OnI
     });
   }
 
-  get hasStatus(): boolean {
-    if (this.form.value?.residenceStatus == 'LegalRes' || this.form.value?.residenceStatus == 'IllegalRes') {
-      return true;
-    } else {
+  get hasNotes(): boolean {
+    if (this.form.value?.residenceStatus == null || this.form.value?.residenceStatus === 'NoResponse') {
       return false;
+    } else {
+      return true;
     }
   }
 

@@ -66,7 +66,6 @@ export class WorkAbroadComponent extends IntakeComponentBase implements OnInit {
     this.form = this.fb.group({
       workAbroad: [this.candidateIntakeData?.workAbroad],
       workAbroadCountryIds: [],
-      workAbroadYrs: [this.candidateIntakeData?.workAbroadYrs],
       workAbroadNotes: [this.candidateIntakeData?.workAbroadNotes],
       // Used to display for multiselect
       selectedCountries: [selectedCountries]

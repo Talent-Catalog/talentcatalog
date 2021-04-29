@@ -14,11 +14,5 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.model.db;
-
-public enum ResidenceStatus {
-    NoResponse,
-    LegalRes,
-    IllegalRes,
-    Other
-}
+alter table saved_search add column default_save_selection_list_id bigint references saved_list;
+ 

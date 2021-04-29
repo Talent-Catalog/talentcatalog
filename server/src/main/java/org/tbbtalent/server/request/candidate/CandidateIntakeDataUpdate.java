@@ -123,6 +123,7 @@ public class CandidateIntakeDataUpdate {
     private LocalDate militaryEnd;
 
     private MaritalStatus maritalStatus;
+    private String maritalStatusNotes;
     private YesNoUnsure partnerRegistered;
     private Long partnerCandId;
     private Long partnerEduLevelId;
@@ -204,7 +205,6 @@ public class CandidateIntakeDataUpdate {
     
     private YesNo workAbroad;
     private List<Long> workAbroadCountryIds;
-    private Long workAbroadYrs;
     private String workAbroadNotes;
     private WorkPermit workPermit;
     private YesNoUnsure workPermitDesired;

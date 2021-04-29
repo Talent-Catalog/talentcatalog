@@ -88,3 +88,8 @@ a {
 .link {
   color: $color-primary;
 }
+
+button:focus {
+  box-shadow: none !important;
+  text-decoration: none !important;
+}

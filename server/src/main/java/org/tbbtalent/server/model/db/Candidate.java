@@ -341,9 +341,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private List<Long> workAbroadCountryIds;
 
     @Nullable
-    private Long workAbroadYrs;
-
-    @Nullable
     private String workAbroadNotes;
 
     @Enumerated(EnumType.STRING)
@@ -380,6 +377,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Enumerated(EnumType.STRING)
     @Nullable
     private MaritalStatus maritalStatus;
+
+    @Nullable
+    private String maritalStatusNotes;
 
     @Enumerated(EnumType.STRING)
     @Nullable
@@ -1051,11 +1051,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setWorkAbroadCountryIds(@Nullable List<Long> workAbroadCountryIds) { this.workAbroadCountryIds = workAbroadCountryIds; }
 
     @Nullable
-    public Long getWorkAbroadYrs() { return workAbroadYrs; }
-
-    public void setWorkAbroadYrs(@Nullable Long workAbroadYrs) { this.workAbroadYrs = workAbroadYrs; }
-
-    @Nullable
     public String getWorkAbroadNotes() { return workAbroadNotes; }
 
     public void setWorkAbroadNotes(@Nullable String workAbroadNotes) { this.workAbroadNotes = workAbroadNotes; }
@@ -1109,6 +1104,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public MaritalStatus getMaritalStatus() { return maritalStatus; }
 
     public void setMaritalStatus(@Nullable MaritalStatus maritalStatus) { this.maritalStatus = maritalStatus; }
+
+    @Nullable
+    public String getMaritalStatusNotes() { return maritalStatusNotes; }
+
+    public void setMaritalStatusNotes(@Nullable String maritalStatusNotes) { this.maritalStatusNotes = maritalStatusNotes; }
 
     @Nullable
     public YesNoUnsure getPartnerRegistered() { return partnerRegistered; }
@@ -1434,6 +1434,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getMaritalStatus() != null) {
             setMaritalStatus(data.getMaritalStatus());
         }
+        if (data.getMaritalStatusNotes() != null) {
+            setMaritalStatusNotes(data.getMaritalStatusNotes());
+        }
         if (data.getPartnerRegistered() != null) {
             setPartnerRegistered(data.getPartnerRegistered());
         }
@@ -1550,9 +1553,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getWorkAbroadCountryIds() != null) {
             setWorkAbroadCountryIds(data.getWorkAbroadCountryIds());
-        }
-        if (data.getWorkAbroadYrs() != null) {
-            setWorkAbroadYrs(data.getWorkAbroadYrs());
         }
         if (data.getWorkAbroadNotes() != null) {
             setWorkAbroadNotes(data.getWorkAbroadNotes());
