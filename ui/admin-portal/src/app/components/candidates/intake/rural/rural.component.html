@@ -36,9 +36,9 @@
       </option>
     </select>
   </div>
-  <div *ngIf="ruralInterest">
+  <div *ngIf="hasNotes">
     <div class="form-group">
-      <label for="intRecruitRuralNotes">Any specific terms or conditions for rural roles?</label>
+      <label for="intRecruitRuralNotes">Notes (e.g. any specific terms or conditions)</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="4"
                 id="intRecruitRuralNotes" [formControlName]="'intRecruitRuralNotes'"
                 placeholder="" ></textarea>

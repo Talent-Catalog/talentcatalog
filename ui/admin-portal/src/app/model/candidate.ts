@@ -133,6 +133,7 @@ export interface CandidateIntakeData {
   militaryStart?: string;
   militaryEnd?: string;
   maritalStatus?: MaritalStatus;
+  maritalStatusNotes?: string;
   partnerRegistered?: YesNoUnsure;
   partnerCandidate?: Candidate;
   partnerEduLevel?: EducationLevel;
@@ -164,7 +165,6 @@ export interface CandidateIntakeData {
 
   workAbroad?: YesNo;
   workAbroadCountryIds?: number[];
-  workAbroadYrs?: number;
   workAbroadNotes?: string;
   workPermit?: WorkPermitValidity;
   workPermitDesired?: YesNoUnsure;
@@ -446,7 +446,8 @@ export enum Exam {
 export enum ResidenceStatus {
   NoResponse = "",
   LegalRes = "Legal Residency",
-  IllegalRes = "Illegal Residency"
+  IllegalRes = "Illegal Residency",
+  Other = "Other"
 }
 
 export enum LeftHomeReason {

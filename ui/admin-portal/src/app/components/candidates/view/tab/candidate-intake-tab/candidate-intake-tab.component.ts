@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component} from '@angular/core';
+import {Component, EventEmitter, Output} from '@angular/core';
 import {IntakeComponentTabBase} from "../../../../util/intake/IntakeComponentTabBase";
 
 @Component({
@@ -23,4 +23,20 @@ import {IntakeComponentTabBase} from "../../../../util/intake/IntakeComponentTab
   styleUrls: ['./candidate-intake-tab.component.scss']
 })
 export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
+  @Output() closeAcc = new EventEmitter();
+  collapse: boolean = false;
+  activeIds: string[] = ['intake-confirm', 'intake-int-recruit', 'intake-english-assessment', 'intake-residency',
+    'intake-host-country', 'intake-registration', 'intake-partner-info', 'intake-additional-eligibility']
+
+  closeAll() {
+    this.activeIds = [];
+    this.collapse = true;
+  }
+
+  openAll() {
+    this.activeIds = ['intake-confirm', 'intake-int-recruit', 'intake-english-assessment', 'intake-residency',
+      'intake-host-country', 'intake-registration', 'intake-partner-info', 'intake-additional-eligibility']
+    this.collapse = false;
+  }
+
 }

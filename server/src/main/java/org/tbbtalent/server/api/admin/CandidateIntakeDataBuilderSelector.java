@@ -107,6 +107,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("militaryEnd")
 
                 .add("maritalStatus")
+                .add("maritalStatusNotes")
                 .add("partnerRegistered")
                 .add("partnerCandidate", partnerCandidateDto())
                 .add("partnerEduLevel", englishLevelDto())
@@ -153,7 +154,6 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("workAbroad")
                 .add("workAbroadCountryIds")
-                .add("workAbroadYrs")
                 .add("workAbroadNotes")
                 .add("workPermit")
                 .add("workPermitDesired")

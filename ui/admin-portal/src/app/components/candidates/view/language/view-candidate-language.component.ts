@@ -30,6 +30,8 @@ export class ViewCandidateLanguageComponent implements OnInit, OnChanges {
 
   @Input() candidate: Candidate;
   @Input() editable: boolean;
+  @Input() accordion: boolean = false;
+  @Input() collapse: boolean;
 
   candidateLanguages: CandidateLanguage[];
   loading: boolean;
@@ -46,6 +48,14 @@ export class ViewCandidateLanguageComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
       this.search();
+    }
+  }
+
+  get activeIds(): string {
+    if (this.collapse) {
+      return '';
+    } else {
+      return 'intake-language';
     }
   }
 

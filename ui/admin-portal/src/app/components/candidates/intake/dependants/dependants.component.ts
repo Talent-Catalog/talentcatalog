@@ -30,6 +30,7 @@ export class DependantsComponent implements OnInit {
   @Input() candidateIntakeData: CandidateIntakeData;
   error: boolean;
   @Input() nationalities: Nationality[];
+  @Input() collapse: boolean;
   saving: boolean;
 
   constructor(
@@ -37,6 +38,14 @@ export class DependantsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+  }
+
+  get activeIds(): string {
+    if (this.collapse) {
+      return '';
+    } else {
+      return 'intake-dependants';
+    }
   }
 
   addRecord() {
