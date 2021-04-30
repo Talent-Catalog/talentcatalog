@@ -41,6 +41,7 @@ export class RegistrationUnhcrComponent extends IntakeComponentBase implements O
   ngOnInit(): void {
     this.form = this.fb.group({
       unhcrRegistered: [this.candidateIntakeData?.unhcrRegistered],
+      unhcrNotRegNotes: [this.candidateIntakeData?.unhcrNotRegNotes],
       unhcrStatus: [this.candidateIntakeData?.unhcrStatus],
       unhcrOldStatus: [this.candidateIntakeData?.unhcrOldStatus],
       unhcrNumber: [this.candidateIntakeData?.unhcrNumber],
@@ -62,6 +63,14 @@ export class RegistrationUnhcrComponent extends IntakeComponentBase implements O
     if (this.unhcrStatus === 'MandateRefugee' ||
         this.unhcrStatus === 'RegisteredAsylum' ||
         this.unhcrStatus === 'RegisteredStateless') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  unhcrNotRegistered(): boolean {
+    if (this.unhcrRegistered === 'No' || this.unhcrRegistered === 'Unsure') {
       return true;
     } else {
       return false;

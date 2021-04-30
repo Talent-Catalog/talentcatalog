@@ -35,8 +35,8 @@
       </option>
     </select>
   </div>
-  <div *ngIf="crime === 'Yes'" class="form-group">
-    <label for="crimeConvictNotes">If yes, when and where? Can you briefly explain the circumstances?</label>
+  <div *ngIf="hasNotes" class="form-group">
+    <label for="crimeConvictNotes">Notes (e.g. If yes, when and where? Can you briefly explain the circumstances?) </label>
     <textarea type="text" class="md-textarea-auto form-control" rows="4"
               id="crimeConvictNotes" [formControlName]="'crimeConvictNotes'"
               placeholder=""></textarea>

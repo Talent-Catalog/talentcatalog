@@ -81,6 +81,7 @@ public class CandidateExamAdminApi
                 .add("exam")
                 .add("otherExam")
                 .add("score")
+                .add("notes")
                 ;
     }
 

@@ -123,10 +123,6 @@
             [candidate]="candidate"
             [candidateIntakeData]="candidateIntakeData">
           </app-destination-limit>
-          <app-destination-job
-            [candidate]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-destination-job>
         </ng-template>
       </ngb-panel>
     </ngb-accordion>
@@ -175,6 +171,14 @@
             [candidate]="candidate"
             [candidateIntakeData]="candidateIntakeData">
           </app-conflict>
+          <app-marital-status
+            [candidate]="candidate"
+            [candidateIntakeData]="candidateIntakeData"
+            [educationLevels]="educationLevels"
+            [occupations]="occupations"
+            [languageLevels]="languageLevels"
+            [nationalities]="nationalities">
+          </app-marital-status>
           <app-family
             [candidate]="candidate"
             [candidateIntakeData]="candidateIntakeData">

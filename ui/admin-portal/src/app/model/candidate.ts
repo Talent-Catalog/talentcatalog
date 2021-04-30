@@ -171,6 +171,7 @@ export interface CandidateIntakeData {
   workDesired?: YesNoUnemployed;
   workDesiredNotes?: string;
   unhcrRegistered?: YesNoUnsure;
+  unhcrNotRegNotes?: string;
   unhcrStatus?: UnhcrStatus;
   unhcrOldStatus?: UnhcrStatus;
   unhcrNumber?: string;
@@ -211,6 +212,7 @@ export interface CandidateExam {
   otherExam?: string;
   score?: string;
   year?: number;
+  notes?: string;
 }
 
 export interface CandidateDestination {

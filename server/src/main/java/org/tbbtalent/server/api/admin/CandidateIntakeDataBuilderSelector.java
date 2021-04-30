@@ -136,6 +136,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("resettleThirdStatus")
 
                 .add("unhcrRegistered")
+                .add("unhcrNotRegNotes")
                 .add("unhcrStatus")
                 .add("unhcrOldStatus")
                 .add("unhcrNumber")
@@ -180,6 +181,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("otherExam")
                 .add("score")
                 .add("year")
+                .add("notes")
                 ;
     }
 

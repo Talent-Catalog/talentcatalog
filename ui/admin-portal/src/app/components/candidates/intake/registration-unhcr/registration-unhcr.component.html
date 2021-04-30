@@ -35,6 +35,14 @@
       </option>
     </select>
   </div>
+  <div *ngIf="unhcrNotRegistered()">
+    <div class="form-group">
+      <label for="unhcrNotRegNotes">Notes</label>
+      <textarea type="text" class="md-textarea-auto form-control" rows="3"
+                id="unhcrNotRegNotes" [formControlName]="'unhcrNotRegNotes'"
+                placeholder=""></textarea>
+    </div>
+  </div>
   <div *ngIf="showAll">
     <div *ngIf="unhcrRegistered == 'Yes'">
       <div class="form-group">
@@ -84,7 +92,7 @@
       </select>
     </div>
     <div class="form-group">
-      <label for="unhcrNotes">Notes</label>
+      <label for="unhcrNotes">Additional UNHCR Notes</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="3"
                 id="unhcrNotes" [formControlName]="'unhcrNotes'"
                 placeholder="" ></textarea>

@@ -43,6 +43,8 @@ public class CandidateExam extends AbstractDomainObject<Long> {
 
     private Long year;
 
+    private String notes;
+
     public CandidateExam() {
     }
 
@@ -61,6 +63,9 @@ public class CandidateExam extends AbstractDomainObject<Long> {
         }
         if (data.getExamYear() != null) {
             setYear(data.getExamYear());
+        }
+        if (data.getExamNotes() != null) {
+            setNotes(data.getExamNotes());
         }
     }
 

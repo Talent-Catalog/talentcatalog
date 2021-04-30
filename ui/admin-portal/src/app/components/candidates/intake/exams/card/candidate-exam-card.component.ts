@@ -48,6 +48,7 @@ export class CandidateExamCardComponent extends IntakeComponentBase implements O
       otherExam: [this.myRecord?.otherExam],
       examScore: [this.myRecord?.score],
       examYear: [this.myRecord?.year],
+      examNotes: [this.myRecord?.notes],
     });
 
     this.years = generateYearArray(1950, true);

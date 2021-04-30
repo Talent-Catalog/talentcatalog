@@ -87,6 +87,7 @@ public class CandidateIntakeDataUpdate {
     private String otherExam;
     private String examScore;
     private Long examYear;
+    private String examNotes;
 
     private YesNo destLimit;
     private String destLimitNotes;
@@ -151,6 +152,7 @@ public class CandidateIntakeDataUpdate {
     private String resettleThirdStatus;
 
     private YesNoUnsure unhcrRegistered;
+    private String unhcrNotRegNotes;
     private UnhcrStatus unhcrStatus;
     private UnhcrStatus unhcrOldStatus;
     private String unhcrNumber;

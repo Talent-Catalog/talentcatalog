@@ -256,6 +256,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private YesNoUnsure unhcrRegistered;
 
+    @Nullable
+    private String unhcrNotRegNotes;
+
     @Enumerated(EnumType.STRING)
     @Nullable
     private UnhcrStatus unhcrStatus;
@@ -915,6 +918,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setUnhcrRegistered(@Nullable YesNoUnsure unhcrRegistered) { this.unhcrRegistered = unhcrRegistered; }
 
     @Nullable
+    public String getUnhcrNotRegNotes() { return unhcrNotRegNotes; }
+
+    public void setUnhcrNotRegNotes(@Nullable String unhcrNotRegNotes) { this.unhcrNotRegNotes = unhcrNotRegNotes; }
+
+    @Nullable
     public UnhcrStatus getUnhcrStatus() { return unhcrStatus; }
 
     public void setUnhcrStatus(@Nullable UnhcrStatus unhcrStatus) { this.unhcrStatus = unhcrStatus; }
@@ -1505,6 +1513,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getUnhcrRegistered() != null) {
             setUnhcrRegistered(data.getUnhcrRegistered());
+        }
+        if (data.getUnhcrNotRegNotes() != null) {
+            setUnhcrNotRegNotes(data.getUnhcrNotRegNotes());
         }
         if (data.getUnhcrStatus() != null) {
             setUnhcrStatus(data.getUnhcrStatus());

@@ -66,6 +66,12 @@
             <option *ngFor="let year of years" [ngValue]="year">{{year}} </option>
           </select>
         </div>
+        <div class="form-group">
+          <label for="examNotes">Notes</label>
+          <textarea type="text" class="md-textarea-auto form-control" rows="3"
+                    id="examNotes" [formControlName]="'examNotes'"
+                    placeholder=""></textarea>
+        </div>
       </div>
     </form>
   </div>
