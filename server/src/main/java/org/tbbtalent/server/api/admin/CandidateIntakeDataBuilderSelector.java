@@ -75,9 +75,6 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("destLimit")
                 .add("destLimitNotes")
 
-                .add("destJob")
-                .add("destJobNotes")
-
                 .add("drivingLicense")
                 .add("drivingLicenseExp")
                 .add("drivingLicenseCountry", countryDto())
@@ -158,6 +155,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("workAbroadNotes")
                 .add("workPermit")
                 .add("workPermitDesired")
+                .add("workPermitDesiredNotes")
                 .add("workDesired")
                 .add("workDesiredNotes")
 
@@ -189,6 +187,7 @@ public class CandidateIntakeDataBuilderSelector {
         return new DtoBuilder()
                 .add("id")
                 .add("relation")
+                .add("relationOther")
                 .add("dob")
                 .add("name")
                 .add("healthConcern")

@@ -120,6 +120,15 @@
 
     <hr/>
 
+    <app-view-candidate-language
+      [candidate]="candidate"
+      [editable]="false"
+      [accordion]="true"
+      [collapse]="collapse">
+    </app-view-candidate-language>
+
+    <hr/>
+
     <ngb-accordion #a="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
       <ngb-panel id="intake-english-assessment">
         <ng-template ngbPanelHeader let-opened="opened">
@@ -264,15 +273,6 @@
         </ng-template>
       </ngb-panel>
     </ngb-accordion>
-
-    <hr/>
-
-    <app-view-candidate-language
-      [candidate]="candidate"
-      [editable]="false"
-      [accordion]="true"
-      [collapse]="collapse">
-    </app-view-candidate-language>
 
     <hr/>
 

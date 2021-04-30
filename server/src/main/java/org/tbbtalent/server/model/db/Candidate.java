@@ -312,13 +312,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Enumerated(EnumType.STRING)
     @Nullable
-    private YesNo destJob;
-
-    @Nullable
-    private String destJobNotes;
-
-    @Enumerated(EnumType.STRING)
-    @Nullable
     private YesNoUnsure crimeConvict;
 
     @Nullable
@@ -1013,20 +1006,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setDestLimitNotes(@Nullable String destLimitNotes) { this.destLimitNotes = destLimitNotes; }
 
     @Nullable
-    public YesNo getDestJob() { return destJob; }
-
-    public void setDestJob(@Nullable YesNo destJob) { this.destJob = destJob; }
-
-    @Nullable
-    public String getDestJobNotes() {
-        return destJobNotes;
-    }
-
-    public void setDestJobNotes(@Nullable String destJobNotes) {
-        this.destJobNotes = destJobNotes;
-    }
-
-    @Nullable
     public YesNoUnsure getCrimeConvict() { return crimeConvict; }
 
     public void setCrimeConvict(@Nullable YesNoUnsure crime) { this.crimeConvict = crime; }
@@ -1368,12 +1347,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getDestLimitNotes() != null) {
             setDestLimitNotes(data.getDestLimitNotes());
-        }
-        if (data.getDestJob() != null) {
-            setDestJob(data.getDestJob());
-        }
-        if (data.getDestJobNotes() != null) {
-            setDestJobNotes(data.getDestJobNotes());
         }
         if (data.getDrivingLicense() != null) {
             setDrivingLicense(data.getDrivingLicense());

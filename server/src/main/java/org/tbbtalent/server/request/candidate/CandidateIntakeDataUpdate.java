@@ -93,9 +93,6 @@ public class CandidateIntakeDataUpdate {
     private YesNo destLimit;
     private String destLimitNotes;
 
-    private YesNo destJob;
-    private String destJobNotes;
-
     private DocumentStatus drivingLicense;
     private LocalDate drivingLicenseExp;
     private Long drivingLicenseCountryId;
