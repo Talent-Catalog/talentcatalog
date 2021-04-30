@@ -48,6 +48,14 @@
       </div>
 
       <div *ngIf="hasDependant">
+        <div *ngIf="dependantRelationship == 'Other'">
+          <div class="form-group">
+            <label [for]="'dependantRelationOther'+myRecordIndex">If other, please explain relationship</label>
+
+            <input type="text" class="form-control"
+                   [id]="'dependantRelationOther'+myRecordIndex" [formControlName]="'dependantRelationOther'">
+          </div>
+        </div>
         <div class="form-group">
           <label [for]="'dependantName'+myRecordIndex">Name</label>
 

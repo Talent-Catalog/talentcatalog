@@ -38,6 +38,8 @@ public class CandidateDependant extends AbstractDomainObject<Long> {
     @Enumerated(EnumType.STRING)
     private DependantRelations relation;
 
+    private String relationOther;
+
     private LocalDate dob;
 
     private String name;
@@ -59,6 +61,9 @@ public class CandidateDependant extends AbstractDomainObject<Long> {
         setCandidate(candidate);
         if (data.getDependantRelation() != null) {
             setRelation(data.getDependantRelation());
+        }
+        if (data.getDependantRelationOther() != null) {
+            setRelationOther(data.getDependantRelationOther());
         }
         if (data.getDependantDob() != null) {
             setDob(data.getDependantDob());

@@ -168,6 +168,7 @@ export interface CandidateIntakeData {
   workAbroadNotes?: string;
   workPermit?: WorkPermitValidity;
   workPermitDesired?: YesNoUnsure;
+  workPermitDesiredNotes?: string;
   workDesired?: YesNoUnemployed;
   workDesiredNotes?: string;
   unhcrRegistered?: YesNoUnsure;
@@ -199,6 +200,7 @@ export interface CandidateCitizenship {
 export interface CandidateDependant {
   id?: number;
   relation?: DependantRelations;
+  relationOther?: string;
   dob?: string;
   name?: string;
   registered?: string;
@@ -464,7 +466,9 @@ export enum MaritalStatus {
   Engaged = "Engaged",
   Defacto = "Defacto",
   Single = "Single",
-  Divorced = "Divorced"
+  Divorced = "Divorced",
+  Separated = "Separated",
+  Widower = "Widow/er"
 }
 
 export enum IeltsScore {

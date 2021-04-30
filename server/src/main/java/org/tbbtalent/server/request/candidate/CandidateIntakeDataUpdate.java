@@ -67,6 +67,7 @@ public class CandidateIntakeDataUpdate {
     //Corresponds to CandidateDependant fields
     private Long dependantId;
     private DependantRelations dependantRelation;
+    private String dependantRelationOther;
     private LocalDate dependantDob;
     private String dependantName;
     private Registration dependantRegistered;
@@ -210,6 +211,7 @@ public class CandidateIntakeDataUpdate {
     private String workAbroadNotes;
     private WorkPermit workPermit;
     private YesNoUnsure workPermitDesired;
+    private String workPermitDesiredNotes;
     private YesNoUnemployed workDesired;
     private String workDesiredNotes;
 

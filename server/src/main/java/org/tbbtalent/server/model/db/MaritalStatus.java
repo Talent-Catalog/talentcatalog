@@ -22,5 +22,7 @@ public enum MaritalStatus {
     Engaged,
     Defacto,
     Single,
-    Divorced
+    Divorced,
+    Separated,
+    Widower
 }

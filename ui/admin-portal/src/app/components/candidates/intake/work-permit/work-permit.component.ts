@@ -38,7 +38,8 @@ export class WorkPermitComponent extends IntakeComponentBase implements OnInit {
   ngOnInit(): void {
     this.form = this.fb.group({
       workPermit: [this.candidateIntakeData?.workPermit],
-      workPermitDesired: [this.candidateIntakeData?.workPermitDesired]
+      workPermitDesired: [this.candidateIntakeData?.workPermitDesired],
+      workPermitDesiredNotes: [this.candidateIntakeData?.workPermitDesiredNotes]
     });
   }
 
@@ -46,4 +47,7 @@ export class WorkPermitComponent extends IntakeComponentBase implements OnInit {
     return this.form.value?.workPermit;
   }
 
+  get workPermitDesired(): string {
+    return this.form.value?.workPermitDesired;
+  }
 }

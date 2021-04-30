@@ -46,6 +46,7 @@ export class DependantsCardComponent extends IntakeComponentBase implements OnIn
     this.form = this.fb.group({
       dependantId: [this.myRecord?.id],
       dependantRelation: [this.myRecord?.relation],
+      dependantRelationOther: [this.myRecord?.relationOther],
       dependantDob: [this.myRecord?.dob],
       dependantName: [this.myRecord?.name],
       dependantRegistered: [this.myRecord?.registered],
@@ -70,6 +71,10 @@ export class DependantsCardComponent extends IntakeComponentBase implements OnIn
       found = this.form.value.dependantRelation !== 'NoResponse'
     }
     return found;
+  }
+
+  get dependantRelationship(): string {
+    return this.form.value.dependantRelation;
   }
 
   get dependantAge(): number {

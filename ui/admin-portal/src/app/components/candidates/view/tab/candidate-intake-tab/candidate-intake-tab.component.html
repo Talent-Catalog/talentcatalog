@@ -276,14 +276,6 @@
 
     <hr/>
 
-    <app-dependants
-      [candidate]="candidate"
-      [candidateIntakeData]="candidateIntakeData"
-      [collapse]="collapse">
-    </app-dependants>
-
-    <hr/>
-
     <ngb-accordion #a="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
       <ngb-panel id="intake-partner-info">
         <ng-template ngbPanelHeader let-opened="opened">
@@ -311,6 +303,14 @@
         </ng-template>
       </ngb-panel>
     </ngb-accordion>
+
+    <hr/>
+
+    <app-dependants
+      [candidate]="candidate"
+      [candidateIntakeData]="candidateIntakeData"
+      [collapse]="collapse">
+    </app-dependants>
 
     <hr/>
 
