@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {Candidate, CandidateIntakeData} from "../../../../model/candidate";
 import {Nationality} from "../../../../model/nationality";
 import {CandidateCitizenshipService} from "../../../../services/candidate-citizenship.service";
@@ -24,31 +24,47 @@ import {CandidateCitizenshipService} from "../../../../services/candidate-citize
   templateUrl: './citizenships.component.html',
   styleUrls: ['./citizenships.component.scss']
 })
-export class CitizenshipsComponent implements OnInit {
+export class CitizenshipsComponent implements OnInit, OnChanges {
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
   error: boolean;
   @Input() nationalities: Nationality[];
-  @Input() collapse: boolean;
+  @Input() open: boolean;
   saving: boolean;
+  activeIds: string;
 
   constructor(
     private candidateCitizenshipService: CandidateCitizenshipService
   ) {}
 
   ngOnInit(): void {
+    this.activeIds = 'intake-citizenships';
+    this.open = true;
   }
 
-  get activeIds(): string {
-    if (this.collapse) {
-      return '';
-    } else {
-      return 'intake-citizenships';
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.collapse && changes.collapse.previousValue !== changes.collapse.currentValue) {
+      if (this.open) {
+        this.activeIds = 'intake-citizenships';
+      } else {
+        this.activeIds = '';
+      }
     }
+  }
+
+  changeCollapse() {
+    if (this.open) {
+      this.activeIds = 'intake-citizenships';
+    } else {
+      this.activeIds = '';
+    }
+    this.open = !this.open
   }
 
   addRecord() {
     this.saving = true;
+    this.open = false;
+    this.activeIds = 'intake-citizenships'
     this.candidateCitizenshipService.create(this.candidate.id, {}).subscribe(
       (citizenship) => {
         this.candidateIntakeData.candidateCitizenships.push(citizenship)
