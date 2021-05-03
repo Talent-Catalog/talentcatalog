@@ -31,8 +31,8 @@
         </button>
 
         <div class="btn-group-sm ml-2">
-          <button (click)="closeAll()" class="btn btn-outline-primary btn-sm mr-2">Close All Tabs</button>
-          <button (click)="openAll()" class="btn btn-outline-primary btn-sm">Open All Tabs</button>
+          <button (click)="togglePanels(false)" class="btn btn-outline-primary btn-sm mr-2">Close All Tabs</button>
+          <button (click)="togglePanels(true)" class="btn btn-outline-primary btn-sm">Open All Tabs</button>
         </div>
       </div>
       <h5>Full Intake</h5>
@@ -107,7 +107,7 @@
       [candidate]="candidate"
       [candidateIntakeData]="candidateIntakeData"
       [nationalities]="nationalities"
-      [open]="collapse">
+      [toggleAll]="toggleAll">
     </app-citizenships>
 
     <hr/>
@@ -115,7 +115,7 @@
     <app-exams
       [candidate]="candidate"
       [candidateIntakeData]="candidateIntakeData"
-      [collapse]="collapse">
+      [collapse]="open">
     </app-exams>
 
     <hr/>
@@ -124,7 +124,7 @@
       [candidate]="candidate"
       [editable]="false"
       [accordion]="true"
-      [collapse]="collapse">
+      [collapse]="open">
     </app-view-candidate-language>
 
     <hr/>

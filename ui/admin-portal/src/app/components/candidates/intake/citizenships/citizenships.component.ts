@@ -14,24 +14,27 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {Candidate, CandidateIntakeData} from "../../../../model/candidate";
 import {Nationality} from "../../../../model/nationality";
 import {CandidateCitizenshipService} from "../../../../services/candidate-citizenship.service";
+import {Subject} from "rxjs/index";
 
 @Component({
   selector: 'app-citizenships',
   templateUrl: './citizenships.component.html',
   styleUrls: ['./citizenships.component.scss']
 })
-export class CitizenshipsComponent implements OnInit, OnChanges {
+export class CitizenshipsComponent implements OnInit {
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
   error: boolean;
   @Input() nationalities: Nationality[];
-  @Input() open: boolean;
+  open: boolean;
   saving: boolean;
   activeIds: string;
+
+  @Input() toggleAll: Subject<any>;
 
   constructor(
     private candidateCitizenshipService: CandidateCitizenshipService
@@ -40,31 +43,30 @@ export class CitizenshipsComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.activeIds = 'intake-citizenships';
     this.open = true;
+    // called when the notifyChildren method is called in the parent component
+    this.toggleAll.subscribe(isOpen => {
+      this.open = isOpen;
+      this.setActiveIds();
+    })
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes.collapse && changes.collapse.previousValue !== changes.collapse.currentValue) {
-      if (this.open) {
-        this.activeIds = 'intake-citizenships';
-      } else {
-        this.activeIds = '';
-      }
-    }
+  toggleOpen() {
+    this.open = !this.open
+    this.setActiveIds();
   }
 
-  changeCollapse() {
+  setActiveIds(){
     if (this.open) {
       this.activeIds = 'intake-citizenships';
     } else {
       this.activeIds = '';
     }
-    this.open = !this.open
   }
 
   addRecord() {
     this.saving = true;
-    this.open = false;
-    this.activeIds = 'intake-citizenships'
+    this.open = true;
+    this.setActiveIds();
     this.candidateCitizenshipService.create(this.candidate.id, {}).subscribe(
       (citizenship) => {
         this.candidateIntakeData.candidateCitizenships.push(citizenship)
