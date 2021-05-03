@@ -17,6 +17,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Candidate, CandidateExam, CandidateIntakeData} from '../../../../model/candidate';
 import {CandidateExamService} from '../../../../services/candidate-exam.service';
+import {Subject} from "rxjs";
 
 @Component({
   selector: 'app-exams',
@@ -27,27 +28,44 @@ export class ExamsComponent implements OnInit {
 
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
-  @Input() collapse: boolean;
   error: boolean;
   saving: boolean;
+  activeIds: string;
+  open: boolean;
+
+  @Input() toggleAll: Subject<any>;
 
   constructor(
     private candidateExamService: CandidateExamService
   ) {}
 
   ngOnInit(): void {
+    this.activeIds = 'intake-exams';
+    this.open = true;
+    // called when the toggleAll method is called in the parent component
+    this.toggleAll.subscribe(isOpen => {
+      this.open = isOpen;
+      this.setActiveIds();
+    })
   }
 
-  get activeIds(): string {
-    if (this.collapse) {
-      return '';
+  toggleOpen() {
+    this.open = !this.open
+    this.setActiveIds();
+  }
+
+  setActiveIds(){
+    if (this.open) {
+      this.activeIds = 'intake-exams';
     } else {
-      return 'intake-exams';
+      this.activeIds = '';
     }
   }
 
   addRecord() {
     this.saving = true;
+    this.open = true;
+    this.setActiveIds();
     const candidateExam: CandidateExam = {};
     this.candidateExamService.create(this.candidate.id, candidateExam).subscribe(
       (exam) => {

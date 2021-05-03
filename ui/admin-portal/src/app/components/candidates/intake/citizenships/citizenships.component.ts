@@ -43,7 +43,7 @@ export class CitizenshipsComponent implements OnInit {
   ngOnInit(): void {
     this.activeIds = 'intake-citizenships';
     this.open = true;
-    // called when the notifyChildren method is called in the parent component
+    // called when the toggleAll method is called in the parent component
     this.toggleAll.subscribe(isOpen => {
       this.open = isOpen;
       this.setActiveIds();

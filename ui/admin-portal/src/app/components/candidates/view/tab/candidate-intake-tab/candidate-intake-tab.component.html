@@ -115,7 +115,7 @@
     <app-exams
       [candidate]="candidate"
       [candidateIntakeData]="candidateIntakeData"
-      [collapse]="open">
+      [toggleAll]="toggleAll">
     </app-exams>
 
     <hr/>
@@ -124,7 +124,7 @@
       [candidate]="candidate"
       [editable]="false"
       [accordion]="true"
-      [collapse]="open">
+      [toggleAll]="toggleAll">
     </app-view-candidate-language>
 
     <hr/>
@@ -309,7 +309,7 @@
     <app-dependants
       [candidate]="candidate"
       [candidateIntakeData]="candidateIntakeData"
-      [collapse]="collapse">
+      [toggleAll]="toggleAll">
     </app-dependants>
 
     <hr/>

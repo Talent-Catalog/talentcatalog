@@ -20,6 +20,7 @@ import {Candidate} from '../../../../model/candidate';
 import {CandidateLanguage} from '../../../../model/candidate-language';
 import {CandidateLanguageService} from '../../../../services/candidate-language.service';
 import {EditCandidateLanguageComponent} from '../language/edit/edit-candidate-language.component';
+import {Subject} from "rxjs";
 
 @Component({
   selector: 'app-view-candidate-language',
@@ -31,31 +32,37 @@ export class ViewCandidateLanguageComponent implements OnInit, OnChanges {
   @Input() candidate: Candidate;
   @Input() editable: boolean;
   @Input() accordion: boolean = false;
-  @Input() collapse: boolean;
 
   candidateLanguages: CandidateLanguage[];
   loading: boolean;
   error;
+
+  activeIds: string;
+  open: boolean;
+  @Input() toggleAll: Subject<any>;
 
   constructor(private candidateLanguageService: CandidateLanguageService,
               private modalService: NgbModal ) {
   }
 
   ngOnInit() {
-
+    /*
+      If an accordion in intake set the subscribe to the toggle all buttons in intake candidate component
+     */
+    if (this.accordion) {
+      this.activeIds = 'intake-language';
+      this.open = true;
+      // called when the toggleAll method is called in the parent component
+      this.toggleAll.subscribe(isOpen => {
+        this.open = isOpen;
+        this.setActiveIds();
+      })
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
       this.search();
-    }
-  }
-
-  get activeIds(): string {
-    if (this.collapse) {
-      return '';
-    } else {
-      return 'intake-language';
     }
   }
 
@@ -85,6 +92,23 @@ export class ViewCandidateLanguageComponent implements OnInit, OnChanges {
       .then((candidateLanguage) => this.search())
       .catch(() => { /* Isn't possible */ });
 
+  }
+
+  /*
+    Methods related to the accordion toggle, and the toggle all parent observable
+   */
+
+  toggleOpen() {
+    this.open = !this.open
+    this.setActiveIds();
+  }
+
+  setActiveIds(){
+    if (this.open) {
+      this.activeIds = 'intake-language';
+    } else {
+      this.activeIds = '';
+    }
   }
 
 

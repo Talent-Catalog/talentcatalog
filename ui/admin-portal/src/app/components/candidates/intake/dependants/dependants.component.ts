@@ -18,6 +18,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {Candidate, CandidateIntakeData} from '../../../../model/candidate';
 import {Nationality} from '../../../../model/nationality';
 import {CandidateDependantService} from '../../../../services/candidate-dependant.service';
+import {Subject} from "rxjs";
 
 @Component({
   selector: 'app-dependants',
@@ -30,26 +31,44 @@ export class DependantsComponent implements OnInit {
   @Input() candidateIntakeData: CandidateIntakeData;
   error: boolean;
   @Input() nationalities: Nationality[];
-  @Input() collapse: boolean;
   saving: boolean;
+  activeIds: string;
+  open: boolean;
+
+  @Input() toggleAll: Subject<any>;
+
 
   constructor(
     private candidateDependantService: CandidateDependantService
   ) {}
 
   ngOnInit(): void {
+    this.activeIds = 'intake-dependants';
+    this.open = true;
+    // called when the toggleAll method is called in the parent component
+    this.toggleAll.subscribe(isOpen => {
+      this.open = isOpen;
+      this.setActiveIds();
+    })
   }
 
-  get activeIds(): string {
-    if (this.collapse) {
-      return '';
+  toggleOpen() {
+    this.open = !this.open
+    this.setActiveIds();
+  }
+
+  setActiveIds(){
+    if (this.open) {
+      this.activeIds = 'intake-dependants';
     } else {
-      return 'intake-dependants';
+      this.activeIds = '';
     }
   }
 
   addRecord() {
     this.saving = true;
+    this.open = true;
+    this.setActiveIds();
     this.candidateDependantService.create(this.candidate.id, {}).subscribe(
       (dependant) => {
         this.candidateIntakeData?.candidateDependants.push(dependant)
