@@ -20,6 +20,7 @@ export class DatePickerComponent implements OnInit {
   today: Date;
   maxDate: NgbDateStruct;
   minDate: NgbDateStruct;
+  error: string;
 
   constructor() { }
 
@@ -44,7 +45,14 @@ export class DatePickerComponent implements OnInit {
   }
 
   update() {
-    this.control.patchValue(this.date);
+    const customDatePattern = /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/;
+    // Only send the string to the component form if date matches the correct format
+    if (this.date.match(customDatePattern) ) {
+      this.error = null;
+      this.control.patchValue(this.date);
+    } else {
+      this.error = 'Incorrect date format, please type date in yyyy-mm-dd';
+    }
   }
 
   clear() {
