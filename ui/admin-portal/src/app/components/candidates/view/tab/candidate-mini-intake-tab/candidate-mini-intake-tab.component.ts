@@ -14,8 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Output} from '@angular/core';
+import {Component} from '@angular/core';
 import {IntakeComponentTabBase} from '../../../../util/intake/IntakeComponentTabBase';
+import {Subject} from "rxjs";
 
 @Component({
   selector: 'app-candidate-mini-intake-tab',
@@ -23,19 +24,17 @@ import {IntakeComponentTabBase} from '../../../../util/intake/IntakeComponentTab
   styleUrls: ['./candidate-mini-intake-tab.component.scss']
 })
 export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
-  @Output() closeAcc = new EventEmitter();
-  collapse: boolean = false;
+  toggleAll: Subject<any> = new Subject();
   activeIds: string[] = ['intake-confirm', 'intake-int-recruit', 'intake-destinations', 'intake-personal-status',
     'intake-english-assessment', 'intake-registration']
 
-  closeAll() {
-    this.activeIds = [];
-    this.collapse = true;
-  }
-
-  openAll() {
-    this.activeIds = ['intake-confirm', 'intake-int-recruit', 'intake-destinations', 'intake-personal-status',
-      'intake-english-assessment', 'intake-registration']
-    this.collapse = false;
+  togglePanels(openAll: boolean) {
+    this.toggleAll.next(openAll);
+    if (openAll) {
+      this.activeIds = ['intake-confirm', 'intake-int-recruit', 'intake-destinations', 'intake-personal-status',
+        'intake-english-assessment', 'intake-registration']
+    } else {
+      this.activeIds = [];
+    }
   }
 }

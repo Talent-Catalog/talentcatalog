@@ -69,7 +69,7 @@ export class ExamsComponent implements OnInit {
     const candidateExam: CandidateExam = {};
     this.candidateExamService.create(this.candidate.id, candidateExam).subscribe(
       (exam) => {
-        this.candidateIntakeData.candidateExams.push(exam)
+        this.candidateIntakeData.candidateExams.unshift(exam)
         this.saving = false;
       },
       (error) => {

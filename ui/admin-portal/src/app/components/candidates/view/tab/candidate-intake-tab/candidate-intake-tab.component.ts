@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Output} from '@angular/core';
+import {Component} from '@angular/core';
 import {IntakeComponentTabBase} from "../../../../util/intake/IntakeComponentTabBase";
 import {Subject} from "rxjs/index";
 
@@ -24,8 +24,6 @@ import {Subject} from "rxjs/index";
   styleUrls: ['./candidate-intake-tab.component.scss']
 })
 export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
-  @Output() closeAcc = new EventEmitter();
-  open: boolean = true;
   toggleAll: Subject<any> = new Subject();
   activeIds: string[] = ['intake-confirm', 'intake-int-recruit', 'intake-english-assessment', 'intake-residency',
     'intake-host-country', 'intake-registration', 'intake-partner-info', 'intake-additional-eligibility']

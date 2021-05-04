@@ -71,7 +71,7 @@ export class DependantsComponent implements OnInit {
     this.setActiveIds();
     this.candidateDependantService.create(this.candidate.id, {}).subscribe(
       (dependant) => {
-        this.candidateIntakeData?.candidateDependants.push(dependant)
+        this.candidateIntakeData?.candidateDependants.unshift(dependant)
         this.saving = false;
       },
       (error) => {

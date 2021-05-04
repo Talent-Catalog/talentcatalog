@@ -69,7 +69,7 @@ export class CitizenshipsComponent implements OnInit {
     this.setActiveIds();
     this.candidateCitizenshipService.create(this.candidate.id, {}).subscribe(
       (citizenship) => {
-        this.candidateIntakeData.candidateCitizenships.push(citizenship)
+        this.candidateIntakeData.candidateCitizenships.unshift(citizenship)
         this.saving = false;
       },
       (error) => {
