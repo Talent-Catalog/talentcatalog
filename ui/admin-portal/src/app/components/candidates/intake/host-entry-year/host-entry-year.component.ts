@@ -47,6 +47,7 @@ export class HostEntryYearComponent extends IntakeComponentBase implements OnIni
       hostBorn: [this.candidateIntakeData?.hostBorn],
       hostEntryYear: [this.candidateIntakeData?.hostEntryYear],
       birthCountryId: [this.candidateIntakeData?.birthCountry?.id],
+      asylumYear: [this.candidateIntakeData?.asylumYear]
     });
   }
 

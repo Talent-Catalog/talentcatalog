@@ -55,5 +55,11 @@
         <option *ngFor="let year of years" [ngValue]="year">{{year}} </option>
       </select>
     </div>
+    <div class="form-group">
+      <label for="asylumYear">
+        Date of asylum?
+      </label>
+      <app-date-picker id="asylumYear" [control]="form.controls.asylumYear" [allowFuture]="false"></app-date-picker>
+    </div>
   </div>
 </form>
