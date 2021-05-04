@@ -46,6 +46,7 @@ export class HostEntryYearComponent extends IntakeComponentBase implements OnIni
     this.form = this.fb.group({
       hostBorn: [this.candidateIntakeData?.hostBorn],
       hostEntryYear: [this.candidateIntakeData?.hostEntryYear],
+      hostEntryYearNotes: [this.candidateIntakeData?.hostEntryYearNotes],
       birthCountryId: [this.candidateIntakeData?.birthCountry?.id],
       asylumYear: [this.candidateIntakeData?.asylumYear]
     });
@@ -53,5 +54,13 @@ export class HostEntryYearComponent extends IntakeComponentBase implements OnIni
 
   get hostBorn(): string {
     return this.form.value?.hostBorn;
+  }
+
+  get hasNotes(): boolean {
+    if (this.form.value?.hostEntryYear == null || this.form.value?.hostEntryYear === '') {
+      return false;
+    } else {
+      return true;
+    }
   }
 }

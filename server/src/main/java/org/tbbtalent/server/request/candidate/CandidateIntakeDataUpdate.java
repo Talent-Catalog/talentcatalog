@@ -104,6 +104,7 @@ public class CandidateIntakeDataUpdate {
     private String hostChallenges;
     private YesNo hostBorn;
     private Long hostEntryYear;
+    private String hostEntryYearNotes;
     private YesNo hostEntryLegally;
     private String hostEntryLegallyNotes;
     private List<IntRecruitReason> intRecruitReasons;

@@ -255,6 +255,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private Long hostEntryYear;
 
+    @Nullable
+    private String hostEntryYearNotes;
+
     @Enumerated(EnumType.STRING)
     @Nullable
     private YesNoUnsure unhcrRegistered;
@@ -914,6 +917,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setHostEntryYear(@Nullable Long hostEntryYear) { this.hostEntryYear = hostEntryYear; }
 
     @Nullable
+    public String getHostEntryYearNotes() { return hostEntryYearNotes; }
+
+    public void setHostEntryYearNotes(@Nullable String hostEntryYearNotes) { this.hostEntryYearNotes = hostEntryYearNotes; }
+
+    @Nullable
     public YesNoUnsure getUnhcrRegistered() { return unhcrRegistered; }
 
     public void setUnhcrRegistered(@Nullable YesNoUnsure unhcrRegistered) { this.unhcrRegistered = unhcrRegistered; }
@@ -1374,6 +1382,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getHostEntryYear() != null) {
             setHostEntryYear(data.getHostEntryYear());
+        }
+        if (data.getHostEntryYearNotes() != null) {
+            setHostEntryYearNotes(data.getHostEntryYearNotes());
         }
         if (data.getHostEntryLegally() != null) {
             setHostEntryLegally(data.getHostEntryLegally());
