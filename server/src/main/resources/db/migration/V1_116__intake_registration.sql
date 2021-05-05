@@ -22,5 +22,3 @@ alter table candidate_dependant rename column notes to health_notes;
 
 update candidate set unhcr_old_status = null;
 alter table candidate rename column unhcr_old_status to unhcr_not_reg_status;
-
-update candidate set unhcr_status = null;
