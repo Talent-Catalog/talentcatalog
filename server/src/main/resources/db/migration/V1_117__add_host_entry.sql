@@ -14,5 +14,4 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-alter table candidate add column host_entry_year integer;
 alter table candidate add column host_entry_year_notes text;
