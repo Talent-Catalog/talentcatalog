@@ -152,14 +152,12 @@ public class CandidateIntakeDataUpdate {
     private YesNo resettleThird;
     private String resettleThirdStatus;
 
-    private YesNoUnsure unhcrRegistered;
-    private String unhcrNotRegNotes;
+    private YesNo unhcrRegistered;
     private UnhcrStatus unhcrStatus;
-    private NotRegisteredStatus unhcrNotRegStatus;
     private String unhcrNumber;
     private Long unhcrFile;
+    private NotRegisteredStatus unhcrNotRegStatus;
     private String unhcrNotes;
-    private YesNo unhcrPermission;
     private YesNoUnsure unrwaRegistered;
     private UnrwaStatus unrwaStatus;
     private String unrwaNumber;

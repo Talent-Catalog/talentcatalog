@@ -260,18 +260,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Enumerated(EnumType.STRING)
     @Nullable
-    private YesNoUnsure unhcrRegistered;
-
-    @Nullable
-    private String unhcrNotRegNotes;
+    private YesNo unhcrRegistered;
 
     @Enumerated(EnumType.STRING)
     @Nullable
     private UnhcrStatus unhcrStatus;
-
-    @Enumerated(EnumType.STRING)
-    @Nullable
-    private NotRegisteredStatus unhcrNotRegStatus;
 
     @Nullable
     private String unhcrNumber;
@@ -279,12 +272,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private Long unhcrFile;
 
-    @Nullable
-    private String unhcrNotes;
-
     @Enumerated(EnumType.STRING)
     @Nullable
-    private YesNo unhcrPermission;
+    private NotRegisteredStatus unhcrNotRegStatus;
+
+    @Nullable
+    private String unhcrNotes;
 
     @Enumerated(EnumType.STRING)
     @Nullable
@@ -922,24 +915,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setHostEntryYearNotes(@Nullable String hostEntryYearNotes) { this.hostEntryYearNotes = hostEntryYearNotes; }
 
     @Nullable
-    public YesNoUnsure getUnhcrRegistered() { return unhcrRegistered; }
+    public YesNo getUnhcrRegistered() { return unhcrRegistered; }
 
-    public void setUnhcrRegistered(@Nullable YesNoUnsure unhcrRegistered) { this.unhcrRegistered = unhcrRegistered; }
-
-    @Nullable
-    public String getUnhcrNotRegNotes() { return unhcrNotRegNotes; }
-
-    public void setUnhcrNotRegNotes(@Nullable String unhcrNotRegNotes) { this.unhcrNotRegNotes = unhcrNotRegNotes; }
+    public void setUnhcrRegistered(@Nullable YesNo unhcrRegistered) { this.unhcrRegistered = unhcrRegistered; }
 
     @Nullable
     public UnhcrStatus getUnhcrStatus() { return unhcrStatus; }
 
     public void setUnhcrStatus(@Nullable UnhcrStatus unhcrStatus) { this.unhcrStatus = unhcrStatus; }
-
-    @Nullable
-    public NotRegisteredStatus getUnhcrNotRegStatus() { return unhcrNotRegStatus; }
-
-    public void setUnhcrNotRegStatus(@Nullable NotRegisteredStatus unhcrNotRegStatus) { this.unhcrNotRegStatus = unhcrNotRegStatus; }
 
     @Nullable
     public String getUnhcrNumber() { return unhcrNumber; }
@@ -952,14 +935,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setUnhcrFile(@Nullable Long unhcrFile) { this.unhcrFile = unhcrFile; }
 
     @Nullable
+    public NotRegisteredStatus getUnhcrNotRegStatus() { return unhcrNotRegStatus; }
+
+    public void setUnhcrNotRegStatus(@Nullable NotRegisteredStatus unhcrNotRegStatus) { this.unhcrNotRegStatus = unhcrNotRegStatus; }
+
+    @Nullable
     public String getUnhcrNotes() { return unhcrNotes; }
 
     public void setUnhcrNotes(@Nullable String unhcrNotes) { this.unhcrNotes = unhcrNotes; }
-
-    @Nullable
-    public YesNo getUnhcrPermission() { return unhcrPermission; }
-
-    public void setUnhcrPermission(@Nullable YesNo unhcrPermission) { this.unhcrPermission = unhcrPermission; }
 
     @Nullable
     public YesNoUnsure getUnrwaRegistered() { return unrwaRegistered; }
@@ -1506,9 +1489,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getUnhcrRegistered() != null) {
             setUnhcrRegistered(data.getUnhcrRegistered());
         }
-        if (data.getUnhcrNotRegNotes() != null) {
-            setUnhcrNotRegNotes(data.getUnhcrNotRegNotes());
-        }
         if (data.getUnhcrStatus() != null) {
             setUnhcrStatus(data.getUnhcrStatus());
         }
@@ -1523,9 +1503,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getUnhcrNotes() != null) {
             setUnhcrNotes(data.getUnhcrNotes());
-        }
-        if (data.getUnhcrPermission() != null) {
-            setUnhcrPermission(data.getUnhcrPermission());
         }
         if (data.getUnrwaRegistered() != null) {
             setUnrwaRegistered(data.getUnrwaRegistered());
