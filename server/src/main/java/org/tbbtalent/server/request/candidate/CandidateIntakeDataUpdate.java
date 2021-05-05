@@ -152,7 +152,7 @@ public class CandidateIntakeDataUpdate {
     private YesNo resettleThird;
     private String resettleThirdStatus;
 
-    private YesNo unhcrRegistered;
+    private YesNoUnsure unhcrRegistered;
     private UnhcrStatus unhcrStatus;
     private String unhcrNumber;
     private Long unhcrFile;
@@ -161,6 +161,8 @@ public class CandidateIntakeDataUpdate {
     private YesNoUnsure unrwaRegistered;
     private UnrwaStatus unrwaStatus;
     private String unrwaNumber;
+    private Long unrwaFile;
+    private NotRegisteredStatus unrwaNotRegStatus;
     private String unrwaNotes;
 
     //Corresponds to CandidateVisaCheck fields

@@ -142,6 +142,8 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("unrwaRegistered")
                 .add("unrwaNumber")
+                .add("unrwaFile")
+                .add("unrwaNotRegStatus")
                 .add("unrwaNotes")
 
                 .add("visaReject")

@@ -260,7 +260,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Enumerated(EnumType.STRING)
     @Nullable
-    private YesNo unhcrRegistered;
+    private YesNoUnsure unhcrRegistered;
 
     @Enumerated(EnumType.STRING)
     @Nullable
@@ -289,6 +289,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Nullable
     private String unrwaNumber;
+
+    @Nullable
+    private Long unrwaFile;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private NotRegisteredStatus unrwaNotRegStatus;
 
     @Nullable
     private String unrwaNotes;
@@ -915,9 +922,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setHostEntryYearNotes(@Nullable String hostEntryYearNotes) { this.hostEntryYearNotes = hostEntryYearNotes; }
 
     @Nullable
-    public YesNo getUnhcrRegistered() { return unhcrRegistered; }
+    public YesNoUnsure getUnhcrRegistered() { return unhcrRegistered; }
 
-    public void setUnhcrRegistered(@Nullable YesNo unhcrRegistered) { this.unhcrRegistered = unhcrRegistered; }
+    public void setUnhcrRegistered(@Nullable YesNoUnsure unhcrRegistered) { this.unhcrRegistered = unhcrRegistered; }
 
     @Nullable
     public UnhcrStatus getUnhcrStatus() { return unhcrStatus; }
@@ -958,6 +965,16 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public String getUnrwaNumber() { return unrwaNumber; }
 
     public void setUnrwaNumber(@Nullable String unrwaNumber) { this.unrwaNumber = unrwaNumber; }
+
+    @Nullable
+    public Long getUnrwaFile() { return unrwaFile; }
+
+    public void setUnrwaFile(@Nullable Long unrwaFile) { this.unrwaFile = unrwaFile; }
+
+    @Nullable
+    public NotRegisteredStatus getUnrwaNotRegStatus() { return unrwaNotRegStatus; }
+
+    public void setUnrwaNotRegStatus(@Nullable NotRegisteredStatus unrwaNotRegStatus) { this.unrwaNotRegStatus = unrwaNotRegStatus; }
 
     @Nullable
     public String getUnrwaNotes() { return unrwaNotes; }
@@ -1512,6 +1529,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getUnrwaNumber() != null) {
             setUnrwaNumber(data.getUnrwaNumber());
+        }
+        if (data.getUnrwaFile() != null) {
+            setUnrwaFile(data.getUnrwaFile());
+        }
+        if (data.getUnrwaNotRegStatus() != null) {
+            setUnrwaNotRegStatus(data.getUnrwaNotRegStatus());
         }
         if (data.getUnrwaNotes() != null) {
             setUnrwaNotes(data.getUnrwaNotes());

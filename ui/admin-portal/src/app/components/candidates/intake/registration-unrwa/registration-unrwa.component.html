@@ -35,36 +35,43 @@
       </option>
     </select>
   </div>
+  <div *ngIf="hasNotes">
+    <div class="form-group">
+      <label for="unrwaNotes">Additional Notes</label>
+      <textarea type="text" class="md-textarea-auto form-control" rows="3"
+                id="unrwaNotes" [formControlName]="'unrwaNotes'"
+                placeholder="" ></textarea>
+    </div>
+  </div>
+
   <div *ngIf="showAll">
     <div *ngIf="unrwaRegistered == 'Yes'">
       <div class="form-group">
-        <label for="unrwaStatus">
-          What is your registration status with UNRWA?
+        <label for="unrwaNumber">What is your UNRWA number?</label>
+        <input type="text" class="form-control"
+               id="unrwaNumber" [formControlName]="'unrwaNumber'">
+      </div>
+      <div class="form-group">
+        <label for="unrwaFile">How many people are included on your UNRWA file?</label>
+        <input type="number" class="form-control"
+               id="unrwaFile" [formControlName]="'unrwaFile'">
+      </div>
+    </div>
+
+    <div *ngIf="unrwaRegistered == 'No'">
+      <div class="form-group">
+        <label for="unhcrNotRegStatus">
+          What best describes your status not being registered?
         </label>
         <select class="form-control"
-                id="unrwaStatus" [formControlName]="'unrwaStatus'">
-          <option *ngFor="let opt of unrwaStatusOptions" [value]="opt.value">
+                id="unhcrNotRegStatus" [formControlName]="'unhcrNotRegStatus'">
+          <option *ngFor="let opt of NotRegisteredStatusOptions" [value]="opt.value">
             {{opt.displayText}}
           </option>
         </select>
       </div>
-      <div  *ngIf="showUnrwaNumber()">
-        <div class="form-group">
-          <label for="unrwaNumber">What is your UNRWA number?</label>
-          <input type="text" class="form-control"
-                 id="unrwaNumber" [formControlName]="'unrwaNumber'">
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="unrwaNotes">Notes</label>
-        <textarea type="text" class="md-textarea-auto form-control" rows="3"
-                  id="unrwaNotes" [formControlName]="'unrwaNotes'"
-                  placeholder="" ></textarea>
-      </div>
     </div>
   </div>
-
-
 
 </form>
 

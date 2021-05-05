@@ -16,7 +16,7 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../util/enum';
-import {NotRegisteredStatus, UnhcrStatus, YesNo} from '../../../../model/candidate';
+import {NotRegisteredStatus, UnhcrStatus, YesNoUnsure} from '../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
@@ -30,10 +30,9 @@ export class RegistrationUnhcrComponent extends IntakeComponentBase implements O
 
   @Input() showAll: boolean = true;
 
-  public unhcrRegisteredOptions: EnumOption[] = enumOptions(YesNo);
+  public unhcrRegisteredOptions: EnumOption[] = enumOptions(YesNoUnsure);
   public unhcrStatusOptions: EnumOption[] = enumOptions(UnhcrStatus);
   public NotRegisteredStatusOptions: EnumOption[] = enumOptions(NotRegisteredStatus);
-  public unhcrPermissionOptions: EnumOption[] = enumOptions(YesNo);
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
@@ -58,21 +57,11 @@ export class RegistrationUnhcrComponent extends IntakeComponentBase implements O
     return this.form.value?.unhcrRegistered;
   }
 
-  showUnhcrNumber(): boolean {
-    if (this.unhcrStatus === 'MandateRefugee' ||
-        this.unhcrStatus === 'RegisteredAsylum' ||
-        this.unhcrStatus === 'RegisteredStateless') {
-      return true;
-    } else {
+  get hasNotes(): boolean {
+    if (this.unhcrRegistered == null || this.unhcrRegistered === 'NoResponse') {
       return false;
-    }
-  }
-
-  unhcrNotRegistered(): boolean {
-    if (this.unhcrRegistered === 'No' || this.unhcrRegistered === 'Unsure') {
-      return true;
     } else {
-      return false;
+      return true;
     }
   }
 

@@ -176,11 +176,13 @@ export interface CandidateIntakeData {
   unhcrStatus?: UnhcrStatus;
   unhcrNumber?: string;
   unhcrFile?: number;
-  unhcrNotRegStatus?: UnhcrStatus;
+  unhcrNotRegStatus?: NotRegisteredStatus;
   unhcrNotes?: string;
   unrwaRegistered?: YesNoUnsure;
   unrwaStatus?: UnrwaStatus;
   unrwaNumber?: string;
+  unrwaFile?: number;
+  unrwaNotRegStatus?: NotRegisteredStatus;
   unrwaNotes?: string;
   visaReject?: YesNoUnsure;
   visaRejectNotes?: string;
