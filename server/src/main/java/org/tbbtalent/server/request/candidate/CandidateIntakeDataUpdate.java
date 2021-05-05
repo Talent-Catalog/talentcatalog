@@ -71,8 +71,10 @@ public class CandidateIntakeDataUpdate {
     private LocalDate dependantDob;
     private String dependantName;
     private Registration dependantRegistered;
+    private String dependantRegisteredNumber;
+    private String dependantRegisteredNotes;
     private YesNo dependantHealthConcerns;
-    private String dependantNotes;
+    private String dependantHealthNotes;
 
     //Corresponds to CandidateDestination fields
     private Long destinationId;

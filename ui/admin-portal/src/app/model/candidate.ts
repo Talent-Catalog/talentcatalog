@@ -175,7 +175,7 @@ export interface CandidateIntakeData {
   unhcrRegistered?: YesNoUnsure;
   unhcrNotRegNotes?: string;
   unhcrStatus?: UnhcrStatus;
-  unhcrOldStatus?: UnhcrStatus;
+  unhcrNotRegStatus?: UnhcrStatus;
   unhcrNumber?: string;
   unhcrFile?: number;
   unhcrNotes?: string;
@@ -205,8 +205,10 @@ export interface CandidateDependant {
   dob?: string;
   name?: string;
   registered?: string;
+  registeredNumber?: string;
+  registeredNotes?: string;
   healthConcern?: string;
-  notes?: string;
+  healthNotes?: string;
 }
 
 export interface CandidateExam {
@@ -384,7 +386,13 @@ export enum UnhcrStatus {
   MandateRefugee = "Assessed by UNHCR as a mandate refugee",
   RegisteredAsylum = "Registered with UNHCR as asylum seeker",
   RegisteredStateless = "Registered with UNHCR as stateless",
-  NotRegistered = "Not registered",
+  Unsure = "Unsure"
+}
+
+export enum NotRegisteredStatus {
+  NoResponse = "",
+  WasRegistered = "No longer registered, but was registered previously.",
+  NeverRegistered = "Never been registered",
   Unsure = "Unsure",
   NA = "Not applicable"
 }

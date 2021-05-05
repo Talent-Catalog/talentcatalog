@@ -16,7 +16,7 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../util/enum';
-import {UnhcrStatus, YesNo, YesNoUnsure} from '../../../../model/candidate';
+import {NotRegisteredStatus, UnhcrStatus, YesNo} from '../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
@@ -30,8 +30,9 @@ export class RegistrationUnhcrComponent extends IntakeComponentBase implements O
 
   @Input() showAll: boolean = true;
 
-  public unhcrRegisteredOptions: EnumOption[] = enumOptions(YesNoUnsure);
+  public unhcrRegisteredOptions: EnumOption[] = enumOptions(YesNo);
   public unhcrStatusOptions: EnumOption[] = enumOptions(UnhcrStatus);
+  public NotRegisteredStatusOptions: EnumOption[] = enumOptions(NotRegisteredStatus);
   public unhcrPermissionOptions: EnumOption[] = enumOptions(YesNo);
 
   constructor(fb: FormBuilder, candidateService: CandidateService) {
@@ -43,7 +44,7 @@ export class RegistrationUnhcrComponent extends IntakeComponentBase implements O
       unhcrRegistered: [this.candidateIntakeData?.unhcrRegistered],
       unhcrNotRegNotes: [this.candidateIntakeData?.unhcrNotRegNotes],
       unhcrStatus: [this.candidateIntakeData?.unhcrStatus],
-      unhcrOldStatus: [this.candidateIntakeData?.unhcrOldStatus],
+      unhcrNotRegStatus: [this.candidateIntakeData?.unhcrNotRegStatus],
       unhcrNumber: [this.candidateIntakeData?.unhcrNumber],
       unhcrFile: [this.candidateIntakeData?.unhcrFile],
       unhcrNotes: [this.candidateIntakeData?.unhcrNotes],

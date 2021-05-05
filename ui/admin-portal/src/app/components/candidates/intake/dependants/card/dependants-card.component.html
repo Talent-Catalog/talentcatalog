@@ -81,9 +81,9 @@
           </select>
         </div>
         <div *ngIf="hasHealthConcern === 'Yes'" class="form-group">
-          <label [for]="'dependantNotes'+myRecordIndex">Notes</label>
-          <textarea type="text" class="md-textarea-auto form-control" rows="4"
-                    [id]="'dependantNotes'+myRecordIndex" [formControlName]="'dependantNotes'"
+          <label [for]="'dependantHealthNotes'+myRecordIndex">Notes</label>
+          <textarea type="text" class="md-textarea-auto form-control" rows="3"
+                    [id]="'dependantHealthNotes'+myRecordIndex" [formControlName]="'dependantHealthNotes'"
                     placeholder="" ></textarea>
         </div>
 
@@ -97,6 +97,20 @@
               {{opt.displayText}}
             </option>
           </select>
+        </div>
+
+        <div *ngIf="dependantRegisteredNumber">
+          <div class="form-group">
+            <label [for]="'dependantRegisteredNumber'+myRecordIndex">If spouse or child, what is their ID number? (only if different from yours)</label>
+            <input type="text" class="form-control"
+                   [id]="'dependantRegisteredNumber'+myRecordIndex" [formControlName]="'dependantRegisteredNumber'">
+          </div>
+          <div class="form-group">
+            <label [for]="'dependantRegisteredNotes'+myRecordIndex">Notes</label>
+            <textarea type="text" class="md-textarea-auto form-control" rows="3"
+                      [id]="'dependantRegisteredNotes'+myRecordIndex" [formControlName]="'dependantRegisteredNotes'"
+                      placeholder="" ></textarea>
+          </div>
         </div>
 
       </div>

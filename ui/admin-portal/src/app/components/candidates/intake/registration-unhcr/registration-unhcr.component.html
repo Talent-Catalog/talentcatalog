@@ -35,19 +35,12 @@
       </option>
     </select>
   </div>
-  <div *ngIf="unhcrNotRegistered()">
-    <div class="form-group">
-      <label for="unhcrNotRegNotes">Notes</label>
-      <textarea type="text" class="md-textarea-auto form-control" rows="3"
-                id="unhcrNotRegNotes" [formControlName]="'unhcrNotRegNotes'"
-                placeholder=""></textarea>
-    </div>
-  </div>
+
   <div *ngIf="showAll">
     <div *ngIf="unhcrRegistered == 'Yes'">
       <div class="form-group">
         <label for="unhcrStatus">
-          What <u>is</u> your registration status with UNHCR?
+          What is your registration status with UNHCR?
         </label>
         <select class="form-control"
                 id="unhcrStatus" [formControlName]="'unhcrStatus'">
@@ -56,46 +49,37 @@
           </option>
         </select>
       </div>
-      <div  *ngIf="showUnhcrNumber()">
-        <div class="form-group">
-          <label for="unhcrNumber">What is your UNHCR ID number?</label>
-          <input type="text" class="form-control"
-                 id="unhcrNumber" [formControlName]="'unhcrNumber'">
-        </div>
-        <div class="form-group">
-          <label for="unhcrFile">How many people are included on your UNHCR file?</label>
-          <input type="number" class="form-control"
-                 id="unhcrFile" [formControlName]="'unhcrFile'">
-        </div>
+      <div class="form-group">
+        <label for="unhcrNumber">What is your UNHCR ID number?</label>
+        <input type="text" class="form-control"
+        id="unhcrNumber" [formControlName]="'unhcrNumber'">
+      </div>
+      <div class="form-group">
+        <label for="unhcrFile">How many people are included on your UNHCR file?</label>
+        <input type="number" class="form-control"
+        id="unhcrFile" [formControlName]="'unhcrFile'">
       </div>
     </div>
-    <div class="form-group">
-      <label for="unhcrOldStatus">
-        What <u>was</u> your registration status with UNHCR?
-      </label>
-      <select class="form-control"
-              id="unhcrOldStatus" [formControlName]="'unhcrOldStatus'">
-        <option *ngFor="let opt of unhcrStatusOptions" [value]="opt.value">
-          {{opt.displayText}}
-        </option>
-      </select>
+
+    <div *ngIf="unhcrRegistered == 'No'">
+      <div class="form-group">
+        <label for="unhcrNotRegStatus">
+          What best describes your status not being registered?
+        </label>
+        <select class="form-control"
+                id="unhcrNotRegStatus" [formControlName]="'unhcrNotRegStatus'">
+          <option *ngFor="let opt of NotRegisteredStatusOptions" [value]="opt.value">
+            {{opt.displayText}}
+          </option>
+        </select>
+      </div>
     </div>
+
     <div class="form-group">
-      <label for="unhcrPermission">
-        Permission to share with UNHCR?
-      </label>
-      <select class="form-control"
-              id="unhcrPermission" [formControlName]="'unhcrPermission'">
-        <option *ngFor="let opt of unhcrPermissionOptions" [value]="opt.value">
-          {{opt.displayText}}
-        </option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="unhcrNotes">Additional UNHCR Notes</label>
+      <label for="unhcrNotRegNotes">Additional Notes</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="3"
-                id="unhcrNotes" [formControlName]="'unhcrNotes'"
-                placeholder="" ></textarea>
+                id="unhcrNotRegNotes" [formControlName]="'unhcrNotRegNotes'"
+                placeholder=""></textarea>
     </div>
   </div>
 

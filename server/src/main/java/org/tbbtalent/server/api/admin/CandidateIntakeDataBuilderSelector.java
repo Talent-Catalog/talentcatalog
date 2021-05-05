@@ -191,8 +191,11 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("relationOther")
                 .add("dob")
                 .add("name")
+                .add("registered")
+                .add("registeredNumber")
+                .add("registeredNotes")
                 .add("healthConcern")
-                .add("notes")
+                .add("healthNotes")
                 ;
     }
     private DtoBuilder candidateDestinationDto() {

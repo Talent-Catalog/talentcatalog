@@ -50,8 +50,10 @@ export class DependantsCardComponent extends IntakeComponentBase implements OnIn
       dependantDob: [this.myRecord?.dob],
       dependantName: [this.myRecord?.name],
       dependantRegistered: [this.myRecord?.registered],
+      dependantRegisteredNumber: [this.myRecord?.registeredNumber],
+      dependantRegisteredNotes: [this.myRecord?.registeredNotes],
       dependantHealthConcerns: [this.myRecord?.healthConcern],
-      dependantNotes: [this.myRecord?.notes],
+      dependantHealthNotes: [this.myRecord?.healthNotes],
     });
   }
 
@@ -84,6 +86,10 @@ export class DependantsCardComponent extends IntakeComponentBase implements OnIn
     }
   }
 
+  get dependantRegistered(): string {
+    return this.form.value.dependantRegistered;
+  }
+
   doDelete() {
     this.candidateDependantService.delete(this.myRecord.id)
       .subscribe(
@@ -94,5 +100,13 @@ export class DependantsCardComponent extends IntakeComponentBase implements OnIn
         }
       );
     this.delete.emit();
+  }
+
+  get dependantRegisteredNumber() {
+    if (this.dependantRelationship === 'Child' || this.dependantRelationship === 'Partner') {
+      if (this.dependantRegistered === 'UNHCR' || this.dependantRegistered === 'UNRWA' || this.dependantRegistered === 'UNHCRUNRWA') {
+        return true;
+      }
+    }
   }
 }
