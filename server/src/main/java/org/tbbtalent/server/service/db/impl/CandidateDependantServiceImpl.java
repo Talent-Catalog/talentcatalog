@@ -64,7 +64,7 @@ public class CandidateDependantServiceImpl implements CandidateDependantService 
         cd.setRelation(request.getRelation());
         cd.setDob(request.getDob());
         cd.setHealthConcern(request.getHealthConcern());
-        cd.setNotes(request.getNotes());
+        cd.setHealthNotes(request.getHealthNotes());
 
         return candidateDependantRepository.save(cd);
     }

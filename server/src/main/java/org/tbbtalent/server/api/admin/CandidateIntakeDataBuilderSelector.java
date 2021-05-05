@@ -134,12 +134,12 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("resettleThirdStatus")
 
                 .add("unhcrRegistered")
-                .add("unhcrNotRegNotes")
                 .add("unhcrStatus")
-                .add("unhcrOldStatus")
                 .add("unhcrNumber")
                 .add("unhcrFile")
                 .add("unhcrNotes")
+                .add("unhcrNotRegStatus")
+                .add("unhcrNotRegNotes")
                 .add("unhcrPermission")
 
                 .add("unrwaRegistered")

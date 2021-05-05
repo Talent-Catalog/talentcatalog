@@ -271,7 +271,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Enumerated(EnumType.STRING)
     @Nullable
-    private UnhcrStatus unhcrOldStatus;
+    private NotRegisteredStatus unhcrNotRegStatus;
 
     @Nullable
     private String unhcrNumber;
@@ -937,9 +937,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setUnhcrStatus(@Nullable UnhcrStatus unhcrStatus) { this.unhcrStatus = unhcrStatus; }
 
     @Nullable
-    public UnhcrStatus getUnhcrOldStatus() { return unhcrOldStatus; }
+    public NotRegisteredStatus getUnhcrNotRegStatus() { return unhcrNotRegStatus; }
 
-    public void setUnhcrOldStatus(@Nullable UnhcrStatus unhcrOldStatus) { this.unhcrOldStatus = unhcrOldStatus; }
+    public void setUnhcrNotRegStatus(@Nullable NotRegisteredStatus unhcrNotRegStatus) { this.unhcrNotRegStatus = unhcrNotRegStatus; }
 
     @Nullable
     public String getUnhcrNumber() { return unhcrNumber; }
@@ -1512,8 +1512,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getUnhcrStatus() != null) {
             setUnhcrStatus(data.getUnhcrStatus());
         }
-        if (data.getUnhcrOldStatus() != null) {
-            setUnhcrOldStatus(data.getUnhcrOldStatus());
+        if (data.getUnhcrNotRegStatus() != null) {
+            setUnhcrNotRegStatus(data.getUnhcrNotRegStatus());
         }
         if (data.getUnhcrNumber() != null) {
             setUnhcrNumber(data.getUnhcrNumber());

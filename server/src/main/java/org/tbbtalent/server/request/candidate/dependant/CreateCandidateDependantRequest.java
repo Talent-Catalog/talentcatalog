@@ -40,5 +40,5 @@ public class CreateCandidateDependantRequest {
     private YesNo healthConcern;
 
     @Nullable
-    private String notes;
+    private String healthNotes;
 }
