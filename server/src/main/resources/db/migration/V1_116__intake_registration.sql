@@ -14,8 +14,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-alter table candidate drop column host_entry_year;
-
 alter table candidate_dependant add column registered_number text;
 alter table candidate_dependant add column registered_notes text;
 alter table candidate_dependant rename column notes to health_notes;
