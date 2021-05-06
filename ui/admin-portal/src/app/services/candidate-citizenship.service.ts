@@ -23,6 +23,7 @@ import {CandidateCitizenship, HasPassport} from "../model/candidate";
 export interface CreateCandidateCitizenshipRequest {
   nationalityId?: number;
   hasPassport?: HasPassport;
+  passportExp?: string;
   notes?: string;
 }
 

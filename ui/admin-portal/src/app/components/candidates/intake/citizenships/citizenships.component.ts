@@ -17,7 +17,10 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Candidate, CandidateIntakeData} from "../../../../model/candidate";
 import {Nationality} from "../../../../model/nationality";
-import {CandidateCitizenshipService} from "../../../../services/candidate-citizenship.service";
+import {
+  CandidateCitizenshipService,
+  CreateCandidateCitizenshipRequest
+} from "../../../../services/candidate-citizenship.service";
 import {Subject} from "rxjs/index";
 
 @Component({
@@ -67,7 +70,8 @@ export class CitizenshipsComponent implements OnInit {
     this.saving = true;
     this.open = true;
     this.setActiveIds();
-    this.candidateCitizenshipService.create(this.candidate.id, {}).subscribe(
+    const request: CreateCandidateCitizenshipRequest = {};
+    this.candidateCitizenshipService.create(this.candidate.id, request).subscribe(
       (citizenship) => {
         this.candidateIntakeData.candidateCitizenships.unshift(citizenship)
         this.saving = false;

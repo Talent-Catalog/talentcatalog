@@ -204,10 +204,10 @@ export interface CandidateDependant {
   relationOther?: string;
   dob?: string;
   name?: string;
-  registered?: string;
+  registered?: Registrations;
   registeredNumber?: string;
   registeredNotes?: string;
-  healthConcern?: string;
+  healthConcern?: YesNo;
   healthNotes?: string;
 }
 

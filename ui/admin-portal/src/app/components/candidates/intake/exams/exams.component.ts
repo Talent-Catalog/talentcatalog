@@ -15,8 +15,8 @@
  */
 
 import {Component, Input, OnInit} from '@angular/core';
-import {Candidate, CandidateExam, CandidateIntakeData} from '../../../../model/candidate';
-import {CandidateExamService} from '../../../../services/candidate-exam.service';
+import {Candidate, CandidateIntakeData} from '../../../../model/candidate';
+import {CandidateExamService, CreateCandidateExamRequest} from '../../../../services/candidate-exam.service';
 import {Subject} from "rxjs";
 
 @Component({
@@ -66,8 +66,8 @@ export class ExamsComponent implements OnInit {
     this.saving = true;
     this.open = true;
     this.setActiveIds();
-    const candidateExam: CandidateExam = {};
-    this.candidateExamService.create(this.candidate.id, candidateExam).subscribe(
+    const request: CreateCandidateExamRequest = {};
+    this.candidateExamService.create(this.candidate.id, request).subscribe(
       (exam) => {
         this.candidateIntakeData.candidateExams.unshift(exam)
         this.saving = false;

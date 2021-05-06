@@ -17,7 +17,10 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Candidate, CandidateIntakeData} from '../../../../model/candidate';
 import {Nationality} from '../../../../model/nationality';
-import {CandidateDependantService} from '../../../../services/candidate-dependant.service';
+import {
+  CandidateDependantService,
+  CreateCandidateDependantRequest
+} from '../../../../services/candidate-dependant.service';
 import {Subject} from "rxjs";
 
 @Component({
@@ -69,7 +72,8 @@ export class DependantsComponent implements OnInit {
     this.saving = true;
     this.open = true;
     this.setActiveIds();
-    this.candidateDependantService.create(this.candidate.id, {}).subscribe(
+    const request: CreateCandidateDependantRequest = {};
+    this.candidateDependantService.create(this.candidate.id, request).subscribe(
       (dependant) => {
         this.candidateIntakeData?.candidateDependants.unshift(dependant)
         this.saving = false;

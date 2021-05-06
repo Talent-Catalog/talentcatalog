@@ -18,12 +18,18 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
-import {CandidateDependant, FamilyRelations} from '../model/candidate';
+import {CandidateDependant, DependantRelations, Registrations, YesNo} from '../model/candidate';
 
 export interface CreateCandidateDependantRequest {
-  relation?: FamilyRelations;
+  relation?: DependantRelations;
+  relationOther?: string;
   dob?: string;
-  healthConcerns?: string;
+  name?: string;
+  registered?: Registrations;
+  registeredNumber?: string;
+  registeredNotes?: string;
+  healthConcern?: YesNo;
+  healthNotes?: string;
 }
 
 @Injectable({providedIn: 'root'})
