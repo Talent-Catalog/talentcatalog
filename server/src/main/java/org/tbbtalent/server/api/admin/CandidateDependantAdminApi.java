@@ -79,9 +79,14 @@ public class CandidateDependantAdminApi
         return new DtoBuilder()
                 .add("id")
                 .add("relation")
+                .add("relationOther")
                 .add("dob")
                 .add("healthConcern")
-                .add("notes")
+                .add("healthNotes")
+                .add("name")
+                .add("registered")
+                .add("registeredNumber")
+                .add("registeredNotes")
                 ;
     }
 
