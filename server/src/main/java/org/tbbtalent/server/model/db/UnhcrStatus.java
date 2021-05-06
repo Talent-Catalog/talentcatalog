@@ -23,4 +23,5 @@ public enum UnhcrStatus {
     RegisteredStateless,
     NotRegistered,
     Unsure,
+    NA
 }
