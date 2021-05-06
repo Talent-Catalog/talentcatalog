@@ -224,7 +224,8 @@ import {HealthIssuesComponent} from './components/candidates/intake/health-issue
 import {VisaJobPutForwardComponent} from './components/candidates/visa/visa-job-assessments/put-forward/visa-job-put-forward.component';
 import {VisaJobNotesComponent} from './components/candidates/visa/visa-job-assessments/visa-job-notes/visa-job-notes.component';
 import {VisaJobCheckAuComponent} from './components/candidates/view/tab/candidate-visa-tab/au/job/visa-job-check-au.component';
-import { CandidateStatusSelectorComponent } from './components/util/candidate-status-selector/candidate-status-selector.component';
+import {CandidateStatusSelectorComponent} from './components/util/candidate-status-selector/candidate-status-selector.component';
+import {FinalAgreementComponent} from './components/candidates/intake/final-agreement/final-agreement.component';
 
 @NgModule({
   declarations: [
@@ -427,7 +428,8 @@ import { CandidateStatusSelectorComponent } from './components/util/candidate-st
     VisaJobPutForwardComponent,
     VisaJobNotesComponent,
     VisaJobCheckAuComponent,
-    CandidateStatusSelectorComponent
+    CandidateStatusSelectorComponent,
+    FinalAgreementComponent
   ],
   imports: [
     BrowserModule,

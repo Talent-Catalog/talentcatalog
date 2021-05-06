@@ -26,13 +26,13 @@ import {Subject} from "rxjs/index";
 export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
   toggleAll: Subject<any> = new Subject();
   activeIds: string[] = ['intake-confirm', 'intake-int-recruit', 'intake-english-assessment', 'intake-residency',
-    'intake-host-country', 'intake-registration', 'intake-partner-info', 'intake-additional-eligibility']
+    'intake-host-country', 'intake-registration', 'intake-partner-info', 'intake-additional-eligibility', 'intake-final-agreement']
 
   togglePanels(openAll: boolean) {
     this.toggleAll.next(openAll);
     if (openAll) {
       this.activeIds = ['intake-confirm', 'intake-int-recruit', 'intake-english-assessment', 'intake-residency',
-        'intake-host-country', 'intake-registration', 'intake-partner-info', 'intake-additional-eligibility']
+        'intake-host-country', 'intake-registration', 'intake-partner-info', 'intake-additional-eligibility', 'intake-final-agreement']
     } else {
       this.activeIds = [];
     }
