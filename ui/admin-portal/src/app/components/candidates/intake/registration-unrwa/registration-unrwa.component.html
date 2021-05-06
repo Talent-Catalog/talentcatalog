@@ -35,14 +35,6 @@
       </option>
     </select>
   </div>
-  <div *ngIf="hasNotes">
-    <div class="form-group">
-      <label for="unrwaNotes">Additional Notes</label>
-      <textarea type="text" class="md-textarea-auto form-control" rows="3"
-                id="unrwaNotes" [formControlName]="'unrwaNotes'"
-                placeholder="" ></textarea>
-    </div>
-  </div>
 
   <div *ngIf="showAll">
     <div *ngIf="unrwaRegistered == 'Yes'">
@@ -60,16 +52,24 @@
 
     <div *ngIf="unrwaRegistered == 'No'">
       <div class="form-group">
-        <label for="unhcrNotRegStatus">
+        <label for="unrwaNotRegStatus">
           What best describes your status not being registered?
         </label>
         <select class="form-control"
-                id="unhcrNotRegStatus" [formControlName]="'unhcrNotRegStatus'">
+                id="unrwaNotRegStatus" [formControlName]="'unrwaNotRegStatus'">
           <option *ngFor="let opt of NotRegisteredStatusOptions" [value]="opt.value">
             {{opt.displayText}}
           </option>
         </select>
       </div>
+    </div>
+  </div>
+  <div *ngIf="hasNotes">
+    <div class="form-group">
+      <label for="unrwaNotes">Additional Notes</label>
+      <textarea type="text" class="md-textarea-auto form-control" rows="3"
+                id="unrwaNotes" [formControlName]="'unrwaNotes'"
+                placeholder="" ></textarea>
     </div>
   </div>
 
