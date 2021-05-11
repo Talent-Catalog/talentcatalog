@@ -231,6 +231,7 @@ export class ViewCandidateComponent implements OnInit {
   }
 
   private setCandidateLists(lists: SavedList[]) {
+    this.savingList = true;
     const ids: number[] = [];
     if (lists !== null && lists.length > 0) {
       for (const savedList of lists) {
@@ -240,7 +241,9 @@ export class ViewCandidateComponent implements OnInit {
     this.candidateSavedListService.replace(this.candidate.id,
       {savedListIds: ids})
       .subscribe(
-        () => {},
+        () => {
+          this.savingList = false;
+        },
         (error) => {
           this.error = error;
           this.savingList = false;
