@@ -51,6 +51,7 @@ export class ViewCandidateComponent implements OnInit {
   loading: boolean;
   savingList: boolean;
   loadingError: boolean;
+  selectDropdownText: boolean = true;
   error;
   candidate: Candidate;
   mainColWidth = 8;
@@ -324,8 +325,10 @@ export class ViewCandidateComponent implements OnInit {
   toggleCheckAll(values: any) {
     if (values.currentTarget.checked){
       this.selectAll();
+      this.selectDropdownText = false;
     } else {
       this.unselectAll();
+      this.selectDropdownText = true;
     }
   }
 

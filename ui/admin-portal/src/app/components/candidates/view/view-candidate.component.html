@@ -86,16 +86,23 @@
           (remove)="onItemDeSelect($event)"
           [compareWith]="compareLists">
           <ng-template ng-header-tmp>
-            <input type="checkbox"  (change)="toggleCheckAll($event)"/> <span class="text-muted"> Select All ({{lists.length}})</span>
+            <input type="checkbox"  (change)="toggleCheckAll($event)"/> <span class="text-muted ml-2">{{selectDropdownText ? 'Select' : 'Deselect' }} all ({{lists.length}})</span>
           </ng-template>
           <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
             <div class="ng-value" *ngFor="let item of items">
-              <span class="ng-value-label"><a [routerLink]="['/list', item.id]" target="_blank"> {{item.name}}</a></span>
+              <span class="ng-value-label">
+                <a [routerLink]="['/list', item.id]"> {{item.name}} </a>
+                <a target="_blank" [routerLink]="['/list', item.id]">
+                  <i class="fas fa-external-link-alt" title="Open list in new tab"></i>
+                </a>
+              </span>
               <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
             </div>
           </ng-template>
           <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
-            <input id="item-{{index}}" type="checkbox" [ngModel]="item$.selected"/><a [routerLink]="['/list', item.id]" target="_blank"> {{item.name}}</a>
+            <div class="d-flex align-items-center">
+              <input id="item-{{index}}" type="checkbox" [ngModel]="item$.selected"/><span class="dropdown-text ml-2"> {{item.name}}</span>
+            </div>
           </ng-template>
         </ng-select>
       </div>

@@ -16,8 +16,8 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import java.util.Set;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateSavedList;
@@ -27,9 +27,12 @@ import org.tbbtalent.server.repository.db.CandidateSavedListRepository;
 import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 
+import java.util.Set;
+
 @Service
 public class CandidateSavedListServiceImpl implements CandidateSavedListService {
     private final CandidateSavedListRepository candidateSavedListRepository;
+    private static final Logger log = LoggerFactory.getLogger(CandidateSavedListServiceImpl.class);
 
     public CandidateSavedListServiceImpl(CandidateSavedListRepository candidateSavedListRepository) {
         this.candidateSavedListRepository = candidateSavedListRepository;
@@ -54,7 +57,11 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
     @Override
     public void removeFromSavedList(Candidate candidate, SavedList savedList) {
         final CandidateSavedList csl = new CandidateSavedList(candidate, savedList);
-        candidateSavedListRepository.delete(csl);
+        try {
+            candidateSavedListRepository.delete(csl);
+        } catch (Exception ex) {
+            log.warn("Could not delete candidate saved list " + csl.getId(), ex);
+        }
         csl.getCandidate().getCandidateSavedLists().remove(csl);
         csl.getSavedList().getCandidateSavedLists().remove(csl);
     }
