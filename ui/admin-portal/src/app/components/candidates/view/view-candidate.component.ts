@@ -24,7 +24,6 @@ import {EditCandidateStatusComponent} from './status/edit-candidate-status.compo
 import {Title} from '@angular/platform-browser';
 import {AuthService} from '../../../services/auth.service';
 import {User} from '../../../model/user';
-import {IDropdownSettings} from 'ng-multiselect-dropdown';
 import {ListItem} from 'ng-multiselect-dropdown/multiselect.model';
 import {IHasSetOfCandidates, SavedList, SearchSavedListRequest} from '../../../model/saved-list';
 import {SavedListService} from '../../../services/saved-list.service';
@@ -64,15 +63,6 @@ export class ViewCandidateComponent implements OnInit {
   attachments: CandidateAttachment[];
   cvs: CandidateAttachment[];
   s3BucketUrl = environment.s3BucketUrl;
-
-  /* MULTI SELECT */
-  dropdownSettings: IDropdownSettings = {
-    idField: 'id',
-    textField: 'name',
-    enableCheckAll: true,
-    singleSelection: false,
-    allowSearchFilter: true
-  };
 
   constructor(private candidateService: CandidateService,
               private savedListService: SavedListService,
