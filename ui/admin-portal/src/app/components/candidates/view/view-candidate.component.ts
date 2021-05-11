@@ -210,30 +210,6 @@ export class ViewCandidateComponent implements OnInit {
       );
   }
 
-  onItemSelect($event: ListItem) {
-    const savedListId: number = +$event.id;
-    this.addCandidateToList(savedListId, false);
-  }
-
-  onItemDeSelect($event) {
-    const savedListId: number = +$event.value.id;
-    this.removeCandidateFromList(savedListId);
-  }
-
-  selectAll() {
-    this.selectedLists = this.lists;
-    this.setCandidateLists(this.lists);
-  }
-
-  unselectAll() {
-    this.selectedLists = [];
-    this.setCandidateLists(null);
-  }
-
-  compareLists = (item, selected) => {
-    return item.id === selected.id;
-  };
-
   onNewList() {
     const modal = this.modalService.open(CreateUpdateListComponent);
     modal.result
@@ -315,6 +291,33 @@ export class ViewCandidateComponent implements OnInit {
   isAnAdmin(): boolean {
     return this.candidateFieldService.isAnAdmin();
   }
+
+  /*
+    Methods for ng-select list selection
+   */
+  onItemSelect($event: ListItem) {
+    const savedListId: number = +$event.id;
+    this.addCandidateToList(savedListId, false);
+  }
+
+  onItemDeSelect($event) {
+    const savedListId: number = +$event.value.id;
+    this.removeCandidateFromList(savedListId);
+  }
+
+  selectAll() {
+    this.selectedLists = this.lists;
+    this.setCandidateLists(this.lists);
+  }
+
+  unselectAll() {
+    this.selectedLists = [];
+    this.setCandidateLists(null);
+  }
+
+  compareLists = (item, selected) => {
+    return item.id === selected.id;
+  };
 
   toggleCheckAll(values: any) {
     if (values.currentTarget.checked){
