@@ -23,6 +23,7 @@
     "@angular/router": "^10.0.6",
     "@fortawesome/fontawesome-free": "^5.14.0",
     "@ng-bootstrap/ng-bootstrap": "^7.0.0",
+    "@ng-select/ng-select": "^5.1.0",
     "angular-2-local-storage": "^3.0.2",
     "angular-local-storage": "^0.7.1",
     "bootstrap": "^4.5.0",

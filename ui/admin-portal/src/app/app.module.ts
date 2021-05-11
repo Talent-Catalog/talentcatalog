@@ -226,6 +226,7 @@ import {VisaJobNotesComponent} from './components/candidates/visa/visa-job-asses
 import {VisaJobCheckAuComponent} from './components/candidates/view/tab/candidate-visa-tab/au/job/visa-job-check-au.component';
 import {CandidateStatusSelectorComponent} from './components/util/candidate-status-selector/candidate-status-selector.component';
 import {FinalAgreementComponent} from './components/candidates/intake/final-agreement/final-agreement.component';
+import {NgSelectModule} from "@ng-select/ng-select";
 
 @NgModule({
   declarations: [
@@ -443,6 +444,7 @@ import {FinalAgreementComponent} from './components/candidates/intake/final-agre
     NgMultiSelectDropDownModule.forRoot(),
     ChartsModule,
     NgxWigModule,
+    NgSelectModule,
     LocalStorageModule.forRoot({
       prefix: 'tbb-admin',
       storageType: 'localStorage'

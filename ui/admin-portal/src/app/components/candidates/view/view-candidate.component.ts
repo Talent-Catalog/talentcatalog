@@ -16,11 +16,7 @@
 
 import {Component, OnInit} from '@angular/core';
 import {CandidateService} from '../../../services/candidate.service';
-import {
-  Candidate,
-  UpdateCandidateStatusInfo,
-  UpdateCandidateStatusRequest
-} from '../../../model/candidate';
+import {Candidate, UpdateCandidateStatusInfo, UpdateCandidateStatusRequest} from '../../../model/candidate';
 import {ActivatedRoute, Router} from '@angular/router';
 import {NgbModal, NgbTabChangeEvent} from '@ng-bootstrap/ng-bootstrap';
 import {DeleteCandidateComponent} from './delete/delete-candidate.component';
@@ -30,11 +26,7 @@ import {AuthService} from '../../../services/auth.service';
 import {User} from '../../../model/user';
 import {IDropdownSettings} from 'ng-multiselect-dropdown';
 import {ListItem} from 'ng-multiselect-dropdown/multiselect.model';
-import {
-  IHasSetOfCandidates,
-  SavedList,
-  SearchSavedListRequest
-} from '../../../model/saved-list';
+import {IHasSetOfCandidates, SavedList, SearchSavedListRequest} from '../../../model/saved-list';
 import {SavedListService} from '../../../services/saved-list.service';
 import {CandidateSavedListService} from '../../../services/candidate-saved-list.service';
 import {SavedListCandidateService} from '../../../services/saved-list-candidate.service';
@@ -150,8 +142,6 @@ export class ViewCandidateComponent implements OnInit {
     );
   }
 
-
-
   deleteCandidate() {
     const modal = this.modalService.open(DeleteCandidateComponent);
     modal.componentInstance.candidate = this.candidate;
@@ -225,18 +215,24 @@ export class ViewCandidateComponent implements OnInit {
     this.addCandidateToList(savedListId, false);
   }
 
-  onItemDeSelect($event: ListItem) {
-    const savedListId: number = +$event.id;
+  onItemDeSelect($event) {
+    const savedListId: number = +$event.value.id;
     this.removeCandidateFromList(savedListId);
   }
 
-  onSelectAll($event: Array<ListItem>) {
+  selectAll() {
+    this.selectedLists = this.lists;
     this.setCandidateLists(this.lists);
   }
 
-  onDeSelectAll($event: Array<ListItem>) {
+  unselectAll() {
+    this.selectedLists = [];
     this.setCandidateLists(null);
   }
+
+  compareLists = (item, selected) => {
+    return item.id === selected.id;
+  };
 
   onNewList() {
     const modal = this.modalService.open(CreateUpdateListComponent);
@@ -319,4 +315,13 @@ export class ViewCandidateComponent implements OnInit {
   isAnAdmin(): boolean {
     return this.candidateFieldService.isAnAdmin();
   }
+
+  toggleCheckAll(values: any) {
+    if (values.currentTarget.checked){
+      this.selectAll();
+    } else {
+      this.unselectAll();
+    }
+  }
+
 }

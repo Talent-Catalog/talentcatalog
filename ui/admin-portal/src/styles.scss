@@ -28,6 +28,7 @@ $fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
 @import "~src/scss/variables";
 @import "~src/scss/btn";
 @import "~src/scss/dragula";
+@import "~@ng-select/ng-select/themes/default.theme.css";
 
 body {
   padding-top: 6rem;

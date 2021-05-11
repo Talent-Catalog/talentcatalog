@@ -69,30 +69,42 @@
       </span>
     </h1>
 
-    <div class="d-flex align-items-center justify-content-end">
+    <div class="d-flex align-items-end mb-4">
       <div class="flex-grow-1">
         <p class="small text-muted mb-0">Add candidate to a list</p>
-        <ng-multiselect-dropdown
-          id="savedLists"
-          class="flex-fill custom-primary"
-          [settings]="dropdownSettings"
-          [data]="lists"
+        <ng-select
+          [items]="lists"
+          [multiple]="true"
+          [placeholder]="'Select or Type'"
+          [closeOnSelect]="false"
+          [clearable]="false"
+          bindLabel="name"
+          [clearSearchOnAdd]="true"
           [(ngModel)]="selectedLists"
-          (onSelectAll)="onSelectAll($event)"
-          (onDeSelectAll)="onDeSelectAll($event)"
-          (onSelect)="onItemSelect($event)"
-          (onDeSelect)="onItemDeSelect($event)">
-        </ng-multiselect-dropdown>
+          (add)="onItemSelect($event)"
+          (remove)="onItemDeSelect($event)"
+          [compareWith]="compareLists">
+          <ng-template ng-header-tmp>
+            <input type="checkbox"  (change)="toggleCheckAll($event)"/> <span class="text-muted"> Select All ({{lists.length}})</span>
+          </ng-template>
+          <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+            <div class="ng-value" *ngFor="let item of items">
+              <span class="ng-value-label"><a [routerLink]="['/list', item.id]" target="_blank"> {{item.name}}</a></span>
+              <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+            </div>
+          </ng-template>
+          <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+            <input id="item-{{index}}" type="checkbox" [ngModel]="item$.selected"/><a [routerLink]="['/list', item.id]" target="_blank"> {{item.name}}</a>
+          </ng-template>
+        </ng-select>
       </div>
-      <div class="pl-2 text-right">
+
+      <div class="pl-2 flex-shrink-0">
         <button class="btn btn-sm btn-secondary" type="button"
                 (click)="onNewList()">+ New List
         </button>
       </div>
 
-
-
-    </div>
   </div>
 
   <div class="row">
