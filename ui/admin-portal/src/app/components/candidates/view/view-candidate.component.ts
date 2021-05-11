@@ -50,6 +50,7 @@ export class ViewCandidateComponent implements OnInit {
 
   activeTabId: string;
   loading: boolean;
+  savingList: boolean;
   loadingError: boolean;
   error;
   candidate: Candidate;
@@ -221,16 +222,19 @@ export class ViewCandidateComponent implements OnInit {
   }
 
   private addCandidateToList(savedListId: number, reload: boolean) {
+    this.savingList = true;
     const request: IHasSetOfCandidates = {
       candidateIds: [this.candidate.id]
     };
     this.savedListCandidateService.merge(savedListId, request).subscribe(
           () => {
+            this.savingList = false;
             if (reload) {
               this.loadLists();
             }
           },
           (error) => {
+            this.savingList = false;
             this.error = error;
           }
     );
@@ -249,17 +253,22 @@ export class ViewCandidateComponent implements OnInit {
         () => {},
         (error) => {
           this.error = error;
+          this.savingList = false;
         }
       );
   }
 
   private removeCandidateFromList(savedListId: number) {
+    this.savingList = true;
     const request: IHasSetOfCandidates = {
       candidateIds: [this.candidate.id]
     };
     this.savedListCandidateService.remove(savedListId, request).subscribe(
-          () => {},
+          () => {
+            this.savingList = false;
+          },
           (error) => {
+            this.savingList = false;
             this.error = error;
           }
     );
