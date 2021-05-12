@@ -257,55 +257,9 @@ export class ViewCandidateComponent implements OnInit {
 
   }
 
-  // selectAll() {
-  //   const selectAllCandidateListModal = this.modalService.open(ConfirmationComponent, {
-  //     centered: true,
-  //     backdrop: 'static'
-  //   });
-  //
-  //   selectAllCandidateListModal.componentInstance.message =
-  //     'Are you sure you want to add candidate ' + this.candidate.user.firstName + ' ' + this.candidate.user.lastName +
-  //     ' too all the lists?';
-  //
-  //   selectAllCandidateListModal.result
-  //     .then((result) => {
-  //       this.selectedLists = this.lists;
-  //       this.setCandidateLists(this.lists);
-  //     })
-  //     .catch(() => { /* Isn't possible */ });
-  // }
-  //
-  // unselectAll() {
-  //   const deselectAllCandidateListModal = this.modalService.open(ConfirmationComponent, {
-  //     centered: true,
-  //     backdrop: 'static'
-  //   });
-  //
-  //   deselectAllCandidateListModal.componentInstance.message =
-  //     'Are you sure you want to remove candidate ' + this.candidate.user.firstName + ' ' + this.candidate.user.lastName +
-  //     ' from all the lists?';
-  //
-  //   deselectAllCandidateListModal.result
-  //     .then((result) => {
-  //       this.selectedLists = [];
-  //       this.setCandidateLists(null);
-  //     })
-  //     .catch(() => { /* Isn't possible */ });
-  // }
-
   compareLists = (item, selected) => {
     return item.id === selected.id;
   };
-
-  // toggleCheckAll(values: any) {
-  //   if (values.currentTarget.checked){
-  //     this.selectAll();
-  //     this.selectDropdownText = false;
-  //   } else {
-  //     this.unselectAll();
-  //     this.selectDropdownText = true;
-  //   }
-  // }
 
   onNewList() {
     const modal = this.modalService.open(CreateUpdateListComponent);

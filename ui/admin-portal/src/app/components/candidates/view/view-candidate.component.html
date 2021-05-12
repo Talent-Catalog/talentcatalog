@@ -72,7 +72,7 @@
     <div class="d-flex align-items-end mb-4">
       <div class="flex-grow-1">
         <p class="small text-muted mb-0">Add candidate to a list</p>
-        <ng-select #listSelect
+        <ng-select
           [items]="lists"
           [multiple]="true"
           [placeholder]="'Select or Type'"
@@ -88,7 +88,7 @@
           <ng-template ng-header-tmp>
             <span class="text-muted ml-2">Selected: {{selectedLists.length}}</span>
           </ng-template>
-          <ng-template #a ng-multi-label-tmp let-items="items" let-clear="clear">
+          <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
             <div class="ng-value" *ngFor="let item of items">
               <span class="ng-value-label">
                 <a [routerLink]="['/list', item.id]"> {{item.name}} </a>
