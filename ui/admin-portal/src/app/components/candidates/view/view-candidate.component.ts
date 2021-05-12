@@ -37,6 +37,7 @@ import {environment} from '../../../../environments/environment';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {CreateUpdateListComponent} from '../../list/create-update/create-update-list.component';
 import {CandidateFieldService} from "../../../services/candidate-field.service";
+import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 
 @Component({
   selector: 'app-view-candidate',
@@ -202,72 +203,6 @@ export class ViewCandidateComponent implements OnInit {
       );
   }
 
-  onNewList() {
-    const modal = this.modalService.open(CreateUpdateListComponent);
-    modal.result
-      .then((savedList: SavedList) => {
-        this.addCandidateToList(savedList.id, true);
-      })
-      .catch(() => { /* Isn't possible */
-      });
-  }
-
-  private addCandidateToList(savedListId: number, reload: boolean) {
-    this.savingList = true;
-    const request: IHasSetOfCandidates = {
-      candidateIds: [this.candidate.id]
-    };
-    this.savedListCandidateService.merge(savedListId, request).subscribe(
-          () => {
-            this.savingList = false;
-            if (reload) {
-              this.loadLists();
-            }
-          },
-          (error) => {
-            this.savingList = false;
-            this.error = error;
-          }
-    );
-  }
-
-  private setCandidateLists(lists: SavedList[]) {
-    this.savingList = true;
-    const ids: number[] = [];
-    if (lists !== null && lists.length > 0) {
-      for (const savedList of lists) {
-        ids.push(savedList.id);
-      }
-    }
-    this.candidateSavedListService.replace(this.candidate.id,
-      {savedListIds: ids})
-      .subscribe(
-        () => {
-          this.savingList = false;
-        },
-        (error) => {
-          this.error = error;
-          this.savingList = false;
-        }
-      );
-  }
-
-  private removeCandidateFromList(savedListId: number) {
-    this.savingList = true;
-    const request: IHasSetOfCandidates = {
-      candidateIds: [this.candidate.id]
-    };
-    this.savedListCandidateService.remove(savedListId, request).subscribe(
-          () => {
-            this.savingList = false;
-          },
-          (error) => {
-            this.savingList = false;
-            this.error = error;
-          }
-    );
-  }
-
   private selectDefaultTab() {
     const defaultActiveTabID: string = this.localStorageService.get(this.lastTabKey);
     this.activeTabId = defaultActiveTabID;
@@ -303,33 +238,139 @@ export class ViewCandidateComponent implements OnInit {
     this.addCandidateToList(savedListId, false);
   }
 
-  onItemDeSelect($event) {
-    const savedListId: number = +$event.value.id;
-    this.removeCandidateFromList(savedListId);
+  onItemDeSelect($event: SavedList) {
+    const savedListId: number = +$event.id;
+    const deleteCandidateListModal = this.modalService.open(ConfirmationComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    deleteCandidateListModal.componentInstance.message =
+      'Are you sure you want to remove ' + this.candidate.user.firstName + ' ' + this.candidate.user.lastName +
+      ' from the list ' + $event.name + ' ?';
+
+    deleteCandidateListModal.result
+      .then((result) => {
+        this.removeCandidateFromList(savedListId);
+      })
+      .catch(() => { /* Isn't possible */ });
+
   }
 
-  selectAll() {
-    this.selectedLists = this.lists;
-    this.setCandidateLists(this.lists);
-  }
-
-  unselectAll() {
-    this.selectedLists = [];
-    this.setCandidateLists(null);
-  }
+  // selectAll() {
+  //   const selectAllCandidateListModal = this.modalService.open(ConfirmationComponent, {
+  //     centered: true,
+  //     backdrop: 'static'
+  //   });
+  //
+  //   selectAllCandidateListModal.componentInstance.message =
+  //     'Are you sure you want to add candidate ' + this.candidate.user.firstName + ' ' + this.candidate.user.lastName +
+  //     ' too all the lists?';
+  //
+  //   selectAllCandidateListModal.result
+  //     .then((result) => {
+  //       this.selectedLists = this.lists;
+  //       this.setCandidateLists(this.lists);
+  //     })
+  //     .catch(() => { /* Isn't possible */ });
+  // }
+  //
+  // unselectAll() {
+  //   const deselectAllCandidateListModal = this.modalService.open(ConfirmationComponent, {
+  //     centered: true,
+  //     backdrop: 'static'
+  //   });
+  //
+  //   deselectAllCandidateListModal.componentInstance.message =
+  //     'Are you sure you want to remove candidate ' + this.candidate.user.firstName + ' ' + this.candidate.user.lastName +
+  //     ' from all the lists?';
+  //
+  //   deselectAllCandidateListModal.result
+  //     .then((result) => {
+  //       this.selectedLists = [];
+  //       this.setCandidateLists(null);
+  //     })
+  //     .catch(() => { /* Isn't possible */ });
+  // }
 
   compareLists = (item, selected) => {
     return item.id === selected.id;
   };
 
-  toggleCheckAll(values: any) {
-    if (values.currentTarget.checked){
-      this.selectAll();
-      this.selectDropdownText = false;
-    } else {
-      this.unselectAll();
-      this.selectDropdownText = true;
+  // toggleCheckAll(values: any) {
+  //   if (values.currentTarget.checked){
+  //     this.selectAll();
+  //     this.selectDropdownText = false;
+  //   } else {
+  //     this.unselectAll();
+  //     this.selectDropdownText = true;
+  //   }
+  // }
+
+  onNewList() {
+    const modal = this.modalService.open(CreateUpdateListComponent);
+    modal.result
+      .then((savedList: SavedList) => {
+        this.addCandidateToList(savedList.id, true);
+      })
+      .catch(() => { /* Isn't possible */
+      });
+  }
+
+  private addCandidateToList(savedListId: number, reload: boolean) {
+    this.savingList = true;
+    const request: IHasSetOfCandidates = {
+      candidateIds: [this.candidate.id]
+    };
+    this.savedListCandidateService.merge(savedListId, request).subscribe(
+      () => {
+        this.savingList = false;
+        if (reload) {
+          this.loadLists();
+        }
+      },
+      (error) => {
+        this.savingList = false;
+        this.error = error;
+      }
+    );
+  }
+
+  private setCandidateLists(lists: SavedList[]) {
+    this.savingList = true;
+    const ids: number[] = [];
+    if (lists !== null && lists.length > 0) {
+      for (const savedList of lists) {
+        ids.push(savedList.id);
+      }
     }
+    this.candidateSavedListService.replace(this.candidate.id,
+      {savedListIds: ids})
+      .subscribe(
+        () => {
+          this.savingList = false;
+        },
+        (error) => {
+          this.error = error;
+          this.savingList = false;
+        }
+      );
+  }
+
+  private removeCandidateFromList(savedListId: number) {
+    this.savingList = true;
+    const request: IHasSetOfCandidates = {
+      candidateIds: [this.candidate.id]
+    };
+    this.savedListCandidateService.remove(savedListId, request).subscribe(
+      () => {
+        this.selectedLists = this.selectedLists.filter(list => list.id !== savedListId)
+        this.savingList = false;
+      },
+      (error) => {
+        this.savingList = false;
+        this.error = error;
+      })
   }
 
 }

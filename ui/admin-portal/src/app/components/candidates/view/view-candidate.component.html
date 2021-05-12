@@ -72,7 +72,7 @@
     <div class="d-flex align-items-end mb-4">
       <div class="flex-grow-1">
         <p class="small text-muted mb-0">Add candidate to a list</p>
-        <ng-select
+        <ng-select #listSelect
           [items]="lists"
           [multiple]="true"
           [placeholder]="'Select or Type'"
@@ -83,12 +83,12 @@
           [clearSearchOnAdd]="true"
           [(ngModel)]="selectedLists"
           (add)="onItemSelect($event)"
-          (remove)="onItemDeSelect($event)"
-          [compareWith]="compareLists">
+          [compareWith]="compareLists"
+          [hideSelected]="true">
           <ng-template ng-header-tmp>
-            <input type="checkbox"  (change)="toggleCheckAll($event)"/> <span class="text-muted ml-2">{{selectDropdownText ? 'Select' : 'Deselect' }} all ({{lists.length}})</span>
+            <span class="text-muted ml-2">Selected: {{selectedLists.length}}</span>
           </ng-template>
-          <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+          <ng-template #a ng-multi-label-tmp let-items="items" let-clear="clear">
             <div class="ng-value" *ngFor="let item of items">
               <span class="ng-value-label">
                 <a [routerLink]="['/list', item.id]"> {{item.name}} </a>
@@ -96,12 +96,7 @@
                   <i class="fas fa-external-link-alt" title="Open list in new tab"></i>
                 </a>
               </span>
-              <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
-            </div>
-          </ng-template>
-          <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
-            <div class="d-flex align-items-center">
-              <input id="item-{{index}}" type="checkbox" [ngModel]="item$.selected"/><span class="dropdown-text ml-2"> {{item.name}}</span>
+              <span class="ng-value-icon right" (click)="onItemDeSelect(item)" aria-hidden="true">×</span>
             </div>
           </ng-template>
         </ng-select>
