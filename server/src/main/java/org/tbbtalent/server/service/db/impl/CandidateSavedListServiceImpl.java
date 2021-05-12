@@ -59,7 +59,6 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
         final CandidateSavedList csl = new CandidateSavedList(candidate, savedList);
         try {
             candidateSavedListRepository.delete(csl);
-            //todo move these up here to avoid error
             csl.getCandidate().getCandidateSavedLists().remove(csl);
             csl.getSavedList().getCandidateSavedLists().remove(csl);
         } catch (Exception ex) {
