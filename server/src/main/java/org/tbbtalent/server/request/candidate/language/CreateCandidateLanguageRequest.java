@@ -18,13 +18,13 @@ package org.tbbtalent.server.request.candidate.language;
 
 public class CreateCandidateLanguageRequest {
 
-    private Long id;
+    private Long languageId;
     private Long writtenLevelId;
     private Long spokenLevelId;
 
-    public Long getId() { return id; }
+    public Long getLanguageId() { return languageId; }
 
-    public void setId(Long languageId) { this.id = languageId; }
+    public void setLanguageId(Long languageId) { this.languageId = languageId; }
 
     public Long getWrittenLevelId() { return writtenLevelId; }
 

@@ -25,10 +25,14 @@ export class CandidateLanguageService {
 
   private apiUrl = environment.apiUrl + '/candidate-language';
 
-  constructor(private http:HttpClient) {}
+  constructor(private http: HttpClient) {}
 
   list(id: number): Observable<CandidateLanguage[]> {
     return this.http.get<CandidateLanguage[]>(`${this.apiUrl}/${id}/list`);
+  }
+
+  create(id: number, details): Observable<CandidateLanguage>  {
+    return this.http.post<CandidateLanguage>(`${this.apiUrl}/${id}`, details);
   }
 
   update(id: number, details): Observable<CandidateLanguage>  {

@@ -16,12 +16,12 @@
 
 package org.tbbtalent.server.service.db;
 
-import java.util.List;
-
 import org.tbbtalent.server.model.db.CandidateLanguage;
 import org.tbbtalent.server.request.candidate.language.CreateCandidateLanguageRequest;
 import org.tbbtalent.server.request.candidate.language.UpdateCandidateLanguageRequest;
 import org.tbbtalent.server.request.candidate.language.UpdateCandidateLanguagesRequest;
+
+import java.util.List;
 
 public interface CandidateLanguageService {
 
@@ -32,6 +32,8 @@ public interface CandidateLanguageService {
     void deleteCandidateLanguage(Long id);
 
     List<CandidateLanguage> list(long id);
+
+    CandidateLanguage createCandidateLanguageAdmin(long id, CreateCandidateLanguageRequest request);
 
     List<CandidateLanguage> updateCandidateLanguages(UpdateCandidateLanguagesRequest request);
 }

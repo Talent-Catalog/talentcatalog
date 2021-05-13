@@ -21,6 +21,7 @@ import {CandidateLanguage} from '../../../../model/candidate-language';
 import {CandidateLanguageService} from '../../../../services/candidate-language.service';
 import {EditCandidateLanguageComponent} from '../language/edit/edit-candidate-language.component';
 import {Subject} from "rxjs";
+import {CreateCandidateLanguageComponent} from "./create/create-candidate-language.component";
 
 @Component({
   selector: 'app-view-candidate-language',
@@ -89,6 +90,20 @@ export class ViewCandidateLanguageComponent implements OnInit, OnChanges {
     editCandidateLanguageModal.componentInstance.candidateLanguage = candidateLanguage;
 
     editCandidateLanguageModal.result
+      .then((candidateLanguage) => this.search())
+      .catch(() => { /* Isn't possible */ });
+
+  }
+
+  createCandidateLanguage() {
+    const createCandidateLanguageModal = this.modalService.open(CreateCandidateLanguageComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    createCandidateLanguageModal.componentInstance.candidateId = this.candidate.id;
+
+    createCandidateLanguageModal.result
       .then((candidateLanguage) => this.search())
       .catch(() => { /* Isn't possible */ });
 

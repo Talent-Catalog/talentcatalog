@@ -24,7 +24,13 @@
 <div *ngIf="!accordion">
   <div class="card" *ngIf="!loading">
     <!-- HEADER -->
-    <div class="card-header">Languages</div>
+    <div class="card-header">Languages
+      <div class="float-right" *ngIf="editable">
+        <button class="btn btn-primary btn-sm" (click)="createCandidateLanguage()">
+          <i class="fas fa-plus"></i>
+        </button>
+      </div>
+    </div>
     <!-- BODY -->
     <div class="card-body">
       <!-- EMPTY STATE -->
