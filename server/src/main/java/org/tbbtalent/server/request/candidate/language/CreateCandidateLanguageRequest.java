@@ -15,12 +15,21 @@
  */
 
 package org.tbbtalent.server.request.candidate.language;
+import org.springframework.lang.Nullable;
 
 public class CreateCandidateLanguageRequest {
+
+    @Nullable
+    private Long candidateId;
 
     private Long languageId;
     private Long writtenLevelId;
     private Long spokenLevelId;
+
+    @Nullable
+    public Long getCandidateId() { return candidateId; }
+
+    public void setCandidateId(@Nullable Long candidateId) { this.candidateId = candidateId; }
 
     public Long getLanguageId() { return languageId; }
 

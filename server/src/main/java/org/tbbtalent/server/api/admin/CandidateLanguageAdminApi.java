@@ -17,6 +17,7 @@
 package org.tbbtalent.server.api.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.db.CandidateLanguage;
@@ -46,21 +47,23 @@ public class CandidateLanguageAdminApi {
         return candidateLanguageDto().buildList(candidateLanguages);
     }
 
-    @PostMapping("{id}")
-    public Map<String, Object> create(@PathVariable("id") long candidateId,
-                                      @RequestBody CreateCandidateLanguageRequest request) throws UsernameTakenException {
-        CandidateLanguage candidateLanguage = this.candidateLanguageService.createCandidateLanguageAdmin(candidateId, request);
+    @PostMapping()
+    public Map<String, Object> create(@RequestBody CreateCandidateLanguageRequest request) throws UsernameTakenException {
+        CandidateLanguage candidateLanguage = this.candidateLanguageService.createCandidateLanguage(request);
         return candidateLanguageDto().build(candidateLanguage);
     }
 
-    @PutMapping("{id}")
-    public Map<String, Object> update(@PathVariable("id") long id,
-                                      @RequestBody UpdateCandidateLanguageRequest request) {
-        CandidateLanguage candidateLanguage = this.candidateLanguageService.updateCandidateLanguage(id, request);
+    @PutMapping()
+    public Map<String, Object> update(@RequestBody UpdateCandidateLanguageRequest request) {
+        CandidateLanguage candidateLanguage = this.candidateLanguageService.updateCandidateLanguage(request);
         return candidateLanguageDto().build(candidateLanguage);
     }
 
-
+    @DeleteMapping("{id}")
+    public ResponseEntity delete(@PathVariable("id") Long id) {
+        this.candidateLanguageService.deleteCandidateLanguage(id);
+        return ResponseEntity.ok().build();
+    }
 
 
     private DtoBuilder candidateLanguageDto() {

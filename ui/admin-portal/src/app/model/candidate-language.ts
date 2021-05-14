@@ -16,9 +16,11 @@
 
 import {Language} from "./language";
 import {LanguageLevel} from "./language-level";
+import {Candidate} from "./candidate";
 
 export interface CandidateLanguage {
   id: number;
+  candidate: Candidate;
   language: Language;
   spokenLevel: LanguageLevel;
   writtenLevel: LanguageLevel;

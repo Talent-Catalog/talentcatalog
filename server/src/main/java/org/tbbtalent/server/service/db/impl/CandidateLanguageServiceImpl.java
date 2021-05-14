@@ -18,7 +18,7 @@ package org.tbbtalent.server.service.db.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.tbbtalent.server.exception.InvalidCredentialsException;
+import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.repository.db.CandidateLanguageRepository;
@@ -32,6 +32,7 @@ import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.CandidateLanguageService;
 import org.tbbtalent.server.service.db.CandidateService;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -63,17 +64,53 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
         this.userContext = userContext;
     }
 
+    /**
+     * Used in the admin portal only to create candidate language.
+     * @param request
+     * @return
+     */
     @Override
     public CandidateLanguage createCandidateLanguage(CreateCandidateLanguageRequest request) {
-        Candidate candidate = userContext.getLoggedInCandidate();
-        return createCandidateLanguage(candidate, request);
+        User loggedInUser = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+        Candidate candidate = getCandidateFromRequest(request.getCandidateId());
+
+        // Load the industry from the database - throw an exception if not found
+        Language language = languageRepository.findById(request.getLanguageId())
+                .orElseThrow(() -> new NoSuchObjectException(Language.class, request.getLanguageId()));
+
+        // Load the languageLevels from the database - throw an exception if not found
+        LanguageLevel languageSpeak = languageLevelRepository.findById(request.getSpokenLevelId())
+                .orElseThrow(() -> new NoSuchObjectException(LanguageLevel.class, request.getSpokenLevelId()));
+
+        LanguageLevel languageReadWrite = languageLevelRepository.findById(request.getWrittenLevelId())
+                .orElseThrow(() -> new NoSuchObjectException(LanguageLevel.class, request.getWrittenLevelId()));
+
+        // Create a new candidateLanguage object to insert into the database
+        CandidateLanguage candidateLanguage = new CandidateLanguage();
+        candidateLanguage.setCandidate(candidate);
+        candidateLanguage.setLanguage(language);
+        candidateLanguage.setSpokenLevel(languageSpeak);
+        candidateLanguage.setWrittenLevel(languageReadWrite);
+
+        // Save the candidateLanguage
+        candidateLanguage = candidateLanguageRepository.save(candidateLanguage);
+        setAuditFieldsFromUser(candidate, loggedInUser);
+        candidateService.save(candidate, true);
+        return candidateLanguage;
     }
 
+    /**
+     * Used in admin portal only.
+     * @param request
+     * @return
+     */
     @Override
-    public CandidateLanguage updateCandidateLanguage(Long id, UpdateCandidateLanguageRequest request) {
+    public CandidateLanguage updateCandidateLanguage(UpdateCandidateLanguageRequest request) {
 
-        CandidateLanguage candidateLanguage = candidateLanguageRepository.findById(id)
-                .orElseThrow(() -> new NoSuchObjectException(CandidateLanguage.class, id));
+        CandidateLanguage candidateLanguage = candidateLanguageRepository.findById(request.getId())
+                .orElseThrow(() -> new NoSuchObjectException(CandidateLanguage.class, request.getId()));
 
         // Load the language from the database - throw an exception if not found
         Language language = languageRepository.findById(request.getLanguageId())
@@ -100,18 +137,21 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
         return candidateLanguage;
     }
 
+    /**
+     * Used in admin portal only to delete candidate language
+     * @param id Candidate Language Id to delete
+     */
     @Override
     public void deleteCandidateLanguage(Long id) {
-        Candidate candidate = userContext.getLoggedInCandidate();
+        User loggedInUser = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
         CandidateLanguage candidateLanguage = candidateLanguageRepository.findByIdLoadCandidate(id)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateLanguage.class, id));
 
-        // Check that the user is deleting their own candidateOccupation
-        if (!candidate.getId().equals(candidateLanguage.getCandidate().getId())) {
-            throw new InvalidCredentialsException("You do not have permission to perform that action");
-        }
+        Candidate candidate = candidateLanguage.getCandidate();
         candidateLanguageRepository.delete(candidateLanguage);
-        candidate.setAuditFields(candidate.getUser());
+        setAuditFieldsFromUser(candidate, loggedInUser);
         candidateService.save(candidate, true);
     }
 
@@ -120,9 +160,11 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
         return candidateLanguageRepository.findByCandidateId(id);
     }
 
-    /*
-    * Used in the candidate portal, only does update languages for creation and updating by sending array of language requests
-    * */
+    /**
+     * Used in the Candidate portal only to create/delete candidate languages by updating array of requests
+     * @param request an array of language requests
+     * @return a list of candidate languages
+     */
     @Override
     public List<CandidateLanguage> updateCandidateLanguages(UpdateCandidateLanguagesRequest request) {
         Candidate candidate = userContext.getLoggedInCandidate();
@@ -176,36 +218,39 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
         return candidateLanguages;
     }
 
-    @Override
-    public CandidateLanguage createCandidateLanguageAdmin(long candidateId, CreateCandidateLanguageRequest request) {
-        Candidate candidate = this.candidateRepository.findById(candidateId)
-                .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateId));
-        return createCandidateLanguage(candidate, request);
+    /**
+     * Depending on if the request came from the admin or candidate portal, sets audit fields with correct user. If
+     * User and Candidate are the same, then it's candidate portal. If User and Candidate are different comes from admin.
+     * @param candidate Candidate being altered
+     * @param user Logged in User
+     */
+    private void setAuditFieldsFromUser(Candidate candidate, User user) {
+        if (candidate.getUser() == user ) {
+            candidate.setAuditFields(candidate.getUser());
+        } else {
+            candidate.setAuditFields(user);
+        }
     }
 
-    private CandidateLanguage createCandidateLanguage(Candidate candidate, CreateCandidateLanguageRequest request) {
-        // Load the industry from the database - throw an exception if not found
-        Language language = languageRepository.findById(request.getLanguageId())
-                .orElseThrow(() -> new NoSuchObjectException(Language.class, request.getLanguageId()));
-
-        // Load the languageLevels from the database - throw an exception if not found
-        LanguageLevel languageSpeak = languageLevelRepository.findById(request.getSpokenLevelId())
-                .orElseThrow(() -> new NoSuchObjectException(LanguageLevel.class, request.getSpokenLevelId()));
-
-        LanguageLevel languageReadWrite = languageLevelRepository.findById(request.getWrittenLevelId())
-                .orElseThrow(() -> new NoSuchObjectException(LanguageLevel.class, request.getWrittenLevelId()));
-
-        // Create a new candidateLanguage object to insert into the database
-        CandidateLanguage candidateLanguage = new CandidateLanguage();
-        candidateLanguage.setCandidate(candidate);
-        candidateLanguage.setLanguage(language);
-        candidateLanguage.setSpokenLevel(languageSpeak);
-        candidateLanguage.setWrittenLevel(languageReadWrite);
-
-        // Save the candidateLanguage
-        candidateLanguage = candidateLanguageRepository.save(candidateLanguage);
-        candidate.setAuditFields(candidate.getUser());
-        candidateService.save(candidate, true);
-        return candidateLanguage;
+    /**
+     * Depending on where the request comes from (candidate or admin portal) need to get the candidate differently.
+     * @param candidateId If from admin portal, id will be present from the request.
+     *                    If null, it will come from candidate portal and candidate will be loggedInCandidate.
+     * @return The candidate that is being populated/updated.
+     */
+    private Candidate getCandidateFromRequest(@Nullable Long candidateId) {
+        Candidate candidate;
+        if (candidateId != null) {
+            // Coming from Admin Portal
+            candidate = candidateRepository.findById(candidateId)
+                    .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateId));
+        } else {
+            // Coming from Candidate Portal
+            candidate = userContext.getLoggedInCandidate();
+            if (candidate == null) {
+                throw new InvalidSessionException("Not logged in");
+            }
+        }
+        return candidate;
     }
 }

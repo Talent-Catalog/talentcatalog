@@ -27,13 +27,11 @@ public interface CandidateLanguageService {
 
     CandidateLanguage createCandidateLanguage(CreateCandidateLanguageRequest request);
 
-    CandidateLanguage updateCandidateLanguage(Long id, UpdateCandidateLanguageRequest request);
+    CandidateLanguage updateCandidateLanguage(UpdateCandidateLanguageRequest request);
+
+    List<CandidateLanguage> updateCandidateLanguages(UpdateCandidateLanguagesRequest request);
 
     void deleteCandidateLanguage(Long id);
 
     List<CandidateLanguage> list(long id);
-
-    CandidateLanguage createCandidateLanguageAdmin(long id, CreateCandidateLanguageRequest request);
-
-    List<CandidateLanguage> updateCandidateLanguages(UpdateCandidateLanguagesRequest request);
 }

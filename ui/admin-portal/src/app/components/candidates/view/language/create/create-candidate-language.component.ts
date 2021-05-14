@@ -3,7 +3,10 @@ import {CandidateLanguage} from "../../../../../model/candidate-language";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {LanguageService} from "../../../../../services/language.service";
-import {CandidateLanguageService} from "../../../../../services/candidate-language.service";
+import {
+  CandidateLanguageService,
+  CreateCandidateLanguageRequest
+} from "../../../../../services/candidate-language.service";
 import {CountryService} from "../../../../../services/country.service";
 import {LanguageLevelService} from "../../../../../services/language-level.service";
 
@@ -70,7 +73,13 @@ export class CreateCandidateLanguageComponent implements OnInit {
 
   onSave() {
     this.saving = true;
-    this.candidateLanguageService.create(this.candidateId, this.candidateForm.value).subscribe(
+    const request: CreateCandidateLanguageRequest = {
+      candidateId: this.candidateId,
+      languageId: this.candidateForm.value.languageId,
+      spokenLevelId: this.candidateForm.value.spokenLevelId,
+      writtenLevelId: this.candidateForm.value.writtenLevelId
+    }
+    this.candidateLanguageService.create(request).subscribe(
       (candidateLanguage) => {
         this.closeModal(candidateLanguage);
         this.saving = false;
