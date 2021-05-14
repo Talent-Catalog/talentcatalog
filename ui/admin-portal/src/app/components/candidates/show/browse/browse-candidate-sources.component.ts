@@ -38,11 +38,7 @@ import {
   SearchBy,
   SearchCandidateSourcesRequest
 } from '../../../../model/base';
-import {
-  ContentUpdateType,
-  CopySourceContentsRequest,
-  SearchSavedListRequest
-} from '../../../../model/saved-list';
+import {ContentUpdateType, CopySourceContentsRequest, SearchSavedListRequest} from '../../../../model/saved-list';
 import {CandidateSourceService} from '../../../../services/candidate-source.service';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {CreateUpdateListComponent} from '../../../list/create-update/create-update-list.component';
@@ -237,42 +233,57 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   }
 
   onCopySource(source: CandidateSource) {
-    //Show modal allowing for list selection
-    const modal = this.modalService.open(SelectListComponent);
-    modal.componentInstance.action = "Copy";
-    modal.componentInstance.title = "Copy to another List";
-    modal.componentInstance.excludeList = source;
+    if (isSavedSearch(source)) {
+      const editModal = this.modalService.open(CreateUpdateSearchComponent);
 
-    modal.result
-      .then((selection: TargetListSelection) => {
-        this.loading = true;
-        const request: CopySourceContentsRequest = {
-          savedListId: selection.savedListId,
-          newListName: selection.newListName,
-          sourceListId: source.id,
-          statusUpdateInfo: selection.statusUpdateInfo,
-          updateType: selection.replace ? ContentUpdateType.replace : ContentUpdateType.add,
-          sfJoblink: selection.sfJoblink
+      editModal.componentInstance.savedSearch = source;
+      editModal.componentInstance.copy = true;
 
-        }
-        this.candidateSourceService.copy(source, request).subscribe(
-          (targetSource) => {
-            //Refresh display which may display new list if there is one.
-            this.search();
+      editModal.result
+        .then(() => {
+          //Refresh display
+          this.search();
+        })
+        .catch(() => { /* Isn't possible */
+        });
+    } else {
+      //Show modal allowing for list selection
+      const modal = this.modalService.open(SelectListComponent);
+      modal.componentInstance.action = "Copy";
+      modal.componentInstance.title = "Copy to another List";
+      modal.componentInstance.excludeList = source;
 
-            //Clear cache for target list as its contents will have changed.
-            this.candidateSourceResultsCacheService.removeFromCache(targetSource);
+      modal.result
+        .then((selection: TargetListSelection) => {
+          this.loading = true;
+          const request: CopySourceContentsRequest = {
+            savedListId: selection.savedListId,
+            newListName: selection.newListName,
+            sourceListId: source.id,
+            statusUpdateInfo: selection.statusUpdateInfo,
+            updateType: selection.replace ? ContentUpdateType.replace : ContentUpdateType.add,
+            sfJoblink: selection.sfJoblink
 
-            this.loading = false;
-          },
-          error => {
-            this.error = error;
-            this.loading = false;
           }
-        );
-      })
-      .catch(() => { /* Isn't possible */
-      });
+          this.candidateSourceService.copy(source, request).subscribe(
+            (targetSource) => {
+              //Refresh display which may display new list if there is one.
+              this.search();
+
+              //Clear cache for target list as its contents will have changed.
+              this.candidateSourceResultsCacheService.removeFromCache(targetSource);
+
+              this.loading = false;
+            },
+            error => {
+              this.error = error;
+              this.loading = false;
+            }
+          );
+        })
+        .catch(() => { /* Isn't possible */
+        });
+    }
   }
 
   onDeleteSource(source: CandidateSource) {

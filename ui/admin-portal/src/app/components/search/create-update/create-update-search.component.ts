@@ -39,6 +39,7 @@ export class CreateUpdateSearchComponent implements OnInit {
   savedSearchTypeInfos: SavedSearchTypeInfo[];
   savedSearchTypeSubInfos: SavedSearchTypeSubInfo[];
   sfJoblink: string;
+  copy: boolean;
 
 
   /**
@@ -47,8 +48,8 @@ export class CreateUpdateSearchComponent implements OnInit {
    */
   get create(): boolean {
     //If we are working on a default search or one with a 0 id, we are in
-    //create mode.
-    return this.savedSearch?.defaultSearch || this.savedSearch?.id === 0
+    //create mode. Or if it create due to copying an existing search (copy = true).
+    return this.savedSearch?.defaultSearch || this.savedSearch?.id === 0 || this.copy;
   }
 
   get title(): string {

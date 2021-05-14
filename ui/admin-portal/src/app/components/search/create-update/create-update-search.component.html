@@ -77,7 +77,8 @@
 
     </div>
     <hr/>
-    <div *ngIf="savedSearch && !savedSearch.defaultSearch">
+    <div *ngIf="(savedSearch && !savedSearch.defaultSearch) || copy ">
+      <h4 *ngIf="copy">Copy Search:</h4>
       <app-candidate-source [candidateSource]="savedSearch" [seeMore]="true" [showMore]="false" [showOpen]="false" [showWatch]="false"></app-candidate-source>
     </div>
   </form>
