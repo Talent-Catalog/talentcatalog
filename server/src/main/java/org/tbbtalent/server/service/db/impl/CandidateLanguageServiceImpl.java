@@ -39,6 +39,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static org.tbbtalent.server.util.audit.AuditHelper.setAuditFieldsFromUser;
+
 @Service
 public class CandidateLanguageServiceImpl implements CandidateLanguageService {
 
@@ -74,7 +76,7 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
         User loggedInUser = userContext.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
-        Candidate candidate = getCandidateFromRequest(request.getCandidateId());
+        Candidate candidate = candidateService.getCandidateFromRequest(request.getCandidateId());
 
         // Load the industry from the database - throw an exception if not found
         Language language = languageRepository.findById(request.getLanguageId())
@@ -108,6 +110,8 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
      */
     @Override
     public CandidateLanguage updateCandidateLanguage(UpdateCandidateLanguageRequest request) {
+        User loggedInUser = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         CandidateLanguage candidateLanguage = candidateLanguageRepository.findById(request.getId())
                 .orElseThrow(() -> new NoSuchObjectException(CandidateLanguage.class, request.getId()));
@@ -131,7 +135,7 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
         candidateLanguage = candidateLanguageRepository.save(candidateLanguage);
         
         Candidate candidate = candidateLanguage.getCandidate();
-        candidate.setAuditFields(candidate.getUser());
+        setAuditFieldsFromUser(candidate, loggedInUser);
         candidateService.save(candidate, true);
 
         return candidateLanguage;
@@ -218,39 +222,14 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
         return candidateLanguages;
     }
 
-    /**
-     * Depending on if the request came from the admin or candidate portal, sets audit fields with correct user. If
-     * User and Candidate are the same, then it's candidate portal. If User and Candidate are different comes from admin.
-     * @param candidate Candidate being altered
-     * @param user Logged in User
-     */
-    private void setAuditFieldsFromUser(Candidate candidate, User user) {
-        if (candidate.getUser() == user ) {
-            candidate.setAuditFields(candidate.getUser());
+    public boolean isAdminRequest(@Nullable Long candidateId) {
+        boolean admin;
+        if (candidateId != null) {
+            admin = true;
         } else {
-            candidate.setAuditFields(user);
+            admin = false;
         }
+        return admin;
     }
 
-    /**
-     * Depending on where the request comes from (candidate or admin portal) need to get the candidate differently.
-     * @param candidateId If from admin portal, id will be present from the request.
-     *                    If null, it will come from candidate portal and candidate will be loggedInCandidate.
-     * @return The candidate that is being populated/updated.
-     */
-    private Candidate getCandidateFromRequest(@Nullable Long candidateId) {
-        Candidate candidate;
-        if (candidateId != null) {
-            // Coming from Admin Portal
-            candidate = candidateRepository.findById(candidateId)
-                    .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateId));
-        } else {
-            // Coming from Candidate Portal
-            candidate = userContext.getLoggedInCandidate();
-            if (candidate == null) {
-                throw new InvalidSessionException("Not logged in");
-            }
-        }
-        return candidate;
-    }
 }

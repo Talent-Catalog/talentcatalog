@@ -1920,4 +1920,27 @@ public class CandidateServiceImpl implements CandidateService {
         save(candidate, true);
 
     }
+
+    /**
+     * Depending on where the request comes from (candidate or admin portal) need to get the candidate differently.
+     * @param requestCandidateId If from admin portal, id will be present from the request.
+     *                    If null, it will come from candidate portal and candidate will be loggedInCandidate.
+     * @return The candidate that is being populated/updated.
+     */
+    @Override
+    public Candidate getCandidateFromRequest(@Nullable Long requestCandidateId) {
+        Candidate candidate;
+        if (requestCandidateId != null) {
+            // Coming from Admin Portal
+            candidate = candidateRepository.findById(requestCandidateId)
+                    .orElseThrow(() -> new NoSuchObjectException(Candidate.class, requestCandidateId));
+        } else {
+            // Coming from Candidate Portal
+            candidate = userContext.getLoggedInCandidate();
+            if (candidate == null) {
+                throw new InvalidSessionException("Not logged in");
+            }
+        }
+        return candidate;
+    }
 }
