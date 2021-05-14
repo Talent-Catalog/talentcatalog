@@ -17,7 +17,10 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {CandidateEducationService} from "../../../../../services/candidate-education.service";
+import {
+  CandidateEducationService,
+  UpdateCandidateEducationRequest
+} from "../../../../../services/candidate-education.service";
 import {CandidateEducation} from "../../../../../model/candidate-education";
 import {CountryService} from "../../../../../services/country.service";
 import {EducationMajorService} from "../../../../../services/education-major.service";
@@ -90,7 +93,18 @@ export class EditCandidateEducationComponent implements OnInit {
 
   onSave() {
     this.saving = true;
-    this.candidateEducationService.update(this.candidateEducation.id, this.candidateForm.value).subscribe(
+    const request: UpdateCandidateEducationRequest = {
+      id: this.candidateEducation.id,
+      courseName: this.candidateForm.value.courseName,
+      institution: this.candidateForm.value.institution,
+      countryId: this.candidateForm.value.countryId,
+      majorId: this.candidateForm.value.majorId,
+      yearCompleted: this.candidateForm.value.yearCompleted,
+      lengthOfCourseYears: this.candidateForm.value.lengthOfCourseYears,
+      educationType: this.candidateForm.value.educationType,
+      incomplete: this.candidateForm.value.incomplete
+    }
+    this.candidateEducationService.update(request).subscribe(
       (candidateEducation) => {
         this.closeModal(candidateEducation);
         this.saving = false;

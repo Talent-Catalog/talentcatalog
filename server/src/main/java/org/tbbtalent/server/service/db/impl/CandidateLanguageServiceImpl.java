@@ -176,6 +176,8 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
         List<Long> updatedLanguageIds = new ArrayList<>();
 
         List<CandidateLanguage> candidateLanguages = candidateLanguageRepository.findByCandidateId(candidate.getId());
+
+        /* map contains the existing candidate's candidate languages that are currently saved in the database. */
         Map<Long, CandidateLanguage> map = candidateLanguages.stream().collect( Collectors.toMap(CandidateLanguage::getId,
                 Function.identity()) );
 

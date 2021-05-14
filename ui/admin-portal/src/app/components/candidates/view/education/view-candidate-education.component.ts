@@ -21,6 +21,7 @@ import {CandidateEducation} from "../../../../model/candidate-education";
 import {CandidateEducationService} from "../../../../services/candidate-education.service";
 import {EditCandidateEducationComponent} from "./edit/edit-candidate-education.component";
 import {CreateCandidateEducationComponent} from "./create/create-candidate-education.component";
+import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
 
 @Component({
   selector: 'app-view-candidate-education',
@@ -91,5 +92,30 @@ export class ViewCandidateEducationComponent implements OnInit, OnChanges {
 
   }
 
+  deleteCandidateEducation(candidateEducation: CandidateEducation) {
+    const deleteCandidateEducationModal = this.modalService.open(ConfirmationComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    deleteCandidateEducationModal.componentInstance.message = 'Are you sure you want to delete this education?';
+
+    deleteCandidateEducationModal.result
+      .then((result) => {
+        if (result === true) {
+          this.candidateEducationService.delete(candidateEducation.id).subscribe(
+            (user) => {
+              this.loading = false;
+              this.search();
+            },
+            (error) => {
+              this.error = error;
+              this.loading = false;
+            });
+          this.search();
+        }
+      })
+      .catch(() => { /* Isn't possible */ });
+  }
 
 }
