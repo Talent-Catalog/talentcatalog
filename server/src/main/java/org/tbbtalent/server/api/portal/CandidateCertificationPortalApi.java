@@ -16,20 +16,17 @@
 
 package org.tbbtalent.server.api.portal;
 
-import java.util.Map;
-
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.model.db.CandidateCertification;
-import org.tbbtalent.server.model.db.CandidateEducation;
 import org.tbbtalent.server.request.candidate.certification.CreateCandidateCertificationRequest;
 import org.tbbtalent.server.request.candidate.certification.UpdateCandidateCertificationRequest;
-import org.tbbtalent.server.request.candidate.education.UpdateCandidateEducationRequest;
 import org.tbbtalent.server.service.db.CandidateCertificationService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
+
+import javax.validation.Valid;
+import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/portal/candidate-certification")
@@ -48,10 +45,9 @@ public class CandidateCertificationPortalApi {
         return candidateCertificationDto().build(candidateCertification);
     }
 
-    @PutMapping("{id}")
-    public Map<String, Object> update(@PathVariable("id") long id,
-                                      @RequestBody UpdateCandidateCertificationRequest request) {
-        CandidateCertification candidateCertification = this.candidateCertificationService.updateCandidateCertificationAdmin(id, request);
+    @PutMapping()
+    public Map<String, Object> update(@RequestBody UpdateCandidateCertificationRequest request) {
+        CandidateCertification candidateCertification = this.candidateCertificationService.updateCandidateCertification(request);
         return candidateCertificationDto().build(candidateCertification);
     }
 

@@ -16,22 +16,20 @@
 
 package org.tbbtalent.server.service.db;
 
-import java.util.List;
-
 import org.tbbtalent.server.model.db.CandidateCertification;
 import org.tbbtalent.server.request.candidate.certification.CreateCandidateCertificationRequest;
 import org.tbbtalent.server.request.candidate.certification.UpdateCandidateCertificationRequest;
 
+import java.util.List;
+
 public interface CandidateCertificationService {
+
+    List<CandidateCertification> list(long id);
 
     CandidateCertification createCandidateCertification(CreateCandidateCertificationRequest request);
 
+    CandidateCertification updateCandidateCertification(UpdateCandidateCertificationRequest request);
+
     void deleteCandidateCertification(Long id);
-
-    CandidateCertification createCandidateCertificationAdmin(long id, CreateCandidateCertificationRequest request);
-
-    CandidateCertification updateCandidateCertificationAdmin(long id, UpdateCandidateCertificationRequest request);
-
-    List<CandidateCertification> list(long id);
 
 }

@@ -16,13 +16,23 @@
 
 package org.tbbtalent.server.request.candidate.certification;
 
+import org.springframework.lang.Nullable;
+
 import java.time.LocalDate;
 
 public class CreateCandidateCertificationRequest {
 
+    @Nullable
+    private Long candidateId;
+
     private String name;
     private String institution;
     private LocalDate dateCompleted;
+
+    @Nullable
+    public Long getCandidateId() { return candidateId; }
+
+    public void setCandidateId(@Nullable Long candidateId) { this.candidateId = candidateId; }
 
     public String getName() { return name; }
 
