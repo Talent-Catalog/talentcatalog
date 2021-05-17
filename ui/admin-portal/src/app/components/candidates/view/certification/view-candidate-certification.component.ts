@@ -100,7 +100,7 @@ export class ViewCandidateCertificationComponent implements OnInit, OnChanges {
       backdrop: 'static'
     });
 
-    deleteCandidateCertificationModal.componentInstance.message = 'Are you sure you want to delete this education?';
+    deleteCandidateCertificationModal.componentInstance.message = 'Are you sure you want to delete this certification?';
 
     deleteCandidateCertificationModal.result
       .then((result) => {
