@@ -19,7 +19,6 @@ import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {CandidateCertification} from "../model/candidate-certification";
-import {CandidateEducation} from '../model/candidate-education';
 
 @Injectable({
   providedIn: 'root'
@@ -35,8 +34,8 @@ export class CandidateCertificationService {
     return this.http.post<CandidateCertification>(`${this.apiUrl}`, request);
   }
 
-  update(id: number, details): Observable<CandidateCertification>  {
-    return this.http.put<CandidateCertification>(`${this.apiUrl}/${id}`, details);
+  update(request): Observable<CandidateCertification>  {
+    return this.http.put<CandidateCertification>(`${this.apiUrl}`, request);
   }
 
   deleteCandidateCertification(id: number): Observable<any> {

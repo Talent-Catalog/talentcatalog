@@ -24,7 +24,13 @@
 <div *ngIf="!accordion">
   <div class="card" *ngIf="!loading">
     <!-- HEADER -->
-    <div class="card-header">Languages</div>
+    <div class="card-header">Languages
+      <div class="float-right" *ngIf="editable">
+        <button class="btn btn-primary btn-sm" (click)="createCandidateLanguage()">
+          <i class="fas fa-plus"></i>
+        </button>
+      </div>
+    </div>
     <!-- BODY -->
     <div class="card-body">
       <!-- EMPTY STATE -->
@@ -34,14 +40,19 @@
       <!-- LANGUAGE CARDS -->
       <ng-container *ngFor="let language of candidateLanguages; let i = index;">
         <div class="row">
-          <div class="col-sm-11">
+          <div class="col-10">
             {{language.language.name}}
           </div>
-          <div class="col-1">
+          <div class="col-2 text-right mb-2">
             <button class="btn btn-default"
                     *ngIf="editable"
                     (click)="editCandidateLanguage(language)">
               <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-default"
+                    *ngIf="editable"
+                    (click)="deleteCandidateLanguage(language)">
+              <i class="fas fa-trash"></i>
             </button>
           </div>
           <div class="col-12" *ngIf="language.migrationLanguage">

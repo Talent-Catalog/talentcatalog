@@ -227,6 +227,7 @@ import {VisaJobCheckAuComponent} from './components/candidates/view/tab/candidat
 import {CandidateStatusSelectorComponent} from './components/util/candidate-status-selector/candidate-status-selector.component';
 import {FinalAgreementComponent} from './components/candidates/intake/final-agreement/final-agreement.component';
 import {NgSelectModule} from "@ng-select/ng-select";
+import {CreateCandidateLanguageComponent} from './components/candidates/view/language/create/create-candidate-language.component';
 
 @NgModule({
   declarations: [
@@ -430,7 +431,8 @@ import {NgSelectModule} from "@ng-select/ng-select";
     VisaJobNotesComponent,
     VisaJobCheckAuComponent,
     CandidateStatusSelectorComponent,
-    FinalAgreementComponent
+    FinalAgreementComponent,
+    CreateCandidateLanguageComponent
   ],
   imports: [
     BrowserModule,

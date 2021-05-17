@@ -50,16 +50,17 @@
 
       <div class="row">
 
-        <div class="col-11">
+        <div class="col-10">
           <span class="card-title">{{edu.educationType}} in {{edu.educationMajor?.name}} : {{edu.courseName}}</span>
         </div>
 
-        <div class="col-1">
-          <div class="float-right" *ngIf="editable">
-            <button type="button" class="btn btn-default" (click)="editCandidateEducation(edu)">
-              <i class="fas fa-edit"></i>
-            </button>
-          </div>
+        <div class="col-2 text-right" *ngIf="editable">
+          <button type="button" class="btn btn-default" (click)="editCandidateEducation(edu)">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button class="btn btn-default" (click)="deleteCandidateEducation(edu)">
+            <i class="fas fa-trash"></i>
+          </button>
         </div>
 
         <div class="col-12">

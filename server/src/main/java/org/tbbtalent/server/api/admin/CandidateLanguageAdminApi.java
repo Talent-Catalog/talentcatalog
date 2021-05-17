@@ -16,20 +16,18 @@
 
 package org.tbbtalent.server.api.admin;
 
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.db.CandidateLanguage;
+import org.tbbtalent.server.request.candidate.language.CreateCandidateLanguageRequest;
 import org.tbbtalent.server.request.candidate.language.UpdateCandidateLanguageRequest;
 import org.tbbtalent.server.service.db.CandidateLanguageService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate-language")
@@ -49,14 +47,23 @@ public class CandidateLanguageAdminApi {
         return candidateLanguageDto().buildList(candidateLanguages);
     }
 
-    @PutMapping("{id}")
-    public Map<String, Object> update(@PathVariable("id") long id,
-                                      @RequestBody UpdateCandidateLanguageRequest request) {
-        CandidateLanguage candidateLanguage = this.candidateLanguageService.updateCandidateLanguage(id, request);
+    @PostMapping()
+    public Map<String, Object> create(@RequestBody CreateCandidateLanguageRequest request) throws UsernameTakenException {
+        CandidateLanguage candidateLanguage = this.candidateLanguageService.createCandidateLanguage(request);
         return candidateLanguageDto().build(candidateLanguage);
     }
 
+    @PutMapping()
+    public Map<String, Object> update(@RequestBody UpdateCandidateLanguageRequest request) {
+        CandidateLanguage candidateLanguage = this.candidateLanguageService.updateCandidateLanguage(request);
+        return candidateLanguageDto().build(candidateLanguage);
+    }
 
+    @DeleteMapping("{id}")
+    public ResponseEntity delete(@PathVariable("id") Long id) {
+        this.candidateLanguageService.deleteCandidateLanguage(id);
+        return ResponseEntity.ok().build();
+    }
 
 
     private DtoBuilder candidateLanguageDto() {

@@ -17,7 +17,10 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {CandidateCertificationService} from "../../../../../services/candidate-certification.service";
+import {
+  CandidateCertificationService,
+  CreateCandidateCertificationRequest
+} from "../../../../../services/candidate-certification.service";
 import {CandidateCertification} from "../../../../../model/candidate-certification";
 import {CountryService} from "../../../../../services/country.service";
 
@@ -69,7 +72,13 @@ export class CreateCandidateCertificationComponent implements OnInit {
 
   onSave() {
     this.saving = true;
-    this.candidateCertificationService.create(this.candidateId, this.candidateForm.value).subscribe(
+    const request: CreateCandidateCertificationRequest = {
+      candidateId: this.candidateId,
+      name: this.candidateForm.value.name,
+      institution: this.candidateForm.value.institution,
+      dateCompleted: this.candidateForm.value.dateCompleted,
+    }
+    this.candidateCertificationService.create(request).subscribe(
       (candidateCertification) => {
         this.closeModal(candidateCertification);
         this.saving = false;

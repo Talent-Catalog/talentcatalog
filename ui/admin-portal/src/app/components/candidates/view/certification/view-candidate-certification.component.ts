@@ -21,6 +21,7 @@ import {CandidateCertification} from "../../../../model/candidate-certification"
 import {CandidateCertificationService} from "../../../../services/candidate-certification.service";
 import {EditCandidateCertificationComponent} from "./edit/edit-candidate-certification.component";
 import {CreateCandidateCertificationComponent} from "./create/create-candidate-certification.component";
+import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
 
 @Component({
   selector: 'app-view-candidate-certification',
@@ -91,6 +92,32 @@ export class ViewCandidateCertificationComponent implements OnInit, OnChanges {
       .then((candidateCertification) => this.doSearch())
       .catch(() => { /* Isn't possible */ });
 
+  }
+
+  deleteCandidateCertification(candidateCertification: CandidateCertification) {
+    const deleteCandidateCertificationModal = this.modalService.open(ConfirmationComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    deleteCandidateCertificationModal.componentInstance.message = 'Are you sure you want to delete this certification?';
+
+    deleteCandidateCertificationModal.result
+      .then((result) => {
+        if (result === true) {
+          this.candidateCertificationService.delete(candidateCertification.id).subscribe(
+            (user) => {
+              this.loading = false;
+              this.doSearch();
+            },
+            (error) => {
+              this.error = error;
+              this.loading = false;
+            });
+          this.doSearch();
+        }
+      })
+      .catch(() => { /* Isn't possible */ });
   }
 
 }

@@ -21,6 +21,8 @@ import {CandidateLanguage} from '../../../../model/candidate-language';
 import {CandidateLanguageService} from '../../../../services/candidate-language.service';
 import {EditCandidateLanguageComponent} from '../language/edit/edit-candidate-language.component';
 import {Subject} from "rxjs";
+import {CreateCandidateLanguageComponent} from "./create/create-candidate-language.component";
+import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
 
 @Component({
   selector: 'app-view-candidate-language',
@@ -92,6 +94,46 @@ export class ViewCandidateLanguageComponent implements OnInit, OnChanges {
       .then((candidateLanguage) => this.search())
       .catch(() => { /* Isn't possible */ });
 
+  }
+
+  createCandidateLanguage() {
+    const createCandidateLanguageModal = this.modalService.open(CreateCandidateLanguageComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    createCandidateLanguageModal.componentInstance.candidateId = this.candidate.id;
+
+    createCandidateLanguageModal.result
+      .then((candidateLanguage) => this.search())
+      .catch(() => { /* Isn't possible */ });
+
+  }
+
+  deleteCandidateLanguage(candidateLanguage: CandidateLanguage) {
+    const deleteCandidateLanguageModal = this.modalService.open(ConfirmationComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    deleteCandidateLanguageModal.componentInstance.message = "Are you sure you want to delete this candidate's language?";
+
+    deleteCandidateLanguageModal.result
+      .then((result) => {
+        if (result === true) {
+          this.candidateLanguageService.delete(candidateLanguage.id).subscribe(
+            (user) => {
+              this.loading = false;
+              this.search();
+            },
+            (error) => {
+              this.error = error;
+              this.loading = false;
+            });
+          this.search();
+        }
+      })
+      .catch(() => { /* Isn't possible */ });
   }
 
   /*

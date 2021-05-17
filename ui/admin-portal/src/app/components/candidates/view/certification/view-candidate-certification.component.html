@@ -44,13 +44,18 @@
         <div class="col-6">
           <span class="card-title">{{candidateCertification.name}}</span>
         </div>
+
         <div class="col-6">
           <div class="float-right" *ngIf="editable">
             <button type="button" class="btn btn-default" (click)="editCandidateCertification(candidateCertification)"><i
               class="fas fa-edit"></i></button>
+            <button class="btn btn-default" (click)="deleteCandidateCertification(candidateCertification)">
+              <i class="fas fa-trash"></i>
+            </button>
           </div>
         </div>
       </div>
+
       <div class="row">
         <div class="col-sm-12 col-md-6">
           <label class="col-form-label text-muted card-subtitle">{{candidateCertification.institution}}</label>

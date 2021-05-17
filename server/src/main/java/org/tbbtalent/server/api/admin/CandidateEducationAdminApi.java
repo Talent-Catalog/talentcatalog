@@ -16,23 +16,18 @@
 
 package org.tbbtalent.server.api.admin;
 
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.db.CandidateEducation;
 import org.tbbtalent.server.request.candidate.education.CreateCandidateEducationRequest;
 import org.tbbtalent.server.request.candidate.education.UpdateCandidateEducationRequest;
 import org.tbbtalent.server.service.db.CandidateEducationService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate-education")
@@ -52,21 +47,23 @@ public class CandidateEducationAdminApi {
         return candidateEducationDto().buildList(candidateEducations);
     }
 
-    @PostMapping("{id}")
-    public Map<String, Object> create(@PathVariable("id") long candidateId,
-                                      @RequestBody CreateCandidateEducationRequest request) throws UsernameTakenException {
-        CandidateEducation candidateEducation = this.candidateEducationService.createCandidateEducation(candidateId, request);
+    @PostMapping()
+    public Map<String, Object> create(@RequestBody CreateCandidateEducationRequest request) throws UsernameTakenException {
+        CandidateEducation candidateEducation = this.candidateEducationService.createCandidateEducation(request);
         return candidateEducationDto().build(candidateEducation);
     }
 
-    @PutMapping("{id}")
-    public Map<String, Object> update(@PathVariable("id") long id,
-                                      @RequestBody UpdateCandidateEducationRequest request) {
-        request.setId(id);
-        CandidateEducation candidateEducation = this.candidateEducationService.updateCandidateEducation(id, request);
+    @PutMapping()
+    public Map<String, Object> update(@RequestBody UpdateCandidateEducationRequest request) {
+        CandidateEducation candidateEducation = this.candidateEducationService.updateCandidateEducation(request);
         return candidateEducationDto().build(candidateEducation);
     }
 
+    @DeleteMapping("{id}")
+    public ResponseEntity delete(@PathVariable("id") Long id) {
+        this.candidateEducationService.deleteCandidateEducation(id);
+        return ResponseEntity.ok().build();
+    }
 
     private DtoBuilder candidateEducationDto() {
         return new DtoBuilder()
