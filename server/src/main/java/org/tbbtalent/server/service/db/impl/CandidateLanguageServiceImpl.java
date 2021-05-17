@@ -32,7 +32,6 @@ import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.CandidateLanguageService;
 import org.tbbtalent.server.service.db.CandidateService;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -222,16 +221,6 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
         candidateService.save(candidate, true);
 
         return candidateLanguages;
-    }
-
-    public boolean isAdminRequest(@Nullable Long candidateId) {
-        boolean admin;
-        if (candidateId != null) {
-            admin = true;
-        } else {
-            admin = false;
-        }
-        return admin;
     }
 
 }
