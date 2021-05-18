@@ -40,6 +40,7 @@ export class CreateUpdateSearchComponent implements OnInit {
   savedSearchTypeSubInfos: SavedSearchTypeSubInfo[];
   sfJoblink: string;
   copy: boolean = false;
+  newSavedSearch: SavedSearch;
 
 
   /**
@@ -146,7 +147,7 @@ export class CreateUpdateSearchComponent implements OnInit {
 
   doCreate() {
     const formValues = this.form.value;
-    this.savedSearch = {
+    this.newSavedSearch = {
       id: 0,
       name: this.nameControl.value,
       savedSearchType: this.savedSearchType,
@@ -160,7 +161,7 @@ export class CreateUpdateSearchComponent implements OnInit {
 
     //And create a SavedSearchRequest from the SavedSearch and the search request
     this.savedSearchService.create(
-      convertToSavedSearchRequest(this.savedSearch, this.searchCandidateRequest)
+      convertToSavedSearchRequest(this.newSavedSearch, this.searchCandidateRequest)
     ).subscribe(
       (savedSearch) => {
         this.activeModal.close(savedSearch);
