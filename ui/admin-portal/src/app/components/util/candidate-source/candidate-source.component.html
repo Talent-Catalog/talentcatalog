@@ -20,11 +20,12 @@
     <div class="row">
       <div class="w-75 align-self-center pl-2">
         <strong>{{candidateSource?.name}} </strong>
-        <span class="d-flex">
+        <span class="d-flex align-items-baseline">
           <i *ngIf="isSavedSearch()" title="Saved Search" class="fas fa-search"></i>
           <i *ngIf="!isSavedSearch()" title="Saved List" class="fas fa-list"></i>
-          <i *ngIf="isShared()" title="Shared" class="fas fa-gift"></i>
           <i *ngIf="candidateSource?.fixed" title="Fixed - can't change" class="fas fa-lock"></i>
+          <i *ngIf="isShared()" title="Shared" class="fas fa-gift"></i>
+          <span *ngIf="isShared()" class="small">Shared by: {{candidateSource?.createdBy.firstName}} {{candidateSource?.createdBy.lastName}}</span>
         </span>
       </div>
       <div class="w-25 float-right">
