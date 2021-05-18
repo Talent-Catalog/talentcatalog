@@ -39,7 +39,7 @@ export class CreateUpdateSearchComponent implements OnInit {
   savedSearchTypeInfos: SavedSearchTypeInfo[];
   savedSearchTypeSubInfos: SavedSearchTypeSubInfo[];
   sfJoblink: string;
-  copy: boolean;
+  copy: boolean = false;
 
 
   /**
@@ -48,13 +48,24 @@ export class CreateUpdateSearchComponent implements OnInit {
    */
   get create(): boolean {
     //If we are working on a default search or one with a 0 id, we are in
-    //create mode. Or if it create due to copying an existing search (copy = true).
-    return this.savedSearch?.defaultSearch || this.savedSearch?.id === 0 || this.copy;
+    //create mode.
+    return this.savedSearch?.defaultSearch || this.savedSearch?.id === 0
+  }
+
+  get copyCreate(): boolean {
+    return this.copy;
   }
 
   get title(): string {
-    return this.create ? "Make New Saved Search"
-      : "Update Existing Saved Search";
+    let title;
+    if (this.create) {
+      title = "Make New Saved Search"
+    } else if (this.copyCreate) {
+      title = "Copy Search"
+    } else {
+      title = "Update Existing Saved Search";
+    }
+    return title;
   }
 
   get nameControl(): AbstractControl {
@@ -126,6 +137,8 @@ export class CreateUpdateSearchComponent implements OnInit {
 
     if (this.create) {
       this.doCreate()
+    } else if (this.copyCreate) {
+      this.doCopyAndCreate()
     } else {
       this.doUpdate();
     }
@@ -157,6 +170,17 @@ export class CreateUpdateSearchComponent implements OnInit {
         this.error = error;
         this.saving = false;
       });
+  }
+
+  doCopyAndCreate() {
+    this.savedSearchService.load(this.savedSearch.id).subscribe(
+      (request: SearchCandidateRequest) => {
+        this.searchCandidateRequest = request;
+        this.doCreate();
+      }, (error) => {
+        this.error = error;
+      }
+    )
   }
 
   doUpdate() {
