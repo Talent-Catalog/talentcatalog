@@ -124,6 +124,9 @@ public class CandidateEs {
     private List<String> occupations;
 
     @Field(type = FieldType.Text)
+    private String migrationOccupation;
+
+    @Field(type = FieldType.Text)
     private List<String> skills;
 
     @Field(type = FieldType.Keyword)
@@ -238,6 +241,7 @@ public class CandidateEs {
         }
         
         this.occupations = new ArrayList<>();
+        this.migrationOccupation = null;
         List<CandidateOccupation> occupations = candidate.getCandidateOccupations();
         if (occupations != null) {
             for (CandidateOccupation occupation : occupations) {
@@ -245,6 +249,9 @@ public class CandidateEs {
                     String text = occupation.getOccupation().getName();
                     if (text != null) {
                         this.occupations.add(text);
+                    }
+                    if (occupation.getMigrationOccupation() != null) {
+                        this.migrationOccupation = occupation.getMigrationOccupation();
                     }
                 }
             }
