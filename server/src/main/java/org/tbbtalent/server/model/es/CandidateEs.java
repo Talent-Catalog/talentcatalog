@@ -285,7 +285,10 @@ public class CandidateEs {
         if (sortFields != null && sortFields.length > 0) {
             String sortField = sortFields[0];
             
-            //Special hack for id field - which is masterId in CandidateEs
+            //Special hack for id field - which is masterId in CandidateEs.
+            //Sort by candidate's id even though displayed as candidate number on front end.
+            //Candidate Number is a text field so can't be sorted.
+            //Thankfully the id and CN increment the same, so still displays in order.
             if (sortField.equals("id")) {
                 sortField = "masterId";
             }
