@@ -54,6 +54,8 @@ export class CandidateFieldService {
       null, null),
     new CandidateFieldInfo("Updated", "updatedDate",
       this.dateFormatter, null),
+    new CandidateFieldInfo("DOB", "dob",
+      this.dateFormatter, null),
   ];
 
   private allDisplayableFieldsMap = new Map<string, CandidateFieldInfo>();
