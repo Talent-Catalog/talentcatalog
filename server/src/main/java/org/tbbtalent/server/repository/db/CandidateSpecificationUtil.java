@@ -16,18 +16,13 @@
 
 package org.tbbtalent.server.repository.db;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Root;
-
 import org.springframework.data.domain.Sort;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.request.PagedSearchRequest;
+
+import javax.persistence.criteria.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Extract some common utility methods
@@ -41,7 +36,8 @@ public class CandidateSpecificationUtil {
                                                CriteriaBuilder builder,
                                                Join<Object, Object> user,
                                                Join<Object, Object> nationality,
-                                               Join<Object, Object> country) {
+                                               Join<Object, Object> country,
+                                               Join<Object, Object> educationLevel) {
         List<Order> orders = new ArrayList<>();
         String[] sort = request.getSortFields();
         boolean idSort = false;
@@ -59,6 +55,9 @@ public class CandidateSpecificationUtil {
                 } else if (property.startsWith("country.")) {
                     join = country;
                     subProperty = property.replaceAll("country.", "");
+                } else if (property.startsWith("maxEducationLevel.")) {
+                    join = educationLevel;
+                    subProperty = property.replaceAll("maxEducationLevel.", "");
                 } else {
                     subProperty = property;
                     if (property.equals("id")) {

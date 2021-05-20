@@ -30,6 +30,7 @@ export class CandidateFieldService {
   //See https://stackoverflow.com/a/48785621/929968
   private dateFormatter = (value) => this.datePipe.transform(value, "yyyy-MM-dd");
   private titleCaseFormatter = (value) => this.titleCasePipe.transform(value);
+  private levelGetNameFormatter = (value) => value.name;
 
   private allDisplayableFields = [
     new CandidateFieldInfo("First Name", "user.firstName",
@@ -49,13 +50,15 @@ export class CandidateFieldService {
     new CandidateFieldInfo("Phone", "phone",
       null, null),
     new CandidateFieldInfo("Status", "status",
-      null, null),
+      this.titleCaseFormatter, null),
     new CandidateFieldInfo("UNHCR Status", "unhcrStatus",
       null, null),
     new CandidateFieldInfo("Updated", "updatedDate",
       this.dateFormatter, null),
     new CandidateFieldInfo("DOB", "dob",
       this.dateFormatter, null),
+    new CandidateFieldInfo("Highest Level of Edu", "maxEducationLevel.level",
+      this.levelGetNameFormatter, null),
   ];
 
   private allDisplayableFieldsMap = new Map<string, CandidateFieldInfo>();

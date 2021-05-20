@@ -16,25 +16,16 @@
 
 package org.tbbtalent.server.repository.db;
 
-import java.util.List;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Fetch;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateSavedList;
 import org.tbbtalent.server.request.candidate.SavedListGetRequest;
 
-import lombok.RequiredArgsConstructor;
+import javax.persistence.criteria.*;
+import java.util.List;
+
 import static org.tbbtalent.server.repository.db.CandidateSpecificationUtil.getOrderByOrders;
 
 /**
@@ -79,12 +70,14 @@ public class GetSavedListCandidatesQuery implements Specification<Candidate> {
             Fetch<Object, Object> userFetch = candidate.fetch("user", JoinType.LEFT);
             Fetch<Object, Object> nationalityFetch = candidate.fetch("nationality", JoinType.LEFT);
             Fetch<Object, Object> countryFetch = candidate.fetch("country", JoinType.LEFT);
+            Fetch<Object, Object> educationLevelFetch = candidate.fetch("maxEducationLevel", JoinType.LEFT);
 
             //Do sorting by passing in the equivalent joins
             List<Order> orders = getOrderByOrders(request, candidate, cb,
                     (Join<Object, Object>) userFetch,
                     (Join<Object, Object>) nationalityFetch,
-                    (Join<Object, Object>) countryFetch);
+                    (Join<Object, Object>) countryFetch,
+                    (Join<Object, Object>) educationLevelFetch);
             query.orderBy(orders);
         }
 
