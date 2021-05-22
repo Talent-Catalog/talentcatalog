@@ -24,7 +24,7 @@ import lombok.ToString;
 
 /**
  * Represents a Salesforce Contact corresponding to a TBB candidate.
- * Contacts the relevant data returned from Salesforce - most importantly
+ * Contains the relevant data returned from Salesforce - most importantly
  * the Salesforce id, from which the Salesforce url (the sflink) can be
  * computed.
  *

@@ -65,6 +65,8 @@ import reactor.core.publisher.Mono;
 
 /**
  * Standard implementation of Salesforce service
+ * <p/>
+ * See https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_what_is_rest_api.htm 
  *
  * @author John Cameron
  */
@@ -106,7 +108,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     
     /**
      * This is the accessToken required for for all Salesforce REST API
-     * calls. It should appear in the Authroization header, prefixed by
+     * calls. It should appear in the Authorization header, prefixed by
      * "Bearer ".
      * <p/>
      * The token is retrieved from Salesforce by calling 
