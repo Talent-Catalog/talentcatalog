@@ -46,7 +46,10 @@ It is also probably easier to install Java directly rather than using brew.
 
 - Gradle [https://gradle.org/install/](https://gradle.org/install/)
   > brew install gradle
+
 - NodeJS: Install as described here [https://nodejs.org/en/](https://nodejs.org/en/)
+    - Note that you should use the LTS version of node - which is not normally the latest.
+    See, for example, https://tamalweb.com/which-nodejs-version
 
 
 - Angular CLI [https://angular.io/cli](https://angular.io/cli)
