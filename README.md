@@ -49,11 +49,15 @@ It is also probably easier to install Java directly rather than using brew.
 
 - NodeJS: Install as described here [https://nodejs.org/en/](https://nodejs.org/en/)
     - Note that you should use the LTS version of node - which is not normally the latest.
-    See, for example, https://tamalweb.com/which-nodejs-version
+    
+    "Production applications should only use Active LTS or Maintenance LTS releases." -       
+  https://nodejs.org/en/about/releases/
 
 
 - Angular CLI [https://angular.io/cli](https://angular.io/cli)
   > npm install -g @angular/cli
+  - To upgrade Angular versions, see https://update.angular.io/
+    
 
 - cURL (for database migrations, can also use Postman) 
   > brew install curl
