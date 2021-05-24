@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {CandidateCertificationCardComponent} from './candidate-certification-card.component';
 
@@ -22,7 +22,7 @@ describe('CandidateCertificationCardComponent', () => {
   let component: CandidateCertificationCardComponent;
   let fixture: ComponentFixture<CandidateCertificationCardComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CandidateCertificationCardComponent ]
     })

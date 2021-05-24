@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {DownloadCvComponent} from './download-cv.component';
 
@@ -22,7 +22,7 @@ describe('DownloadCvComponent', () => {
   let component: DownloadCvComponent;
   let fixture: ComponentFixture<DownloadCvComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ DownloadCvComponent ]
     })

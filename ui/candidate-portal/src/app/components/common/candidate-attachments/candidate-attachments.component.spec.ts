@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {CandidateAttachmentsComponent} from './candidate-attachments.component';
 
@@ -22,7 +22,7 @@ describe('FileUploadsComponent', () => {
   let component: CandidateAttachmentsComponent;
   let fixture: ComponentFixture<CandidateAttachmentsComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CandidateAttachmentsComponent ]
     })
