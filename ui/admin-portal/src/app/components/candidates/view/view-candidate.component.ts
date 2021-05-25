@@ -18,7 +18,7 @@ import {Component, OnInit} from '@angular/core';
 import {CandidateService} from '../../../services/candidate.service';
 import {Candidate, UpdateCandidateStatusInfo, UpdateCandidateStatusRequest} from '../../../model/candidate';
 import {ActivatedRoute, Router} from '@angular/router';
-import {NgbModal, NgbTabChangeEvent} from '@ng-bootstrap/ng-bootstrap';
+import {NgbModal, NgbNavChangeEvent} from '@ng-bootstrap/ng-bootstrap';
 import {DeleteCandidateComponent} from './delete/delete-candidate.component';
 import {EditCandidateStatusComponent} from './status/edit-candidate-status.component';
 import {Title} from '@angular/platform-browser';
@@ -208,7 +208,7 @@ export class ViewCandidateComponent implements OnInit {
     this.activeTabId = defaultActiveTabID;
   }
 
-  onTabChanged(event: NgbTabChangeEvent) {
+  onTabChanged(event: NgbNavChangeEvent) {
     this.setActiveTabId(event.nextId);
   }
 

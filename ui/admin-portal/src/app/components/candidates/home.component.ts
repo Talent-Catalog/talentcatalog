@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {NgbTabChangeEvent} from "@ng-bootstrap/ng-bootstrap";
+import {NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {SavedSearchSubtype, SavedSearchType} from "../../model/saved-search";
 import {CandidateSourceType, SearchBy} from "../../model/base"
 import {LocalStorageService} from "angular-2-local-storage";
@@ -58,7 +58,7 @@ export class HomeComponent implements OnInit {
     this.selectDefaultTab()
   }
 
-  onTabChanged(event: NgbTabChangeEvent) {
+  onTabChanged(event: NgbNavChangeEvent) {
     this.setActiveTabId(event.nextId);
   }
 

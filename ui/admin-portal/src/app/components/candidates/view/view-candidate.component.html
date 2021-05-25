@@ -110,126 +110,110 @@
 
   </div>
 
-  <div class="row">
-    <div class="col-sm-{{mainColWidth}}">
-      <!-- TABS -->
-      <ngb-tabset [activeId]="activeTabId" (tabChange)="onTabChanged($event)">
+    <div class="row">
+      <div class="col-sm-{{mainColWidth}}">
+        <!-- TABS -->
+        <nav ngbNav #nav="ngbNav" class="nav-tabs" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
 
-        <!-- GENERAL -->
-        <ngb-tab id="General" [title]="'General'">
-          <ng-template ngbTabContent>
-            <app-candidate-general-tab
-              [candidate]="candidate"
-              [editable]="!loggedInUser.readOnly"
-              [loggedInUser]="loggedInUser">
-            </app-candidate-general-tab>
-          </ng-template>
-        </ngb-tab>
+          <!-- GENERAL -->
+          <ng-container ngbNavItem="General">
+            <a ngbNavLink>General</a>
+            <ng-template ngbNavContent>
+              <app-candidate-general-tab
+                [candidate]="candidate"
+                [editable]="!loggedInUser.readOnly"
+                [loggedInUser]="loggedInUser">
+              </app-candidate-general-tab>
+            </ng-template>
+          </ng-container>
 
-        <!-- EXPERIENCE -->
-        <ngb-tab id="Experience" [title]="'Experience'">
-          <ng-template ngbTabContent>
-            <app-candidate-experience-tab
-              [candidate]="candidate"
-              [editable]="!loggedInUser.readOnly">
-            </app-candidate-experience-tab>
-          </ng-template>
-        </ngb-tab>
+          <!-- EXPERIENCE -->
+          <ng-container ngbNavItem="Experience">
+            <a ngbNavLink>Experience</a>
+            <ng-template ngbNavContent>
+              <app-candidate-experience-tab
+                [candidate]="candidate"
+                [editable]="!loggedInUser.readOnly">
+              </app-candidate-experience-tab>
+            </ng-template>
+          </ng-container>
 
-        <!-- Education -->
-        <ngb-tab id="Education" [title]="'Education'">
-          <ng-template ngbTabContent>
-            <app-candidate-education-tab
-              [candidate]="candidate"
-              [editable]="!loggedInUser.readOnly">
-            </app-candidate-education-tab>
-          </ng-template>
-        </ngb-tab>
+          <!-- Education -->
+          <ng-container ngbNavItem="Education">
+            <a ngbNavLink>Education</a>
+            <ng-template ngbNavContent>
+              <app-candidate-education-tab
+                [candidate]="candidate"
+                [editable]="!loggedInUser.readOnly">
+              </app-candidate-education-tab>
+            </ng-template>
+          </ng-container>
 
-        <!-- Additional Info -->
-        <ngb-tab id="Additional" [title]="'Additional Info'">
-          <ng-template ngbTabContent>
-            <app-candidate-additional-info-tab
-              [candidate]="candidate"
-              [editable]="!loggedInUser.readOnly"
-              [loggedInUser]="loggedInUser"
-              (candidateChanged)="onCandidateChanged()"
-            >
-            </app-candidate-additional-info-tab>
-          </ng-template>
-        </ngb-tab>
+          <!-- Additional Info -->
+          <ng-container ngbNavItem="Additional">
+            <a ngbNavLink>Additional Info</a>
+            <ng-template ngbNavContent>
+              <app-candidate-additional-info-tab
+                [candidate]="candidate"
+                [editable]="!loggedInUser.readOnly"
+                [loggedInUser]="loggedInUser"
+                (candidateChanged)="onCandidateChanged()"
+              >
+              </app-candidate-additional-info-tab>
+            </ng-template>
+          </ng-container>
 
-        <!-- Mini Intake -->
-        <ngb-tab id="MiniIntake" [title]="'Mini Intake'" *ngIf="isAnAdmin()">
-          <ng-template ngbTabContent>
-            <app-candidate-mini-intake-tab
-              [candidate]="candidate"
-            >
-            </app-candidate-mini-intake-tab>
-          </ng-template>
-        </ngb-tab>
+          <!-- Mini Intake -->
+          <ng-container ngbNavItem="MiniIntake" *ngIf="isAnAdmin()">
+            <a ngbNavLink>Mini Intake</a>
+            <ng-template ngbNavContent>
+              <app-candidate-mini-intake-tab
+                [candidate]="candidate"
+              >
+              </app-candidate-mini-intake-tab>
+            </ng-template>
+          </ng-container>
 
-        <!-- Intake -->
-        <ngb-tab id="FullIntake" [title]="'Full Intake'" *ngIf="isAnAdmin()">
-          <ng-template ngbTabContent>
-            <app-candidate-intake-tab
-              [candidate]="candidate"
-            >
-            </app-candidate-intake-tab>
-          </ng-template>
-        </ngb-tab>
+          <!-- Intake -->
+          <ng-container ngbNavItem="FullIntake" *ngIf="isAnAdmin()">
+            <a ngbNavLink>Full Intake</a>
+            <ng-template ngbNavContent>
+              <app-candidate-intake-tab
+                [candidate]="candidate"
+              >
+              </app-candidate-intake-tab>
+            </ng-template>
+          </ng-container>
 
-        <!-- Visa eligibility -->
-        <ngb-tab id="Visa" [title]="'Visa'" *ngIf="isAnAdmin()">
-          <ng-template ngbTabContent>
-            <app-candidate-visa-tab
-              [candidate]="candidate"
-            >
-            </app-candidate-visa-tab>
-          </ng-template>
-        </ngb-tab>
+          <!-- Visa eligibility -->
+          <ng-container ngbNavItem="Visa" *ngIf="isAnAdmin()">
+            <a ngbNavLink>Visa</a>
+            <ng-template ngbNavContent>
+              <app-candidate-visa-tab
+                [candidate]="candidate"
+              >
+              </app-candidate-visa-tab>
+            </ng-template>
+          </ng-container>
 
-      </ngb-tabset>
-    </div>
-    <div class="col-sm-{{sidePanelColWidth}} admin-panel">
-      <div class="w-100">
-        <div class="float-right">
-          <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
-            class="fas fa-arrow-{{sidePanelColWidth == 8 ? 'right' : 'left'}}"></i></button>
+        </nav>
+        <div [ngbNavOutlet]="nav" class="mt-2"></div>
+      </div>
+      <div class="col-sm-{{sidePanelColWidth}} admin-panel">
+        <div class="w-100">
+          <div class="float-right">
+            <button class="btn btn-sm btn-outline-secondary" (click)="resizeSidePanel()"><i
+              class="fas fa-arrow-{{sidePanelColWidth == 8 ? 'right' : 'left'}}"></i></button>
+          </div>
+          <app-view-candidate-note
+            [candidate]="candidate"
+            [editable]="!loggedInUser.readOnly"
+            [characterLimit]="1000"
+            (onResize)="resizeSidePanel()">
+          </app-view-candidate-note>
         </div>
-        <app-view-candidate-note
-          [candidate]="candidate"
-          [editable]="!loggedInUser.readOnly"
-          [characterLimit]="1000"
-          (onResize)="resizeSidePanel()">
-        </app-view-candidate-note>
-
-
-<!--        <ngb-tabset>-->
-
-<!--          &lt;!&ndash;         HISTORY &ndash;&gt;-->
-<!--          <ngb-tab [title]="'History'">-->
-<!--            <ng-template ngbTabContent>-->
-<!--              <app-candidate-history-tab-->
-<!--                [candidate]="candidate"-->
-<!--                [characterLimit]="1000"-->
-<!--                [editable]="!loggedInUser.readOnly"-->
-<!--                (onResize)="resizeSidePanel()">-->
-<!--              </app-candidate-history-tab>-->
-<!--            </ng-template>-->
-<!--          </ngb-tab>-->
-
-          <!--         HISTORY -->
-<!--          <ngb-tab [title]="'Audit'">-->
-            <!--          <ng-template ngbTabContent>-->
-            <!--            <app-candidate-eligibility-tab></app-candidate-eligibility-tab>-->
-            <!--          </ng-template>-->
-<!--          </ngb-tab>-->
-
-<!--        </ngb-tabset>-->
       </div>
     </div>
   </div>
-
 
 </div>
