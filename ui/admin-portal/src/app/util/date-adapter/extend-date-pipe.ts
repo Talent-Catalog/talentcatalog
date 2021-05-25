@@ -33,7 +33,10 @@ export class ExtendDatePipe extends DatePipe implements PipeTransform {
     super(locale);
   }
 
-  transform(value: any, format = 'customDefault', timezone?: string, locale?: string): string {
+// Theoretically this should return string | null like the super class - but that doesn't work
+// See https://stackoverflow.com/questions/64806103/extending-angular-datepipe-errors-in-angular-11-worked-in-angular-10
+transform(value: Date | string | number,
+          format = 'customDefault', timezone?: string, locale?: string): any {
     format = this.customFormats[format] || format;
 
     return super.transform(value, format, timezone, locale);
