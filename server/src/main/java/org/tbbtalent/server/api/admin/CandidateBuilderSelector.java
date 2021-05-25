@@ -82,6 +82,8 @@ public class CandidateBuilderSelector {
                 .add("contextNote")
                 .add("maritalStatus")
                 .add("drivingLicense")
+                .add("langAssessmentScore")
+                .add("candidateExams", examsDto())
                 .add("maxEducationLevel", educationLevelDto())
                 .add("surveyType", surveyTypeDto())
                 .add("country", countryDto())
@@ -203,6 +205,14 @@ public class CandidateBuilderSelector {
                 .add("id")
                 .add("name")
                 .add("level")
+                ;
+    }
+
+    private DtoBuilder examsDto() {
+        return new DtoBuilder()
+                .add("id")
+                .add("exam")
+                .add("score")
                 ;
     }
 
