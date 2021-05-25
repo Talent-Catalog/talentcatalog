@@ -28,11 +28,11 @@
     "@ngx-translate/core": "^13.0.0",
     "@ngx-translate/http-loader": "^6.0.0",
     "angular-2-local-storage": "^3.0.2",
-    "bootstrap": "^4.5.3",
+    "bootstrap": "^4.6.0",
     "core-js": "^3.8.1",
     "ng-recaptcha": "^6.1.0",
     "rxjs": "^6.6.3",
-    "tslib": "^2.0.0",
+    "tslib": "^2.2.0",
     "zone.js": "~0.10.3"
   },
   "devDependencies": {
