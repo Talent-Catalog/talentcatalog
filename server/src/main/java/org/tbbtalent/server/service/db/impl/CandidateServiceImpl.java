@@ -470,6 +470,11 @@ public class CandidateServiceImpl implements CandidateService {
         } else {
 
             Specification<Candidate> query = computeQuery(request);
+            if (request.getSortFields()[0].equals("ieltsScore")) {
+                System.out.println("in ieltsScore");
+                // Get order of candidates sorted by ielts score
+                // Map with the query candidates
+            }
 
             candidates = candidateRepository.findAll(query, request.getPageRequestWithoutSort());
         }

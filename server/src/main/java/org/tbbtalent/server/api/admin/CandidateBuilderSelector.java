@@ -83,6 +83,8 @@ public class CandidateBuilderSelector {
                 .add("maritalStatus")
                 .add("drivingLicense")
                 .add("langAssessmentScore")
+                .add("residenceStatus")
+                .add("ieltsScore")
                 .add("candidateExams", examsDto())
                 .add("maxEducationLevel", educationLevelDto())
                 .add("surveyType", surveyTypeDto())

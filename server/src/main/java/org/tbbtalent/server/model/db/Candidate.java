@@ -154,7 +154,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
      * This can be set based on a user's selection associated with a saved
      * search, as recorded in the associated selection list for that user
      * and saved search.
-     * @see SavedSearchAdminApi#selectCandidate   
+     * @see SavedSearchAdminApi#selectCandidate
      */
     @Transient
     private boolean selected = false;
@@ -489,11 +489,41 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private Country birthCountry;
 
+    @Transient
+    private String ieltsScore;
+
     public Candidate() {
+    }
+
+//    @Formula(value ="(select e.score from candidate_exam e " +
+//            "where e.exam = 'IeltsGen')")
+//    public String getIeltsScore() {
+//        return ieltsScore;
+//    }
+
+    @Transient
+    public String getIeltsScore() {
+        this.ieltsScore = null;
+        if (candidateExams != null) {
+            for (CandidateExam exam : candidateExams) {
+                if (exam.getExam() == Exam.IELTSGen) {
+                    this.ieltsScore = exam.getScore();
+                    break;
+                } else if (exam.getExam() == Exam.IELTSAca) {
+                    this.ieltsScore = exam.getScore();
+                }
+            }
+        }
+        return this.ieltsScore;
+    }
+
+    public void setIeltsScore(String ieltsScore) {
+        this.ieltsScore = ieltsScore;
     }
 
     //todo The "caller" is the user used to set the createdBy and updatedBy fields
     //Seems to always be the same as user - so not sure if it has any point.
+
     public Candidate(User user, String phone, String whatsapp, User caller) {
         super(caller);
         this.user = user;

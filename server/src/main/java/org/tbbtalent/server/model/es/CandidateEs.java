@@ -144,6 +144,14 @@ public class CandidateEs {
     @Field(type = FieldType.Keyword)
     private Integer maxEducationLevel;
 
+    @Field(type = FieldType.Keyword)
+    @Enumerated(EnumType.ORDINAL)
+    private IeltsScore langAssessmentScore;
+
+    @Field(type = FieldType.Keyword)
+    @Enumerated(EnumType.STRING)
+    private ResidenceStatus residenceStatus;
+
     public CandidateEs() {
     }
 
@@ -173,6 +181,8 @@ public class CandidateEs {
         this.maritalStatus = candidate.getMaritalStatus();
         this.drivingLicense = candidate.getDrivingLicense();
         this.dob = candidate.getDob();
+        this.residenceStatus = candidate.getResidenceStatus();
+        this.langAssessmentScore = candidate.getLangAssessmentScore();
 
         this.maxEducationLevel = null;
         if (candidate.getMaxEducationLevel() != null) {

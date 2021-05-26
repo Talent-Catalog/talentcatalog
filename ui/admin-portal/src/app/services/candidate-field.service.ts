@@ -20,7 +20,7 @@ import {CandidateFieldInfo} from "../model/candidate-field-info";
 import {AuthService} from "./auth.service";
 import {CandidateSource} from "../model/base";
 import {enumKeysToEnumOptions} from "../util/enum";
-import {IeltsScore} from "../model/candidate";
+import {IeltsScore, ResidenceStatus} from "../model/candidate";
 
 @Injectable({
   providedIn: 'root'
@@ -35,6 +35,9 @@ export class CandidateFieldService {
   private levelGetNameFormatter = (value) => value.name;
   private stringToInt = (value) => {
     return enumKeysToEnumOptions([value], IeltsScore)[0].displayText;
+  }
+  private getDisplayEnum = (value) => {
+    return enumKeysToEnumOptions([value], ResidenceStatus)[0].displayText;
   }
 
   private allDisplayableFields = [
@@ -66,8 +69,10 @@ export class CandidateFieldService {
       this.levelGetNameFormatter, null),
     new CandidateFieldInfo("Estimated IELTS Score", "langAssessmentScore",
       this.stringToInt, null),
-    new CandidateFieldInfo("IELTS Score", "candidateExams.score",
-      this.stringToInt, null),
+    new CandidateFieldInfo("IELTS Score", "ieltsScore",
+      null, null),
+    new CandidateFieldInfo("Legal status", "residenceStatus",
+      this.getDisplayEnum, null),
   ];
 
   private allDisplayableFieldsMap = new Map<string, CandidateFieldInfo>();
