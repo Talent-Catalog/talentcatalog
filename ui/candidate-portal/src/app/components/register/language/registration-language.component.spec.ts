@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {RegistrationLanguageComponent} from './registration-language.component';
 
@@ -22,7 +22,7 @@ describe('RegistrationLanguageComponent', () => {
   let component: RegistrationLanguageComponent;
   let fixture: ComponentFixture<RegistrationLanguageComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ RegistrationLanguageComponent ]
     })

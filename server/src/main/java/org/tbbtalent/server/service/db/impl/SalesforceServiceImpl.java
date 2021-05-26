@@ -65,6 +65,14 @@ import reactor.core.publisher.Mono;
 
 /**
  * Standard implementation of Salesforce service
+ * <p/>
+ * See https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_what_is_rest_api.htm
+ * <p/>
+ * Notes:
+ * <ul>
+ *   <li>Field names in classes used to communicate with SF need to have names that match the 
+ *   internal SF field name</li>
+ * </ul>
  *
  * @author John Cameron
  */
@@ -106,7 +114,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     
     /**
      * This is the accessToken required for for all Salesforce REST API
-     * calls. It should appear in the Authroization header, prefixed by
+     * calls. It should appear in the Authorization header, prefixed by
      * "Bearer ".
      * <p/>
      * The token is retrieved from Salesforce by calling 
@@ -288,6 +296,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                         "Could not find name for job opportunity " + sfJoblink);
             }
             String jobAccountId = opportunity.getAccountId();
+            String jobOwnerId = opportunity.getOwnerId();
             
             
             //Now build requests of candidate opportunities we want to create
@@ -298,7 +307,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 OpportunityRecordComposite opportunityRequest =
                         new OpportunityRecordComposite(
                                 candidate, jobOpportunityName, jobOpportunityId,
-                                jobAccountId);
+                                jobAccountId, jobOwnerId);
                 opportunityRequests.add(opportunityRequest);
             }
             OpportunityRequestComposite req = new OpportunityRequestComposite();
@@ -505,7 +514,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         if (sfId != null) {
             opportunity = findRecordFieldsFromId(
                     "Opportunity", sfId,
-                    "Name,AccountId", Opportunity.class);
+                    "Name,AccountId,OwnerId", Opportunity.class);
         }
         return opportunity;
     }
@@ -1034,6 +1043,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         public String Name;
 
         /**
+         * ID job opportunity owner
+         */
+        public String OwnerId;
+
+        /**
          * Id of associated Job opportunity record
          */
         public String Parent_Opportunity__c;
@@ -1051,10 +1065,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
          */
         public String TBBCandidateExternalId__c;
 
-        public OpportunityRequest(Candidate candidate, 
-                                  String jobOpportunityName, 
-                                  String jobOpportunityId,
-                                  String jobAccountId) {
+        public OpportunityRequest(Candidate candidate,
+            String jobOpportunityName,
+            String jobOpportunityId,
+            String jobAccountId, String jobOwnerId) {
             User user = candidate.getUser();
             String candidateNumber = candidate.getCandidateNumber();
             
@@ -1066,6 +1080,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
             AccountId = jobAccountId;
             Candidate_Contact__c = candidate.getSfId();
+            OwnerId = jobOwnerId;
             Parent_Opportunity__c = jobOpportunityId;
             
             LocalDateTime close = LocalDateTime.now().plusYears(1);
@@ -1095,10 +1110,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         public CompositeAttributes attributes;
 
         public OpportunityRecordComposite(Candidate candidate,
-                                          String jobOpportunityName,
-                                          String jobOpportunityId,
-                                          String jobAccountId) {
-            super(candidate, jobOpportunityName, jobOpportunityId, jobAccountId);
+            String jobOpportunityName,
+            String jobOpportunityId,
+            String jobAccountId, String jobOwnerId) {
+            super(candidate, jobOpportunityName, jobOpportunityId, jobAccountId, jobOwnerId);
             attributes = new CompositeAttributes("Opportunity");
         }
     }

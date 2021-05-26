@@ -43,61 +43,54 @@
   <h5>{{candidate.user?.firstName}} {{candidate.user?.lastName}}</h5>
 
   <!-- TABS -->
-  <ngb-tabset>
+  <nav ngbNav #nav="ngbNav" class="nav-tabs">
 
     <!-- GENERAL -->
-    <ngb-tab [title]="'General'">
-      <ng-template ngbTabContent>
+    <ng-container ngbNavItem>
+      <a ngbNavLink>General</a>
+      <ng-template ngbNavContent>
         <app-candidate-general-tab
           [candidate]="candidate"
           [loggedInUser]="loggedInUser"
           [editable]="false">
         </app-candidate-general-tab>
       </ng-template>
-    </ngb-tab>
+    </ng-container>
 
     <!-- EXPERIENCE -->
-    <ngb-tab [title]="'Experience'">
-      <ng-template ngbTabContent>
+    <ng-container ngbNavItem>
+      <a ngbNavLink>Experience</a>
+      <ng-template ngbNavContent>
         <app-candidate-experience-tab
           [candidate]="candidate"
           [editable]="false">
         </app-candidate-experience-tab>
       </ng-template>
-    </ngb-tab>
+    </ng-container>
 
     <!-- EDUCATION -->
-    <ngb-tab [title]="'Education'">
-      <ng-template ngbTabContent>
+    <ng-container ngbNavItem>
+      <a ngbNavLink>Education</a>
+      <ng-template ngbNavContent>
         <app-candidate-education-tab
           [candidate]="candidate"
           [editable]="false">
         </app-candidate-education-tab>
       </ng-template>
-    </ngb-tab>
+    </ng-container>
 
-    <!-- HISTORY -->
-    <ngb-tab [title]="'Notes'">
-      <ng-template ngbTabContent>
+    <!-- NOTES -->
+    <ng-container ngbNavItem>
+      <a ngbNavLink>Notes</a>
+      <ng-template ngbNavContent>
         <app-candidate-history-tab
           [candidate]="candidate"
           [characterLimit]="100"
           [editable]="false">
         </app-candidate-history-tab>
       </ng-template>
-    </ngb-tab>
-
-    <!-- Additional Info --
-    <ngb-tab [title]="'Additional Info'">
-      <ng-template ngbTabContent>
-        <app-candidate-additional-info-tab
-          [candidate]="candidate"
-          [editable]="false">
-        </app-candidate-additional-info-tab>
-      </ng-template>
-    </ngb-tab>
-    -->
-
-  </ngb-tabset>
+    </ng-container>
+  </nav>
+  <div [ngbNavOutlet]="nav" class="mt-2"></div>
 
 </div>

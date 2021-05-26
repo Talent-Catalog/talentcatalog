@@ -116,7 +116,7 @@ label,a > i.fas,i.fab,i.far {
 a.is-link, a > i.is-link {
   color: $color-primary;
   cursor: pointer;
-  @include hover() {
+  &:hover {
     color: $color-primary-dark;
   }
 }
