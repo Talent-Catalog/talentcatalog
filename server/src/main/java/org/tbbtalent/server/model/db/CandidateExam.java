@@ -67,6 +67,8 @@ public class CandidateExam extends AbstractDomainObject<Long> {
         if (data.getExamNotes() != null) {
             setNotes(data.getExamNotes());
         }
+        //persist (also set null if changed)
+        //candidate.setIeltsScore();
     }
 
 }
