@@ -73,6 +73,8 @@ export class CandidateFieldService {
       null, null),
     new CandidateFieldInfo("Legal status", "residenceStatus",
       this.getDisplayEnum, null),
+    new CandidateFieldInfo("Number of dependants", "numberDependants",
+      null, null),
   ];
 
   private allDisplayableFieldsMap = new Map<string, CandidateFieldInfo>();

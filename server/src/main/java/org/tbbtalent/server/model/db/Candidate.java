@@ -489,8 +489,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private Country birthCountry;
 
-    @Transient
+    //@Formula(value = "select distinct ce.score from candidate c left join candidate_exam ce on c.id = ce.candidate_id where ce.exam = 'IELTSGen'")
+    @Nullable
     private String ieltsScore;
+
+    @Column(updatable=false, insertable=false)
+    @Nullable
+    private Integer numberDependants;
 
     public Candidate() {
     }
@@ -501,8 +506,33 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 //        return ieltsScore;
 //    }
 
+    @PreUpdate
+    @PostLoad
+    @PostUpdate
+    public void postLoad() {
+        this.ieltsScore = null;
+        if (candidateExams != null) {
+            for (CandidateExam exam : candidateExams) {
+                if (exam.getExam() == Exam.IELTSGen) {
+                    this.ieltsScore = exam.getScore();
+                    break;
+                } else if (exam.getExam() == Exam.IELTSAca) {
+                    this.ieltsScore = exam.getScore();
+                }
+            }
+        }
+        if (!candidateDependants.isEmpty()) {
+            this.numberDependants = 0;
+            for (CandidateDependant dep : candidateDependants) {
+                this.numberDependants++;
+            }
+        }
+
+    }
+
     @Transient
     public String getIeltsScore() {
+        //return this.ieltsScore;
         this.ieltsScore = null;
         if (candidateExams != null) {
             for (CandidateExam exam : candidateExams) {
@@ -519,6 +549,22 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setIeltsScore(String ieltsScore) {
         this.ieltsScore = ieltsScore;
+    }
+
+    @Transient
+    public Integer getNumberDependants() {
+        //return this.numberDependants;
+        if (!candidateDependants.isEmpty()) {
+            this.numberDependants = 0;
+            for (CandidateDependant dep : candidateDependants) {
+                this.numberDependants++;
+            }
+        }
+        return this.numberDependants;
+    }
+
+    public void setNumberDependants(Integer numberDependants) {
+        this.numberDependants = numberDependants;
     }
 
     //todo The "caller" is the user used to set the createdBy and updatedBy fields

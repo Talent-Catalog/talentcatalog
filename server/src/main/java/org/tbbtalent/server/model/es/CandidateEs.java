@@ -59,7 +59,9 @@ public class CandidateEs {
             "maritalStatus",
             "drivingLicense",
             "dob",
-            "maxEducationLevel"
+            "maxEducationLevel",
+            "residenceStatus",
+            "langAssessmentScore"
     }; 
    
     @Id
