@@ -14,10 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {Candidate, CandidateIntakeData} from '../../../../model/candidate';
 import {CandidateExamService, CreateCandidateExamRequest} from '../../../../services/candidate-exam.service';
 import {Subject} from "rxjs";
+import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-exams',
@@ -34,6 +35,8 @@ export class ExamsComponent implements OnInit {
   open: boolean;
 
   @Input() toggleAll: Subject<any>;
+
+  @ViewChild(NgbAccordion) acc: NgbAccordion;
 
   constructor(
     private candidateExamService: CandidateExamService
@@ -56,8 +59,10 @@ export class ExamsComponent implements OnInit {
 
   setActiveIds(){
     if (this.open) {
+      this.acc.expandAll();
       this.activeIds = 'intake-exams';
     } else {
+      this.acc.collapseAll();
       this.activeIds = '';
     }
   }

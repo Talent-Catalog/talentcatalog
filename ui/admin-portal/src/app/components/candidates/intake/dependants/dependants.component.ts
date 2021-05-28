@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {Candidate, CandidateIntakeData} from '../../../../model/candidate';
 import {Nationality} from '../../../../model/nationality';
 import {
@@ -22,6 +22,7 @@ import {
   CreateCandidateDependantRequest
 } from '../../../../services/candidate-dependant.service';
 import {Subject} from "rxjs";
+import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-dependants',
@@ -40,6 +41,7 @@ export class DependantsComponent implements OnInit {
 
   @Input() toggleAll: Subject<any>;
 
+  @ViewChild(NgbAccordion) acc: NgbAccordion;
 
   constructor(
     private candidateDependantService: CandidateDependantService
@@ -62,8 +64,10 @@ export class DependantsComponent implements OnInit {
 
   setActiveIds(){
     if (this.open) {
+      this.acc.expandAll();
       this.activeIds = 'intake-dependants';
     } else {
+      this.acc.collapseAll()
       this.activeIds = '';
     }
   }
