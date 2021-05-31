@@ -60,6 +60,7 @@ public class CandidateEs {
             "drivingLicense",
             "dob",
             "maxEducationLevel",
+            // todo get these sorting correctly, not currently working
             "residenceStatus",
             "langAssessmentScore"
     }; 

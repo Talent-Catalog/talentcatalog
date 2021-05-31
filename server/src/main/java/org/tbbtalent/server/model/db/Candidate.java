@@ -489,65 +489,21 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private Country birthCountry;
 
-    //@Formula(value = "select distinct ce.score from candidate c left join candidate_exam ce on c.id = ce.candidate_id where ce.exam = 'IELTSGen'")
     @Nullable
     private String ieltsScore;
 
-    @Column(updatable=false, insertable=false)
     @Nullable
     private Integer numberDependants;
 
     public Candidate() {
     }
 
-//    @Formula(value ="(select e.score from candidate_exam e " +
-//            "where e.exam = 'IeltsGen')")
-//    public String getIeltsScore() {
-//        return ieltsScore;
-//    }
-
-    @PreUpdate
-    @PostLoad
-    @PostUpdate
-    public void postLoad() {
-        this.ieltsScore = null;
-        if (candidateExams != null) {
-            for (CandidateExam exam : candidateExams) {
-                if (exam.getExam() == Exam.IELTSGen) {
-                    this.ieltsScore = exam.getScore();
-                    break;
-                } else if (exam.getExam() == Exam.IELTSAca) {
-                    this.ieltsScore = exam.getScore();
-                }
-            }
-        }
-        if (!candidateDependants.isEmpty()) {
-            this.numberDependants = 0;
-            for (CandidateDependant dep : candidateDependants) {
-                this.numberDependants++;
-            }
-        }
-
-    }
-
-    @Transient
+    @Nullable
     public String getIeltsScore() {
-        //return this.ieltsScore;
-        this.ieltsScore = null;
-        if (candidateExams != null) {
-            for (CandidateExam exam : candidateExams) {
-                if (exam.getExam() == Exam.IELTSGen) {
-                    this.ieltsScore = exam.getScore();
-                    break;
-                } else if (exam.getExam() == Exam.IELTSAca) {
-                    this.ieltsScore = exam.getScore();
-                }
-            }
-        }
-        return this.ieltsScore;
+        return ieltsScore;
     }
 
-    public void setIeltsScore(String ieltsScore) {
+    public void setIeltsScore(@Nullable String ieltsScore) {
         this.ieltsScore = ieltsScore;
     }
 
