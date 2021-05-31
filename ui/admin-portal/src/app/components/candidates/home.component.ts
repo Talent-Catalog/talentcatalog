@@ -88,6 +88,8 @@ export class HomeComponent implements OnInit {
 
     this.nav.select(id);
 
+    //The typed saved search tabs have id's which look like "type:profession", "type:jobs",
+    //"type:other". Unpack the id to identify the search type
     const parts = id.split(':');
     if (parts[0] === 'type' && parts.length === 2) {
 
