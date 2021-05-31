@@ -14,8 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
-import {NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {NgbNav, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {SavedSearchSubtype, SavedSearchType} from "../../model/saved-search";
 import {CandidateSourceType, SearchBy} from "../../model/base"
 import {LocalStorageService} from "angular-2-local-storage";
@@ -37,6 +37,11 @@ export class HomeComponent implements OnInit {
   categoryForm: FormGroup;
   private lastTabKey: string = 'HomeLastTab';
   private lastCategoryTabKey: string = 'HomeLastCategoryTab';
+
+  //Get reference to the nav element
+  @ViewChild(NgbNav)
+  nav: NgbNav;
+
   savedSearchTypeInfos: SavedSearchTypeInfo[];
   savedSearchTypeSubInfos: SavedSearchTypeSubInfo[];
   selectedSavedSearchSubtype: SavedSearchSubtype;
@@ -81,7 +86,7 @@ export class HomeComponent implements OnInit {
 
   private setActiveTabId(id: string) {
 
-    this.activeTabId = id;
+    this.nav.select(id);
 
     const parts = id.split(':');
     if (parts[0] === 'type' && parts.length === 2) {
