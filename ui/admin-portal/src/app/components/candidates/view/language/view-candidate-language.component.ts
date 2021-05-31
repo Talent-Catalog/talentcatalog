@@ -14,8 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
+import {NgbAccordion, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from '../../../../model/candidate';
 import {CandidateLanguage} from '../../../../model/candidate-language';
 import {CandidateLanguageService} from '../../../../services/candidate-language.service';
@@ -42,6 +42,8 @@ export class ViewCandidateLanguageComponent implements OnInit, OnChanges {
   activeIds: string;
   open: boolean;
   @Input() toggleAll: Subject<any>;
+
+  @ViewChild(NgbAccordion) acc: NgbAccordion;
 
   constructor(private candidateLanguageService: CandidateLanguageService,
               private modalService: NgbModal ) {
@@ -147,8 +149,10 @@ export class ViewCandidateLanguageComponent implements OnInit, OnChanges {
 
   setActiveIds(){
     if (this.open) {
+      this.acc.expandAll();
       this.activeIds = 'intake-language';
     } else {
+      this.acc.collapseAll();
       this.activeIds = '';
     }
   }

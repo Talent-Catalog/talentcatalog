@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {Candidate, CandidateIntakeData} from "../../../../model/candidate";
 import {Nationality} from "../../../../model/nationality";
 import {
@@ -22,6 +22,7 @@ import {
   CreateCandidateCitizenshipRequest
 } from "../../../../services/candidate-citizenship.service";
 import {Subject} from "rxjs/index";
+import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-citizenships',
@@ -38,6 +39,8 @@ export class CitizenshipsComponent implements OnInit {
   activeIds: string;
 
   @Input() toggleAll: Subject<any>;
+
+  @ViewChild(NgbAccordion) acc: NgbAccordion;
 
   constructor(
     private candidateCitizenshipService: CandidateCitizenshipService
@@ -60,8 +63,10 @@ export class CitizenshipsComponent implements OnInit {
 
   setActiveIds(){
     if (this.open) {
+      this.acc.expandAll();
       this.activeIds = 'intake-citizenships';
     } else {
+      this.acc.collapseAll();
       this.activeIds = '';
     }
   }

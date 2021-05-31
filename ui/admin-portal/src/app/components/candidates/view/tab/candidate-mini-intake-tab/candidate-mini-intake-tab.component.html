@@ -59,14 +59,16 @@
   <hr/>
 
   <div>
-    <ngb-accordion #a="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+    <ngb-accordion #confirm="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
       <ngb-panel id="intake-confirm">
-        <ng-template ngbPanelHeader let-opened="opened">
-          <div class="d-flex align-items-center justify-content-between" [ngClass]="{'opened' : opened}">
+        <ng-template ngbPanelHeader>
+          <div class="d-flex align-items-center justify-content-between">
             Confirm General Information
-            <button ngbPanelToggle class="btn btn-link p-0 ml-4 btn-outline-none">
-              <i *ngIf="opened" class="d-flex fas fa-chevron-up"></i>
-              <i *ngIf="!opened" class="d-flex fas fa-chevron-down"></i>
+            <button ngbPanelToggle class="btn btn-link">
+              <ng-container *ngIf="confirm.activeIds.includes('intake-confirm')"
+              ><i class="d-flex fas fa-chevron-up"></i></ng-container
+              >
+              <ng-container *ngIf="!confirm.activeIds.includes('intake-confirm')"><i class="d-flex fas fa-chevron-down"></i></ng-container>
             </button>
           </div>
         </ng-template>
@@ -81,14 +83,16 @@
 
     <hr/>
 
-    <ngb-accordion #a="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+    <ngb-accordion #recruit="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
       <ngb-panel id="intake-int-recruit">
-        <ng-template ngbPanelHeader let-opened="opened">
-          <div class="d-flex align-items-center justify-content-between" [ngClass]="{'opened' : opened}">
+        <ng-template ngbPanelHeader>
+          <div class="d-flex align-items-center justify-content-between">
             Interest in International Recruitment
-            <button ngbPanelToggle class="btn btn-link p-0 ml-4 btn-outline-none">
-              <i *ngIf="opened" class="d-flex fas fa-chevron-up"></i>
-              <i *ngIf="!opened" class="d-flex fas fa-chevron-down"></i>
+            <button ngbPanelToggle class="btn btn-link">
+              <ng-container *ngIf="recruit.activeIds.includes('intake-int-recruit')"
+              ><i class="d-flex fas fa-chevron-up"></i></ng-container
+              >
+              <ng-container *ngIf="!recruit.activeIds.includes('intake-int-recruit')"><i class="d-flex fas fa-chevron-down"></i></ng-container>
             </button>
           </div>
         </ng-template>
@@ -103,14 +107,16 @@
 
     <hr/>
 
-    <ngb-accordion #a="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+    <ngb-accordion #destinations="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
       <ngb-panel id="intake-destinations">
-        <ng-template ngbPanelHeader let-opened="opened">
-          <div class="d-flex align-items-center justify-content-between" [ngClass]="{'opened' : opened}">
+        <ng-template ngbPanelHeader>
+          <div class="d-flex align-items-center justify-content-between">
             Destinations
-            <button ngbPanelToggle class="btn btn-link p-0 ml-4 btn-outline-none">
-              <i *ngIf="opened" class="d-flex fas fa-chevron-up"></i>
-              <i *ngIf="!opened" class="d-flex fas fa-chevron-down"></i>
+            <button ngbPanelToggle class="btn btn-link">
+              <ng-container *ngIf="destinations.activeIds.includes('intake-destinations')"
+              ><i class="d-flex fas fa-chevron-up"></i></ng-container
+              >
+              <ng-container *ngIf="!destinations.activeIds.includes('intake-destinations')"><i class="d-flex fas fa-chevron-down"></i></ng-container>
             </button>
           </div>
         </ng-template>
@@ -138,14 +144,16 @@
 
     <hr/>
 
-    <ngb-accordion #a="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+    <ngb-accordion #personal="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
       <ngb-panel id="intake-personal-status">
-        <ng-template ngbPanelHeader let-opened="opened">
-          <div class="d-flex align-items-center justify-content-between" [ngClass]="{'opened' : opened}">
+        <ng-template ngbPanelHeader>
+          <div class="d-flex align-items-center justify-content-between">
             Personal Status / Program Eligibility
-            <button ngbPanelToggle class="btn btn-link p-0 ml-4 btn-outline-none">
-              <i *ngIf="opened" class="d-flex fas fa-chevron-up"></i>
-              <i *ngIf="!opened" class="d-flex fas fa-chevron-down"></i>
+            <button ngbPanelToggle class="btn btn-link">
+              <ng-container *ngIf="personal.activeIds.includes('intake-personal-status')"
+              ><i class="d-flex fas fa-chevron-up"></i></ng-container
+              >
+              <ng-container *ngIf="!personal.activeIds.includes('intake-personal-status')"><i class="d-flex fas fa-chevron-down"></i></ng-container>
             </button>
           </div>
         </ng-template>
@@ -193,17 +201,16 @@
 
     <hr/>
 
-    <ngb-accordion #a="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+    <ngb-accordion #english="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
       <ngb-panel id="intake-english-assessment">
-        <ng-template ngbPanelHeader let-opened="opened">
-          <div class="d-flex align-items-center justify-content-between" [ngClass]="{'opened' : opened}">
-            <div>
-              English Assessment
-              <span class="small ml-2">Only complete if never taken IELTS or TOEFL.</span>
-            </div>
-            <button ngbPanelToggle class="btn btn-link p-0 ml-4 btn-outline-none">
-              <i *ngIf="opened" class="d-flex fas fa-chevron-up"></i>
-              <i *ngIf="!opened" class="d-flex fas fa-chevron-down"></i>
+        <ng-template ngbPanelHeader>
+          <div class="d-flex align-items-center justify-content-between">
+            English Assessment
+            <button ngbPanelToggle class="btn btn-link">
+              <ng-container *ngIf="english.activeIds.includes('intake-english-assessment')"
+              ><i class="d-flex fas fa-chevron-up"></i></ng-container
+              >
+              <ng-container *ngIf="!english.activeIds.includes('intake-english-assessment')"><i class="d-flex fas fa-chevron-down"></i></ng-container>
             </button>
           </div>
         </ng-template>
@@ -218,14 +225,16 @@
 
     <hr/>
 
-    <ngb-accordion #a="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
+    <ngb-accordion #registration="ngbAccordion" [activeIds]="activeIds" [destroyOnHide]="false">
       <ngb-panel id="intake-registration">
-        <ng-template ngbPanelHeader let-opened="opened">
-          <div class="d-flex align-items-center justify-content-between" [ngClass]="{'opened' : opened}">
+        <ng-template ngbPanelHeader>
+          <div class="d-flex align-items-center justify-content-between">
             Registration
-            <button ngbPanelToggle class="btn btn-link p-0 ml-4 btn-outline-none">
-              <i *ngIf="opened" class="d-flex fas fa-chevron-up"></i>
-              <i *ngIf="!opened" class="d-flex fas fa-chevron-down"></i>
+            <button ngbPanelToggle class="btn btn-link">
+              <ng-container *ngIf="registration.activeIds.includes('intake-registration')"
+              ><i class="d-flex fas fa-chevron-up"></i></ng-container
+              >
+              <ng-container *ngIf="!registration.activeIds.includes('intake-registration')"><i class="d-flex fas fa-chevron-down"></i></ng-container>
             </button>
           </div>
         </ng-template>

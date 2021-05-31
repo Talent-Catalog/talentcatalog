@@ -14,9 +14,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component} from '@angular/core';
+import {Component, QueryList, ViewChildren} from '@angular/core';
 import {IntakeComponentTabBase} from "../../../../util/intake/IntakeComponentTabBase";
 import {Subject} from "rxjs/index";
+import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-candidate-intake-tab',
@@ -28,13 +29,18 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
   activeIds: string[] = ['intake-confirm', 'intake-int-recruit', 'intake-english-assessment', 'intake-residency',
     'intake-host-country', 'intake-registration', 'intake-partner-info', 'intake-additional-eligibility', 'intake-final-agreement']
 
+  @ViewChildren(NgbAccordion) accs: QueryList<NgbAccordion>;
+
   togglePanels(openAll: boolean) {
     this.toggleAll.next(openAll);
     if (openAll) {
-      this.activeIds = ['intake-confirm', 'intake-int-recruit', 'intake-english-assessment', 'intake-residency',
-        'intake-host-country', 'intake-registration', 'intake-partner-info', 'intake-additional-eligibility', 'intake-final-agreement']
+      this.accs.forEach(acc => {
+        acc.expandAll();
+      })
     } else {
-      this.activeIds = [];
+      this.accs.forEach(acc => {
+        acc.collapseAll();
+      })
     }
   }
 
