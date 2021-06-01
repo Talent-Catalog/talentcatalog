@@ -26,7 +26,6 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.Join;
@@ -229,13 +228,6 @@ public class CandidateSpecification {
                 List<CandidateStatus> statuses = request.getStatuses();
                 conjunction.getExpressions().add(
                     builder.isTrue(candidate.get("status").in(statuses)));
-            } else {
-                //Empty statuses implies excluding draft and deleted
-                List<CandidateStatus> defaultExclusions = new ArrayList(
-                    Arrays.asList(CandidateStatus.draft, CandidateStatus.deleted) );
-                conjunction.getExpressions().add(
-                    candidate.get("status").in(defaultExclusions).not()
-                );
             }
 
             // Occupations SEARCH

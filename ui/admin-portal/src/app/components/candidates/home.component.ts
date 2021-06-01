@@ -86,7 +86,7 @@ export class HomeComponent implements OnInit {
 
   private setActiveTabId(id: string) {
 
-    this.nav.select(id);
+    this.nav?.select(id);
 
     //The typed saved search tabs have id's which look like "type:profession", "type:jobs",
     //"type:other". Unpack the id to identify the search type
