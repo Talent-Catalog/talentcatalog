@@ -25,6 +25,7 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateExam;
 import org.tbbtalent.server.model.db.Exam;
+import org.tbbtalent.server.model.db.IeltsScore;
 import org.tbbtalent.server.repository.db.CandidateExamRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.NationalityRepository;
@@ -71,10 +72,15 @@ public class CandidateExamServiceImpl implements CandidateExamService {
             throws EntityReferencedException, InvalidRequestException {
         CandidateExam ce = candidateExamRepository.findByIdLoadCandidate(examId)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateExam.class, examId));
-        if (ce.getExam() != null && ce.getExam().equals(Exam.IELTSGen)) {
-            ce.getCandidate().setIeltsScore(null);
-        }
+
+        boolean ieltsExam = ce.getExam().equals(Exam.IELTSGen);
+
         candidateExamRepository.deleteById(examId);
+
+        if (ieltsExam) {
+            ce.getCandidate().setIeltsScore(null);
+            candidateRepository.save(ce.getCandidate());
+        }
         return true;
     }
 
@@ -85,6 +91,9 @@ public class CandidateExamServiceImpl implements CandidateExamService {
         Long id = data.getExamId();
         ce = candidateExamRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateExam.class, id));
+
+        boolean existingIelts = ce.getExam() == (Exam.IELTSGen);
+
         ce.populateIntakeData(candidate, data);
 
         // Check that the requested exam type doesnt already exist to avoid duplicates of ielts exams
@@ -97,9 +106,15 @@ public class CandidateExamServiceImpl implements CandidateExamService {
 
         candidateExamRepository.save(ce);
 
-        // Set the candidates Ielts Score
-        if (ce.getExam().equals(Exam.IELTSGen)) {
-            candidate.setIeltsScore(ce.getScore());
+        // If exam score is not null and either existing Ielts exam is being updated, or data updating an Ielts exam.
+        if (data.getExamType().equals(Exam.IELTSGen)) {
+            IeltsScore score = IeltsScore.valueOf(data.getExamScore());
+            candidate.setIeltsScore(score);
+        } else {
+            if (existingIelts) {
+                candidate.setIeltsScore(null);
+            }
         }
+
     }
 }

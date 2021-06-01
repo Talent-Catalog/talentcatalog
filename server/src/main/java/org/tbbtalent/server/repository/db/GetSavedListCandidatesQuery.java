@@ -77,8 +77,7 @@ public class GetSavedListCandidatesQuery implements Specification<Candidate> {
                     (Join<Object, Object>) userFetch,
                     (Join<Object, Object>) nationalityFetch,
                     (Join<Object, Object>) countryFetch,
-                    (Join<Object, Object>) educationLevelFetch,
-                    query);
+                    (Join<Object, Object>) educationLevelFetch);
             query.orderBy(orders);
         }
 

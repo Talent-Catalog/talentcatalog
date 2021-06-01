@@ -37,17 +37,15 @@ public class CandidateSpecificationUtil {
                                                Join<Object, Object> user,
                                                Join<Object, Object> nationality,
                                                Join<Object, Object> country,
-                                               Join<Object, Object> educationLevel,
-                                               CriteriaQuery query) {
+                                               Join<Object, Object> educationLevel) {
         List<Order> orders = new ArrayList<>();
         String[] sort = request.getSortFields();
-        Subquery<String> sq = null;
         boolean idSort = false;
         if (sort != null) {
             for (String property : sort) {
 
                 Join<Object, Object> join = null;
-                String subProperty = null;
+                String subProperty;
                 if (property.startsWith("user.")) {
                     join = user;
                     subProperty = property.replaceAll("user.", "");
@@ -60,17 +58,6 @@ public class CandidateSpecificationUtil {
                 } else if (property.startsWith("maxEducationLevel.")) {
                     join = educationLevel;
                     subProperty = property.replaceAll("maxEducationLevel.", "");
-                } else if (property.equals("ieltsScore")) {
-                    subProperty = "ieltsScore";
-//                    // select distinct score from candidate_exam ce left join candidate c on c.id = ce.candidate_id where ce.exam = 'IELTSGen';
-//                    //select * from Candidate c inner join (select score, candidate_id from candidate_exam ce where ce.exam = 'IELTSGen') sc on c.id = sc.candidate_id order by score desc;
-//                    sq = query.subquery(String.class);
-//                    Root<CandidateExam> ce = sq.from(CandidateExam.class);
-//                    Join<Object, Object> cand = ce.join("candidate");
-//                    sq.select(ce.get("score")).where(builder.and (
-//                            builder.equal((ce.get("exam")), "IELTSGen")),
-//                            builder.equal((cand.get("id")), ce.get("candidateId"))
-//                    );
                 } else {
                     subProperty = property;
                     if (property.equals("id")) {
@@ -79,18 +66,13 @@ public class CandidateSpecificationUtil {
                 }
 
                 Path<Object> path;
-                if (subProperty.equals("ieltsScore")) {
-                    orders.add(request.getSortDirection().equals(Sort.Direction.ASC)
-                            ? builder.asc(candidate.get("score")) : builder.desc(candidate.get("score")));
+                if (join != null) {
+                    path = join.get(subProperty);
                 } else {
-                    if (join != null) {
-                        path = join.get(subProperty);
-                    } else {
-                        path = candidate.get(subProperty);
-                    }
-                    orders.add(request.getSortDirection().equals(Sort.Direction.ASC)
-                            ? builder.asc(path) : builder.desc(path));
+                    path = candidate.get(subProperty);
                 }
+                orders.add(request.getSortDirection().equals(Sort.Direction.ASC)
+                        ? builder.asc(path) : builder.desc(path));
             }
         }
         

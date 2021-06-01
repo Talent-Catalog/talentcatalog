@@ -18,9 +18,10 @@ import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {IntakeComponentBase} from '../../../../util/intake/IntakeComponentBase';
 import {EnumOption, enumOptions} from '../../../../../util/enum';
 import {CandidateExam, Exam} from '../../../../../model/candidate';
-import {FormBuilder} from '@angular/forms';
+import {AbstractControl, FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../../services/candidate.service';
 import {CandidateExamService} from '../../../../../services/candidate-exam.service';
+
 import {generateYearArray} from '../../../../../util/year-helper';
 
 @Component({
@@ -46,7 +47,7 @@ export class CandidateExamCardComponent extends IntakeComponentBase implements O
       examId: [this.myRecord?.id],
       examType: [this.myRecord?.exam],
       otherExam: [this.myRecord?.otherExam],
-      examScore: [this.myRecord?.score],
+      examScore: [this.myRecord?.score, [this.ieltsScoreValidator]],
       examYear: [this.myRecord?.year],
       examNotes: [this.myRecord?.notes],
     });
@@ -54,6 +55,29 @@ export class CandidateExamCardComponent extends IntakeComponentBase implements O
     this.years = generateYearArray(1950, true);
 
   }
+
+
+  ieltsScoreValidator(control: AbstractControl): { [key: string]: boolean } | null {
+    const regexpIeltsScore = new RegExp('^\\d(\\.5)?$');
+    if (control.value !== undefined && regexpIeltsScore.test(control.value)) {
+      return { 'score': true };
+    }
+    return null;
+  }
+
+  // ieltsScoreValidator(type: string, score: string): ValidationErrors | null {
+  //   return (group: FormGroup): { [key: string]: any } => {
+  //     const t = group.controls[type];
+  //     const s = group.controls[score];
+  //     if (t.value === 'IELTSGen') {
+  //       console.log("heyyy")
+  //       return {
+  //         invalidDate: "Date from should be less than Date to"
+  //       };
+  //     }
+  //     return {};
+  //   }
+  // }
 
   get isOtherExam(): boolean {
     let other: boolean = false;

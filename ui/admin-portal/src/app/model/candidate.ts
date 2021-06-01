@@ -215,7 +215,7 @@ export interface CandidateExam {
   id?: number;
   exam?: Exam;
   otherExam?: string;
-  score?: string;
+  score?: IeltsScore;
   year?: number;
   notes?: string;
 }

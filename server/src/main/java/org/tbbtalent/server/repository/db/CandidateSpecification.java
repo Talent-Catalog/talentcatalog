@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.tbbtalent.server.repository.db.CandidateSpecificationUtil.getOrderByOrders;
+
 public class CandidateSpecification {
 
     public static Specification<Candidate> buildSearchQuery(
@@ -60,7 +62,7 @@ public class CandidateSpecification {
                 );
             }
 
-            //query.distinct(true);
+            query.distinct(true);
 
             /*
               My theory on the reason for this - JC
@@ -93,8 +95,8 @@ public class CandidateSpecification {
                 maxEducationLevel = (Join<Object, Object>) educationLevelFetch;
 
                 //Fetch<Candidate, CandidateExam> examsFetch = candidate.fetch("candidateExams");
-                Join<Candidate, CandidateExam> cExams = candidate.join("candidateExams", JoinType.LEFT);
-                Join<Candidate, CandidateDependant> cDeps = candidate.join("candidateDependants", JoinType.LEFT);
+//                Join<Candidate, CandidateExam> cExams = candidate.join("candidateExams", JoinType.LEFT);
+//                Join<Candidate, CandidateDependant> cDeps = candidate.join("candidateDependants", JoinType.LEFT);
 //                cExams.on(
 //                        builder.equal(cExams.get("exam"), Exam.IELTSGen)
 //                );
@@ -102,19 +104,19 @@ public class CandidateSpecification {
                 //ListJoin<Object,Object> cExams = candidate.joinList("candidateExams",JoinType.LEFT);
 
                 //select * from Candidate c inner join (select score, candidate_id from candidate_exam ce where ce.exam = 'IELTSGen') sc on c.id = sc.candidate_id order by score desc;
-                Subquery<CandidateExam> sq = query.subquery(CandidateExam.class);
-                Root<CandidateExam> ce = sq.from(CandidateExam.class);
-                //Join<Object,Object> examsC = ce.join("candidate",JoinType.LEFT);
-                ce.alias("cex");
-                candidate.alias("c");
-                cExams.alias("examsc");
-                sq.select(ce).distinct(true).where(builder.or(
-                        builder.equal((ce.get("exam")), "IELTSGen")),
-                        builder.equal((ce.get("exam")), null)
-                );
-
-                query.where(builder.in(cExams).value(sq));
-                query.orderBy(builder.asc(cExams.get("score")));
+//                Subquery<CandidateExam> sq = query.subquery(CandidateExam.class);
+//                Root<CandidateExam> ce = sq.from(CandidateExam.class);
+//                //Join<Object,Object> examsC = ce.join("candidate",JoinType.LEFT);
+//                ce.alias("cex");
+//                candidate.alias("c");
+//                cExams.alias("examsc");
+//                sq.select(ce).distinct(true).where(builder.or(
+//                        builder.equal((ce.get("exam")), "IELTSGen")),
+//                        builder.equal((ce.get("exam")), null)
+//                );
+//
+//                query.where(builder.in(cExams).value(sq));
+//                query.orderBy(builder.asc(cExams.get("score")));
 
 //                SELECT COUNT(relation) FROM candidate_dependant
 //                left join candidate c on c.id = candidate_dependant.candidate_id
@@ -135,10 +137,10 @@ public class CandidateSpecification {
                     //query.orderBy(builder.desc(builder.size(candidate.get("candidateDependants"))));
 
 
-//                List<Order> orders = getOrderByOrders(request, candidate, builder,
-//                        user, nationality, country, maxEducationLevel, query);
-//
-//                query.orderBy(orders);
+                List<Order> orders = getOrderByOrders(request, candidate, builder,
+                        user, nationality, country, maxEducationLevel);
+
+                query.orderBy(orders);
 
             } else {
                 //Count query - sort doesn't matter

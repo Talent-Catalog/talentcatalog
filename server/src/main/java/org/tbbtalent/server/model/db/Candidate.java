@@ -489,8 +489,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private Country birthCountry;
 
+    @Enumerated(EnumType.STRING)
     @Nullable
-    private String ieltsScore;
+    private IeltsScore ieltsScore;
 
     @Nullable
     private Integer numberDependants;
@@ -499,11 +500,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     }
 
     @Nullable
-    public String getIeltsScore() {
+    public IeltsScore getIeltsScore() {
         return ieltsScore;
     }
 
-    public void setIeltsScore(@Nullable String ieltsScore) {
+    public void setIeltsScore(@Nullable IeltsScore ieltsScore) {
         this.ieltsScore = ieltsScore;
     }
 
