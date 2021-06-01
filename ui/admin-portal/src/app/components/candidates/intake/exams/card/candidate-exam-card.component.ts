@@ -18,7 +18,7 @@ import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {IntakeComponentBase} from '../../../../util/intake/IntakeComponentBase';
 import {EnumOption, enumOptions} from '../../../../../util/enum';
 import {CandidateExam, Exam} from '../../../../../model/candidate';
-import {AbstractControl, FormBuilder} from '@angular/forms';
+import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../../services/candidate.service';
 import {CandidateExamService} from '../../../../../services/candidate-exam.service';
 
@@ -36,6 +36,8 @@ export class CandidateExamCardComponent extends IntakeComponentBase implements O
   //Drop down values for enumeration
   examOptions: EnumOption[] = enumOptions(Exam);
   years: number[];
+  errorMsg: string;
+  regexpIeltsScore: RegExp;
 
   constructor(fb: FormBuilder, candidateService: CandidateService,
               private candidateExamService: CandidateExamService) {
@@ -47,37 +49,21 @@ export class CandidateExamCardComponent extends IntakeComponentBase implements O
       examId: [this.myRecord?.id],
       examType: [this.myRecord?.exam],
       otherExam: [this.myRecord?.otherExam],
-      examScore: [this.myRecord?.score, [this.ieltsScoreValidator]],
+      examScore: [this.myRecord?.score],
       examYear: [this.myRecord?.year],
       examNotes: [this.myRecord?.notes],
     });
 
     this.years = generateYearArray(1950, true);
 
+    this.regexpIeltsScore = new RegExp('^\\d(\\.5)?$');
+    this.errorMsg = "The IELTS score must be between 0-9 and with decimal increments of .5 only."
+
   }
 
-
-  ieltsScoreValidator(control: AbstractControl): { [key: string]: boolean } | null {
-    const regexpIeltsScore = new RegExp('^\\d(\\.5)?$');
-    if (control.value !== undefined && regexpIeltsScore.test(control.value)) {
-      return { 'score': true };
-    }
-    return null;
+  get type() {
+    return this.form?.controls?.examType?.value;
   }
-
-  // ieltsScoreValidator(type: string, score: string): ValidationErrors | null {
-  //   return (group: FormGroup): { [key: string]: any } => {
-  //     const t = group.controls[type];
-  //     const s = group.controls[score];
-  //     if (t.value === 'IELTSGen') {
-  //       console.log("heyyy")
-  //       return {
-  //         invalidDate: "Date from should be less than Date to"
-  //       };
-  //     }
-  //     return {};
-  //   }
-  // }
 
   get isOtherExam(): boolean {
     let other: boolean = false;

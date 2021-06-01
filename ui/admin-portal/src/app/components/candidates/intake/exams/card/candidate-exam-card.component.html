@@ -54,12 +54,14 @@
       <div *ngIf="hasSelectedExam">
         <div class="form-group">
           <label [for]="'examScore'+myRecordIndex">Score</label>
-          <input type="text" class="form-control"
-                 [id]="'examScore'+myRecordIndex" [formControlName]="'examScore'">
-        </div>
-        <div *ngIf="form.controls.examScore.invalid && (form.controls.examScore.dirty || form.controls.examScore.touched)"
-             class="alert alert-danger">
-          Error
+          <app-form-control-conditional
+            [id]="'examScore'+myRecordIndex"
+            [control]="form.controls.examScore"
+            [errorMsg]="this.errorMsg"
+            [regex]="this.regexpIeltsScore"
+            [dependantOn]="['IELTSGen', 'IELTSAca']"
+            [dependantValue]="form.controls.examType.value">
+          </app-form-control-conditional>
         </div>
 
 
