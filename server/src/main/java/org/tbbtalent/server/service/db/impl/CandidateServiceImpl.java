@@ -78,6 +78,21 @@ public class CandidateServiceImpl implements CandidateService {
 
     private static final Logger log = LoggerFactory.getLogger(CandidateServiceImpl.class);
 
+    /**
+     * These are the default candidate statuses to included in searches when no statuses are 
+     * specified.
+     * Basically all statuses except for draft, deleted and "inactive" statuses such as employed
+     * and ineligible.
+     */
+    private static final List<CandidateStatus> defaultSearchStatuses = new ArrayList<>( 
+        EnumSet.complementOf(EnumSet.of(
+            CandidateStatus.draft, 
+            CandidateStatus.deleted,
+            CandidateStatus.employed, 
+            CandidateStatus.ineligible,
+            CandidateStatus.unreachable
+        )));
+    
     private final UserRepository userRepository;
     private final SavedListRepository savedListRepository;
     private final SavedSearchRepository savedSearchRepository;
@@ -427,6 +442,13 @@ public class CandidateServiceImpl implements CandidateService {
     private Page<Candidate> doSearchCandidates(SearchCandidateRequest request) {
 
         Page<Candidate> candidates;
+        
+        //Modify request, defaulting blank statuses
+        List<CandidateStatus> requestedStatuses = request.getStatuses();
+        if (requestedStatuses == null || requestedStatuses.isEmpty()) {
+            request.setStatuses(defaultSearchStatuses);
+        }
+
         String simpleQueryString = request.getSimpleQueryString();
         if (simpleQueryString != null && simpleQueryString.length() > 0) {
             //This is an elastic search request
