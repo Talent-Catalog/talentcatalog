@@ -72,28 +72,20 @@
       </div>
 
       <form class="filter-form" [formGroup]="searchForm" (ngSubmit)="apply()" #formWrapper>
-        <div class="row">
-          <p>Introducing Elasticsearch which <strong>searches all CV's as well!</strong></p>
-          <p>
-          When searching + means AND, space means OR.
-            For example <strong>welder diesel+mechanic</strong>
-            will find all candidate profiles containing
-            the word 'welder' OR both words 'diesel' AND 'mechanic'.</p>
-          <p>You can just match the first part of a word using *. For example
-            'account*' will match 'accounting' or 'accountant'.</p>
-          <p>You can also search for phrases as well as words by using
-            double quotes. For example <strong>accountant + "hospital director"</strong>
-            will find profiles with the word 'accountant' AND the phrase
-            'hospital director'.</p>
-          <p>You can use brackets to group terms. For example
-          <strong>accountant + (excel powerpoint)</strong> means find profiles
-          containing the word 'accountant' AND either one of 'excel' or 'powerpoint'.
-            But <strong>(accountant + excel) powerpoint</strong> means find
-            profiles containing both words 'accountant' and 'excel' OR profiles
-          containing the word 'powerpoint'.</p>
+        <div>
+          <p>Introducing Elasticsearch which <strong>searches all CV's as well!</strong> When searching + means AND, space means OR. For example <strong>welder diesel+mechanic</strong>
+            will find all candidate profiles containing the word 'welder' OR both words 'diesel' AND 'mechanic'.
+            You can just match the first part of a word using *. For example 'account*' will match 'accounting' or
+            'accountant'. You can also search for phrases as well as words by using double quotes.
+            For example <strong>accountant + "hospital director"</strong> will find profiles with the word 'accountant'
+            AND the phrase 'hospital director'. You can use brackets to group terms. For example
+            <strong>accountant + (excel powerpoint)</strong> means find profiles
+            containing the word 'accountant' AND either one of 'excel' or 'powerpoint'.
+            But <strong>(accountant + excel) powerpoint</strong> means find profiles containing both words
+            'accountant' and 'excel' OR profiles containing the word 'powerpoint'.</p>
         </div>
+        <hr/>
         <div class="row">
-
           <div class="form-group col-12 col-md-6">
             <label for="simpleQueryString">Elasticsearch</label>
             <input id="simpleQueryString" type="text" class="form-control" placeholder="eg welder diesel+mechanic" aria-label="Elastic"
@@ -112,6 +104,7 @@
               formControlName="statusesDisplay"
             >
             </ng-multiselect-dropdown>
+            <p class="small text-muted mt-1">If nothing is specified, the default is to exclude draft, deleted and inactive statuses (employed, unreachable etc)</p>
           </div>
 
           <!-- ENGLISH LANGUAGE -->
