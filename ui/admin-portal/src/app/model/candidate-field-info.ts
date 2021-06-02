@@ -33,6 +33,20 @@ export class CandidateFieldInfo {
     return ret;
   }
 
+  getIeltsValue(candidate: Candidate): string {
+    let ret = null;
+    if (candidate?.ieltsScore) {
+      // If candidate has an IeltsGen exam, then the score is from that.
+      // If not the score is from the lang assessment estimation (so with estimated on value).
+      if (this.hasIeltsExam(candidate)) {
+        ret = candidate?.ieltsScore;
+      } else {
+        ret = candidate?.ieltsScore + " estimated";
+      }
+    }
+    return ret;
+  }
+
   getUnformattedValue(candidate: Candidate): any {
     const fields: string[] = this.fieldPath.split('.');
     let val = candidate;
@@ -47,5 +61,14 @@ export class CandidateFieldInfo {
     }
     return val;
   }
+
+  hasIeltsExam(candidate: Candidate): boolean {
+    if (candidate.candidateExams.length > 0) {
+      return candidate?.candidateExams?.find(e => e?.exam?.toString() === "IELTSGen") != null;
+    } else {
+      return false;
+    }
+  }
+
 }
 

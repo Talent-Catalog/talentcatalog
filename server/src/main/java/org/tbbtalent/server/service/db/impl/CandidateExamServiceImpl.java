@@ -78,8 +78,14 @@ public class CandidateExamServiceImpl implements CandidateExamService {
 
         candidateExamRepository.deleteById(examId);
 
+        // If ieltsExam is deleted, set ieltsScore to null UNLESS langAssessmentScore exists, set it to that.
         if (ieltsExam) {
-            ce.getCandidate().setIeltsScore(null);
+            if (ce.getCandidate().getLangAssessmentScore() != null) {
+                BigDecimal score = new BigDecimal(ce.getCandidate().getLangAssessmentScore());
+                ce.getCandidate().setIeltsScore(score);
+            } else {
+                ce.getCandidate().setIeltsScore(null);
+            }
             candidateRepository.save(ce.getCandidate());
         }
         return true;
@@ -109,8 +115,10 @@ public class CandidateExamServiceImpl implements CandidateExamService {
 
         // If exam score is not null and either existing Ielts exam is being updated, or data updating an Ielts exam.
         if (data.getExamType().equals(Exam.IELTSGen)) {
-            BigDecimal score = new BigDecimal(data.getExamScore());
-            candidate.setIeltsScore(score);
+            if (!data.getExamScore().isEmpty()) {
+                BigDecimal score = new BigDecimal(data.getExamScore());
+                candidate.setIeltsScore(score);
+            }
         } else {
             if (existingIelts) {
                 candidate.setIeltsScore(null);

@@ -40,6 +40,10 @@ export class CandidateFieldService {
     return enumKeysToEnumOptions([value], ResidenceStatus)[0].displayText;
   }
 
+  private getSourceIelts = (value) => {
+    return enumKeysToEnumOptions([value], ResidenceStatus)[0].displayText;
+  }
+
   private allDisplayableFields = [
     new CandidateFieldInfo("First Name", "user.firstName",
       null, this.isCandidateNameViewable),

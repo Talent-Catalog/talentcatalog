@@ -59,6 +59,9 @@ export interface Candidate {
   maritalStatus: MaritalStatus;
   drivingLicense: DrivingLicenseStatus;
   unhcrStatus: UnhcrStatus;
+  ieltsScore: string;
+  langAssessmentScore: string;
+  candidateExams: CandidateExam[];
 }
 
 export interface CandidateIntakeData {
