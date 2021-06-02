@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {NgbNav, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {SavedSearchSubtype, SavedSearchType} from "../../model/saved-search";
 import {CandidateSourceType, SearchBy} from "../../model/base"
@@ -31,7 +31,7 @@ import {FormBuilder, FormGroup} from "@angular/forms";
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, AfterViewInit {
 
   activeTabId: string;
   categoryForm: FormGroup;
@@ -59,7 +59,11 @@ export class HomeComponent implements OnInit {
     this.categoryForm = this.fb.group({
       savedSearchSubtype: [this.selectedSavedSearchSubtype]
     });
+  }
 
+  ngAfterViewInit(): void {
+    //Have to wait until AfterViewInit is called in order for the navigation tabs, this.nav, to be
+    //set. See doc on @ViewChild
     this.selectDefaultTab()
   }
 
