@@ -24,6 +24,7 @@ import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
@@ -489,9 +490,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private Country birthCountry;
 
-    @Enumerated(EnumType.STRING)
     @Nullable
-    private IeltsScore ieltsScore;
+    private BigDecimal ieltsScore;
 
     @Nullable
     private Integer numberDependants;
@@ -500,11 +500,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     }
 
     @Nullable
-    public IeltsScore getIeltsScore() {
+    public BigDecimal getIeltsScore() {
         return ieltsScore;
     }
 
-    public void setIeltsScore(@Nullable IeltsScore ieltsScore) {
+    // todo update the database column for ieltsScore to be for big decimal which should be numeric or decimal.
+    public void setIeltsScore(@Nullable BigDecimal ieltsScore) {
         this.ieltsScore = ieltsScore;
     }
 

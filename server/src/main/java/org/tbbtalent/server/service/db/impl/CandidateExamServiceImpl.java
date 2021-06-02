@@ -25,13 +25,14 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateExam;
 import org.tbbtalent.server.model.db.Exam;
-import org.tbbtalent.server.model.db.IeltsScore;
 import org.tbbtalent.server.repository.db.CandidateExamRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.NationalityRepository;
 import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tbbtalent.server.request.candidate.exam.CreateCandidateExamRequest;
 import org.tbbtalent.server.service.db.CandidateExamService;
+
+import java.math.BigDecimal;
 
 /**
  * Manage candidate exams
@@ -108,7 +109,7 @@ public class CandidateExamServiceImpl implements CandidateExamService {
 
         // If exam score is not null and either existing Ielts exam is being updated, or data updating an Ielts exam.
         if (data.getExamType().equals(Exam.IELTSGen)) {
-            IeltsScore score = IeltsScore.valueOf(data.getExamScore());
+            BigDecimal score = new BigDecimal(data.getExamScore());
             candidate.setIeltsScore(score);
         } else {
             if (existingIelts) {
