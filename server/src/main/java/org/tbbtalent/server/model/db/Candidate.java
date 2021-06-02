@@ -481,9 +481,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private String langAssessment;
 
-    @Enumerated(EnumType.STRING)
     @Nullable
-    private IeltsScore langAssessmentScore;
+    private String langAssessmentScore;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "birth_country_id")
@@ -1273,9 +1272,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setLangAssessment(@Nullable String langAssessment) { this.langAssessment = langAssessment; }
 
     @Nullable
-    public IeltsScore getLangAssessmentScore() { return langAssessmentScore; }
+    public String getLangAssessmentScore() { return langAssessmentScore; }
 
-    public void setLangAssessmentScore(@Nullable IeltsScore langAssessmentScore) { this.langAssessmentScore = langAssessmentScore; }
+    public void setLangAssessmentScore(@Nullable String langAssessmentScore) { this.langAssessmentScore = langAssessmentScore; }
 
     @Nullable
     public Country getBirthCountry() { return birthCountry; }
@@ -1443,6 +1442,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getLangAssessmentScore() != null) {
             setLangAssessmentScore(data.getLangAssessmentScore());
+            if (ieltsScore == null) {
+                BigDecimal score = new BigDecimal(data.getLangAssessmentScore());
+                setIeltsScore(score);
+            }
         }
         if (data.getLeftHomeReasons() != null) {
             setLeftHomeReasons(data.getLeftHomeReasons());

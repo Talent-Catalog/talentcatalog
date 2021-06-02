@@ -148,8 +148,7 @@ public class CandidateEs {
     private Integer maxEducationLevel;
 
     @Field(type = FieldType.Keyword)
-    @Enumerated(EnumType.ORDINAL)
-    private IeltsScore langAssessmentScore;
+    private String langAssessmentScore;
 
     @Field(type = FieldType.Keyword)
     @Enumerated(EnumType.STRING)

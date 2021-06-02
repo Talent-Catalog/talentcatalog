@@ -32,23 +32,23 @@ export class FormControlConditionalComponent implements OnInit, OnChanges {
   }
 
   update() {
-    const meetsDependant = this.dependantOn.some(d =>  d === this.dependantValue)
     // Only send the string to the component form if date matches the correct format
-    if (meetsDependant) {
-      if (this.regex.test(this.value)) {
-        this.error = null;
-        this.control.patchValue(this.value);
+    if (this.value != null) {
+      if (this.dependantCheck()) {
+        if (this.regex.test(this.value)) {
+          this.error = null;
+          this.control.patchValue(this.value);
+        } else {
+          this.error = this.errorMsg;
+        }
       } else {
-        this.error = this.errorMsg;
+        this.control.patchValue(this.value);
       }
-    } else {
-      this.control.patchValue(this.value);
     }
   }
 
   checkStatus() {
-    const meetsDependant = this.dependantOn.some(d =>  d === this.dependantValue)
-    if (meetsDependant) {
+    if (this.dependantCheck()) {
       if (this.regex.test(this.value)) {
         this.error = null;
       } else {
@@ -56,6 +56,14 @@ export class FormControlConditionalComponent implements OnInit, OnChanges {
       }
     } else {
       this.error = null;
+    }
+  }
+
+  dependantCheck() {
+    if (this.dependantOn != null && this.dependantValue != null) {
+      return this.dependantOn.some(d =>  d === this.dependantValue)
+    } else {
+      return true;
     }
   }
 
