@@ -86,7 +86,7 @@ public class CandidateExamServiceImpl implements CandidateExamService {
 
         // If exam score is not null and either existing Ielts exam is being updated, or data updating an Ielts exam.
         if (data.getExamType().equals(Exam.IELTSGen)) {
-            if (!data.getExamScore().isEmpty()) {
+            if (data.getExamScore() != null) {
                 BigDecimal score = new BigDecimal(data.getExamScore());
                 candidate.setIeltsScore(score);
             }
