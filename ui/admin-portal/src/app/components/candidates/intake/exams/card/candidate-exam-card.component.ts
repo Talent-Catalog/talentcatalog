@@ -56,7 +56,7 @@ export class CandidateExamCardComponent extends IntakeComponentBase implements O
 
     this.years = generateYearArray(1950, true);
 
-    this.regexpIeltsScore = new RegExp('^\\d(\\.5)?$');
+    this.regexpIeltsScore = new RegExp('^([0-8](\\.5)?$)|(^9$)');
     this.errorMsg = "The IELTS score must be between 0-9 and with decimal increments of .5 only."
 
   }
