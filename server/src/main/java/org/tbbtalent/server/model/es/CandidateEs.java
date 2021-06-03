@@ -29,6 +29,7 @@ import org.tbbtalent.server.request.PagedSearchRequest;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,9 +61,9 @@ public class CandidateEs {
             "drivingLicense",
             "dob",
             "maxEducationLevel",
+            "ieltsScore",
             // todo get these sorting correctly, not currently working
             "residenceStatus",
-            "langAssessmentScore"
     }; 
    
     @Id
@@ -154,6 +155,9 @@ public class CandidateEs {
     @Enumerated(EnumType.STRING)
     private ResidenceStatus residenceStatus;
 
+    @Field(type = FieldType.Double)
+    private BigDecimal ieltsScore;
+
     public CandidateEs() {
     }
 
@@ -184,7 +188,7 @@ public class CandidateEs {
         this.drivingLicense = candidate.getDrivingLicense();
         this.dob = candidate.getDob();
         this.residenceStatus = candidate.getResidenceStatus();
-        this.langAssessmentScore = candidate.getLangAssessmentScore();
+        this.ieltsScore = candidate.getIeltsScore();
 
         this.maxEducationLevel = null;
         if (candidate.getMaxEducationLevel() != null) {
@@ -343,7 +347,7 @@ public class CandidateEs {
                 //and updated, is assumed to be a keyword field.
                 //This will need to change if we add other sorting fields 
                 //that are not keyword fields (eg numeric fields).
-                String[] nonKeywordFields = {"masterId", "updated", "dob", "maxEducationLevel"};
+                String[] nonKeywordFields = {"masterId", "updated", "dob", "maxEducationLevel", "ieltsScore"};
 
                 boolean keywordField = Arrays.stream(nonKeywordFields).noneMatch(sortField::equals);
                 

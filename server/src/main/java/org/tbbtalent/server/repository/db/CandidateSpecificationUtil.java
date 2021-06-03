@@ -81,7 +81,7 @@ public class CandidateSpecificationUtil {
         //which means that the contents of pages - computed at different times -
         //won't be predictable.
         if (!idSort) {
-            orders.add(builder.asc(candidate.get("id")));
+            orders.add(builder.desc(candidate.get("id")));
         }
         return orders;
     }

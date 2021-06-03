@@ -40,10 +40,6 @@ export class CandidateFieldService {
     return enumKeysToEnumOptions([value], ResidenceStatus)[0].displayText;
   }
 
-  private getSourceIelts = (value) => {
-    return enumKeysToEnumOptions([value], ResidenceStatus)[0].displayText;
-  }
-
   private allDisplayableFields = [
     new CandidateFieldInfo("First Name", "user.firstName",
       null, this.isCandidateNameViewable),
@@ -71,8 +67,6 @@ export class CandidateFieldService {
       this.dateFormatter, null),
     new CandidateFieldInfo("Highest Level of Edu", "maxEducationLevel.level",
       this.levelGetNameFormatter, null),
-    new CandidateFieldInfo("Estimated IELTS Score", "langAssessmentScore",
-      this.stringToInt, null),
     new CandidateFieldInfo("IELTS Score", "ieltsScore",
       null, null),
     new CandidateFieldInfo("Legal status", "residenceStatus",

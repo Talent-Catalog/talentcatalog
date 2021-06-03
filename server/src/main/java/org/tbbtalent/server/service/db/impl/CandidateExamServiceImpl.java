@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.EntityExistsException;
@@ -31,6 +32,7 @@ import org.tbbtalent.server.repository.db.NationalityRepository;
 import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tbbtalent.server.request.candidate.exam.CreateCandidateExamRequest;
 import org.tbbtalent.server.service.db.CandidateExamService;
+import org.tbbtalent.server.service.db.CandidateService;
 
 import java.math.BigDecimal;
 
@@ -43,15 +45,17 @@ import java.math.BigDecimal;
 public class CandidateExamServiceImpl implements CandidateExamService {
     private final CandidateExamRepository candidateExamRepository;
     private final CandidateRepository candidateRepository;
-    private final NationalityRepository nationalityRepository;
+    private final CandidateService candidateService;
 
     public CandidateExamServiceImpl(
             CandidateExamRepository candidateExamRepository,
-            CandidateRepository candidateRepository, 
-            NationalityRepository nationalityRepository) {
+            CandidateRepository candidateRepository,
+            NationalityRepository nationalityRepository,
+            // todo, is this best way to avoid circular dependancy? Perhaps move update Elastic Proxy to a util standalone method?
+            @Lazy CandidateService candidateService) {
         this.candidateExamRepository = candidateExamRepository;
         this.candidateRepository = candidateRepository;
-        this.nationalityRepository = nationalityRepository;
+        this.candidateService = candidateService;
     }
 
     @Override
@@ -86,7 +90,8 @@ public class CandidateExamServiceImpl implements CandidateExamService {
             } else {
                 ce.getCandidate().setIeltsScore(null);
             }
-            candidateRepository.save(ce.getCandidate());
+            // todo getting cycle dependancy how to best do this?
+            candidateService.save(ce.getCandidate(), true);
         }
         return true;
     }
