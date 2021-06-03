@@ -85,7 +85,6 @@ public class CandidateBuilderSelector {
                 .add("langAssessmentScore")
                 .add("residenceStatus")
                 .add("ieltsScore")
-                .add("numberDependants")
                 .add("candidateExams", examsDto())
                 .add("maxEducationLevel", educationLevelDto())
                 .add("surveyType", surveyTypeDto())

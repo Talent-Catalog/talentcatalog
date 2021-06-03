@@ -492,36 +492,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private BigDecimal ieltsScore;
 
-    @Nullable
-    private Integer numberDependants;
-
     public Candidate() {
-    }
-
-    @Nullable
-    public BigDecimal getIeltsScore() {
-        return ieltsScore;
-    }
-
-    // todo update the database column for ieltsScore to be for big decimal which should be numeric or decimal.
-    public void setIeltsScore(@Nullable BigDecimal ieltsScore) {
-        this.ieltsScore = ieltsScore;
-    }
-
-    @Transient
-    public Integer getNumberDependants() {
-        //return this.numberDependants;
-        if (!candidateDependants.isEmpty()) {
-            this.numberDependants = 0;
-            for (CandidateDependant dep : candidateDependants) {
-                this.numberDependants++;
-            }
-        }
-        return this.numberDependants;
-    }
-
-    public void setNumberDependants(Integer numberDependants) {
-        this.numberDependants = numberDependants;
     }
 
     //todo The "caller" is the user used to set the createdBy and updatedBy fields
@@ -1275,6 +1246,15 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public String getLangAssessmentScore() { return langAssessmentScore; }
 
     public void setLangAssessmentScore(@Nullable String langAssessmentScore) { this.langAssessmentScore = langAssessmentScore; }
+
+    @Nullable
+    public BigDecimal getIeltsScore() {
+        return ieltsScore;
+    }
+
+    public void setIeltsScore(@Nullable BigDecimal ieltsScore) {
+        this.ieltsScore = ieltsScore;
+    }
 
     @Nullable
     public Country getBirthCountry() { return birthCountry; }
