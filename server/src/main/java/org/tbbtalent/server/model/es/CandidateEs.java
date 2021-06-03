@@ -20,6 +20,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
@@ -359,7 +360,11 @@ public class CandidateEs {
                 }
                 requestAdj = PageRequest.of(
                         request.getPageNumber(), request.getPageSize(),
-                        request.getSortDirection(), esFieldSpec
+                        (request.getSortDirection() == Sort.Direction.ASC ?
+                                Sort.by(esFieldSpec).ascending() :
+                                Sort.by(esFieldSpec).descending())
+                        .and(Sort.by("masterId").descending())
+
                 );
             }
         } else {
