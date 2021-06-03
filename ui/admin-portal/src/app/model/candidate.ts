@@ -517,7 +517,6 @@ export enum Registrations {
   NoResponse = "",
   UNHCR = "UNHCR only",
   UNRWA = "UNRWA only",
-  UNHCRUNRWA = "UNHCR & UNRWA",
   Neither = "Neither",
   NA = "Not Applicable",
 }
