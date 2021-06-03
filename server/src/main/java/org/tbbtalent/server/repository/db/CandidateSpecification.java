@@ -16,47 +16,20 @@
 
 package org.tbbtalent.server.repository.db;
 
-import static org.tbbtalent.server.repository.db.CandidateSpecificationUtil.getOrderByOrders;
-
 import io.jsonwebtoken.lang.Collections;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.criteria.Fetch;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateAttachment;
-import org.tbbtalent.server.model.db.CandidateEducation;
-import org.tbbtalent.server.model.db.CandidateJobExperience;
-import org.tbbtalent.server.model.db.CandidateLanguage;
-import org.tbbtalent.server.model.db.CandidateOccupation;
-import org.tbbtalent.server.model.db.CandidateReviewStatusItem;
-import org.tbbtalent.server.model.db.CandidateSkill;
-import org.tbbtalent.server.model.db.CandidateStatus;
-import org.tbbtalent.server.model.db.EducationLevel;
-import org.tbbtalent.server.model.db.EducationMajor;
-import org.tbbtalent.server.model.db.Language;
-import org.tbbtalent.server.model.db.LanguageLevel;
-import org.tbbtalent.server.model.db.Occupation;
-import org.tbbtalent.server.model.db.ReviewStatus;
-import org.tbbtalent.server.model.db.SavedSearch;
-import org.tbbtalent.server.model.db.SearchType;
-import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
+
+import javax.persistence.criteria.*;
+import java.time.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.tbbtalent.server.repository.db.CandidateSpecificationUtil.getOrderByOrders;
 
 public class CandidateSpecification {
 
@@ -119,49 +92,6 @@ public class CandidateSpecification {
 
                 Fetch<Object, Object> educationLevelFetch = candidate.fetch("maxEducationLevel");
                 maxEducationLevel = (Join<Object, Object>) educationLevelFetch;
-
-                //Fetch<Candidate, CandidateExam> examsFetch = candidate.fetch("candidateExams");
-//                Join<Candidate, CandidateExam> cExams = candidate.join("candidateExams", JoinType.LEFT);
-//                Join<Candidate, CandidateDependant> cDeps = candidate.join("candidateDependants", JoinType.LEFT);
-//                cExams.on(
-//                        builder.equal(cExams.get("exam"), Exam.IELTSGen)
-//                );
-
-                //ListJoin<Object,Object> cExams = candidate.joinList("candidateExams",JoinType.LEFT);
-
-                //select * from Candidate c inner join (select score, candidate_id from candidate_exam ce where ce.exam = 'IELTSGen') sc on c.id = sc.candidate_id order by score desc;
-//                Subquery<CandidateExam> sq = query.subquery(CandidateExam.class);
-//                Root<CandidateExam> ce = sq.from(CandidateExam.class);
-//                //Join<Object,Object> examsC = ce.join("candidate",JoinType.LEFT);
-//                ce.alias("cex");
-//                candidate.alias("c");
-//                cExams.alias("examsc");
-//                sq.select(ce).distinct(true).where(builder.or(
-//                        builder.equal((ce.get("exam")), "IELTSGen")),
-//                        builder.equal((ce.get("exam")), null)
-//                );
-//
-//                query.where(builder.in(cExams).value(sq));
-//                query.orderBy(builder.asc(cExams.get("score")));
-
-//                SELECT COUNT(relation) FROM candidate_dependant
-//                left join candidate c on c.id = candidate_dependant.candidate_id
-//                where c.id = 42807)
-//                Subquery<Long> sqt = query.subquery(Long.class);
-//                Root<CandidateDependant> cd = sq.from(CandidateDependant.class);
-//                //Join<Object,Object> examsC = ce.join("candidate",JoinType.LEFT);
-////                ce.alias("cex");
-////                candidate.alias("c");
-////                cExams.alias("examsc");
-//                sqt.select(builder.count(cd)).where(builder.or(
-//                        builder.equal((ce.get("exam")), "IELTSGen")),
-//                        builder.equal((ce.get("exam")), null)
-//                );
-//
-//                query.where(builder.in(cExams).value(sq));
-
-                    //query.orderBy(builder.desc(builder.size(candidate.get("candidateDependants"))));
-
 
                 List<Order> orders = getOrderByOrders(request, candidate, builder,
                         user, nationality, country, maxEducationLevel);

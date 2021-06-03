@@ -63,7 +63,6 @@ public class CandidateEs {
             "dob",
             "maxEducationLevel",
             "ieltsScore",
-            // todo get these sorting correctly, not currently working
             "residenceStatus",
     }; 
    
