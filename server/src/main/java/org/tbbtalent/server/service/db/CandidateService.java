@@ -20,9 +20,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.reactive.function.client.WebClientException;
-import org.tbbtalent.server.exception.ExportFailedException;
-import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.exception.UsernameTakenException;
+import org.tbbtalent.server.exception.*;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.DataRow;
 import org.tbbtalent.server.model.db.Gender;
@@ -351,4 +349,20 @@ public interface CandidateService {
      * @return Updated candidate record.
      */
     Candidate addMissingDestinations(Candidate candidate);
+
+    /**
+     * This candidate exam method is moved into the Candidate Service due a
+     * circular dependency error when referencing the candidate service in
+     * the Candidate Exam Service. The Candidate Service is needed in this method
+     * to update the Candidate's record on Elasticsearch with the updated IeltsScore field.
+     * Delete the candidate exam with the given id.
+     * @param examId ID of record to be deleted
+     * @return True if record was deleted, false if it was not found.
+     * @throws EntityReferencedException if the object cannot be deleted because
+     * it is referenced by another object.
+     * @throws InvalidRequestException if not authorized to delete this list.
+     * @param examId id of exam to be deleted
+     */
+    boolean deleteCandidateExam(long examId)
+            throws EntityReferencedException, InvalidRequestException;
 }

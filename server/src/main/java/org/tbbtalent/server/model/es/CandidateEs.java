@@ -149,9 +149,6 @@ public class CandidateEs {
     private Integer maxEducationLevel;
 
     @Field(type = FieldType.Keyword)
-    private String langAssessmentScore;
-
-    @Field(type = FieldType.Keyword)
     @Enumerated(EnumType.STRING)
     private ResidenceStatus residenceStatus;
 
@@ -347,7 +344,7 @@ public class CandidateEs {
                 //and updated, is assumed to be a keyword field.
                 //This will need to change if we add other sorting fields 
                 //that are not keyword fields (eg numeric fields).
-                String[] nonKeywordFields = {"masterId", "updated", "dob", "maxEducationLevel", "ieltsScore"};
+                String[] nonKeywordFields = {"masterId", "updated", "maxEducationLevel", "ieltsScore"};
 
                 boolean keywordField = Arrays.stream(nonKeywordFields).noneMatch(sortField::equals);
                 

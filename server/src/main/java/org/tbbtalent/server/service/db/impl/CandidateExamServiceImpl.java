@@ -16,23 +16,18 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import org.springframework.context.annotation.Lazy;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.EntityExistsException;
-import org.tbbtalent.server.exception.EntityReferencedException;
-import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateExam;
 import org.tbbtalent.server.model.db.Exam;
 import org.tbbtalent.server.repository.db.CandidateExamRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
-import org.tbbtalent.server.repository.db.NationalityRepository;
 import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tbbtalent.server.request.candidate.exam.CreateCandidateExamRequest;
 import org.tbbtalent.server.service.db.CandidateExamService;
-import org.tbbtalent.server.service.db.CandidateService;
 
 import java.math.BigDecimal;
 
@@ -45,17 +40,12 @@ import java.math.BigDecimal;
 public class CandidateExamServiceImpl implements CandidateExamService {
     private final CandidateExamRepository candidateExamRepository;
     private final CandidateRepository candidateRepository;
-    private final CandidateService candidateService;
 
     public CandidateExamServiceImpl(
             CandidateExamRepository candidateExamRepository,
-            CandidateRepository candidateRepository,
-            NationalityRepository nationalityRepository,
-            // todo, is this best way to avoid circular dependancy? Perhaps move update Elastic Proxy to a util standalone method?
-            @Lazy CandidateService candidateService) {
+            CandidateRepository candidateRepository) {
         this.candidateExamRepository = candidateExamRepository;
         this.candidateRepository = candidateRepository;
-        this.candidateService = candidateService;
     }
 
     @Override
@@ -70,30 +60,6 @@ public class CandidateExamServiceImpl implements CandidateExamService {
         ce.setCandidate(candidate);
         
         return candidateExamRepository.save(ce);
-    }
-
-    @Override
-    public boolean deleteExam(long examId)
-            throws EntityReferencedException, InvalidRequestException {
-        CandidateExam ce = candidateExamRepository.findByIdLoadCandidate(examId)
-                .orElseThrow(() -> new NoSuchObjectException(CandidateExam.class, examId));
-
-        boolean ieltsExam = ce.getExam().equals(Exam.IELTSGen);
-
-        candidateExamRepository.deleteById(examId);
-
-        // If ieltsExam is deleted, set ieltsScore to null UNLESS langAssessmentScore exists, set it to that.
-        if (ieltsExam) {
-            if (ce.getCandidate().getLangAssessmentScore() != null) {
-                BigDecimal score = new BigDecimal(ce.getCandidate().getLangAssessmentScore());
-                ce.getCandidate().setIeltsScore(score);
-            } else {
-                ce.getCandidate().setIeltsScore(null);
-            }
-            // todo getting cycle dependancy how to best do this?
-            candidateService.save(ce.getCandidate(), true);
-        }
-        return true;
     }
 
     @Override

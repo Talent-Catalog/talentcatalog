@@ -120,6 +120,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final SurveyTypeRepository surveyTypeRepository;
     private final OccupationRepository occupationRepository;
     private final LanguageLevelRepository languageLevelRepository;
+    private final CandidateExamRepository candidateExamRepository;
     private final EmailHelper emailHelper;
     private final PdfHelper pdfHelper;
 
@@ -151,6 +152,7 @@ public class CandidateServiceImpl implements CandidateService {
                                 SurveyTypeRepository surveyTypeRepository,
                                 OccupationRepository occupationRepository,
                                 LanguageLevelRepository languageLevelRepository,
+                                CandidateExamRepository candidateExamRepository,
                                 EmailHelper emailHelper, PdfHelper pdfHelper) {
         this.userRepository = userRepository;
         this.savedListRepository = savedListRepository;
@@ -177,6 +179,7 @@ public class CandidateServiceImpl implements CandidateService {
         this.surveyTypeRepository = surveyTypeRepository;
         this.occupationRepository = occupationRepository;
         this.languageLevelRepository = languageLevelRepository;
+        this.candidateExamRepository = candidateExamRepository;
         this.emailHelper = emailHelper;
         this.pdfHelper = pdfHelper;
         this.fileSystemService = fileSystemService;
@@ -1962,5 +1965,28 @@ public class CandidateServiceImpl implements CandidateService {
             }
         }
         return candidate;
+    }
+
+    @Override
+    public boolean deleteCandidateExam(long examId)
+            throws EntityReferencedException, InvalidRequestException {
+        CandidateExam ce = candidateExamRepository.findByIdLoadCandidate(examId)
+                .orElseThrow(() -> new NoSuchObjectException(CandidateExam.class, examId));
+
+        boolean ieltsExam = ce.getExam().equals(Exam.IELTSGen);
+
+        candidateExamRepository.deleteById(examId);
+
+        // If ieltsExam is deleted, set ieltsScore to null UNLESS langAssessmentScore exists, set it to that.
+        if (ieltsExam) {
+            if (ce.getCandidate().getLangAssessmentScore() != null) {
+                BigDecimal score = new BigDecimal(ce.getCandidate().getLangAssessmentScore());
+                ce.getCandidate().setIeltsScore(score);
+            } else {
+                ce.getCandidate().setIeltsScore(null);
+            }
+            save(ce.getCandidate(), true);
+        }
+        return true;
     }
 }
