@@ -59,10 +59,10 @@
             Migrated Language: {{language.migrationLanguage}}
           </div>
           <div class="col-sm-12 col-md-6">
-            Speaking: <span><i>{{language.spokenLevel.name}}</i></span>
+            <span>Speaking: <i>{{language.spokenLevel.name}}</i></span>
           </div>
           <div class="col-sm-12 col-md-6">
-            Reading and Writing: <span><i>{{language.writtenLevel.name}}</i></span>
+            <span>Reading and Writing: <i>{{language.writtenLevel.name}}</i></span>
           </div>
         </div>
         <hr *ngIf="i < candidateLanguages?.length - 1">
@@ -74,10 +74,10 @@
             IELTS Score
           </div>
           <div *ngIf="hasIelts(candidate)" class="col-sm-12 col-md-6">
-            Ielts General: <span><i>{{candidate.ieltsScore}}</i></span>
+            <span>Ielts General: <i>{{candidate.ieltsScore}}</i></span>
           </div>
           <div *ngIf="candidate?.langAssessmentScore" class="col-sm-12 col-md-6">
-            Language Assessment Score: <span><i>{{candidate.langAssessmentScore}}</i></span>
+            <span>Language Assessment Score: <i>{{candidate.langAssessmentScore}}</i></span>
           </div>
         </div>
       </ng-container>

@@ -168,7 +168,6 @@ export interface CandidateIntakeData {
   resettleThirdStatus?: string;
 
   workAbroad?: YesNo;
-  workAbroadCountryIds?: number[];
   workAbroadNotes?: string;
   workPermit?: WorkPermitValidity;
   workPermitDesired?: YesNoUnsure;
