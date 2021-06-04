@@ -211,7 +211,7 @@ public class CandidateIntakeDataUpdate {
     private WorkPermit workPermit;
     private YesNoUnsure workPermitDesired;
     private String workPermitDesiredNotes;
-    private YesNoUnemployed workDesired;
+    private YesNoUnemployedOther workDesired;
     private String workDesiredNotes;
 
 }

@@ -16,9 +16,10 @@
 
 package org.tbbtalent.server.model.db;
 
-public enum YesNoUnemployed {
+public enum YesNoUnemployedOther {
     NoResponse,
     Yes,
     No,
     Unemployed,
+    Other
 }

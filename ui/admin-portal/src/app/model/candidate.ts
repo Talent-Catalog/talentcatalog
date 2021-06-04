@@ -172,7 +172,7 @@ export interface CandidateIntakeData {
   workPermit?: WorkPermitValidity;
   workPermitDesired?: YesNoUnsure;
   workPermitDesiredNotes?: string;
-  workDesired?: YesNoUnemployed;
+  workDesired?: YesNoUnemployedOther;
   workDesiredNotes?: string;
   unhcrRegistered?: YesNoUnsure;
   unhcrStatus?: UnhcrStatus;
@@ -408,11 +408,12 @@ export enum WorkPermitValidity {
   No = "No - I do not have a work permit",
 }
 
-export enum YesNoUnemployed {
+export enum YesNoUnemployedOther {
   NoResponse = "",
   Yes = "Yes",
   No = "No",
   Unemployed = "I am unemployed",
+  Other = "Other"
 }
 
 export enum YesNo {

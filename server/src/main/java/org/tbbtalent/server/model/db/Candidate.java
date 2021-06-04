@@ -248,7 +248,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Enumerated(EnumType.STRING)
     @Nullable
-    private YesNoUnemployed workDesired;
+    private YesNoUnemployedOther workDesired;
 
     @Nullable
     private String workDesiredNotes;
@@ -902,9 +902,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setWorkPermitDesiredNotes(@Nullable String workPermitDesiredNotes) { this.workPermitDesiredNotes = workPermitDesiredNotes; }
 
     @Nullable
-    public YesNoUnemployed getWorkDesired() { return workDesired; }
+    public YesNoUnemployedOther getWorkDesired() { return workDesired; }
 
-    public void setWorkDesired(@Nullable YesNoUnemployed workDesired) { this.workDesired = workDesired; }
+    public void setWorkDesired(@Nullable YesNoUnemployedOther workDesired) { this.workDesired = workDesired; }
 
     @Nullable
     public String getWorkDesiredNotes() { return workDesiredNotes; }
