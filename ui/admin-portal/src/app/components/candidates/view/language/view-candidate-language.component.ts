@@ -16,7 +16,7 @@
 
 import {Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 import {NgbAccordion, NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {Candidate} from '../../../../model/candidate';
+import {Candidate, hasIeltsExam} from '../../../../model/candidate';
 import {CandidateLanguage} from '../../../../model/candidate-language';
 import {CandidateLanguageService} from '../../../../services/candidate-language.service';
 import {EditCandidateLanguageComponent} from '../language/edit/edit-candidate-language.component';
@@ -157,5 +157,8 @@ export class ViewCandidateLanguageComponent implements OnInit, OnChanges {
     }
   }
 
+  hasIelts(candidate: Candidate): boolean {
+    return hasIeltsExam(candidate);
+  }
 
 }

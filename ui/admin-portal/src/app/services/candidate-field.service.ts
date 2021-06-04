@@ -20,7 +20,7 @@ import {CandidateFieldInfo} from "../model/candidate-field-info";
 import {AuthService} from "./auth.service";
 import {CandidateSource} from "../model/base";
 import {enumKeysToEnumOptions} from "../util/enum";
-import {IeltsScore, ResidenceStatus} from "../model/candidate";
+import {Candidate, hasIeltsExam, IeltsScore, ResidenceStatus} from "../model/candidate";
 
 @Injectable({
   providedIn: 'root'
@@ -38,6 +38,9 @@ export class CandidateFieldService {
   }
   private getDisplayEnum = (value) => {
     return enumKeysToEnumOptions([value], ResidenceStatus)[0].displayText;
+  }
+  private getIeltsScoreType = (value) => {
+    return this.getIeltsScore(value);
   }
 
   private allDisplayableFields = [
@@ -68,7 +71,7 @@ export class CandidateFieldService {
     new CandidateFieldInfo("Highest Level of Edu", "maxEducationLevel.level",
       this.levelGetNameFormatter, null),
     new CandidateFieldInfo("IELTS Score", "ieltsScore",
-      null, null),
+      this.getIeltsScoreType, null),
     new CandidateFieldInfo("Legal status", "residenceStatus",
       this.getDisplayEnum, null),
   ];
@@ -206,4 +209,17 @@ export class CandidateFieldService {
 
     return same;
   }
+
+  getIeltsScore(candidate: Candidate): string {
+    let score: string = null;
+    if (candidate?.ieltsScore) {
+      if (hasIeltsExam(candidate)) {
+        score = candidate?.ieltsScore;
+      } else {
+        score = candidate?.ieltsScore + ' (estimated)'
+      }
+    }
+    return score;
+  }
+
 }

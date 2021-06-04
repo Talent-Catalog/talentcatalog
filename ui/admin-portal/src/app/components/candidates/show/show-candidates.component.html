@@ -243,12 +243,9 @@
                      [checked]="candidate.selected">
             </td>
             <td *ngFor="let field of selectedFields">
-              <span *ngIf="field.fieldPath === 'ieltsScore'; else notIelts">
-                {{field.getIeltsValue(candidate)}}
-              </span>
-              <ng-template #notIelts>
+              <span>
                 {{field.getValue(candidate)}}
-              </ng-template>
+              </span>
             </td>
             <td>
               <div ngbDropdown placement="bottom-right" (click)="$event.stopPropagation();" container="body">

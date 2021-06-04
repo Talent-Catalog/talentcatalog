@@ -572,3 +572,11 @@ export function getCandidateExternalHref(
   router: Router, location: Location, candidate: Candidate): string {
   return getExternalHref(router, location, getCandidateNavigation(candidate));
 }
+
+export function hasIeltsExam(candidate: Candidate): boolean {
+  if (candidate.candidateExams.length > 0) {
+    return candidate?.candidateExams?.find(e => e?.exam?.toString() === "IELTSGen") != null;
+  } else {
+    return false;
+  }
+}

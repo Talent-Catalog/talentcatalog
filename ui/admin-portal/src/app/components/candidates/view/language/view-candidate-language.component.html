@@ -34,16 +34,16 @@
     <!-- BODY -->
     <div class="card-body">
       <!-- EMPTY STATE -->
-      <p class="m-0" *ngIf="!candidateLanguages?.length">
+      <p *ngIf="!candidateLanguages?.length" class="m-1">
         No language data has been entered by this candidate.
       </p>
       <!-- LANGUAGE CARDS -->
       <ng-container *ngFor="let language of candidateLanguages; let i = index;">
         <div class="row">
-          <div class="col-10">
+          <div class="col-10 mb-2">
             {{language.language.name}}
           </div>
-          <div class="col-2 text-right mb-2">
+          <div class="col-2 text-right">
             <button class="btn btn-default"
                     *ngIf="editable"
                     (click)="editCandidateLanguage(language)">
@@ -59,13 +59,27 @@
             Migrated Language: {{language.migrationLanguage}}
           </div>
           <div class="col-sm-12 col-md-6">
-            <span>Speaking: {{language.spokenLevel.name}}</span>
+            Speaking: <span><i>{{language.spokenLevel.name}}</i></span>
           </div>
           <div class="col-sm-12 col-md-6">
-            <span>Reading and Writing: {{language.writtenLevel.name}}</span>
+            Reading and Writing: <span><i>{{language.writtenLevel.name}}</i></span>
           </div>
         </div>
         <hr *ngIf="i < candidateLanguages?.length - 1">
+      </ng-container>
+      <ng-container *ngIf="candidate?.ieltsScore || candidate?.langAssessmentScore">
+        <hr>
+        <div class="row">
+          <div class="col-10 mb-2">
+            IELTS Score
+          </div>
+          <div *ngIf="hasIelts(candidate)" class="col-sm-12 col-md-6">
+            Ielts General: <span><i>{{candidate.ieltsScore}}</i></span>
+          </div>
+          <div *ngIf="candidate?.langAssessmentScore" class="col-sm-12 col-md-6">
+            Language Assessment Score: <span><i>{{candidate.langAssessmentScore}}</i></span>
+          </div>
+        </div>
       </ng-container>
     </div>
   </div>
@@ -84,6 +98,9 @@
         </div>
       </ng-template>
       <ng-template ngbPanelContent>
+        <p *ngIf="!candidateLanguages?.length" class="m-1">
+          No language data has been entered by this candidate.
+        </p>
         <ng-container *ngFor="let language of candidateLanguages; let i = index;">
           <div class="row">
             <div class="col-sm-11">
@@ -93,10 +110,10 @@
               Migrated Language: {{language.migrationLanguage}}
             </div>
             <div class="col-sm-12 col-md-6">
-              <span>Speaking: {{language.spokenLevel.name}}</span>
+              <span>Speaking: <i>{{language.spokenLevel.name}}</i></span>
             </div>
             <div class="col-sm-12 col-md-6">
-              <span>Reading and Writing: {{language.writtenLevel.name}}</span>
+              <span>Reading and Writing: <i>{{language.writtenLevel.name}}</i></span>
             </div>
           </div>
           <hr *ngIf="i < candidateLanguages?.length - 1">
