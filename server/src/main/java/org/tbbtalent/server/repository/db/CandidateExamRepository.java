@@ -17,9 +17,28 @@
 package org.tbbtalent.server.repository.db;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.tbbtalent.server.model.db.CandidateExam;
+import org.tbbtalent.server.model.db.Exam;
+
+import java.util.Optional;
 
 public interface CandidateExamRepository
         extends JpaRepository<CandidateExam, Long> {
-    
+
+    @Query(" select e from CandidateExam e "
+            + " left join e.candidate c "
+            + " where e.id = :id")
+    Optional<CandidateExam> findByIdLoadCandidate(@Param("id") Long id);
+
+    @Query(" select distinct e from CandidateExam e "
+            + " left join e.candidate c "
+            + " where c.id = :candidateId"
+            + " and e.exam = :examType"
+            + " and e.id != :id")
+    Optional<CandidateExam> findDuplicateByExamType(@Param("examType") Exam examType,
+                                           @Param("candidateId") Long candidateId,
+                                                    @Param("id") Long id);
+
 }

@@ -115,7 +115,7 @@ public class CandidateIntakeDataUpdate {
     private String intRecruitRuralNotes;
 
     private String langAssessment;
-    private IeltsScore langAssessmentScore;
+    private String langAssessmentScore;
     private List<LeftHomeReason> leftHomeReasons;
     private String leftHomeOther;
     private YesNo militaryService;

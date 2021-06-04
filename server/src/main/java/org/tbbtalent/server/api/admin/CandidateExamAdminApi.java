@@ -24,6 +24,7 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.CandidateExam;
 import org.tbbtalent.server.request.candidate.exam.CreateCandidateExamRequest;
 import org.tbbtalent.server.service.db.CandidateExamService;
+import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 import javax.validation.Valid;
@@ -36,10 +37,12 @@ public class CandidateExamAdminApi
         implements IJoinedTableApi<CreateCandidateExamRequest,
         CreateCandidateExamRequest,CreateCandidateExamRequest> {
     private final CandidateExamService candidateExamService;
+    private final CandidateService candidateService;
 
-    public CandidateExamAdminApi(
-            CandidateExamService candidateExamService) {
+    public CandidateExamAdminApi(CandidateExamService candidateExamService,
+                                 CandidateService candidateService) {
         this.candidateExamService = candidateExamService;
+        this.candidateService = candidateService;
     }
 
     /**
@@ -72,7 +75,7 @@ public class CandidateExamAdminApi
     @Override
     public boolean delete(long id) 
             throws EntityReferencedException, InvalidRequestException {
-        return candidateExamService.deleteExam(id);
+        return candidateService.deleteCandidateExam(id);
     }
     
     private DtoBuilder candidateExamDto() {

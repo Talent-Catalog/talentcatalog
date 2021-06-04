@@ -20,6 +20,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
@@ -28,7 +30,10 @@ import org.tbbtalent.server.request.PagedSearchRequest;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -54,7 +59,11 @@ public class CandidateEs {
             "phone",
             "unhcrStatus",
             "maritalStatus",
-            "drivingLicense"
+            "drivingLicense",
+            "dob",
+            "maxEducationLevel",
+            "ieltsScore",
+            "residenceStatus",
     }; 
    
     @Id
@@ -112,6 +121,9 @@ public class CandidateEs {
     @Enumerated(EnumType.STRING)
     private DocumentStatus drivingLicense;
 
+    @Field(type = FieldType.Date, format = DateFormat.basic_date)
+    private LocalDate dob;
+
     /**
      * Id of matching Candidate record in database
      */
@@ -132,6 +144,16 @@ public class CandidateEs {
     @Field(type = FieldType.Keyword)
     @Enumerated(EnumType.STRING)
     private CandidateStatus status;
+
+    @Field(type = FieldType.Keyword)
+    private Integer maxEducationLevel;
+
+    @Field(type = FieldType.Keyword)
+    @Enumerated(EnumType.STRING)
+    private ResidenceStatus residenceStatus;
+
+    @Field(type = FieldType.Double)
+    private BigDecimal ieltsScore;
 
     public CandidateEs() {
     }
@@ -161,6 +183,14 @@ public class CandidateEs {
         this.unhcrStatus = candidate.getUnhcrStatus();
         this.maritalStatus = candidate.getMaritalStatus();
         this.drivingLicense = candidate.getDrivingLicense();
+        this.dob = candidate.getDob();
+        this.residenceStatus = candidate.getResidenceStatus();
+        this.ieltsScore = candidate.getIeltsScore();
+
+        this.maxEducationLevel = null;
+        if (candidate.getMaxEducationLevel() != null) {
+            this.maxEducationLevel = candidate.getMaxEducationLevel().getLevel();
+        }
 
         this.minEnglishSpokenLevel = null;
         this.minEnglishWrittenLevel = null;
@@ -314,9 +344,9 @@ public class CandidateEs {
                 //and updated, is assumed to be a keyword field.
                 //This will need to change if we add other sorting fields 
                 //that are not keyword fields (eg numeric fields).
-                boolean keywordField = 
-                        !sortField.equals("masterId") &&
-                        !sortField.equals("updated");
+                String[] nonKeywordFields = {"masterId", "updated", "maxEducationLevel", "ieltsScore"};
+
+                boolean keywordField = Arrays.stream(nonKeywordFields).noneMatch(sortField::equals);
                 
                 String esFieldSpec = sortField;
                 if (keywordField) {
@@ -329,7 +359,11 @@ public class CandidateEs {
                 }
                 requestAdj = PageRequest.of(
                         request.getPageNumber(), request.getPageSize(),
-                        request.getSortDirection(), esFieldSpec
+                        (request.getSortDirection() == Sort.Direction.ASC ?
+                                Sort.by(esFieldSpec).ascending() :
+                                Sort.by(esFieldSpec).descending())
+                        .and(Sort.by("masterId").descending())
+
                 );
             }
         } else {

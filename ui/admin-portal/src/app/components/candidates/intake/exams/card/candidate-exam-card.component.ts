@@ -21,6 +21,7 @@ import {CandidateExam, Exam} from '../../../../../model/candidate';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../../services/candidate.service';
 import {CandidateExamService} from '../../../../../services/candidate-exam.service';
+
 import {generateYearArray} from '../../../../../util/year-helper';
 
 @Component({
@@ -35,6 +36,8 @@ export class CandidateExamCardComponent extends IntakeComponentBase implements O
   //Drop down values for enumeration
   examOptions: EnumOption[] = enumOptions(Exam);
   years: number[];
+  errorMsg: string;
+  regexpIeltsScore: RegExp;
 
   constructor(fb: FormBuilder, candidateService: CandidateService,
               private candidateExamService: CandidateExamService) {
@@ -53,6 +56,13 @@ export class CandidateExamCardComponent extends IntakeComponentBase implements O
 
     this.years = generateYearArray(1950, true);
 
+    this.regexpIeltsScore = new RegExp('^([0-8](\\.5)?$)|(^9$)');
+    this.errorMsg = "The IELTS score must be between 0-9 and with decimal increments of .5 only."
+
+  }
+
+  get type() {
+    return this.form?.controls?.examType?.value;
   }
 
   get isOtherExam(): boolean {
