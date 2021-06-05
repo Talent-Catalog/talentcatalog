@@ -68,11 +68,33 @@ import reactor.core.publisher.Mono;
  * <p/>
  * See https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_what_is_rest_api.htm
  * <p/>
+ * @see #executeUpsert and other execute methods for other refs to Salesforce doc.
+ * <p/>
+ * Basically we need to construct a simple Java object containing the required SF fields which will
+ * be converted to a Json object by {@link WebClient} methods and included in the body of the
+ * HTTP request sent to SF.
+ * These Java objects are defined here in nested classes like: {@link ContactRequest} and 
+ * {@link OpportunityRequest}.
+ * <p/>
+ * Operating on multiple records in a single HTTP request is called a "composite" request by SF.
+ * See https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/using_composite_resources.htm
+ * In this code we use sObject Collections - 
+ * see https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_composite_sobjects_collections.htm 
+ * Basically this means passing an array of records in the HTTP body. Each record is basically
+ * the request object plus extra attributes. For example the record in a composite contact request
+ * is a {@link ContactRecordComposite}, and the multiple contact request is a 
+ * {@link ContactRequestComposite}, which is just an array of ContactRecordComposite (plus a couple
+ * of other fields - eg allOrNone).
+ * <p/> 
  * Notes:
  * <ul>
  *   <li>Field names in classes used to communicate with SF need to have names that match the 
  *   internal SF field name</li>
  * </ul>
+ * <p/>
+ * The standard Salesforce doc on this stuff is typically poor.
+ * The Trailhead is worth a look - start here: 
+ * https://trailhead.salesforce.com/content/learn/modules/api_basics/api_basics_overview
  *
  * @author John Cameron
  */
@@ -181,8 +203,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         //Create a contact request using data from the candidate
         ContactRequest contactRequest = new ContactRequest(candidate);
         
-        //Upsert request bodies should not include the TBBid 
-        //(it is specified as part of the PATCH uri).
+        //Upsert request bodies should not include the TBBid because it is used as the unique key
+        //used to identify the record to be updated - specified in the PATCH uri, not in the
+        //request body.
         contactRequest.setTBBid__c(null);
 
         //Execute and decode the response
