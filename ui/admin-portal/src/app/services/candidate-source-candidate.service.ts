@@ -36,6 +36,12 @@ export class CandidateSourceCandidateService {
 
   constructor(private http: HttpClient) {}
 
+  list(source: CandidateSource): Observable<Candidate[]> {
+    const apiUrl = isSavedSearch(source) ? this.savedSearchApiUrl : this.savedListApiUrl;
+
+    return this.http.get<Candidate[]>(`${apiUrl}/${source.id}/list`);
+  }
+
   searchPaged(source: CandidateSource, request: PagedSearchRequest):
     Observable<SearchResults<Candidate>> {
 

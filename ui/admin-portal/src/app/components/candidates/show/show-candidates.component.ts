@@ -59,7 +59,7 @@ import {
 import {
   CandidateSource,
   canEditSource,
-  defaultReviewStatusFilter,
+  defaultReviewStatusFilter, findHasId, indexOfHasId,
   isMine,
   isSharedWithMe,
   ReviewStatus
@@ -267,6 +267,19 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
+  isSelected(candidate: Candidate): boolean {
+    let selected: boolean;
+    if (isSavedSearch(this.candidateSource)) {
+      selected = candidate.selected;
+    } else {
+      selected = indexOfHasId(candidate.id, this.selectedCandidates) >= 0;
+    }
+    return selected;
+  }
+
+  /**
+   * True if any candidates are currently selected.
+   */
   isSelection(): boolean {
     let isSelection: boolean;
     if (isSavedSearch(this.candidateSource)) {
@@ -624,6 +637,12 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     return !isSavedSearch(this.candidateSource);
   }
 
+  isSwapSelectionSupported(): boolean {
+    //Not supported for saved searches because swapping an empty selection on a search could
+    //potentially end up selecting huge numbers of candidates - up to the whole database.
+    return !isSavedSearch(this.candidateSource);
+  }
+
   sourceType(): string {
     return isSavedSearch(this.candidateSource) ? 'savedSearch' : 'list';
   }
@@ -754,6 +773,54 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         this.requestSaveSelection();
       }
     }
+  }
+
+  /**
+   * Selected becomes unselected and vice versa.
+   * <p/>
+   * Note that this only works for saved lists. Html should prevent
+   * this from being called - but if it is, it will do nothing.
+   */
+  swapSelection() {
+    if (isSavedList(this.candidateSource)) {
+
+      //First of all, get all candidates in this list from the server.
+      this.searching = true;
+      this.error = null;
+      this.candidateSourceCandidateService.list(this.candidateSource).subscribe(
+        (candidates: Candidate[]) => {
+          //Now do the actual swap
+          this.doSwapSelection(candidates)
+          this.searching = false;
+        },
+        error => {
+          this.error = error;
+          this.searching = false;
+        });
+    }
+  }
+
+  /**
+   * Selected becomes unselected and vice versa.
+   * <p/>
+   * Note: only works for saved lists - not saved sources.
+   * @param candidates All candidates
+   */
+  private doSwapSelection(candidates: Candidate[]) {
+    //This will contain the new selection
+    const newSelectedCandidates: Candidate[] = [];
+
+    //Invert the selection by looking at all candidates, and if they are not currently selected
+    //add them to newSelectedCandidates.
+    for (const candidate of candidates) {
+      //Look for this candidate's id in the currently selected candidates
+      if (indexOfHasId(candidate.id, this.selectedCandidates) < 0) {
+        //Not in currently selected - so add to new selected.
+        newSelectedCandidates.push(candidate);
+      }
+    }
+    //Switch to new selection
+    this.selectedCandidates = newSelectedCandidates;
   }
 
   private requestSaveSelection() {
@@ -947,10 +1014,10 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   clearSelection() {
-    const request: ClearSelectionRequest = {
-      userId: this.loggedInUser.id,
-    };
     if (isSavedSearch(this.candidateSource)) {
+      const request: ClearSelectionRequest = {
+        userId: this.loggedInUser.id,
+      };
       this.savedSearchService.clearSelection(this.candidateSource.id, request).subscribe(
         () => {
           this.doSearch(true);
@@ -959,6 +1026,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
           this.error = err;
         });
     } else {
+      //For saved lists, the candidate data - including whether or not they have been selected
+      //is not saved anywhere, so just doing a refresh will clear all displayed selections
       this.doSearch(true);
     }
     this.selectedCandidates = [];

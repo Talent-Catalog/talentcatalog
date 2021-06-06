@@ -116,6 +116,12 @@
         Clear <i class="fas fa-user-check"></i>
       </button>
 
+      <button *ngIf="isSwapSelectionSupported()" class="btn btn-sm btn-secondary"
+              (click)="swapSelection()"
+              title="Swap Selection. Selected becomes unselected and vice versa.">
+        <i class="fas fa-user-check"></i><i class="fas fa-sync"></i>
+      </button>
+
       <button class="btn btn-sm btn-secondary" (click)="exportCandidates()"
               title="Export candidates">
         <i class="fas fa-spinner fa-spin" *ngIf=exporting></i>
@@ -239,8 +245,8 @@
             <td>
               <input type="checkbox" class="custom-checkbox" id="selected" data-onstyle="primary"
                      (ngModelChange)="onSelectionChange(candidate, $event)"
-                     [ngModel]="candidate.selected"
-                     [checked]="candidate.selected">
+                     [ngModel]="isSelected(candidate)"
+                     [checked]="isSelected(candidate)">
             </td>
             <td *ngFor="let field of selectedFields">
               {{field.getValue(candidate)}}

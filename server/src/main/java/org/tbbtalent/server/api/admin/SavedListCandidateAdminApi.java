@@ -18,7 +18,9 @@ package org.tbbtalent.server.api.admin;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -82,6 +84,14 @@ public class SavedListCandidateAdminApi implements
         this.candidateService = candidateService;
         this.savedListService = savedListService;
         candidateBuilderSelector = new CandidateBuilderSelector(userContext);
+    }
+
+    @Override
+    public List<Map<String, Object>> list(long savedListId) throws NoSuchObjectException {
+        SavedList savedList = savedListService.get(savedListId);
+        Set<Candidate> candidates = savedList.getCandidates();
+        DtoBuilder builder = candidateBuilderSelector.selectBuilder();
+        return builder.buildList(candidates);
     }
 
     @Override

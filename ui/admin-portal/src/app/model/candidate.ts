@@ -26,8 +26,9 @@ import {Location} from '@angular/common';
 import {getExternalHref} from '../util/url';
 import {Occupation} from './occupation';
 import {LanguageLevel} from './language-level';
+import {HasId} from "./base";
 
-export interface Candidate {
+export interface Candidate extends HasId {
   id: number;
   candidateNumber: string;
   status: string;
