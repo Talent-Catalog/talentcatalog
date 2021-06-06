@@ -82,7 +82,10 @@ import {
   SavedListGetRequest,
   UpdateExplicitSavedListContentsRequest
 } from '../../../model/saved-list';
-import {CandidateSourceCandidateService} from '../../../services/candidate-source-candidate.service';
+import {
+  CandidateSourceCandidateService,
+  SalesforceOppParams
+} from '../../../services/candidate-source-candidate.service';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {EditCandidateReviewStatusItemComponent} from '../../util/candidate-review/edit/edit-candidate-review-status-item.component';
 import {Router} from '@angular/router';
@@ -1068,8 +1071,26 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   createUpdateSalesforce() {
     this.error = null;
     this.updating = true;
+    //todo Pop up modal to capture optional stageName and nextStep
+    const stageName: string = "Acceptance"
+    const nextStep: string = "5Jun21 Hire me"
+
+    //todo When it is a selection based opp, the request will not just be SalesforceOppsParams,
+    //it will also be candidateIds like UpdateCandidateStatusRequest
+    /*
+       const request: UpdateCandidateStatusRequest = {
+        candidateIds: this.selectedCandidates.map(c => c.id),
+        info: info
+      };
+
+     */
+
+    const salesforceOppParams: SalesforceOppParams = {
+      stageName: stageName,
+      nextStep: nextStep
+    };
     this.candidateSourceCandidateService.createUpdateSalesforce(
-      this.candidateSource).subscribe(
+      this.candidateSource, salesforceOppParams).subscribe(
       result => {
         this.doSearch(true);
         this.updating = false;

@@ -36,6 +36,7 @@ import org.tbbtalent.server.exception.ExportFailedException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.request.candidate.SalesforceOppParams;
 import org.tbbtalent.server.request.candidate.SavedListGetRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
@@ -168,9 +169,11 @@ public class SavedListCandidateAdminApi implements
 
     @PutMapping(value = "{id}/update-sf")
     public void createUpdateSalesforce(
-            @PathVariable("id") long savedListId) 
+            @PathVariable("id") long savedListId,
+            @Valid @RequestBody SalesforceOppParams salesforceOppParams) 
             throws NoSuchObjectException, GeneralSecurityException {
-        savedListService.createUpdateSalesforce(savedListId);
+        
+        savedListService.createUpdateSalesforce(savedListId, salesforceOppParams);
     }
 
     /**

@@ -26,6 +26,7 @@ import org.tbbtalent.server.model.sf.Opportunity;
 
 import java.security.GeneralSecurityException;
 import java.util.List;
+import org.tbbtalent.server.request.candidate.SalesforceOppParams;
 
 /**
  * Access to Salesforce.
@@ -155,6 +156,7 @@ public interface SalesforceService {
      * external id TBBCandidateExternalId__c
      * 
      * @param candidates Candidates
+     * @param salesforceOppParams Optional Salesforce fields to set on candidate opportunities           
      * @param sfJoblink url link to Job opportunity on Salesforce
      * @throws GeneralSecurityException If there are errors relating to keys
      * and digital signing.
@@ -163,7 +165,7 @@ public interface SalesforceService {
      * including if sfJoblink is not a valid link to a Salesforce job opportunity.
      */
     void createOrUpdateJobOpportunities(
-            List<Candidate> candidates, String sfJoblink)
+            List<Candidate> candidates, SalesforceOppParams salesforceOppParams, String sfJoblink)
             throws GeneralSecurityException, WebClientException, SalesforceException;
     
     /**

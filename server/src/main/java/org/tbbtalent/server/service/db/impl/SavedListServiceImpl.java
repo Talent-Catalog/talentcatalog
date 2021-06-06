@@ -46,6 +46,7 @@ import org.tbbtalent.server.repository.db.GetCandidateSavedListsQuery;
 import org.tbbtalent.server.repository.db.GetSavedListsQuery;
 import org.tbbtalent.server.repository.db.SavedListRepository;
 import org.tbbtalent.server.repository.db.UserRepository;
+import org.tbbtalent.server.request.candidate.SalesforceOppParams;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
 import org.tbbtalent.server.request.list.ContentUpdateType;
@@ -396,7 +397,7 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
-    public void createUpdateSalesforce(long id) 
+    public void createUpdateSalesforce(long id, SalesforceOppParams salesforceOppParams) 
             throws NoSuchObjectException, GeneralSecurityException, WebClientException {
         SavedList savedList = savedListRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(SavedList.class, id));
@@ -419,7 +420,7 @@ public class SavedListServiceImpl implements SavedListService {
         String sfJoblink = savedList.getSfJoblink();
         if (sfJoblink != null && sfJoblink.length() > 0) {
             salesforceService.createOrUpdateJobOpportunities(
-                    candidates, sfJoblink);
+                    candidates, salesforceOppParams, sfJoblink);
         }
     }
 

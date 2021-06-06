@@ -24,6 +24,7 @@ import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.request.candidate.SalesforceOppParams;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
@@ -219,12 +220,13 @@ public interface SavedListService {
      * Salesforce links may be created and stored in candidate records.
      *
      * @param id id of Saved List
+     * @param salesforceOppParams Optional Salesforce fields to set on candidate opportunities           
      * @throws NoSuchObjectException  if there is no saved list with this id
      * @throws GeneralSecurityException If there are errors relating to keys
      * and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
      */
-    void createUpdateSalesforce(long id)
+    void createUpdateSalesforce(long id, SalesforceOppParams salesforceOppParams)
             throws NoSuchObjectException, GeneralSecurityException,
             WebClientException;
     
