@@ -1,0 +1,35 @@
+<div class="modal-header">
+
+  <h4 class="modal-title">Update Salesforce</h4>
+
+  <button type="button" class="close" aria-label="Close" (click)="cancel()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+
+</div>
+
+<div class="modal-body">
+  <form [formGroup]="salesforceStageForm">
+
+    <div class="form-group">
+      <label for="stage">Candidate Opportunity Stage</label>
+      <select class="form-control" name="stage" id="stage" [formControlName]="'stage'">
+        <option *ngFor="let opt of candidateOpportunityStageOptions" [value]="opt.displayText">
+          {{opt.displayText}}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="nextStep">Next step - please start with date: eg 9Nov21 next step goes here</label>
+      <input type="text" class="form-control" id="nextStep" [formControlName]="'nextStep'">
+    </div>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary"
+          (click)="onSave()">Do it</button>
+  <button type="button" class="btn btn-secondary"
+          (click)="cancel()">Cancel</button>
+</div>

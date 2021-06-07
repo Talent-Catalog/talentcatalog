@@ -17,7 +17,6 @@
 package org.tbbtalent.server.api.admin;
 
 import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,7 +37,6 @@ import org.tbbtalent.server.exception.ExportFailedException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.request.candidate.SalesforceOppParams;
 import org.tbbtalent.server.request.candidate.SavedListGetRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
@@ -175,15 +173,6 @@ public class SavedListCandidateAdminApi implements
         response.setHeader("Content-Disposition", "attachment; filename=\"" + "candidates.csv\"");
         response.setContentType("text/csv; charset=utf-8");
         candidateService.exportToCsv(savedListId, request, response.getWriter());
-    }
-
-    @PutMapping(value = "{id}/update-sf")
-    public void createUpdateSalesforce(
-            @PathVariable("id") long savedListId,
-            @Valid @RequestBody SalesforceOppParams salesforceOppParams) 
-            throws NoSuchObjectException, GeneralSecurityException {
-        
-        savedListService.createUpdateSalesforce(savedListId, salesforceOppParams);
     }
 
     /**

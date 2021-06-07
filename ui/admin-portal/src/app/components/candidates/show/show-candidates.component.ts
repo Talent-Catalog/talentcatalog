@@ -27,7 +27,7 @@ import {
 } from '@angular/core';
 
 import {
-  Candidate,
+  Candidate, SalesforceOppParams,
   UpdateCandidateStatusInfo,
   UpdateCandidateStatusRequest
 } from '../../../model/candidate';
@@ -83,8 +83,7 @@ import {
   UpdateExplicitSavedListContentsRequest
 } from '../../../model/saved-list';
 import {
-  CandidateSourceCandidateService,
-  SalesforceOppParams
+  CandidateSourceCandidateService
 } from '../../../services/candidate-source-candidate.service';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {EditCandidateReviewStatusItemComponent} from '../../util/candidate-review/edit/edit-candidate-review-status-item.component';
@@ -100,6 +99,10 @@ import {CandidateColumnSelectorComponent} from '../../util/candidate-column-sele
 import {CandidateFieldInfo} from '../../../model/candidate-field-info';
 import {CandidateFieldService} from '../../../services/candidate-field.service';
 import {EditCandidateStatusComponent} from "../view/status/edit-candidate-status.component";
+import {
+  SalesforceStageComponent,
+  SalesforceStageInfo
+} from "../../util/salesforce-stage/salesforce-stage.component";
 
 interface CachedTargetList {
   sourceID: number;
@@ -1137,38 +1140,65 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   }
 
+  /**
+   * Updates/creates candidate related records on Salesforce.
+   * <p/>
+   * Only works with saved lists (a bit dangerous with saved searches which could involve
+   * very large numbers of candidates - even all candidates on database!).
+   * Should be disabled in html for saved searches, but if it does get called for a search, it
+   * will do nothing.
+   */
   createUpdateSalesforce() {
+    if (isSavedList(this.candidateSource)) {
+      const nSelections = this.selectedCandidates.length;
+      if (nSelections === 0) {
+        //No candidates are selected, check whether the user wants to apply to the whole list.
+        const applyToWholeListQuery = this.modalService.open(ConfirmationComponent, {
+          centered: true, backdrop: 'static'});
+        applyToWholeListQuery.componentInstance.message =
+          'There are no candidates selected. Would you like to apply to everyone in the list?';
+        applyToWholeListQuery.result
+        .then((confirmed) => {if (confirmed === true) {
+          this.doCreateUpdateSalesforceOnList(false);
+          }})
+        .catch(() => { });
+      } else {
+        this.doCreateUpdateSalesforceOnList(true);
+      }
+    }
+  }
+
+  private doCreateUpdateSalesforceOnList(selectedCandidatesOnly: boolean) {
+    if (!this.candidateSource.sfJoblink) {
+      //If we do not have a job opportunity, there will be no candidate opp info.
+      this.doCreateUpdateSalesforceOnList2(null, selectedCandidatesOnly);
+    } else {
+      const applyToWholeListQuery = this.modalService.open(SalesforceStageComponent);
+      applyToWholeListQuery.result
+      .then((info: SalesforceOppParams) => {
+        this.doCreateUpdateSalesforceOnList2(info, selectedCandidatesOnly);
+      })
+      .catch(() => { });
+    }
+}
+
+  private doCreateUpdateSalesforceOnList2(info: SalesforceOppParams, selectedCandidatesOnly: boolean) {
     this.error = null;
     this.updating = true;
-    //todo Pop up modal to capture optional stageName and nextStep
-    const stageName: string = "Acceptance"
-    const nextStep: string = "5Jun21 Hire me"
 
-    //todo When it is a selection based opp, the request will not just be SalesforceOppsParams,
-    //it will also be candidateIds like UpdateCandidateStatusRequest
-    /*
-       const request: UpdateCandidateStatusRequest = {
-        candidateIds: this.selectedCandidates.map(c => c.id),
-        info: info
-      };
-
-     */
-
-    const salesforceOppParams: SalesforceOppParams = {
-      stageName: stageName,
-      nextStep: nextStep
-    };
-    this.candidateSourceCandidateService.createUpdateSalesforce(
-      this.candidateSource, salesforceOppParams).subscribe(
-      result => {
-        this.doSearch(true);
-        this.updating = false;
-      },
-      err => {
-        this.error = err;
-        this.updating = false;
-      }
-    );
+    if (selectedCandidatesOnly) {
+      const sfJobLink: string = this.candidateSource.sfJoblink;
+      const candidateIds: number[] = this.selectedCandidates.map(c => c.id);
+      this.candidateService.createUpdateSalesforceFromCandidates(candidateIds, sfJobLink, info)
+      .subscribe(result => {this.updating = false; },
+        err => {this.error = err; this.updating = false; }
+      );
+    } else {
+      this.candidateService.createUpdateSalesforceFromList(this.candidateSource, info)
+      .subscribe(result => {this.updating = false; },
+        err => {this.error = err; this.updating = false; }
+      );
+    }
   }
 
   doEditSource() {

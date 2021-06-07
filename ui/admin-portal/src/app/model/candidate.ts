@@ -296,6 +296,14 @@ export enum AvailImmediateReason {
   Other = "Other"
 }
 
+export enum CandidateOpportunityStage {
+  prospect = "Prospect",
+  miniIntake = "Mini intake",
+  fullIntake = "Full intake",
+  visaEligibility = "Visa eligibility",
+  //todo more
+}
+
 export enum CandidateStatus {
   active = "active",
   deleted = "deleted",
@@ -305,6 +313,22 @@ export enum CandidateStatus {
   ineligible = "ineligible",
   pending = "pending",
   unreachable = "unreachable"
+}
+
+export interface SalesforceOppParams {
+  stageName?: string;
+  nextStep?: string;
+}
+
+export interface UpdateCandidateOppsRequest {
+  candidateIds: number[];
+  sfJobLink: string;
+  salesforceOppParams?: SalesforceOppParams;
+}
+
+export interface UpdateCandidateListOppsRequest {
+  savedListId: number;
+  salesforceOppParams?: SalesforceOppParams;
 }
 
 export interface UpdateCandidateStatusInfo {

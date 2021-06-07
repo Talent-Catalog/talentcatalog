@@ -26,6 +26,7 @@ import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -229,7 +230,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     @Override
     @NonNull
-    public List<Contact> createOrUpdateContacts(@NonNull List<Candidate> candidates) 
+    public List<Contact> createOrUpdateContacts(@NonNull Collection<Candidate> candidates) 
             throws GeneralSecurityException, WebClientException, SalesforceException {
         List<ContactRecordComposite> contactRequests = new ArrayList<>();
         for (Candidate candidate : candidates) {
@@ -288,8 +289,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         //can create new opportunities - supplying the default initial stage of "Prospect".
         //If we have been supplied with a stage, then we can update and create - using that stage.
 
-        String stageName = salesforceOppParams.getStageName();
-        String nextStep = salesforceOppParams.getNextStep();
+        String stageName = null;
+        String nextStep = null;
+        if (salesforceOppParams != null) {
+            stageName = salesforceOppParams.getStageName();
+            nextStep = salesforceOppParams.getNextStep();
+        }
         boolean createOnly = stageName == null;
         
         if (!createOnly) {

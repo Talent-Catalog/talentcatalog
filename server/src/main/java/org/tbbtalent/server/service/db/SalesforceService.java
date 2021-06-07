@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.service.db;
 
+import java.util.Collection;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.web.reactive.function.client.WebClientException;
@@ -145,7 +146,7 @@ public interface SalesforceService {
      * @throws SalesforceException if Salesforce had a problem with the data
      */
     @NonNull
-    List<Contact> createOrUpdateContacts(@NonNull List<Candidate> candidates)
+    List<Contact> createOrUpdateContacts(@NonNull Collection<Candidate> candidates)
             throws GeneralSecurityException, WebClientException, SalesforceException;
 
     /**

@@ -19,14 +19,9 @@ import {Observable} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from "../model/search-results";
-import {Candidate} from "../model/candidate";
+import {Candidate, SalesforceOppParams} from "../model/candidate";
 import {CandidateSource, PagedSearchRequest} from "../model/base";
 import {isSavedSearch} from "../model/saved-search";
-
-export interface SalesforceOppParams {
-  stageName?: string;
-  nextStep?: string;
-}
 
 @Injectable({providedIn: 'root'})
 export class CandidateSourceCandidateService {
@@ -58,13 +53,5 @@ export class CandidateSourceCandidateService {
 
     return this.http.post(
       `${apiUrl}/${source.id}/export/csv`, request, {responseType: 'blob'});
-  }
-
-  createUpdateSalesforce(source: CandidateSource,
-                         salesforceOppParams: SalesforceOppParams): Observable<void> {
-    const apiUrl = isSavedSearch(source) ?
-      this.savedSearchApiUrl : this.savedListApiUrl;
-
-    return this.http.put<void>(`${apiUrl}/${source.id}/update-sf`, salesforceOppParams);
   }
 }
