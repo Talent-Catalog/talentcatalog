@@ -39,10 +39,10 @@
     </div>
     <div class="d-flex align-items-end flex-column justify-content-between">
       <div class="d-flex float-right">
-        <button class="btn btn-sm btn-outline-success mr-1" (click)="createIntakeNote('Full Intake', false, $event.target)" [disabled]="saving">
+        <button class="btn btn-sm btn-outline-success mr-1" (click)="createIntakeNote('Full Intake', 'start', $event.target)" [disabled]="saving">
           Start Intake
         </button>
-        <button class="btn btn-sm btn-outline-secondary ml-1" (click)="createIntakeNote('Full Intake', true, $event.target)" [disabled]="saving">
+        <button class="btn btn-sm btn-outline-secondary ml-1" (click)="createIntakeNote('Full Intake', 'update', $event.target)" [disabled]="saving">
           Update Intake
         </button>
       </div>
@@ -403,4 +403,12 @@
     </ngb-accordion>
   </div>
 
+</div>
+
+<div class="d-flex align-items-end flex-column justify-content-between">
+  <div class="d-flex float-right">
+    <button class="btn btn-sm btn-outline-dark mr-1 mt-3" (click)="createIntakeNote('Full Intake', 'complete', $event.target)" [disabled]="saving">
+      Complete Intake
+    </button>
+  </div>
 </div>
