@@ -52,8 +52,8 @@ export class HostEntryYearComponent extends IntakeComponentBase implements OnIni
     });
   }
 
-  get hostBorn(): string {
-    return this.form.value?.hostBorn;
+  get countryIdAsNumber(): number {
+    return parseFloat(this.form.value?.birthCountryId);
   }
 
   get hasNotes(): boolean {
@@ -62,5 +62,18 @@ export class HostEntryYearComponent extends IntakeComponentBase implements OnIni
     } else {
       return true;
     }
+  }
+
+  get bornInHost(): boolean {
+    let born: boolean;
+    if (this.form.value?.birthCountryId) {
+      // Check if the candidate was born in their current country location (host country)
+      if (this.countryIdAsNumber === this.candidate?.country?.id) {
+        born = true;
+      } else {
+        born = false;
+      }
+    }
+    return born
   }
 }

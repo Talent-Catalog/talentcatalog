@@ -19,33 +19,24 @@
 </div>
 <form [formGroup]="form">
   <div class="form-group">
-    <label for="hostBorn">Were you born in {{candidate?.country?.name}}?</label>
+    <label for="birthCountryId">
+      Where were you born?
+    </label>
     <div class="float-right">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <select class="form-control"
-            id="hostBorn" [formControlName]="'hostBorn'">
-      <option *ngFor="let opt of hostBornOptions" [value]="opt.value">
-        {{opt.displayText}}
+    <select id="birthCountryId" class="form-control" [formControlName]="'birthCountryId'">
+      <option value=""></option>
+      <option *ngFor="let opt of countries" [value]="opt.id">
+        {{opt.name}}
       </option>
     </select>
   </div>
 
-  <div *ngIf="hostBorn === 'No'">
-    <div class="form-group">
-      <label for="birthCountryId">
-        Where were you born?
-      </label>
-      <select id="birthCountryId" class="form-control" [formControlName]="'birthCountryId'">
-        <option value=""></option>
-        <option *ngFor="let opt of countries" [value]="opt.id">
-          {{opt.name}}
-        </option>
-      </select>
-    </div>
+  <div *ngIf="!bornInHost">
     <div class="form-group">
       <label for="hostEntryYear">
         What year did you immigrate to {{candidate?.country?.name}}?
