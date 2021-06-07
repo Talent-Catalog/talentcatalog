@@ -24,6 +24,7 @@ import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
@@ -154,7 +155,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
      * This can be set based on a user's selection associated with a saved
      * search, as recorded in the associated selection list for that user
      * and saved search.
-     * @see SavedSearchAdminApi#selectCandidate   
+     * @see SavedSearchAdminApi#selectCandidate
      */
     @Transient
     private boolean selected = false;
@@ -480,20 +481,23 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private String langAssessment;
 
-    @Enumerated(EnumType.STRING)
     @Nullable
-    private IeltsScore langAssessmentScore;
+    private String langAssessmentScore;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "birth_country_id")
     @Nullable
     private Country birthCountry;
 
+    @Nullable
+    private BigDecimal ieltsScore;
+
     public Candidate() {
     }
 
     //todo The "caller" is the user used to set the createdBy and updatedBy fields
     //Seems to always be the same as user - so not sure if it has any point.
+
     public Candidate(User user, String phone, String whatsapp, User caller) {
         super(caller);
         this.user = user;
@@ -1239,9 +1243,18 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setLangAssessment(@Nullable String langAssessment) { this.langAssessment = langAssessment; }
 
     @Nullable
-    public IeltsScore getLangAssessmentScore() { return langAssessmentScore; }
+    public String getLangAssessmentScore() { return langAssessmentScore; }
 
-    public void setLangAssessmentScore(@Nullable IeltsScore langAssessmentScore) { this.langAssessmentScore = langAssessmentScore; }
+    public void setLangAssessmentScore(@Nullable String langAssessmentScore) { this.langAssessmentScore = langAssessmentScore; }
+
+    @Nullable
+    public BigDecimal getIeltsScore() {
+        return ieltsScore;
+    }
+
+    public void setIeltsScore(@Nullable BigDecimal ieltsScore) {
+        this.ieltsScore = ieltsScore;
+    }
 
     @Nullable
     public Country getBirthCountry() { return birthCountry; }
@@ -1409,6 +1422,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getLangAssessmentScore() != null) {
             setLangAssessmentScore(data.getLangAssessmentScore());
+            if (ieltsScore == null) {
+                BigDecimal score = new BigDecimal(data.getLangAssessmentScore());
+                setIeltsScore(score);
+            }
         }
         if (data.getLeftHomeReasons() != null) {
             setLeftHomeReasons(data.getLeftHomeReasons());

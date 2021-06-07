@@ -60,6 +60,9 @@ export interface Candidate extends HasId {
   maritalStatus: MaritalStatus;
   drivingLicense: DrivingLicenseStatus;
   unhcrStatus: UnhcrStatus;
+  ieltsScore: string;
+  langAssessmentScore: string;
+  candidateExams: CandidateExam[];
 }
 
 export interface CandidateIntakeData {
@@ -126,7 +129,7 @@ export interface CandidateIntakeData {
   intRecruitRural?: YesNoUnsure;
   intRecruitRuralNotes?: string;
   langAssessment?: string;
-  langAssessmentScore?: IeltsScore;
+  langAssessmentScore?: string;
   leftHomeReasons?: LeftHomeReason[];
   leftHomeOther?: string;
   militaryService?: YesNo;

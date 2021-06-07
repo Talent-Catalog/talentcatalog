@@ -17,8 +17,6 @@
 package org.tbbtalent.server.service.db;
 
 import org.springframework.lang.NonNull;
-import org.tbbtalent.server.exception.EntityReferencedException;
-import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateExam;
@@ -39,17 +37,6 @@ public interface CandidateExamService {
     CandidateExam createExam(
             long candidateId, CreateCandidateExamRequest request)
             throws NoSuchObjectException;
-
-    /**
-     * Delete the candidate exam with the given id.
-     * @param examId ID of record to be deleted
-     * @return True if record was deleted, false if it was not found.
-     * @throws EntityReferencedException if the object cannot be deleted because 
-     * it is referenced by another object.
-     * @throws InvalidRequestException if not authorized to delete this list.
-     */
-    boolean deleteExam(long examId)
-            throws EntityReferencedException, InvalidRequestException;
 
     /**
      * Updates the candidate exam intake data associated with the given

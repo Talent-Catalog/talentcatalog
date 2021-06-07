@@ -19,6 +19,8 @@ import {DatePipe, TitleCasePipe} from "@angular/common";
 import {CandidateFieldInfo} from "../model/candidate-field-info";
 import {AuthService} from "./auth.service";
 import {CandidateSource} from "../model/base";
+import {enumKeysToEnumOptions} from "../util/enum";
+import {IeltsScore, ResidenceStatus} from "../model/candidate";
 
 @Injectable({
   providedIn: 'root'
@@ -30,6 +32,13 @@ export class CandidateFieldService {
   //See https://stackoverflow.com/a/48785621/929968
   private dateFormatter = (value) => this.datePipe.transform(value, "yyyy-MM-dd");
   private titleCaseFormatter = (value) => this.titleCasePipe.transform(value);
+  private levelGetNameFormatter = (value) => value.name;
+  private stringToInt = (value) => {
+    return enumKeysToEnumOptions([value], IeltsScore)[0].displayText;
+  }
+  private getDisplayEnum = (value) => {
+    return enumKeysToEnumOptions([value], ResidenceStatus)[0].displayText;
+  }
 
   private allDisplayableFields = [
     new CandidateFieldInfo("First Name", "user.firstName",
@@ -49,11 +58,19 @@ export class CandidateFieldService {
     new CandidateFieldInfo("Phone", "phone",
       null, null),
     new CandidateFieldInfo("Status", "status",
-      null, null),
+      this.titleCaseFormatter, null),
     new CandidateFieldInfo("UNHCR Status", "unhcrStatus",
       null, null),
     new CandidateFieldInfo("Updated", "updatedDate",
       this.dateFormatter, null),
+    new CandidateFieldInfo("DOB", "dob",
+      this.dateFormatter, null),
+    new CandidateFieldInfo("Highest Level of Edu", "maxEducationLevel.level",
+      this.levelGetNameFormatter, null),
+    new CandidateFieldInfo("IELTS Score", "ieltsScore",
+      null, null),
+    new CandidateFieldInfo("Legal status", "residenceStatus",
+      this.getDisplayEnum, null),
   ];
 
   private allDisplayableFieldsMap = new Map<string, CandidateFieldInfo>();
