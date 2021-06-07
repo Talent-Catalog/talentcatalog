@@ -321,7 +321,15 @@ export enum CandidateOpportunityStage {
   relocating = "Relocating",
   relocated = "Relocated",
   settled = "Settled",
-  durableSolution = "Durable solution"
+  durableSolution = "Durable solution",
+  noJobOffer = "No job offer",
+  noVisa = "No visa",
+  notFitForRole = "Not fit for role",
+  notEligibleForVisa = "Not eligible for visa",
+  noInterview = "No interview",
+  candidateRejectsOffer = "Candidate rejects offer",
+  candidateWithdraws = "Candidate withdraws"
+
 }
 
 export enum CandidateStatus {
