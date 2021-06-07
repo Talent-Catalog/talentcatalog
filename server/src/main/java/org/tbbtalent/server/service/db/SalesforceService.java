@@ -166,7 +166,7 @@ public interface SalesforceService {
      * including if sfJoblink is not a valid link to a Salesforce job opportunity.
      */
     void createOrUpdateJobOpportunities(
-            List<Candidate> candidates, SalesforceOppParams salesforceOppParams, String sfJoblink)
+            List<Candidate> candidates, @Nullable SalesforceOppParams salesforceOppParams, String sfJoblink)
             throws GeneralSecurityException, WebClientException, SalesforceException;
     
     /**

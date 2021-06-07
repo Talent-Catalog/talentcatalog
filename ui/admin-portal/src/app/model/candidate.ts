@@ -301,7 +301,24 @@ export enum CandidateOpportunityStage {
   miniIntake = "Mini intake",
   fullIntake = "Full intake",
   visaEligibility = "Visa eligibility",
-  //todo more
+  cvPreparation = "CV preparation",
+  cvReview = "CV review",
+  oneWayPreparation = "1 way preparation",
+  oneWayReview = "1 way review",
+  testPreparation = "Test preparation",
+  testing = "Testing",
+  twoWayPreparation = "2 way preparation",
+  twoWayReview = "2 way review",
+  offer = "Offer",
+  acceptance = "Acceptance",
+  provincialVisaPreparation = "Provincial visa preparation",
+  provincialVisaProcessing = "Provincial visa processing",
+  visaPreparation = "Visa preparation",
+  visaProcessing = "Visa processing",
+  relocating = "Relocating",
+  relocated = "Relocated",
+  settled = "Settled",
+  durableSolution = "Durable solution"
 }
 
 export enum CandidateStatus {

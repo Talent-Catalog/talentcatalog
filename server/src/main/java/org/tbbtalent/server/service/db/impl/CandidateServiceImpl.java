@@ -1852,13 +1852,15 @@ public class CandidateServiceImpl implements CandidateService {
         createUpdateSalesforce(savedList.getCandidates(), sfJobLink, request.getSalesforceOppParams());
     }
 
-    private void createUpdateSalesforce(Collection<Candidate> candidates, String sfJoblink,
-        SalesforceOppParams salesforceOppParams)
+    private void createUpdateSalesforce(Collection<Candidate> candidates, 
+        @Nullable String sfJoblink,
+        @Nullable SalesforceOppParams salesforceOppParams)
         throws GeneralSecurityException, WebClientException {
 
         //Need ordered list so that can match with returned contacts.
         List<Candidate> orderedCandidates = new ArrayList<>(candidates);
         
+        //Update Salesforce contacts
         List<Contact> contacts =
             salesforceService.createOrUpdateContacts(orderedCandidates);
 
@@ -1872,7 +1874,8 @@ public class CandidateServiceImpl implements CandidateService {
                 candidateRepository.save(candidate);
             }
         }
-
+        
+        //If we have a Salesforce job opportunity, we can also update associated candidate opps.
         if (sfJoblink != null && sfJoblink.length() > 0) {
             salesforceService.createOrUpdateJobOpportunities(
                 orderedCandidates, salesforceOppParams, sfJoblink);

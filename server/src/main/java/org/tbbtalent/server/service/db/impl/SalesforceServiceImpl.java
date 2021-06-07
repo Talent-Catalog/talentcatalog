@@ -103,7 +103,7 @@ import reactor.core.publisher.Mono;
 @Service
 public class SalesforceServiceImpl implements SalesforceService, InitializingBean {
     private static final Logger log = LoggerFactory.getLogger(SalesforceServiceImpl.class);
-    private static final String apiVersion = "v49.0";
+    private static final String apiVersion = "v51.0";
     private static final String candidateNumberSFFieldName = "TBBid__c";
     private static final String candidateOpportunitySFFieldName = "TBBCandidateExternalId__c";
     
