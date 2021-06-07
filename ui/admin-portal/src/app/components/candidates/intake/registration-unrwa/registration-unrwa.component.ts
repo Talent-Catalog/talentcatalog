@@ -41,6 +41,7 @@ export class RegistrationUnrwaComponent extends IntakeComponentBase implements O
   ngOnInit(): void {
     this.form = this.fb.group({
       unrwaRegistered: [this.candidateIntakeData?.unrwaRegistered],
+      unrwaStatus: [this.candidateIntakeData?.unrwaStatus],
       unrwaNumber: [this.candidateIntakeData?.unrwaNumber],
       unrwaFile: [this.candidateIntakeData?.unrwaFile],
       unrwaNotRegStatus: [this.candidateIntakeData?.unrwaNotRegStatus],

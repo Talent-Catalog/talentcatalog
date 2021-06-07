@@ -388,7 +388,6 @@ export enum UnhcrStatus {
   MandateRefugee = "Assessed by UNHCR as a mandate refugee",
   RegisteredAsylum = "Registered with UNHCR as asylum seeker",
   RegisteredStateless = "Registered with UNHCR as stateless",
-  NotRegistered = "Not registered",
   Unsure = "Unsure",
   NA = "Not applicable"
 }

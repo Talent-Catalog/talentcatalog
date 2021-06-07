@@ -21,7 +21,6 @@ public enum UnhcrStatus {
     MandateRefugee,
     RegisteredAsylum,
     RegisteredStateless,
-    NotRegistered,
     Unsure,
     NA
 }

@@ -39,6 +39,17 @@
   <div *ngIf="showAll">
     <div *ngIf="unrwaRegistered == 'Yes'">
       <div class="form-group">
+        <label for="unrwaStatus">
+          What is your registration status with UNRWA?
+        </label>
+        <select class="form-control"
+                id="unrwaStatus" [formControlName]="'unrwaStatus'">
+          <option *ngFor="let opt of unrwaStatusOptions" [value]="opt.value">
+            {{opt.displayText}}
+          </option>
+        </select>
+      </div>
+      <div class="form-group">
         <label for="unrwaNumber">What is your UNRWA number?</label>
         <input type="text" class="form-control"
                id="unrwaNumber" [formControlName]="'unrwaNumber'">
