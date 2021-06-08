@@ -284,10 +284,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private YesNoUnsure unrwaRegistered;
 
-    @Enumerated(EnumType.STRING)
-    @Nullable
-    private UnrwaStatus unrwaStatus;
-
     @Nullable
     private String unrwaNumber;
 
@@ -957,11 +953,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setUnrwaRegistered(@Nullable YesNoUnsure unrwaRegistered) { this.unrwaRegistered = unrwaRegistered; }
 
     @Nullable
-    public UnrwaStatus getUnrwaStatus() { return unrwaStatus; }
-
-    public void setUnrwaStatus(@Nullable UnrwaStatus unrwaStatus) { this.unrwaStatus = unrwaStatus; }
-
-    @Nullable
     public String getUnrwaNumber() { return unrwaNumber; }
 
     public void setUnrwaNumber(@Nullable String unrwaNumber) { this.unrwaNumber = unrwaNumber; }
@@ -1531,9 +1522,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getUnrwaRegistered() != null) {
             setUnrwaRegistered(data.getUnrwaRegistered());
-        }
-        if (data.getUnrwaStatus() != null) {
-            setUnrwaStatus(data.getUnrwaStatus());
         }
         if (data.getUnrwaNumber() != null) {
             setUnrwaNumber(data.getUnrwaNumber());

@@ -181,7 +181,6 @@ export interface CandidateIntakeData {
   unhcrNotRegStatus?: NotRegisteredStatus;
   unhcrNotes?: string;
   unrwaRegistered?: YesNoUnsure;
-  unrwaStatus?: UnrwaStatus;
   unrwaNumber?: string;
   unrwaFile?: number;
   unrwaNotRegStatus?: NotRegisteredStatus;
@@ -441,15 +440,6 @@ export enum YesNoUnsureLearn {
   Yes = "Yes",
   No = "No",
   Unsure = "Unsure - I need to learn more."
-}
-
-export enum UnrwaStatus {
-  NoResponse = "",
-  Registered = "Registered",
-  WasRegistered = "No longer registered, but was registered previously.",
-  NeverRegistered = "Never been registered",
-  Unsure = "Unsure",
-  NA = "Not applicable"
 }
 
 export enum Exam {
