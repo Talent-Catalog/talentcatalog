@@ -1,0 +1,172 @@
+<!--
+  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<div *ngIf="error">
+  {{error}}
+</div>
+<form [formGroup]="form">
+  <div class="form-group">
+    <label for="birthCountryId">
+      Where were you born?
+    </label>
+    <div class="float-right">
+      <app-autosave-status
+        [saving]="saving"
+        [typing]="typing">
+      </app-autosave-status>
+    </div>
+    <select id="birthCountryId" class="form-control" [formControlName]="'birthCountryId'">
+      <option value=""></option>
+      <option *ngFor="let opt of countries" [value]="opt.id">
+        {{opt.name}}
+      </option>
+    </select>
+  </div>
+
+  <div *ngIf="!bornInHost">
+    <div class="form-group">
+      <label for="hostEntryYear">
+        What year did you immigrate to {{candidate?.country?.name}}?
+      </label>
+      <select id="hostEntryYear" class="form-control" [formControlName]="'hostEntryYear'">
+        <option value=""></option>
+        <option *ngFor="let year of years" [ngValue]="year">{{year}} </option>
+      </select>
+    </div>
+    <div *ngIf="hasNotes" class="form-group">
+      <label for="hostEntryYearNotes">Notes</label>
+      <textarea type="text" class="md-textarea-auto form-control" rows="3"
+                id="hostEntryYearNotes" [formControlName]="'hostEntryYearNotes'"
+                placeholder=""></textarea>
+    </div>
+    <div class="form-group">
+      <label for="asylumYear">
+        Date of asylum?
+      </label>
+      <app-date-picker id="asylumYear" [control]="form.controls.asylumYear" [allowFuture]="false"></app-date-picker>
+    </div>
+
+    <div *ngIf="showAll">
+      <div class="form-group">
+        <label for="hostEntryLegally">
+          Did you enter legally?
+        </label>
+        <select class="form-control"
+                id="hostEntryLegally" [formControlName]="'hostEntryLegally'">
+          <option *ngFor="let opt of hostEntryLegallyOptions" [value]="opt.value">
+            {{opt.displayText}}
+          </option>
+        </select>
+      </div>
+
+      <div *ngIf="enterLegally === 'No'" class="form-group">
+        <label for="hostEntryLegallyNotes">Notes</label>
+        <textarea type="text" class="md-textarea-auto form-control" rows="3"
+                  id="hostEntryLegallyNotes" [formControlName]="'hostEntryLegallyNotes'"
+                  placeholder="" ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="returnedHome">Have you returned to your home country since entering {{candidate.country.name}} and claiming asylum?</label>
+        <select class="form-control"
+                id="returnedHome" [formControlName]="'returnedHome'">
+          <option *ngFor="let opt of returnedHomeOptions" [value]="opt.value">
+            {{opt.displayText}}
+          </option>
+        </select>
+      </div>
+
+      <div *ngIf="returnedHome === 'Yes'">
+        <div class="form-group">
+          <label for="returnedHomeReason">What was the reason for your return?</label>
+          <textarea type="text" class="md-textarea-auto form-control" rows="3"
+                    id="returnedHomeReason" [formControlName]="'returnedHomeReason'"
+                    placeholder="" ></textarea>
+        </div>
+      </div>
+      <div *ngIf="returnedHome === 'No'">
+        <div class="form-group">
+          <label for="returnedHomeReasonNo">What are the reasons you have not returned?</label>
+          <textarea type="text" class="md-textarea-auto form-control" rows="3"
+                    id="returnedHomeReasonNo" [formControlName]="'returnedHomeReasonNo'"
+                    placeholder="" ></textarea>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="returnHomeSafe">Do you feel it is safe to permanently return to your home country?</label>
+        <select class="form-control"
+                id="returnHomeSafe" [formControlName]="'returnHomeSafe'">
+          <option *ngFor="let opt of homeSafeOptions" [value]="opt.value" [disabled]="!editable">
+            {{opt.displayText}}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="leftHomeReasons">
+          What are the primary reasons you left your home country and currently live in {{candidate.country.name}}?
+        </label>
+        <div *ngIf="editable" class="float-right">
+          <app-autosave-status
+            [saving]="saving"
+            [typing]="typing">
+          </app-autosave-status>
+        </div>
+        <ng-multiselect-dropdown
+          id="leftHomeReasons"
+          class="custom-primary"
+          [settings]="dropdownSettings"
+          [data]="leftHomeReasonOptions"
+          formControlName="leftHomeReasons">
+        </ng-multiselect-dropdown>
+      </div>
+
+      <div *ngIf="hasOther">
+        <div class="form-group">
+          <label for="leftHomeOther">If other, please explain</label>
+          <input type="text" class="form-control" id="leftHomeOther" [formControlName]="'leftHomeOther'">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="returnHomeFuture">
+          Do you plan to return to your country of origin in the near future?
+        </label>
+        <div class="float-right">
+          <app-autosave-status
+            [saving]="saving"
+            [typing]="typing">
+          </app-autosave-status>
+        </div>
+        <select class="form-control"
+                id="returnHomeFuture" [formControlName]="'returnHomeFuture'">
+          <option *ngFor="let opt of returnHomeFutureOptions" [value]="opt.value">
+            {{opt.displayText}}
+          </option>
+        </select>
+      </div>
+
+      <div *ngIf="returnHomeFuture === 'Yes'">
+        <div class="form-group">
+          <label for="returnHomeWhen">If yes, when do you plan to return? </label>
+          <input type="text" class="form-control" id="returnHomeWhen" [formControlName]="'returnHomeWhen'">
+        </div>
+      </div>
+    </div>
+
+  </div>
+</form>

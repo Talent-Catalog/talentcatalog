@@ -16,21 +16,21 @@
 
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {HostEntryYearComponent} from './host-entry-year.component';
+import {HostEntryComponent} from './host-entry.component';
 
 describe('HostEntryYearComponent', () => {
-  let component: HostEntryYearComponent;
-  let fixture: ComponentFixture<HostEntryYearComponent>;
+  let component: HostEntryComponent;
+  let fixture: ComponentFixture<HostEntryComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ HostEntryYearComponent ]
+      declarations: [ HostEntryComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(HostEntryYearComponent);
+    fixture = TestBed.createComponent(HostEntryComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

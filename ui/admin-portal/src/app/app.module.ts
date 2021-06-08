@@ -155,7 +155,7 @@ import {ReturnHomeSafeComponent} from './components/candidates/intake/return-hom
 import {WorkPermitComponent} from './components/candidates/intake/work-permit/work-permit.component';
 import {WorkLegallyComponent} from './components/candidates/intake/work-legally/work-legally.component';
 import {WorkStatusComponent} from './components/candidates/intake/work-status/work-status.component';
-import {HostEntryYearComponent} from './components/candidates/intake/host-entry-year/host-entry-year.component';
+import {HostEntryComponent} from './components/candidates/intake/host-entry-year/host-entry.component';
 import {CandidateVisaTabComponent} from './components/candidates/view/tab/candidate-visa-tab/candidate-visa-tab.component';
 import {CustomDateAdapter, CustomDateParserFormatter} from './util/date-adapter/ngb-date-adapter';
 import {RegistrationUnhcrComponent} from './components/candidates/intake/registration-unhcr/registration-unhcr.component';
@@ -360,7 +360,7 @@ import {FormControlConditionalComponent} from './components/util/form-control-co
     WorkPermitComponent,
     WorkLegallyComponent,
     WorkStatusComponent,
-    HostEntryYearComponent,
+    HostEntryComponent,
     CandidateVisaTabComponent,
     RegistrationUnhcrComponent,
     RegistrationUnrwaComponent,

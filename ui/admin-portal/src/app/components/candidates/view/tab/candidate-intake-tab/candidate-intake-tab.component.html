@@ -207,35 +207,15 @@
           </div>
         </ng-template>
         <ng-template ngbPanelContent>
-          <app-host-entry-year
+          <app-host-entry
             [candidate]="candidate"
             [candidateIntakeData]="candidateIntakeData"
             [countries]="countries">
-          </app-host-entry-year>
-          <app-host-entry-legally
-            [candidate]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-host-entry-legally>
-          <app-returned-home
-            [candidate]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-returned-home>
+          </app-host-entry>
           <app-home-location
             [candidate]="candidate"
             [candidateIntakeData]="candidateIntakeData">
           </app-home-location>
-          <app-return-home-safe
-            [candidate]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-return-home-safe>
-          <app-left-home-reason
-            [candidate]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-left-home-reason>
-          <app-return-home-future
-            [candidate]="candidate"
-            [candidateIntakeData]="candidateIntakeData">
-          </app-return-home-future>
           <app-resettlement-third
             [candidate]="candidate"
             [candidateIntakeData]="candidateIntakeData">

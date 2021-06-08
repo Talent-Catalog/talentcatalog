@@ -158,11 +158,12 @@
           </div>
         </ng-template>
         <ng-template ngbPanelContent>
-          <app-host-entry-year
+          <app-host-entry
             [candidate]="candidate"
             [candidateIntakeData]="candidateIntakeData"
-            [countries]="countries">
-          </app-host-entry-year>
+            [countries]="countries"
+            [showAll]="false">
+          </app-host-entry>
           <app-residence-status
             [candidate]="candidate"
             [candidateIntakeData]="candidateIntakeData">
