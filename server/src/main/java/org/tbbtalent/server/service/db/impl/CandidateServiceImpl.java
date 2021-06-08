@@ -94,7 +94,7 @@ public class CandidateServiceImpl implements CandidateService {
         )));
     
     private final UserRepository userRepository;
-    private final SavedListRepository savedListRepository;
+    private final SavedListService savedListService;
     private final SavedSearchRepository savedSearchRepository;
     private final CandidateRepository candidateRepository;
     private final CandidateEsRepository candidateEsRepository;
@@ -126,36 +126,36 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Autowired
     public CandidateServiceImpl(UserRepository userRepository,
-                                SavedListRepository savedListRepository,
-                                SavedSearchRepository savedSearchRepository,
-                                CandidateRepository candidateRepository,
-                                CandidateEsRepository candidateEsRepository,
-                                CandidateSavedListService candidateSavedListService,
-                                ElasticsearchOperations elasticsearchOperations,
-                                GoogleFileSystemService fileSystemService,
-                                SalesforceService salesforceService,
-                                CountryRepository countryRepository,
-                                CountryService countryService,
-                                EducationLevelRepository educationLevelRepository,
-                                NationalityRepository nationalityRepository,
-                                NationalityService nationalityService,
-                                PasswordHelper passwordHelper,
-                                UserContext userContext,
-                                SavedSearchService savedSearchService,
-                                CandidateNoteService candidateNoteService,
-                                CandidateCitizenshipService candidateCitizenshipService, 
-                                CandidateDependantService candidateDependantService,
-                                CandidateDestinationService candidateDestinationService,
-                                CandidateVisaService candidateVisaService,
-                                CandidateVisaJobCheckService candidateVisaJobCheckService,
-                                CandidateExamService candidateExamService,
-                                SurveyTypeRepository surveyTypeRepository,
-                                OccupationRepository occupationRepository,
-                                LanguageLevelRepository languageLevelRepository,
-                                CandidateExamRepository candidateExamRepository,
-                                EmailHelper emailHelper, PdfHelper pdfHelper) {
+        SavedListService savedListService,
+        SavedSearchRepository savedSearchRepository,
+        CandidateRepository candidateRepository,
+        CandidateEsRepository candidateEsRepository,
+        CandidateSavedListService candidateSavedListService,
+        ElasticsearchOperations elasticsearchOperations,
+        GoogleFileSystemService fileSystemService,
+        SalesforceService salesforceService,
+        CountryRepository countryRepository,
+        CountryService countryService,
+        EducationLevelRepository educationLevelRepository,
+        NationalityRepository nationalityRepository,
+        NationalityService nationalityService,
+        PasswordHelper passwordHelper,
+        UserContext userContext,
+        SavedSearchService savedSearchService,
+        CandidateNoteService candidateNoteService,
+        CandidateCitizenshipService candidateCitizenshipService,
+        CandidateDependantService candidateDependantService,
+        CandidateDestinationService candidateDestinationService,
+        CandidateVisaService candidateVisaService,
+        CandidateVisaJobCheckService candidateVisaJobCheckService,
+        CandidateExamService candidateExamService,
+        SurveyTypeRepository surveyTypeRepository,
+        OccupationRepository occupationRepository,
+        LanguageLevelRepository languageLevelRepository,
+        CandidateExamRepository candidateExamRepository,
+        EmailHelper emailHelper, PdfHelper pdfHelper) {
         this.userRepository = userRepository;
-        this.savedListRepository = savedListRepository;
+        this.savedListService = savedListService;
         this.savedSearchRepository = savedSearchRepository;
         this.candidateRepository = candidateRepository;
         this.candidateEsRepository = candidateEsRepository;
@@ -282,11 +282,7 @@ public class CandidateServiceImpl implements CandidateService {
         Set<Long> savedListIds = request.getSavedListIds();
         if (savedListIds != null) {
             for (Long savedListId : savedListIds) {
-                SavedList savedList = savedListRepository.findById(savedListId)
-                        .orElse(null);
-                if (savedList == null) {
-                    throw new NoSuchObjectException(SavedList.class, savedListId);
-                }
+                SavedList savedList = savedListService.get(savedListId);
                 savedLists.add(savedList);
             }
         }
@@ -1838,6 +1834,53 @@ public class CandidateServiceImpl implements CandidateService {
 
         save(candidate, false);
         return candidate;
+    }
+
+    @Override
+    public void createUpdateSalesforce(UpdateCandidateOppsRequest request)
+        throws NoSuchObjectException, GeneralSecurityException, WebClientException {
+
+        List<Candidate> candidates = candidateRepository.findByIds(request.getCandidateIds());
+        
+        createUpdateSalesforce(candidates, request.getSfJobLink(), request.getSalesforceOppParams());
+    }
+
+    @Override
+    public void createUpdateSalesforce(UpdateCandidateListOppsRequest request)
+        throws NoSuchObjectException, GeneralSecurityException, WebClientException {
+        SavedList savedList = savedListService.get(request.getSavedListId());
+        String sfJobLink = savedList.getSfJoblink();
+        createUpdateSalesforce(savedList.getCandidates(), sfJobLink, request.getSalesforceOppParams());
+    }
+
+    private void createUpdateSalesforce(Collection<Candidate> candidates, 
+        @Nullable String sfJoblink,
+        @Nullable SalesforceOppParams salesforceOppParams)
+        throws GeneralSecurityException, WebClientException {
+
+        //Need ordered list so that can match with returned contacts.
+        List<Candidate> orderedCandidates = new ArrayList<>(candidates);
+        
+        //Update Salesforce contacts
+        List<Contact> contacts =
+            salesforceService.createOrUpdateContacts(orderedCandidates);
+
+        //Update the sfLink in all candidate records.
+        int nCandidates = orderedCandidates.size();
+        for (int i = 0; i < nCandidates; i++) {
+            Contact contact = contacts.get(i);
+            if (contact.getId() != null) {
+                Candidate candidate = orderedCandidates.get(i);
+                candidate.setSflink(contact.getUrl());
+                candidateRepository.save(candidate);
+            }
+        }
+        
+        //If we have a Salesforce job opportunity, we can also update associated candidate opps.
+        if (sfJoblink != null && sfJoblink.length() > 0) {
+            salesforceService.createOrUpdateJobOpportunities(
+                orderedCandidates, salesforceOppParams, sfJoblink);
+        }
     }
 
     @Override

@@ -26,6 +26,7 @@ import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -53,6 +54,7 @@ import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.model.sf.Opportunity;
+import org.tbbtalent.server.request.candidate.SalesforceOppParams;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 
@@ -68,17 +70,40 @@ import reactor.core.publisher.Mono;
  * <p/>
  * See https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_what_is_rest_api.htm
  * <p/>
+ * @see #executeUpsert and other execute methods for other refs to Salesforce doc.
+ * <p/>
+ * Basically we need to construct a simple Java object containing the required SF fields which will
+ * be converted to a Json object by {@link WebClient} methods and included in the body of the
+ * HTTP request sent to SF.
+ * These Java objects are defined here in nested classes like: {@link ContactRequest} and 
+ * {@link OpportunityRequest}.
+ * <p/>
+ * Operating on multiple records in a single HTTP request is called a "composite" request by SF.
+ * See https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/using_composite_resources.htm
+ * In this code we use sObject Collections - 
+ * see https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_composite_sobject_tree_flat.htm
+ * Basically this means passing an array of records in the HTTP body. Each record is basically
+ * the request object plus extra attributes. For example the record in a composite contact request
+ * is a {@link ContactRecordComposite}, and the multiple contact request is a 
+ * {@link ContactRequestComposite}, which is just an array of ContactRecordComposite (plus a couple
+ * of other fields - eg allOrNone).
+ * <p/> 
  * Notes:
  * <ul>
  *   <li>Field names in classes used to communicate with SF need to have names that match the 
  *   internal SF field name</li>
  * </ul>
+ * <p/>
+ * The standard Salesforce doc on this stuff is typically poor.
+ * The Trailhead is worth a look - start here: 
+ * https://trailhead.salesforce.com/content/learn/modules/api_basics/api_basics_overview
  *
  * @author John Cameron
  */
 @Service
 public class SalesforceServiceImpl implements SalesforceService, InitializingBean {
     private static final Logger log = LoggerFactory.getLogger(SalesforceServiceImpl.class);
+    private static final String apiVersion = "v51.0";
     private static final String candidateNumberSFFieldName = "TBBid__c";
     private static final String candidateOpportunitySFFieldName = "TBBCandidateExternalId__c";
     
@@ -134,7 +159,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         
         WebClient.Builder builder = 
                 WebClient.builder()
-                .baseUrl("https://talentbeyondboundaries.my.salesforce.com/services/data/v49.0")
+                .baseUrl("https://talentbeyondboundaries.my.salesforce.com/services/data/" + apiVersion)
                 .defaultHeader("Content_Type","application/json")
                 .defaultHeader("Accept","application/json");
 
@@ -181,8 +206,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         //Create a contact request using data from the candidate
         ContactRequest contactRequest = new ContactRequest(candidate);
         
-        //Upsert request bodies should not include the TBBid 
-        //(it is specified as part of the PATCH uri).
+        //Upsert request bodies should not include the TBBid because it is used as the unique key
+        //used to identify the record to be updated - specified in the PATCH uri, not in the
+        //request body.
         contactRequest.setTBBid__c(null);
 
         //Execute and decode the response
@@ -204,7 +230,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     @Override
     @NonNull
-    public List<Contact> createOrUpdateContacts(@NonNull List<Candidate> candidates) 
+    public List<Contact> createOrUpdateContacts(@NonNull Collection<Candidate> candidates) 
             throws GeneralSecurityException, WebClientException, SalesforceException {
         List<ContactRecordComposite> contactRequests = new ArrayList<>();
         for (Candidate candidate : candidates) {
@@ -250,64 +276,79 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
     @Override
     public void createOrUpdateJobOpportunities(
-            List<Candidate> candidates, String sfJoblink) 
+        List<Candidate> candidates, SalesforceOppParams salesforceOppParams, String sfJoblink) 
             throws GeneralSecurityException, WebClientException, SalesforceException {
-        
+
         //Get id job opportunity.  
         String jobOpportunityId = extractIdFromSfUrl(sfJoblink);
 
-        //We only want to create opportunities where they have not already been
-        //created. We don't want to update existing opportunities because the
-        //opportunity Stage is a required field but we don't want to override
-        //existing Stages.
-        //
-        //We figure out which candidates have opportunities still to be
-        //created by first creating a map of candidates indexed by their unique
-        //opportunity id - constructed from the candidate number and the 
-        //job opportunity id.
-        Map<String,Candidate> idCandidateMap = new HashMap<>();
-        for (Candidate candidate : candidates) {
-            String id = makeExternalId(candidate.getCandidateNumber(), 
+        List<Candidate> candidatesToProcess;
+
+        //Opportunity Stage is a required field. If don't have one, we can't touch existing 
+        //candidate opportunities because we need to leave their existing stage unchanged, but
+        //can create new opportunities - supplying the default initial stage of "Prospect".
+        //If we have been supplied with a stage, then we can update and create - using that stage.
+
+        String stageName = null;
+        String nextStep = null;
+        if (salesforceOppParams != null) {
+            stageName = salesforceOppParams.getStageName();
+            nextStep = salesforceOppParams.getNextStep();
+        }
+        boolean createOnly = stageName == null;
+        
+        if (!createOnly) {
+            //We will be processing all candidates, creating new ones and updating existing ones
+            //with the supplied stage.
+            candidatesToProcess = candidates;
+        } else {
+            //We have no defined stage, so we will just be processing (ie creating) any missing
+            //candidate opportunities.
+            
+            //We figure out which candidates have opportunities still to be
+            //created by first creating a map of candidates indexed by their unique
+            //opportunity id - constructed from the candidate number and the 
+            //job opportunity id.
+            Map<String, Candidate> idCandidateMap = new HashMap<>();
+            for (Candidate candidate : candidates) {
+                String id = makeExternalId(candidate.getCandidateNumber(),
                     jobOpportunityId);
-            idCandidateMap.put(id, candidate);
-        }
+                idCandidateMap.put(id, candidate);
+            }
 
-        //Now find all ids for existing candidate opportunities for this job.
-        //Then remove candidates from the map with those ids (because there
-        //is no need to create an opp for them - they have one)
-        List<String> externalIds = findCandidateOpportunities(jobOpportunityId);
-        for (String externalId : externalIds) {
-            idCandidateMap.remove(externalId); 
+            //Now find all ids for existing candidate opportunities for this job.
+            //Then remove candidates from the map with those ids (because there
+            //is no need to create an opp for them - they have one)
+            List<String> externalIds = findCandidateOpportunities(jobOpportunityId);
+            for (String externalId : externalIds) {
+                idCandidateMap.remove(externalId);
+            }
+            
+            //The candidates to process will just be ones who need opportunities created
+            candidatesToProcess = new ArrayList<>(idCandidateMap.values());
         }
-
-        //If the map is empty, that means that all candidate already have their 
-        //opp for this job. So nothing to do.
-        if (idCandidateMap.size() > 0) {
-            
-            //Now we just need to create opps for those candidates still in the 
-            //map.
-            
+        
+        if (candidatesToProcess.size() > 0) {
             //First get some more info about the job: its name and its 
             //associated account.
             Opportunity opportunity = findOpportunity(jobOpportunityId);
             String jobOpportunityName = opportunity == null ? null : opportunity.getName();
             if (jobOpportunityName == null) {
                 throw new SalesforceException(
-                        "Could not find name for job opportunity " + sfJoblink);
+                    "Could not find name for job opportunity " + sfJoblink);
             }
             String jobAccountId = opportunity.getAccountId();
             String jobOwnerId = opportunity.getOwnerId();
-            
-            
+
             //Now build requests of candidate opportunities we want to create
             List<OpportunityRecordComposite> opportunityRequests = new ArrayList<>();
-            
-            for (Candidate candidate : idCandidateMap.values()) {
+
+            for (Candidate candidate : candidatesToProcess) {
                 //Create a request using data from the candidate
                 OpportunityRecordComposite opportunityRequest =
-                        new OpportunityRecordComposite(
-                                candidate, jobOpportunityName, jobOpportunityId,
-                                jobAccountId, jobOwnerId);
+                    new OpportunityRecordComposite(
+                        candidate, stageName, nextStep, jobOpportunityName, jobOpportunityId,
+                        jobAccountId, jobOwnerId);
                 opportunityRequests.add(opportunityRequest);
             }
             OpportunityRequestComposite req = new OpportunityRequestComposite();
@@ -315,15 +356,15 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
             //Execute and decode the response
             UpsertResult[] results =
-                    executeUpserts(candidateOpportunitySFFieldName, req);
+                executeUpserts(candidateOpportunitySFFieldName, req);
 
             if (results.length != opportunityRequests.size()) {
                 //This is a fatal error because if the numbers don't match we don't 
                 //know how to match results to requests.
                 throw new SalesforceException(
-                        "Number of results (" + results.length
-                                + ") did not match number of requests ("
-                                + opportunityRequests.size() + ")");
+                    "Number of results (" + results.length
+                        + ") did not match number of requests ("
+                        + opportunityRequests.size() + ")");
             }
 
             //Log any failures
@@ -332,8 +373,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 UpsertResult result = results[count++];
                 if (!result.isSuccess()) {
                     log.error("Update failed for opportunity "
-                            + request.getName()
-                            + ": " + result.getErrorMessage());
+                        + request.getName()
+                        + ": " + result.getErrorMessage());
                 }
             }
         }
@@ -650,6 +691,17 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         return result;
     }
 
+    /**
+     * See https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_composite_sobjects_collections_upsert.htm
+     * @param externalIdName Name of SF field containing an unique id used to 
+     *       identify SF records. For example the SF TBBid__c field on Contact
+     *       records which we populate with candidate's candidateNumber.                       
+     * @param obj Object supplying data used to update the Salesforce record.
+     * @return ClientResponses
+     * @throws GeneralSecurityException If there are errors relating to keys
+     * and digital signing.
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     */
     private UpsertResult[] executeUpserts(String externalIdName, HasSize obj) 
             throws GeneralSecurityException {
         
@@ -956,7 +1008,19 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         public String message;
         public List<String> fields;
     }
-    
+
+    /**
+     * This is the core information that is sent in the body of Salesforce HTTP requests
+     * representing the Salesforce Contact fields to be populated in a create or update.
+     * <p/>
+     * However we normally send multiple updates at the same time as described here:  
+     * https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_composite_sobject_tree_flat.htm
+     * <p/>
+     * In that scenario, each of these objects is prepended with a {@link CompositeAttributes} 
+     * object. This is represented by the associated {@link ContactRecordComposite}.
+     * <p/>
+     * The request containing these multiple updates is represented by {@link ContactRequestComposite}
+     */
     @Getter
     @Setter
     @ToString
@@ -992,6 +1056,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         }
     }
 
+    /**
+     * Single request containing multiple Contact updates.
+     * <p/>
+     * See doc for {@link ContactRequest}
+     */
     @Getter
     @Setter
     @ToString
@@ -1004,7 +1073,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             return records.size();
         }
     }
-    
+
+    /**
+     * Wrapper for each {@link ContactRequest} in a {@link ContactRequestComposite}
+     * <p/>
+     * See doc for {@link ContactRequest}
+     */
     @Getter
     @Setter
     @ToString(callSuper = true)
@@ -1017,6 +1091,9 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         }
     }
 
+    /**
+     * See doc for {@link ContactRequest}
+     */
     @Getter
     @Setter
     @ToString
@@ -1053,9 +1130,14 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         public String Parent_Opportunity__c;
 
         /**
-         * Set to first stage - ie "Prospect"
+         * Set to stage - default is "Prospect" 
          */
-        public String StageName;
+        public String StageName = "Prospect";
+
+        /**
+         * Opportunity next step 
+         */
+        public String NextStep;
         
         /**
          * This is the unique external id that defines all the candidate 
@@ -1066,6 +1148,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         public String TBBCandidateExternalId__c;
 
         public OpportunityRequest(Candidate candidate,
+            String stageName, String nextStep,
             String jobOpportunityName,
             String jobOpportunityId,
             String jobAccountId, String jobOwnerId) {
@@ -1086,10 +1169,14 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             LocalDateTime close = LocalDateTime.now().plusYears(1);
             CloseDate = close.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             
-            StageName = "Prospect";
+            StageName = stageName;
+            NextStep = nextStep;
         }
     }
 
+    /**
+     * See doc for {@link ContactRequestComposite}
+     */
     @Getter
     @Setter
     @ToString
@@ -1102,7 +1189,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             return records.size();
         }
     }
-    
+
+    /**
+     * See doc for {@link ContactRecordComposite}
+     */
     @Getter
     @Setter
     @ToString(callSuper = true)
@@ -1110,10 +1200,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         public CompositeAttributes attributes;
 
         public OpportunityRecordComposite(Candidate candidate,
+            String stageName, String nextStep,
             String jobOpportunityName,
             String jobOpportunityId,
             String jobAccountId, String jobOwnerId) {
-            super(candidate, jobOpportunityName, jobOpportunityId, jobAccountId, jobOwnerId);
+            super(candidate, stageName, nextStep, jobOpportunityName, jobOpportunityId, jobAccountId, jobOwnerId);
             attributes = new CompositeAttributes("Opportunity");
         }
     }

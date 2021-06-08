@@ -18,8 +18,6 @@ package org.tbbtalent.server.service.db.impl;
 
 import static org.springframework.data.jpa.domain.Specification.where;
 
-import java.security.GeneralSecurityException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,7 +29,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
@@ -40,7 +37,6 @@ import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.SavedSearch;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.User;
-import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.GetCandidateSavedListsQuery;
 import org.tbbtalent.server.repository.db.GetSavedListsQuery;
@@ -77,11 +73,11 @@ public class SavedListServiceImpl implements SavedListService {
 
     @Autowired
     public SavedListServiceImpl(
-            CandidateRepository candidateRepository,
-            SavedListRepository savedListRepository,
-            CandidateSavedListService candidateSavedListService, 
-            SalesforceService salesforceService, UserRepository userRepository,
-            UserContext userContext
+        CandidateRepository candidateRepository,
+        SavedListRepository savedListRepository,
+        CandidateSavedListService candidateSavedListService,
+        SalesforceService salesforceService, UserRepository userRepository,
+        UserContext userContext
     ) {
         this.candidateRepository = candidateRepository;
         this.savedListRepository = savedListRepository;
@@ -393,34 +389,6 @@ public class SavedListServiceImpl implements SavedListService {
         savedList.removeUser(user);
 
         return savedListRepository.save(savedList);
-    }
-
-    @Override
-    public void createUpdateSalesforce(long id) 
-            throws NoSuchObjectException, GeneralSecurityException, WebClientException {
-        SavedList savedList = savedListRepository.findById(id)
-                .orElseThrow(() -> new NoSuchObjectException(SavedList.class, id));
-
-        List<Candidate> candidates = new ArrayList<>(savedList.getCandidates());
-        List<Contact> contacts = 
-                salesforceService.createOrUpdateContacts(candidates);
-
-        //Update the sfLink in all candidate records.
-        int nCandidates = candidates.size();
-        for (int i = 0; i < nCandidates; i++) {
-            Contact contact = contacts.get(i);
-            if (contact.getId() != null) {
-                Candidate candidate = candidates.get(i);
-                candidate.setSflink(contact.getUrl());
-                candidateRepository.save(candidate);
-            }
-        }
-        
-        String sfJoblink = savedList.getSfJoblink();
-        if (sfJoblink != null && sfJoblink.length() > 0) {
-            salesforceService.createOrUpdateJobOpportunities(
-                    candidates, sfJoblink);
-        }
     }
 
     private void checkDuplicates(Long savedListId, String name, Long userId) 

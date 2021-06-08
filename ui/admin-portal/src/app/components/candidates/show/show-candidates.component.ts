@@ -27,7 +27,7 @@ import {
 } from '@angular/core';
 
 import {
-  Candidate,
+  Candidate, SalesforceOppParams,
   UpdateCandidateStatusInfo,
   UpdateCandidateStatusRequest
 } from '../../../model/candidate';
@@ -59,7 +59,7 @@ import {
 import {
   CandidateSource,
   canEditSource,
-  defaultReviewStatusFilter,
+  defaultReviewStatusFilter, findHasId, indexOfHasId,
   isMine,
   isSharedWithMe,
   ReviewStatus
@@ -82,7 +82,9 @@ import {
   SavedListGetRequest,
   UpdateExplicitSavedListContentsRequest
 } from '../../../model/saved-list';
-import {CandidateSourceCandidateService} from '../../../services/candidate-source-candidate.service';
+import {
+  CandidateSourceCandidateService
+} from '../../../services/candidate-source-candidate.service';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {EditCandidateReviewStatusItemComponent} from '../../util/candidate-review/edit/edit-candidate-review-status-item.component';
 import {Router} from '@angular/router';
@@ -97,6 +99,10 @@ import {CandidateColumnSelectorComponent} from '../../util/candidate-column-sele
 import {CandidateFieldInfo} from '../../../model/candidate-field-info';
 import {CandidateFieldService} from '../../../services/candidate-field.service';
 import {EditCandidateStatusComponent} from "../view/status/edit-candidate-status.component";
+import {
+  SalesforceStageComponent,
+  SalesforceStageInfo
+} from "../../util/salesforce-stage/salesforce-stage.component";
 
 interface CachedTargetList {
   sourceID: number;
@@ -264,6 +270,19 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
+  isSelected(candidate: Candidate): boolean {
+    let selected: boolean;
+    if (isSavedSearch(this.candidateSource)) {
+      selected = candidate.selected;
+    } else {
+      selected = indexOfHasId(candidate.id, this.selectedCandidates) >= 0;
+    }
+    return selected;
+  }
+
+  /**
+   * True if any candidates are currently selected.
+   */
   isSelection(): boolean {
     let isSelection: boolean;
     if (isSavedSearch(this.candidateSource)) {
@@ -621,6 +640,12 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     return !isSavedSearch(this.candidateSource);
   }
 
+  isSwapSelectionSupported(): boolean {
+    //Not supported for saved searches because swapping an empty selection on a search could
+    //potentially end up selecting huge numbers of candidates - up to the whole database.
+    return !isSavedSearch(this.candidateSource);
+  }
+
   sourceType(): string {
     return isSavedSearch(this.candidateSource) ? 'savedSearch' : 'list';
   }
@@ -751,6 +776,54 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         this.requestSaveSelection();
       }
     }
+  }
+
+  /**
+   * Selected becomes unselected and vice versa.
+   * <p/>
+   * Note that this only works for saved lists. Html should prevent
+   * this from being called - but if it is, it will do nothing.
+   */
+  swapSelection() {
+    if (isSavedList(this.candidateSource)) {
+
+      //First of all, get all candidates in this list from the server.
+      this.searching = true;
+      this.error = null;
+      this.candidateSourceCandidateService.list(this.candidateSource).subscribe(
+        (candidates: Candidate[]) => {
+          //Now do the actual swap
+          this.doSwapSelection(candidates)
+          this.searching = false;
+        },
+        error => {
+          this.error = error;
+          this.searching = false;
+        });
+    }
+  }
+
+  /**
+   * Selected becomes unselected and vice versa.
+   * <p/>
+   * Note: only works for saved lists - not saved sources.
+   * @param candidates All candidates
+   */
+  private doSwapSelection(candidates: Candidate[]) {
+    //This will contain the new selection
+    const newSelectedCandidates: Candidate[] = [];
+
+    //Invert the selection by looking at all candidates, and if they are not currently selected
+    //add them to newSelectedCandidates.
+    for (const candidate of candidates) {
+      //Look for this candidate's id in the currently selected candidates
+      if (indexOfHasId(candidate.id, this.selectedCandidates) < 0) {
+        //Not in currently selected - so add to new selected.
+        newSelectedCandidates.push(candidate);
+      }
+    }
+    //Switch to new selection
+    this.selectedCandidates = newSelectedCandidates;
   }
 
   private requestSaveSelection() {
@@ -944,10 +1017,10 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   clearSelection() {
-    const request: ClearSelectionRequest = {
-      userId: this.loggedInUser.id,
-    };
     if (isSavedSearch(this.candidateSource)) {
+      const request: ClearSelectionRequest = {
+        userId: this.loggedInUser.id,
+      };
       this.savedSearchService.clearSelection(this.candidateSource.id, request).subscribe(
         () => {
           this.doSearch(true);
@@ -956,6 +1029,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
           this.error = err;
         });
     } else {
+      //For saved lists, the candidate data - including whether or not they have been selected
+      //is not saved anywhere, so just doing a refresh will clear all displayed selections
       this.doSearch(true);
     }
     this.selectedCandidates = [];
@@ -1065,20 +1140,65 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   }
 
+  /**
+   * Updates/creates candidate related records on Salesforce.
+   * <p/>
+   * Only works with saved lists (a bit dangerous with saved searches which could involve
+   * very large numbers of candidates - even all candidates on database!).
+   * Should be disabled in html for saved searches, but if it does get called for a search, it
+   * will do nothing.
+   */
   createUpdateSalesforce() {
+    if (isSavedList(this.candidateSource)) {
+      const nSelections = this.selectedCandidates.length;
+      if (nSelections === 0) {
+        //No candidates are selected, check whether the user wants to apply to the whole list.
+        const applyToWholeListQuery = this.modalService.open(ConfirmationComponent, {
+          centered: true, backdrop: 'static'});
+        applyToWholeListQuery.componentInstance.message =
+          'There are no candidates selected. Would you like to apply to everyone in the list?';
+        applyToWholeListQuery.result
+        .then((confirmed) => {if (confirmed === true) {
+          this.doCreateUpdateSalesforceOnList(false);
+          }})
+        .catch(() => { });
+      } else {
+        this.doCreateUpdateSalesforceOnList(true);
+      }
+    }
+  }
+
+  private doCreateUpdateSalesforceOnList(selectedCandidatesOnly: boolean) {
+    if (!this.candidateSource.sfJoblink) {
+      //If we do not have a job opportunity, there will be no candidate opp info.
+      this.doCreateUpdateSalesforceOnList2(null, selectedCandidatesOnly);
+    } else {
+      const applyToWholeListQuery = this.modalService.open(SalesforceStageComponent);
+      applyToWholeListQuery.result
+      .then((info: SalesforceOppParams) => {
+        this.doCreateUpdateSalesforceOnList2(info, selectedCandidatesOnly);
+      })
+      .catch(() => { });
+    }
+}
+
+  private doCreateUpdateSalesforceOnList2(info: SalesforceOppParams, selectedCandidatesOnly: boolean) {
     this.error = null;
     this.updating = true;
-    this.candidateSourceCandidateService.createUpdateSalesforce(
-      this.candidateSource).subscribe(
-      result => {
-        this.doSearch(true);
-        this.updating = false;
-      },
-      err => {
-        this.error = err;
-        this.updating = false;
-      }
-    );
+
+    if (selectedCandidatesOnly) {
+      const sfJobLink: string = this.candidateSource.sfJoblink;
+      const candidateIds: number[] = this.selectedCandidates.map(c => c.id);
+      this.candidateService.createUpdateSalesforceFromCandidates(candidateIds, sfJobLink, info)
+      .subscribe(result => {this.updating = false; },
+        err => {this.error = err; this.updating = false; }
+      );
+    } else {
+      this.candidateService.createUpdateSalesforceFromList(this.candidateSource, info)
+      .subscribe(result => {this.updating = false; },
+        err => {this.error = err; this.updating = false; }
+      );
+    }
   }
 
   doEditSource() {

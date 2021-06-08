@@ -15,12 +15,19 @@
  */
 
 import {Injectable} from '@angular/core';
-import {Candidate, CandidateIntakeData, UpdateCandidateStatusRequest} from '../model/candidate';
+import {
+  Candidate,
+  CandidateIntakeData,
+  SalesforceOppParams, UpdateCandidateListOppsRequest, UpdateCandidateOppsRequest,
+  UpdateCandidateStatusRequest
+} from '../model/candidate';
 import {Observable} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
 import {map} from "rxjs/operators";
+import {CandidateSource} from "../model/base";
+import {isSavedSearch} from "../model/saved-search";
 
 @Injectable({providedIn: 'root'})
 export class CandidateService {
@@ -108,6 +115,28 @@ export class CandidateService {
   createUpdateSalesforce(candidateId: number): Observable<Candidate> {
     return this.http.put<Candidate>(
       `${this.apiUrl}/${candidateId}/update-sf`, null);
+  }
+
+  createUpdateSalesforceFromList(source: CandidateSource,
+                                 salesforceOppParams: SalesforceOppParams): Observable<void> {
+
+    const request: UpdateCandidateListOppsRequest = {
+      savedListId: source.id,
+      salesforceOppParams: salesforceOppParams
+    }
+    return this.http.put<void>(`${this.apiUrl}/update-sf-by-list`, request);
+  }
+
+  createUpdateSalesforceFromCandidates(
+    candidateIds: number[], sfJobLink: string, salesforceOppParams: SalesforceOppParams): Observable<void> {
+
+    const request: UpdateCandidateOppsRequest = {
+      candidateIds: candidateIds,
+      sfJobLink: sfJobLink,
+      salesforceOppParams: salesforceOppParams
+    }
+
+    return this.http.put<void>(`${this.apiUrl}/update-sf`, request);
   }
 
   /**

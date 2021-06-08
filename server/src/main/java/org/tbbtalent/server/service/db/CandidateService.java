@@ -16,6 +16,13 @@
 
 package org.tbbtalent.server.service.db;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.security.GeneralSecurityException;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,16 +34,28 @@ import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.request.LoginRequest;
-import org.tbbtalent.server.request.candidate.*;
+import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
+import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
+import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
+import org.tbbtalent.server.request.candidate.CandidatePhoneSearchRequest;
+import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
+import org.tbbtalent.server.request.candidate.IHasSetOfSavedLists;
+import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
+import org.tbbtalent.server.request.candidate.SavedListGetRequest;
+import org.tbbtalent.server.request.candidate.SavedSearchGetRequest;
+import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateContactRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateEducationRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateLinksRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateListOppsRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateOppsRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
+import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tbbtalent.server.util.dto.DtoBuilder;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.security.GeneralSecurityException;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 public interface CandidateService {
 
@@ -317,8 +336,42 @@ public interface CandidateService {
      * @throws WebClientException if there is a problem connecting to Salesforce
      */
     Candidate createUpdateSalesforce(long id)
-            throws NoSuchObjectException, GeneralSecurityException,
-            WebClientException;
+            throws NoSuchObjectException, GeneralSecurityException, WebClientException;
+
+    /**
+     * Creates/updates Salesforce records corresponding to the given candidates.
+     * <p/>
+     * This could involve creating or updating contact records and/or
+     * creating or updating opportunity records.
+     * <p/>
+     * Salesforce links may be created and stored in candidate records.
+     *
+     * @param request Identifies candidates as well as optional Salesforce fields to set on 
+     *                candidate opportunities           
+     * @throws GeneralSecurityException If there are errors relating to keys
+     * and digital signing.
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     */
+    void createUpdateSalesforce(UpdateCandidateOppsRequest request)
+        throws GeneralSecurityException, WebClientException;
+
+    /**
+     * Creates/updates Salesforce records corresponding to candidates in a given list
+     * <p/>
+     * This could involve creating or updating contact records and/or
+     * creating or updating opportunity records.
+     * <p/>
+     * Salesforce links may be created and stored in candidate records.
+     *
+     * @param request Identifies list of candidates as well as optional Salesforce fields to set on 
+     *                candidate opportunities           
+     * @throws NoSuchObjectException  if there is no saved list with this id
+     * @throws GeneralSecurityException If there are errors relating to keys
+     * and digital signing.
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     */
+    void createUpdateSalesforce(UpdateCandidateListOppsRequest request)
+        throws NoSuchObjectException, GeneralSecurityException, WebClientException;
 
     /**
      * Updates the intake data associated with the given candidate.

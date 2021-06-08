@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.api.admin;
 
+import javax.validation.Valid;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -213,6 +214,20 @@ public class CandidateAdminApi {
         Candidate candidate = candidateService.createUpdateSalesforce(id);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
+    }
+
+    @PutMapping("update-sf")
+    public void createUpdateSalesforce(@RequestBody UpdateCandidateOppsRequest request)
+            throws GeneralSecurityException, WebClientException {
+        candidateService.createUpdateSalesforce(request);
+    }
+
+    @PutMapping(value = "update-sf-by-list")
+    public void createUpdateSalesforce(
+        @Valid @RequestBody UpdateCandidateListOppsRequest request)
+        throws NoSuchObjectException, GeneralSecurityException, WebClientException {
+
+        candidateService.createUpdateSalesforce(request);
     }
 
     @PutMapping("{id}/intake")

@@ -26,8 +26,9 @@ import {Location} from '@angular/common';
 import {getExternalHref} from '../util/url';
 import {Occupation} from './occupation';
 import {LanguageLevel} from './language-level';
+import {HasId} from "./base";
 
-export interface Candidate {
+export interface Candidate extends HasId {
   id: number;
   candidateNumber: string;
   status: string;
@@ -296,6 +297,39 @@ export enum AvailImmediateReason {
   Other = "Other"
 }
 
+export enum CandidateOpportunityStage {
+  prospect = "Prospect",
+  miniIntake = "Mini intake",
+  fullIntake = "Full intake",
+  visaEligibility = "Visa eligibility",
+  cvPreparation = "CV preparation",
+  cvReview = "CV review",
+  oneWayPreparation = "1 way preparation",
+  oneWayReview = "1 way review",
+  testPreparation = "Test preparation",
+  testing = "Testing",
+  twoWayPreparation = "2 way preparation",
+  twoWayReview = "2 way review",
+  offer = "Offer",
+  acceptance = "Acceptance",
+  provincialVisaPreparation = "Provincial visa preparation",
+  provincialVisaProcessing = "Provincial visa processing",
+  visaPreparation = "Visa preparation",
+  visaProcessing = "Visa processing",
+  relocating = "Relocating",
+  relocated = "Relocated",
+  settled = "Settled",
+  durableSolution = "Durable solution",
+  noJobOffer = "No job offer",
+  noVisa = "No visa",
+  notFitForRole = "Not fit for role",
+  notEligibleForVisa = "Not eligible for visa",
+  noInterview = "No interview",
+  candidateRejectsOffer = "Candidate rejects offer",
+  candidateWithdraws = "Candidate withdraws"
+
+}
+
 export enum CandidateStatus {
   active = "active",
   deleted = "deleted",
@@ -305,6 +339,22 @@ export enum CandidateStatus {
   ineligible = "ineligible",
   pending = "pending",
   unreachable = "unreachable"
+}
+
+export interface SalesforceOppParams {
+  stageName?: string;
+  nextStep?: string;
+}
+
+export interface UpdateCandidateOppsRequest {
+  candidateIds: number[];
+  sfJobLink: string;
+  salesforceOppParams?: SalesforceOppParams;
+}
+
+export interface UpdateCandidateListOppsRequest {
+  savedListId: number;
+  salesforceOppParams?: SalesforceOppParams;
 }
 
 export interface UpdateCandidateStatusInfo {

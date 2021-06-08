@@ -228,6 +228,7 @@ import {CandidateStatusSelectorComponent} from './components/util/candidate-stat
 import {FinalAgreementComponent} from './components/candidates/intake/final-agreement/final-agreement.component';
 import {NgSelectModule} from "@ng-select/ng-select";
 import {CreateCandidateLanguageComponent} from './components/candidates/view/language/create/create-candidate-language.component';
+import { SalesforceStageComponent } from './components/util/salesforce-stage/salesforce-stage.component';
 import {FormControlConditionalComponent} from './components/util/form-control-conditional/form-control-conditional.component';
 
 @NgModule({
@@ -434,6 +435,7 @@ import {FormControlConditionalComponent} from './components/util/form-control-co
     CandidateStatusSelectorComponent,
     FinalAgreementComponent,
     CreateCandidateLanguageComponent,
+    SalesforceStageComponent,
     FormControlConditionalComponent
   ],
   imports: [

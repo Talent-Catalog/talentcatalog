@@ -16,10 +16,8 @@
 
 package org.tbbtalent.server.service.db;
 
-import java.security.GeneralSecurityException;
 import java.util.List;
 import org.springframework.data.domain.Page;
-import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
@@ -209,24 +207,6 @@ public interface SavedListService {
      */
     SavedList removeSharedUser(long id, UpdateSharingRequest request)
             throws NoSuchObjectException;
-
-    /**
-     * Creates/updates Salesforce records corresponding to the given list.
-     * <p/>
-     * This could involve creating or updating contact records and/or
-     * creating (but not updating) opportunity records.
-     * <p/>
-     * Salesforce links may be created and stored in candidate records.
-     *
-     * @param id id of Saved List
-     * @throws NoSuchObjectException  if there is no saved list with this id
-     * @throws GeneralSecurityException If there are errors relating to keys
-     * and digital signing.
-     * @throws WebClientException if there is a problem connecting to Salesforce
-     */
-    void createUpdateSalesforce(long id)
-            throws NoSuchObjectException, GeneralSecurityException,
-            WebClientException;
     
     /**
      * Updates the fields that are displayed for each candidate in the given 
