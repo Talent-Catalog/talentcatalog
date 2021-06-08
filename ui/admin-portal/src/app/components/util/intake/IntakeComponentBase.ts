@@ -196,9 +196,6 @@ export abstract class IntakeComponentBase implements AfterViewInit, OnDestroy, O
           enums.push(item.value);
         }
         formValue[key] = enums;
-      } else {
-        // If not enum it will be a list of ids.
-        return formValue;
       }
     }
     return formValue;

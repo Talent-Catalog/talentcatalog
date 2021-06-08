@@ -120,12 +120,6 @@
         <label for="leftHomeReasons">
           What are the primary reasons you left your home country and currently live in {{candidate.country.name}}?
         </label>
-        <div *ngIf="editable" class="float-right">
-          <app-autosave-status
-            [saving]="saving"
-            [typing]="typing">
-          </app-autosave-status>
-        </div>
         <ng-multiselect-dropdown
           id="leftHomeReasons"
           class="custom-primary"
@@ -146,12 +140,6 @@
         <label for="returnHomeFuture">
           Do you plan to return to your country of origin in the near future?
         </label>
-        <div class="float-right">
-          <app-autosave-status
-            [saving]="saving"
-            [typing]="typing">
-          </app-autosave-status>
-        </div>
         <select class="form-control"
                 id="returnHomeFuture" [formControlName]="'returnHomeFuture'">
           <option *ngFor="let opt of returnHomeFutureOptions" [value]="opt.value">
