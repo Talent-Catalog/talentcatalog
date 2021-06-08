@@ -104,7 +104,6 @@ public class CandidateIntakeDataUpdate {
 
     private String homeLocation;
     private String hostChallenges;
-    private YesNo hostBorn;
     private Long hostEntryYear;
     private String hostEntryYearNotes;
     private YesNo hostEntryLegally;

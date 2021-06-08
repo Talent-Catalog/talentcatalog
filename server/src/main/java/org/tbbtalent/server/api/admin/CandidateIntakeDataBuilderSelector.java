@@ -84,7 +84,6 @@ public class CandidateIntakeDataBuilderSelector {
 
                 .add("homeLocation")
                 .add("hostChallenges")
-                .add("hostBorn")
                 .add("hostEntryYear")
                 .add("hostEntryYearNotes")
                 .add("hostEntryLegally")

@@ -452,10 +452,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @Enumerated(EnumType.STRING)
     @Nullable
-    private YesNo hostBorn;
-
-    @Enumerated(EnumType.STRING)
-    @Nullable
     private YesNo canDrive;
 
     @Enumerated(EnumType.STRING)
@@ -1195,11 +1191,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setVisaRejectNotes(@Nullable String visaRejectNotes) { this.visaRejectNotes = visaRejectNotes; }
 
     @Nullable
-    public YesNo getHostBorn() { return hostBorn; }
-
-    public void setHostBorn(@Nullable YesNo hostBorn) { this.hostBorn = hostBorn; }
-
-    @Nullable
     public YesNo getCanDrive() { return canDrive; }
 
     public void setCanDrive(@Nullable YesNo canDrive) { this.canDrive = canDrive; }
@@ -1371,9 +1362,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getHostChallenges() != null) {
             setHostChallenges(data.getHostChallenges());
-        }
-        if (data.getHostBorn() != null) {
-            setHostBorn(data.getHostBorn());
         }
         if (data.getHostEntryYear() != null) {
             setHostEntryYear(data.getHostEntryYear());
