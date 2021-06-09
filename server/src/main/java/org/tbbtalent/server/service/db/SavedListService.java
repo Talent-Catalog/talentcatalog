@@ -141,15 +141,15 @@ public interface SavedListService {
      */
     List<SavedList> listSavedLists(SearchSavedListRequest request);
 
-    //TODO JC Convert this to throw NoSuchObjectException - that is how it is called I think
     /**
      * Merge the contents of the SavedList with the given id with the 
      * candidates indicated in the given request.
      * @param savedListId ID of saved list to be updated
      * @param request Request containing the contents to be merged into the list
-     * @return False if no saved list with that id was found, otherwise true.
+     * @throws NoSuchObjectException if there is no saved list with this id
      */
-    boolean mergeSavedList(long savedListId, UpdateExplicitSavedListContentsRequest request);
+    void mergeSavedList(long savedListId, UpdateExplicitSavedListContentsRequest request)
+        throws NoSuchObjectException;
 
     /**
      * Merge the contents of the SavedList with the given id with the 
@@ -163,15 +163,15 @@ public interface SavedListService {
     void mergeSavedListFromFile(long savedListId, MultipartFile file)
         throws NoSuchObjectException, IOException;
 
-    //TODO JC Convert this to throw NoSuchObjectException - that is how it is called I think
     /**
      * Remove the candidates indicated in the given request from the SavedList 
      * with the given id.
      * @param savedListId ID of saved list to be updated
      * @param request Request containing the new list contents
-     * @return False if no saved list with that id was found, otherwise true.
+     * @throws NoSuchObjectException if there is no saved list with this id
      */
-    boolean removeFromSavedList(long savedListId, UpdateExplicitSavedListContentsRequest request); 
+    void removeFromSavedList(long savedListId, UpdateExplicitSavedListContentsRequest request)
+        throws NoSuchObjectException;
 
     /**
      * Return a page of SavedList's that match the given request, ordered by

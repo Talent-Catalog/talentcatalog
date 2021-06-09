@@ -248,22 +248,19 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
-    public boolean mergeSavedList(long savedListId,
-        UpdateExplicitSavedListContentsRequest request) {
+    public void mergeSavedList(long savedListId,
+        UpdateExplicitSavedListContentsRequest request) throws NoSuchObjectException {
         SavedList savedList = savedListRepository.findByIdLoadCandidates(savedListId)
                 .orElse(null);
-
-        boolean done = true;
         if (savedList == null) {
-            done = false;
-        } else {
-            SavedList sourceList = fetchSourceList(request);
-            Set<Candidate> candidates = fetchCandidates(request);
-            savedList.addCandidates(candidates, sourceList);
-
-            saveIt(savedList);
+            throw new NoSuchObjectException(SavedList.class, savedListId);
         }
-        return done;
+
+        SavedList sourceList = fetchSourceList(request);
+        Set<Candidate> candidates = fetchCandidates(request);
+        savedList.addCandidates(candidates, sourceList);
+
+        saveIt(savedList);
     }
 
     @Override
@@ -297,21 +294,18 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
-    public boolean removeFromSavedList(long savedListId,
-        UpdateExplicitSavedListContentsRequest request) {
+    public void removeFromSavedList(long savedListId, 
+        UpdateExplicitSavedListContentsRequest request) throws NoSuchObjectException {
         SavedList savedList = savedListRepository.findByIdLoadCandidates(savedListId)
                 .orElse(null);
-
-        boolean done = true;
         if (savedList == null) {
-            done = false;
-        } else {
-            Set<Candidate> candidates = fetchCandidates(request);
-            for (Candidate candidate : candidates) {
-                candidateSavedListService.removeFromSavedList(candidate, savedList);
-            }
+            throw new NoSuchObjectException(SavedList.class, savedListId);
         }
-        return done;
+
+        Set<Candidate> candidates = fetchCandidates(request);
+        for (Candidate candidate : candidates) {
+            candidateSavedListService.removeFromSavedList(candidate, savedList);
+        }
     }
 
     @Override
