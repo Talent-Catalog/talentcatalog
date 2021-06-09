@@ -155,7 +155,7 @@ import {ReturnHomeSafeComponent} from './components/candidates/intake/return-hom
 import {WorkPermitComponent} from './components/candidates/intake/work-permit/work-permit.component';
 import {WorkLegallyComponent} from './components/candidates/intake/work-legally/work-legally.component';
 import {WorkStatusComponent} from './components/candidates/intake/work-status/work-status.component';
-import {HostEntryComponent} from './components/candidates/intake/host-entry-year/host-entry.component';
+import {HostEntryComponent} from './components/candidates/intake/host-entry/host-entry.component';
 import {CandidateVisaTabComponent} from './components/candidates/view/tab/candidate-visa-tab/candidate-visa-tab.component';
 import {CustomDateAdapter, CustomDateParserFormatter} from './util/date-adapter/ngb-date-adapter';
 import {RegistrationUnhcrComponent} from './components/candidates/intake/registration-unhcr/registration-unhcr.component';
@@ -228,7 +228,7 @@ import {CandidateStatusSelectorComponent} from './components/util/candidate-stat
 import {FinalAgreementComponent} from './components/candidates/intake/final-agreement/final-agreement.component';
 import {NgSelectModule} from "@ng-select/ng-select";
 import {CreateCandidateLanguageComponent} from './components/candidates/view/language/create/create-candidate-language.component';
-import { SalesforceStageComponent } from './components/util/salesforce-stage/salesforce-stage.component';
+import {SalesforceStageComponent} from './components/util/salesforce-stage/salesforce-stage.component';
 import {FormControlConditionalComponent} from './components/util/form-control-conditional/form-control-conditional.component';
 
 @NgModule({

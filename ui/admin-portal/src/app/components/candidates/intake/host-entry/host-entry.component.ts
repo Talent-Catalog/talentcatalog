@@ -107,15 +107,17 @@ export class HostEntryComponent extends IntakeComponentBase implements OnInit {
     }
   }
 
-  get bornInHost(): boolean {
+  get notHostBorn(): boolean {
     let born: boolean;
     if (this.form.value?.birthCountryId) {
       // Check if the candidate was born in their current country location (host country)
       if (this.countryIdAsNumber === this.candidate?.country?.id) {
-        born = true;
-      } else {
         born = false;
+      } else {
+        born = true;
       }
+    } else {
+      born = false;
     }
     return born
   }
