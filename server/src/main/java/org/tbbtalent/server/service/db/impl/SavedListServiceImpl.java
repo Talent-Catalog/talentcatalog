@@ -18,6 +18,9 @@ package org.tbbtalent.server.service.db.impl;
 
 import static org.springframework.data.jpa.domain.Specification.where;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,6 +32,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
@@ -260,6 +264,36 @@ public class SavedListServiceImpl implements SavedListService {
             saveIt(savedList);
         }
         return done;
+    }
+
+    @Override
+    public void mergeSavedListFromFile(long savedListId, MultipartFile file)
+        throws NoSuchObjectException, IOException {
+
+        Set<Long> candidateIds = new HashSet<>();
+
+        //Extract candidate ids from file
+        BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
+        try {
+            while (reader.ready()) {
+                String[] tokens = reader.readLine().split("\\s*,\\s*");
+                if (tokens.length > 0) {
+                    Long candidateId = Long.parseLong(tokens[0]);
+                    Candidate candidate = candidateRepository.findById(candidateId).orElse(null);
+                    if (candidate == null) {
+                        throw new NoSuchObjectException(Candidate.class, candidateId);
+                    }
+                    candidateIds.add(candidateId);
+                }
+            }
+        } catch (NumberFormatException ex) {
+            throw new NoSuchObjectException("Non numeric candidate id " + ex.getMessage());
+        }
+
+        UpdateExplicitSavedListContentsRequest request = new UpdateExplicitSavedListContentsRequest();
+        request.setCandidateIds(candidateIds);
+        request.setUpdateType(ContentUpdateType.add);
+        mergeSavedList(savedListId, request);
     }
 
     @Override

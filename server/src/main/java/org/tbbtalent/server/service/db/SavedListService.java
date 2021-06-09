@@ -16,8 +16,10 @@
 
 package org.tbbtalent.server.service.db;
 
+import java.io.IOException;
 import java.util.List;
 import org.springframework.data.domain.Page;
+import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
@@ -139,6 +141,7 @@ public interface SavedListService {
      */
     List<SavedList> listSavedLists(SearchSavedListRequest request);
 
+    //TODO JC Convert this to throw NoSuchObjectException - that is how it is called I think
     /**
      * Merge the contents of the SavedList with the given id with the 
      * candidates indicated in the given request.
@@ -146,8 +149,21 @@ public interface SavedListService {
      * @param request Request containing the contents to be merged into the list
      * @return False if no saved list with that id was found, otherwise true.
      */
-    boolean mergeSavedList(long savedListId, UpdateExplicitSavedListContentsRequest request);  
+    boolean mergeSavedList(long savedListId, UpdateExplicitSavedListContentsRequest request);
 
+    /**
+     * Merge the contents of the SavedList with the given id with the 
+     * candidates whose ids appear in the given file.
+     * @param savedListId ID of saved list to be updated
+     * @param file File containing candidate numbers, one to a line
+     * @throws NoSuchObjectException if there is no saved list with this id
+     * or if any of the candidate ids are not numeric or do not correspond to a candidate
+     * @throws IOException If there is a problem reading the file
+     */
+    void mergeSavedListFromFile(long savedListId, MultipartFile file)
+        throws NoSuchObjectException, IOException;
+
+    //TODO JC Convert this to throw NoSuchObjectException - that is how it is called I think
     /**
      * Remove the candidates indicated in the given request from the SavedList 
      * with the given id.
