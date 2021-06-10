@@ -87,4 +87,32 @@ public class PopulateElasticsearchServiceImpl implements PopulateElasticsearchSe
 
         log.info("Done: " + count + " candidates " + verb + " to Elasticsearch");
     }
+
+    @Async
+    @Override
+    public void populateCandidateFromElastic() {
+
+        log.info("Loading candidates.");
+
+        final int pageSize = 20;
+
+        //Loop through pages (keeps memory requirements down - compared to
+        //loading all candidates in one go)
+        int count = 0;
+        int nUpdated;
+        Pageable page = PageRequest.of(0, pageSize, Sort.by("id"));
+        do {
+            nUpdated = candidateService.populateCandidatesFromElastic(page);
+
+            count += nUpdated;
+
+            page = page.next();
+            int pageNum = page.getPageNumber();
+            if (pageNum % 5 == 0) {
+                log.info(count + " candidates (" + pageNum + " pages) updated.");
+            }
+        } while (nUpdated > 0);
+
+        log.info("Done: " + count + " candidates updated");
+    }
 }
