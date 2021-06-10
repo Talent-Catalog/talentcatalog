@@ -96,14 +96,32 @@
           <!-- STATUS -->
           <div class="form-group col-12 col-md-3">
             <label>Status</label>
-            <ng-multiselect-dropdown
+            <ng-select
               id="statuses"
-              class="scroll-select custom-primary"
-              [settings]="statusDropdownSettings"
-              [data]="candidateStatusOptions"
-              formControlName="statusesDisplay"
-            >
-            </ng-multiselect-dropdown>
+              [items]="candidateStatusOptions"
+              [multiple]="true"
+              [closeOnSelect]="false"
+              [searchable]="false"
+              [virtualScroll]="false"
+              bindLabel="displayText"
+              appendTo="body"
+              [formControlName]="'statusesDisplay'">
+              <ng-template ng-header-tmp>
+                <div class="d-flex justify-content-between">
+                  <button class="btn btn-sm btn-link" (click)="onSelectAll(candidateStatusOptions, 'statusesDisplay'); $event.preventDefault()">Select All</button>
+                  <button class="btn btn-sm btn-link" (click)="onClearAll('statusesDisplay'); $event.preventDefault()">Clear All</button>
+                </div>
+              </ng-template>
+              <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+                <div class="ng-value" *ngFor="let item of items | slice:0:3">
+                  <span class="ng-value-label">{{item.displayText}}</span>
+                  <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                </div>
+                <div class="ng-value" *ngIf="items.length > 3">
+                  <span class="ng-value-label">{{items.length - 3}} more...</span>
+                </div>
+              </ng-template>
+            </ng-select>
             <p class="small text-muted mt-1">If nothing is specified, the default is to exclude draft, deleted and inactive statuses (employed, unreachable etc)</p>
           </div>
 

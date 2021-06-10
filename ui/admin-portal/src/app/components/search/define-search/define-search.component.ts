@@ -62,12 +62,7 @@ import {canEditSource} from '../../../model/base';
 import {ConfirmationComponent} from '../../util/confirm/confirmation.component';
 import {User} from '../../../model/user';
 import {AuthService} from '../../../services/auth.service';
-import {
-  enumKeysToEnumOptions,
-  enumMultiSelectSettings,
-  EnumOption,
-  enumOptions
-} from "../../../util/enum";
+import {enumKeysToEnumOptions, enumMultiSelectSettings, EnumOption, enumOptions} from "../../../util/enum";
 
 @Component({
   selector: 'app-define-search',
@@ -640,5 +635,13 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
 
   canChangeSearchRequest(): boolean {
     return canEditSource(this.savedSearch, this.authService)
+  }
+
+  public onSelectAll(options: any, formControl: any) {
+    this.searchForm.controls[formControl].patchValue(options);
+  }
+
+  public onClearAll(formControl: string) {
+    this.searchForm.controls[formControl].patchValue(null);
   }
 }

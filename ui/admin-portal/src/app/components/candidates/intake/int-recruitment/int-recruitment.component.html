@@ -28,14 +28,16 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <ng-multiselect-dropdown
-      id="intRecruitReasons"
-      class="custom-primary"
-      [settings]="dropdownSettings"
-      [data]="intRecruitReasonOptions"
-      formControlName="intRecruitReasons">
-    </ng-multiselect-dropdown>
+    <ng-select
+      [items]="intRecruitReasonOptions"
+      [multiple]="true"
+      [closeOnSelect]="false"
+      [searchable]="false"
+      bindLabel="displayText"
+      [formControlName]="'intRecruitReasons'">
+    </ng-select>
   </div>
+
   <div *ngIf="hasOther">
     <div class="form-group">
       <label for="intRecruitOther">If other, please explain</label>

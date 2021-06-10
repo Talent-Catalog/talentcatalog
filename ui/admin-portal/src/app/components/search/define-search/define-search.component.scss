@@ -157,3 +157,7 @@ $candidate-card-width: 375px;
     }
   }
 }
+
+.ng-dropdown-panel > .ng-dropdown-panel-items {
+    max-height: fit-content;
+}

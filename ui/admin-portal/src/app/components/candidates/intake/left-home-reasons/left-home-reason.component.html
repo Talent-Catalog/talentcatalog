@@ -28,13 +28,15 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <ng-multiselect-dropdown
+    <ng-select
       id="leftHomeReasons"
-      class="custom-primary"
-      [settings]="dropdownSettings"
-      [data]="leftHomeReasonOptions"
-      formControlName="leftHomeReasons">
-    </ng-multiselect-dropdown>
+      [items]="leftHomeReasonOptions"
+      [multiple]="true"
+      [closeOnSelect]="false"
+      [searchable]="false"
+      bindLabel="displayText"
+      [formControlName]="'leftHomeReasons'">
+    </ng-select>
   </div>
 
   <div *ngIf="hasOther">
