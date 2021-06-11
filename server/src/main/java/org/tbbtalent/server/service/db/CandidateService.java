@@ -16,13 +16,6 @@
 
 package org.tbbtalent.server.service.db;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.security.GeneralSecurityException;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,28 +27,16 @@ import org.tbbtalent.server.model.db.Gender;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.request.LoginRequest;
-import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
-import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
-import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
-import org.tbbtalent.server.request.candidate.CandidatePhoneSearchRequest;
-import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
-import org.tbbtalent.server.request.candidate.IHasSetOfSavedLists;
-import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
-import org.tbbtalent.server.request.candidate.SavedListGetRequest;
-import org.tbbtalent.server.request.candidate.SavedSearchGetRequest;
-import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateContactRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateEducationRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateLinksRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateListOppsRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateOppsRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
-import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
-import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
+import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.util.dto.DtoBuilder;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.security.GeneralSecurityException;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 public interface CandidateService {
 
@@ -84,6 +65,30 @@ public interface CandidateService {
      */
     int populateElasticCandidates(
             Pageable pageable, boolean logTotal, boolean createElastic);
+
+    /**
+     * Updates the candidates database records corresponding to candidates on
+     * elasticsearch.
+     * <p/>
+     * This is intended to be a bulk update which updates the contents of the
+     * database server for ALL non deleted candidates on our database and
+     * updates a specific field/fields in the database from ES.
+     * This was made to handle if the two databases get out of sync
+     * (e.g. due to a bad flyway) and we want the restore the data from the ES.
+     * As long as the ES hasn't been reloaded (so retains the original data before flyway).
+     * <p/>
+     * For performance reasons (and to minimize memory use) this update is done
+     * a page of records (eg 20) at a time - as defined by the "pageable"
+     * parameter passed to this method. This method will normally be called
+     * repeatedly from a background Async task, triggered by an API call to
+     * SystemAdminApi, starting with page 0, page 1, etc, until all candidates
+     * have been added/updated.
+     *
+     * @param pageable      The page request - basically the page number.
+     * @return The number of candidates added or updated on this call. Normally
+     * that will be page full (eg 20).
+     */
+    int populateCandidatesFromElastic(Pageable pageable);
 
     /**
      * Returns the requested page of candidates which match the attributes in
