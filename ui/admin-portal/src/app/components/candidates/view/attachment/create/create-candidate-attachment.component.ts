@@ -108,4 +108,8 @@ export class CreateCandidateAttachmentComponent implements OnInit {
     );
 
   }
+
+  onError(error: string) {
+    this.error = error;
+  }
 }

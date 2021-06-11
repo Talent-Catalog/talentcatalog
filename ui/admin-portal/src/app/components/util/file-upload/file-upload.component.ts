@@ -61,9 +61,9 @@ export class FileUploadComponent implements OnInit {
     'txt',
   ];
 
+  @Output() error = new EventEmitter();
   @Output() newFiles = new EventEmitter();
 
-  error: any;
   hover: boolean;
 
   ngOnInit() {
@@ -73,8 +73,6 @@ export class FileUploadComponent implements OnInit {
     const files: File[] = [...event.target.files];
 
     if (!!files && files.length) {
-
-      this.error = null;
 
       for (const file of files) {
         if (!this.validFile(file)) {
@@ -87,16 +85,16 @@ export class FileUploadComponent implements OnInit {
 
   validFile(file) {
     if (file.name.indexOf('.') === -1) {
-      this.error = 'No file extension found. Please rename and re-upload this file.';
+      this.error.emit('No file extension found. Please rename and re-select this file.');
       return false;
     }
 
     const tokens = file.name.split('.');
     const ext = tokens[tokens.length - 1].toLowerCase();
     if (!this.validExtensions.includes(ext)) {
-      this.error =
-        'Unsupported file extension. Please upload a file with one of the following extensions: '
-        + this.validExtensions.join(', ');
+      this.error.emit(
+        'Unsupported file extension. Please select a file with one of the following extensions: '
+        + this.validExtensions.join(', '));
       return false;
     }
 

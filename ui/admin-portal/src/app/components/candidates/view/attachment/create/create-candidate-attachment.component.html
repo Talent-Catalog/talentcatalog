@@ -78,6 +78,7 @@
       </div>
 
       <app-file-upload *ngIf="!uploading"
+                       (error)="onError($event)"
                        (newFiles)="startServerUpload($event)"></app-file-upload>
 
 

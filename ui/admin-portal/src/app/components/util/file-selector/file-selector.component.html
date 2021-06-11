@@ -26,18 +26,37 @@
 
 <div class="modal-body">
 
+  <div class="alert alert-danger" *ngIf="error">
+    {{error}}
+  </div>
+
+  <p>
+    Valid file extensions:
+    <span *ngFor="let extension of validExtensions">
+      {{' ' + extension}}
+    </span>
+  </p>
+
   <p *ngIf="instructions">{{instructions}}</p>
 
+  <p *ngIf="selectedFiles.length > 0">
+    Selection:
+  </p>
   <div *ngFor="let file of selectedFiles">
     {{file.name}}
   </div>
 
-  <app-file-upload [validExtensions]="['csv', 'txt']" (newFiles)="addFiles($event)"></app-file-upload>
+  <app-file-upload [validExtensions]="validExtensions" (newFiles)="addFiles($event)"
+  (error)="onError($event)"></app-file-upload>
 </div>
 
 <div class="modal-footer">
-  <button type="button" class="btn btn-primary"
+  <button [disabled]="!isValid()" type="button" class="btn btn-primary"
           (click)="close()">
-    Close
+    {{closeButtonLabel}}
+  </button>
+  <button type="button" class="btn btn-primary"
+          (click)="cancel()">
+    Cancel
   </button>
 </div>

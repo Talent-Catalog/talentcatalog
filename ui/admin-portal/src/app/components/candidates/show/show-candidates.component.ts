@@ -495,8 +495,15 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         backdrop: 'static'
       })
 
-      fileSelectorModal.componentInstance.title = "Select file to import (.txt or .csv)";
-      fileSelectorModal.componentInstance.instructions = "John was here";
+      fileSelectorModal.componentInstance.validExtensions = ['csv', 'txt'];
+      fileSelectorModal.componentInstance.maxFiles = 1;
+      fileSelectorModal.componentInstance.closeButtonLabel = "Import";
+      fileSelectorModal.componentInstance.title = "Select file containing candidate numbers";
+      fileSelectorModal.componentInstance.instructions = "Select a file with one of the above " +
+        "extensions which contains candidate number at the start of each line. " +
+        "This will work for a spreadsheet that has been exported in csv format as long as " +
+        "candidate numbers are in the first column of teh spreadsheet. " +
+        "Other data in the spreadsheet will be ignored. Any header line will also be ignored.";
 
       fileSelectorModal.result
       .then((selectedFiles: File[]) => {
@@ -507,7 +514,6 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private doImport(files: File[]) {
-    // todo get file - is multiple files a good idea?
     const formData: FormData = new FormData();
     formData.append('file', files[0]);
 
@@ -516,7 +522,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.savedListCandidateService.mergeFromFile(this.candidateSource.id, formData).subscribe(
       result => {
         this.importing = false;
-      //  todo Refresh?
+        this.doSearch(true);
       },
       error => {
         this.error = error;
