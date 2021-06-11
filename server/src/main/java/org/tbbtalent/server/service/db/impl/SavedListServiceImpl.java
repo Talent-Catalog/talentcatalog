@@ -269,22 +269,51 @@ public class SavedListServiceImpl implements SavedListService {
 
         Set<Long> candidateIds = new HashSet<>();
 
-        //Extract candidate ids from file
+        //Extract candidate numbers from file, look up the id and add to candidateIds
+        //We need candidateIds to pass to other methods.
         BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
         try {
+            boolean possibleHeader = true;
             while (reader.ready()) {
-                String[] tokens = reader.readLine().split("\\s*,\\s*");
-                if (tokens.length > 0) {
-                    Long candidateId = Long.parseLong(tokens[0]);
-                    Candidate candidate = candidateRepository.findById(candidateId).orElse(null);
-                    if (candidate == null) {
-                        throw new NoSuchObjectException(Candidate.class, candidateId);
+                String line = reader.readLine().trim();
+                if (line.length() > 0) {
+                    String[] tokens = line.split("\\s*,\\s*");
+                    if (tokens.length > 0) {
+                        //Ignore empty tokens
+                        if (tokens[0].length() > 0) {
+                            Long candidateNumber;
+                            
+                            //A bit of logic to skip any header. Only checks very first line.
+                            boolean skip;
+                            if (possibleHeader) {
+                                try {
+                                    candidateNumber = Long.parseLong(tokens[0]);
+                                    skip = false;
+                                } catch (Exception ex) {
+                                    //If possible header is not a numeric, skip it
+                                    skip = true;
+                                }
+                                possibleHeader = false;
+                            } else {
+                                skip = false;
+                            }
+                            
+                            if (!skip) {
+                                candidateNumber = Long.parseLong(tokens[0]);
+                                Candidate candidate =
+                                    candidateRepository
+                                        .findByCandidateNumber(candidateNumber.toString());
+                                if (candidate == null) {
+                                    throw new NoSuchObjectException(Candidate.class, candidateNumber);
+                                }
+                                candidateIds.add(candidate.getId());
+                            }
+                        }
                     }
-                    candidateIds.add(candidateId);
                 }
             }
         } catch (NumberFormatException ex) {
-            throw new NoSuchObjectException("Non numeric candidate id " + ex.getMessage());
+            throw new NoSuchObjectException("Non numeric candidate number " + ex.getMessage());
         }
 
         UpdateExplicitSavedListContentsRequest request = new UpdateExplicitSavedListContentsRequest();

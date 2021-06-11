@@ -103,6 +103,9 @@ import {
   SalesforceStageComponent,
   SalesforceStageInfo
 } from "../../util/salesforce-stage/salesforce-stage.component";
+import {i18nMetaToJSDoc} from "@angular/compiler/src/render3/view/i18n/meta";
+import {CreateCandidateAttachmentComponent} from "../view/attachment/create/create-candidate-attachment.component";
+import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 
 interface CachedTargetList {
   sourceID: number;
@@ -136,6 +139,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   loading: boolean;
   searching: boolean;
   exporting: boolean;
+  importing: boolean;
   updating: boolean;
   updatingStatuses: boolean;
   savingSelection: boolean;
@@ -482,6 +486,45 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.doSearch(true);
   }
 
+  importCandidates() {
+
+    if (isSavedList(this.candidateSource)) {
+
+      const fileSelectorModal = this.modalService.open(FileSelectorComponent, {
+        centered: true,
+        backdrop: 'static'
+      })
+
+      fileSelectorModal.componentInstance.title = "Select file to import (.txt or .csv)";
+      fileSelectorModal.componentInstance.instructions = "John was here";
+
+      fileSelectorModal.result
+      .then((selectedFiles: File[]) => {
+        this.doImport(selectedFiles);
+      })
+      .catch(() => { /* Isn't possible */ });
+    }
+  }
+
+  private doImport(files: File[]) {
+    // todo get file - is multiple files a good idea?
+    const formData: FormData = new FormData();
+    formData.append('file', files[0]);
+
+    this.error = null;
+    this.importing = true;
+    this.savedListCandidateService.mergeFromFile(this.candidateSource.id, formData).subscribe(
+      result => {
+        this.importing = false;
+      //  todo Refresh?
+      },
+      error => {
+        this.error = error;
+        this.importing = false;
+      }
+    )
+  }
+
   exportCandidates() {
     this.exporting = true;
 
@@ -669,6 +712,10 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       global = this.candidateSource.global;
     }
     return global;
+  }
+
+  isImportable(): boolean {
+    return isSavedList(this.candidateSource);
   }
 
   isSharedWithMe(): boolean {

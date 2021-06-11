@@ -153,11 +153,11 @@ public interface SavedListService {
 
     /**
      * Merge the contents of the SavedList with the given id with the 
-     * candidates whose ids appear in the given file.
+     * candidates whose candidate numbers (NOT ids) appear in the given file.
      * @param savedListId ID of saved list to be updated
      * @param file File containing candidate numbers, one to a line
      * @throws NoSuchObjectException if there is no saved list with this id
-     * or if any of the candidate ids are not numeric or do not correspond to a candidate
+     * or if any of the candidate numbers are not numeric or do not correspond to a candidate
      * @throws IOException If there is a problem reading the file
      */
     void mergeSavedListFromFile(long savedListId, MultipartFile file)

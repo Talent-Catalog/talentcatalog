@@ -100,6 +100,21 @@ public class SavedListCandidateAdminApi implements
         savedListService.mergeSavedList(savedListId, request);
     }
 
+    /**
+     * Merge the contents of the SavedList with the given id with the 
+     * candidates whose candidate numbers (NOT ids) appear in the given file.
+     * @param savedListId ID of saved list to be updated
+     * @param file File containing candidate numbers, one to a line
+     * @throws NoSuchObjectException if there is no saved list with this id
+     * or if any of the candidate numbers are not numeric or do not correspond to a candidate
+     * @throws IOException If there is a problem reading the file
+     */
+    @PutMapping("{id}/merge-from-file")
+    public void mergeFromFile(@PathVariable("id") long savedListId,
+        @RequestParam("file") MultipartFile file) throws NoSuchObjectException, IOException {
+        savedListService.mergeSavedListFromFile(savedListId, file);
+    }
+
     @Override
     public void remove(long savedListId, @Valid UpdateExplicitSavedListContentsRequest request) 
             throws NoSuchObjectException {
@@ -175,21 +190,6 @@ public class SavedListCandidateAdminApi implements
         response.setHeader("Content-Disposition", "attachment; filename=\"" + "candidates.csv\"");
         response.setContentType("text/csv; charset=utf-8");
         candidateService.exportToCsv(savedListId, request, response.getWriter());
-    }
-
-    /**
-     * Merge the contents of the SavedList with the given id with the 
-     * candidates whose ids appear in the given file.
-     * @param savedListId ID of saved list to be updated
-     * @param file File containing candidate numbers, one to a line
-     * @throws NoSuchObjectException if there is no saved list with this id
-     * or if any of the candidate ids are not numeric or do not correspond to a candidate
-     * @throws IOException If there is a problem reading the file
-     */
-    @PutMapping("{id}/merge-from-file")
-    public void importCandidates(@PathVariable("id") long savedListId,
-        @RequestParam("file") MultipartFile file) throws NoSuchObjectException, IOException {
-        savedListService.mergeSavedListFromFile(savedListId, file);
     }
     
     /**

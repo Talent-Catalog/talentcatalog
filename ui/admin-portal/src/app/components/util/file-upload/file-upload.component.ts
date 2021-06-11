@@ -17,7 +17,7 @@
 import {
   Component,
   EventEmitter,
-  HostListener,
+  HostListener, Input,
   OnInit,
   Output
 } from '@angular/core';
@@ -52,7 +52,16 @@ export class FileUploadComponent implements OnInit {
     this.handleFileChanged(fileChangeEvent);
   }
 
-  @Output() uploadStarted = new EventEmitter();
+  @Input() validExtensions: string[] = [
+    'jpg',
+    'png',
+    'pdf',
+    'doc',
+    'docx',
+    'txt',
+  ];
+
+  @Output() newFiles = new EventEmitter();
 
   error: any;
   hover: boolean;
@@ -72,7 +81,7 @@ export class FileUploadComponent implements OnInit {
           return;
         }
       }
-      this.uploadStarted.emit(files);
+      this.newFiles.emit(files);
     }
   }
 
@@ -83,17 +92,11 @@ export class FileUploadComponent implements OnInit {
     }
 
     const tokens = file.name.split('.');
-    const validExtensions = [
-      'jpg',
-      'png',
-      'pdf',
-      'doc',
-      'docx',
-      'txt',
-    ];
     const ext = tokens[tokens.length - 1].toLowerCase();
-    if (!validExtensions.includes(ext)) {
-      this.error = 'Unsupported file extension. Please upload a file with one of the following extensions: ' + validExtensions.join(', ');
+    if (!this.validExtensions.includes(ext)) {
+      this.error =
+        'Unsupported file extension. Please upload a file with one of the following extensions: '
+        + this.validExtensions.join(', ');
       return false;
     }
 
