@@ -68,6 +68,7 @@ import {
   EnumOption,
   enumOptions
 } from "../../../util/enum";
+import {SearchCandidateRequest} from "../../../model/search-candidate-request";
 
 @Component({
   selector: 'app-define-search',
@@ -380,7 +381,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     this.selectedBaseJoin = null;
 
     this.savedSearchService.load(id).subscribe(
-      //todo This is really a SearchCandidateRequest but typing it causes errors. What is it?
       (request) => {
         this.populateFormWithSavedSearch(request);
         this.loading = false;
@@ -464,8 +464,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       .catch(() => { });
   }
 
-  //todo This request is really a SearchCandidateRequest - but typing it introduces errors. What is it?
-  populateFormWithSavedSearch(request) {
+  populateFormWithSavedSearch(request: SearchCandidateRequest) {
     /* Do a blanket patch of all form fields */
     Object.keys(this.searchForm.controls).forEach(name => {
       this.searchForm.controls[name].patchValue(request[name]);

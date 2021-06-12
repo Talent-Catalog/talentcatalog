@@ -33,6 +33,7 @@ import {
   SavedList
 } from "../model/saved-list";
 import {UpdateCandidateStatusInfo} from "../model/candidate";
+import {SearchCandidateRequest} from "../model/search-candidate-request";
 
 export interface CreateFromDefaultSavedSearchRequest {
   savedListId: number;
@@ -129,9 +130,8 @@ export class SavedSearchService {
     return content;
   };
 
-  //todo Should be a SearchCandidateRequest but typing it causes errors
-  load(id: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/${id}/load`);
+  load(id: number): Observable<SearchCandidateRequest> {
+    return this.http.get<SearchCandidateRequest>(`${this.apiUrl}/${id}/load`);
   }
 
   get(id: number): Observable<SavedSearch> {
