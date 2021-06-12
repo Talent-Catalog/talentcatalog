@@ -117,7 +117,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     allowSearchFilter: true
   };
 
-  /* DATA */
+  /* DATA - these are all drop down options for each select field*/
   nationalities: Nationality[];
   countries: Country[];
   languages: Language[];
@@ -471,7 +471,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       this.searchForm.controls[name].patchValue(request[name]);
     });
 
-    // For the multiselects we have to set the corresponding id/name object
+    // For the multiselects we have to set the corresponding id/name object by searching for the
+    // values in the given search request in the complete set of drop down options for that field.
 
     /* STATUSES */
 
@@ -529,6 +530,14 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
         .filter(c => request.educationMajorIds.indexOf(c.id) !== -1);
     }
     this.searchForm.controls['educationMajors'].patchValue(educationMajors);
+
+    /* EDUCATION LEVEL */
+    let minEducationLevelObj = [];
+    if (request.minEducationLevel && this.educationLevels) {
+      minEducationLevelObj = this.educationLevels
+        .filter(c => request.minEducationLevel === c.level);
+    }
+    this.searchForm.controls['minEducationLevelObj'].patchValue(minEducationLevelObj);
 
     /* OTHER LANGUAGE */
     this.otherLanguagePicker.patchModel({
