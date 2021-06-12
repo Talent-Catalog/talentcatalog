@@ -41,7 +41,13 @@ import java.util.List;
   Here are some of the messiest parts of the code:
   
   * All the Transient fields in SavedSearch - which are populated by the getSavedSearch method
-    in SavedSearchServiceImpl
+    in SavedSearchServiceImpl. Instead of all that copying and Transient fields, the SavedSearch
+    should not be storing ids, but other entities. Ids can be transferred in the Dto 
+    (if necessary for performance reasons)
+    and populated using browser look ups of id to values from those static lists (eg of countries).
+  * Static lists should be uploaded to the browser once on login, then accessed in services.
+    On the rare occasions when static lists change - eg new occupation, users are asked to logout
+    and in again. Or - a failed local lookup could trigger an automatic reload before failing hard.     
   * The addition of the above transient fields in the savedSearchDtoExtended method of SavedSearchAdminApi    
   * convertToSearchCandidateRequest method on SavedSearchServiceImpl, and its cloned version 
     in CandidateServiceImpl
@@ -55,7 +61,9 @@ import java.util.List;
     On the browser the class has a whole bunch of redundant fields corresponding to the 
     transient fields of SavedSearch.
   * On the browser, the SavedSearch class extends the SearchCandidateRequest class, but on the
-    server it doesn't - but probably should.
+    server it doesn't. Instead SavedSearch should contain SearchCandidateRequest as a property 
+    (@Embedded in the @Entity) in both browser and server. That avoids a lot of pointless field 
+    copying.
   * The redundant fields are on the browser version of SearchCandidateRequest because the 
     inheriting browser SavedSearch makes use of those redundant fields (names instead of ids). 
     But the browser version of SearchCandidateRequest probably doesn't need them in the Define 
