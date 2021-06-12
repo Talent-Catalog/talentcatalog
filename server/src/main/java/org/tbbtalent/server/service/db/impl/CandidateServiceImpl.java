@@ -221,6 +221,44 @@ public class CandidateServiceImpl implements CandidateService {
         return count;
     }
 
+    @Transactional
+    @Override
+    public int populateCandidatesFromElastic(Pageable pageable) {
+        Page<Candidate> candidates = candidateRepository.findCandidatesWhereStatusNotDeleted(pageable);
+
+        int count = 0;
+        for (Candidate candidate : candidates) {
+            try {
+                CandidateEs twin;
+                String textSearchId = candidate.getTextSearchId();
+                if (textSearchId != null) {
+                    twin = candidateEsRepository.findById(textSearchId)
+                            .orElse(null);
+                    if (twin != null) {
+                        //Get the desired field from twin and save to candidate
+                        if (twin.getUnhcrStatus() == UnhcrStatus.NotRegistered) {
+                            candidate.setUnhcrRegistered(YesNoUnsure.No);
+                            candidate.setUnhcrStatus(twin.getUnhcrStatus());
+                            save(candidate, false);
+                            log.warn("Updated candidate " + candidate.getId() + " with Not Registered status to Not Registered and UnhcrRegistered is No!");
+                        } else if (twin.getUnhcrStatus() == UnhcrStatus.RegisteredAsylum) {
+                            candidate.setUnhcrRegistered(YesNoUnsure.Yes);
+                            save(candidate, false);
+                            log.warn("Updated candidate " + candidate.getId() + " with Registered Asylum status to UnhcrRegistered is Yes!");
+                        }
+                    } else {
+                        log.warn("Could not find twin in database");
+                    }
+                }
+                count++;
+            } catch (Exception ex) {
+                log.warn("Could not load candidate " + candidate.getId(), ex);
+            }
+        }
+
+        return count;
+    }
+
     @Override
     public boolean clearCandidateSavedLists(long candidateId) {
         Candidate candidate = candidateRepository.findByIdLoadSavedLists(candidateId);
