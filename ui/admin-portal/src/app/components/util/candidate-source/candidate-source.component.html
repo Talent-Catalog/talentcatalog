@@ -87,7 +87,7 @@
       </div>
       <div class="w-100" *ngIf="savedSearch.educationMajors">Education Majors: <span
         *ngFor="let name of savedSearch.educationMajors">{{name}},</span></div>
-      <div class="w-100" *ngIf="savedSearch.otherLanguage">Other Language: {{savedSearch.otherLanguage.name}}
+      <div class="w-100" *ngIf="savedSearch.otherLanguageId">Other Language: {{savedSearch.otherLanguageId}}
         <span *ngIf="savedSearch.otherSpokenLevel">Spoken:{{savedSearch.otherSpokenLevel}}</span>
         <span *ngIf="savedSearch.otherWrittenLevel">Written:{{savedSearch.otherWrittenLevel}}</span>
       </div>
