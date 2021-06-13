@@ -500,9 +500,9 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       fileSelectorModal.componentInstance.closeButtonLabel = "Import";
       fileSelectorModal.componentInstance.title = "Select file containing candidate numbers";
       fileSelectorModal.componentInstance.instructions = "Select a file with one of the above " +
-        "extensions which contains candidate number at the start of each line. " +
+        "extensions which contains a candidate number at the start of each line. " +
         "This will work for a spreadsheet that has been exported in csv format as long as " +
-        "candidate numbers are in the first column of teh spreadsheet. " +
+        "candidate numbers are in the first column of the spreadsheet. " +
         "Other data in the spreadsheet will be ignored. Any header line will also be ignored.";
 
       fileSelectorModal.result
