@@ -31,7 +31,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.ExportFailedException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
@@ -96,6 +98,21 @@ public class SavedListCandidateAdminApi implements
     public void merge(long savedListId, @Valid UpdateExplicitSavedListContentsRequest request) 
             throws NoSuchObjectException {
         savedListService.mergeSavedList(savedListId, request);
+    }
+
+    /**
+     * Merge the contents of the SavedList with the given id with the 
+     * candidates whose candidate numbers (NOT ids) appear in the given file.
+     * @param savedListId ID of saved list to be updated
+     * @param file File containing candidate numbers, one to a line
+     * @throws NoSuchObjectException if there is no saved list with this id
+     * or if any of the candidate numbers are not numeric or do not correspond to a candidate
+     * @throws IOException If there is a problem reading the file
+     */
+    @PutMapping("{id}/merge-from-file")
+    public void mergeFromFile(@PathVariable("id") long savedListId,
+        @RequestParam("file") MultipartFile file) throws NoSuchObjectException, IOException {
+        savedListService.mergeSavedListFromFile(savedListId, file);
     }
 
     @Override
@@ -174,7 +191,7 @@ public class SavedListCandidateAdminApi implements
         response.setContentType("text/csv; charset=utf-8");
         candidateService.exportToCsv(savedListId, request, response.getWriter());
     }
-
+    
     /**
      * Adds or replaces the given candidates to a given existing list.
      * <p/>

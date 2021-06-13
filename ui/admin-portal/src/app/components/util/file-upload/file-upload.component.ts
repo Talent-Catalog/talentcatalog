@@ -17,7 +17,7 @@
 import {
   Component,
   EventEmitter,
-  HostListener,
+  HostListener, Input,
   OnInit,
   Output
 } from '@angular/core';
@@ -52,9 +52,18 @@ export class FileUploadComponent implements OnInit {
     this.handleFileChanged(fileChangeEvent);
   }
 
-  @Output() uploadStarted = new EventEmitter();
+  @Input() validExtensions: string[] = [
+    'jpg',
+    'png',
+    'pdf',
+    'doc',
+    'docx',
+    'txt',
+  ];
 
-  error: any;
+  @Output() error = new EventEmitter();
+  @Output() newFiles = new EventEmitter();
+
   hover: boolean;
 
   ngOnInit() {
@@ -65,35 +74,27 @@ export class FileUploadComponent implements OnInit {
 
     if (!!files && files.length) {
 
-      this.error = null;
-
       for (const file of files) {
         if (!this.validFile(file)) {
           return;
         }
       }
-      this.uploadStarted.emit(files);
+      this.newFiles.emit(files);
     }
   }
 
   validFile(file) {
     if (file.name.indexOf('.') === -1) {
-      this.error = 'No file extension found. Please rename and re-upload this file.';
+      this.error.emit('No file extension found. Please rename and re-select this file.');
       return false;
     }
 
     const tokens = file.name.split('.');
-    const validExtensions = [
-      'jpg',
-      'png',
-      'pdf',
-      'doc',
-      'docx',
-      'txt',
-    ];
     const ext = tokens[tokens.length - 1].toLowerCase();
-    if (!validExtensions.includes(ext)) {
-      this.error = 'Unsupported file extension. Please upload a file with one of the following extensions: ' + validExtensions.join(', ');
+    if (!this.validExtensions.includes(ext)) {
+      this.error.emit(
+        'Unsupported file extension. Please select a file with one of the following extensions: '
+        + this.validExtensions.join(', '));
       return false;
     }
 
