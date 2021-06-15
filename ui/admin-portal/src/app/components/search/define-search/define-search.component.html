@@ -162,12 +162,6 @@
                   bindLabel="name"
                   [readonly]="elastic()"
                   [formControlName]="'occupations'">
-                  <ng-template ng-header-tmp>
-                    <div class="d-flex justify-content-between">
-                      <button class="btn btn-sm btn-link" (click)="onSelectAll(candidateOccupations, 'occupations'); $event.preventDefault()">Select All</button>
-                      <button class="btn btn-sm btn-link" (click)="onClearAll('occupations'); $event.preventDefault()">Clear All</button>
-                    </div>
-                  </ng-template>
                   <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
                     <div *ngFor="let item of items | slice:0:3" class="ng-value">
                       <span class="ng-value-label">{{item.name}}</span>
@@ -270,10 +264,8 @@
                   id="minEducationLevel"
                   [ngClass]="{'disabled' : elastic()}"
                   [items]="educationLevels"
-                  [multiple]="true"
                   [closeOnSelect]="false"
                   [searchable]="true"
-                  [virtualScroll]="true"
                   bindLabel="name"
                   [readonly]="elastic()"
                   [formControlName]="'minEducationLevelObj'">
@@ -300,12 +292,6 @@
                   bindLabel="name"
                   [readonly]="elastic()"
                   [formControlName]="'educationMajors'">
-                  <ng-template ng-header-tmp>
-                    <div class="d-flex justify-content-between">
-                      <button class="btn btn-sm btn-link" (click)="onSelectAll(educationMajors, 'educationMajors'); $event.preventDefault()">Select All</button>
-                      <button class="btn btn-sm btn-link" (click)="onClearAll('educationMajors'); $event.preventDefault()">Clear All</button>
-                    </div>
-                  </ng-template>
                   <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
                     <div *ngFor="let item of items | slice:0:3" class="ng-value">
                       <span class="ng-value-label">{{item.name}}</span>
@@ -359,12 +345,6 @@
               [virtualScroll]="true"
               bindLabel="name"
               [formControlName]="'nationalities'">
-              <ng-template ng-header-tmp>
-                <div class="d-flex justify-content-between">
-                  <button class="btn btn-sm btn-link" (click)="onSelectAll(nationalities, 'nationalities'); $event.preventDefault()">Select All</button>
-                  <button class="btn btn-sm btn-link" (click)="onClearAll('nationalities'); $event.preventDefault()">Clear All</button>
-                </div>
-              </ng-template>
               <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
                 <div *ngFor="let item of items | slice:0:3" class="ng-value">
                   <span class="ng-value-label">{{item.name}}</span>
