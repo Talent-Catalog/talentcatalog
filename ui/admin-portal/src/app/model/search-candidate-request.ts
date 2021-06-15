@@ -21,7 +21,7 @@ export interface SearchCandidateRequest {
   simpleQueryString?: string;
   keyword?: string;
   gender?: string;
-  statuses?: string;
+  statuses?: string[];
   occupationIds?: number[];
   orProfileKeyword?: string;
   verifiedOccupationIds?: number[];
@@ -31,7 +31,7 @@ export interface SearchCandidateRequest {
   countryIds?: number[];
   englishMinWrittenLevel?: number;
   englishMinSpokenLevel?: number;
-  otherLanguage?: Language;
+  otherLanguageId?: number;
   otherMinWrittenLevel?: number;
   otherMinSpokenLevel?: number;
   lastModifiedFrom?: string;

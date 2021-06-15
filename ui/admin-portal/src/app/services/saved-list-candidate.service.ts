@@ -37,6 +37,10 @@ export class SavedListCandidateService {
     return this.http.post<SavedList>(`${this.apiUrl}`, request);
   }
 
+  mergeFromFile(id: number, formData: FormData): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}/merge-from-file`, formData);
+  }
+
   merge(id: number, request: UpdateExplicitSavedListContentsRequest): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/${id}/merge`, request);
   }

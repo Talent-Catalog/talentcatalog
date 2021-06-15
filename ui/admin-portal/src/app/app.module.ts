@@ -230,6 +230,7 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {CreateCandidateLanguageComponent} from './components/candidates/view/language/create/create-candidate-language.component';
 import {SalesforceStageComponent} from './components/util/salesforce-stage/salesforce-stage.component';
 import {FormControlConditionalComponent} from './components/util/form-control-conditional/form-control-conditional.component';
+import { FileSelectorComponent } from './components/util/file-selector/file-selector.component';
 
 @NgModule({
   declarations: [
@@ -436,7 +437,8 @@ import {FormControlConditionalComponent} from './components/util/form-control-co
     FinalAgreementComponent,
     CreateCandidateLanguageComponent,
     SalesforceStageComponent,
-    FormControlConditionalComponent
+    FormControlConditionalComponent,
+    FileSelectorComponent
   ],
   imports: [
     BrowserModule,

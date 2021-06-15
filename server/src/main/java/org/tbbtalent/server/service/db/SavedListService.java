@@ -16,8 +16,10 @@
 
 package org.tbbtalent.server.service.db;
 
+import java.io.IOException;
 import java.util.List;
 import org.springframework.data.domain.Page;
+import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
@@ -144,18 +146,32 @@ public interface SavedListService {
      * candidates indicated in the given request.
      * @param savedListId ID of saved list to be updated
      * @param request Request containing the contents to be merged into the list
-     * @return False if no saved list with that id was found, otherwise true.
+     * @throws NoSuchObjectException if there is no saved list with this id
      */
-    boolean mergeSavedList(long savedListId, UpdateExplicitSavedListContentsRequest request);  
+    void mergeSavedList(long savedListId, UpdateExplicitSavedListContentsRequest request)
+        throws NoSuchObjectException;
+
+    /**
+     * Merge the contents of the SavedList with the given id with the 
+     * candidates whose candidate numbers (NOT ids) appear in the given file.
+     * @param savedListId ID of saved list to be updated
+     * @param file File containing candidate numbers, one to a line
+     * @throws NoSuchObjectException if there is no saved list with this id
+     * or if any of the candidate numbers are not numeric or do not correspond to a candidate
+     * @throws IOException If there is a problem reading the file
+     */
+    void mergeSavedListFromFile(long savedListId, MultipartFile file)
+        throws NoSuchObjectException, IOException;
 
     /**
      * Remove the candidates indicated in the given request from the SavedList 
      * with the given id.
      * @param savedListId ID of saved list to be updated
      * @param request Request containing the new list contents
-     * @return False if no saved list with that id was found, otherwise true.
+     * @throws NoSuchObjectException if there is no saved list with this id
      */
-    boolean removeFromSavedList(long savedListId, UpdateExplicitSavedListContentsRequest request); 
+    void removeFromSavedList(long savedListId, UpdateExplicitSavedListContentsRequest request)
+        throws NoSuchObjectException;
 
     /**
      * Return a page of SavedList's that match the given request, ordered by

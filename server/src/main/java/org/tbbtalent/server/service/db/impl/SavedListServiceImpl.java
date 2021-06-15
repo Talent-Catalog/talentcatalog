@@ -18,10 +18,15 @@ package org.tbbtalent.server.service.db.impl;
 
 import static org.springframework.data.jpa.domain.Specification.where;
 
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.validation.constraints.NotNull;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,6 +34,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
@@ -244,40 +250,77 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
-    public boolean mergeSavedList(long savedListId,
-        UpdateExplicitSavedListContentsRequest request) {
+    public void mergeSavedList(long savedListId,
+        UpdateExplicitSavedListContentsRequest request) throws NoSuchObjectException {
         SavedList savedList = savedListRepository.findByIdLoadCandidates(savedListId)
                 .orElse(null);
-
-        boolean done = true;
         if (savedList == null) {
-            done = false;
-        } else {
-            SavedList sourceList = fetchSourceList(request);
-            Set<Candidate> candidates = fetchCandidates(request);
-            savedList.addCandidates(candidates, sourceList);
-
-            saveIt(savedList);
+            throw new NoSuchObjectException(SavedList.class, savedListId);
         }
-        return done;
+
+        SavedList sourceList = fetchSourceList(request);
+        Set<Candidate> candidates = fetchCandidates(request);
+        savedList.addCandidates(candidates, sourceList);
+
+        saveIt(savedList);
     }
 
     @Override
-    public boolean removeFromSavedList(long savedListId,
-        UpdateExplicitSavedListContentsRequest request) {
+    public void mergeSavedListFromFile(long savedListId, MultipartFile file)
+        throws NoSuchObjectException, IOException {
+
+        Set<Long> candidateIds = new HashSet<>();
+
+        //Extract candidate numbers from file, look up the id and add to candidateIds
+        //We need candidateIds to pass to other methods.
+        CSVReader reader = new CSVReader(new InputStreamReader(file.getInputStream()));
+        String [] tokens;
+        try {
+            boolean possibleHeader = true;
+            while ((tokens = reader.readNext()) != null) {
+                //tokens[] is an array of values from the line
+                //Ignore empty tokens
+                if (tokens.length > 0 && tokens[0].length() > 0) {
+                    //A bit of logic to skip any header. Only checks once.
+                    boolean skip = possibleHeader && !StringUtils.isNumeric(tokens[0]);
+                    possibleHeader = false;
+
+                    if (!skip) {
+                        long candidateNumber = Long.parseLong(tokens[0]);
+                        Candidate candidate =
+                            candidateRepository.findByCandidateNumber(Long.toString(candidateNumber));
+                        if (candidate == null) {
+                            throw new NoSuchObjectException(Candidate.class, candidateNumber);
+                        }
+                        candidateIds.add(candidate.getId());
+                    }
+                }
+            }
+        } catch (NumberFormatException ex) {
+            throw new NoSuchObjectException("Non numeric candidate number " + ex.getMessage());
+        } catch (CsvValidationException ex) {
+            throw new IOException("Bad file format: " + ex.getMessage());
+        }
+
+        UpdateExplicitSavedListContentsRequest request = new UpdateExplicitSavedListContentsRequest();
+        request.setCandidateIds(candidateIds);
+        request.setUpdateType(ContentUpdateType.add);
+        mergeSavedList(savedListId, request);
+    }
+
+    @Override
+    public void removeFromSavedList(long savedListId, 
+        UpdateExplicitSavedListContentsRequest request) throws NoSuchObjectException {
         SavedList savedList = savedListRepository.findByIdLoadCandidates(savedListId)
                 .orElse(null);
-
-        boolean done = true;
         if (savedList == null) {
-            done = false;
-        } else {
-            Set<Candidate> candidates = fetchCandidates(request);
-            for (Candidate candidate : candidates) {
-                candidateSavedListService.removeFromSavedList(candidate, savedList);
-            }
+            throw new NoSuchObjectException(SavedList.class, savedListId);
         }
-        return done;
+
+        Set<Candidate> candidates = fetchCandidates(request);
+        for (Candidate candidate : candidates) {
+            candidateSavedListService.removeFromSavedList(candidate, savedList);
+        }
     }
 
     @Override

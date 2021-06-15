@@ -14,10 +14,6 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="alert alert-danger" *ngIf="error">
-  {{error}}
-</div>
-
 <div class="upload-box card text-center" [class.hover]="hover">
 
   <input #input type="file" multiple hidden (change)="handleFileChanged($event)">
