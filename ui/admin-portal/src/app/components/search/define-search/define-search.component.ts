@@ -177,7 +177,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       timezone: moment.tz.guess(),
       minAge: [null],
       maxAge: [null],
-      minEducationLevelObj: [[]],
+      //todo why change this to obj, did change for allowing multiple objects? Need to update backend
+      minEducationLevel: [null],
       educationMajorIds: [[]],
       searchJoinRequests: this.fb.array([]),
       //for display purposes
@@ -329,7 +330,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
 
     if (request.minEducationLevelObj != null
       && request.minEducationLevelObj.length > 0) {
-      request.minEducationLevel = request.minEducationLevelObj[0].level;
+      request.minEducationLevelObj = request.minEducationLevelObj[0].level;
       delete request.minEducationLevelObj;
     }
 
@@ -643,5 +644,18 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
 
   public onClearAll(formControl: string) {
     this.searchForm.controls[formControl].patchValue(null);
+  }
+
+  public getTooltip(formControlName: string) {
+    let tooltip: string = '';
+    const control = this.searchForm.controls[formControlName];
+    const item = control.value[0];
+    //If enum get the display text from value, else get name.
+    if (("value" in item && "displayText" in item)) {
+      control.value.forEach(i => tooltip += i.displayText + ', ');
+    } else {
+      control.value.forEach(i => tooltip += i.name + ', ');
+    }
+    return tooltip.slice(0, -2);
   }
 }

@@ -101,10 +101,9 @@
               [items]="candidateStatusOptions"
               [multiple]="true"
               [closeOnSelect]="false"
-              [searchable]="false"
+              [searchable]="true"
               [virtualScroll]="false"
               bindLabel="displayText"
-              appendTo="body"
               [formControlName]="'statusesDisplay'">
               <ng-template ng-header-tmp>
                 <div class="d-flex justify-content-between">
@@ -113,11 +112,12 @@
                 </div>
               </ng-template>
               <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
-                <div class="ng-value" *ngFor="let item of items | slice:0:3">
+                <div *ngFor="let item of items | slice:0:3" class="ng-value">
                   <span class="ng-value-label">{{item.displayText}}</span>
                   <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
                 </div>
-                <div class="ng-value" *ngIf="items.length > 3">
+                <div *ngIf="items.length > 3" [ngbPopover]="getTooltip('statusesDisplay')" popoverTitle="Statuses"
+                     triggers="mouseenter:mouseleave"  container="body" class="ng-value">
                   <span class="ng-value-label">{{items.length - 3}} more...</span>
                 </div>
               </ng-template>
@@ -151,15 +151,34 @@
               <!-- OCCUPATION MULTISELECT -->
               <div class="form-group col-12">
                 <label>Occupation</label>
-                <ng-multiselect-dropdown
+                <ng-select
                   id="occupationIds"
-                  class="scroll-select custom-primary"
-                  [settings]="multiSelectSettings"
-                  [data]="candidateOccupations"
-                  formControlName="occupations"
-                  [disabled]="elastic()"
-                >
-                </ng-multiselect-dropdown>
+                  [ngClass]="{'disabled' : elastic()}"
+                  [items]="candidateOccupations"
+                  [multiple]="true"
+                  [closeOnSelect]="false"
+                  [searchable]="true"
+                  [virtualScroll]="true"
+                  bindLabel="name"
+                  [readonly]="elastic()"
+                  [formControlName]="'occupations'">
+                  <ng-template ng-header-tmp>
+                    <div class="d-flex justify-content-between">
+                      <button class="btn btn-sm btn-link" (click)="onSelectAll(candidateOccupations, 'occupations'); $event.preventDefault()">Select All</button>
+                      <button class="btn btn-sm btn-link" (click)="onClearAll('occupations'); $event.preventDefault()">Clear All</button>
+                    </div>
+                  </ng-template>
+                  <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+                    <div *ngFor="let item of items | slice:0:3" class="ng-value">
+                      <span class="ng-value-label">{{item.name}}</span>
+                      <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                    </div>
+                    <div *ngIf="items.length > 3" [ngbPopover]="getTooltip('occupations')" popoverTitle="Occupations"
+                         triggers="mouseenter:mouseleave"  container="body" class="ng-value">
+                      <span class="ng-value-label">{{items.length - 3}} more...</span>
+                    </div>
+                  </ng-template>
+                </ng-select>
               </div>
 
               <!-- AGE -->
@@ -247,29 +266,57 @@
 <!--              </div>-->
               <div class="form-group col-12 col-md-5">
                 <label>Education Level (minimum)</label>
-                <ng-multiselect-dropdown
+                <ng-select
                   id="minEducationLevel"
-                  class="custom-primary"
-                  [settings]="educationLevelSettings"
-                  [data]="educationLevels"
-                  formControlName="minEducationLevelObj"
-                  [disabled]="elastic()"
-                >
-                </ng-multiselect-dropdown>
+                  [ngClass]="{'disabled' : elastic()}"
+                  [items]="educationLevels"
+                  [multiple]="true"
+                  [closeOnSelect]="false"
+                  [searchable]="true"
+                  [virtualScroll]="true"
+                  bindLabel="name"
+                  [readonly]="elastic()"
+                  [formControlName]="'minEducationLevelObj'">
+                  <ng-template ng-header-tmp>
+                    <div class="d-flex justify-content-between">
+                      <button class="btn btn-sm btn-link" (click)="onSelectAll(educationLevels, 'minEducationLevelObj'); $event.preventDefault()">Select All</button>
+                      <button class="btn btn-sm btn-link" (click)="onClearAll('minEducationLevelObj'); $event.preventDefault()">Clear All</button>
+                    </div>
+                  </ng-template>
+                </ng-select>
               </div>
 
               <!-- EDUCATION MAJOR -->
               <div class="form-group col-12 col-md-5">
                 <label>Education major</label>
-                <ng-multiselect-dropdown
+                <ng-select
                   id="educationMajorIds"
-                  class="scroll-select custom-primary"
-                  [settings]="multiSelectSettings"
-                  [data]="educationMajors"
-                  formControlName="educationMajors"
-                  [disabled]="elastic()"
-                >
-                </ng-multiselect-dropdown>
+                  [ngClass]="{'disabled' : elastic()}"
+                  [items]="educationMajors"
+                  [multiple]="true"
+                  [closeOnSelect]="false"
+                  [searchable]="true"
+                  [virtualScroll]="true"
+                  bindLabel="name"
+                  [readonly]="elastic()"
+                  [formControlName]="'educationMajors'">
+                  <ng-template ng-header-tmp>
+                    <div class="d-flex justify-content-between">
+                      <button class="btn btn-sm btn-link" (click)="onSelectAll(educationMajors, 'educationMajors'); $event.preventDefault()">Select All</button>
+                      <button class="btn btn-sm btn-link" (click)="onClearAll('educationMajors'); $event.preventDefault()">Clear All</button>
+                    </div>
+                  </ng-template>
+                  <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+                    <div *ngFor="let item of items | slice:0:3" class="ng-value">
+                      <span class="ng-value-label">{{item.name}}</span>
+                      <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                    </div>
+                    <div *ngIf="items.length > 3" [ngbPopover]="getTooltip('educationMajors')" popoverTitle="Education Majors"
+                         triggers="mouseenter:mouseleave"  container="body" class="ng-value">
+                      <span class="ng-value-label">{{items.length - 3}} more...</span>
+                    </div>
+                  </ng-template>
+                </ng-select>
               </div>
 
             </div>
@@ -303,14 +350,32 @@
               </button>
             </div>
 
-            <ng-multiselect-dropdown
+            <ng-select
               id="selectedNationalities"
-              class="scroll-select custom-primary"
-              [settings]="multiSelectSettings"
-              [data]="nationalities"
-              formControlName="nationalities"
-            >
-            </ng-multiselect-dropdown>
+              [items]="nationalities"
+              [multiple]="true"
+              [closeOnSelect]="false"
+              [searchable]="true"
+              [virtualScroll]="true"
+              bindLabel="name"
+              [formControlName]="'nationalities'">
+              <ng-template ng-header-tmp>
+                <div class="d-flex justify-content-between">
+                  <button class="btn btn-sm btn-link" (click)="onSelectAll(nationalities, 'nationalities'); $event.preventDefault()">Select All</button>
+                  <button class="btn btn-sm btn-link" (click)="onClearAll('nationalities'); $event.preventDefault()">Clear All</button>
+                </div>
+              </ng-template>
+              <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+                <div *ngFor="let item of items | slice:0:3" class="ng-value">
+                  <span class="ng-value-label">{{item.name}}</span>
+                  <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                </div>
+                <div *ngIf="items.length > 3" [ngbPopover]="getTooltip('nationalities')" popoverTitle="Nationalities"
+                     triggers="mouseenter:mouseleave"  container="body" class="ng-value">
+                  <span class="ng-value-label">{{items.length - 3}} more...</span>
+                </div>
+              </ng-template>
+            </ng-select>
           </div>
 
           <!-- COUNTRIES  -->
