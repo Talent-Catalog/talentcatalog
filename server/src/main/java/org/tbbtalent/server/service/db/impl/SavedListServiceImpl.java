@@ -198,6 +198,17 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
+    public SavedList createSavedList(User user, UpdateSavedListInfoRequest request)
+        throws EntityExistsException {
+        SavedList savedList = new SavedList();
+        request.populateFromRequest(savedList);
+
+        //Save created list so that we get its id from the database
+        savedList.setAuditFields(user);
+        return savedListRepository.save(savedList);
+    }
+
+    @Override
     @Transactional
     public SavedList createSavedList(UpdateSavedListInfoRequest request) 
             throws EntityExistsException {
@@ -205,11 +216,7 @@ public class SavedListServiceImpl implements SavedListService {
         if (loggedInUser != null) {
             checkDuplicates(null, request.getName(), loggedInUser.getId());
         }
-        SavedList savedList = new SavedList();
-        request.populateFromRequest(savedList);
-        
-        //Save created list so that we get its id from the database
-        return saveIt(savedList);
+        return createSavedList(loggedInUser, request);
     }
 
     @Override
