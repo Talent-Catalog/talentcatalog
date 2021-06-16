@@ -68,7 +68,6 @@ import {
   CandidateSourceResultsCacheService
 } from '../../../services/candidate-source-results-cache.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {IDropdownSettings} from 'ng-multiselect-dropdown';
 import {User} from '../../../model/user';
 import {AuthService} from '../../../services/auth.service';
 import {UserService} from '../../../services/user.service';
@@ -149,16 +148,6 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   /* MULTI SELECT */
   statuses: string[];
-  dropdownSettings: IDropdownSettings = {
-    idField: 'id',
-    textField: 'text',
-    singleSelection: false,
-    selectAllText: 'Select All',
-    unSelectAllText: 'Deselect All',
-    itemsShowLimit: 3,
-    closeDropDownOnSelection: true,
-    allowSearchFilter: true
-  };
 
   currentCandidate: Candidate;
   private selectedCandidates: Candidate[];

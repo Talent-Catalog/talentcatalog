@@ -18,7 +18,6 @@ import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {SavedList, SearchSavedListRequest} from '../../../model/saved-list';
-import {IDropdownSettings} from 'ng-multiselect-dropdown';
 import {SavedListService} from '../../../services/saved-list.service';
 import {JoblinkValidationEvent} from '../../util/joblink/joblink.component';
 import {CandidateStatus, UpdateCandidateStatusInfo} from "../../../model/candidate";
@@ -62,14 +61,6 @@ export class SelectListComponent implements OnInit {
   title: string = "Select List";
 
   lists: SavedList[] = [];
-
-  dropdownSettings: IDropdownSettings = {
-    idField: 'id',
-    textField: 'name',
-    enableCheckAll: false,
-    singleSelection: true,
-    allowSearchFilter: true
-  };
 
   private statusUpdateInfo: UpdateCandidateStatusInfo;
 

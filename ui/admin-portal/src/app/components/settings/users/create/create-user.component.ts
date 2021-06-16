@@ -21,7 +21,6 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {UserService} from "../../../../services/user.service";
 import {CountryService} from "../../../../services/country.service";
 import {Country} from "../../../../model/country";
-import {IDropdownSettings} from "ng-multiselect-dropdown";
 
 @Component({
   selector: 'app-create-user',
@@ -35,15 +34,6 @@ export class CreateUserComponent implements OnInit {
   error;
   loading: boolean;
   saving: boolean;
-
-  /* MULTI SELECT */
-  dropdownSettings: IDropdownSettings = {
-    idField: 'id',
-    textField: 'name',
-    enableCheckAll: false,
-    singleSelection: false,
-    allowSearchFilter: true
-  };
 
   countries: Country[];
 

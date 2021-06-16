@@ -20,7 +20,6 @@ import {StatReport} from "../../model/stat-report";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {SavedList, SearchSavedListRequest} from "../../model/saved-list";
 import {SavedListService} from "../../services/saved-list.service";
-import {IDropdownSettings} from "ng-multiselect-dropdown";
 import {ActivatedRoute} from "@angular/router";
 import {SavedSearch} from "../../model/saved-search";
 import {forkJoin} from "rxjs";
@@ -41,14 +40,6 @@ export class InfographicComponent implements OnInit {
   searches: SavedSearch[] = [];
   statReports: StatReport[];
   statsFilter: FormGroup;
-
-  dropdownSettings: IDropdownSettings = {
-    idField: 'id',
-    textField: 'name',
-    enableCheckAll: false,
-    singleSelection: true,
-    allowSearchFilter: true
-  };
 
   constructor(private route: ActivatedRoute,
               private statService: CandidateStatService,

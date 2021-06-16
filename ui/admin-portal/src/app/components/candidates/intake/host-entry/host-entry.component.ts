@@ -18,11 +18,10 @@ import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
-import {enumKeysToEnumOptions, enumMultiSelectSettings, EnumOption, enumOptions} from '../../../../util/enum';
+import {enumKeysToEnumOptions, EnumOption, enumOptions} from '../../../../util/enum';
 import {LeftHomeReason, YesNo, YesNoUnsure} from '../../../../model/candidate';
 import {generateYearArray} from '../../../../util/year-helper';
 import {Country} from "../../../../model/country";
-import {IDropdownSettings} from "ng-multiselect-dropdown";
 
 @Component({
   selector: 'app-host-entry',
@@ -35,7 +34,6 @@ export class HostEntryComponent extends IntakeComponentBase implements OnInit {
   @Input() showAll: boolean = true;
   @Input() countries: Country[];
 
-  public dropdownSettings: IDropdownSettings = enumMultiSelectSettings;
   public hostBornOptions: EnumOption[] = enumOptions(YesNo);
   public hostEntryLegallyOptions: EnumOption[] = enumOptions(YesNo);
   public returnedHomeOptions: EnumOption[] = enumOptions(YesNo);

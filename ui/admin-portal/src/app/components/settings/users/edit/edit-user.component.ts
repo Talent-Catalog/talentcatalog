@@ -22,7 +22,6 @@ import {UserService} from "../../../../services/user.service";
 import {AuthService} from "../../../../services/auth.service";
 import {CountryService} from "../../../../services/country.service";
 import {Country} from "../../../../model/country";
-import {IDropdownSettings} from "ng-multiselect-dropdown";
 
 @Component({
   selector: 'app-edit-user',
@@ -36,15 +35,6 @@ export class EditUserComponent implements OnInit {
   error;
   loading: boolean;
   saving: boolean;
-
-  /* MULTI SELECT */
-  dropdownSettings: IDropdownSettings = {
-    idField: 'id',
-    textField: 'name',
-    enableCheckAll: false,
-    singleSelection: false,
-    allowSearchFilter: true
-  };
 
   countries: Country[];
 
