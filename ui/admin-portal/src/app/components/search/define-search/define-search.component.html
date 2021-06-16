@@ -240,12 +240,15 @@
               <!-- GENDER -->
               <div class="form-group col-12 col-md-2">
                 <label for="gender">Gender</label>
-                <select class="form-control" name="gender" id="gender" [formControlName]="'gender'">
-                  <option [ngValue]="null"></option>
-                  <option value="female">Female</option>
-                  <option value="male">Male</option>
-                  <option value="other">Other</option>
-                </select>
+                <ng-select
+                  id="gender"
+                  [items]="genderOptions"
+                  [closeOnSelect]="false"
+                  placeholder="Select"
+                  bindLabel="displayText"
+                  bindValue="value"
+                  [formControlName]="'gender'">
+                </ng-select>
               </div>
 
               <!-- EDUCATION LEVEL -->
@@ -270,8 +273,9 @@
                   [searchable]="true"
                   placeholder="Select or type..."
                   bindLabel="name"
+                  bindValue="level"
                   [readonly]="elastic()"
-                  [formControlName]="'minEducationLevelObj'">
+                  [formControlName]="'minEducationLevel'">
                 </ng-select>
               </div>
 

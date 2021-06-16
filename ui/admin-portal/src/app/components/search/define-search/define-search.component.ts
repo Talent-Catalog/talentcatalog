@@ -16,7 +16,7 @@
 
 import {Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 
-import {Candidate, CandidateStatus} from '../../../model/candidate';
+import {Candidate, CandidateStatus, Gender} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
 import {Country} from '../../../model/country';
 import {CountryService} from '../../../services/country.service';
@@ -31,7 +31,6 @@ import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {SearchSavedSearchesComponent} from '../load-search/search-saved-searches.component';
 import {CreateUpdateSearchComponent} from '../create-update/create-update-search.component';
 import {SavedSearchService} from '../../../services/saved-search.service';
-import {IDropdownSettings} from 'ng-multiselect-dropdown';
 import {forkJoin, Subscription} from 'rxjs';
 import {JoinSavedSearchComponent} from '../join-search/join-saved-search.component';
 import {EducationLevel} from '../../../model/education-level';
@@ -62,7 +61,7 @@ import {canEditSource} from '../../../model/base';
 import {ConfirmationComponent} from '../../util/confirm/confirmation.component';
 import {User} from '../../../model/user';
 import {AuthService} from '../../../services/auth.service';
-import {enumKeysToEnumOptions, enumMultiSelectSettings, EnumOption, enumOptions} from "../../../util/enum";
+import {enumKeysToEnumOptions, EnumOption, enumOptions} from "../../../util/enum";
 import {SearchCandidateRequest} from "../../../model/search-candidate-request";
 
 @Component({
@@ -95,24 +94,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
   sortField = 'id';
   sortDirection = 'DESC';
 
-  /* MULTI SELECT */
-  multiSelectSettings: IDropdownSettings = {
-    idField: 'id',
-    textField: 'name',
-    singleSelection: false,
-    selectAllText: 'Select All',
-    unSelectAllText: 'Deselect All',
-    allowSearchFilter: true
-  };
-
-  /* Education Level Select */
-  educationLevelSettings: IDropdownSettings = {
-    idField: 'level',
-    textField: 'name',
-    singleSelection: true,
-    allowSearchFilter: true
-  };
-
   /* DATA - these are all drop down options for each select field*/
   nationalities: Nationality[];
   countries: Country[];
@@ -125,8 +106,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
 
   notElastic;
 
-  statusDropdownSettings: IDropdownSettings = enumMultiSelectSettings;
   candidateStatusOptions: EnumOption[] = enumOptions(CandidateStatus);
+  genderOptions: EnumOption[] = enumOptions(Gender);
 
   selectedCandidate: Candidate;
   englishLanguageModel: LanguageLevelFormControlModel;
@@ -178,7 +159,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       timezone: moment.tz.guess(),
       minAge: [null],
       maxAge: [null],
-      minEducationLevelObj: [],
+      minEducationLevel: [],
       educationMajorIds: [[]],
       searchJoinRequests: this.fb.array([]),
       //for display purposes
@@ -326,11 +307,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     if (request.occupations != null) {
       request.occupationIds = request.occupations.map(o => o.id);
       delete request.occupations;
-    }
-
-    if (request.minEducationLevelObj != null) {
-      request.minEducationLevel = request.minEducationLevelObj.level;
-      delete request.minEducationLevelObj;
     }
 
     if (request.educationMajors != null) {
@@ -523,14 +499,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
         .filter(c => request.educationMajorIds.indexOf(c.id) !== -1);
     }
     this.searchForm.controls['educationMajors'].patchValue(educationMajors);
-
-    /* EDUCATION LEVEL */
-    let minEducationLevelObj;
-    if (request.minEducationLevel && this.educationLevels) {
-      minEducationLevelObj = this.educationLevels
-        .find(c => request.minEducationLevel === c.level);
-    }
-    this.searchForm.controls['minEducationLevelObj'].patchValue(minEducationLevelObj);
 
     /* OTHER LANGUAGE */
     this.otherLanguagePicker.patchModel({
