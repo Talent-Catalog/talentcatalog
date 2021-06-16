@@ -26,29 +26,35 @@
 
       <div class="d-flex mb-2">
         <!-- SAVED LIST -->
-        <div class="flex-fill mr-2">
+        <div class="w-50 mr-2">
           <label>List</label>
           <!-- Disabled if saved search is entered -->
-          <ng-multiselect-dropdown formControlName="savedList"
-                                   id="savedList"
-                                   class="custom-primary"
-                                   [settings]="dropdownSettings"
-                                   [disabled]="savedSearch != null"
-                                   [data]="lists">
-          </ng-multiselect-dropdown>
+          <ng-select
+            id="savedList"
+            [items]="lists"
+            [closeOnSelect]="false"
+            [searchable]="true"
+            placeholder="Select or type..."
+            bindLabel="name"
+            [readonly]="savedSearch != null"
+            formControlName="savedList">
+          </ng-select>
         </div>
 
         <!-- SAVED SEARCH -->
-        <div class="flex-fill">
+        <div class="w-50">
           <label>Search</label>
           <!-- Disabled if saved list is entered -->
-          <ng-multiselect-dropdown formControlName="savedSearch"
-                                   id="savedSearch"
-                                   class="custom-primary"
-                                   [settings]="dropdownSettings"
-                                   [disabled]="savedList != null"
-                                   [data]="searches">
-          </ng-multiselect-dropdown>
+          <ng-select
+            id="savedSearch"
+            [items]="searches"
+            [closeOnSelect]="false"
+            [searchable]="true"
+            placeholder="Select or type..."
+            bindLabel="name"
+            [readonly]="savedList != null"
+            formControlName="savedSearch">
+          </ng-select>
         </div>
       </div>
 

@@ -15,19 +15,11 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {
-  CandidateStatService,
-  CandidateStatsRequest
-} from "../../services/candidate-stat.service";
+import {CandidateStatService, CandidateStatsRequest} from "../../services/candidate-stat.service";
 import {StatReport} from "../../model/stat-report";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {
-  SavedList,
-  SearchSavedListRequest
-} from "../../model/saved-list";
+import {SavedList, SearchSavedListRequest} from "../../model/saved-list";
 import {SavedListService} from "../../services/saved-list.service";
-import {IDropdownSettings} from "ng-multiselect-dropdown";
-import {isArray} from "rxjs/internal-compatibility";
 import {ActivatedRoute} from "@angular/router";
 import {SavedSearch} from "../../model/saved-search";
 import {forkJoin} from "rxjs";
@@ -48,14 +40,6 @@ export class InfographicComponent implements OnInit {
   searches: SavedSearch[] = [];
   statReports: StatReport[];
   statsFilter: FormGroup;
-
-  dropdownSettings: IDropdownSettings = {
-    idField: 'id',
-    textField: 'name',
-    enableCheckAll: false,
-    singleSelection: true,
-    allowSearchFilter: true
-  };
 
   constructor(private route: ActivatedRoute,
               private statService: CandidateStatService,
@@ -82,14 +66,12 @@ export class InfographicComponent implements OnInit {
   get savedList(): SavedList {
     const savedList: SavedList = this.statsFilter.value.savedList;
     //Control always returns an array
-    return (savedList == null || (isArray(savedList) && savedList.length === 0)
-    || savedList[0] == null)  ? null : savedList[0];
+    return savedList;
   }
   get savedSearch(): SavedSearch {
     const savedSearch: SavedSearch = this.statsFilter.value.savedSearch;
     //Control always returns an array
-    return (savedSearch == null || (isArray(savedSearch) && savedSearch.length === 0)
-      || savedSearch[0] == null)  ? null : savedSearch[0];
+    return savedSearch;
   }
 
   private loadListsAndSearches() {

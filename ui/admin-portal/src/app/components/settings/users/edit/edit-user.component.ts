@@ -16,13 +16,12 @@
 
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {UpdateUserRequest, User} from "../../../../model/user";
+import {User} from "../../../../model/user";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {UserService} from "../../../../services/user.service";
 import {AuthService} from "../../../../services/auth.service";
 import {CountryService} from "../../../../services/country.service";
 import {Country} from "../../../../model/country";
-import {IDropdownSettings} from "ng-multiselect-dropdown";
 
 @Component({
   selector: 'app-edit-user',
@@ -36,15 +35,6 @@ export class EditUserComponent implements OnInit {
   error;
   loading: boolean;
   saving: boolean;
-
-  /* MULTI SELECT */
-  dropdownSettings: IDropdownSettings = {
-    idField: 'id',
-    textField: 'name',
-    enableCheckAll: false,
-    singleSelection: false,
-    allowSearchFilter: true
-  };
 
   countries: Country[];
 
@@ -104,13 +94,6 @@ export class EditUserComponent implements OnInit {
 
   dismiss() {
     this.activeModal.dismiss(false);
-  }
-
-  /* MULTI SELECT METHODS */
-  onItemSelect(item: any) {
-  }
-
-  onItemDeSelect(item: any) {
   }
 
 }

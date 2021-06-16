@@ -120,13 +120,16 @@
         <label for="leftHomeReasons">
           What are the primary reasons you left your home country and currently live in {{candidate.country.name}}?
         </label>
-        <ng-multiselect-dropdown
+        <ng-select
           id="leftHomeReasons"
-          class="custom-primary"
-          [settings]="dropdownSettings"
-          [data]="leftHomeReasonOptions"
-          formControlName="leftHomeReasons">
-        </ng-multiselect-dropdown>
+          [items]="leftHomeReasonOptions"
+          [multiple]="true"
+          [closeOnSelect]="false"
+          [searchable]="false"
+          placeholder="Select one or more"
+          bindLabel="displayText"
+          [formControlName]="'leftHomeReasons'">
+        </ng-select>
       </div>
 
       <div *ngIf="hasOther">

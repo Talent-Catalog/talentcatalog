@@ -604,6 +604,12 @@ export enum Qualification {
   Other = "Other"
 }
 
+export enum Gender {
+  female = "Female",
+  male = "Male",
+  other = "Other",
+}
+
 export function getCandidateNavigation(candidate: Candidate): any[] {
   return ['candidate', candidate.candidateNumber];
 }

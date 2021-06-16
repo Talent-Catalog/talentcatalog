@@ -183,18 +183,17 @@
 
       <!-- REVIEW STATUS FILTER -->
       <div *ngIf="isReviewable()" class="form-group col-12">
-        <ng-multiselect-dropdown
+        <ng-select
           id="reviewStatus"
-          class="custom-primary"
+          [items]="statuses"
+          [closeOnSelect]="false"
+          [searchable]="true"
+          [multiple]="true"
+          (ngModelChange)="onReviewStatusFilterChange()"
           [placeholder]="'Review status: Empty displays everything'"
-          [settings]="dropdownSettings"
-          [data]="statuses"
-          formControlName="statusesDisplay"
-          (onSelect)="onItemSelect()"
-          (onDeSelect)="onItemDeSelect()"
-          (onSelectAll)="onSelectAll()"
-          (onDeSelectAll)="onDeSelectAll()">
-        </ng-multiselect-dropdown>
+          bindLabel="name"
+          formControlName="statusesDisplay">
+        </ng-select>
       </div>
     </form>
 

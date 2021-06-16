@@ -14,20 +14,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {IDropdownSettings} from "ng-multiselect-dropdown";
-
 export interface EnumOption {
   value: string;
   displayText: string
 }
-
-export const enumMultiSelectSettings: IDropdownSettings = {
-  idField: 'value',
-  textField: 'displayText',
-  enableCheckAll: false,
-  singleSelection: false,
-  allowSearchFilter: true
-};
 
 /**
  * Takes a string enumeration and returns a corresponding array of values and
