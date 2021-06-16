@@ -68,15 +68,16 @@
       <!-- SOURCE COUNTRIES  -->
       <div class="form-group">
         <label>Source Country</label>
-        <ng-multiselect-dropdown
+        <ng-select
           id="sourceCountry"
-          class="custom-primary"
-          [settings]="dropdownSettings"
-          [data]="countries"
-          formControlName="sourceCountries"
-          (onSelect)="onItemSelect($event)"
-          (onDeSelect)="onItemDeSelect($event)">
-        </ng-multiselect-dropdown>
+          [items]="countries"
+          [multiple]="true"
+          [closeOnSelect]="false"
+          [searchable]="true"
+          [virtualScroll]="true"
+          bindLabel="name"
+          [formControlName]="'sourceCountries'">
+        </ng-select>
         <p class="text-muted">Leave blank if there are no restrictions, otherwise add one or more countries to which admin is restricted.</p>
       </div>
 

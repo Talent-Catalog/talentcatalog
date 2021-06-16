@@ -128,7 +128,7 @@ export class SelectListComponent implements OnInit {
 
   select() {
     const selection: TargetListSelection = {
-      savedListId: this.savedList === null ? 0 : this.savedList[0].id,
+      savedListId: this.savedList === null ? 0 : this.savedList.id,
       newListName: this.newList ? this.newListName : null,
       replace: this.replace,
       sfJoblink: this.sfJoblink ? this.sfJoblink : null

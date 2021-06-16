@@ -27,17 +27,15 @@ import {
 } from '@angular/core';
 
 import {
-  Candidate, SalesforceOppParams,
+  Candidate,
+  SalesforceOppParams,
   UpdateCandidateStatusInfo,
   UpdateCandidateStatusRequest
 } from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
 import {SearchResults} from '../../../model/search-results';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {
-  CreateFromDefaultSavedSearchRequest,
-  SavedSearchService
-} from '../../../services/saved-search.service';
+import {CreateFromDefaultSavedSearchRequest, SavedSearchService} from '../../../services/saved-search.service';
 import {Observable, of, Subscription} from 'rxjs';
 import {CandidateReviewStatusItem} from '../../../model/candidate-review-status-item';
 import {HttpClient} from '@angular/common/http';
@@ -59,7 +57,8 @@ import {
 import {
   CandidateSource,
   canEditSource,
-  defaultReviewStatusFilter, findHasId, indexOfHasId,
+  defaultReviewStatusFilter,
+  indexOfHasId,
   isMine,
   isSharedWithMe,
   ReviewStatus
@@ -82,9 +81,7 @@ import {
   SavedListGetRequest,
   UpdateExplicitSavedListContentsRequest
 } from '../../../model/saved-list';
-import {
-  CandidateSourceCandidateService
-} from '../../../services/candidate-source-candidate.service';
+import {CandidateSourceCandidateService} from '../../../services/candidate-source-candidate.service';
 import {LocalStorageService} from 'angular-2-local-storage';
 import {EditCandidateReviewStatusItemComponent} from '../../util/candidate-review/edit/edit-candidate-review-status-item.component';
 import {Router} from '@angular/router';
@@ -99,12 +96,7 @@ import {CandidateColumnSelectorComponent} from '../../util/candidate-column-sele
 import {CandidateFieldInfo} from '../../../model/candidate-field-info';
 import {CandidateFieldService} from '../../../services/candidate-field.service';
 import {EditCandidateStatusComponent} from "../view/status/edit-candidate-status.component";
-import {
-  SalesforceStageComponent,
-  SalesforceStageInfo
-} from "../../util/salesforce-stage/salesforce-stage.component";
-import {i18nMetaToJSDoc} from "@angular/compiler/src/render3/view/i18n/meta";
-import {CreateCandidateAttachmentComponent} from "../view/attachment/create/create-candidate-attachment.component";
+import {SalesforceStageComponent} from "../../util/salesforce-stage/salesforce-stage.component";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 
 interface CachedTargetList {
@@ -621,7 +613,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     return breadcrumb;
   }
 
-  private onReviewStatusFilterChange() {
+  onReviewStatusFilterChange() {
 
     this.reviewStatusFilter = this.searchForm.value.statusesDisplay;
 
@@ -630,22 +622,6 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     //Ignoring the page number will allow the cache to supply pageNumber
     //if it has something cached.
     this.doSearch(false, false);
-  }
-
-  onItemSelect() {
-    this.onReviewStatusFilterChange();
-  }
-
-  onItemDeSelect() {
-    this.onReviewStatusFilterChange();
-  }
-
-  onSelectAll() {
-    this.onReviewStatusFilterChange();
-  }
-
-  onDeSelectAll() {
-    this.onReviewStatusFilterChange();
   }
 
   addToSharedWithMe() {

@@ -16,7 +16,7 @@
 
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {UpdateUserRequest, User} from "../../../../model/user";
+import {User} from "../../../../model/user";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {UserService} from "../../../../services/user.service";
 import {AuthService} from "../../../../services/auth.service";
@@ -104,13 +104,6 @@ export class EditUserComponent implements OnInit {
 
   dismiss() {
     this.activeModal.dismiss(false);
-  }
-
-  /* MULTI SELECT METHODS */
-  onItemSelect(item: any) {
-  }
-
-  onItemDeSelect(item: any) {
   }
 
 }

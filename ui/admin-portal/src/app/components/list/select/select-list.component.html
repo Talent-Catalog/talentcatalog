@@ -34,13 +34,14 @@
     <div class="form-group">
       <div *ngIf="!newList">
         <label>Existing list</label>
-        <ng-multiselect-dropdown formControlName="savedList"
-                                 id="savedLists"
-                                 class="custom-primary"
-                                 [settings]="dropdownSettings"
-                                 [data]="lists"
-        >
-        </ng-multiselect-dropdown>
+        <ng-select
+          id="savedList"
+          [items]="lists"
+          [closeOnSelect]="false"
+          [searchable]="true"
+          bindLabel="name"
+          formControlName="savedList">
+        </ng-select>
       </div>
 
       <div class="form-inline">

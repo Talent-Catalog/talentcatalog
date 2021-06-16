@@ -62,12 +62,7 @@ import {canEditSource} from '../../../model/base';
 import {ConfirmationComponent} from '../../util/confirm/confirmation.component';
 import {User} from '../../../model/user';
 import {AuthService} from '../../../services/auth.service';
-import {
-  enumKeysToEnumOptions,
-  enumMultiSelectSettings,
-  EnumOption,
-  enumOptions
-} from "../../../util/enum";
+import {enumKeysToEnumOptions, enumMultiSelectSettings, EnumOption, enumOptions} from "../../../util/enum";
 import {SearchCandidateRequest} from "../../../model/search-candidate-request";
 
 @Component({
@@ -183,7 +178,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       timezone: moment.tz.guess(),
       minAge: [null],
       maxAge: [null],
-      minEducationLevelObj: [[]],
+      minEducationLevelObj: [],
       educationMajorIds: [[]],
       searchJoinRequests: this.fb.array([]),
       //for display purposes
@@ -333,9 +328,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
       delete request.occupations;
     }
 
-    if (request.minEducationLevelObj != null
-      && request.minEducationLevelObj.length > 0) {
-      request.minEducationLevel = request.minEducationLevelObj[0].level;
+    if (request.minEducationLevelObj != null) {
+      request.minEducationLevel = request.minEducationLevelObj.level;
       delete request.minEducationLevelObj;
     }
 
@@ -531,10 +525,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     this.searchForm.controls['educationMajors'].patchValue(educationMajors);
 
     /* EDUCATION LEVEL */
-    let minEducationLevelObj = [];
+    let minEducationLevelObj;
     if (request.minEducationLevel && this.educationLevels) {
       minEducationLevelObj = this.educationLevels
-        .filter(c => request.minEducationLevel === c.level);
+        .find(c => request.minEducationLevel === c.level);
     }
     this.searchForm.controls['minEducationLevelObj'].patchValue(minEducationLevelObj);
 

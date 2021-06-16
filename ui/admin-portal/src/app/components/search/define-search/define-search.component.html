@@ -269,12 +269,6 @@
                   bindLabel="name"
                   [readonly]="elastic()"
                   [formControlName]="'minEducationLevelObj'">
-                  <ng-template ng-header-tmp>
-                    <div class="d-flex justify-content-between">
-                      <button class="btn btn-sm btn-link" (click)="onSelectAll(educationLevels, 'minEducationLevelObj'); $event.preventDefault()">Select All</button>
-                      <button class="btn btn-sm btn-link" (click)="onClearAll('minEducationLevelObj'); $event.preventDefault()">Clear All</button>
-                    </div>
-                  </ng-template>
                 </ng-select>
               </div>
 
@@ -361,14 +355,28 @@
           <!-- COUNTRIES  -->
           <div class="form-group col-12 col-md-4 mt-2">
             <label>Country</label>
-            <ng-multiselect-dropdown
+            <ng-select
               id="country"
-              class="scroll-select custom-primary"
-              [settings]="multiSelectSettings"
-              [data]="countries"
-              formControlName="countries"
-            >
-            </ng-multiselect-dropdown>
+              [ngClass]="{'disabled' : elastic()}"
+              [items]="countries"
+              [multiple]="true"
+              [closeOnSelect]="false"
+              [searchable]="true"
+              [virtualScroll]="true"
+              bindLabel="name"
+              [readonly]="elastic()"
+              [formControlName]="'countries'">
+              <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+                <div *ngFor="let item of items | slice:0:3" class="ng-value">
+                  <span class="ng-value-label">{{item.name}}</span>
+                  <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                </div>
+                <div *ngIf="items.length > 3" [ngbPopover]="getTooltip('countries')" popoverTitle="Countries"
+                     triggers="mouseenter:mouseleave"  container="body" class="ng-value">
+                  <span class="ng-value-label">{{items.length - 3}} more...</span>
+                </div>
+              </ng-template>
+            </ng-select>
           </div>
 
           <div *ngIf="searchForm.errors && (searchForm.dirty || searchForm.touched)">

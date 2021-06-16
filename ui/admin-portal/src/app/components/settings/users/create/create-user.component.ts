@@ -99,24 +99,4 @@ export class CreateUserComponent implements OnInit {
     this.activeModal.dismiss(false);
   }
 
-  /* MULTI SELECT METHODS */
-  onItemSelect(item: any) {
-    console.log(this.userForm);
-    // const values = this.userForm.controls.sourceCountryIds.value || [];
-    // const addValue = item.id != null ? item.id : item;
-    // values.push(addValue);
-    // this.userForm.controls.sourceCountryIds.patchValue(values);
-    // console.log(values)
-  }
-
-  onItemDeSelect(item: any) {
-    // const values = this.userForm.controls[formControlName].value || [];
-    // const removeValue = item.id != null ? item.id : item;
-    // const indexToRemove = values.findIndex(val => val === removeValue);
-    // if (indexToRemove >= 0) {
-    //   values.splice(indexToRemove, 1);
-    //   this.userForm.controls[formControlName].patchValue(values);
-    // }
-  }
-
 }
