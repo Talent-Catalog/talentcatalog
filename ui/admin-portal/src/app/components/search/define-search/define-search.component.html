@@ -362,7 +362,6 @@
             <label>Country</label>
             <ng-select
               id="country"
-              [ngClass]="{'disabled' : elastic()}"
               [items]="countries"
               [multiple]="true"
               [closeOnSelect]="false"
@@ -370,7 +369,6 @@
               [virtualScroll]="true"
               placeholder="Select or type..."
               bindLabel="name"
-              [readonly]="elastic()"
               [formControlName]="'countries'">
               <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
                 <div *ngFor="let item of items | slice:0:3" class="ng-value">
