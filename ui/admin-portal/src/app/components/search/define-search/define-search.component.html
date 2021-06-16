@@ -103,6 +103,7 @@
               [closeOnSelect]="false"
               [searchable]="true"
               [virtualScroll]="false"
+              placeholder="Select or type..."
               bindLabel="displayText"
               [formControlName]="'statusesDisplay'">
               <ng-template ng-header-tmp>
@@ -159,6 +160,7 @@
                   [closeOnSelect]="false"
                   [searchable]="true"
                   [virtualScroll]="true"
+                  placeholder="Select or type..."
                   bindLabel="name"
                   [readonly]="elastic()"
                   [formControlName]="'occupations'">
@@ -266,6 +268,7 @@
                   [items]="educationLevels"
                   [closeOnSelect]="false"
                   [searchable]="true"
+                  placeholder="Select or type..."
                   bindLabel="name"
                   [readonly]="elastic()"
                   [formControlName]="'minEducationLevelObj'">
@@ -283,6 +286,7 @@
                   [closeOnSelect]="false"
                   [searchable]="true"
                   [virtualScroll]="true"
+                  placeholder="Select or type..."
                   bindLabel="name"
                   [readonly]="elastic()"
                   [formControlName]="'educationMajors'">
@@ -337,6 +341,7 @@
               [closeOnSelect]="false"
               [searchable]="true"
               [virtualScroll]="true"
+              placeholder="Select or type..."
               bindLabel="name"
               [formControlName]="'nationalities'">
               <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
@@ -363,6 +368,7 @@
               [closeOnSelect]="false"
               [searchable]="true"
               [virtualScroll]="true"
+              placeholder="Select or type..."
               bindLabel="name"
               [readonly]="elastic()"
               [formControlName]="'countries'">
