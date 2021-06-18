@@ -1471,6 +1471,22 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    public List<DataRow> computeStatusStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds) {
+        return toRows(candidateRepository.
+                countByStatusOrderByCount(
+                        genderStr(gender), countryStr(country),
+                        sourceCountryIds, dateFrom, dateTo));
+    }
+
+    @Override
+    public List<DataRow> computeStatusStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds) {
+        return toRows(candidateRepository.
+                countByStatusOrderByCount(
+                        genderStr(gender), countryStr(country),
+                        sourceCountryIds, dateFrom, dateTo, candidateIds));
+    }
+
+    @Override
     public Resource generateCv(Candidate candidate) {
        return pdfHelper.generatePdf(candidate);
     }

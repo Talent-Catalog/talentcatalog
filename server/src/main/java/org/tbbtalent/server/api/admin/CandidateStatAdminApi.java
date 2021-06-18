@@ -16,13 +16,6 @@
 
 package org.tbbtalent.server.api.admin;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,18 +24,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.Country;
-import org.tbbtalent.server.model.db.Gender;
-import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.model.db.StatReport;
-import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.repository.db.CountryRepository;
 import org.tbbtalent.server.request.candidate.stat.CandidateStatsRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
+
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController()
 @RequestMapping("/api/admin/candidate/stat")
@@ -171,6 +163,18 @@ public class CandidateStatAdminApi {
         statReports.add(new StatReport(title + " (Lebanon)",
                 this.candidateService.computeNationalityStats(null, "lebanon", dateFrom, dateTo, sourceCountryIds)));
 
+        title = "Statuses";
+        statReports.add(new StatReport(title,
+                this.candidateService.computeStatusStats(null, null, dateFrom, dateTo, sourceCountryIds)));
+        statReports.add(new StatReport(title + " (male)",
+                this.candidateService.computeStatusStats(Gender.male, null, dateFrom, dateTo, sourceCountryIds)));
+        statReports.add(new StatReport(title + " (female)",
+                this.candidateService.computeStatusStats(Gender.female, null, dateFrom, dateTo, sourceCountryIds)));
+        statReports.add(new StatReport(title + " (Jordan)",
+                this.candidateService.computeStatusStats(null, "jordan", dateFrom, dateTo, sourceCountryIds)));
+        statReports.add(new StatReport(title + " (Lebanon)",
+                this.candidateService.computeStatusStats(null, "lebanon", dateFrom, dateTo, sourceCountryIds)));
+
         title = "Occupations";
         statReports.add(new StatReport(title + "",
                 this.candidateService.computeOccupationStats(null, dateFrom, dateTo, sourceCountryIds)));
@@ -280,6 +284,18 @@ public class CandidateStatAdminApi {
                 this.candidateService.computeNationalityStats(null, "jordan", dateFrom, dateTo, candidateIds, sourceCountryIds)));
         statReports.add(new StatReport(title + " (Lebanon)",
                 this.candidateService.computeNationalityStats(null, "lebanon", dateFrom, dateTo, candidateIds, sourceCountryIds)));
+
+        title = "Statuses";
+        statReports.add(new StatReport(title,
+                this.candidateService.computeStatusStats(null, null, dateFrom, dateTo, candidateIds, sourceCountryIds)));
+        statReports.add(new StatReport(title + " (male)",
+                this.candidateService.computeStatusStats(Gender.male, null, dateFrom, dateTo, candidateIds, sourceCountryIds)));
+        statReports.add(new StatReport(title + " (female)",
+                this.candidateService.computeStatusStats(Gender.female, null, dateFrom, dateTo, candidateIds, sourceCountryIds)));
+        statReports.add(new StatReport(title + " (Jordan)",
+                this.candidateService.computeStatusStats(null, "jordan", dateFrom, dateTo, candidateIds, sourceCountryIds)));
+        statReports.add(new StatReport(title + " (Lebanon)",
+                this.candidateService.computeStatusStats(null, "lebanon", dateFrom, dateTo, candidateIds, sourceCountryIds)));
 
         title = "Occupations";
         statReports.add(new StatReport(title + "",
