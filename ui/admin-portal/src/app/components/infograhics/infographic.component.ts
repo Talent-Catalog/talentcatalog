@@ -40,6 +40,7 @@ export class InfographicComponent implements OnInit {
   searches: SavedSearch[] = [];
   statReports: StatReport[];
   statsFilter: FormGroup;
+  statsName: string;
 
   constructor(private route: ActivatedRoute,
               private statService: CandidateStatService,
@@ -133,6 +134,14 @@ export class InfographicComponent implements OnInit {
       dateTo: this.dateTo
     }
 
+    if (this.savedList) {
+      this.statsName = 'list ' + this.savedList?.name;
+    } else if (this.savedSearch) {
+      this.statsName = 'search ' + this.savedSearch?.name;
+    } else {
+      this.statsName = 'all data'
+    }
+
     this.statService.getAllStats(request).subscribe(result => {
         this.loading = false;
         this.statReports = result;
@@ -191,5 +200,10 @@ export class InfographicComponent implements OnInit {
         document.body.removeChild(link);
       }
     }
+  }
+
+  scroll(id){
+    const elmnt = document.getElementById(id);
+    elmnt.scrollIntoView({behavior: "smooth", block: "center"});
   }
 }

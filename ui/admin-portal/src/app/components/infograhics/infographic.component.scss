@@ -17,3 +17,12 @@
 section {
   margin: 20px;
 }
+
+.second-nav {
+  top: 76px;
+  z-index: 1;
+  .scroll-dropdown {
+    max-height: 70vh;
+    overflow: auto;
+  }
+}
