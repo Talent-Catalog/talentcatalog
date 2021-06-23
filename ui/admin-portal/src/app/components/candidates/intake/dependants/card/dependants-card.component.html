@@ -37,14 +37,9 @@
 
         </div>
 
-        <select class="form-control"
-                [id]="'dependantRelation'+myRecordIndex"
-                [formControlName]="'dependantRelation'">
-          <option *ngFor="let opt of dependantRelations"
-                  [value]="opt.value">
-            {{opt.displayText}}
-          </option>
-        </select>
+        <ng-select [id]="'dependantRelation'+myRecordIndex" [formControlName]="'dependantRelation'" (clear)="setNoResponse('dependantRelation')"
+                   [items]="dependantRelations" [closeOnSelect]="true" [clearOnBackspace]="false"
+                   placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
       </div>
 
       <div *ngIf="hasDependant">
@@ -73,12 +68,10 @@
           <label [for]="'dependantHealthConcerns'+myRecordIndex">
             Any health concerns?
           </label>
-          <select class="form-control"
-                  [id]="'dependantHealthConcerns'+myRecordIndex" [formControlName]="'dependantHealthConcerns'">
-            <option *ngFor="let opt of dependentHealthConcerns" [value]="opt.value">
-              {{opt.displayText}}
-            </option>
-          </select>
+          <ng-select [id]="'dependantHealthConcerns'+myRecordIndex" [formControlName]="'dependantHealthConcerns'"
+                     (clear)="setNoResponse('dependantHealthConcerns')" [items]="dependentHealthConcerns"
+                     [closeOnSelect]="true" [clearOnBackspace]="false"
+                     placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
         </div>
         <div *ngIf="hasHealthConcern === 'Yes'" class="form-group">
           <label [for]="'dependantHealthNotes'+myRecordIndex">Notes</label>
@@ -91,12 +84,10 @@
           <label [for]="'dependantRegistered'+myRecordIndex">
             Are they registered?
           </label>
-          <select class="form-control"
-                  [id]="'dependantRegistered'+myRecordIndex" [formControlName]="'dependantRegistered'">
-            <option *ngFor="let opt of dependantRegisterOptions" [value]="opt.value">
-              {{opt.displayText}}
-            </option>
-          </select>
+          <ng-select [id]="'dependantRegistered'+myRecordIndex" [formControlName]="'dependantRegistered'"
+                     (clear)="setNoResponse('dependantRegistered')" [items]="dependantRegisterOptions"
+                     [closeOnSelect]="true" [clearOnBackspace]="false"
+                     placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
         </div>
 
         <div *ngIf="dependantRegisteredNumber">

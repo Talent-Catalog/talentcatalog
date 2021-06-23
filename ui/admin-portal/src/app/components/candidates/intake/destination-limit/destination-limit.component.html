@@ -28,12 +28,9 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <select class="form-control"
-            id="destLimit" [formControlName]="'destLimit'">
-      <option *ngFor="let opt of destLimitOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <ng-select id="destLimit" [formControlName]="'destLimit'" (clear)="setNoResponse('destLimit')"
+               [items]="destLimitOptions" [closeOnSelect]="true" [clearOnBackspace]="false"
+               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
   </div>
   <div *ngIf="destLimit === 'Yes'" class="form-group">
     <label for="destLimitNotes">Notes</label>

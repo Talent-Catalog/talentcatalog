@@ -148,7 +148,7 @@ export interface CandidateIntakeData {
   partnerEnglish?: YesNo;
   partnerEnglishLevel?: LanguageLevel;
   partnerIelts?: IeltsStatus;
-  partnerIeltsScore?: IeltsScore;
+  partnerIeltsScore?: string;
   partnerIeltsYr?: number;
   partnerCitizenship?: Nationality;
 
@@ -369,7 +369,6 @@ export interface UpdateCandidateStatusRequest {
 }
 
 export enum FamilyRelations {
-  NoResponse = "",
   NoRelation = "No relatives",
   Child = "Daughter/Son",
   Parent = "Mother/Father",
@@ -381,7 +380,6 @@ export enum FamilyRelations {
 }
 
 export enum DependantRelations {
-  NoResponse = "",
   Partner = "Spouse/Partner",
   Child = "Daughter/Son",
   Parent = "Mother/Father",
@@ -393,21 +391,18 @@ export enum DependantRelations {
 }
 
 export enum HasPassport {
-  NoResponse = "",
   ValidPassport = "Has valid passport",
   InvalidPassport = "Has invalid passport",
   NoPassport = "No passport"
 }
 
 export enum TBBEligibilityAssessment {
-  NoResponse = "",
   Proceed = "Proceed",
   Discuss = "Discuss further",
   DontProceed = "Don't proceed",
 }
 
 export enum VisaEligibility {
-  NoResponse = "",
   Yes = "Yes",
   YesBut = "Yes (but manage expectations about visa pathway)",
   DiscussFurther = "Discuss further",
@@ -433,7 +428,6 @@ export enum IntRecruitReason {
 }
 
 export enum UnhcrStatus {
-  NoResponse = "",
   MandateRefugee = "Assessed by UNHCR as a mandate refugee",
   RegisteredAsylum = "Registered with UNHCR as asylum seeker",
   RegisteredStateless = "Registered with UNHCR as stateless",
@@ -443,7 +437,6 @@ export enum UnhcrStatus {
 }
 
 export enum NotRegisteredStatus {
-  NoResponse = "",
   WasRegistered = "No longer registered, but was registered previously.",
   NeverRegistered = "Never been registered",
   Unsure = "Unsure",
@@ -451,14 +444,12 @@ export enum NotRegisteredStatus {
 }
 
 export enum WorkPermitValidity {
-  NoResponse = "",
   YesNotDesired = "Yes - a permit to work but not in my desired field",
   YesDesired = "Yes - a permit to work in my desired field",
   No = "No - I do not have a work permit",
 }
 
 export enum YesNoUnemployedOther {
-  NoResponse = "",
   Yes = "Yes",
   No = "No",
   Unemployed = "I am unemployed",
@@ -466,20 +457,17 @@ export enum YesNoUnemployedOther {
 }
 
 export enum YesNo {
-  NoResponse = "",
   Yes = "Yes",
   No = "No",
 }
 
 export enum YesNoUnsure {
-  NoResponse = "",
   Yes = "Yes",
   No = "No",
   Unsure = "Unsure"
 }
 
 export enum IeltsStatus {
-  NoResponse = "",
   YesGeneral = "Yes - Ielts General",
   YesAcademic = "Yes - Ielts Academic",
   No = "No",
@@ -487,7 +475,6 @@ export enum IeltsStatus {
 }
 
 export enum YesNoUnsureLearn {
-  NoResponse = "",
   Yes = "Yes",
   No = "No",
   Unsure = "Unsure - I need to learn more."
@@ -550,14 +537,12 @@ export enum IeltsScore {
 }
 
 export enum DrivingLicenseStatus {
-  NoResponse = "",
   Valid = "Valid",
   Expired = "Expired",
   None = "None"
 }
 
 export enum Registrations {
-  NoResponse = "",
   UNHCR = "UNHCR only",
   UNRWA = "UNRWA only",
   Neither = "Neither",
@@ -565,28 +550,24 @@ export enum Registrations {
 }
 
 export enum TravelDocumentStatus {
-  NoResponse = "",
   Valid = "Valid",
   Expired = "Expired",
   None = "None"
 }
 
 export enum RiskLevel {
-  NoResponse = "",
   Low = "Low Risk",
   Medium = "Medium Risk",
   High = "High Risk"
 }
 
 export enum TbbEligibility {
-  NoResponse = "",
   Proceed = "Ready to proceed",
   Discuss = "Needs discussion",
   NotProceed = "Do not proceed"
 }
 
 export enum OtherVisas {
-  NoResponse = "",
   TempSkilled = "482 temporary skilled (medium stream)",
   SpecialHum = "202 (special humanitarian)",
   OtherHum = "Other humanitarian (200, 201, 203)",
@@ -595,7 +576,6 @@ export enum OtherVisas {
 }
 
 export enum Qualification {
-  NoResponse = "",
   HighSchool = "High School",
   Associates = "Associates",
   Bachelors = "Bachelors",

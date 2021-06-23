@@ -28,12 +28,9 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <select class="form-control"
-            id="unrwaRegistered" [formControlName]="'unrwaRegistered'">
-      <option *ngFor="let opt of unrwaRegisteredOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <ng-select id="unrwaRegistered" [formControlName]="'unrwaRegistered'" (clear)="setNoResponse('unrwaRegistered')"
+               [items]="unrwaRegisteredOptions" [closeOnSelect]="true" [clearOnBackspace]="false"
+               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
   </div>
 
   <div *ngIf="showAll">
@@ -55,12 +52,9 @@
         <label for="unrwaNotRegStatus">
           What best describes your status not being registered?
         </label>
-        <select class="form-control"
-                id="unrwaNotRegStatus" [formControlName]="'unrwaNotRegStatus'">
-          <option *ngFor="let opt of NotRegisteredStatusOptions" [value]="opt.value">
-            {{opt.displayText}}
-          </option>
-        </select>
+        <ng-select id="unrwaNotRegStatus" [formControlName]="'unrwaNotRegStatus'" (clear)="setNoResponse('unrwaNotRegStatus')"
+                   [items]="NotRegisteredStatusOptions" [closeOnSelect]="true" [clearOnBackspace]="false"
+                   placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
       </div>
     </div>
   </div>

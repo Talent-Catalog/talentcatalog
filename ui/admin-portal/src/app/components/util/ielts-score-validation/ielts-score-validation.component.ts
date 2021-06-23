@@ -2,19 +2,19 @@ import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core'
 import {FormControl} from "@angular/forms";
 
 @Component({
-  selector: 'app-form-control-conditional',
-  templateUrl: './form-control-conditional.component.html',
-  styleUrls: ['./form-control-conditional.component.scss']
+  selector: 'app-ielts-score-validation',
+  templateUrl: './ielts-score-validation.component.html',
+  styleUrls: ['./ielts-score-validation.component.scss']
 })
-export class FormControlConditionalComponent implements OnInit, OnChanges {
+export class IeltsScoreValidationComponent implements OnInit, OnChanges {
 
   @Input() control: FormControl;
-  @Input() regex: RegExp;
-  @Input() dependantOn: string[];
-  @Input() dependantValue: string;
-  @Input() errorMsg: string;
+  @Input() examType: string;
 
+  errorMsg: string;
+  regex: RegExp;
   error: string;
+  ieltsExams: string[];
 
   value: string;
 
@@ -22,11 +22,16 @@ export class FormControlConditionalComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.value = this.control.value;
+    this.ieltsExams = ['IELTSGen', 'IELTSAca']
+    this.regex = new RegExp('^([0-8](\\.5)?$)|(^9$)');
+    this.errorMsg = "The IELTS score must be between 0-9 and with decimal increments of .5 only."
     this.checkStatus();
   }
 
+
+
   ngOnChanges(changes: SimpleChanges) {
-    if (changes && changes.dependantValue && changes.dependantValue.previousValue !== changes.dependantValue.currentValue) {
+    if (changes && changes.examType && changes.examType.previousValue !== changes.examType.currentValue) {
       this.checkStatus();
     }
   }
@@ -34,7 +39,7 @@ export class FormControlConditionalComponent implements OnInit, OnChanges {
   update() {
     // Only send the string to the component form if date matches the correct format
     if (this.value != null) {
-      if (this.dependantCheck()) {
+      if (this.ieltsExamCheck()) {
         if (this.regex.test(this.value)) {
           this.error = null;
           this.control.patchValue(this.value);
@@ -48,7 +53,7 @@ export class FormControlConditionalComponent implements OnInit, OnChanges {
   }
 
   checkStatus() {
-    if (this.dependantCheck()) {
+    if (this.ieltsExamCheck()) {
       if (this.regex.test(this.value)) {
         this.error = null;
       } else {
@@ -59,9 +64,10 @@ export class FormControlConditionalComponent implements OnInit, OnChanges {
     }
   }
 
-  dependantCheck() {
-    if (this.dependantOn != null && this.dependantValue != null) {
-      return this.dependantOn.some(d =>  d === this.dependantValue)
+  ieltsExamCheck() {
+    // Check if changing exam type is an ielts, otherwise assume it is an ielts exam.
+    if (this.examType != null) {
+      return this.ieltsExams.some(d =>  d === this.examType)
     } else {
       return true;
     }

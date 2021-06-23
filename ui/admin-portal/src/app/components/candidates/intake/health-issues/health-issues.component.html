@@ -13,12 +13,10 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <select class="form-control"
-            id="healthIssues" [formControlName]="'healthIssues'">
-      <option *ngFor="let opt of healthIssuesOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <ng-select id="healthIssues" [formControlName]="'healthIssues'" (clear)="setNoResponse('healthIssues')"
+               [items]="healthIssuesOptions" [closeOnSelect]="true" [clearOnBackspace]="false"
+               placeholder="Select" bindLabel="displayText" bindValue="value">
+    </ng-select>
   </div>
 
   <div *ngIf="hasNotes" class="form-group">

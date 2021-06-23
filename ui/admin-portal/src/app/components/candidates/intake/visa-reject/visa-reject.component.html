@@ -29,12 +29,9 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <select class="form-control"
-            id="visaReject" [formControlName]="'visaReject'">
-      <option *ngFor="let opt of visaRejectOptions" [value]="opt.value" [disabled]="!editable">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <ng-select id="visaReject" [formControlName]="'visaReject'" (clear)="setNoResponse('visaReject')"
+               [items]="visaRejectOptions" [closeOnSelect]="true" [clearOnBackspace]="false"
+               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
   </div>
   <div *ngIf="visaReject === 'Yes'" class="form-group">
     <label for="visaRejectNotes">Notes</label>

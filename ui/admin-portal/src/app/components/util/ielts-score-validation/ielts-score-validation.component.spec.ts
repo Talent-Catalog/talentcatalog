@@ -1,6 +1,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {FormControlConditionalComponent} from './form-control-conditional.component';
+import {FormControlConditionalComponent} from './ielts-score-validation.component';
 
 describe('FormControlConditionalComponent', () => {
   let component: FormControlConditionalComponent;

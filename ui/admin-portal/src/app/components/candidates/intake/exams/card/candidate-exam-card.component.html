@@ -35,33 +35,26 @@
             </button>
           </div>
         </div>
-        <select class="form-control"
-                [id]="'examType'+myRecordIndex" [formControlName]="'examType'">
-          <option *ngFor="let opt of examOptions" [value]="opt.value">
-            {{opt.displayText}}
-          </option>
-        </select>
+        <ng-select [id]="'examType'+myRecordIndex" [formControlName]="'examType'" (clear)="setNoResponse('examType')"
+                   [items]="examOptions" [closeOnSelect]="true" [clearOnBackspace]="false"
+                   placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
       </div>
 
       <div *ngIf="isOtherExam">
         <div class="form-group">
           <label [for]="'otherExam'+myRecordIndex">Other Exam Name</label>
-          <input type="text" class="form-control"
-                    [id]="'otherExam'+myRecordIndex" [formControlName]="'otherExam'">
+          <input type="text" class="form-control" [id]="'otherExam'+myRecordIndex" [formControlName]="'otherExam'">
         </div>
       </div>
 
       <div *ngIf="hasSelectedExam">
         <div class="form-group">
           <label [for]="'examScore'+myRecordIndex">Score</label>
-          <app-form-control-conditional
+          <app-ielts-score-validation
             [id]="'examScore'+myRecordIndex"
             [control]="form.controls.examScore"
-            [errorMsg]="this.errorMsg"
-            [regex]="this.regexpIeltsScore"
-            [dependantOn]="['IELTSGen', 'IELTSAca']"
-            [dependantValue]="form.controls.examType.value">
-          </app-form-control-conditional>
+            [examType]="form.controls.examType.value">
+          </app-ielts-score-validation>
         </div>
 
 
@@ -69,10 +62,8 @@
           <label [for]="'examYear'+myRecordIndex">
             In what year did you take the test?
           </label>
-          <select [id]="'examYear'+myRecordIndex" class="form-control" [formControlName]="'examYear'">
-            <option value=""></option>
-            <option *ngFor="let year of years" [ngValue]="year">{{year}} </option>
-          </select>
+          <ng-select [id]="'examYear'+myRecordIndex" [formControlName]="'examYear'" [items]="years"
+                     [closeOnSelect]="true" [clearOnBackspace]="false" placeholder="Select"></ng-select>
         </div>
         <div class="form-group">
           <label [for]="'examNotes'+myRecordIndex">Notes</label>

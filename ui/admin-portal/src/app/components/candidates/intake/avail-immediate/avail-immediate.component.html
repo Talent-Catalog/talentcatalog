@@ -26,12 +26,9 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <select class="form-control"
-            id="availImmediate" [formControlName]="'availImmediate'">
-      <option *ngFor="let opt of availImmediateOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <ng-select id="availImmediate" [formControlName]="'availImmediate'" (clear)="setNoResponse('availImmediate')"
+               [items]="availImmediateOptions" [closeOnSelect]="true" [clearOnBackspace]="false"
+               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
   </div>
 
   <div *ngIf="availImmediate === 'Yes'|| availImmediate == 'Unsure'">
@@ -46,12 +43,9 @@
   <div *ngIf="availImmediate === 'No'|| availImmediate == 'Unsure'">
     <div class="form-group">
       <label for="availImmediateReason">Factors preventing immediate availability for international work.</label>
-      <select class="form-control"
-              id="availImmediateReason" [formControlName]="'availImmediateReason'">
-        <option *ngFor="let opt of availImmediateReasonOptions" [value]="opt.value">
-          {{opt.displayText}}
-        </option>
-      </select>
+      <ng-select id="availImmediateReason" [formControlName]="'availImmediateReason'" (clear)="setNoResponse('availImmediateReason')"
+                 [items]="availImmediateReasonOptions" [closeOnSelect]="true" [clearOnBackspace]="false"
+                 placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
     </div>
     <div class="form-group">
       <label for="availImmediateNotes">If Other, or if you have additional notes please describe here.</label>

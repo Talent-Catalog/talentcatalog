@@ -28,12 +28,9 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <select class="form-control"
-            id="returnHomeFuture" [formControlName]="'returnHomeFuture'">
-      <option *ngFor="let opt of returnHomeFutureOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <ng-select id="returnHomeFuture" [formControlName]="'returnHomeFuture'" (clear)="setNoResponse('returnHomeFuture')"
+               [items]="returnHomeFutureOptions" [closeOnSelect]="true" [clearOnBackspace]="false"
+               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
   </div>
 
   <div *ngIf="returnHomeFuture === 'Yes'">

@@ -26,12 +26,10 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <select class="form-control"
-            id="workDesired" [formControlName]="'workDesired'">
-      <option *ngFor="let opt of workDesiredOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <ng-select id="workDesired" [formControlName]="'workDesired'" (clear)="setNoResponse('workDesired')"
+               [items]="workDesiredOptions" [closeOnSelect]="true" [clearOnBackspace]="false"
+               placeholder="Select" bindLabel="displayText" bindValue="value">
+    </ng-select>
   </div>
   <div *ngIf="hasWorkDesired">
     <div class="form-group">

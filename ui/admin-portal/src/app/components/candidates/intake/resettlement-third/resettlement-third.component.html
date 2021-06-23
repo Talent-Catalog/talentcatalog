@@ -26,12 +26,9 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <select class="form-control"
-            id="resettleThird" [formControlName]="'resettleThird'">
-      <option *ngFor="let opt of resettlementThirdOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <ng-select id="resettleThird" [formControlName]="'resettleThird'" (clear)="setNoResponse('resettleThird')"
+               [items]="resettlementThirdOptions" [closeOnSelect]="true" [clearOnBackspace]="false"
+               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
   </div>
   <div *ngIf="resettlementThird === 'Yes'">
     <div class="form-group">

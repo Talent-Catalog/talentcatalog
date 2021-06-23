@@ -28,12 +28,9 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <select class="form-control"
-            id="hostEntryLegally" [formControlName]="'hostEntryLegally'">
-      <option *ngFor="let opt of hostEntryLegallyOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <ng-select id="hostEntryLegally" [formControlName]="'hostEntryLegally'" (clear)="setNoResponse('hostEntryLegally')"
+               [items]="hostEntryLegallyOptions" [closeOnSelect]="true" [clearOnBackspace]="false"
+               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
   </div>
   <div *ngIf="enterLegally === 'No'" class="form-group">
     <label for="hostEntryLegallyNotes">Notes</label>
