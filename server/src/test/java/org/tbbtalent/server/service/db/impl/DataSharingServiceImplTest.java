@@ -20,13 +20,13 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 class DataSharingServiceImplTest {
     private DataSharingServiceImpl service;
-
+// See here: https://console.aws.amazon.com/rds/home?region=us-east-1#database:id=prod-tbb;is-cluster=false
 //    @BeforeEach
     void setUp() {
         service = new DataSharingServiceImpl();
-        service.setMasterJdbcUrl("jdbc:postgresql://prod-tbb.cskpt7osayvj.us-east-1.rds.amazonaws.com:5432/tbbtalent");
-        service.setMasterUser("tbbtalent");
-        service.setMasterPwd("T884T@lent!N0W");
+        service.setMasterJdbcUrl("See AWS");
+        service.setMasterUser("See AWS");
+        service.setMasterPwd("See AWS");
     }
 
 //    @Test
