@@ -53,10 +53,8 @@
       <!-- NATIONALITY -->
       <div class="form-group">
         <label for="nationalityId">Nationality *</label>
-        <select class="form-control" name="nationality" id="nationalityId" [formControlName]="'nationalityId'">
-          <option value=""></option>
-          <option *ngFor="let nationality of nationalities" [value]="nationality.id">{{nationality.name}}</option>
-        </select>
+        <ng-select id="nationalityId" name="nationality" [formControlName]="'nationalityId'" [items]="nationalities"
+                   placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
       </div>
 
       <!-- DOB -->
@@ -81,19 +79,15 @@
 
       <div class="form-group">
         <label for="countryId">Current country *</label>
-        <select class="form-control" name="countryId" id="countryId" [formControlName]="'countryId'">
-          <option value=""></option>
-          <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
-        </select>
+        <ng-select id="countryId" name="countryId" [formControlName]="'countryId'" [items]="countries"
+                   placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
       </div>
 
       <!-- YEAR OF ARRIVAL -->
       <div class="form-group">
         <label for="yearOfArrival">What year did they arrive in this country?</label>
-        <select class="form-control" name="yearOfArrival" id="yearOfArrival" [formControlName]="'yearOfArrival'">
-          <option value=""></option>
-          <option *ngFor="let year of years" [value]="year">{{year}}</option>
-        </select>
+        <ng-select id="yearOfArrival" name="yearOfArrival" [formControlName]="'yearOfArrival'"
+                   [items]="years" placeholder="Select"></ng-select>
       </div>
 
       <div class="form-group">

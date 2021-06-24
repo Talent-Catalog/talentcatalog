@@ -40,10 +40,8 @@
         <label for="surveyTypeId">
           How did you hear about us?
         </label>
-        <select class="form-control" name="surveyTypeId" id="surveyTypeId" [formControlName]="'surveyTypeId'">
-          <option value=""></option>
-          <option *ngFor="let s of surveyTypes" [value]="s.id">{{s.name}}</option>
-        </select>
+        <ng-select id="surveyTypeId" name="surveyTypeId" [formControlName]="'surveyTypeId'" [items]="surveyTypes"
+                   placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
       </div>
 
       <div class="form-group">

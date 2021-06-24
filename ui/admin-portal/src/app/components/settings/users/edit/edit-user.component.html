@@ -57,12 +57,12 @@
       </div>
       <div class="form-group">
         <label for="role">Role</label>
-        <select class="form-control" id="role" formControlName="role">
-          <option value="admin">Full Admin</option>
-          <option value="sourcepartneradmin">Source Partner Admin</option>
-          <option value="semilimited">Semi Limited</option>
-          <option value="limited">Limited</option>
-        </select>
+        <ng-select id="role" [formControlName]="'role'" [closeOnSelect]="true" placeholder="Select">
+          <ng-option value="admin">Full Admin</ng-option>
+          <ng-option value="sourcepartneradmin">Source Partner Admin</ng-option>
+          <ng-option value="semilimited">Semi Limited</ng-option>
+          <ng-option value="limited">Limited</ng-option>
+        </ng-select>
       </div>
 
       <!-- SOURCE COUNTRIES  -->

@@ -40,28 +40,22 @@
       <!-- LANGUAGE TYPE -->
       <div class="form-group">
         <label for="languageId">Language:</label>
-        <select class="form-control" name="languageId" id="languageId" [formControlName]="'languageId'">
-          <option value=""></option>
-          <option *ngFor="let language of languages" [value]="language.id">{{language.name}}</option>
-        </select>
+        <ng-select id="languageId" name="languageId" [formControlName]="'languageId'" [items]="languages"
+                   placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
       </div>
 
       <!-- SPOKEN LEVEL -->
       <div class="form-group">
         <label for="spokenLevelId">Speaking:</label>
-        <select class="form-control" name="spokenLevelId" id="spokenLevelId" [formControlName]="'spokenLevelId'">
-          <option value=""></option>
-          <option *ngFor="let level of languageLevels" [value]="level.id">{{level.name}}</option>
-        </select>
+        <ng-select id="spokenLevelId" name="spokenLevelId" [formControlName]="'spokenLevelId'" [items]="languageLevels"
+                   placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
       </div>
 
       <!-- SPOKEN LEVEL -->
       <div class="form-group">
         <label for="writtenLevelId">Reading and Writing:</label>
-        <select class="form-control" name="writtenLevelId" id="writtenLevelId" [formControlName]="'writtenLevelId'">
-          <option value=""></option>
-          <option *ngFor="let level of languageLevels" [value]="level.id">{{level.name}}</option>
-        </select>
+        <ng-select id="writtenLevelId" name="writtenLevelId" [formControlName]="'writtenLevelId'" [items]="languageLevels"
+                   placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
       </div>
 
       <div class="modal-footer">

@@ -47,10 +47,8 @@
       <!-- COUNTRY -->
       <div class="form-group">
         <label for="countryId">Country *</label>
-        <select class="form-control" name="country" id="countryId" [formControlName]="'countryId'">
-          <option value=""></option>
-          <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
-        </select>
+        <ng-select id="countryId" name="country" [formControlName]="'countryId'" [items]="countries"
+                   placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
       </div>
 
       <!-- START DATE -->
@@ -68,21 +66,19 @@
       <!-- FULL TIME -->
       <div class="form-group">
         <label for="fullTime">Contract Type *</label>
-        <select class="form-control" name="fullTime" id="fullTime" [formControlName]="'fullTime'">
-          <option value=""></option>
-          <option value="true">Full time</option>
-          <option value="false">Part Time</option>
-        </select>
+        <ng-select id="fullTime" name="fullTime" [formControlName]="'fullTime'">
+          <ng-option value="true">Full time</ng-option>
+          <ng-option value="false">Part Time</ng-option>
+        </ng-select>
       </div>
 
       <!-- PAID -->
       <div class="form-group">
         <label for="paid">Employment Type *</label>
-        <select class="form-control" name="paid" id="paid" [formControlName]="'paid'">
-          <option value=""></option>
-          <option value="true">Paid</option>
-          <option value="false">Voluntary</option>
-        </select>
+        <ng-select id="paid" name="paid" [formControlName]="'paid'">
+          <ng-option value="true">Paid</ng-option>
+          <ng-option value="false">Voluntary</ng-option>
+        </ng-select>
       </div>
 
       <!-- ROLE NAME -->

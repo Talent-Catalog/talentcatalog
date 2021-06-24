@@ -39,9 +39,8 @@
 
 
       <div class="form-group">
-        <ng-select id="occupationId" name="occupationId" [formControlName]="'occupationId'" placeholder="Select">
-          <ng-option *ngFor="let occupation of occupations" [value]="occupation.id">{{occupation.name}}</ng-option>
-        </ng-select>
+        <ng-select id="occupationId" name="occupationId" [formControlName]="'occupationId'" [items]="occupations"
+                   placeholder="Select"  bindValue="name" bindLabel="id"></ng-select>
       </div>
 
       <div class="row">
