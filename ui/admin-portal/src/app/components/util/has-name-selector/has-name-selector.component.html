@@ -21,10 +21,11 @@
     </div>
   </div>
   <div class="modal-body">
-    <select class="form-control" id="hasName" formControlName="hasNameIndex">
-      <option *ngFor="let hasName of hasNames; let i=index" [value]="i">
-        {{hasName?.name}}</option>
-    </select>
+    <ng-select id="hasName" [formControlName]="'hasNameIndex'"
+               [closeOnSelect]="true" placeholder="Select" [clearable]="false">
+      <ng-option *ngFor="let hasName of hasNames; let i=index" [value]="i">
+        {{hasName?.name}}</ng-option>
+    </ng-select>
   </div>
 </form>
 <div class="modal-footer">

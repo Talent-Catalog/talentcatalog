@@ -42,10 +42,10 @@
       </div>
       <div class="form-group">
         <label for="status">Status</label>
-        <select class="form-control" id="status" formControlName="status">
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-        </select>
+        <ng-select id="status" [formControlName]="'status'" [closeOnSelect]="true" placeholder="Select">
+          <ng-option value="active">Active</ng-option>
+          <ng-option value="inactive">Inactive</ng-option>
+        </ng-select>
       </div>
 
       <div class="modal-footer">

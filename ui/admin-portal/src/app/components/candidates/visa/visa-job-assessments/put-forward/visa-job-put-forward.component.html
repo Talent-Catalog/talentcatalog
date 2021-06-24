@@ -26,11 +26,8 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <select class="form-control"
-            id="visaJobPutForward" formControlName="visaJobPutForward">
-      <option *ngFor="let opt of visaEligibilityOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <ng-select id="visaJobPutForward" [formControlName]="'visaJobPutForward'" (clear)="setNoResponse('visaJobPutForward')"
+               [items]="visaEligibilityOptions" [closeOnSelect]="true" [clearOnBackspace]="false"
+               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
   </div>
 </form>

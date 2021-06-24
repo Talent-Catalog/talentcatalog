@@ -67,7 +67,7 @@ export class IeltsScoreValidationComponent implements OnInit, OnChanges {
   ieltsExamCheck() {
     // Check if changing exam type is an ielts, otherwise assume it is an ielts exam.
     if (this.examType != null) {
-      return this.ieltsExams.some(d =>  d === this.examType)
+      return this.ieltsExams?.some(d =>  d === this.examType)
     } else {
       return true;
     }

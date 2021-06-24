@@ -46,12 +46,8 @@
       </div>
       <div class="form-group">
         <label for="gender">Gender</label>
-        <select class="form-control" name="gender" id="gender" [formControlName]="'gender'">
-          <option value=""></option>
-          <option value="female">Female</option>
-          <option value="male">Male</option>
-          <option value="other">Other</option>
-        </select>
+        <ng-select id="gender" [formControlName]="'gender'" [items]="genderOptions" placeholder="Select"
+                   name="gender" bindLabel="displayText" bindValue="value" ></ng-select>
       </div>
 
       <!-- NATIONALITY -->
