@@ -66,18 +66,18 @@ export class InfographicComponent implements OnInit {
   get dateTo(): string { return this.statsFilter.value.dateTo; }
   get savedList(): SavedList {
     const savedList: SavedList = this.statsFilter.value.savedList;
-    //Control always returns an array
+    //Control always returns an object
     return savedList;
   }
   get savedSearch(): SavedSearch {
     const savedSearch: SavedSearch = this.statsFilter.value.savedSearch;
-    //Control always returns an array
+    //Control always returns an object
     return savedSearch;
   }
 
   private loadListsAndSearches() {
     /*load all our visible lists and searches */
-    this.loading = true;
+     this.loading = true;
     const request: SearchSavedListRequest = {
       owned: true,
       shared: true,
@@ -113,9 +113,9 @@ export class InfographicComponent implements OnInit {
       const isSavedSearchId = params.get('source') === 'search';
       if (id) {
         if (isSavedSearchId) {
-          this.statsFilter.controls['savedSearch'].patchValue([findHasId(id, this.searches)]);
+          this.statsFilter.controls['savedSearch'].patchValue(findHasId(id, this.searches));
         } else {
-          this.statsFilter.controls['savedList'].patchValue([findHasId(id, this.lists)]);
+          this.statsFilter.controls['savedList'].patchValue(findHasId(id, this.lists));
         }
 
         //Auto run if we have an id
