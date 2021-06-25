@@ -229,8 +229,8 @@ import {FinalAgreementComponent} from './components/candidates/intake/final-agre
 import {NgSelectModule} from "@ng-select/ng-select";
 import {CreateCandidateLanguageComponent} from './components/candidates/view/language/create/create-candidate-language.component';
 import {SalesforceStageComponent} from './components/util/salesforce-stage/salesforce-stage.component';
-import {FormControlConditionalComponent} from './components/util/form-control-conditional/form-control-conditional.component';
-import { FileSelectorComponent } from './components/util/file-selector/file-selector.component';
+import {IeltsScoreValidationComponent} from './components/util/ielts-score-validation/ielts-score-validation.component';
+import {FileSelectorComponent} from './components/util/file-selector/file-selector.component';
 
 @NgModule({
   declarations: [
@@ -437,7 +437,7 @@ import { FileSelectorComponent } from './components/util/file-selector/file-sele
     FinalAgreementComponent,
     CreateCandidateLanguageComponent,
     SalesforceStageComponent,
-    FormControlConditionalComponent,
+    IeltsScoreValidationComponent,
     FileSelectorComponent
   ],
   imports: [

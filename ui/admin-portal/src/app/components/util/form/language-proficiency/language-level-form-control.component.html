@@ -39,10 +39,8 @@
     <!-- LANGUAGE -->
     <div class="form-group" [hidden]="languageDisabled">
       <label>Language</label>
-
-      <select class="form-control" name="language" [formControlName]="'languageId'" [disabled]="languageDisabled">
-        <option [value]="language.id" *ngFor="let language of languages">{{language.name}}</option>
-      </select>
+      <ng-select [formControlName]="'languageId'" [items]="languages" [clearOnBackspace]="false"
+                 [clearable]="false" placeholder="Select" bindLabel="name" bindValue="id"></ng-select>
     </div>
 
     <!-- SPOKEN LEVEL -->

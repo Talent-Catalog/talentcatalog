@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {CandidateLanguage} from "../../../../../model/candidate-language";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {LanguageService} from "../../../../../services/language.service";
 import {
@@ -64,9 +64,9 @@ export class CreateCandidateLanguageComponent implements OnInit {
     );
 
     this.candidateForm = this.fb.group({
-      languageId: [null],
-      spokenLevelId: [null],
-      writtenLevelId: [null]
+      languageId: [null, Validators.required],
+      spokenLevelId: [null, Validators.required],
+      writtenLevelId: [null, Validators.required]
     });
     this.loading = false;
   }

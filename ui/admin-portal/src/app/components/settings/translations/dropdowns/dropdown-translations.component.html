@@ -28,24 +28,20 @@
           </div>
 
           <div class="form-group col-4">
-            <select class="form-control" id="type" formControlName="type">
-              <option value="">Select an object type...</option>
-              <option value="country">Countries</option>
-              <option value="nationality">Nationalities</option>
-              <option value="language">Languages</option>
-              <option value="language_level">Language Levels</option>
-              <option value="occupation">Occupations</option>
-              <option value="education_level">Education Levels</option>
-              <option value="education_major">Education Majors</option>
-            </select>
+            <ng-select id="type" formControlName="type" placeholder="Select an object type...">
+              <ng-option value="country">Countries</ng-option>
+              <ng-option value="nationality">Nationalities</ng-option>
+              <ng-option value="language">Languages</ng-option>
+              <ng-option value="language_level">Language Levels</ng-option>
+              <ng-option value="occupation">Occupations</ng-option>
+              <ng-option value="education_level">Education Levels</ng-option>
+              <ng-option value="education_major">Education Majors</ng-option>
+            </ng-select>
           </div>
 
           <div class="form-group col-4">
-            <select class="form-control" id="language" name="language" formControlName="language">
-              <option value="">Select a language...</option>
-              <option *ngFor="let systemLanguage of systemLanguages"
-                      [value]="systemLanguage.language">{{systemLanguage.label}}</option>
-            </select>
+            <ng-select id="language" name="language" [formControlName]="'language'" [items]="systemLanguages"
+                       placeholder="Select a language..." bindValue="language" bindLabel="label"></ng-select>
           </div>
 
         </div>

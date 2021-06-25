@@ -27,12 +27,9 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <select class="form-control"
-            id="destJob" [formControlName]="'destJob'">
-      <option *ngFor="let opt of destJobOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <ng-select id="destJob" [formControlName]="'destJob'" (clear)="setNoResponse('destJob')"
+               [items]="destJobOptions" [clearOnBackspace]="false"
+               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
   </div>
 
   <div *ngIf="destJob === 'No'">

@@ -216,6 +216,10 @@ export abstract class IntakeComponentBase implements AfterViewInit, OnDestroy, O
     return gotOne;
   }
 
+  private setNoResponse(formControlName: string) {
+    this.form.controls[formControlName].setValue('NoResponse');
+  };
+
   /**
    * When the component is destroyed we need to stop subscribing
    * (otherwise we get a memory leak)

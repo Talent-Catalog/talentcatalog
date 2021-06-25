@@ -2,11 +2,8 @@
 
   <div class="form-group">
     <label for="status">Status</label>
-    <select class="form-control" name="status" id="status" [formControlName]="'status'">
-      <option *ngFor="let opt of candidateStatusOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <ng-select id="status" name="status" [formControlName]="'status'" [items]="candidateStatusOptions" [clearable]="false"
+               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
   </div>
 
   <div class="form-group">

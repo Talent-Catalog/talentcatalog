@@ -26,12 +26,9 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <select class="form-control"
-            id="militaryService" [formControlName]="'militaryService'">
-      <option *ngFor="let opt of militaryServiceOptions" [value]="opt.value" [disabled]="!editable">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <ng-select id="militaryService" [formControlName]="'militaryService'" (clear)="setNoResponse('militaryService')"
+               [items]="militaryServiceOptions" [clearOnBackspace]="false"
+               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
   </div>
   <div *ngIf="served">
     <div>
@@ -64,12 +61,9 @@
     <label for="militaryWanted">
       Are you now wanted for military backup?
     </label>
-    <select class="form-control"
-            id="militaryWanted" [formControlName]="'militaryWanted'">
-      <option *ngFor="let opt of militaryWantedOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <ng-select id="militaryWanted" [formControlName]="'militaryWanted'" (clear)="setNoResponse('militaryWanted')"
+               [items]="militaryWantedOptions" [clearOnBackspace]="false"
+               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
   </div>
 </form>
 

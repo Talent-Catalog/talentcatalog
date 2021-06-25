@@ -28,12 +28,9 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <select class="form-control"
-            id="unhcrRegistered" [formControlName]="'unhcrRegistered'">
-      <option *ngFor="let opt of unhcrRegisteredOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <ng-select id="unhcrRegistered" [formControlName]="'unhcrRegistered'" (clear)="setNoResponse('unhcrRegistered')"
+               [items]="unhcrRegisteredOptions" [clearOnBackspace]="false"
+               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
   </div>
 
   <div *ngIf="showAll">
@@ -42,22 +39,17 @@
         <label for="unhcrStatus">
           What is your registration status with UNHCR?
         </label>
-        <select class="form-control"
-                id="unhcrStatus" [formControlName]="'unhcrStatus'">
-          <option *ngFor="let opt of unhcrStatusOptions" [value]="opt.value">
-            {{opt.displayText}}
-          </option>
-        </select>
+        <ng-select id="unhcrStatus" [formControlName]="'unhcrStatus'" (clear)="setNoResponse('unhcrStatus')"
+                   [items]="unhcrStatusOptions" [clearOnBackspace]="false"
+                   placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
       </div>
       <div class="form-group">
         <label for="unhcrNumber">What is your UNHCR ID number?</label>
-        <input type="text" class="form-control"
-        id="unhcrNumber" [formControlName]="'unhcrNumber'">
+        <input type="text" class="form-control" id="unhcrNumber" [formControlName]="'unhcrNumber'">
       </div>
       <div class="form-group">
         <label for="unhcrFile">How many people are included on your UNHCR file?</label>
-        <input type="number" class="form-control"
-        id="unhcrFile" [formControlName]="'unhcrFile'">
+        <input type="number" class="form-control" id="unhcrFile" [formControlName]="'unhcrFile'">
       </div>
     </div>
 
@@ -66,12 +58,9 @@
         <label for="unhcrNotRegStatus">
           What best describes your status not being registered?
         </label>
-        <select class="form-control"
-                id="unhcrNotRegStatus" [formControlName]="'unhcrNotRegStatus'">
-          <option *ngFor="let opt of NotRegisteredStatusOptions" [value]="opt.value">
-            {{opt.displayText}}
-          </option>
-        </select>
+        <ng-select id="unhcrNotRegStatus" [formControlName]="'unhcrNotRegStatus'" (clear)="setNoResponse('unhcrNotRegStatus')"
+                   [items]="NotRegisteredStatusOptions" [clearOnBackspace]="false"
+                   placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
       </div>
     </div>
 

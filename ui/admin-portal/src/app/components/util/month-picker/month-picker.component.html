@@ -14,14 +14,8 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="input-group">
-  <select class="form-control" [(ngModel)]="month" (ngModelChange)="updateMonth()">
-    <option [ngValue]="null" [disabled]="true">Month</option>
-    <option *ngFor="let month of months" [ngValue]="month">{{month}}</option>
-  </select>
-  <select class="form-control" [(ngModel)]="year" (ngModelChange)="updateYear()">
-    <option [ngValue]="null" [disabled]="true">Year</option>
-    <option *ngFor="let year of years" [ngValue]="year">{{year}} </option>
-  </select>
+<div class="d-flex">
+  <ng-select class="w-50" [(ngModel)]="month" (ngModelChange)="updateMonth()" [items]="months" placeholder="Month"></ng-select>
+  <ng-select class="w-50" [(ngModel)]="year" (ngModelChange)="updateYear()" [items]="years" placeholder="Year"></ng-select>
 </div>
 

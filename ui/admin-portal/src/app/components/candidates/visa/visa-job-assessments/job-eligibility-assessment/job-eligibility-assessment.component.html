@@ -10,11 +10,7 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <select class="form-control"
-            id="visaJobTbbEligibility" [formControlName]="'visaJobTbbEligibility'">
-      <option *ngFor="let opt of jobEligibilityAssessOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <ng-select id="visaJobTbbEligibility" [formControlName]="'visaJobTbbEligibility'" [items]="jobEligibilityAssessOptions"
+               placeholder="Select" bindValue="value" bindLabel="displayText"></ng-select>
   </div>
 </form>
