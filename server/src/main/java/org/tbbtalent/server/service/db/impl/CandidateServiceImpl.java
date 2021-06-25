@@ -105,8 +105,6 @@ public class CandidateServiceImpl implements CandidateService {
     private final CountryRepository countryRepository;
     private final CountryService countryService;
     private final EducationLevelRepository educationLevelRepository;
-    private final NationalityRepository nationalityRepository;
-    private final NationalityService nationalityService;
     private final PasswordHelper passwordHelper;
     private final UserContext userContext;
     private final SavedSearchService savedSearchService;
@@ -137,8 +135,6 @@ public class CandidateServiceImpl implements CandidateService {
         CountryRepository countryRepository,
         CountryService countryService,
         EducationLevelRepository educationLevelRepository,
-        NationalityRepository nationalityRepository,
-        NationalityService nationalityService,
         PasswordHelper passwordHelper,
         UserContext userContext,
         SavedSearchService savedSearchService,
@@ -164,8 +160,6 @@ public class CandidateServiceImpl implements CandidateService {
         this.countryRepository = countryRepository;
         this.countryService = countryService;
         this.educationLevelRepository = educationLevelRepository;
-        this.nationalityRepository = nationalityRepository;
-        this.nationalityService = nationalityService;
         this.passwordHelper = passwordHelper;
         this.userContext = userContext;
         this.savedSearchService = savedSearchService;
@@ -609,7 +603,7 @@ public class CandidateServiceImpl implements CandidateService {
             //Look up names from ids.
             List<String> reqNationalities = new ArrayList<>();
             for (Long id : nationalityIds) {
-                final Nationality nationality = nationalityService.getNationality(id);
+                final Country nationality = countryService.getCountry(id);
                 reqNationalities.add(nationality.getName());
             }
             boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
@@ -884,7 +878,7 @@ public class CandidateServiceImpl implements CandidateService {
 
         //set country and nationality to unknown on create as required for search
         candidate.setCountry(countryRepository.getOne(0L));
-        candidate.setNationality(nationalityRepository.getOne(0L));
+        candidate.setNationality(countryRepository.getOne(0L));
 
         //Save candidate to get id (but don't update Elasticsearch yet)
         candidate = save(candidate, false);
@@ -989,8 +983,8 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountryId()));
 
         // Load the country from the database - throw an exception if not found
-        Nationality nationality = nationalityRepository.findById(request.getNationalityId())
-                .orElseThrow(() -> new NoSuchObjectException(Nationality.class, request.getNationalityId()));
+        Country nationality = countryRepository.findById(request.getNationalityId())
+                .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getNationalityId()));
 
         User user = candidate.getUser();
         user.setFirstName(request.getFirstName());
@@ -1135,8 +1129,8 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountryId()));
 
         // Load the nationality from the database - throw an exception if not found
-        Nationality nationality = nationalityRepository.findById(request.getNationality())
-                .orElseThrow(() -> new NoSuchObjectException(Nationality.class, request.getNationality()));
+        Country nationality = countryRepository.findById(request.getNationality())
+                .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getNationality()));
 
         User user = userContext.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
@@ -2017,9 +2011,9 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         final Long partnerCitizenshipId = data.getPartnerCitizenshipId();
-        Nationality partnerCitizenship = null;
+        Country partnerCitizenship = null;
         if (partnerCitizenshipId != null) {
-            partnerCitizenship = nationalityRepository.findById(partnerCitizenshipId).orElse(null);
+            partnerCitizenship = countryRepository.findById(partnerCitizenshipId).orElse(null);
         }
 
         final Long drivingLicenseCountryId = data.getDrivingLicenseCountryId();
