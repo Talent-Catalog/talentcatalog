@@ -19,7 +19,6 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {CandidateService} from '../../../../../services/candidate.service';
 import {Candidate, Gender} from '../../../../../model/candidate';
-import {NationalityService} from '../../../../../services/nationality.service';
 import {CountryService} from '../../../../../services/country.service';
 import {generateYearArray} from '../../../../../util/year-helper';
 import {EnumOption, enumOptions} from "../../../../../util/enum";
@@ -47,7 +46,6 @@ export class EditCandidateContactComponent implements OnInit {
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
               private candidateService: CandidateService,
-              private nationalityService: NationalityService,
               private countryService: CountryService ) {
   }
 
@@ -68,7 +66,7 @@ export class EditCandidateContactComponent implements OnInit {
     );
 
     /*load the nationalities */
-    this.nationalityService.listNationalities().subscribe(
+    this.countryService.listCountries().subscribe(
       (response) => {
         this.nationalities = response;
       },

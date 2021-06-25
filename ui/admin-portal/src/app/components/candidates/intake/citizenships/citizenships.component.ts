@@ -16,13 +16,13 @@
 
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {Candidate, CandidateIntakeData} from "../../../../model/candidate";
-import {Nationality} from "../../../../model/nationality";
 import {
   CandidateCitizenshipService,
   CreateCandidateCitizenshipRequest
 } from "../../../../services/candidate-citizenship.service";
 import {Subject} from "rxjs/index";
 import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
+import {Country} from "../../../../model/country";
 
 @Component({
   selector: 'app-citizenships',
@@ -33,7 +33,7 @@ export class CitizenshipsComponent implements OnInit {
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
   error: boolean;
-  @Input() nationalities: Nationality[];
+  @Input() nationalities: Country[];
   open: boolean;
   saving: boolean;
   activeIds: string;

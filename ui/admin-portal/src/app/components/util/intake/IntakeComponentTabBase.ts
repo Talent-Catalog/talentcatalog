@@ -18,8 +18,6 @@ import {Directive, Input, OnInit} from '@angular/core';
 import {forkJoin} from 'rxjs';
 import {Candidate, CandidateIntakeData} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
-import {Nationality} from '../../../model/nationality';
-import {NationalityService} from '../../../services/nationality.service';
 import {CountryService} from '../../../services/country.service';
 import {Country} from '../../../model/country';
 import {EducationLevel} from '../../../model/education-level';
@@ -86,7 +84,7 @@ export abstract class IntakeComponentTabBase implements OnInit {
   /**
    * All standard nationalities
    */
-  nationalities: Nationality[];
+  nationalities: Country[];
 
   /**
    * All TBB destinations
@@ -121,7 +119,6 @@ export abstract class IntakeComponentTabBase implements OnInit {
   public constructor(
     protected candidateService: CandidateService,
     protected countryService: CountryService,
-    protected nationalityService: NationalityService,
     protected educationLevelService: EducationLevelService,
     protected occupationService: OccupationService,
     protected languageLevelService: LanguageLevelService,
@@ -149,7 +146,7 @@ export abstract class IntakeComponentTabBase implements OnInit {
     forkJoin({
       'countries': this.countryService.listCountries(),
       'tbbDestinations': this.countryService.listTBBDestinations(),
-      'nationalities': this.nationalityService.listNationalities(),
+      'nationalities': this.countryService.listCountries(),
       'educationLevels': this.educationLevelService.listEducationLevels(),
       'occupations': this.occupationService.listOccupations(),
       'languageLevels': this.languageLevelService.listLanguageLevels(),

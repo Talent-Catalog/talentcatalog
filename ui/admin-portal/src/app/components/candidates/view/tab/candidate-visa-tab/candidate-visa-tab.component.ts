@@ -16,7 +16,6 @@
 
 import {Component, OnInit} from '@angular/core';
 import {CandidateService} from '../../../../../services/candidate.service';
-import {NationalityService} from '../../../../../services/nationality.service';
 import {IntakeComponentTabBase} from '../../../../util/intake/IntakeComponentTabBase';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {CountryService} from '../../../../../services/country.service';
@@ -47,7 +46,6 @@ export class CandidateVisaTabComponent extends IntakeComponentTabBase implements
 
   constructor(candidateService: CandidateService,
               countryService: CountryService,
-              nationalityService: NationalityService,
               educationLevelService: EducationLevelService,
               occupationService: OccupationService,
               languageLevelService: LanguageLevelService,
@@ -56,7 +54,7 @@ export class CandidateVisaTabComponent extends IntakeComponentTabBase implements
               private candidateVisaCheckService: CandidateVisaCheckService,
               private modalService: NgbModal,
               private fb: FormBuilder) {
-    super(candidateService, countryService, nationalityService, educationLevelService, occupationService, languageLevelService, noteService, authService)
+    super(candidateService, countryService, educationLevelService, occupationService, languageLevelService, noteService, authService)
   }
 
   onDataLoaded(init: boolean) {

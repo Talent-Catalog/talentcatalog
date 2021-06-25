@@ -23,8 +23,8 @@ import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 import {EducationLevel} from '../../../../model/education-level';
 import {Occupation} from '../../../../model/occupation';
 import {LanguageLevel} from '../../../../model/language-level';
-import {Nationality} from '../../../../model/nationality';
 import {generateYearArray} from '../../../../util/year-helper';
+import {Country} from "../../../../model/country";
 
 @Component({
   selector: 'app-marital-status',
@@ -36,7 +36,7 @@ export class MaritalStatusComponent extends IntakeComponentBase implements OnIni
   @Input() educationLevels: EducationLevel[];
   @Input() occupations: Occupation[];
   @Input() languageLevels: LanguageLevel[];
-  @Input() nationalities: Nationality[];
+  @Input() nationalities: Country[];
 
   public maritalStatusOptions: EnumOption[] = enumOptions(MaritalStatus);
   public partnerRegisteredOptions: EnumOption[] = enumOptions(YesNoUnsure);
