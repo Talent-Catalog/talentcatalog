@@ -39,8 +39,8 @@
 
       <!-- EDUCATION TYPE -->
       <div class="form-group">
-        <label for="educationType">Education Type</label>
-        <ng-select id="educationType" name="educationType" [formControlName]="'educationType'">
+        <label for="educationType">Education Type *</label>
+        <ng-select id="educationType" name="educationType" [formControlName]="'educationType'" [clearable]="false">
 <!--          <option value="School">School</option>-->
           <ng-option value="Vocational">Vocational</ng-option>
           <ng-option value="Associate">Associate</ng-option>
@@ -53,7 +53,7 @@
       <!-- MAJOR -->
       <div class="form-group">
         <label for="majorId">Major *</label>
-        <ng-select id="majorId" name="majorId" [formControlName]="'majorId'" [items]="majors"
+        <ng-select id="majorId" name="majorId" [formControlName]="'majorId'" [items]="majors" [clearable]="false"
                    placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
       </div>
 
@@ -73,7 +73,7 @@
       <!-- COUNTRY -->
       <div class="form-group">
         <label for="countryId">Country *</label>
-        <ng-select id="countryId" name="country" [formControlName]="'countryId'" [items]="majors"
+        <ng-select id="countryId" name="country" [formControlName]="'countryId'" [items]="countries" [clearable]="false"
                    placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
       </div>
 

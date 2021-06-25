@@ -22,7 +22,7 @@
   </div>
   <div class="modal-body">
     <ng-select id="hasName" [formControlName]="'hasNameIndex'"
-               [closeOnSelect]="true" placeholder="Select" [clearable]="false">
+               placeholder="Select" [clearable]="false">
       <ng-option *ngFor="let hasName of hasNames; let i=index" [value]="i">
         {{hasName?.name}}</ng-option>
     </ng-select>

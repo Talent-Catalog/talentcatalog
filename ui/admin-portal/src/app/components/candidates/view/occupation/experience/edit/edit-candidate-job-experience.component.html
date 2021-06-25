@@ -48,7 +48,7 @@
       <div class="form-group">
         <label for="countryId">Country *</label>
         <ng-select id="countryId" name="country" [formControlName]="'countryId'" [items]="countries"
-                   placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
+                   [clearable]="false" bindValue="id" bindLabel="name"></ng-select>
       </div>
 
       <!-- START DATE -->
@@ -66,7 +66,7 @@
       <!-- FULL TIME -->
       <div class="form-group">
         <label for="fullTime">Contract Type *</label>
-        <ng-select id="fullTime" name="fullTime" [formControlName]="'fullTime'">
+        <ng-select id="fullTime" name="fullTime" [formControlName]="'fullTime'" [clearable]="false">
           <ng-option value="true">Full time</ng-option>
           <ng-option value="false">Part Time</ng-option>
         </ng-select>
@@ -75,7 +75,7 @@
       <!-- PAID -->
       <div class="form-group">
         <label for="paid">Employment Type *</label>
-        <ng-select id="paid" name="paid" [formControlName]="'paid'">
+        <ng-select id="paid" name="paid" [formControlName]="'paid'" [clearable]="false">
           <ng-option value="true">Paid</ng-option>
           <ng-option value="false">Voluntary</ng-option>
         </ng-select>

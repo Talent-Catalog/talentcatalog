@@ -41,21 +41,21 @@
       <div class="form-group">
         <label for="languageId">Language:</label>
         <ng-select id="languageId" name="languageId" [formControlName]="'languageId'" [items]="languages"
-                   placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
+                   [clearable]="false" placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
       </div>
 
       <!-- SPOKEN LEVEL -->
       <div class="form-group">
         <label for="spokenLevelId">Speaking:</label>
         <ng-select id="spokenLevelId" name="spokenLevelId" [formControlName]="'spokenLevelId'" [items]="languageLevels"
-                   placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
+                   [clearable]="false" placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
       </div>
 
       <!-- SPOKEN LEVEL -->
       <div class="form-group">
         <label for="writtenLevelId">Reading and Writing:</label>
         <ng-select id="writtenLevelId" name="writtenLevelId" [formControlName]="'writtenLevelId'" [items]="languageLevels"
-                   placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
+                   [clearable]="false" placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
       </div>
 
       <div class="modal-footer">

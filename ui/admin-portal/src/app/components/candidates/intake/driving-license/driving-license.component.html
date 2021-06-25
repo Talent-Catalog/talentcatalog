@@ -30,7 +30,7 @@
       </app-autosave-status>
     </div>
     <ng-select id="canDrive" [formControlName]="'canDrive'" (clear)="setNoResponse('canDrive')"
-               [items]="canDriveOptions" [closeOnSelect]="true" [clearOnBackspace]="false"
+               [items]="canDriveOptions" [clearOnBackspace]="false"
                placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
   </div>
 
@@ -40,7 +40,7 @@
         Do you have a driving license?
       </label>
       <ng-select id="drivingLicense" [formControlName]="'drivingLicense'" (clear)="setNoResponse('drivingLicense')"
-                 [items]="drivingLicenseOptions" [closeOnSelect]="true" [clearOnBackspace]="false"
+                 [items]="drivingLicenseOptions" [clearOnBackspace]="false"
                  placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
     </div>
 
@@ -56,7 +56,7 @@
           Country of Issue
         </label>
         <ng-select id="drivingLicenseCountryId" [formControlName]="'drivingLicenseCountryId'" (clear)="setNoResponse('drivingLicenseCountryId')"
-                   [items]="countries" [closeOnSelect]="true" [clearOnBackspace]="false"
+                   [items]="countries" [clearOnBackspace]="false"
                    placeholder="Select" bindLabel="name" bindValue="id"></ng-select>
       </div>
 

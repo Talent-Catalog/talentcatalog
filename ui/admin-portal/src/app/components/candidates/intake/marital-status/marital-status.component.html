@@ -29,7 +29,7 @@
       </app-autosave-status>
     </div>
     <ng-select id="maritalStatus" [formControlName]="'maritalStatus'" (clear)="setNoResponse('maritalStatus')"
-               [items]="maritalStatusOptions" [closeOnSelect]="true" [clearOnBackspace]="false"
+               [items]="maritalStatusOptions" [clearOnBackspace]="false"
                placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
     <p class="small">
       Note: If you are planning on immigrating with your spouse, his or her professional information is also critical
@@ -43,7 +43,7 @@
         Is your partner registered with TBB?
       </label>
       <ng-select id="partnerRegistered" [formControlName]="'partnerRegistered'" (clear)="setNoResponse('partnerRegistered')"
-                 [items]="partnerRegisteredOptions" [closeOnSelect]="true" [clearOnBackspace]="false"
+                 [items]="partnerRegisteredOptions" [clearOnBackspace]="false"
                  placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
     </div>
     <div *ngIf="partnerRegistered === 'Yes'">
@@ -65,7 +65,7 @@
         What is your partner’s highest level of education?
       </label>
       <ng-select id="partnerEduLevelId" [formControlName]="'partnerEduLevelId'" [items]="educationLevels"
-                 [closeOnSelect]="true" [clearOnBackspace]="false"
+                 [clearOnBackspace]="false"
                  placeholder="Select" bindLabel="name" bindValue="id"></ng-select>
     </div>
     <div *ngIf="eduLevelSelected">
@@ -101,7 +101,7 @@
         Does your partner speak English?
       </label>
       <ng-select id="partnerEnglish" [formControlName]="'partnerEnglish'" (clear)="setNoResponse('partnerEnglish')"
-                 [items]="partnerEnglishOptions" [closeOnSelect]="true" [clearOnBackspace]="false"
+                 [items]="partnerEnglishOptions" [clearOnBackspace]="false"
                  placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
     </div>
     <div *ngIf="partnerEnglish === 'Yes'">
@@ -110,7 +110,7 @@
           What level of English does your partner speak?
         </label>
         <ng-select id="partnerEnglishLevelId" [formControlName]="'partnerEnglishLevelId'" (clear)="setNoResponse('partnerEnglishLevelId')"
-                   [items]="languageLevels" [closeOnSelect]="true" [clearOnBackspace]="false"
+                   [items]="languageLevels" [clearOnBackspace]="false"
                    placeholder="Select" bindLabel="name" bindValue="id"></ng-select>
       </div>
       <div class="form-group">
@@ -118,7 +118,7 @@
           Has your partner completed IELTS?
         </label>
         <ng-select id="partnerIelts" [formControlName]="'partnerIelts'" (clear)="setNoResponse('partnerIelts')"
-                   [items]="partnerIeltsOptions" [closeOnSelect]="true" [clearOnBackspace]="false"
+                   [items]="partnerIeltsOptions" [clearOnBackspace]="false"
                    placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
       </div>
       <div *ngIf="takenIelts">
@@ -146,7 +146,7 @@
         What is your partners current citizenship?
       </label>
       <ng-select id="partnerCitizenshipId" [formControlName]="'partnerCitizenshipId'"
-                 [items]="nationalities" [closeOnSelect]="true" [clearOnBackspace]="false"
+                 [items]="nationalities" [clearOnBackspace]="false"
                  placeholder="Select" bindLabel="name" bindValue="id"></ng-select>
     </div>
 

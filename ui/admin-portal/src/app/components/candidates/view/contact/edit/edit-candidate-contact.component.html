@@ -54,7 +54,7 @@
       <div class="form-group">
         <label for="nationalityId">Nationality *</label>
         <ng-select id="nationalityId" name="nationality" [formControlName]="'nationalityId'" [items]="nationalities"
-                   placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
+                   [clearable]="false" placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
       </div>
 
       <!-- DOB -->
@@ -79,7 +79,7 @@
 
       <div class="form-group">
         <label for="countryId">Current country *</label>
-        <ng-select id="countryId" name="countryId" [formControlName]="'countryId'" [items]="countries"
+        <ng-select id="countryId" name="countryId" [formControlName]="'countryId'" [items]="countries" [clearable]="false"
                    placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
       </div>
 

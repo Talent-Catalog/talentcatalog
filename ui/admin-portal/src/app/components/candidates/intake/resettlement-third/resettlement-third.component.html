@@ -27,7 +27,7 @@
       </app-autosave-status>
     </div>
     <ng-select id="resettleThird" [formControlName]="'resettleThird'" (clear)="setNoResponse('resettleThird')"
-               [items]="resettlementThirdOptions" [closeOnSelect]="true" [clearOnBackspace]="false"
+               [items]="resettlementThirdOptions" [clearOnBackspace]="false"
                placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
   </div>
   <div *ngIf="resettlementThird === 'Yes'">

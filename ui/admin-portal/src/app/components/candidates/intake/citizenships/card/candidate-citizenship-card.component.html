@@ -36,7 +36,7 @@
           </div>
         </div>
         <ng-select [id]="'nationality'+myRecordIndex" [formControlName]="'citizenNationalityId'"
-                   [closeOnSelect]="true" [clearOnBackspace]="false" placeholder="Select">
+                   [clearOnBackspace]="false" placeholder="Select">
           <ng-option *ngFor="let nationality of filteredNationalities" [value]="nationality.id">
             {{nationality.name}}</ng-option>
         </ng-select>
@@ -46,7 +46,7 @@
         <div class="form-group">
           <label [for]="'hasPassport'+myRecordIndex">Passport?</label>
           <ng-select [id]="'hasPassport'+myRecordIndex" [formControlName]="'citizenHasPassport'" (clear)="setNoResponse('citizenHasPassport')"
-                     [items]="hasPassportOptions" [closeOnSelect]="true" [clearOnBackspace]="false"
+                     [items]="hasPassportOptions" [clearOnBackspace]="false"
                      placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
         </div>
         <div *ngIf="hasPassport === 'ValidPassport'">

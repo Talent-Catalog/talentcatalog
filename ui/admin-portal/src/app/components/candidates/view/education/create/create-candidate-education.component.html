@@ -40,7 +40,7 @@
       <!-- EDUCATION TYPE -->
       <div class="form-group">
         <label for="educationType">Education Type *</label>
-        <ng-select id="educationType" [formControlName]="'educationType'" placeholder="Select">
+        <ng-select id="educationType" [formControlName]="'educationType'" placeholder="Select" [clearable]="false">
           <ng-option value="Associate">Associate</ng-option>
           <ng-option value="Vocational">Vocational</ng-option>
           <ng-option value="Bachelor">Bachelor</ng-option>
@@ -53,14 +53,13 @@
       <div class="form-group">
         <label for="educationMajorId">Major *</label>
         <ng-select id="educationMajorId" name="educationMajorId" [formControlName]="'educationMajorId'" [items]="majors"
-                   placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
+                   [clearable]="false" placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
       </div>
 
       <!-- COURSE NAME -->
       <div class="form-group">
         <label for="courseName">Course Name *</label>
-        <input type="text" class="form-control" id="courseName"
-               [formControlName]="'courseName'">
+        <input type="text" class="form-control" id="courseName" [formControlName]="'courseName'">
       </div>
 
       <!-- INSTITUTION NAME -->
@@ -73,7 +72,7 @@
       <div class="form-group">
         <label for="countryId">Country *</label>
         <ng-select id="countryId" name="country" [formControlName]="'countryId'" [items]="countries"
-                   placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
+                   [clearable]="false" placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
       </div>
 
       <!-- COURSE LENGTH -->

@@ -12,7 +12,7 @@
       </app-autosave-status>
     </div>
     <ng-select id="visaHealthAssessment" [formControlName]="'visaHealthAssessment'" (clear)="setNoResponse('visaHealthAssessment')"
-               [items]="healthAssessmentOptions" [closeOnSelect]="true" [clearOnBackspace]="false"
+               [items]="healthAssessmentOptions" [clearOnBackspace]="false"
                placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
   </div>
   <div *ngIf="hasNotes" class="form-group">

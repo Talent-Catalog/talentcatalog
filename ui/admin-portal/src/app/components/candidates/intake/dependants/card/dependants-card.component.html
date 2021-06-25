@@ -38,7 +38,7 @@
         </div>
 
         <ng-select [id]="'dependantRelation'+myRecordIndex" [formControlName]="'dependantRelation'" (clear)="setNoResponse('dependantRelation')"
-                   [items]="dependantRelations" [closeOnSelect]="true" [clearOnBackspace]="false"
+                   [items]="dependantRelations" [clearOnBackspace]="false"
                    placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
       </div>
 
@@ -70,7 +70,7 @@
           </label>
           <ng-select [id]="'dependantHealthConcerns'+myRecordIndex" [formControlName]="'dependantHealthConcerns'"
                      (clear)="setNoResponse('dependantHealthConcerns')" [items]="dependentHealthConcerns"
-                     [closeOnSelect]="true" [clearOnBackspace]="false"
+                     [clearOnBackspace]="false"
                      placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
         </div>
         <div *ngIf="hasHealthConcern === 'Yes'" class="form-group">
@@ -86,7 +86,7 @@
           </label>
           <ng-select [id]="'dependantRegistered'+myRecordIndex" [formControlName]="'dependantRegistered'"
                      (clear)="setNoResponse('dependantRegistered')" [items]="dependantRegisterOptions"
-                     [closeOnSelect]="true" [clearOnBackspace]="false"
+                     [clearOnBackspace]="false"
                      placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
         </div>
 

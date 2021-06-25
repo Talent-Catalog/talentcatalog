@@ -27,7 +27,7 @@
           <form [formGroup]="categoryForm" class="col-sm-4 pt-3">
 <!--            <label for="savedSearchSubtype">Category</label>-->
             <ng-select id="savedSearchSubtype" [formControlName]="'savedSearchSubtype'" [items]="savedSearchTypeSubInfos"
-                       [closeOnSelect]="true" [clearable]="false" (change)="onSavedSearchSubtypeChange($event)"
+                       [clearable]="false" (change)="onSavedSearchSubtypeChange($event)"
                        placeholder="Select" bindLabel="title" bindValue="savedSearchSubtype"></ng-select>
           </form>
           <app-browse-candidate-sources

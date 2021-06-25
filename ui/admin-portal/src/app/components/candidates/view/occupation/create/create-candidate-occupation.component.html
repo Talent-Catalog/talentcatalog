@@ -42,9 +42,8 @@
         <div class="col-12">
           <div class="form-group">
             <label for="occupationId">Occupation</label>
-            <ng-select id="occupationId" name="occupationId" [formControlName]="'occupationId'" placeholder="Select">
-              <ng-option *ngFor="let occupation of occupations" [value]="occupation.id">{{occupation.name}}</ng-option>
-            </ng-select>
+            <ng-select id="occupationId" name="occupationId" [formControlName]="'occupationId'" [items]="occupations"
+                       [clearable]="false" placeholder="Select" bindLabel="name" bindValue="id"></ng-select>
           </div>
         </div>
 

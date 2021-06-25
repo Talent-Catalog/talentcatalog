@@ -29,7 +29,7 @@
       </app-autosave-status>
     </div>
     <ng-select id="unrwaRegistered" [formControlName]="'unrwaRegistered'" (clear)="setNoResponse('unrwaRegistered')"
-               [items]="unrwaRegisteredOptions" [closeOnSelect]="true" [clearOnBackspace]="false"
+               [items]="unrwaRegisteredOptions" [clearOnBackspace]="false"
                placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
   </div>
 
@@ -53,7 +53,7 @@
           What best describes your status not being registered?
         </label>
         <ng-select id="unrwaNotRegStatus" [formControlName]="'unrwaNotRegStatus'" (clear)="setNoResponse('unrwaNotRegStatus')"
-                   [items]="NotRegisteredStatusOptions" [closeOnSelect]="true" [clearOnBackspace]="false"
+                   [items]="NotRegisteredStatusOptions" [clearOnBackspace]="false"
                    placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
       </div>
     </div>

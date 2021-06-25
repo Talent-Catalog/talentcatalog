@@ -30,7 +30,7 @@
       </app-autosave-status>
     </div>
     <ng-select id="visaReject" [formControlName]="'visaReject'" (clear)="setNoResponse('visaReject')"
-               [items]="visaRejectOptions" [closeOnSelect]="true" [clearOnBackspace]="false"
+               [items]="visaRejectOptions" [clearOnBackspace]="false"
                placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
   </div>
   <div *ngIf="visaReject === 'Yes'" class="form-group">

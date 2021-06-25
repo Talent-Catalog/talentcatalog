@@ -36,7 +36,7 @@
           </div>
         </div>
         <ng-select [id]="'examType'+myRecordIndex" [formControlName]="'examType'" (clear)="setNoResponse('examType')"
-                   [items]="examOptions" [closeOnSelect]="true" [clearOnBackspace]="false"
+                   [items]="examOptions" [clearOnBackspace]="false"
                    placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
       </div>
 
@@ -63,7 +63,7 @@
             In what year did you take the test?
           </label>
           <ng-select [id]="'examYear'+myRecordIndex" [formControlName]="'examYear'" [items]="years"
-                     [closeOnSelect]="true" [clearOnBackspace]="false" placeholder="Select"></ng-select>
+                     [clearOnBackspace]="false" placeholder="Select"></ng-select>
         </div>
         <div class="form-group">
           <label [for]="'examNotes'+myRecordIndex">Notes</label>

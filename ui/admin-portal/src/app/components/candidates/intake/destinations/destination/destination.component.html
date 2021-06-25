@@ -30,7 +30,7 @@
       </app-autosave-status>
     </div>
     <ng-select [id]="'destinationInterest'+myRecordIndex" [formControlName]="'destinationInterest'" (clear)="setNoResponse('destinationInterest')"
-               [items]="destInterestOptions" [closeOnSelect]="true" [clearOnBackspace]="false"
+               [items]="destInterestOptions" [clearOnBackspace]="false"
                placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
   </div>
 
@@ -38,7 +38,7 @@
     <div class="form-group">
       <label [for]="'destinationFamily'+myRecordIndex">Do you have family in {{country.name}} and if so what is the closest relative?</label>
       <ng-select [id]="'destinationFamily'+myRecordIndex" [formControlName]="'destinationFamily'" (clear)="setNoResponse('destinationFamily')"
-                 [items]="destFamilyOptions" [closeOnSelect]="true" [clearOnBackspace]="false"
+                 [items]="destFamilyOptions" [clearOnBackspace]="false"
                  placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
     </div>
     <div  *ngIf="showLocation()">

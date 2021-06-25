@@ -27,7 +27,7 @@
       </app-autosave-status>
     </div>
     <ng-select id="workPermit" [formControlName]="'workPermit'" (clear)="setNoResponse('workPermit')"
-               [items]="workPermitOptions" [closeOnSelect]="true" [clearOnBackspace]="false"
+               [items]="workPermitOptions" [clearOnBackspace]="false"
                placeholder="Select" bindLabel="displayText" bindValue="value">
     </ng-select>
   </div>
@@ -35,7 +35,7 @@
     <div class="form-group">
       <label for="workPermitDesired">Are you legally able to obtain a work permit in your desired field?</label>
       <ng-select id="workPermitDesired" [formControlName]="'workPermitDesired'" (clear)="setNoResponse('workPermitDesired')"
-                 [items]="workPermitDesiredOptions" [closeOnSelect]="true" [clearOnBackspace]="false"
+                 [items]="workPermitDesiredOptions" [clearOnBackspace]="false"
                  placeholder="Select" bindLabel="displayText" bindValue="value">
       </ng-select>
     </div>

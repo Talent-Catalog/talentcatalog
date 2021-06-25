@@ -29,7 +29,7 @@
       </app-autosave-status>
     </div>
     <ng-select id="residenceStatus" [formControlName]="'residenceStatus'" (clear)="setNoResponse('residenceStatus')"
-               [items]="residenceStatusOptions" [closeOnSelect]="true" [clearOnBackspace]="false"
+               [items]="residenceStatusOptions" [clearOnBackspace]="false"
                placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
   </div>
   <div *ngIf="hasNotes">

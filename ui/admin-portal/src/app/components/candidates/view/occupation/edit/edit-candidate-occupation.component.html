@@ -40,7 +40,7 @@
 
       <div class="form-group">
         <ng-select id="occupationId" name="occupationId" [formControlName]="'occupationId'" [items]="occupations"
-                   placeholder="Select"  bindValue="name" bindLabel="id"></ng-select>
+                   [clearable]="false" placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
       </div>
 
       <div class="row">
