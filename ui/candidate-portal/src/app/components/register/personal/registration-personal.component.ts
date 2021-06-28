@@ -19,8 +19,6 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {Candidate} from "../../../model/candidate";
 import {CandidateService} from "../../../services/candidate.service";
-import {NationalityService} from "../../../services/nationality.service";
-import {Nationality} from "../../../model/nationality";
 import {CountryService} from "../../../services/country.service";
 import {Country} from "../../../model/country";
 import {RegistrationService} from "../../../services/registration.service";
@@ -51,7 +49,7 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
 
   candidate: Candidate;
   countries: Country[];
-  nationalities: Nationality[];
+  nationalities: Country[];
   years: number[];
   subscription;
 
@@ -59,7 +57,6 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
               private router: Router,
               private candidateService: CandidateService,
               private countryService: CountryService,
-              private nationalityService: NationalityService,
               public translateService: TranslateService,
               public registrationService: RegistrationService) { }
 
@@ -127,17 +124,6 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
       (error) => {
         this.error = error;
         this._loading.countries = false;
-      }
-    );
-
-    this.nationalityService.listNationalities().subscribe(
-      (response) => {
-        this.nationalities = response;
-        this._loading.nationalities = false;
-      },
-      (error) => {
-        this.error = error;
-        this._loading.nationalities = false;
       }
     );
   }

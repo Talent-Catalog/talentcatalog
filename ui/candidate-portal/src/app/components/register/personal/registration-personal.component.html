@@ -125,7 +125,7 @@
         <label for="nationality">{{ 'REGISTRATION.PERSONAL.LABEL.NATIONALITY' | translate }} <sup>*</sup></label>
         <select class="form-control" name="nationality" id="nationality" [formControlName]="'nationality'">
           <option value=""></option>
-          <option *ngFor="let nationality of nationalities" [value]="nationality.id">{{nationality.name}}</option>
+          <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
         </select>
         <app-form-control-error [control]="form.controls.nationality"></app-form-control-error>
       </div>
