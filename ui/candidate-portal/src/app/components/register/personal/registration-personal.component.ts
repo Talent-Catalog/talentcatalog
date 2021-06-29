@@ -42,8 +42,7 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
   // Component states
   _loading = {
     candidate: true,
-    countries: true,
-    nationalities: true
+    countries: true
   };
   saving: boolean;
 
@@ -113,7 +112,6 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
 
   loadDropDownData(){
     this._loading.countries = true;
-    this._loading.nationalities = true;
 
     /* Load the countries */
     this.countryService.listCountries().subscribe(
@@ -178,7 +176,7 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
 
   get loading() {
     const l = this._loading;
-    return l.candidate || l.countries || l.nationalities;
+    return l.candidate || l.countries
   }
 
   cancel() {

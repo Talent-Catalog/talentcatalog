@@ -89,7 +89,7 @@ public class CandidateBuilderSelector {
                 .add("maxEducationLevel", educationLevelDto())
                 .add("surveyType", surveyTypeDto())
                 .add("country", countryDto())
-                .add("nationality", nationalityDto())
+                .add("nationality", countryDto())
                 .add("user", userDto())
                 .add("candidateReviewStatusItems", reviewDto())
                 ;
@@ -115,7 +115,7 @@ public class CandidateBuilderSelector {
                 .add("contextNote")
                 .add("country", countryDto())
                 .add("user",userSemiLimitedDto())
-                .add("nationality", nationalityDto())
+                .add("nationality", countryDto())
                 .add("candidateReviewStatusItems", reviewDto())
                 ;
     }
@@ -167,7 +167,7 @@ public class CandidateBuilderSelector {
                 ;
     }
 
-    private DtoBuilder nationalityDto() {
+    private DtoBuilder nationalityBreakDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("name")

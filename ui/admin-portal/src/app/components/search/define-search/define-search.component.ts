@@ -20,7 +20,6 @@ import {Candidate, CandidateStatus, Gender} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
 import {Country} from '../../../model/country';
 import {CountryService} from '../../../services/country.service';
-import {NationalityService} from '../../../services/nationality.service';
 import {Language} from '../../../model/language';
 import {LanguageService} from '../../../services/language.service';
 import {SearchResults} from '../../../model/search-results';
@@ -118,7 +117,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(private http: HttpClient, private fb: FormBuilder,
               private candidateService: CandidateService,
-              private nationalityService: NationalityService,
               private countryService: CountryService,
               private languageService: LanguageService,
               private savedSearchService: SavedSearchService,

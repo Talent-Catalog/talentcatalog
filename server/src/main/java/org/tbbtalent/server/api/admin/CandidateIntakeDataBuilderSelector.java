@@ -116,7 +116,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("partnerIelts")
                 .add("partnerIeltsScore")
                 .add("partnerIeltsYr")
-                .add("partnerCitizenship", nationalityDto())
+                .add("partnerCitizenship", countryDto())
 
                 .add("residenceStatus")
                 .add("residenceStatusNotes")
@@ -164,7 +164,7 @@ public class CandidateIntakeDataBuilderSelector {
     private DtoBuilder candidateCitizenshipDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("nationality", nationalityDto())
+                .add("nationality", countryDto())
                 .add("hasPassport")
                 .add("passportExp")
                 .add("notes")
@@ -264,7 +264,7 @@ public class CandidateIntakeDataBuilderSelector {
                 ;
     }
 
-    private DtoBuilder nationalityDto() {
+    private DtoBuilder nationalityBreakDto() {
         return new DtoBuilder()
                 .add("id")
                 ;

@@ -39,9 +39,6 @@ import {LocalStorageModule} from 'angular-2-local-storage';
 import {LoginComponent} from './components/login/login.component';
 import {SettingsComponent} from './components/settings/settings.component';
 import {SearchUsersComponent} from './components/settings/users/search-users.component';
-import {SearchNationalitiesComponent} from './components/settings/nationalities/search-nationalities.component';
-import {CreateNationalityComponent} from './components/settings/nationalities/create/create-nationality.component';
-import {EditNationalityComponent} from './components/settings/nationalities/edit/edit-nationality.component';
 import {ConfirmationComponent} from './components/util/confirm/confirmation.component';
 import {SearchCountriesComponent} from './components/settings/countries/search-countries.component';
 import {CreateCountryComponent} from './components/settings/countries/create/create-country.component';
@@ -244,16 +241,12 @@ import {FileSelectorComponent} from './components/util/file-selector/file-select
     DeleteCandidateComponent,
     SettingsComponent,
     SearchUsersComponent,
-    SearchNationalitiesComponent,
-    EditNationalityComponent,
-    CreateNationalityComponent,
     SearchCountriesComponent,
     CreateCountryComponent,
     EditCountryComponent,
     SearchLanguagesComponent,
     CreateLanguageComponent,
     EditLanguageComponent,
-    CreateNationalityComponent,
     SearchSavedSearchesComponent,
     CreateUpdateSearchComponent,
     CandidateSearchCardComponent,
