@@ -51,6 +51,7 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
   nationalities: Country[];
   years: number[];
   subscription;
+  tbbCandValid: boolean;
 
   constructor(private fb: FormBuilder,
               private router: Router,
@@ -110,7 +111,33 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
     );
   }
 
-  loadDropDownData(){
+  // private tbbCriteriaValidator(): ValidatorFn {
+  //   return (control: AbstractControl): ValidationErrors | null => {
+  //     //If there are subtypes associated with the currently selected type,
+  //     //as indicated by a non null savedSearchTypeSubInfos, the subtype control
+  //     //is required, ie must have a non empty value.
+  //     return this.country && (control.value == null) ?
+  //       { 'subtypeRequired': true } : null;
+  //   };
+  // };
+
+  get tbbCriteriaFailed() {
+    if (this.country === this.nationality) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  get nationality() {
+    return this.form.value.nationality.toString();
+  }
+
+  get country() {
+    return this.form.value.countryId.toString();
+  }
+
+  loadDropDownData() {
     this._loading.countries = true;
 
     /* Load the countries */

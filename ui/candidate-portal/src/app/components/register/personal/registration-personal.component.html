@@ -155,6 +155,14 @@
 
   <app-error [error]="error"></app-error>
 
+  <div *ngIf="tbbCriteriaFailed" class="alert alert-secondary">
+    <h5>{{ 'ERROR.CRITERIA_INVALID.HEADING.ELIGIBILITY' | translate }}</h5>
+      <p>{{ 'ERROR.CRITERIA_INVALID.ELIGIBILITY' | translate }}</p>
+    <h5>{{ 'ERROR.CRITERIA_INVALID.HEADING.APPLY' | translate }}</h5>
+      <p>{{ 'ERROR.CRITERIA_INVALID.APPLY' | translate }}</p>
+    <a href="https://" target="_blank">TBB Eligibility Criteria</a>
+  </div>
+
 </div>
 
 <app-registration-footer [nextDisabled]="form?.invalid || loading || saving"

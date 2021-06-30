@@ -124,7 +124,7 @@ export class CreateUpdateSearchComponent implements OnInit {
       //If there are subtypes associated with the currently selected type,
       //as indicated by a non null savedSearchTypeSubInfos, the subtype control
       //is required, ie must have a non empty value.
-      return this.savedSearchTypeSubInfos && (control.value === undefined) ?
+      return this.savedSearchTypeSubInfos && (control.value == null) ?
         { 'subtypeRequired': true } : null;
     };
   };
