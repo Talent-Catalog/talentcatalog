@@ -151,7 +151,7 @@ public class CandidateStatAdminApi {
         statReports.add(new StatReport(title + " (female)",
                 this.candidateService.computeBirthYearStats(Gender.female, dateFrom, dateTo, sourceCountryIds), chartType));
 
-        title = "Nationalities";
+        title = "Nationalities by Country";
         statReports.add(new StatReport(title,
                 this.candidateService.computeNationalityStats(null, null, dateFrom, dateTo, sourceCountryIds)));
         statReports.add(new StatReport(title + " (male)",

@@ -24,6 +24,7 @@ import {Country} from "../../../model/country";
 import {RegistrationService} from "../../../services/registration.service";
 import {generateYearArray} from "../../../util/year-helper";
 import {LangChangeEvent, TranslateService} from "@ngx-translate/core";
+import {LanguageService} from "../../../services/language.service";
 
 @Component({
   selector: 'app-registration-personal',
@@ -51,13 +52,14 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
   nationalities: Country[];
   years: number[];
   subscription;
-  tbbCandValid: boolean;
+  lang: string;
 
   constructor(private fb: FormBuilder,
               private router: Router,
               private candidateService: CandidateService,
               private countryService: CountryService,
               public translateService: TranslateService,
+              public languageService: LanguageService,
               public registrationService: RegistrationService) { }
 
   ngOnInit() {
@@ -79,8 +81,11 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
       // registrationId: ['', Validators.required]
     });
     this.loadDropDownData();
+
+    this.lang = this.languageService.getSelectedLanguage();
     //listen for change of language and save
     this.subscription = this.translateService.onLangChange.subscribe((event: LangChangeEvent) => {
+      this.lang = event.lang;
       this.loadDropDownData();
     });
 

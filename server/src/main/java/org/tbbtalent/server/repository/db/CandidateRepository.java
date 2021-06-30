@@ -364,7 +364,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
      **************************************************************************/
     String countByNationalitySelectSQL = "select n.name, count(distinct c) as PeopleCount" +
             " from candidate c left join users u on c.user_id = u.id" +
-            " left join nationality n on c.nationality_id = n.id " +
+            " left join country n on c.nationality_id = n.id " +
             " left join country on c.country_id = country.id " +
             " where c.country_id in (:sourceCountryIds) " +
             " and " + countingStandardFilter + dateConditionFilter +

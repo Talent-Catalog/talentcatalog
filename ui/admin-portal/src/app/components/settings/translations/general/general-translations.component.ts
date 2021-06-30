@@ -510,6 +510,7 @@ const ALL_FIELDS = {
         },
         "ELIGIBILITY": null,
         "APPLY": null,
+        "LINK": null,
       },
     },
   };

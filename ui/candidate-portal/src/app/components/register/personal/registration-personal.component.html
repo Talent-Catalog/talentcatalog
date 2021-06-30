@@ -157,10 +157,13 @@
 
   <div *ngIf="tbbCriteriaFailed" class="alert alert-secondary">
     <h5>{{ 'ERROR.CRITERIA_INVALID.HEADING.ELIGIBILITY' | translate }}</h5>
-      <p>{{ 'ERROR.CRITERIA_INVALID.ELIGIBILITY' | translate }}</p>
+    <h5><a [href]="lang == 'en' ? 'https://www.talentbeyondboundaries.org/talentcatalog/eligibility'
+        : 'https://www.talentbeyondboundaries.org/talentcatalog/eligibility-ar'" target="_blank">
+      {{ 'ERROR.CRITERIA_INVALID.LINK' | translate }}</a>
+    </h5>
+    <p>{{ 'ERROR.CRITERIA_INVALID.ELIGIBILITY' | translate }}</p>
     <h5>{{ 'ERROR.CRITERIA_INVALID.HEADING.APPLY' | translate }}</h5>
-      <p>{{ 'ERROR.CRITERIA_INVALID.APPLY' | translate }}</p>
-    <a href="https://" target="_blank">TBB Eligibility Criteria</a>
+    <p>{{ 'ERROR.CRITERIA_INVALID.APPLY' | translate }}</p>
   </div>
 
 </div>
