@@ -101,8 +101,7 @@
               [items]="candidateStatusOptions"
               [multiple]="true"
               [closeOnSelect]="false"
-              [searchable]="true"
-              [virtualScroll]="false"
+              [clearSearchOnAdd]="true"
               placeholder="Select or type..."
               bindLabel="displayText"
               [formControlName]="'statusesDisplay'">
@@ -158,8 +157,7 @@
                   [items]="candidateOccupations"
                   [multiple]="true"
                   [closeOnSelect]="false"
-                  [searchable]="true"
-                  [virtualScroll]="true"
+                  [clearSearchOnAdd]="true"
                   placeholder="Select or type..."
                   bindLabel="name"
                   [readonly]="elastic()"
@@ -186,14 +184,14 @@
                   <div class="form-group col-6 pl-0">
                     <label for="minYrs">Min Years Experience</label>
                     <input id="minYrs" type="number" class="form-control"
-                           name="minYrs" [formControlName]="'minYrs'" [readOnly]="elastic()">
+                           name="minYrs" [formControlName]="'minYrs'" [readOnly]="elastic()" [placeholder]="'Select'">
                   </div>
 
                   <!-- MAX AGE -->
                   <div class="form-group col-6 pr-0">
                     <label for="maxYrs">Max Years Experience</label>
                     <input id="maxYrs" type="number" class="form-control"
-                           name="maxYrs" [formControlName]="'maxYrs'" [readOnly]="elastic()">
+                           name="maxYrs" [formControlName]="'maxYrs'" [readOnly]="elastic()" [placeholder]="'Select'">
                   </div>
                 </div>
 
@@ -216,14 +214,14 @@
                   <div class="form-group col-6 pl-0">
                     <label for="minAge">Min Age</label>
                     <input id="minAge" type="number" class="form-control"
-                           name="minAge" [formControlName]="'minAge'" [readOnly]="elastic()">
+                           name="minAge" [formControlName]="'minAge'" [readOnly]="elastic()" [placeholder]="'Select'">
                   </div>
 
                   <!-- MAX AGE -->
                   <div class="form-group col-6 pr-0">
                     <label for="maxAge">Max Age</label>
                     <input id="maxAge" type="number" class="form-control"
-                           name="maxAge" [formControlName]="'maxAge'" [readOnly]="elastic()">
+                           name="maxAge" [formControlName]="'maxAge'" [readOnly]="elastic()" [placeholder]="'Select'">
                   </div>
                 </div>
 
@@ -243,7 +241,7 @@
                 <ng-select
                   id="gender"
                   [items]="genderOptions"
-                  [closeOnSelect]="false"
+                  [searchable]="false"
                   placeholder="Select"
                   bindLabel="displayText"
                   bindValue="value"
@@ -269,8 +267,6 @@
                   id="minEducationLevel"
                   [ngClass]="{'disabled' : elastic()}"
                   [items]="educationLevels"
-                  [closeOnSelect]="false"
-                  [searchable]="true"
                   placeholder="Select or type..."
                   bindLabel="name"
                   bindValue="level"
@@ -288,8 +284,7 @@
                   [items]="educationMajors"
                   [multiple]="true"
                   [closeOnSelect]="false"
-                  [searchable]="true"
-                  [virtualScroll]="true"
+                  [clearSearchOnAdd]="true"
                   placeholder="Select or type..."
                   bindLabel="name"
                   [readonly]="elastic()"
@@ -343,8 +338,7 @@
               [items]="nationalities"
               [multiple]="true"
               [closeOnSelect]="false"
-              [searchable]="true"
-              [virtualScroll]="true"
+              [clearSearchOnAdd]="true"
               placeholder="Select or type..."
               bindLabel="name"
               [formControlName]="'nationalities'">
@@ -369,8 +363,7 @@
               [items]="countries"
               [multiple]="true"
               [closeOnSelect]="false"
-              [searchable]="true"
-              [virtualScroll]="true"
+              [clearSearchOnAdd]="true"
               placeholder="Select or type..."
               bindLabel="name"
               [formControlName]="'countries'">

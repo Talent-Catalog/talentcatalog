@@ -155,15 +155,15 @@
 
   <app-error [error]="error"></app-error>
 
-  <div *ngIf="tbbCriteriaFailed" class="alert alert-secondary">
+  <div *ngIf="tbbCriteriaFailed" class="alert alert-danger">
     <h5>{{ 'ERROR.CRITERIA_INVALID.HEADING.ELIGIBILITY' | translate }}</h5>
     <h5><a [href]="lang == 'en' ? 'https://www.talentbeyondboundaries.org/talentcatalog/eligibility'
         : 'https://www.talentbeyondboundaries.org/talentcatalog/eligibility-ar'" target="_blank">
       {{ 'ERROR.CRITERIA_INVALID.LINK' | translate }}</a>
     </h5>
-    <p>{{ 'ERROR.CRITERIA_INVALID.ELIGIBILITY' | translate }}</p>
-    <h5>{{ 'ERROR.CRITERIA_INVALID.HEADING.APPLY' | translate }}</h5>
-    <p>{{ 'ERROR.CRITERIA_INVALID.APPLY' | translate }}</p>
+<!--    <p>{{ 'ERROR.CRITERIA_INVALID.ELIGIBILITY' | translate }}</p>-->
+<!--    <h5>{{ 'ERROR.CRITERIA_INVALID.HEADING.APPLY' | translate }}</h5>-->
+<!--    <p>{{ 'ERROR.CRITERIA_INVALID.APPLY' | translate }}</p>-->
   </div>
 
 </div>

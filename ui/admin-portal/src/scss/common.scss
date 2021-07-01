@@ -129,3 +129,8 @@ table {
 .accordion > .card {
   overflow: initial;
 }
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: #999 !important;
+  opacity: 1; /* Firefox */
+}
