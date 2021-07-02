@@ -116,22 +116,16 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
     );
   }
 
-  // private tbbCriteriaValidator(): ValidatorFn {
-  //   return (control: AbstractControl): ValidationErrors | null => {
-  //     //If there are subtypes associated with the currently selected type,
-  //     //as indicated by a non null savedSearchTypeSubInfos, the subtype control
-  //     //is required, ie must have a non empty value.
-  //     return this.country && (control.value == null) ?
-  //       { 'subtypeRequired': true } : null;
-  //   };
-  // };
-
   get tbbCriteriaFailed() {
-    if (this.country === this.nationality) {
-      return true;
-    } else {
-      return false;
+    let failed: boolean = false;
+    if (this.country !== '0' && this.country !== '') {
+      if (this.country === this.nationality) {
+        failed = true;
+      } else {
+        failed = false;
+      }
     }
+    return failed;
   }
 
   get nationality() {

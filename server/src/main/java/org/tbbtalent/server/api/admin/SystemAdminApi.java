@@ -34,6 +34,7 @@ import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
+import org.tbbtalent.server.repository.db.CandidateNoteRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.DataSharingService;
@@ -70,6 +71,7 @@ public class SystemAdminApi {
     private final DataSharingService dataSharingService;
 
     private final CandidateAttachmentRepository candidateAttachmentRepository;
+    private final CandidateNoteRepository candidateNoteRepository;
     private final CandidateRepository candidateRepository;
     private final PopulateElasticsearchService populateElasticsearchService;
     private final SalesforceService salesforceService;
@@ -101,6 +103,7 @@ public class SystemAdminApi {
             DataSharingService dataSharingService,
             UserContext userContext,
             CandidateAttachmentRepository candidateAttachmentRepository,
+            CandidateNoteRepository candidateNoteRepository,
             CandidateRepository candidateRepository,
             Drive googleDriveService,
             PopulateElasticsearchService populateElasticsearchService,
@@ -109,6 +112,7 @@ public class SystemAdminApi {
         this.dataSharingService = dataSharingService;
         this.userContext = userContext;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
+        this.candidateNoteRepository = candidateNoteRepository;
         this.googleDriveService = googleDriveService;
         this.candidateRepository = candidateRepository;
         this.populateElasticsearchService = populateElasticsearchService;
@@ -228,6 +232,44 @@ public class SystemAdminApi {
                 success++;
             } catch (Exception e) {
                 log.warn("Error adding metadata to object with key: " + summary.getKey(), e);
+            }
+            count++;
+            if (count%100 == 0) {
+                log.info("Processed " + count);
+            }
+        }
+        log.info("Finished processing. Success total of: " + success + " out of " + count);
+        return "done";
+    }
+
+    @GetMapping("update-statuses")
+    public String updateStatusesIneligible() {
+        List<Candidate> pendingCandidates = candidateRepository.findByStatus(CandidateStatus.pending);
+        log.info("Have all pending candidates. There is a total of: " + pendingCandidates.size());
+        User loggedInUser = userContext.getLoggedInUser().orElse(null);
+        int count = 0;
+        int success = 0;
+        for(Candidate candidate : pendingCandidates) {
+            try {
+                if (candidate.getCountry() == candidate.getNationality()) {
+                    candidate.setStatus(CandidateStatus.ineligible);
+                    candidateRepository.save(candidate);
+                    try {
+                        CandidateNote candidateNote = new CandidateNote();
+                        candidateNote.setCandidate(candidate);
+                        candidateNote.setTitle("Status change from pending to ineligible");
+                        candidateNote.setComment("TBB criteria not met: Country located is same as country of nationality.");
+                        candidateNote.setNoteType(NoteType.admin);
+                        candidateNote.setAuditFields(loggedInUser);
+                        candidateNoteRepository.save(candidateNote);
+                    } catch (Exception e) {
+                        log.warn("Error creating note for candidate with candidate number: " + candidate.getCandidateNumber(), e);
+                    }
+                    // todo update elasticsearch somehow
+                }
+                success++;
+            } catch (Exception e) {
+                log.warn("Error changing status for candidate with candidate number: " + candidate.getCandidateNumber(), e);
             }
             count++;
             if (count%100 == 0) {

@@ -25,6 +25,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateStatus;
 import org.tbbtalent.server.model.db.Country;
 
 import java.time.LocalDate;
@@ -100,6 +101,10 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             + " where c.status <> 'deleted'"
     )
     Page<Candidate> findCandidatesWhereStatusNotDeleted(Pageable pageable);
+
+    @Query(" select c from Candidate c "
+            + " where c.status = :status")
+    List<Candidate> findByStatus(@Param("status") CandidateStatus status);
 
     @Transactional
     @Modifying

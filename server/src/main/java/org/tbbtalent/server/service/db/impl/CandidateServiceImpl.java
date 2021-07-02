@@ -1139,6 +1139,9 @@ public class CandidateServiceImpl implements CandidateService {
         user.setLastName(request.getLastName());
         user = userRepository.save(user);
         Candidate candidate = candidateRepository.findByUserId(user.getId());
+
+        String newStatus = checkStatusValidity(request.getCountryId(), request.getNationality(), candidate);
+
         if (candidate != null) {
             candidate.setGender(request.getGender());
             candidate.setDob(request.getDob());
@@ -1149,7 +1152,29 @@ public class CandidateServiceImpl implements CandidateService {
 
             candidate.setAuditFields(user);
         }
-        return save(candidate, true);
+
+        candidate = save(candidate, true);
+
+        // Change status if required, and create note.
+        if (newStatus.equals("ineligible")) {
+            // Create note and change status to ineligible
+            final UpdateCandidateStatusRequest statusRequest =
+                    new UpdateCandidateStatusRequest(candidate.getId());
+            UpdateCandidateStatusInfo info = statusRequest.getInfo();
+            info.setStatus(CandidateStatus.ineligible);
+            info.setComment("TBB criteria not met: Country located is same as country of nationality.");
+            updateCandidateStatus(statusRequest);
+        } else if (newStatus.equals("pending")) {
+            // Create note and change status to pending
+            final UpdateCandidateStatusRequest statusRequest =
+                    new UpdateCandidateStatusRequest(candidate.getId());
+            UpdateCandidateStatusInfo info = statusRequest.getInfo();
+            info.setStatus(CandidateStatus.pending);
+            info.setComment("TBB criteria met: Country located different to country of nationality.");
+            updateCandidateStatus(statusRequest);
+        }
+
+        return candidate;
     }
 
     @Override
@@ -1203,13 +1228,21 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         // Don't update status to pending if status is already pending
         if (!candidate.getStatus().equals(CandidateStatus.pending)) {
-            final UpdateCandidateStatusRequest request = 
-                new UpdateCandidateStatusRequest(candidate.getId());
-            UpdateCandidateStatusInfo info = request.getInfo();
-            info.setStatus(CandidateStatus.pending);
-            info.setComment("Candidate submitted");
-            
-            updateCandidateStatus(request);
+            if (candidate.getNationality() != candidate.getCountry()) {
+                final UpdateCandidateStatusRequest request =
+                        new UpdateCandidateStatusRequest(candidate.getId());
+                UpdateCandidateStatusInfo info = request.getInfo();
+                info.setStatus(CandidateStatus.pending);
+                info.setComment("Candidate submitted");
+                updateCandidateStatus(request);
+            } else {
+                final UpdateCandidateStatusRequest request =
+                        new UpdateCandidateStatusRequest(candidate.getId());
+                UpdateCandidateStatusInfo info = request.getInfo();
+                info.setStatus(CandidateStatus.ineligible);
+                info.setComment("TBB criteria not met: Country located is same as country of nationality.");
+                updateCandidateStatus(request);
+            }
         }
         candidate.setAuditFields(candidate.getUser());
         return save(candidate, true);
@@ -2079,5 +2112,23 @@ public class CandidateServiceImpl implements CandidateService {
             save(ce.getCandidate(), true);
         }
         return true;
+    }
+
+    private String checkStatusValidity(long countryReq, long nationalityReq, Candidate candidate) {
+        String newStatus = "";
+        // If candidate pending, but they updating country & nationality as same. Change to ineligible.
+        if (candidate.getStatus() == CandidateStatus.pending) {
+            if (countryReq == nationalityReq) {
+                newStatus = "ineligible";
+            }
+        // If candidate ineligible & it has country & nationality the same (causing the status) BUT the request
+        // has nationality & country as different. We can change ineligible status to pending. This determines
+        // that the cause of the ineligible status was due to country & nationality being the same, and not another reason.
+        } else if (candidate.getStatus() == CandidateStatus.ineligible) {
+            if (candidate.getCountry() == candidate.getNationality() && countryReq != nationalityReq) {
+                newStatus = "pending";
+            }
+        }
+        return newStatus;
     }
 }

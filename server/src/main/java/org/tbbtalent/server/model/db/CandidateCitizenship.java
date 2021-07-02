@@ -43,7 +43,7 @@ public class CandidateCitizenship extends AbstractDomainObject<Long> {
     private LocalDate passportExp;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "country_id")
+    @JoinColumn(name = "nationality_id")
     private Country nationality;
 
     private String notes;
