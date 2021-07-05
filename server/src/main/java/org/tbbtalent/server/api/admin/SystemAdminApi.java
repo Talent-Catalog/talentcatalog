@@ -242,16 +242,18 @@ public class SystemAdminApi {
         return "done";
     }
 
+    // todo Remove after running. One off method. Login as System Admin user.
     @GetMapping("update-statuses")
     public String updateStatusesIneligible() {
-        List<Candidate> pendingCandidates = candidateRepository.findByStatus(CandidateStatus.pending);
-        log.info("Have all pending candidates. There is a total of: " + pendingCandidates.size());
+        List<CandidateStatus> statuses = new ArrayList<>(EnumSet.of(CandidateStatus.pending, CandidateStatus.incomplete));
+        List<Candidate> candidates = candidateRepository.findByStatuses(statuses);
+        log.info("Have all pending and incomplete candidates. There is a total of: " + candidates.size());
         User loggedInUser = userContext.getLoggedInUser().orElse(null);
         int count = 0;
         int success = 0;
-        for(Candidate candidate : pendingCandidates) {
+        for(Candidate candidate : candidates) {
             try {
-                if (candidate.getCountry() == candidate.getNationality()) {
+                if (candidate.getCountry() != null && candidate.getCountry() == candidate.getNationality()) {
                     candidate.setStatus(CandidateStatus.ineligible);
                     candidateRepository.save(candidate);
                     try {
@@ -265,7 +267,6 @@ public class SystemAdminApi {
                     } catch (Exception e) {
                         log.warn("Error creating note for candidate with candidate number: " + candidate.getCandidateNumber(), e);
                     }
-                    // todo update elasticsearch somehow
                 }
                 success++;
             } catch (Exception e) {
@@ -277,7 +278,7 @@ public class SystemAdminApi {
             }
         }
         log.info("Finished processing. Success total of: " + success + " out of " + count);
-        return "done";
+        return "Done. Now run esload to update elasticsearch.";
     }
 
     @GetMapping("google")

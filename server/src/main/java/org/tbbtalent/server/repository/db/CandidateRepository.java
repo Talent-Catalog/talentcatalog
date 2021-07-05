@@ -103,8 +103,8 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     Page<Candidate> findCandidatesWhereStatusNotDeleted(Pageable pageable);
 
     @Query(" select c from Candidate c "
-            + " where c.status = :status")
-    List<Candidate> findByStatus(@Param("status") CandidateStatus status);
+            + " where c.status in (:statuses)")
+    List<Candidate> findByStatuses(@Param("statuses") List<CandidateStatus> statuses);
 
     @Transactional
     @Modifying
