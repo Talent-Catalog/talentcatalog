@@ -21,7 +21,6 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {UserService} from "../../../../services/user.service";
 import {CountryService} from "../../../../services/country.service";
 import {Country} from "../../../../model/country";
-import {IDropdownSettings} from "ng-multiselect-dropdown";
 
 @Component({
   selector: 'app-create-user',
@@ -35,15 +34,6 @@ export class CreateUserComponent implements OnInit {
   error;
   loading: boolean;
   saving: boolean;
-
-  /* MULTI SELECT */
-  dropdownSettings: IDropdownSettings = {
-    idField: 'id',
-    textField: 'name',
-    enableCheckAll: false,
-    singleSelection: false,
-    allowSearchFilter: true
-  };
 
   countries: Country[];
 
@@ -97,26 +87,6 @@ export class CreateUserComponent implements OnInit {
 
   dismiss() {
     this.activeModal.dismiss(false);
-  }
-
-  /* MULTI SELECT METHODS */
-  onItemSelect(item: any) {
-    console.log(this.userForm);
-    // const values = this.userForm.controls.sourceCountryIds.value || [];
-    // const addValue = item.id != null ? item.id : item;
-    // values.push(addValue);
-    // this.userForm.controls.sourceCountryIds.patchValue(values);
-    // console.log(values)
-  }
-
-  onItemDeSelect(item: any) {
-    // const values = this.userForm.controls[formControlName].value || [];
-    // const removeValue = item.id != null ? item.id : item;
-    // const indexToRemove = values.findIndex(val => val === removeValue);
-    // if (indexToRemove >= 0) {
-    //   values.splice(indexToRemove, 1);
-    //   this.userForm.controls[formControlName].patchValue(values);
-    // }
   }
 
 }

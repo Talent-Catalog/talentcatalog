@@ -28,12 +28,8 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <select id="birthCountryId" class="form-control" [formControlName]="'birthCountryId'">
-      <option value=""></option>
-      <option *ngFor="let opt of countries" [value]="opt.id">
-        {{opt.name}}
-      </option>
-    </select>
+    <ng-select id="birthCountryId" [formControlName]="'birthCountryId'" [items]="countries" [closeOnSelect]="true"
+               [clearOnBackspace]="false" placeholder="Select" bindLabel="name" bindValue="id"></ng-select>
   </div>
 
   <div *ngIf="notHostBorn">
@@ -41,10 +37,8 @@
       <label for="hostEntryYear">
         What year did you immigrate to {{candidate?.country?.name}}?
       </label>
-      <select id="hostEntryYear" class="form-control" [formControlName]="'hostEntryYear'">
-        <option value=""></option>
-        <option *ngFor="let year of years" [ngValue]="year">{{year}} </option>
-      </select>
+      <ng-select id="hostEntryYear" [formControlName]="'hostEntryYear'" [items]="years"
+                 [clearOnBackspace]="false" placeholder="Select"></ng-select>
     </div>
     <div *ngIf="hasNotes" class="form-group">
       <label for="hostEntryYearNotes">Notes</label>
@@ -64,12 +58,9 @@
         <label for="hostEntryLegally">
           Did you enter legally?
         </label>
-        <select class="form-control"
-                id="hostEntryLegally" [formControlName]="'hostEntryLegally'">
-          <option *ngFor="let opt of hostEntryLegallyOptions" [value]="opt.value">
-            {{opt.displayText}}
-          </option>
-        </select>
+        <ng-select id="hostEntryLegally" [formControlName]="'hostEntryLegally'" (clear)="setNoResponse('hostEntryLegally')"
+                   [items]="hostEntryLegallyOptions" [clearOnBackspace]="false"
+                   placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
       </div>
 
       <div *ngIf="enterLegally === 'No'" class="form-group">
@@ -81,12 +72,9 @@
 
       <div class="form-group">
         <label for="returnedHome">Have you returned to your home country since entering {{candidate.country.name}} and claiming asylum?</label>
-        <select class="form-control"
-                id="returnedHome" [formControlName]="'returnedHome'">
-          <option *ngFor="let opt of returnedHomeOptions" [value]="opt.value">
-            {{opt.displayText}}
-          </option>
-        </select>
+        <ng-select id="returnedHome" [formControlName]="'returnedHome'" (clear)="setNoResponse('returnedHome')"
+                   [items]="returnedHomeOptions" [clearOnBackspace]="false"
+                   placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
       </div>
 
       <div *ngIf="returnedHome === 'Yes'">
@@ -108,25 +96,19 @@
 
       <div class="form-group">
         <label for="returnHomeSafe">Do you feel it is safe to permanently return to your home country?</label>
-        <select class="form-control"
-                id="returnHomeSafe" [formControlName]="'returnHomeSafe'">
-          <option *ngFor="let opt of homeSafeOptions" [value]="opt.value" [disabled]="!editable">
-            {{opt.displayText}}
-          </option>
-        </select>
+        <ng-select id="returnHomeSafe" [formControlName]="'returnHomeSafe'" (clear)="setNoResponse('returnHomeSafe')"
+                   [items]="homeSafeOptions" [clearOnBackspace]="false"
+                   placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
       </div>
 
       <div class="form-group">
         <label for="leftHomeReasons">
           What are the primary reasons you left your home country and currently live in {{candidate.country.name}}?
         </label>
-        <ng-multiselect-dropdown
-          id="leftHomeReasons"
-          class="custom-primary"
-          [settings]="dropdownSettings"
-          [data]="leftHomeReasonOptions"
-          formControlName="leftHomeReasons">
-        </ng-multiselect-dropdown>
+        <ng-select id="leftHomeReasons" [formControlName]="'leftHomeReasons'" [items]="leftHomeReasonOptions"
+                   [multiple]="true" [closeOnSelect]="false" [searchable]="false"
+                   placeholder="Select one or more" bindLabel="displayText">
+        </ng-select>
       </div>
 
       <div *ngIf="hasOther">
@@ -140,12 +122,9 @@
         <label for="returnHomeFuture">
           Do you plan to return to your country of origin in the near future?
         </label>
-        <select class="form-control"
-                id="returnHomeFuture" [formControlName]="'returnHomeFuture'">
-          <option *ngFor="let opt of returnHomeFutureOptions" [value]="opt.value">
-            {{opt.displayText}}
-          </option>
-        </select>
+        <ng-select id="returnHomeFuture" [formControlName]="'returnHomeFuture'" (clear)="setNoResponse('returnHomeFuture')"
+                   [items]="returnHomeFutureOptions" [clearOnBackspace]="false"
+                   placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
       </div>
 
       <div *ngIf="returnHomeFuture === 'Yes'">

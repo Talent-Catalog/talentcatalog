@@ -18,10 +18,11 @@ import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {CandidateService} from '../../../../../services/candidate.service';
-import {Candidate} from '../../../../../model/candidate';
+import {Candidate, Gender} from '../../../../../model/candidate';
 import {NationalityService} from '../../../../../services/nationality.service';
 import {CountryService} from '../../../../../services/country.service';
 import {generateYearArray} from '../../../../../util/year-helper';
+import {EnumOption, enumOptions} from "../../../../../util/enum";
 
 @Component({
   selector: 'app-edit-candidate-contact',
@@ -35,6 +36,7 @@ export class EditCandidateContactComponent implements OnInit {
 
   candidateForm: FormGroup;
 
+  genderOptions: EnumOption[] = enumOptions(Gender);
   nationalities = [];
   countries = [];
   years = [];

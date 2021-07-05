@@ -15,19 +15,11 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {
-  CandidateStatService,
-  CandidateStatsRequest
-} from "../../services/candidate-stat.service";
+import {CandidateStatService, CandidateStatsRequest} from "../../services/candidate-stat.service";
 import {StatReport} from "../../model/stat-report";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {
-  SavedList,
-  SearchSavedListRequest
-} from "../../model/saved-list";
+import {SavedList, SearchSavedListRequest} from "../../model/saved-list";
 import {SavedListService} from "../../services/saved-list.service";
-import {IDropdownSettings} from "ng-multiselect-dropdown";
-import {isArray} from "rxjs/internal-compatibility";
 import {ActivatedRoute} from "@angular/router";
 import {SavedSearch} from "../../model/saved-search";
 import {forkJoin} from "rxjs";
@@ -48,14 +40,7 @@ export class InfographicComponent implements OnInit {
   searches: SavedSearch[] = [];
   statReports: StatReport[];
   statsFilter: FormGroup;
-
-  dropdownSettings: IDropdownSettings = {
-    idField: 'id',
-    textField: 'name',
-    enableCheckAll: false,
-    singleSelection: true,
-    allowSearchFilter: true
-  };
+  statsName: string;
 
   constructor(private route: ActivatedRoute,
               private statService: CandidateStatService,
@@ -81,20 +66,18 @@ export class InfographicComponent implements OnInit {
   get dateTo(): string { return this.statsFilter.value.dateTo; }
   get savedList(): SavedList {
     const savedList: SavedList = this.statsFilter.value.savedList;
-    //Control always returns an array
-    return (savedList == null || (isArray(savedList) && savedList.length === 0)
-    || savedList[0] == null)  ? null : savedList[0];
+    //Control always returns an object
+    return savedList;
   }
   get savedSearch(): SavedSearch {
     const savedSearch: SavedSearch = this.statsFilter.value.savedSearch;
-    //Control always returns an array
-    return (savedSearch == null || (isArray(savedSearch) && savedSearch.length === 0)
-      || savedSearch[0] == null)  ? null : savedSearch[0];
+    //Control always returns an object
+    return savedSearch;
   }
 
   private loadListsAndSearches() {
     /*load all our visible lists and searches */
-    this.loading = true;
+     this.loading = true;
     const request: SearchSavedListRequest = {
       owned: true,
       shared: true,
@@ -130,9 +113,9 @@ export class InfographicComponent implements OnInit {
       const isSavedSearchId = params.get('source') === 'search';
       if (id) {
         if (isSavedSearchId) {
-          this.statsFilter.controls['savedSearch'].patchValue([findHasId(id, this.searches)]);
+          this.statsFilter.controls['savedSearch'].patchValue(findHasId(id, this.searches));
         } else {
-          this.statsFilter.controls['savedList'].patchValue([findHasId(id, this.lists)]);
+          this.statsFilter.controls['savedList'].patchValue(findHasId(id, this.lists));
         }
 
         //Auto run if we have an id
@@ -149,6 +132,14 @@ export class InfographicComponent implements OnInit {
       searchId: this.savedSearch == null ? null : this.savedSearch.id,
       dateFrom: this.dateFrom,
       dateTo: this.dateTo
+    }
+
+    if (this.savedList) {
+      this.statsName = 'list ' + this.savedList?.name;
+    } else if (this.savedSearch) {
+      this.statsName = 'search ' + this.savedSearch?.name;
+    } else {
+      this.statsName = 'all data'
     }
 
     this.statService.getAllStats(request).subscribe(result => {
@@ -209,5 +200,10 @@ export class InfographicComponent implements OnInit {
         document.body.removeChild(link);
       }
     }
+  }
+
+  scroll(id){
+    const elmnt = document.getElementById(id);
+    elmnt.scrollIntoView({behavior: "smooth", block: "center"});
   }
 }

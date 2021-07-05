@@ -29,12 +29,9 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <select class="form-control"
-            id="canDrive" [formControlName]="'canDrive'">
-      <option *ngFor="let opt of canDriveOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <ng-select id="canDrive" [formControlName]="'canDrive'" (clear)="setNoResponse('canDrive')"
+               [items]="canDriveOptions" [clearOnBackspace]="false"
+               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
   </div>
 
   <div *ngIf="canDrive === 'Yes'">
@@ -42,13 +39,9 @@
       <label for="drivingLicense">
         Do you have a driving license?
       </label>
-
-      <select class="form-control"
-              id="drivingLicense" [formControlName]="'drivingLicense'">
-        <option *ngFor="let opt of drivingLicenseOptions" [value]="opt.value">
-          {{opt.displayText}}
-        </option>
-      </select>
+      <ng-select id="drivingLicense" [formControlName]="'drivingLicense'" (clear)="setNoResponse('drivingLicense')"
+                 [items]="drivingLicenseOptions" [clearOnBackspace]="false"
+                 placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
     </div>
 
     <div *ngIf="hasDrivingLicense">
@@ -62,12 +55,9 @@
         <label for="drivingLicenseCountryId">
           Country of Issue
         </label>
-        <select class="form-control"
-                id="drivingLicenseCountryId" [formControlName]="'drivingLicenseCountryId'">
-          <option *ngFor="let opt of countries" [value]="opt.id">
-            {{opt.name}}
-          </option>
-        </select>
+        <ng-select id="drivingLicenseCountryId" [formControlName]="'drivingLicenseCountryId'" (clear)="setNoResponse('drivingLicenseCountryId')"
+                   [items]="countries" [clearOnBackspace]="false"
+                   placeholder="Select" bindLabel="name" bindValue="id"></ng-select>
       </div>
 
     </div>

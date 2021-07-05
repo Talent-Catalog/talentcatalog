@@ -32,7 +32,7 @@
   </div>
 
   <form [formGroup]="form">
-    <div class="form-group" >
+    <div class="form-group">
       <label for="name">Name *</label>
       <input type="text" class="form-control" id="name" formControlName="name" required>
       <div *ngIf="nameControl.invalid && (nameControl.dirty || nameControl.touched)"
@@ -41,7 +41,6 @@
           Name is required.
         </div>
       </div>
-
       <div class="operator">
         <input type="checkbox" class="custom-checkbox" id="reviewable"
                [value]="false" formControlName="reviewable">
@@ -49,33 +48,31 @@
           Should result of searches be reviewable?
         </label>
       </div>
-
-      <app-joblink [joblink]="savedSearch?.sfJoblink"
-                   (updateError)="error=$event"
-                   (joblinkValidation)="onJoblinkValidation($event)"
-      ></app-joblink>
-
-      <div *ngIf="jobName">
-        {{jobName}}
-      </div>
-
-      <div>
-        <label for="savedSearchType">Type *</label>
-        <select class="form-control" id="savedSearchType" formControlName="savedSearchType"
-                (change)="onSavedSearchTypeChange()">
-          <option *ngFor="let typeInfo of savedSearchTypeInfos"
-                  [value]="typeInfo.savedSearchType">{{typeInfo.title}}</option>
-        </select>
-      </div>
-
-      <div *ngIf="savedSearchTypeSubInfos">
-        <label for="savedSearchSubtype">Category *</label>
-        <select class="form-control" id="savedSearchSubtype" formControlName="savedSearchSubtype">
-          <option *ngFor="let subtypeInfo of savedSearchTypeSubInfos" [value]="subtypeInfo.savedSearchSubtype">{{subtypeInfo.title}}</option>
-        </select>
-      </div>
-
     </div>
+
+      <div class="form-group">
+        <app-joblink [joblink]="savedSearch?.sfJoblink"
+                     (updateError)="error=$event"
+                     (joblinkValidation)="onJoblinkValidation($event)"
+        ></app-joblink>
+
+        <div *ngIf="jobName">
+          {{jobName}}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="savedSearchType">Type *</label>
+        <ng-select id="savedSearchType" [formControlName]="'savedSearchType'" [items]="savedSearchTypeInfos" (change)="onSavedSearchTypeChange()"
+                   [clearable]="false" placeholder="Select" bindLabel="title" bindValue="savedSearchType"></ng-select>
+      </div>
+
+      <div class="form-group" *ngIf="savedSearchTypeSubInfos">
+        <label for="savedSearchSubtype">Category *</label>
+        <ng-select id="savedSearchSubtype" [formControlName]="'savedSearchSubtype'" [items]="savedSearchTypeSubInfos"
+                   [clearable]="false" placeholder="Select" bindLabel="title" bindValue="savedSearchSubtype"></ng-select>
+      </div>
+
     <hr/>
     <div *ngIf="(savedSearch && !savedSearch.defaultSearch) || copy ">
       <h4 *ngIf="copy">Copy Search:</h4>

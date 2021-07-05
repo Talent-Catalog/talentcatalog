@@ -28,12 +28,9 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <select class="form-control"
-            id="workAbroad" [formControlName]="'workAbroad'">
-      <option *ngFor="let opt of workAbroadOptions" [value]="opt.value">
-        {{opt.displayText}}
-      </option>
-    </select>
+    <ng-select id="workAbroad" [formControlName]="'workAbroad'" (clear)="setNoResponse('workAbroad')"
+               [items]="workAbroadOptions" [clearOnBackspace]="false"
+               placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
   </div>
   <div *ngIf="workAbroad === 'Yes'">
     <div class="form-group">

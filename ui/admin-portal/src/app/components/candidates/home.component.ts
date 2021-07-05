@@ -14,16 +14,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterContentInit, Component, OnInit, ViewChild} from '@angular/core';
 import {NgbNav, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {SavedSearchSubtype, SavedSearchType} from "../../model/saved-search";
 import {CandidateSourceType, SearchBy} from "../../model/base"
 import {LocalStorageService} from "angular-2-local-storage";
-import {
-  SavedSearchService,
-  SavedSearchTypeInfo,
-  SavedSearchTypeSubInfo
-} from "../../services/saved-search.service";
+import {SavedSearchService, SavedSearchTypeInfo, SavedSearchTypeSubInfo} from "../../services/saved-search.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
 
 @Component({
@@ -31,7 +27,7 @@ import {FormBuilder, FormGroup} from "@angular/forms";
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit, AfterViewInit {
+export class HomeComponent implements OnInit, AfterContentInit{
 
   activeTabId: string;
   categoryForm: FormGroup;
@@ -61,9 +57,9 @@ export class HomeComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngAfterViewInit(): void {
-    //Have to wait until AfterViewInit is called in order for the navigation tabs, this.nav, to be
-    //set. See doc on @ViewChild
+  ngAfterContentInit(): void {
+    //Have to wait until AfterContentInit to avoid Expression changed error: https://angular.io/errors/NG0100
+    //This is called in order for the navigation tabs, this.nav, to be set. See doc on @ViewChild
     this.selectDefaultTab()
   }
 

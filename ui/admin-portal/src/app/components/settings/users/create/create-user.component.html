@@ -53,26 +53,26 @@
     </div>
     <div class="form-group">
       <label for="role">Role</label>
-      <select class="form-control" id="role" formControlName="role">
-        <option value="admin">Full Admin</option>
-        <option value="sourcepartneradmin">Source Partner Admin</option>
-        <option value="semilimited">Semi Limited</option>
-        <option value="limited">Limited</option>
-        <option value="readonly">Read Only</option>
-      </select>
+      <ng-select id="role" [formControlName]="'role'" placeholder="Select">
+        <ng-option value="admin">Full Admin</ng-option>
+        <ng-option value="sourcepartneradmin">Source Partner Admin</ng-option>
+        <ng-option value="semilimited">Semi Limited</ng-option>
+        <ng-option value="limited">Limited</ng-option>
+        <ng-option value="readonly">Read Only</ng-option>
+      </ng-select>
     </div>
     <!-- SOURCE COUNTRIES  -->
     <div class="form-group">
       <label>Source Country</label>
-      <ng-multiselect-dropdown
+      <ng-select
         id="sourceCountry"
-        class="custom-primary"
-        [settings]="dropdownSettings"
-        [data]="countries"
-        formControlName="sourceCountries"
-        (onSelect)="onItemSelect($event)"
-        (onDeSelect)="onItemDeSelect($event)">
-      </ng-multiselect-dropdown>
+        [items]="countries"
+        [closeOnSelect]="false"
+        [multiple]="true"
+        placeholder="Select or type..."
+        bindLabel="name"
+        formControlName="sourceCountries">
+      </ng-select>
       <p class="text-muted">Leave blank if there are no restrictions, otherwise add one or more countries to which admin is restricted.</p>
     </div>
     <div class="form-group">

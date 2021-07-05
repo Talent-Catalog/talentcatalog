@@ -121,3 +121,14 @@ a.is-link, a > i.is-link {
   }
 }
 
+.ng-select.ng-select-disabled.disabled {
+  &.ng-select-multiple {
+    .ng-value-container .ng-value {
+      background-color: #d4d4d4;
+    }
+  }
+  .ng-select-container {
+    background-color: #e9ecef;
+    opacity: 1;
+  }
+}

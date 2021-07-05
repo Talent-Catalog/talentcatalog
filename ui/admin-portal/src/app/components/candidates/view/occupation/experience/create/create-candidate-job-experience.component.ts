@@ -63,15 +63,15 @@ export class CreateCandidateJobExperienceComponent implements OnInit {
     );
 
     this.candidateForm = this.fb.group({
-      countryId: ['', [Validators.required]],
-      companyName: ['', [Validators.required]],
+      countryId: [null, [Validators.required]],
+      companyName: [null, [Validators.required]],
       candidateOccupationId: [this.candidateOccupationId],
-      role: ['', [Validators.required]],
-      startDate: ['', [Validators.required]],
-      endDate: [''],
-      fullTime: ['', [Validators.required]],
-      paid: ['', [Validators.required]],
-      description: ['', [Validators.required]],
+      role: [null, [Validators.required]],
+      startDate: [null, [Validators.required]],
+      endDate: [null],
+      fullTime: [null, [Validators.required]],
+      paid: [null, [Validators.required]],
+      description: [null, [Validators.required]],
     });
     this.loading = false;
   }
