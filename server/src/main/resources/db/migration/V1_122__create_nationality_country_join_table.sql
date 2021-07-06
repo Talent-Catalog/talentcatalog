@@ -15,6 +15,8 @@
  */
 
 insert into country (id, name, status) values (1000, 'Stateless', 'active');
+insert into country (id, name, status) values (1001, 'Ivory Coast', 'active');
+insert into country (id, name, status) values (1002, 'Republic of the Congo', 'active');
 
 create table country_nationality_join
 (
@@ -194,5 +196,5 @@ insert into country_nationality_join (country_id, nationality_id) values (6419, 
 insert into country_nationality_join (country_id, nationality_id) values (6420, 9417);
 insert into country_nationality_join (country_id, nationality_id) values (9565, 9566);
 insert into country_nationality_join (country_id, nationality_id) values (1000, 9564);
-insert into country_nationality_join (country_id, nationality_id) values (10000, 9321);
-insert into country_nationality_join (country_id, nationality_id) values (10001, 9277);
+insert into country_nationality_join (country_id, nationality_id) values (1001, 9321);
+insert into country_nationality_join (country_id, nationality_id) values (1002, 9277);
