@@ -129,11 +129,11 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
   }
 
   get nationality() {
-    return this.form.value.nationality.toString();
+    return this.form.value.nationality?.toString();
   }
 
   get country() {
-    return this.form.value.countryId.toString();
+    return this.form.value.countryId?.toString();
   }
 
   loadDropDownData() {
