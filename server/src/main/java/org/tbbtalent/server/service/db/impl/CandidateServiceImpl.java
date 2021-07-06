@@ -81,16 +81,16 @@ public class CandidateServiceImpl implements CandidateService {
     /**
      * These are the default candidate statuses to included in searches when no statuses are 
      * specified.
-     * Basically all statuses except for draft, deleted and "inactive" statuses such as employed
-     * and ineligible.
+     * Basically all "inactive" statuses such as draft, deleted, employed and ineligible.
      */
     private static final List<CandidateStatus> defaultSearchStatuses = new ArrayList<>( 
         EnumSet.complementOf(EnumSet.of(
-            CandidateStatus.draft, 
+            CandidateStatus.autonomousEmployment,
             CandidateStatus.deleted,
+            CandidateStatus.draft, 
             CandidateStatus.employed, 
             CandidateStatus.ineligible,
-            CandidateStatus.unreachable
+            CandidateStatus.withdrawn
         )));
     
     private final UserRepository userRepository;

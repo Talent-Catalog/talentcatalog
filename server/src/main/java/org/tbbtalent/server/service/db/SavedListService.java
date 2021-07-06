@@ -24,6 +24,7 @@ import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
@@ -100,6 +101,16 @@ public interface SavedListService {
      * @throws EntityExistsException if a list with this name already exists.
      */
     SavedList createSavedList(UpdateSavedListInfoRequest request) 
+            throws EntityExistsException;
+
+    /**
+     * Create a new SavedList
+     * @param user User to be recorded as creator of saved list
+     * @param request Create request
+     * @return Created saved list
+     * @throws EntityExistsException if a list with this name already exists.
+     */
+    SavedList createSavedList(User user, UpdateSavedListInfoRequest request) 
             throws EntityExistsException;
 
     /**

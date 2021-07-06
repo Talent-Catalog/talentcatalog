@@ -49,11 +49,18 @@ public abstract class AbstractUpdateCandidateSourceRequest {
      * @see AbstractCandidateSource
      */
     @Nullable
+    private Boolean global;
+
+    /**
+     * @see AbstractCandidateSource
+     */
+    @Nullable
     private String sfJoblink;
 
     public void populateFromRequest(AbstractCandidateSource candidateSource) {
         candidateSource.setName(name);
         candidateSource.setFixed(fixed);
+        candidateSource.setGlobal(global);
         candidateSource.setSfJoblink(sfJoblink);
     }
 }

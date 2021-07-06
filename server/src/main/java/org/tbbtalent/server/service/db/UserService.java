@@ -22,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.UsernameTakenException;
+import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.user.CheckPasswordResetTokenRequest;
@@ -48,6 +49,8 @@ public interface UserService {
     void updatePassword(UpdateUserPasswordRequest request);
     void updateUserPassword(long id, UpdateUserPasswordRequest request);
 
+    User findByUsernameAndRole(String username, Role role);
+    
     Page<User> searchUsers(SearchUserRequest request);
 
     User getUser(long id);
