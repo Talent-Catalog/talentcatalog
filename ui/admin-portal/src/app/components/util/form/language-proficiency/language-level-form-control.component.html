@@ -18,20 +18,10 @@
 
 <div class="position-relative">
 
-  <div class="input-group" (click)="toggle()">
-
-    <div class="form-control" [ngClass]="disabledClasses">
-      <div class="language-label">
-        {{renderLevel()}}
-      </div>
-    </div>
-
-    <div class="input-group-append">
-      <button type="button" class="btn btn-outline-secondary" [disabled]="disable">
-        <span class="fas fa-angle-down"></span>
-      </button>
-    </div>
-
+  <div class="form-control language-label" [ngClass]="disabledClasses" (click)="toggle()">
+      <span class="placeholder" *ngIf="!renderLevel()">Select</span>
+      <span class="input-text">{{renderLevel()}}</span>
+      <span class="fas fa-caret-down"></span>
   </div>
 
   <form [formGroup]="form" class="language-dropdown" *ngIf="showMenu">

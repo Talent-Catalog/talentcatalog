@@ -17,7 +17,6 @@
 import {CandidateOccupation} from "./candidate-occupation";
 import {CandidateEducation} from "./candidate-education";
 import {Country} from "./country";
-import {Nationality} from "./nationality";
 import {CandidateJobExperience} from "./candidate-job-experience";
 import {CandidateCertification} from "./candidate-certification";
 import {CandidateLanguage} from "./candidate-language";
@@ -37,7 +36,7 @@ export interface Candidate {
   country: Country;
   city: string;
   yearOfArrival: number;
-  nationality: Nationality;
+  nationality: Country;
   registeredWithUN: boolean;
   candidateJobExperiences: CandidateJobExperience[];
   candidateCertifications: CandidateCertification[];

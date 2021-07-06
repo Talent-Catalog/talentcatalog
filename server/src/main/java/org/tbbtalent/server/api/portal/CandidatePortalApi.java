@@ -215,7 +215,7 @@ public class CandidatePortalApi {
                 .add("country", countryDto())
                 .add("city")
                 .add("yearOfArrival")
-                .add("nationality", nationalityDto())
+                .add("nationality", countryDto())
                 .add("unhcrStatus")
                 .add("unhcrNumber")
                 ;
@@ -233,13 +233,6 @@ public class CandidatePortalApi {
                 .add("occupation", occupationDto())
                 .add("yearsExperience")
                 .add("migrationOccupation")
-                ;
-    }
-
-    private DtoBuilder nationalityDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
                 ;
     }
 
@@ -408,7 +401,7 @@ public class CandidatePortalApi {
                 .add("dob")
                 .add("city")
                 .add("yearOfArrival")
-                .add("nationality", nationalityDto())
+                .add("nationality", countryDto())
                 .add("country", countryDto())
                 /* OCCUPATIONS */
                 .add("candidateOccupations", candidateOccupationDto())

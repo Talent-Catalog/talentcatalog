@@ -19,13 +19,12 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {Candidate} from "../../../model/candidate";
 import {CandidateService} from "../../../services/candidate.service";
-import {NationalityService} from "../../../services/nationality.service";
-import {Nationality} from "../../../model/nationality";
 import {CountryService} from "../../../services/country.service";
 import {Country} from "../../../model/country";
 import {RegistrationService} from "../../../services/registration.service";
 import {generateYearArray} from "../../../util/year-helper";
 import {LangChangeEvent, TranslateService} from "@ngx-translate/core";
+import {LanguageService} from "../../../services/language.service";
 
 @Component({
   selector: 'app-registration-personal',
@@ -44,23 +43,23 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
   // Component states
   _loading = {
     candidate: true,
-    countries: true,
-    nationalities: true
+    countries: true
   };
   saving: boolean;
 
   candidate: Candidate;
   countries: Country[];
-  nationalities: Nationality[];
+  nationalities: Country[];
   years: number[];
   subscription;
+  lang: string;
 
   constructor(private fb: FormBuilder,
               private router: Router,
               private candidateService: CandidateService,
               private countryService: CountryService,
-              private nationalityService: NationalityService,
               public translateService: TranslateService,
+              public languageService: LanguageService,
               public registrationService: RegistrationService) { }
 
   ngOnInit() {
@@ -82,8 +81,11 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
       // registrationId: ['', Validators.required]
     });
     this.loadDropDownData();
+
+    this.lang = this.languageService.getSelectedLanguage();
     //listen for change of language and save
     this.subscription = this.translateService.onLangChange.subscribe((event: LangChangeEvent) => {
+      this.lang = event.lang;
       this.loadDropDownData();
     });
 
@@ -114,9 +116,28 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
     );
   }
 
-  loadDropDownData(){
+  get tbbCriteriaFailed() {
+    let failed: boolean = false;
+    if (this.country !== '0' && this.country !== '') {
+      if (this.country === this.nationality) {
+        failed = true;
+      } else {
+        failed = false;
+      }
+    }
+    return failed;
+  }
+
+  get nationality() {
+    return this.form.value.nationality?.toString();
+  }
+
+  get country() {
+    return this.form.value.countryId?.toString();
+  }
+
+  loadDropDownData() {
     this._loading.countries = true;
-    this._loading.nationalities = true;
 
     /* Load the countries */
     this.countryService.listCountries().subscribe(
@@ -127,17 +148,6 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
       (error) => {
         this.error = error;
         this._loading.countries = false;
-      }
-    );
-
-    this.nationalityService.listNationalities().subscribe(
-      (response) => {
-        this.nationalities = response;
-        this._loading.nationalities = false;
-      },
-      (error) => {
-        this.error = error;
-        this._loading.nationalities = false;
       }
     );
   }
@@ -192,7 +202,7 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
 
   get loading() {
     const l = this._loading;
-    return l.candidate || l.countries || l.nationalities;
+    return l.candidate || l.countries
   }
 
   cancel() {

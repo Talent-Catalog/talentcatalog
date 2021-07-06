@@ -20,8 +20,6 @@ import {Candidate, CandidateStatus, Gender} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
 import {Country} from '../../../model/country';
 import {CountryService} from '../../../services/country.service';
-import {Nationality} from '../../../model/nationality';
-import {NationalityService} from '../../../services/nationality.service';
 import {Language} from '../../../model/language';
 import {LanguageService} from '../../../services/language.service';
 import {SearchResults} from '../../../model/search-results';
@@ -95,7 +93,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
   sortDirection = 'DESC';
 
   /* DATA - these are all drop down options for each select field*/
-  nationalities: Nationality[];
+  nationalities: Country[];
   countries: Country[];
   languages: Language[];
   educationLevels: EducationLevel[];
@@ -119,7 +117,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(private http: HttpClient, private fb: FormBuilder,
               private candidateService: CandidateService,
-              private nationalityService: NationalityService,
               private countryService: CountryService,
               private languageService: LanguageService,
               private savedSearchService: SavedSearchService,
@@ -181,7 +178,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     forkJoin({
-      'nationalities': this.nationalityService.listNationalities(),
+      'nationalities': this.countryService.listCountries(),
       'countriesRestricted': this.countryService.listCountriesRestricted(),
       'languages': this.languageService.listLanguages(),
       'languageLevels': this.languageLevelService.listLanguageLevels(),
