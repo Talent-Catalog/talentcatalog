@@ -5,6 +5,9 @@ tbb:
   destinations: ${TBB_DESTINATIONS:Australia,Canada,New Zealand,United Kingdom}
   partner-dbcopy-config: ${TBB_PARTNER_DBCOPY_CONFIG:data.sharing/tbbCopiesTest.xml}
 
+  alert:
+    email: alert@talentbeyondboundaries.org 
+      
 spring:
   servlet:
     multipart:
