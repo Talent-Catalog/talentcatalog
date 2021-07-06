@@ -54,7 +54,7 @@
     </div>
 
     <div class="card-body">
-      <div *ngIf="candidateNote.comment && candidateNote.showDetail">
+      <div *ngIf="candidateNote.comment">
         <div [innerHTML]="candidateNote.comment"></div>
         <hr/>
       </div>

@@ -16,17 +16,12 @@
 
 package org.tbbtalent.server.model.db;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
-import javax.persistence.Table;
-
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import javax.persistence.*;
 
 /**
  * A candidate can appear in multiple saved lists.
@@ -55,7 +50,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "candidate_saved_list")
-public class CandidateSavedList {
+public class CandidateSavedList extends AbstractAuditableDomainObject<CandidateSavedListKey> {
 
     @EqualsAndHashCode.Include
     @EmbeddedId

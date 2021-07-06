@@ -33,6 +33,7 @@
 
       <textarea id="contextNotes" class="md-textarea-auto form-control" rows="3"
                 [formControlName]="'contextNote'"></textarea>
+      <app-updated-by *ngIf="candidateSource" [object]="candidateSource"></app-updated-by>
     </div>
 
   </form>
