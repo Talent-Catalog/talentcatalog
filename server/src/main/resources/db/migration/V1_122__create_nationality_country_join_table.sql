@@ -98,7 +98,7 @@ insert into country_nationality_join (country_id, nationality_id) values (6277, 
 insert into country_nationality_join (country_id, nationality_id) values (6278, 9315);
 insert into country_nationality_join (country_id, nationality_id) values (6279, 9316);
 insert into country_nationality_join (country_id, nationality_id) values (6280, 9317);
-insert into country_nationality_join (country_id, nationality_id) values (6280, 265);
+
 insert into country_nationality_join (country_id, nationality_id) values (6281, 9318);
 insert into country_nationality_join (country_id, nationality_id) values (6283, 9319);
 insert into country_nationality_join (country_id, nationality_id) values (6284, 9320);
@@ -136,7 +136,7 @@ insert into country_nationality_join (country_id, nationality_id) values (6339, 
 insert into country_nationality_join (country_id, nationality_id) values (6341, 9360);
 insert into country_nationality_join (country_id, nationality_id) values (6342, 9361);
 insert into country_nationality_join (country_id, nationality_id) values (6343, 9362);
-insert into country_nationality_join (country_id, nationality_id) values (6343, 7342);
+
 insert into country_nationality_join (country_id, nationality_id) values (6344, 9363);
 insert into country_nationality_join (country_id, nationality_id) values (6345, 9364);
 insert into country_nationality_join (country_id, nationality_id) values (6346, 9365);
@@ -157,7 +157,7 @@ insert into country_nationality_join (country_id, nationality_id) values (6371, 
 insert into country_nationality_join (country_id, nationality_id) values (6372, 9382);
 insert into country_nationality_join (country_id, nationality_id) values (6375, 9385);
 insert into country_nationality_join (country_id, nationality_id) values (6377, 9386);
-insert into country_nationality_join (country_id, nationality_id) values (6377, 267);
+
 insert into country_nationality_join (country_id, nationality_id) values (6378, 9387);
 insert into country_nationality_join (country_id, nationality_id) values (6378, 9259);
 insert into country_nationality_join (country_id, nationality_id) values (6379, 9327);
@@ -165,12 +165,12 @@ insert into country_nationality_join (country_id, nationality_id) values (6381, 
 insert into country_nationality_join (country_id, nationality_id) values (6381, 9270);
 insert into country_nationality_join (country_id, nationality_id) values (6382, 9389);
 insert into country_nationality_join (country_id, nationality_id) values (6383, 9391);
-insert into country_nationality_join (country_id, nationality_id) values (6383, 353);
+
 insert into country_nationality_join (country_id, nationality_id) values (6384, 9392);
 insert into country_nationality_join (country_id, nationality_id) values (6387, 9393);
 insert into country_nationality_join (country_id, nationality_id) values (6388, 9394);
 insert into country_nationality_join (country_id, nationality_id) values (6389, 9396);
-insert into country_nationality_join (country_id, nationality_id) values (6389, 6863);
+
 insert into country_nationality_join (country_id, nationality_id) values (6389, 9395);
 insert into country_nationality_join (country_id, nationality_id) values (6390, 9397);
 insert into country_nationality_join (country_id, nationality_id) values (6391, 9398);
