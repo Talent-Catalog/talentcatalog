@@ -105,8 +105,6 @@ public class CandidateServiceImpl implements CandidateService {
     private final CountryRepository countryRepository;
     private final CountryService countryService;
     private final EducationLevelRepository educationLevelRepository;
-    private final NationalityRepository nationalityRepository;
-    private final NationalityService nationalityService;
     private final PasswordHelper passwordHelper;
     private final UserContext userContext;
     private final SavedSearchService savedSearchService;
@@ -137,8 +135,6 @@ public class CandidateServiceImpl implements CandidateService {
         CountryRepository countryRepository,
         CountryService countryService,
         EducationLevelRepository educationLevelRepository,
-        NationalityRepository nationalityRepository,
-        NationalityService nationalityService,
         PasswordHelper passwordHelper,
         UserContext userContext,
         SavedSearchService savedSearchService,
@@ -164,8 +160,6 @@ public class CandidateServiceImpl implements CandidateService {
         this.countryRepository = countryRepository;
         this.countryService = countryService;
         this.educationLevelRepository = educationLevelRepository;
-        this.nationalityRepository = nationalityRepository;
-        this.nationalityService = nationalityService;
         this.passwordHelper = passwordHelper;
         this.userContext = userContext;
         this.savedSearchService = savedSearchService;
@@ -609,7 +603,7 @@ public class CandidateServiceImpl implements CandidateService {
             //Look up names from ids.
             List<String> reqNationalities = new ArrayList<>();
             for (Long id : nationalityIds) {
-                final Nationality nationality = nationalityService.getNationality(id);
+                final Country nationality = countryService.getCountry(id);
                 reqNationalities.add(nationality.getName());
             }
             boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
@@ -884,7 +878,7 @@ public class CandidateServiceImpl implements CandidateService {
 
         //set country and nationality to unknown on create as required for search
         candidate.setCountry(countryRepository.getOne(0L));
-        candidate.setNationality(nationalityRepository.getOne(0L));
+        candidate.setNationality(countryRepository.getOne(0L));
 
         //Save candidate to get id (but don't update Elasticsearch yet)
         candidate = save(candidate, false);
@@ -989,8 +983,8 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountryId()));
 
         // Load the country from the database - throw an exception if not found
-        Nationality nationality = nationalityRepository.findById(request.getNationalityId())
-                .orElseThrow(() -> new NoSuchObjectException(Nationality.class, request.getNationalityId()));
+        Country nationality = countryRepository.findById(request.getNationalityId())
+                .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getNationalityId()));
 
         User user = candidate.getUser();
         user.setFirstName(request.getFirstName());
@@ -1135,8 +1129,8 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getCountryId()));
 
         // Load the nationality from the database - throw an exception if not found
-        Nationality nationality = nationalityRepository.findById(request.getNationality())
-                .orElseThrow(() -> new NoSuchObjectException(Nationality.class, request.getNationality()));
+        Country nationality = countryRepository.findById(request.getNationality())
+                .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getNationality()));
 
         User user = userContext.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
@@ -1145,6 +1139,9 @@ public class CandidateServiceImpl implements CandidateService {
         user.setLastName(request.getLastName());
         user = userRepository.save(user);
         Candidate candidate = candidateRepository.findByUserId(user.getId());
+
+        String newStatus = checkStatusValidity(request.getCountryId(), request.getNationality(), candidate);
+
         if (candidate != null) {
             candidate.setGender(request.getGender());
             candidate.setDob(request.getDob());
@@ -1155,7 +1152,29 @@ public class CandidateServiceImpl implements CandidateService {
 
             candidate.setAuditFields(user);
         }
-        return save(candidate, true);
+
+        candidate = save(candidate, true);
+
+        // Change status if required, and create note.
+        if (newStatus.equals("ineligible")) {
+            // Create note and change status to ineligible
+            final UpdateCandidateStatusRequest statusRequest =
+                    new UpdateCandidateStatusRequest(candidate.getId());
+            UpdateCandidateStatusInfo info = statusRequest.getInfo();
+            info.setStatus(CandidateStatus.ineligible);
+            info.setComment("TBB criteria not met: Country located is same as country of nationality.");
+            updateCandidateStatus(statusRequest);
+        } else if (newStatus.equals("pending")) {
+            // Create note and change status to pending
+            final UpdateCandidateStatusRequest statusRequest =
+                    new UpdateCandidateStatusRequest(candidate.getId());
+            UpdateCandidateStatusInfo info = statusRequest.getInfo();
+            info.setStatus(CandidateStatus.pending);
+            info.setComment("TBB criteria met: Country located different to country of nationality.");
+            updateCandidateStatus(statusRequest);
+        }
+
+        return candidate;
     }
 
     @Override
@@ -1209,13 +1228,21 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         // Don't update status to pending if status is already pending
         if (!candidate.getStatus().equals(CandidateStatus.pending)) {
-            final UpdateCandidateStatusRequest request = 
-                new UpdateCandidateStatusRequest(candidate.getId());
-            UpdateCandidateStatusInfo info = request.getInfo();
-            info.setStatus(CandidateStatus.pending);
-            info.setComment("Candidate submitted");
-            
-            updateCandidateStatus(request);
+            if (candidate.getNationality() != candidate.getCountry()) {
+                final UpdateCandidateStatusRequest request =
+                        new UpdateCandidateStatusRequest(candidate.getId());
+                UpdateCandidateStatusInfo info = request.getInfo();
+                info.setStatus(CandidateStatus.pending);
+                info.setComment("Candidate submitted");
+                updateCandidateStatus(request);
+            } else {
+                final UpdateCandidateStatusRequest request =
+                        new UpdateCandidateStatusRequest(candidate.getId());
+                UpdateCandidateStatusInfo info = request.getInfo();
+                info.setStatus(CandidateStatus.ineligible);
+                info.setComment("TBB criteria not met: Country located is same as country of nationality.");
+                updateCandidateStatus(request);
+            }
         }
         candidate.setAuditFields(candidate.getUser());
         return save(candidate, true);
@@ -2017,9 +2044,9 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         final Long partnerCitizenshipId = data.getPartnerCitizenshipId();
-        Nationality partnerCitizenship = null;
+        Country partnerCitizenship = null;
         if (partnerCitizenshipId != null) {
-            partnerCitizenship = nationalityRepository.findById(partnerCitizenshipId).orElse(null);
+            partnerCitizenship = countryRepository.findById(partnerCitizenshipId).orElse(null);
         }
 
         final Long drivingLicenseCountryId = data.getDrivingLicenseCountryId();
@@ -2085,5 +2112,23 @@ public class CandidateServiceImpl implements CandidateService {
             save(ce.getCandidate(), true);
         }
         return true;
+    }
+
+    private String checkStatusValidity(long countryReq, long nationalityReq, Candidate candidate) {
+        String newStatus = "";
+        // If candidate pending, but they updating country & nationality as same. Change to ineligible.
+        if (candidate.getStatus() == CandidateStatus.pending) {
+            if (countryReq == nationalityReq) {
+                newStatus = "ineligible";
+            }
+        // If candidate ineligible & it has country & nationality the same (causing the status) BUT the request
+        // has nationality & country as different. We can change ineligible status to pending. This determines
+        // that the cause of the ineligible status was due to country & nationality being the same, and not another reason.
+        } else if (candidate.getStatus() == CandidateStatus.ineligible) {
+            if (candidate.getCountry() == candidate.getNationality() && countryReq != nationalityReq) {
+                newStatus = "pending";
+            }
+        }
+        return newStatus;
     }
 }

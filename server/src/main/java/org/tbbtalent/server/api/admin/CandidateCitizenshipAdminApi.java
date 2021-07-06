@@ -16,11 +16,6 @@
 
 package org.tbbtalent.server.api.admin;
 
-import java.util.Map;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.exception.EntityReferencedException;
@@ -30,6 +25,10 @@ import org.tbbtalent.server.model.db.CandidateCitizenship;
 import org.tbbtalent.server.request.candidate.citizenship.CreateCandidateCitizenshipRequest;
 import org.tbbtalent.server.service.db.CandidateCitizenshipService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate-citizenship")
@@ -79,17 +78,16 @@ public class CandidateCitizenshipAdminApi
     private DtoBuilder candidateCitizenshipDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("nationality", nationalityDto())
+                .add("nationality", countryDto())
                 .add("hasPassport")
                 .add("notes")
                 ;
     }
 
-    private DtoBuilder nationalityDto() {
+    private DtoBuilder countryDto() {
         return new DtoBuilder()
                 .add("id")
                 .add("name")
-                .add("status")
                 ;
     }
     

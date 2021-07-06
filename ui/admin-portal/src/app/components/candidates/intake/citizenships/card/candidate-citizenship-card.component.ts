@@ -20,8 +20,8 @@ import {EnumOption, enumOptions} from '../../../../../util/enum';
 import {FormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../../util/intake/IntakeComponentBase';
-import {Nationality} from '../../../../../model/nationality';
 import {CandidateCitizenshipService} from '../../../../../services/candidate-citizenship.service';
+import {Country} from "../../../../../model/country";
 
 @Component({
   selector: 'app-candidate-citizenship-card',
@@ -33,7 +33,7 @@ export class CandidateCitizenshipCardComponent extends IntakeComponentBase imple
 
   //All known nationalities - a filtered version of this is used for drop downs
   //Filtered to remove nationalities already used in existingRecords.
-  @Input() nationalities: Nationality[];
+  @Input() nationalities: Country[];
 
   //Drop down values for enumeration
   hasPassportOptions: EnumOption[] = enumOptions(HasPassport);
@@ -75,7 +75,7 @@ export class CandidateCitizenshipCardComponent extends IntakeComponentBase imple
   /**
    * Filters out nationalities already used in existingRecords
    */
-  get filteredNationalities(): Nationality[] {
+  get filteredNationalities(): Country[] {
     if (!this.nationalities) {
       return [];
     } else if (!this.candidateIntakeData.candidateCitizenships) {

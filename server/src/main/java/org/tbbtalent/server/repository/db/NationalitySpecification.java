@@ -16,16 +16,16 @@
 
 package org.tbbtalent.server.repository.db;
 
-import javax.persistence.criteria.Predicate;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
-import org.tbbtalent.server.model.db.Nationality;
+import org.tbbtalent.server.model.db.NationalityBreak;
 import org.tbbtalent.server.request.nationality.SearchNationalityRequest;
+
+import javax.persistence.criteria.Predicate;
 
 public class NationalitySpecification {
 
-    public static Specification<Nationality> buildSearchQuery(final SearchNationalityRequest request) {
+    public static Specification<NationalityBreak> buildSearchQuery(final SearchNationalityRequest request) {
         return (nationality, query, builder) -> {
             Predicate conjunction = builder.conjunction();
             query.distinct(true);

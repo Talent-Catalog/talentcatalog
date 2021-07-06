@@ -16,13 +16,13 @@
 
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {Candidate, CandidateIntakeData} from '../../../../model/candidate';
-import {Nationality} from '../../../../model/nationality';
 import {
   CandidateDependantService,
   CreateCandidateDependantRequest
 } from '../../../../services/candidate-dependant.service';
 import {Subject} from "rxjs";
 import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
+import {Country} from "../../../../model/country";
 
 @Component({
   selector: 'app-dependants',
@@ -34,7 +34,7 @@ export class DependantsComponent implements OnInit {
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
   error: boolean;
-  @Input() nationalities: Nationality[];
+  @Input() nationalities: Country[];
   saving: boolean;
   activeIds: string;
   open: boolean;

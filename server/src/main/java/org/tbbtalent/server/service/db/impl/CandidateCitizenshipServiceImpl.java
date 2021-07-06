@@ -23,10 +23,10 @@ import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateCitizenship;
-import org.tbbtalent.server.model.db.Nationality;
+import org.tbbtalent.server.model.db.Country;
 import org.tbbtalent.server.repository.db.CandidateCitizenshipRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
-import org.tbbtalent.server.repository.db.NationalityRepository;
+import org.tbbtalent.server.repository.db.CountryRepository;
 import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tbbtalent.server.request.candidate.citizenship.CreateCandidateCitizenshipRequest;
 import org.tbbtalent.server.service.db.CandidateCitizenshipService;
@@ -40,15 +40,15 @@ import org.tbbtalent.server.service.db.CandidateCitizenshipService;
 public class CandidateCitizenshipServiceImpl implements CandidateCitizenshipService {
     private final CandidateCitizenshipRepository candidateCitizenshipRepository;
     private final CandidateRepository candidateRepository;
-    private final NationalityRepository nationalityRepository;
+    private final CountryRepository countryRepository;
 
     public CandidateCitizenshipServiceImpl(
             CandidateCitizenshipRepository candidateCitizenshipRepository,
             CandidateRepository candidateRepository, 
-            NationalityRepository nationalityRepository) {
+            CountryRepository countryRepository) {
         this.candidateCitizenshipRepository = candidateCitizenshipRepository;
         this.candidateRepository = candidateRepository;
-        this.nationalityRepository = nationalityRepository;
+        this.countryRepository = countryRepository;
     }
 
     @Override
@@ -64,8 +64,8 @@ public class CandidateCitizenshipServiceImpl implements CandidateCitizenshipServ
         
         final Long nationalityId = request.getNationalityId();
         if (nationalityId != null) {
-            Nationality nationality = nationalityRepository.findById(nationalityId)
-                    .orElseThrow(() -> new NoSuchObjectException(Nationality.class, nationalityId));
+            Country nationality = countryRepository.findById(nationalityId)
+                    .orElseThrow(() -> new NoSuchObjectException(Country.class, nationalityId));
             cc.setNationality(nationality);
         }
         cc.setHasPassport(request.getHasPassport());
@@ -86,8 +86,8 @@ public class CandidateCitizenshipServiceImpl implements CandidateCitizenshipServ
             Long nationalityId, @NonNull Candidate candidate, CandidateIntakeDataUpdate data) 
             throws NoSuchObjectException {
         if (nationalityId != null) {
-            Nationality nationality = nationalityRepository.findById(nationalityId)
-                    .orElseThrow(() -> new NoSuchObjectException(Nationality.class, nationalityId));
+            Country nationality = countryRepository.findById(nationalityId)
+                    .orElseThrow(() -> new NoSuchObjectException(Country.class, nationalityId));
 
             CandidateCitizenship cc;
             Long id = data.getCitizenId();
