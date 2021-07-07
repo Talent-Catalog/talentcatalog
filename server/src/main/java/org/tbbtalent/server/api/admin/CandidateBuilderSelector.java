@@ -167,13 +167,6 @@ public class CandidateBuilderSelector {
                 ;
     }
 
-    private DtoBuilder nationalityBreakDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
-                ;
-    }
-
     private DtoBuilder reviewDto() {
         return new DtoBuilder()
                 .add("id")

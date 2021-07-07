@@ -264,12 +264,6 @@ public class CandidateIntakeDataBuilderSelector {
                 ;
     }
 
-    private DtoBuilder nationalityBreakDto() {
-        return new DtoBuilder()
-                .add("id")
-                ;
-    }
-
     private DtoBuilder occupationDto() {
         return new DtoBuilder()
                 .add("id")
