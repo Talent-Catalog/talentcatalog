@@ -16,10 +16,6 @@
 
 package org.tbbtalent.server.repository;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,21 +25,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.Nationality;
-import org.tbbtalent.server.model.db.Role;
-import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.model.db.User;
-import org.tbbtalent.server.repository.db.CandidateRepository;
-import org.tbbtalent.server.repository.db.GetSavedListCandidatesQuery;
-import org.tbbtalent.server.repository.db.NationalityRepository;
-import org.tbbtalent.server.repository.db.SavedListRepository;
-import org.tbbtalent.server.repository.db.UserRepository;
+import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.repository.db.*;
 import org.tbbtalent.server.request.candidate.SavedListGetRequest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @TestPropertySource(properties = {
@@ -51,9 +41,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         "spring.flyway.enabled=false"
 })
 class CandidateRepositoryTest {
-    
+
     @Autowired
-    private NationalityRepository nationalityRepository;
+    private CountryRepository countryRepository;
     
     @Autowired
     private CandidateRepository candidateRepository;
@@ -66,7 +56,7 @@ class CandidateRepositoryTest {
 
     private User owningUser;
     private SavedList savedList;
-    private Nationality nationality1;
+    private Country nationality1;
     
     @BeforeEach
     void setUpListAndOwningUser() {
@@ -74,9 +64,9 @@ class CandidateRepositoryTest {
         assertNotNull(userRepository);
         
         //Set up a nationality.
-        nationality1 = new Nationality();
-        nationality1.setName("Syrian");
-        nationalityRepository.save(nationality1);
+        nationality1 = new Country();
+        nationality1.setName("Syria");
+        countryRepository.save(nationality1);
 
         //Set up owning user
         owningUser = new User(
