@@ -16,10 +16,6 @@
 
 package org.tbbtalent.server.repository;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,12 +28,12 @@ import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.User;
-import org.tbbtalent.server.repository.db.CandidateRepository;
-import org.tbbtalent.server.repository.db.GetSavedListCandidatesQuery;
-import org.tbbtalent.server.repository.db.NationalityRepository;
-import org.tbbtalent.server.repository.db.SavedListRepository;
-import org.tbbtalent.server.repository.db.UserRepository;
+import org.tbbtalent.server.repository.db.*;
 import org.tbbtalent.server.request.candidate.SavedListGetRequest;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -48,7 +44,7 @@ class CandidateRepositoryEndToEndTest {
     private static final Logger log = LoggerFactory.getLogger(CandidateRepositoryEndToEndTest.class);
     
     @Autowired
-    private NationalityRepository nationalityRepository;
+    private CountryRepository countryRepository;
     
     @Autowired
     private CandidateRepository candidateRepository;
