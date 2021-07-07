@@ -25,6 +25,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateStatus;
 import org.tbbtalent.server.model.db.Country;
 
 import java.time.LocalDate;
@@ -100,6 +101,10 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             + " where c.status <> 'deleted'"
     )
     Page<Candidate> findCandidatesWhereStatusNotDeleted(Pageable pageable);
+
+    @Query(" select c from Candidate c "
+            + " where c.status in (:statuses)")
+    List<Candidate> findByStatuses(@Param("statuses") List<CandidateStatus> statuses);
 
     @Transactional
     @Modifying
@@ -364,7 +369,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
      **************************************************************************/
     String countByNationalitySelectSQL = "select n.name, count(distinct c) as PeopleCount" +
             " from candidate c left join users u on c.user_id = u.id" +
-            " left join nationality n on c.nationality_id = n.id " +
+            " left join country n on c.nationality_id = n.id " +
             " left join country on c.country_id = country.id " +
             " where c.country_id in (:sourceCountryIds) " +
             " and " + countingStandardFilter + dateConditionFilter +

@@ -71,7 +71,14 @@ import {UserPipe} from './pipes/user.pipe';
 import {TrimPipe} from './pipes/trim.pipe';
 import {MonthPickerComponent} from './components/common/month-picker/month-picker.component';
 import {FaIconLibrary, FontAwesomeModule} from '@fortawesome/angular-fontawesome';
-import {faCalendar, faChevronDown, faChevronUp, faEdit, faEllipsisH} from '@fortawesome/free-solid-svg-icons';
+import {
+  faCalendar,
+  faChevronDown,
+  faChevronUp,
+  faEdit,
+  faEllipsisH,
+  faExternalLinkAlt
+} from '@fortawesome/free-solid-svg-icons';
 import {DeleteOccupationComponent} from './components/register/candidate-occupation/delete/delete-occupation.component';
 import {CandidateCertificationFormComponent} from './components/common/candidate-certification-form/candidate-certification-form.component';
 import {DownloadCvComponent} from './components/common/download-cv/download-cv.component';
@@ -166,8 +173,8 @@ export class AppModule {
       faChevronDown,
       faChevronUp,
       faEllipsisH,
-      faCalendar
-
+      faCalendar,
+      faExternalLinkAlt
     );
   }
 }

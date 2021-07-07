@@ -59,7 +59,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final LanguageLevelRepository languageLevelRepository;
     private final LanguageRepository languageRepository;
     private final CountryRepository countryRepository;
-    private final NationalityRepository nationalityRepository;
     private final OccupationRepository occupationRepository;
     private final EducationMajorRepository educationMajorRepository;
     private final EducationLevelRepository educationLevelRepository;
@@ -76,7 +75,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             LanguageLevelRepository languageLevelRepository,
             LanguageRepository languageRepository,
             CountryRepository countryRepository,
-            NationalityRepository nationalityRepository,
             OccupationRepository occupationRepository,
             EducationMajorRepository educationMajorRepository,
             EducationLevelRepository educationLevelRepository,
@@ -90,7 +88,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         this.languageLevelRepository = languageLevelRepository;
         this.languageRepository = languageRepository;
         this.countryRepository = countryRepository;
-        this.nationalityRepository = nationalityRepository;
         this.occupationRepository = occupationRepository;
         this.educationMajorRepository = educationMajorRepository;
         this.educationLevelRepository = educationLevelRepository;
@@ -187,7 +184,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setCountryNames(countryRepository.getNamesForIds(getIdsFromString(savedSearch.getCountryIds())));
         }
         if (!StringUtils.isEmpty(savedSearch.getNationalityIds())){
-            savedSearch.setNationalityNames(nationalityRepository.getNamesForIds(getIdsFromString(savedSearch.getNationalityIds())));
+            savedSearch.setNationalityNames(countryRepository.getNamesForIds(getIdsFromString(savedSearch.getNationalityIds())));
         }
         if (!StringUtils.isEmpty(savedSearch.getOccupationIds())){
             savedSearch.setOccupationNames(occupationRepository.getNamesForIds(getIdsFromString(savedSearch.getOccupationIds())));

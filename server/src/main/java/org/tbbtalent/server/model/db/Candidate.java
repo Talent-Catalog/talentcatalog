@@ -96,7 +96,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "nationality_id")
-    private Nationality nationality;
+    private Country nationality;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -424,7 +424,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "partner_citizenship_id")
     @Nullable
-    private Nationality partnerCitizenship;
+    private Country partnerCitizenship;
 
     @Enumerated(EnumType.STRING)
     @Nullable
@@ -655,11 +655,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.country = country;
     }
 
-    public Nationality getNationality() {
+    public Country getNationality() {
         return nationality;
     }
 
-    public void setNationality(Nationality nationality) {
+    public void setNationality(Country nationality) {
         this.nationality = nationality;
     }
 
@@ -1151,9 +1151,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setPartnerIeltsYr(@Nullable Long partnerIeltsYr) { this.partnerIeltsYr = partnerIeltsYr; }
 
     @Nullable
-    public Nationality getPartnerCitizenship() { return partnerCitizenship; }
+    public Country getPartnerCitizenship() { return partnerCitizenship; }
 
-    public void setPartnerCitizenship(@Nullable Nationality partnerCitizenship) { this.partnerCitizenship = partnerCitizenship; }
+    public void setPartnerCitizenship(@Nullable Country partnerCitizenship) { this.partnerCitizenship = partnerCitizenship; }
 
     @Nullable
     public YesNo getMilitaryService() { return militaryService; }
@@ -1300,7 +1300,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
                                    @Nullable EducationLevel partnerEduLevel,
                                    @Nullable Occupation partnerOccupation,
                                    @Nullable LanguageLevel partnerEnglishLevel,
-                                   @Nullable Nationality partnerCitizenship,
+                                   @Nullable Country partnerCitizenship,
                                    @Nullable Country drivingLicenseCountry,
                                    @Nullable Country birthCountry) {
         if (data.getAsylumYear() != null) {

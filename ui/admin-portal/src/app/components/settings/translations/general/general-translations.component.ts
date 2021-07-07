@@ -503,5 +503,14 @@ const ALL_FIELDS = {
       "ENTITY_REFERENCED": null,
       "UNKNOWN_OCCUPATION": null,
       "ALLOW_POPUPS": null,
+      "CRITERIA_INVALID": {
+        "HEADING": {
+          "ELIGIBILITY": null,
+          "APPLY": null,
+        },
+        "ELIGIBILITY": null,
+        "APPLY": null,
+        "LINK": null,
+      },
     },
   };

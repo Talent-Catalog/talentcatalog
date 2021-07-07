@@ -16,7 +16,6 @@
 
 import {User} from './user';
 import {Country} from './country';
-import {Nationality} from './nationality';
 import {CandidateReviewStatusItem} from './candidate-review-status-item';
 import {EducationMajor} from './education-major';
 import {EducationLevel} from './education-level';
@@ -38,7 +37,7 @@ export interface Candidate extends HasId {
   city: string;
   country: Country;
   yearOfArrival: number;
-  nationality: Nationality;
+  nationality: Country;
   phone: string;
   whatsapp: string;
   user: User;
@@ -150,7 +149,7 @@ export interface CandidateIntakeData {
   partnerIelts?: IeltsStatus;
   partnerIeltsScore?: string;
   partnerIeltsYr?: number;
-  partnerCitizenship?: Nationality;
+  partnerCitizenship?: Country;
 
   returnedHome?: YesNoUnsure;
   returnedHomeNotes?: string;

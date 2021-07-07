@@ -8,7 +8,6 @@ import {
 import {IntakeComponentTabBase} from "../../../../../../util/intake/IntakeComponentTabBase";
 import {CandidateService} from "../../../../../../../services/candidate.service";
 import {CountryService} from "../../../../../../../services/country.service";
-import {NationalityService} from "../../../../../../../services/nationality.service";
 import {EducationLevelService} from "../../../../../../../services/education-level.service";
 import {OccupationService} from "../../../../../../../services/occupation.service";
 import {LanguageLevelService} from "../../../../../../../services/language-level.service";
@@ -37,7 +36,6 @@ export class VisaJobCheckAuComponent extends IntakeComponentTabBase implements O
 
   constructor(candidateService: CandidateService,
               countryService: CountryService,
-              nationalityService: NationalityService,
               educationLevelService: EducationLevelService,
               occupationService: OccupationService,
               languageLevelService: LanguageLevelService,
@@ -45,7 +43,7 @@ export class VisaJobCheckAuComponent extends IntakeComponentTabBase implements O
               authService: AuthService,
               private candidateEducationService: CandidateEducationService,
               private candidateOccupationService: CandidateOccupationService) {
-    super(candidateService, countryService, nationalityService, educationLevelService,
+    super(candidateService, countryService, educationLevelService,
       occupationService, languageLevelService, noteService, authService)
     this.candidateEducationService = candidateEducationService
     this.candidateOccupationService = candidateOccupationService

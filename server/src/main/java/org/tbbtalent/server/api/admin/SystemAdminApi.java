@@ -34,6 +34,7 @@ import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
+import org.tbbtalent.server.repository.db.CandidateNoteRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.DataSharingService;
@@ -70,6 +71,7 @@ public class SystemAdminApi {
     private final DataSharingService dataSharingService;
 
     private final CandidateAttachmentRepository candidateAttachmentRepository;
+    private final CandidateNoteRepository candidateNoteRepository;
     private final CandidateRepository candidateRepository;
     private final PopulateElasticsearchService populateElasticsearchService;
     private final SalesforceService salesforceService;
@@ -101,6 +103,7 @@ public class SystemAdminApi {
             DataSharingService dataSharingService,
             UserContext userContext,
             CandidateAttachmentRepository candidateAttachmentRepository,
+            CandidateNoteRepository candidateNoteRepository,
             CandidateRepository candidateRepository,
             Drive googleDriveService,
             PopulateElasticsearchService populateElasticsearchService,
@@ -109,6 +112,7 @@ public class SystemAdminApi {
         this.dataSharingService = dataSharingService;
         this.userContext = userContext;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
+        this.candidateNoteRepository = candidateNoteRepository;
         this.googleDriveService = googleDriveService;
         this.candidateRepository = candidateRepository;
         this.populateElasticsearchService = populateElasticsearchService;
@@ -236,6 +240,45 @@ public class SystemAdminApi {
         }
         log.info("Finished processing. Success total of: " + success + " out of " + count);
         return "done";
+    }
+
+    // todo Remove after running. One off method. Login as System Admin user.
+    @GetMapping("update-statuses")
+    public String updateStatusesIneligible() {
+        List<CandidateStatus> statuses = new ArrayList<>(EnumSet.of(CandidateStatus.pending, CandidateStatus.incomplete));
+        List<Candidate> candidates = candidateRepository.findByStatuses(statuses);
+        log.info("Have all pending and incomplete candidates. There is a total of: " + candidates.size());
+        User loggedInUser = userContext.getLoggedInUser().orElse(null);
+        int count = 0;
+        int success = 0;
+        for(Candidate candidate : candidates) {
+            try {
+                if (candidate.getCountry() != null && candidate.getCountry() == candidate.getNationality()) {
+                    candidate.setStatus(CandidateStatus.ineligible);
+                    candidateRepository.save(candidate);
+                    try {
+                        CandidateNote candidateNote = new CandidateNote();
+                        candidateNote.setCandidate(candidate);
+                        candidateNote.setTitle("Status change from pending to ineligible");
+                        candidateNote.setComment("TBB criteria not met: Country located is same as country of nationality.");
+                        candidateNote.setNoteType(NoteType.admin);
+                        candidateNote.setAuditFields(loggedInUser);
+                        candidateNoteRepository.save(candidateNote);
+                    } catch (Exception e) {
+                        log.warn("Error creating note for candidate with candidate number: " + candidate.getCandidateNumber(), e);
+                    }
+                }
+                success++;
+            } catch (Exception e) {
+                log.warn("Error changing status for candidate with candidate number: " + candidate.getCandidateNumber(), e);
+            }
+            count++;
+            if (count%100 == 0) {
+                log.info("Processed " + count);
+            }
+        }
+        log.info("Finished processing. Success total of: " + success + " out of " + count);
+        return "Done. Now run esload to update elasticsearch.";
     }
 
     @GetMapping("google")
