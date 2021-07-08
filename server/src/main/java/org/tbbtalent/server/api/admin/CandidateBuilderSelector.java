@@ -79,7 +79,7 @@ public class CandidateBuilderSelector {
                 .add("selected")
                 .add("createdDate")
                 .add("updatedDate")
-                .add("contextNote")
+                .add("contextNote", contextNoteDto())
                 .add("maritalStatus")
                 .add("drivingLicense")
                 .add("langAssessmentScore")
@@ -208,6 +208,14 @@ public class CandidateBuilderSelector {
                 .add("id")
                 .add("exam")
                 .add("score")
+                ;
+    }
+
+    private DtoBuilder contextNoteDto() {
+        return new DtoBuilder()
+                .add("contextNote")
+                .add("updatedDate")
+                .add("updatedBy", userDto())
                 ;
     }
 

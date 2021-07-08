@@ -19,12 +19,10 @@ package org.tbbtalent.server.service.db.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateSavedList;
-import org.tbbtalent.server.model.db.CandidateSavedListKey;
-import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.repository.db.CandidateSavedListRepository;
 import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
+import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 
 import java.util.Set;
@@ -32,10 +30,13 @@ import java.util.Set;
 @Service
 public class CandidateSavedListServiceImpl implements CandidateSavedListService {
     private final CandidateSavedListRepository candidateSavedListRepository;
+    private final UserContext userContext;
     private static final Logger log = LoggerFactory.getLogger(CandidateSavedListServiceImpl.class);
 
-    public CandidateSavedListServiceImpl(CandidateSavedListRepository candidateSavedListRepository) {
+    public CandidateSavedListServiceImpl(CandidateSavedListRepository candidateSavedListRepository,
+                                         UserContext userContext) {
         this.candidateSavedListRepository = candidateSavedListRepository;
+        this.userContext = userContext;
     }
 
     @Override
@@ -67,15 +68,19 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
     }
 
     @Override
-    public void updateCandidateContextNote(
+    public CandidateSavedList updateCandidateContextNote(
             long savedListId, UpdateCandidateContextNoteRequest request) {
+        final User loggedInUser = userContext.getLoggedInUser().orElse(null);
         CandidateSavedListKey key = 
                 new CandidateSavedListKey(request.getCandidateId(), savedListId);
         CandidateSavedList csl = candidateSavedListRepository.findById(key)
                 .orElse(null);
+
         if (csl != null) {
             csl.setContextNote(request.getContextNote());
+            csl.setAuditFields(loggedInUser);
             candidateSavedListRepository.save(csl);
         }
+        return csl;
     }
 }

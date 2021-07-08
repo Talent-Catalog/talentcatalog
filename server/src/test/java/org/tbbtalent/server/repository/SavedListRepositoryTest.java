@@ -16,10 +16,6 @@
 
 package org.tbbtalent.server.repository;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,20 +28,17 @@ import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.User;
-import org.tbbtalent.server.repository.db.CandidateRepository;
-import org.tbbtalent.server.repository.db.CandidateSavedListRepository;
-import org.tbbtalent.server.repository.db.GetSavedListsQuery;
-import org.tbbtalent.server.repository.db.SavedListRepository;
-import org.tbbtalent.server.repository.db.UserRepository;
+import org.tbbtalent.server.repository.db.*;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
+import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.impl.CandidateSavedListServiceImpl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @TestPropertySource(properties = {
@@ -61,6 +54,9 @@ class SavedListRepositoryTest {
     private CandidateSavedListRepository candidateSavedListRepository;
     
     private CandidateSavedListService candidateSavedListService;
+
+    @Autowired
+    private UserContext userContext;
     
     @Autowired
     private SavedListRepository savedListRepository;
@@ -93,7 +89,7 @@ class SavedListRepositoryTest {
         assertNotNull(savedList);
         
         candidateSavedListService = 
-                new CandidateSavedListServiceImpl(candidateSavedListRepository);
+                new CandidateSavedListServiceImpl(candidateSavedListRepository, userContext);
     }
 
     private Candidate createTestCandidate(String username, String firstName, String lastName, String email) {

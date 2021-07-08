@@ -512,17 +512,17 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
      */
     @Transient
     @Nullable
-    public String getContextNote() {
-        String contextNote = null;
+    public CandidateSavedList getContextNote() {
+        CandidateSavedList csl = null;
         if (contextSavedListId != null) {
-            for (CandidateSavedList csl : candidateSavedLists) {
-                if (contextSavedListId.equals(csl.getSavedList().getId())) {
-                    contextNote = csl.getContextNote();
+            for (CandidateSavedList c : candidateSavedLists) {
+                if (contextSavedListId.equals(c.getSavedList().getId())) {
+                    csl = c;
                     break;
                 }
             }
         }
-        return contextNote;
+        return csl;
     }
 
     /**

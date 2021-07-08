@@ -1654,7 +1654,7 @@ public class CandidateServiceImpl implements CandidateService {
                     formatCandidateMajor(candidate.getCandidateEducations()),
                     getEnglishSpokenProficiency(candidate.getCandidateLanguages()),
                     formatCandidateOccupation(candidate.getCandidateOccupations()),
-                    candidate.getContextNote() != null ? candidate.getContextNote() : null,
+                    candidate.getContextNote() != null ? candidate.getContextNote().getContextNote() : null,
                     getCandidateExternalHref(candidate.getCandidateNumber())
             };
         } else if (role == Role.limited) {
@@ -1666,7 +1666,7 @@ public class CandidateServiceImpl implements CandidateService {
                     formatCandidateMajor(candidate.getCandidateEducations()),
                     getEnglishSpokenProficiency(candidate.getCandidateLanguages()),
                     formatCandidateOccupation(candidate.getCandidateOccupations()),
-                    candidate.getContextNote() != null ? candidate.getContextNote() : null,
+                    candidate.getContextNote() != null ? candidate.getContextNote().getContextNote() : null,
                     getCandidateExternalHref(candidate.getCandidateNumber())
             };
         } else {
@@ -1683,7 +1683,7 @@ public class CandidateServiceImpl implements CandidateService {
                     formatCandidateMajor(candidate.getCandidateEducations()),
                     getEnglishSpokenProficiency(candidate.getCandidateLanguages()),
                     formatCandidateOccupation(candidate.getCandidateOccupations()),
-                    candidate.getContextNote() != null ? candidate.getContextNote() : null,
+                    candidate.getContextNote() != null ? candidate.getContextNote().getContextNote() : null,
                     getCandidateExternalHref(candidate.getCandidateNumber())
             };
         }

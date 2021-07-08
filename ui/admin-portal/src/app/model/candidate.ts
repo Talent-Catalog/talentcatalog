@@ -26,6 +26,7 @@ import {getExternalHref} from '../util/url';
 import {Occupation} from './occupation';
 import {LanguageLevel} from './language-level';
 import {HasId} from "./base";
+import {ContextNote} from "./context-note";
 
 export interface Candidate extends HasId {
   id: number;
@@ -55,7 +56,7 @@ export interface Candidate extends HasId {
   selected: boolean;
   createdDate: number;
   updatedDate: number;
-  contextNote: string;
+  contextNote: ContextNote;
   maritalStatus: MaritalStatus;
   drivingLicense: DrivingLicenseStatus;
   unhcrStatus: UnhcrStatus;

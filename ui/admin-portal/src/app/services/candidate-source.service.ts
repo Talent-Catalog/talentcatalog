@@ -30,6 +30,7 @@ import {map} from "rxjs/operators";
 import {SavedSearchService} from "./saved-search.service";
 import {CandidateFieldService} from "./candidate-field.service";
 import {CopySourceContentsRequest} from "../model/saved-list";
+import {ContextNote} from "../model/context-note";
 
 @Injectable({providedIn: 'root'})
 export class CandidateSourceService {
@@ -108,11 +109,10 @@ export class CandidateSourceService {
   };
 
   updateContextNote(source: CandidateSource,
-                    request: UpdateCandidateContextNoteRequest): Observable<void> {
+                    request: UpdateCandidateContextNoteRequest): Observable<ContextNote> {
     const apiUrl = isSavedSearch(source) ?
       this.savedSearchApiUrl : this.savedListApiUrl;
-    return this.http.put<void>(`${apiUrl}/context/${source.id}`, request);
-
+    return this.http.put<ContextNote>(`${apiUrl}/context/${source.id}`, request);
   }
 
   updateDisplayedFieldPaths(source: CandidateSource,

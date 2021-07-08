@@ -14,29 +14,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  AfterViewInit,
-  Component,
-  Input,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  SimpleChanges
-} from '@angular/core';
+import {AfterViewInit, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {Candidate} from '../../../model/candidate';
-import {
-  catchError,
-  debounceTime,
-  switchMap,
-  takeUntil,
-  tap
-} from 'rxjs/operators';
+import {catchError, debounceTime, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {Subject} from 'rxjs';
-import {
-  CandidateSource,
-  UpdateCandidateContextNoteRequest
-} from '../../../model/base';
+import {CandidateSource, UpdateCandidateContextNoteRequest} from '../../../model/base';
 import {CandidateSourceService} from '../../../services/candidate-source.service';
 import {isSavedSearch} from "../../../model/saved-search";
 
@@ -64,7 +47,7 @@ export class CandidateContextNoteComponent implements OnInit, AfterViewInit, OnC
 
   ngOnInit() {
     this.form = this.fb.group({
-      contextNote: [this.candidate.contextNote],
+      contextNote: [this.candidate.contextNote?.contextNote],
     });
   }
 
@@ -80,7 +63,7 @@ export class CandidateContextNoteComponent implements OnInit, AfterViewInit, OnC
     //Replace the form value with the new candidates context notes when
     //changing from one candidate to the next or when selection has changed.
     if (this.form) {
-      this.form.controls['contextNote'].patchValue(this.candidate.contextNote);
+      this.form.controls['contextNote'].patchValue(this.candidate.contextNote.contextNote);
     }
   }
 
@@ -123,9 +106,9 @@ export class CandidateContextNoteComponent implements OnInit, AfterViewInit, OnC
     ).subscribe(
 
       //Save has completed successfully
-      () => {
+      (result) => {
         this.saving = false
-        this.candidate.contextNote = this.contextNote;
+        this.candidate.contextNote = result;
         },
           //Theoretically never get here because we catch errors in the pipe
           (error) => {

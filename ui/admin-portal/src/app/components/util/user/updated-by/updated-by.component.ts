@@ -14,14 +14,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 
-@Component({
+@Component ({
   selector: 'app-updated-by',
   templateUrl: './updated-by.component.html',
   styleUrls: ['./updated-by.component.scss']
 })
-export class UpdatedByComponent implements OnInit {
+export class UpdatedByComponent implements OnInit, OnChanges {
 
   @Input() object: {[key: string]: any};
 
@@ -29,6 +29,14 @@ export class UpdatedByComponent implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    //Replace the form value with the new candidates context notes when
+    //changing from one candidate to the next or when selection has changed.
+    if (changes.object.currentValue.updatedDate && changes.object.currentValue?.updatedDate !== changes.object.previousValue?.updatedDate) {
+      console.log(this.object);
+    }
   }
 
 }
