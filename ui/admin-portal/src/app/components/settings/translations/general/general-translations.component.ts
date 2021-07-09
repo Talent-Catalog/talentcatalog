@@ -504,12 +504,7 @@ const ALL_FIELDS = {
       "UNKNOWN_OCCUPATION": null,
       "ALLOW_POPUPS": null,
       "CRITERIA_INVALID": {
-        "HEADING": {
-          "ELIGIBILITY": null,
-          "APPLY": null,
-        },
-        "ELIGIBILITY": null,
-        "APPLY": null,
+        "HEADING": null,
         "LINK": null,
       },
     },
