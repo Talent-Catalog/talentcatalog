@@ -78,7 +78,7 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
 
         if (csl != null) {
             csl.setContextNote(request.getContextNote());
-            csl.setAuditFields(loggedInUser);
+            //csl.setAuditFields(loggedInUser);
             candidateSavedListRepository.save(csl);
         }
         return csl;

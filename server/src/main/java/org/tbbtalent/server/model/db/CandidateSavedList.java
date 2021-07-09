@@ -50,11 +50,8 @@ import javax.persistence.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "candidate_saved_list")
+@IdClass(CandidateSavedListKey.class)
 public class CandidateSavedList extends AbstractAuditableDomainObject<CandidateSavedListKey> {
-
-    @EqualsAndHashCode.Include
-    @EmbeddedId
-    CandidateSavedListKey id;
 
     @ManyToOne
     @MapsId("candidateId")
@@ -74,6 +71,6 @@ public class CandidateSavedList extends AbstractAuditableDomainObject<CandidateS
     public CandidateSavedList(Candidate candidate, SavedList savedList) {
         this.candidate = candidate;
         this.savedList = savedList;
-        this.id = new CandidateSavedListKey(candidate.getId(), savedList.getId()); 
+        //this.key = new CandidateSavedListKey(candidate.getId(), savedList.getId());
     }
 }

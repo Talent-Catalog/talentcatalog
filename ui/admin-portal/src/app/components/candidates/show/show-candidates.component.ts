@@ -707,7 +707,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     if (isSavedSearch(this.candidateSource)) {
       //Saved search selection change
 
-      if (candidate.contextNote.contextNote && !selected) {
+      if (candidate?.contextNote?.contextNote && !selected) {
         //They have a context note which they will lose if they deselect.
         //Ask for confirmation.
         const confirmation = this.modalService.open(ConfirmationComponent, {
