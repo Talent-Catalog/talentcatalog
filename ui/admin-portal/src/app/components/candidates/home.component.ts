@@ -51,7 +51,7 @@ export class HomeComponent implements OnInit, AfterContentInit{
   }
 
   ngOnInit() {
-    this.setActiveTabId("type:profession")
+    this.selectDefaultTab();
     this.categoryForm = this.fb.group({
       savedSearchSubtype: [this.selectedSavedSearchSubtype]
     });
@@ -103,7 +103,7 @@ export class HomeComponent implements OnInit, AfterContentInit{
 
   private setSelectedSavedSearchSubtype(selectedSavedSearchSubtype: number) {
     this.selectedSavedSearchSubtype = selectedSavedSearchSubtype;
-    this.categoryForm.controls['savedSearchSubtype'].patchValue(selectedSavedSearchSubtype);
+    this.categoryForm?.controls['savedSearchSubtype'].patchValue(selectedSavedSearchSubtype);
 
     this.localStorageService.set(this.lastCategoryTabKey, this.selectedSavedSearchSubtype);
   }
