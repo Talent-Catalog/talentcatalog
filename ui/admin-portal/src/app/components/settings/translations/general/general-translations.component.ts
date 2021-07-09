@@ -182,6 +182,10 @@ const ALL_FIELDS = {
       },
       "INACTIVE": {
         "EXPLANATION": null
+      },
+      "INELIGIBLE": {
+        "EXPLANATION": null,
+        "BUTTON": null
       }
     },
     "REGISTRATION": {
