@@ -51,7 +51,7 @@ export class HomeComponent implements OnInit, AfterContentInit{
   }
 
   ngOnInit() {
-
+    this.setActiveTabId("type:profession")
     this.categoryForm = this.fb.group({
       savedSearchSubtype: [this.selectedSavedSearchSubtype]
     });
