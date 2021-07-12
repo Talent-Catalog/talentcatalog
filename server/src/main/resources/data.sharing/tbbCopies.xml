@@ -57,10 +57,10 @@
                 <!--Located in Jordan or Lebanon only-->
                 (candidate.country_id IS NULL OR candidate.country_id IN (6288,6296))
                 AND
-                <!--Exclude candidates in Test list-->
+                <!--Exclude candidates in TestCandidates list-->
                 candidate.id NOT IN
                 (select candidate_id from candidate_saved_list where saved_list_id 
-                   = (select id from saved_list where name = 'Test' and global = true));
+                   = (select id from saved_list where name = 'TestCandidates' and global = true));
             </filter>
             <tables>
                 <table>
