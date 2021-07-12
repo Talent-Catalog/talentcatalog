@@ -50,8 +50,21 @@ import javax.persistence.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "candidate_saved_list")
-@IdClass(CandidateSavedListKey.class)
+
+/* todo:
+    Problem extending the mapped superclass abstract auditable domain object, as that extends the abstract domain object which
+    has an id. We need to get the auditable fields without also getting an id, as this already uses an embedded id made up of the CandidateSavedListKey..
+    Get error below when trying to save a new csl into a saved list by selecting a candidate.
+    Caused by: org.hibernate.id.IdentifierGenerationException: Unknown integral data type for ids : org.tbbtalent.server.model.db.CandidateSavedListKey
+    Potentially a problem with how we handle audits, better option see link https://www.baeldung.com/database-auditing-jpa
+    Would require a big do over of all auditable fields.
+    Currently audit appears and works on saved lists when adding a context note (just need to readd the audit fields to the database under candidateSavedList.)
+* */
 public class CandidateSavedList extends AbstractAuditableDomainObject<CandidateSavedListKey> {
+
+    @EqualsAndHashCode.Include
+    @EmbeddedId
+    CandidateSavedListKey id;
 
     @ManyToOne
     @MapsId("candidateId")
@@ -71,6 +84,6 @@ public class CandidateSavedList extends AbstractAuditableDomainObject<CandidateS
     public CandidateSavedList(Candidate candidate, SavedList savedList) {
         this.candidate = candidate;
         this.savedList = savedList;
-        //this.key = new CandidateSavedListKey(candidate.getId(), savedList.getId());
+        this.id = new CandidateSavedListKey(candidate.getId(), savedList.getId());
     }
 }

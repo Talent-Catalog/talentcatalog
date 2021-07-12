@@ -78,7 +78,8 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
 
         if (csl != null) {
             csl.setContextNote(request.getContextNote());
-            //csl.setAuditFields(loggedInUser);
+            // todo change how this sets the audit fields for csl. Works when updating a context note, but fails when saving/making a selection.
+            csl.setAuditFields(loggedInUser);
             candidateSavedListRepository.save(csl);
         }
         return csl;
