@@ -116,6 +116,7 @@ export class ViewCandidateComponent implements OnInit {
     const request: SearchSavedListRequest = {
       owned: true,
       shared: true,
+      global: true,
       fixed: false
     };
 
