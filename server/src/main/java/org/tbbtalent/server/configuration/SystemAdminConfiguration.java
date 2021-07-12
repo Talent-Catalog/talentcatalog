@@ -38,6 +38,10 @@ import org.tbbtalent.server.service.db.UserService;
 public class SystemAdminConfiguration {
 
   private final static String SYSTEM_ADMIN_NAME = "SystemAdmin";
+  public final static String[] GLOBAL_LIST_NAMES = new String[] {
+      "Test"
+  }; 
+  
   private final SavedListService savedListService;
   private final UserService userService;
 
@@ -69,12 +73,18 @@ public class SystemAdminConfiguration {
       req.setPassword("password");
       systemAdmin = userService.createUser(req);
     }
-    
-    //Create the global Test tag
-    UpdateSavedListInfoRequest req = new UpdateSavedListInfoRequest();
-    req.setGlobal(true);
-    req.setName("Test");
-    savedListService.createSavedList(systemAdmin, req);
+
+    //Create global lists
+    for (String listName : GLOBAL_LIST_NAMES) {
+      //Don't create if already exists.
+      if (savedListService.get(systemAdmin, listName) == null) {
+        //Create the global list
+        UpdateSavedListInfoRequest req = new UpdateSavedListInfoRequest();
+        req.setGlobal(true);
+        req.setName(listName);
+        savedListService.createSavedList(systemAdmin, req);
+      }
+    }
   }
   
 }

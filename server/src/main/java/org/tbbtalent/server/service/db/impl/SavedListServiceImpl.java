@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -200,6 +201,9 @@ public class SavedListServiceImpl implements SavedListService {
     @Override
     public SavedList createSavedList(User user, UpdateSavedListInfoRequest request)
         throws EntityExistsException {
+        if (user != null) {
+            checkDuplicates(null, request.getName(), user);
+        }
         SavedList savedList = new SavedList();
         request.populateFromRequest(savedList);
 
@@ -213,9 +217,6 @@ public class SavedListServiceImpl implements SavedListService {
     public SavedList createSavedList(UpdateSavedListInfoRequest request) 
             throws EntityExistsException {
         final User loggedInUser = userContext.getLoggedInUser().orElse(null);
-        if (loggedInUser != null) {
-            checkDuplicates(null, request.getName(), loggedInUser.getId());
-        }
         return createSavedList(loggedInUser, request);
     }
 
@@ -251,9 +252,17 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
+    @NonNull
     public SavedList get(long savedListId) {
         return savedListRepository.findById(savedListId)
                 .orElseThrow(() -> new NoSuchObjectException(SavedList.class, savedListId));
+    }
+
+    @Override
+    @Nullable
+    public SavedList get(@NonNull User user, String listName) {
+        return listName == null ? null : 
+            savedListRepository.findByNameIgnoreCase(listName, user.getId()).orElse(null);
     }
 
     @Override
@@ -388,7 +397,7 @@ public class SavedListServiceImpl implements SavedListService {
             throws NoSuchObjectException, EntityExistsException {
         final User loggedInUser = userContext.getLoggedInUser().orElse(null);
         if (loggedInUser != null) {
-            checkDuplicates(savedListId, request.getName(), loggedInUser.getId());
+            checkDuplicates(savedListId, request.getName(), loggedInUser);
         }
         SavedList savedList = get(savedListId);
         request.populateFromRequest(savedList);
@@ -441,11 +450,20 @@ public class SavedListServiceImpl implements SavedListService {
         return savedListRepository.save(savedList);
     }
 
-    private void checkDuplicates(Long savedListId, String name, Long userId) 
+    /**
+     * Checks against a user having more than one list with the same name.
+     * @param savedListId If not null, this must be the id of the list with the given name. 
+     * @param name Name of list
+     * @param user Owner of list
+     * @throws EntityExistsException If a list exists already with that name, and the list is not
+     * the list with the given id.
+     */
+    private void checkDuplicates(Long savedListId, String name, @NonNull User user) 
             throws EntityExistsException {
-        SavedList existing = savedListRepository.findByNameIgnoreCase(name, userId)
-                .orElse(null);
+        SavedList existing = get(user, name);
         if (existing != null && existing.getStatus() != Status.deleted) {
+            //We have a undeleted list with that name. Report duplicate unless the list is the
+            //one we expect - ie with the given id.
             if (!existing.getId().equals(savedListId)) {
                 throw new EntityExistsException("SavedList " + existing.getId());
             }

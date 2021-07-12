@@ -19,6 +19,8 @@ package org.tbbtalent.server.service.db;
 import java.io.IOException;
 import java.util.List;
 import org.springframework.data.domain.Page;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
@@ -127,7 +129,17 @@ public interface SavedListService {
      * @return Saved list
      * @throws NoSuchObjectException if there is no saved list with this id. 
      */
+    @NonNull
     SavedList get(long savedListId) throws NoSuchObjectException;
+
+    /**
+     * Get the SavedList, if any, with the given name (ignoring case), owned by the given user.
+     * @param user Owner of list
+     * @param listName Name of list (case insensitive - eg "test" will match "Test")
+     * @return Saved list or null if not found
+     */
+    @Nullable
+    SavedList get(@NonNull User user, String listName);
 
     /**
      * Return all SavedList's associated with the given candidate that match 
