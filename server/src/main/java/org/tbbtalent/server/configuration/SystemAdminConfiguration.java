@@ -81,6 +81,7 @@ public class SystemAdminConfiguration {
         //Create the global list
         UpdateSavedListInfoRequest req = new UpdateSavedListInfoRequest();
         req.setGlobal(true);
+        req.setFixed(true);
         req.setName(listName);
         savedListService.createSavedList(systemAdmin, req);
       }

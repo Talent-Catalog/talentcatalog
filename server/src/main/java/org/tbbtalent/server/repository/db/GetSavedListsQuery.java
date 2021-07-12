@@ -69,8 +69,14 @@ public class GetSavedListsQuery implements Specification<SavedList> {
             );
         }
 
-        // (shared OR owned)
+        // (shared OR owned OR global)
         Predicate ors = cb.disjunction();
+
+        if (request.getGlobal() != null && request.getGlobal()) {
+            ors.getExpressions().add(
+                cb.equal(savedList.get("global"), request.getGlobal())
+            );
+        }
 
         //If shared is specified, only supply searches shared with the owner
         if (request.getShared() != null && request.getShared()) {

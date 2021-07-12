@@ -39,6 +39,7 @@ public class SavedListBuilderSelector {
                 .add("status")
                 .add("name")
                 .add("fixed")
+                .add("global")
                 .add("savedSearchSource", savedSearchSourceDto())
                 .add("sfJoblink")
                 .add("createdBy", userDto())
