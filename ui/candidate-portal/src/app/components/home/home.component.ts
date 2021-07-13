@@ -18,6 +18,7 @@ import {Component, OnInit} from '@angular/core';
 import {CandidateService} from "../../services/candidate.service";
 import {Candidate, CandidateStatus} from "../../model/candidate";
 import {User} from "../../model/user";
+import {LanguageService} from "../../services/language.service";
 
 @Component({
   selector: 'app-home',
@@ -31,12 +32,15 @@ export class HomeComponent implements OnInit {
 
   candidate: Candidate;
   user: User;
+  lang: string;
 
-  constructor(private candidateService: CandidateService) {
+  constructor(private candidateService: CandidateService,
+              private languageService: LanguageService) {
   }
 
   ngOnInit() {
     this.loading = true;
+    this.lang = this.languageService.getSelectedLanguage();
     this.candidateService.getStatus().subscribe(
       (candidate) => {
         this.candidate = candidate || ({status: CandidateStatus.draft} as Candidate);

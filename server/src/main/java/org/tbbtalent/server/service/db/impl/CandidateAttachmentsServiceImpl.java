@@ -284,18 +284,32 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     @Override
     public void downloadCandidateAttachment(
             CandidateAttachment attachment, OutputStream out) throws IOException {
-        if (attachment.getType() == AttachmentType.googlefile) {
-            FileSystemFile file = new FileSystemFile();
-            file.setUrl(attachment.getLocation());
-            fileSystemService.downloadFile(file, out);
+        User user = userContext.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        boolean creator = attachment.getCreatedBy().equals(user);
+        boolean mine = attachment.getCandidate().equals(user.getCandidate());
+
+        // If from candidate validate they can't access if they aren't the creator, and it's not about them.
+        if (user.getRole().equals(Role.user)) {
+            if (!creator && !mine) {
+                throw new InvalidRequestException("You don't have permission to download this attachment.");
+            }
+        } else if (user.getRole().equals(Role.limited) || user.getRole().equals(Role.semilimited)) {
+            throw new InvalidRequestException("You don't have permission to download this attachment.");
         } else {
-            //We only handle Google attachments for now because that is all
-            //we need.
-            //We can access link and AWS attachments simply using their urls.
-            //We can do that with Google attachments because of security 
-            //restrictions with the Google Shared Drive.
-            //To get around that, we actually download a copy of the Google
-            //file and return that copy to the user's browser.
+            if (attachment.getType() == AttachmentType.googlefile) {
+                FileSystemFile file = new FileSystemFile();
+                file.setUrl(attachment.getLocation());
+                fileSystemService.downloadFile(file, out);
+            } else {
+                //We only handle Google attachments for now because that is all
+                //we need.
+                //We can access link and AWS attachments simply using their urls.
+                //We can do that with Google attachments because of security
+                //restrictions with the Google Shared Drive.
+                //To get around that, we actually download a copy of the Google
+                //file and return that copy to the user's browser.
+            }
         }
     }
 
