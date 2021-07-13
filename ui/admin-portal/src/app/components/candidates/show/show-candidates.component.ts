@@ -678,11 +678,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isGlobal(): boolean {
-    let global: boolean = false;
-    if (isSavedSearch(this.candidateSource)) {
-      global = this.candidateSource.global;
-    }
-    return global;
+    return this.candidateSource.global;
   }
 
   isImportable(): boolean {
