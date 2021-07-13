@@ -183,12 +183,8 @@ export class CandidateSourceComponent implements OnInit, OnChanges {
   }
 
   isRemovable() {
-    // Can't delete global searches
-    if (isSavedSearch(this.candidateSource)){
-      return !this.candidateSource.global;
-    } else {
-      return true;
-    }
+    // Can't delete global sources
+    return !this.candidateSource.global;
   }
 
   getSavedSearch(savedSearchId: number) {

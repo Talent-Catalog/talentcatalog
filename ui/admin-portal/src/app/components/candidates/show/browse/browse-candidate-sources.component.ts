@@ -135,6 +135,10 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
         break;
       case SearchBy.sharedWithMe:
         req.shared = true;
+        if (this.sourceType === CandidateSourceType.SavedList) {
+          //Global lists appear in the "shared with me" tab.
+          req.global = true;
+        }
         break;
       case SearchBy.watched:
         req.watched = true;

@@ -95,6 +95,7 @@ export interface CandidateSource extends Auditable {
   displayedFieldsLong?: string[];
   displayedFieldsShort?: string[];
   fixed: boolean;
+  global: boolean;
   sfJoblink?: string;
   users?: User[];
   watcherUserIds?: number[];

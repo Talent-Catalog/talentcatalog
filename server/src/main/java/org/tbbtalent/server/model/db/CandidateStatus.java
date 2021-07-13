@@ -29,6 +29,11 @@ public enum CandidateStatus {
     active,
 
     /**
+     * The candidate has found employment themselves 
+     */
+    autonomousEmployment,
+
+    /**
      * Candidate has been deleted. (The status of the candidate's corresponding User object should
      * also be set to deleted - ie {@link Status#deleted} 
      */
@@ -63,6 +68,12 @@ public enum CandidateStatus {
     /**
      * We cannot contact candidate
      */
-    unreachable
+    unreachable,
+
+    /**
+     * The candidate has requested to be withdrawn from consideration.
+     */
+    withdrawn,
+    
 
 }

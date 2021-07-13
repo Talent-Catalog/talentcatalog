@@ -22,7 +22,10 @@ export class CandidateStatusSelectorComponent implements OnInit, OnChanges {
   @Output() statusInfoUpdate = new EventEmitter<UpdateCandidateStatusInfo>();
 
   candidateStatusInfoForm: FormGroup;
-  candidateStatusOptions: EnumOption[] = enumOptions(CandidateStatus);
+
+  //Filter out the draft option. Users should not be able to set a candidate's status to draft.
+  candidateStatusOptions: EnumOption[] =
+    enumOptions(CandidateStatus).filter(option => option.displayText !== CandidateStatus.draft);
 
   constructor(private fb: FormBuilder) {
   }

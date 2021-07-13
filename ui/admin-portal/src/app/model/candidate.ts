@@ -331,13 +331,15 @@ export enum CandidateOpportunityStage {
 
 export enum CandidateStatus {
   active = "active",
-  deleted = "deleted",
-  draft = "draft",
-  employed = "employed",
+  autonomousEmployment = "autonomous employment (inactive)",
+  deleted = "deleted (inactive)",
+  draft = "draft (inactive)",
+  employed = "employed (inactive)",
   incomplete = "incomplete",
-  ineligible = "ineligible",
+  ineligible = "ineligible (inactive)",
   pending = "pending",
-  unreachable = "unreachable"
+  unreachable = "unreachable",
+  withdrawn = "withdrawn (inactive)"
 }
 
 export interface SalesforceOppParams {

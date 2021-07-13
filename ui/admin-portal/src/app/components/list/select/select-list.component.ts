@@ -98,6 +98,7 @@ export class SelectListComponent implements OnInit {
     const request: SearchSavedListRequest = {
       owned: true,
       shared: true,
+      global: true,
       fixed: false
     };
 

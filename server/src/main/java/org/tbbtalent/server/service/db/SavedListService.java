@@ -19,11 +19,14 @@ package org.tbbtalent.server.service.db;
 import java.io.IOException;
 import java.util.List;
 import org.springframework.data.domain.Page;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
@@ -103,6 +106,16 @@ public interface SavedListService {
             throws EntityExistsException;
 
     /**
+     * Create a new SavedList
+     * @param user User to be recorded as creator of saved list
+     * @param request Create request
+     * @return Created saved list
+     * @throws EntityExistsException if a list with this name already exists.
+     */
+    SavedList createSavedList(User user, UpdateSavedListInfoRequest request) 
+            throws EntityExistsException;
+
+    /**
      * Delete the SavedList with the given ID
      * @param savedListId ID of SavedList to delete
      * @return True if delete was successful
@@ -116,7 +129,17 @@ public interface SavedListService {
      * @return Saved list
      * @throws NoSuchObjectException if there is no saved list with this id. 
      */
+    @NonNull
     SavedList get(long savedListId) throws NoSuchObjectException;
+
+    /**
+     * Get the SavedList, if any, with the given name (ignoring case), owned by the given user.
+     * @param user Owner of list
+     * @param listName Name of list (case insensitive - eg "test" will match "Test")
+     * @return Saved list or null if not found
+     */
+    @Nullable
+    SavedList get(@NonNull User user, String listName);
 
     /**
      * Return all SavedList's associated with the given candidate that match 

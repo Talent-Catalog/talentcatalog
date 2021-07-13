@@ -51,7 +51,8 @@ public class EmailSender {
 
     private static final Logger log = LoggerFactory.getLogger(EmailSender.class);
 
-    private final String alertEmail = "alert@talentbeyondboundaries.org";
+    @Value("${tbb.alert.email}")
+    private String alertEmail;
     private final String alertSubject = "Talent Catalog Alert";
 
     public enum EmailType {
