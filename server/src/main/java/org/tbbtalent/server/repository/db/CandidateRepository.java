@@ -192,7 +192,11 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
      */
 
     String candidatesCondition = " and c.id in (:candidateIds)";
-    String countingStandardFilter = "u.status = 'active' and c.status != 'draft'";
+    String notTestCandidateCondition = 
+        " and c.id NOT IN (select candidate_id from candidate_saved_list" +
+        " where saved_list_id = (select id from saved_list where name = 'TestCandidates' and global = true))";
+    String countingStandardFilter = 
+        "u.status = 'active' and c.status != 'draft'" + notTestCandidateCondition;
     String dateConditionFilter = " and u.created_date >= (:dateFrom) and u.created_date <= (:dateTo)";
     
     //Note that I have been forced to go to native queries for these more 
