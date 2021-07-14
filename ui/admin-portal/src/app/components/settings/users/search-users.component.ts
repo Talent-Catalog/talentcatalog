@@ -30,6 +30,7 @@ import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {AuthService} from '../../../services/auth.service';
 import {ChangePasswordComponent} from "../../account/change-password/change-password.component";
 import {ChangeUsernameComponent} from "../../account/change-username/change-username.component";
+import {isAdminUser} from "../../../model/base";
 
 
 @Component({
@@ -199,5 +200,23 @@ export class SearchUsersComponent implements OnInit {
         this.error = error;
         this.loading = false;
       });
+  }
+
+  isAnAdmin(): boolean {
+    return isAdminUser(this.authService);
+  }
+
+  getSourceCountries(user: User): string[] {
+    return user.sourceCountries.map(c => c.name);
+  }
+
+  canEdit(user: User): boolean {
+    let editable: boolean = false;
+    if (this.loggedInUser.role === 'admin') {
+      editable = true;
+    } else if (this.loggedInUser.role === 'sourcepartneradmin') {
+      user.createdBy === this.loggedInUser ? editable = true : editable = false;
+    }
+    return editable;
   }
 }

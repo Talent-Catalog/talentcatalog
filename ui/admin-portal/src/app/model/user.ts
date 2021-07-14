@@ -27,6 +27,7 @@ export interface User {
   sourceCountries: Country[];
   status: string;
   createdDate: number;
+  createdBy: User;
   updatedDate: number;
   lastLogin: number;
   usingMfa: boolean;
