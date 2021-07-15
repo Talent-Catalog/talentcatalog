@@ -16,12 +16,13 @@
 
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {User} from "../../../../model/user";
+import {AdminRole, User} from "../../../../model/user";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {UserService} from "../../../../services/user.service";
 import {AuthService} from "../../../../services/auth.service";
 import {CountryService} from "../../../../services/country.service";
 import {Country} from "../../../../model/country";
+import {EnumOption, enumOptions} from "../../../../util/enum";
 
 @Component({
   selector: 'app-edit-user',
@@ -36,6 +37,7 @@ export class EditUserComponent implements OnInit {
   loading: boolean;
   saving: boolean;
 
+  roleOptions: EnumOption[] = enumOptions(AdminRole);
   countries: Country[];
 
   constructor(private activeModal: NgbActiveModal,
@@ -62,7 +64,7 @@ export class EditUserComponent implements OnInit {
       this.loading = false;
     });
 
-    this.countryService.listCountries().subscribe(
+    this.countryService.listCountriesRestricted().subscribe(
       (response) => {
         this.countries = response;
       },
@@ -71,6 +73,10 @@ export class EditUserComponent implements OnInit {
         this.loading = false;
       }
     );
+
+    if (this.authService.getLoggedInUser().role === "sourcepartneradmin") {
+      this.roleOptions = this.roleOptions.filter(r => r.value !== "admin" && r.value !== "sourcepartneradmin" );
+    }
 
   }
 

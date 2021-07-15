@@ -21,7 +21,7 @@ import {SearchResults} from '../../../model/search-results';
 
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
-import {User} from "../../../model/user";
+import {AdminRole, User} from "../../../model/user";
 import {UserService} from "../../../services/user.service";
 import {CreateUserComponent} from "./create/create-user.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
@@ -31,6 +31,7 @@ import {AuthService} from '../../../services/auth.service';
 import {ChangePasswordComponent} from "../../account/change-password/change-password.component";
 import {ChangeUsernameComponent} from "../../account/change-username/change-username.component";
 import {isAdminUser} from "../../../model/base";
+import {EnumOption, enumOptions} from "../../../util/enum";
 
 
 @Component({
@@ -48,6 +49,7 @@ export class SearchUsersComponent implements OnInit {
   pageNumber: number;
   pageSize: number;
   results: SearchResults<User>;
+  roleOptions: EnumOption[] = enumOptions(AdminRole);
 
   constructor(private fb: FormBuilder,
               private userService: UserService,
@@ -66,6 +68,9 @@ export class SearchUsersComponent implements OnInit {
     this.pageSize = 50;
 
     this.onChanges();
+    if (this.authService.getLoggedInUser().role === "sourcepartneradmin") {
+      this.roleOptions = this.roleOptions.filter(r => r.value !== "admin" && r.value !== "sourcepartneradmin" );
+    }
   }
 
   onChanges(): void {
@@ -215,7 +220,7 @@ export class SearchUsersComponent implements OnInit {
     if (this.loggedInUser.role === 'admin') {
       editable = true;
     } else if (this.loggedInUser.role === 'sourcepartneradmin') {
-      user.createdBy === this.loggedInUser ? editable = true : editable = false;
+      user?.createdBy?.id === this.loggedInUser?.id ? editable = true : editable = false;
     }
     return editable;
   }

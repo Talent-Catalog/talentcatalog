@@ -131,7 +131,7 @@ public class UserAdminApi {
                 .add("readOnly")
                 .add("status")
                 .add("createdDate")
-                .add("createdBy")
+                .add("createdBy", userDtoSemiLimited())
                 .add("lastLogin")
                 .add("usingMfa")
                 .add("mfaConfigured")

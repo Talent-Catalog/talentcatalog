@@ -124,69 +124,118 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User createUser(CreateUserRequest request) throws UsernameTakenException {
-        User user = new User(
-                request.getUsername(),
-                request.getFirstName(),
-                request.getLastName(),
-                request.getEmail(),
-                request.getRole());
+        User loggedInUser = getLoggedInUser();
 
-        user.setReadOnly(request.getReadOnly());
-        user.setUsingMfa(request.getUsingMfa());
+        if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.sourcepartneradmin) {
+            User user = new User(
+                    request.getUsername(),
+                    request.getFirstName(),
+                    request.getLastName(),
+                    request.getEmail(),
+                    request.getRole());
+            user.setReadOnly(request.getReadOnly());
+            user.setUsingMfa(request.getUsingMfa());
 
-        if(CollectionUtils.isNotEmpty(request.getSourceCountries())) {
-            for (Country sourceCountry : request.getSourceCountries()) {
-                user.getSourceCountries().add(sourceCountry);
+            addSourceCountries(user, request.getSourceCountries());
+            addRole(user, request.getRole());
+            /* Validate the password before account creation */
+            String passwordEncrypted = passwordHelper.validateAndEncodePassword(request.getPassword());
+            user.setPasswordEnc(passwordEncrypted);
+            User existing = userRepository.findByUsernameIgnoreCase(user.getUsername());
+            if (existing != null){
+                throw new UsernameTakenException("username");
             }
+
+            existing = userRepository.findByEmailIgnoreCase(user.getEmail());
+            if (existing != null){
+                throw new UsernameTakenException("email");
+            }
+            user.setAuditFields(loggedInUser);
+            return this.userRepository.save(user);
+        } else {
+            throw new InvalidRequestException("You don't have permission to create a user.");
         }
 
-        /* Validate the password before account creation */
-        String passwordEncrypted = passwordHelper.validateAndEncodePassword(request.getPassword());
-        user.setPasswordEnc(passwordEncrypted);
-
-        User existing = userRepository.findByUsernameIgnoreCase(user.getUsername());
-        if (existing != null){
-            throw new UsernameTakenException("username");
-        }
-
-        existing = userRepository.findByEmailIgnoreCase(user.getEmail());
-        if (existing != null){
-            throw new UsernameTakenException("email");
-        }
-
-        return this.userRepository.save(user);
     }
 
     @Override
     @Transactional
     public User updateUser(long id, UpdateUserRequest request) {
+        User loggedInUser =getLoggedInUser();
         User user = this.userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(User.class, id));
 
-        if (!user.getEmail().equalsIgnoreCase(request.getEmail())){
-            User existing = userRepository.findByEmailIgnoreCase(request.getEmail());
-            if (existing != null){
-                throw new UsernameTakenException("email");
+        // Only update if logged in user role is admin OR source partner admin AND they created the user.
+        if (canEditUser(user)) {
+            if (!user.getEmail().equalsIgnoreCase(request.getEmail())){
+                User existing = userRepository.findByEmailIgnoreCase(request.getEmail());
+                if (existing != null){
+                    throw new UsernameTakenException("email");
+                }
+            }
+            // Clear old source country joins before adding again
+            user.getSourceCountries().clear();
+
+            //Check source countries aren't restricted
+            addSourceCountries(user, request.getSourceCountries());
+
+            //Check role type isn't restricted
+            addRole(user, request.getRole());
+
+            user.setReadOnly(request.getReadOnly());
+            user.setFirstName(request.getFirstName());
+            user.setLastName(request.getLastName());
+            user.setEmail(request.getEmail());
+            user.setStatus(request.getStatus());
+            user.setUsingMfa(request.getUsingMfa());
+            userRepository.save(user);
+        } else {
+            throw new InvalidRequestException("You don't have permission to edit this user.");
+        }
+        return user;
+    }
+
+    private boolean canEditUser(User user) {
+        boolean canUpdate;
+        User loggedInUser =getLoggedInUser();
+        if (loggedInUser.getRole() == Role.admin) {
+            canUpdate = true;
+        } else if (loggedInUser.getRole() == Role.sourcepartneradmin) {
+            // Check that source partner admins can only edit users that they created.
+            canUpdate = user.getCreatedBy().getId().equals(loggedInUser.getId());
+        } else {
+            canUpdate = false;
+        }
+        return canUpdate;
+    }
+
+    private void addSourceCountries(User user, List<Country> requestCountries) {
+        User loggedInUser = getLoggedInUser();
+        if (CollectionUtils.isNotEmpty(requestCountries)) {
+            for (Country sourceCountry : requestCountries) {
+                if (loggedInUser.getSourceCountries().isEmpty() || loggedInUser.getSourceCountries().contains(sourceCountry)) {
+                    user.getSourceCountries().add(sourceCountry);
+                } else {
+                    throw new InvalidRequestException("You don't have permission to add this country.");
+                }
+                user.getSourceCountries().add(sourceCountry);
             }
         }
+    }
 
-        // Clear old source country joins before adding again
-        user.getSourceCountries().clear();
-        for (Country sourceCountry : request.getSourceCountries()) {
-            user.getSourceCountries().add(sourceCountry);
+    private void addRole(User user, Role requestedRole) {
+        User loggedInUser = getLoggedInUser();
+        Role loggedInRole = loggedInUser.getRole();
+        if (loggedInRole == Role.admin) {
+            user.setRole(requestedRole);
+        } else {
+            // Check that source partner admin is only saving roles that are allowed (not admin or source partner admin)
+            if (requestedRole != Role.admin && requestedRole != Role.sourcepartneradmin) {
+                user.setRole(requestedRole);
+            } else {
+                throw new InvalidRequestException("You don't have permission to save this role type.");
+            }
         }
-
-
-        user.setReadOnly(request.getReadOnly());
-
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setEmail(request.getEmail());
-        user.setStatus(request.getStatus());
-        user.setRole(request.getRole());
-        user.setUsingMfa(request.getUsingMfa());
-
-        return userRepository.save(user);
     }
 
     @Override

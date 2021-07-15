@@ -16,11 +16,6 @@
 
 package org.tbbtalent.server.configuration;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -41,11 +36,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.tbbtalent.server.security.JwtAuthenticationEntryPoint;
-import org.tbbtalent.server.security.JwtAuthenticationFilter;
-import org.tbbtalent.server.security.LanguageFilter;
-import org.tbbtalent.server.security.TbbAuthenticationProvider;
-import org.tbbtalent.server.security.TbbUserDetailsService;
+import org.tbbtalent.server.security.*;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
@@ -113,9 +110,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     // Migrate database
                 .antMatchers("/api/admin/system/migrate").hasAnyRole("ADMIN")
 
-                    // UPDATE/EDIT general settings
+                    // UPDATE/EDIT SETTINGS
                 .antMatchers(HttpMethod.PUT,
-                        "/api/admin/user/*",
                         "/api/admin/country/*",
                         "/api/admin/nationality/*",
                         "/api/admin/language/*",
@@ -125,9 +121,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         "/api/admin/education-major/*",
                         "/api/admin/translation/*",
                         "/api/admin/translation/file/*").hasRole("ADMIN")
-                    // CREATE general settings
+                    // CREATE GENERAL SETTINGS
                 .antMatchers(HttpMethod.POST,
-                        "/api/admin/user",
                         "/api/admin/country",
                         "/api/admin/nationality",
                         "/api/admin/language",
@@ -135,6 +130,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         "/api/admin/occupation",
                         "/api/admin/education-level",
                         "/api/admin/education-major").hasRole("ADMIN")
+
+                // CREATE/UPDATE USERS
+                .antMatchers(HttpMethod.PUT, "/api/admin/user/*").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN")
+                .antMatchers(HttpMethod.POST, "/api/admin/user/*").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN")
 
                 // SEE CANDIDATE FILE ATTACHMENTS. ADMIN/SOURCE PARTNER ADMIN ALLOWED. READ ONLY has access BUT has the data restricted in the DTO based on role.
                 .antMatchers(HttpMethod.POST, "/api/admin/candidate-attachment/search").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN", "READONLY")

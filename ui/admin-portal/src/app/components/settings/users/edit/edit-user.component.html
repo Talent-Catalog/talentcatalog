@@ -57,11 +57,14 @@
       </div>
       <div class="form-group">
         <label for="role">Role</label>
-        <ng-select id="role" [formControlName]="'role'" placeholder="Select">
-          <ng-option value="admin">Full Admin</ng-option>
-          <ng-option value="sourcepartneradmin">Source Partner Admin</ng-option>
-          <ng-option value="semilimited">Semi Limited</ng-option>
-          <ng-option value="limited">Limited</ng-option>
+        <ng-select
+          id="role"
+          [items]="roleOptions"
+          [formControlName]="'role'"
+          [clearable]="false"
+          placeholder="Select"
+          bindValue="value"
+          bindLabel="displayText">
         </ng-select>
       </div>
 
