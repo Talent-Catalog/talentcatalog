@@ -199,10 +199,14 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
         "u.status = 'active' and c.status != 'draft'" + notTestCandidateCondition;
     String dateConditionFilter = " and u.created_date >= (:dateFrom) and u.created_date <= (:dateTo)";
     
+    //Stats that are not based on predefined candidate ids, should exclude ineligible.
+    //(With candidate ids, it is up to the associated list or search to decide whether or not to 
+    // exclude ineligible)
+    String excludeIneligible = " and c.status != 'ineligible'";
+    
     //Note that I have been forced to go to native queries for these more 
     //complex queries. The non native queries seem a bit buggy.
     //Anyway - I couldn't get them working. Simpler to use normal SQL. JC.
-
 
     /***************************************************************************
      Count By Birth Year
@@ -216,7 +220,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
                     " and gender like :gender" +
                     " and dob is not null and extract(year from dob) > 1940 ";
     String countByBirthYearGroupBySQL = " group by year order by year asc";
-    @Query(value = countByBirthYearSelectSQL +
+    @Query(value = countByBirthYearSelectSQL + excludeIneligible +
             countByBirthYearGroupBySQL, nativeQuery = true)
     List<Object[]> countByBirthYearOrderByYear(@Param("gender") String gender,
                                                @Param("sourceCountryIds") List<Long> sourceCountryIds,
@@ -240,7 +244,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             "where c.country_id in (:sourceCountryIds) " + dateConditionFilter;
     String countByCreatedDateGroupBySQL = "group by DATE(u.created_date) " +
             "order by DATE(u.created_date) asc;";
-    @Query(value = countByCreatedDateSelectSQL +
+    @Query(value = countByCreatedDateSelectSQL + excludeIneligible +
             countByCreatedDateGroupBySQL, nativeQuery = true)
     List<Object[]> countByCreatedDateOrderByCount(@Param("sourceCountryIds") List<Long> sourceCountryIds,
                                                   @Param("dateFrom") LocalDate dateFrom,
@@ -265,7 +269,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     String countByGenderGroupBySQL =
                     " group by gender order by PeopleCount desc";
     
-    @Query(value = countByGenderSelectSQL +
+    @Query(value = countByGenderSelectSQL + excludeIneligible +
             countByGenderGroupBySQL, nativeQuery = true)
     List<Object[]> countByGenderOrderByCount(
             @Param("sourceCountryIds") List<Long> sourceCountryIds,
@@ -292,7 +296,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             " and " + countingStandardFilter + dateConditionFilter +
             " and gender like :gender";
     String countByLanguageGroupBySQL = " group by l.name order by PeopleCount desc";
-    @Query(value = countByLanguageSelectSQL +
+    @Query(value = countByLanguageSelectSQL + excludeIneligible +
             countByLanguageGroupBySQL, nativeQuery = true)
     List<Object[]> countByLanguageOrderByCount(@Param("gender") String gender,
                                                @Param("sourceCountryIds") List<Long> sourceCountryIds,
@@ -320,7 +324,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             " and gender like :gender ";
     String countByMaxEducationGroupBySQL = "group by EducationLevel " +
             "order by PeopleCount desc;";
-    @Query(value = countByMaxEducationSelectSQL +
+    @Query(value = countByMaxEducationSelectSQL + excludeIneligible +
             countByMaxEducationGroupBySQL, nativeQuery = true)
     List<Object[]> countByMaxEducationLevelOrderByCount(@Param("gender") String gender,
                                                         @Param("sourceCountryIds") List<Long> sourceCountryIds,
@@ -354,7 +358,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
      * @param gender Gender filter or % if all genders
      * @return List of occupation name and count
      */
-    @Query(value = countByMostCommonOccupationSelectSQL +
+    @Query(value = countByMostCommonOccupationSelectSQL + excludeIneligible +
             countByMostCommonOccupationGroupBySQL, nativeQuery = true)
     List<Object[]> countByMostCommonOccupationOrderByCount(@Param("gender") String gender,
                                                            @Param("sourceCountryIds") List<Long> sourceCountryIds,
@@ -380,7 +384,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             " and gender like :gender" +
             " and lower(country.name) like :country";
     String countByNationalityGroupBySQL = " group by n.name order by PeopleCount desc";
-    @Query(value = countByNationalitySelectSQL +
+    @Query(value = countByNationalitySelectSQL + excludeIneligible +
             countByNationalityGroupBySQL, nativeQuery = true)
     List<Object[]> countByNationalityOrderByCount(@Param("gender") String gender,
                                                   @Param("country") String country,
@@ -411,7 +415,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             " and gender like :gender ";
     String countByOccupationGenderGroupBySQL = "group by o.name " +
             "order by PeopleCount desc;";
-    @Query(value = countByOccupationGenderSelectSQL +
+    @Query(value = countByOccupationGenderSelectSQL + excludeIneligible +
             countByOccupationGenderGroupBySQL, nativeQuery = true)
     List<Object[]> countByOccupationOrderByCount(@Param("gender") String gender,
                                                  @Param("sourceCountryIds") List<Long> sourceCountryIds,
@@ -439,7 +443,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             " and " + countingStandardFilter + dateConditionFilter;
     String countByOccupationGroupBySQL = " group by o.name " +
             "order by PeopleCount desc;";
-    @Query(value = countByOccupationSelectSQL +
+    @Query(value = countByOccupationSelectSQL + excludeIneligible +
             countByOccupationGroupBySQL, nativeQuery = true)
     List<Object[]> countByOccupationOrderByCount(@Param("sourceCountryIds") List<Long> sourceCountryIds,
                                                  @Param("dateFrom") LocalDate dateFrom,
@@ -465,7 +469,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             " and gender like :gender" +
             " and lower(l.name) = lower(:language)";
     String countBySpokenLanguageGroupBySQL = " group by ll.name order by PeopleCount desc";
-    @Query(value = countBySpokenLanguageSelectSQL +
+    @Query(value = countBySpokenLanguageSelectSQL + excludeIneligible +
             countBySpokenLanguageGroupBySQL, nativeQuery = true)
     List<Object[]> countBySpokenLanguageLevelByCount(@Param("gender") String gender,
                                                      @Param("language") String language,
@@ -494,7 +498,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             " and gender like :gender" +
             " and lower(country.name) like :country";
     String countBySurveyGroupBySQL = " group by s.name order by PeopleCount desc";
-    @Query(value = countBySurveySelectSQL +
+    @Query(value = countBySurveySelectSQL + excludeIneligible +
             countBySurveyGroupBySQL, nativeQuery = true)
     List<Object[]> countBySurveyOrderByCount(@Param("gender") String gender,
                                              @Param("country") String country,
@@ -521,7 +525,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
             " and gender like :gender" +
             " and lower(country.name) like :country";
     String countByStatusGroupBySQL = " group by c.status order by PeopleCount desc";
-    @Query(value = countByStatusSelectSQL +
+    @Query(value = countByStatusSelectSQL + excludeIneligible +
             countByStatusGroupBySQL, nativeQuery = true)
     List<Object[]> countByStatusOrderByCount(@Param("gender") String gender,
                                              @Param("country") String country,
