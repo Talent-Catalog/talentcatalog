@@ -50,6 +50,7 @@ import org.tbbtalent.server.util.qr.EncodedQrImage;
 
 import javax.security.auth.login.AccountLockedException;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -175,8 +176,6 @@ public class UserServiceImpl implements UserService {
                     throw new UsernameTakenException("email");
                 }
             }
-            // Clear old source country joins before adding again
-            user.getSourceCountries().clear();
 
             //Check source countries aren't restricted, and add to user.
             addSourceCountriesIfValid(user, request.getSourceCountries());
@@ -237,14 +236,20 @@ public class UserServiceImpl implements UserService {
      */
     private void addSourceCountriesIfValid(User user, List<Country> requestCountries) throws InvalidRequestException {
         User loggedInUser = getLoggedInUser();
-        if (CollectionUtils.isNotEmpty(requestCountries)) {
-            for (Country sourceCountry : requestCountries) {
-                if (loggedInUser.getSourceCountries().isEmpty() || loggedInUser.getSourceCountries().contains(sourceCountry)) {
+        // Only update source countries if they are different from existing.
+        List<Country> currentUserCountries = new ArrayList<>(user.getSourceCountries());
+        if (!currentUserCountries.equals(requestCountries)) {
+            // Clear old source country joins before adding again
+            user.getSourceCountries().clear();
+            if (CollectionUtils.isNotEmpty(requestCountries)) {
+                for (Country sourceCountry : requestCountries) {
+                    if (loggedInUser.getSourceCountries().isEmpty() || loggedInUser.getSourceCountries().contains(sourceCountry)) {
+                        user.getSourceCountries().add(sourceCountry);
+                    } else {
+                        throw new InvalidRequestException("You don't have permission to add this country.");
+                    }
                     user.getSourceCountries().add(sourceCountry);
-                } else {
-                    throw new InvalidRequestException("You don't have permission to add this country.");
                 }
-                user.getSourceCountries().add(sourceCountry);
             }
         }
     }
