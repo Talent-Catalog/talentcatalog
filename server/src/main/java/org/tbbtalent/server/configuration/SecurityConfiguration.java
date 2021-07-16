@@ -104,6 +104,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // DELETE: DELETE CANDIDATE DEPENDANT (INTAKE INTERVIEW)
                 .antMatchers(HttpMethod.DELETE, "/api/admin/candidate-dependant/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED")
 
+                // DELETE: DELETE USER (ADDED AUTHORISATION ON SERVER FOR SOURCE PARTNER ADMINS)
+                .antMatchers(HttpMethod.DELETE, "/api/admin/user/*").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN")
+
                 // ADMIN ONLY RESTRICTIONS
                     // All OTHER DELETE end points
                 .antMatchers(HttpMethod.DELETE, "/api/admin/**/*").hasRole("ADMIN")

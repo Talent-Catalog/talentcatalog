@@ -212,7 +212,7 @@ export class SearchUsersComponent implements OnInit {
   }
 
   getSourceCountries(user: User): string[] {
-    return user.sourceCountries.map(c => c.name);
+    return user.sourceCountries.map(c => ' ' + c.name );
   }
 
   canEdit(user: User): boolean {
