@@ -18,7 +18,7 @@
   <div class="section">
     <div class="float-right">
       <div class="float-right">
-        <button *ngIf="isAnAdmin()" class="btn btn-primary" (click)="addUser()">Add</button>
+        <button *ngIf="isAnAdmin() && !loggedInUser.readOnly" class="btn btn-primary" (click)="addUser()">Add</button>
       </div>
     </div>
     <div class="alert alert-danger" *ngIf="error">

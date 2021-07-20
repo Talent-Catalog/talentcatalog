@@ -135,8 +135,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         "/api/admin/education-major").hasRole("ADMIN")
 
                 // CREATE/UPDATE USERS
-                .antMatchers(HttpMethod.PUT, "/api/admin/user/*").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN")
-                .antMatchers(HttpMethod.POST, "/api/admin/user/*").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN")
+                .antMatchers(HttpMethod.PUT, "/api/admin/user/*").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN", "READONLY")
+                .antMatchers(HttpMethod.POST, "/api/admin/user/*").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN", "READONLY")
 
                 // SEE CANDIDATE FILE ATTACHMENTS. ADMIN/SOURCE PARTNER ADMIN ALLOWED. READ ONLY has access BUT has the data restricted in the DTO based on role.
                 .antMatchers(HttpMethod.POST, "/api/admin/candidate-attachment/search").hasAnyRole("ADMIN", "SOURCEPARTNERADMIN", "READONLY")
@@ -258,6 +258,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         // Add the JWT security filter
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         http.addFilterAfter(languageFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.headers(headers -> headers.contentSecurityPolicy(contentSecurityPolicy -> contentSecurityPolicy.policyDirectives("script-src 'self'")));
     }
 
     //See https://docs.spring.io/spring-security/site/docs/current/reference/html5/#cors
