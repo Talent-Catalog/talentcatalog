@@ -258,7 +258,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         // Add the JWT security filter
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         http.addFilterAfter(languageFilter(), UsernamePasswordAuthenticationFilter.class);
-        http.headers(headers -> headers.contentSecurityPolicy(contentSecurityPolicy -> contentSecurityPolicy.policyDirectives("script-src 'self'")));
     }
 
     //See https://docs.spring.io/spring-security/site/docs/current/reference/html5/#cors
