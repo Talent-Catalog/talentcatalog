@@ -259,6 +259,12 @@ public class UserServiceImpl implements UserService {
                     }
                     user.getSourceCountries().add(sourceCountry);
                 }
+            } else {
+                if (loggedInUser.getRole().equals(Role.sourcepartneradmin) && !loggedInUser.getSourceCountries().isEmpty()) {
+                    for (Country sourceCountry : loggedInUser.getSourceCountries()) {
+                        user.getSourceCountries().add(sourceCountry);
+                    }
+                }
             }
         }
     }
