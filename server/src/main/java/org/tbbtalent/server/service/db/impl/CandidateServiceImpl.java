@@ -70,6 +70,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -1217,7 +1219,14 @@ public class CandidateServiceImpl implements CandidateService {
         Candidate candidate = getLoggedInCandidate()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         candidate.setAdditionalInfo(request.getAdditionalInfo());
-        candidate.setLinkedInLink(request.getLinkedInLink());
+        String linkedInRegex = "^http[s]?:/\\/www\\.linkedin\\.com\\/in\\/[A-z0-9_-]+\\/?$";
+        Pattern p = Pattern.compile(linkedInRegex);
+        Matcher m = p.matcher(request.getLinkedInLink());
+        if (m.find()) {
+            candidate.setLinkedInLink(request.getLinkedInLink());
+        } else {
+            throw new InvalidRequestException("This is not a valid LinkedIn link.");
+        }
         candidate.setAuditFields(candidate.getUser());
         return save(candidate, true);
     }
