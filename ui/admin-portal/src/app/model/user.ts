@@ -50,6 +50,5 @@ export enum AdminRole {
   admin= "Full Admin",
   sourcepartneradmin = "Source Partner Admin",
   semilimited = "Semi Limited",
-  limited = "Limited",
-  readonly = "Read Only"
+  limited = "Limited"
 }
