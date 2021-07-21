@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
@@ -127,8 +126,17 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User createUser(CreateUserRequest request) throws UsernameTakenException, InvalidRequestException {
         User loggedInUser = getLoggedInUser();
+        boolean authSuccess;
 
-        if (authoriseAdminUser(null, true)) {
+        if (loggedInUser.getReadOnly()) {
+            authSuccess = false;
+        } else if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.sourcepartneradmin) {
+            authSuccess = true;
+        } else {
+            authSuccess = false;
+        }
+
+        if (authSuccess) {
             User user = new User(
                     request.getUsername(),
                     request.getFirstName(),
@@ -164,12 +172,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public User updateUser(long id, UpdateUserRequest request) throws InvalidRequestException {
+    public User updateUser(long id, UpdateUserRequest request) throws UsernameTakenException, InvalidRequestException {
+        User loggedInUser = getLoggedInUser();
         User user = this.userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(User.class, id));
 
         // Only update if logged in user role is admin OR source partner admin AND they created the user.
-        if (authoriseAdminUser(user, false)) {
+        if (authoriseAdminUser(user)) {
             if (!user.getEmail().equalsIgnoreCase(request.getEmail())){
                 User existing = userRepository.findByEmailIgnoreCase(request.getEmail());
                 if (existing != null){
@@ -189,6 +198,7 @@ public class UserServiceImpl implements UserService {
             user.setEmail(request.getEmail());
             user.setStatus(request.getStatus());
             user.setUsingMfa(request.getUsingMfa());
+            user.setAuditFields(loggedInUser);
             userRepository.save(user);
         } else {
             throw new InvalidRequestException("You don't have permission to edit this user.");
@@ -203,11 +213,10 @@ public class UserServiceImpl implements UserService {
      * Source partner admins can create users, but only for their source countries.
      * Source partner admins can also only create users that arent admins or source partner admins.
      * Source partner admins can only update users who they created.
-     * @param user Can be null if a create user, otherwise it is the user to be updated.
-     * @param create A boolean to determine if the method is a create or if false it is an edit.
+     * @param user It is the user to be updated.
      * @return
      */
-    private boolean authoriseAdminUser(@Nullable User user, boolean create) {
+    private boolean authoriseAdminUser(User user) {
         boolean authSuccess;
         User loggedInUser =getLoggedInUser();
         if (loggedInUser.getReadOnly()) {
@@ -215,13 +224,8 @@ public class UserServiceImpl implements UserService {
         } else if (loggedInUser.getRole() == Role.admin) {
             authSuccess = true;
         } else if (loggedInUser.getRole() == Role.sourcepartneradmin) {
-            // Check that source partner admins can only edit users that they created.
-            if (create) {
-                authSuccess = true;
-            } else {
-                // Only allowed to update/delete if user belongs to logged in user.
-                authSuccess = user.getCreatedBy().getId().equals(loggedInUser.getId());
-            }
+            // Only allowed to update/delete if user belongs to logged in user.
+            authSuccess = user.getCreatedBy().getId().equals(loggedInUser.getId());
         } else {
             authSuccess = false;
         }
@@ -276,10 +280,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public User updateUsername(long id, UpdateUsernameRequest request) {
+    public User updateUsername(long id, UpdateUsernameRequest request) throws NoSuchObjectException, InvalidRequestException {
+        User loggedInUser = getLoggedInUser();
         User user = this.userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(User.class, id));
-        if (authoriseAdminUser(user, false)) {
+        if (authoriseAdminUser(user)) {
             if (!user.getUsername().equalsIgnoreCase(request.getUsername())){
                 User existing = userRepository.findByUsernameIgnoreCase(request.getUsername());
                 if (existing != null){
@@ -287,6 +292,7 @@ public class UserServiceImpl implements UserService {
                 }
             }
             user.setUsername(request.getUsername());
+            user.setAuditFields(loggedInUser);
             userRepository.save(user);
         } else {
             throw new InvalidRequestException("You don't have permission to update this user's username.");
@@ -326,14 +332,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void deleteUser(long id) throws InvalidRequestException {
-        User user = userRepository.findById(id).orElse(null);
-        if (authoriseAdminUser(user, false)) {
-            if (user != null) {
-                user.setStatus(Status.deleted);
-                userRepository.save(user);
-            }
-        } else  {
+    public void deleteUser(long id) throws NoSuchObjectException, InvalidRequestException {
+        User loggedInUser = getLoggedInUser();
+        User user = this.userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(User.class, id));
+        if (authoriseAdminUser(user)) {
+            user.setStatus(Status.deleted);
+            user.setAuditFields(loggedInUser);
+            userRepository.save(user);
+        } else {
             throw new InvalidRequestException("You don't have permission to delete this user.");
         }
     }
@@ -448,7 +455,7 @@ public class UserServiceImpl implements UserService {
         /* Get user */
         User user = this.userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(User.class, id));
-        if (authoriseAdminUser(user, false)) {
+        if (authoriseAdminUser(user)) {
             /* Check that the new passwords match */
             if (!request.getPassword().equals(request.getPasswordConfirmation())) {
                 throw new PasswordMatchException();
@@ -520,10 +527,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void mfaReset(long id) throws NoSuchObjectException, InvalidRequestException {
+        User loggedInUser = getLoggedInUser();
         User user = this.userRepository.findById(id)
             .orElseThrow(() -> new NoSuchObjectException(User.class, id));
-        if (authoriseAdminUser(user, false)) {
+        if (authoriseAdminUser(user)) {
             user.setMfaSecret(null);
+            user.setAuditFields(loggedInUser);
             userRepository.save(user);
         } else {
             throw new InvalidRequestException("You don't have permission to reset this user's MFA.");
