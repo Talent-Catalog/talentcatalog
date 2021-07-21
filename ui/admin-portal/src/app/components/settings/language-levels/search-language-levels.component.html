@@ -18,7 +18,7 @@
   <div class="section">
     <div>
       <div class="float-right">
-        <button class="btn btn-primary" (click)="addLanguageLevel()">Add</button>
+        <button *ngIf="isAnAdmin() && !loggedInUser.readOnly" class="btn btn-primary" (click)="addLanguageLevel()">Add</button>
       </div>
     </div>
     <div class="alert alert-danger" *ngIf="error">

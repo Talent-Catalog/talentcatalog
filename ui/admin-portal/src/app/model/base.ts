@@ -177,3 +177,10 @@ export function canEditSource(source: CandidateSource, auth: AuthService) {
   return changeable;
 }
 
+export function isAdminUser(auth: AuthService) {
+  const loggedInUser =
+    auth ? auth.getLoggedInUser() : null;
+  const role = loggedInUser ? loggedInUser.role : null;
+  return role !== 'semilimited' && role !== 'limited';
+}
+
