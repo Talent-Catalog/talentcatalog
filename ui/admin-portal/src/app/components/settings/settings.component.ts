@@ -14,11 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {User} from "../../model/user";
-import {FormBuilder} from "@angular/forms";
-import {UserService} from "../../services/user.service";
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {AuthService} from "../../services/auth.service";
 
 

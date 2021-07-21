@@ -28,6 +28,8 @@ import {CreateOccupationComponent} from "./create/create-occupation.component";
 import {EditOccupationComponent} from "./edit/edit-occupation.component";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {User} from "../../../model/user";
+import {isAdminUser} from "../../../model/base";
+import {AuthService} from "../../../services/auth.service";
 
 @Component({
   selector: 'app-search-occupations',
@@ -48,7 +50,8 @@ export class SearchOccupationsComponent implements OnInit {
 
   constructor(private fb: FormBuilder,
               private occupationService: OccupationService,
-              private modalService: NgbModal) {
+              private modalService: NgbModal,
+              private authService: AuthService) {
   }
 
   ngOnInit() {
@@ -139,5 +142,9 @@ export class SearchOccupationsComponent implements OnInit {
         }
       })
       .catch(() => { /* Isn't possible */ });
+  }
+
+  isAnAdmin(): boolean {
+    return isAdminUser(this.authService);
   }
 }

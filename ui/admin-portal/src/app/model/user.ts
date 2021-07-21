@@ -27,6 +27,7 @@ export interface User {
   sourceCountries: Country[];
   status: string;
   createdDate: number;
+  createdBy: User;
   updatedDate: number;
   lastLogin: number;
   usingMfa: boolean;
@@ -45,3 +46,9 @@ export interface UpdateUserRequest {
   usingMfa: boolean;
 }
 
+export enum AdminRole {
+  admin= "Full Admin",
+  sourcepartneradmin = "Source Partner Admin",
+  semilimited = "Semi Limited",
+  limited = "Limited"
+}

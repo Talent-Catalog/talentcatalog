@@ -93,7 +93,7 @@ const routes: Routes = [
         path: 'settings',
         canActivate: [RoleGuardService],
         data: {
-          expectedRole: 'admin'
+          expectedRoles: ['admin', 'sourcepartneradmin']
         },
         children: [
           {

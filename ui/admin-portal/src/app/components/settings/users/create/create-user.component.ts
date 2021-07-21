@@ -16,11 +16,13 @@
 
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {User} from "../../../../model/user";
+import {AdminRole, User} from "../../../../model/user";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {UserService} from "../../../../services/user.service";
 import {CountryService} from "../../../../services/country.service";
 import {Country} from "../../../../model/country";
+import {EnumOption, enumOptions} from "../../../../util/enum";
+import {AuthService} from "../../../../services/auth.service";
 
 @Component({
   selector: 'app-create-user',
@@ -35,12 +37,14 @@ export class CreateUserComponent implements OnInit {
   loading: boolean;
   saving: boolean;
 
+  roleOptions: EnumOption[] = enumOptions(AdminRole);
   countries: Country[];
 
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
               private userService: UserService,
-              private countryService: CountryService) {
+              private countryService: CountryService,
+              private authService: AuthService) {
   }
 
   ngOnInit() {
@@ -56,7 +60,7 @@ export class CreateUserComponent implements OnInit {
       usingMfa: [true]
     });
 
-    this.countryService.listCountries().subscribe(
+    this.countryService.listCountriesRestricted().subscribe(
       (response) => {
         this.countries = response;
       },
@@ -65,6 +69,9 @@ export class CreateUserComponent implements OnInit {
         this.loading = false;
       }
     );
+    if (this.authService.getLoggedInUser().role === "sourcepartneradmin") {
+      this.roleOptions = this.roleOptions.filter(r => r.value !== "admin" && r.value !== "sourcepartneradmin" );
+    }
 
   }
 

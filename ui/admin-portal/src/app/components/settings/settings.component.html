@@ -25,76 +25,78 @@
     </ng-template>
   </ng-container>
 
-  <!-- Countries -->
-  <ng-container ngbNavItem>
-    <a ngbNavLink>Countries</a>
-    <ng-template ngbNavContent>
-      <app-search-countries [loggedInUser]="loggedInUser">
-      </app-search-countries>
-    </ng-template>
-  </ng-container>
+  <ng-container *ngIf="loggedInUser.role == 'admin'">
+    <!-- Countries -->
+    <ng-container ngbNavItem>
+      <a ngbNavLink>Countries</a>
+      <ng-template ngbNavContent>
+        <app-search-countries [loggedInUser]="loggedInUser">
+        </app-search-countries>
+      </ng-template>
+    </ng-container>
 
-  <!-- Languages -->
-  <ng-container ngbNavItem>
-    <a ngbNavLink>Languages</a>
-    <ng-template ngbNavContent>
-      <app-search-languages [loggedInUser]="loggedInUser">
-      </app-search-languages>
-    </ng-template>
-  </ng-container>
+    <!-- Languages -->
+    <ng-container ngbNavItem>
+      <a ngbNavLink>Languages</a>
+      <ng-template ngbNavContent>
+        <app-search-languages [loggedInUser]="loggedInUser">
+        </app-search-languages>
+      </ng-template>
+    </ng-container>
 
-  <!-- Language Levels -->
-  <ng-container ngbNavItem>
-    <a ngbNavLink>Language Levels</a>
-    <ng-template ngbNavContent>
-      <app-search-language-levels [loggedInUser]="loggedInUser">
-      </app-search-language-levels>
-    </ng-template>
-  </ng-container>
+    <!-- Language Levels -->
+    <ng-container ngbNavItem>
+      <a ngbNavLink>Language Levels</a>
+      <ng-template ngbNavContent>
+        <app-search-language-levels [loggedInUser]="loggedInUser">
+        </app-search-language-levels>
+      </ng-template>
+    </ng-container>
 
-  <!-- Occupations -->
-  <ng-container ngbNavItem>
-    <a ngbNavLink>Occupations</a>
-    <ng-template ngbNavContent>
-      <app-search-occupations [loggedInUser]="loggedInUser">
-      </app-search-occupations>
-    </ng-template>
-  </ng-container>
+    <!-- Occupations -->
+    <ng-container ngbNavItem>
+      <a ngbNavLink>Occupations</a>
+      <ng-template ngbNavContent>
+        <app-search-occupations [loggedInUser]="loggedInUser">
+        </app-search-occupations>
+      </ng-template>
+    </ng-container>
 
-  <!-- Education -->
-  <ng-container ngbNavItem>
-    <a ngbNavLink>Education Levels</a>
-    <ng-template ngbNavContent>
-      <app-search-education-levels [loggedInUser]="loggedInUser">
-      </app-search-education-levels>
-    </ng-template>
-  </ng-container>
+    <!-- Education -->
+    <ng-container ngbNavItem>
+      <a ngbNavLink>Education Levels</a>
+      <ng-template ngbNavContent>
+        <app-search-education-levels [loggedInUser]="loggedInUser">
+        </app-search-education-levels>
+      </ng-template>
+    </ng-container>
 
-  <!-- Education Majors -->
-  <ng-container ngbNavItem>
-    <a ngbNavLink>Education Majors</a>
-    <ng-template ngbNavContent>
-      <app-search-education-majors [loggedInUser]="loggedInUser">
-      </app-search-education-majors>
-    </ng-template>
-  </ng-container>
+    <!-- Education Majors -->
+    <ng-container ngbNavItem>
+      <a ngbNavLink>Education Majors</a>
+      <ng-template ngbNavContent>
+        <app-search-education-majors [loggedInUser]="loggedInUser">
+        </app-search-education-majors>
+      </ng-template>
+    </ng-container>
 
-  <!-- Translations -->
-  <ng-container ngbNavItem>
-    <a ngbNavLink>Translations (general)</a>
-    <ng-template ngbNavContent>
-      <app-general-translations [loggedInUser]="loggedInUser">
-      </app-general-translations>
-    </ng-template>
-  </ng-container>
+    <!-- Translations -->
+    <ng-container ngbNavItem>
+      <a ngbNavLink>Translations (general)</a>
+      <ng-template ngbNavContent>
+        <app-general-translations [loggedInUser]="loggedInUser">
+        </app-general-translations>
+      </ng-template>
+    </ng-container>
 
-  <!-- Translations -->
-  <ng-container ngbNavItem>
-    <a ngbNavLink>Translations (dropdowns)</a>
-    <ng-template ngbNavContent>
-      <app-dropdown-translations [loggedInUser]="loggedInUser">
-      </app-dropdown-translations>
-    </ng-template>
+    <!-- Translations -->
+    <ng-container ngbNavItem>
+      <a ngbNavLink>Translations (dropdowns)</a>
+      <ng-template ngbNavContent>
+        <app-dropdown-translations [loggedInUser]="loggedInUser">
+        </app-dropdown-translations>
+      </ng-template>
+    </ng-container>
   </ng-container>
 
 </nav>

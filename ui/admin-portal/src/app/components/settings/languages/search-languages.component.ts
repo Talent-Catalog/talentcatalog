@@ -28,6 +28,8 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {EditLanguageComponent} from "./edit/edit-language.component";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {User} from "../../../model/user";
+import {isAdminUser} from "../../../model/base";
+import {AuthService} from "../../../services/auth.service";
 
 @Component({
   selector: 'app-search-languages',
@@ -48,7 +50,8 @@ export class SearchLanguagesComponent implements OnInit {
 
   constructor(private fb: FormBuilder,
               private languageService: LanguageService,
-              private modalService: NgbModal) {
+              private modalService: NgbModal,
+              private authService: AuthService) {
   }
 
   ngOnInit() {
@@ -139,5 +142,9 @@ export class SearchLanguagesComponent implements OnInit {
       })
       .catch(() => { /* Isn't possible */ });
 
+  }
+
+  isAnAdmin(): boolean {
+    return isAdminUser(this.authService);
   }
 }

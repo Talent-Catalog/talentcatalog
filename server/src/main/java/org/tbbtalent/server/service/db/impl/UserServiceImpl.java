@@ -16,19 +16,12 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import static dev.samstevens.totp.util.Utils.getDataUriForImage;
-
 import dev.samstevens.totp.code.CodeVerifier;
 import dev.samstevens.totp.exceptions.QrGenerationException;
 import dev.samstevens.totp.qr.QrData;
 import dev.samstevens.totp.qr.QrDataFactory;
 import dev.samstevens.totp.qr.QrGenerator;
 import dev.samstevens.totp.secret.SecretGenerator;
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import javax.security.auth.login.AccountLockedException;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,48 +29,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.CredentialsExpiredException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.LockedException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tbbtalent.server.exception.EmailSendFailedException;
-import org.tbbtalent.server.exception.ExpiredTokenException;
-import org.tbbtalent.server.exception.InvalidCredentialsException;
-import org.tbbtalent.server.exception.InvalidPasswordTokenException;
-import org.tbbtalent.server.exception.InvalidSessionException;
-import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.exception.PasswordExpiredException;
-import org.tbbtalent.server.exception.PasswordMatchException;
-import org.tbbtalent.server.exception.ServiceException;
-import org.tbbtalent.server.exception.UserDeactivatedException;
-import org.tbbtalent.server.exception.UsernameTakenException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.Country;
-import org.tbbtalent.server.model.db.Role;
-import org.tbbtalent.server.model.db.SavedSearch;
-import org.tbbtalent.server.model.db.Status;
-import org.tbbtalent.server.model.db.User;
-import org.tbbtalent.server.repository.db.CandidateRepository;
-import org.tbbtalent.server.repository.db.CountryRepository;
-import org.tbbtalent.server.repository.db.SavedSearchRepository;
-import org.tbbtalent.server.repository.db.UserRepository;
-import org.tbbtalent.server.repository.db.UserSpecification;
+import org.tbbtalent.server.exception.*;
+import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.repository.db.*;
 import org.tbbtalent.server.request.LoginRequest;
-import org.tbbtalent.server.request.user.CheckPasswordResetTokenRequest;
-import org.tbbtalent.server.request.user.CreateUserRequest;
-import org.tbbtalent.server.request.user.ResetPasswordRequest;
-import org.tbbtalent.server.request.user.SearchUserRequest;
-import org.tbbtalent.server.request.user.SendResetPasswordEmailRequest;
-import org.tbbtalent.server.request.user.UpdateSharingRequest;
-import org.tbbtalent.server.request.user.UpdateUserPasswordRequest;
-import org.tbbtalent.server.request.user.UpdateUserRequest;
-import org.tbbtalent.server.request.user.UpdateUsernameRequest;
+import org.tbbtalent.server.request.user.*;
 import org.tbbtalent.server.response.JwtAuthenticationResponse;
 import org.tbbtalent.server.security.JwtTokenProvider;
 import org.tbbtalent.server.security.PasswordHelper;
@@ -85,6 +46,15 @@ import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.UserService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.util.qr.EncodedQrImage;
+
+import javax.security.auth.login.AccountLockedException;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import static dev.samstevens.totp.util.Utils.getDataUriForImage;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -159,88 +129,180 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public User createUser(CreateUserRequest request) throws UsernameTakenException {
-        User user = new User(
-                request.getUsername(),
-                request.getFirstName(),
-                request.getLastName(),
-                request.getEmail(),
-                request.getRole());
+    public User createUser(CreateUserRequest request) throws UsernameTakenException, InvalidRequestException {
+        User loggedInUser = getLoggedInUser();
+        boolean authSuccess;
 
-        user.setReadOnly(request.getReadOnly());
-        user.setUsingMfa(request.getUsingMfa());
-
-        if(CollectionUtils.isNotEmpty(request.getSourceCountries())) {
-            for (Country sourceCountry : request.getSourceCountries()) {
-                user.getSourceCountries().add(sourceCountry);
-            }
+        if (loggedInUser.getReadOnly()) {
+            authSuccess = false;
+        } else if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.sourcepartneradmin) {
+            authSuccess = true;
+        } else {
+            authSuccess = false;
         }
 
-        /* Validate the password before account creation */
-        String passwordEncrypted = passwordHelper.validateAndEncodePassword(request.getPassword());
-        user.setPasswordEnc(passwordEncrypted);
+        if (authSuccess) {
+            User user = new User(
+                    request.getUsername(),
+                    request.getFirstName(),
+                    request.getLastName(),
+                    request.getEmail(),
+                    request.getRole());
+            user.setReadOnly(request.getReadOnly());
+            user.setUsingMfa(request.getUsingMfa());
 
-        User existing = userRepository.findByUsernameIgnoreCase(user.getUsername());
-        if (existing != null){
-            throw new UsernameTakenException("username");
-        }
-
-        existing = userRepository.findByEmailIgnoreCase(user.getEmail());
-        if (existing != null){
-            throw new UsernameTakenException("email");
-        }
-
-        return this.userRepository.save(user);
-    }
-
-    @Override
-    @Transactional
-    public User updateUser(long id, UpdateUserRequest request) {
-        User user = this.userRepository.findById(id)
-                .orElseThrow(() -> new NoSuchObjectException(User.class, id));
-
-        if (!user.getEmail().equalsIgnoreCase(request.getEmail())){
-            User existing = userRepository.findByEmailIgnoreCase(request.getEmail());
-            if (existing != null){
-                throw new UsernameTakenException("email");
-            }
-        }
-
-        // Clear old source country joins before adding again
-        user.getSourceCountries().clear();
-        for (Country sourceCountry : request.getSourceCountries()) {
-            user.getSourceCountries().add(sourceCountry);
-        }
-
-
-        user.setReadOnly(request.getReadOnly());
-
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setEmail(request.getEmail());
-        user.setStatus(request.getStatus());
-        user.setRole(request.getRole());
-        user.setUsingMfa(request.getUsingMfa());
-
-        return userRepository.save(user);
-    }
-
-    @Override
-    @Transactional
-    public User updateUsername(long id, UpdateUsernameRequest request) {
-        User user = this.userRepository.findById(id)
-                .orElseThrow(() -> new NoSuchObjectException(User.class, id));
-
-        if (!user.getUsername().equalsIgnoreCase(request.getUsername())){
-            User existing = userRepository.findByUsernameIgnoreCase(request.getUsername());
+            //Validate source countries aren't restricted, and add to user.
+            addSourceCountriesIfValid(user, request.getSourceCountries());
+            // Validate the role requested, and add to user.
+            addRoleIfValid(user, request.getRole());
+            /* Validate the password before account creation */
+            String passwordEncrypted = passwordHelper.validateAndEncodePassword(request.getPassword());
+            user.setPasswordEnc(passwordEncrypted);
+            User existing = userRepository.findByUsernameIgnoreCase(user.getUsername());
             if (existing != null){
                 throw new UsernameTakenException("username");
             }
+
+            existing = userRepository.findByEmailIgnoreCase(user.getEmail());
+            if (existing != null){
+                throw new UsernameTakenException("email");
+            }
+            user.setAuditFields(loggedInUser);
+            return this.userRepository.save(user);
+        } else {
+            throw new InvalidRequestException("You don't have permission to create a user.");
         }
 
-        user.setUsername(request.getUsername());
+    }
 
-        return userRepository.save(user);
+    @Override
+    @Transactional
+    public User updateUser(long id, UpdateUserRequest request) throws UsernameTakenException, InvalidRequestException {
+        User loggedInUser = getLoggedInUser();
+        User user = this.userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(User.class, id));
+
+        // Only update if logged in user role is admin OR source partner admin AND they created the user.
+        if (authoriseAdminUser(user)) {
+            if (!user.getEmail().equalsIgnoreCase(request.getEmail())){
+                User existing = userRepository.findByEmailIgnoreCase(request.getEmail());
+                if (existing != null){
+                    throw new UsernameTakenException("email");
+                }
+            }
+
+            //Check source countries aren't restricted, and add to user.
+            addSourceCountriesIfValid(user, request.getSourceCountries());
+
+            //Check role type isn't restricted, and add to user.
+            addRoleIfValid(user, request.getRole());
+
+            user.setReadOnly(request.getReadOnly());
+            user.setFirstName(request.getFirstName());
+            user.setLastName(request.getLastName());
+            user.setEmail(request.getEmail());
+            user.setStatus(request.getStatus());
+            user.setUsingMfa(request.getUsingMfa());
+            user.setAuditFields(loggedInUser);
+            userRepository.save(user);
+        } else {
+            throw new InvalidRequestException("You don't have permission to edit this user.");
+        }
+        return user;
+    }
+
+
+    /**
+     * Check that the logged in user is authorized to create or update a user.
+     * Admin users can create or update users (unless they are read only).
+     * Source partner admins can create users, but only for their source countries.
+     * Source partner admins can also only create users that arent admins or source partner admins.
+     * Source partner admins can only update users who they created.
+     * @param user It is the user to be updated.
+     * @return
+     */
+    private boolean authoriseAdminUser(User user) {
+        boolean authSuccess;
+        User loggedInUser =getLoggedInUser();
+        if (loggedInUser.getReadOnly()) {
+            authSuccess = false;
+        } else if (loggedInUser.getRole() == Role.admin) {
+            authSuccess = true;
+        } else if (loggedInUser.getRole() == Role.sourcepartneradmin) {
+            // Only allowed to update/delete if user belongs to logged in user.
+            authSuccess = user.getCreatedBy().getId().equals(loggedInUser.getId());
+        } else {
+            authSuccess = false;
+        }
+        return authSuccess;
+    }
+
+    /**
+     * Validates that if restricted source countries are present, and if valid it adds those source countries are added to new or updated users.
+     * If logged in users source countries is empty, it means no restrictions.
+     * @param user User to add source countries to.
+     * @param requestCountries The list of countries from the request. Can be empty.
+     */
+    private void addSourceCountriesIfValid(User user, List<Country> requestCountries) throws InvalidRequestException {
+        User loggedInUser = getLoggedInUser();
+        // Only update source countries if they are different from existing.
+        List<Country> currentUserCountries = new ArrayList<>(user.getSourceCountries());
+        if (!currentUserCountries.equals(requestCountries)) {
+            // Clear old source country joins before adding again
+            user.getSourceCountries().clear();
+            if (CollectionUtils.isNotEmpty(requestCountries)) {
+                for (Country sourceCountry : requestCountries) {
+                    if (loggedInUser.getSourceCountries().isEmpty() || loggedInUser.getSourceCountries().contains(sourceCountry)) {
+                        user.getSourceCountries().add(sourceCountry);
+                    } else {
+                        throw new InvalidRequestException("You don't have permission to add this country.");
+                    }
+                    user.getSourceCountries().add(sourceCountry);
+                }
+            }
+        }
+    }
+
+    /**
+     * Validates that source partner admins can only set roles that aren't admin or source partner admin.
+     * @param user User - the user to add or update role type to.
+     * @param requestedRole - The role to change to in the request.
+     */
+    private void addRoleIfValid(User user, Role requestedRole) throws InvalidRequestException {
+        User loggedInUser = getLoggedInUser();
+        Role loggedInRole = loggedInUser.getRole();
+        if (loggedInRole == Role.admin) {
+            user.setRole(requestedRole);
+        } else {
+            // Check that source partner admin is only saving roles that are allowed (not admin or source partner admin)
+            if (requestedRole != Role.admin && requestedRole != Role.sourcepartneradmin) {
+                user.setRole(requestedRole);
+            } else {
+                throw new InvalidRequestException("You don't have permission to save this role type.");
+            }
+        }
+    }
+
+    @Override
+    @Transactional
+    public User updateUsername(long id, UpdateUsernameRequest request) throws NoSuchObjectException, InvalidRequestException {
+        User loggedInUser = getLoggedInUser();
+        User user = this.userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(User.class, id));
+        if (authoriseAdminUser(user)) {
+            if (!user.getUsername().equalsIgnoreCase(request.getUsername())){
+                User existing = userRepository.findByUsernameIgnoreCase(request.getUsername());
+                if (existing != null){
+                    throw new UsernameTakenException("username");
+                }
+            }
+            user.setUsername(request.getUsername());
+            user.setAuditFields(loggedInUser);
+            userRepository.save(user);
+        } else {
+            throw new InvalidRequestException("You don't have permission to update this user's username.");
+        }
+        return user;
     }
 
     @Override
@@ -275,11 +337,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void deleteUser(long id) {
-        User user = userRepository.findById(id).orElse(null);
-        if (user != null) {
+    public void deleteUser(long id) throws NoSuchObjectException, InvalidRequestException {
+        User loggedInUser = getLoggedInUser();
+        User user = this.userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(User.class, id));
+        if (authoriseAdminUser(user)) {
             user.setStatus(Status.deleted);
+            user.setAuditFields(loggedInUser);
             userRepository.save(user);
+        } else {
+            throw new InvalidRequestException("You don't have permission to delete this user.");
         }
     }
 
@@ -354,6 +421,10 @@ public class UserServiceImpl implements UserService {
         return userContext.getLoggedInUser().orElse(null);
     }
 
+    /**
+     * CANDIDATE PORTAL: Update a users password
+     * @param request
+     */
     @Override
     @Transactional(readOnly = false, rollbackFor = Exception.class)
     public void updatePassword(UpdateUserPasswordRequest request) {
@@ -378,22 +449,30 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    /**
+     * ADMIN PORTAL: Update an administrators user password
+     * @param id
+     * @param request
+     */
     @Override
     @Transactional(readOnly = false, rollbackFor = Exception.class)
-    public void updateUserPassword(long id, UpdateUserPasswordRequest request) {
+    public void updateUserPassword(long id, UpdateUserPasswordRequest request) throws InvalidRequestException {
         /* Get user */
         User user = this.userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(User.class, id));
+        if (authoriseAdminUser(user)) {
+            /* Check that the new passwords match */
+            if (!request.getPassword().equals(request.getPasswordConfirmation())) {
+                throw new PasswordMatchException();
+            }
 
-        /* Check that the new passwords match */
-        if (!request.getPassword().equals(request.getPasswordConfirmation())) {
-            throw new PasswordMatchException();
+            /* Change the password */
+            String passwordEnc = passwordHelper.validateAndEncodePassword(request.getPassword());
+            user.setPasswordEnc(passwordEnc);
+            userRepository.save(user);
+        } else {
+            throw new InvalidRequestException("You don't have permission to update this user's password.");
         }
-
-        /* Change the password */
-        String passwordEnc = passwordHelper.validateAndEncodePassword(request.getPassword());
-        user.setPasswordEnc(passwordEnc);
-        userRepository.save(user);
     }
 
     @Override
@@ -452,13 +531,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void mfaReset(long id) throws NoSuchObjectException {
+    public void mfaReset(long id) throws NoSuchObjectException, InvalidRequestException {
+        User loggedInUser = getLoggedInUser();
         User user = this.userRepository.findById(id)
             .orElseThrow(() -> new NoSuchObjectException(User.class, id));
-
-        user.setMfaSecret(null);
-
-        userRepository.save(user);
+        if (authoriseAdminUser(user)) {
+            user.setMfaSecret(null);
+            user.setAuditFields(loggedInUser);
+            userRepository.save(user);
+        } else {
+            throw new InvalidRequestException("You don't have permission to reset this user's MFA.");
+        }
     }
 
     @Override

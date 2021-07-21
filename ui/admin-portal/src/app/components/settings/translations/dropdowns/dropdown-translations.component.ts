@@ -59,8 +59,8 @@ export class DropdownTranslationsComponent implements OnInit {
     /* SET UP FORM */
     this.searchForm = this.fb.group({
       keyword: [''],
-      type: ['', Validators.required],
-      language: ['', Validators.required],
+      type: [null, Validators.required],
+      language: [null, Validators.required],
     });
     this.pageNumber = 1;
     this.pageSize = 50;
@@ -102,13 +102,13 @@ export class DropdownTranslationsComponent implements OnInit {
 
   /* SEARCH FORM */
   search() {
-    let request = this.searchForm.value;
+    const request = this.searchForm.value;
     request.pageNumber = this.pageNumber - 1;
     request.pageSize = this.pageSize;
 
     if (this.searchForm.valid) {
-      let type = this.searchForm.controls['type'].value;
-      let language = this.searchForm.controls['language'].value;
+      const type = this.searchForm.controls['type'].value;
+      const language = this.searchForm.controls['language'].value;
       this.loading = true;
       this.results = null;
       this.error = null;

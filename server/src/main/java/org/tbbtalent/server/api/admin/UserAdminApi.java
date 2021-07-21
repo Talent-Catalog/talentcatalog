@@ -58,6 +58,8 @@ public class UserAdminApi {
 
         if (loggedInUser.getRole() == Role.admin) {
             return userDto().build(user);
+        } else if (loggedInUser.getRole() == Role.sourcepartneradmin) {
+            return userDto().build(user);
         } else {
             return userDtoSemiLimited().build(user);
         }
@@ -129,6 +131,7 @@ public class UserAdminApi {
                 .add("readOnly")
                 .add("status")
                 .add("createdDate")
+                .add("createdBy", userDtoSemiLimited())
                 .add("lastLogin")
                 .add("usingMfa")
                 .add("mfaConfigured")
