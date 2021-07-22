@@ -328,67 +328,49 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             UpdateCandidateAttachmentRequest request) throws IOException {
         User user = userContext.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-
         CandidateAttachment candidateAttachment = getCandidateAttachment(id);
-
         final AttachmentType attachmentType = candidateAttachment.getType();
-        
-        // Update the name
-        if (!candidateAttachment.getName().equals(request.getName())) {
-            candidateAttachment.setName(request.getName());
-            if (attachmentType == AttachmentType.googlefile) {
-                //For Google files we also rename the uploaded file 
-                FileSystemFile fsf = new FileSystemFile();
-                fsf.setName(request.getName());
-                fsf.setUrl(candidateAttachment.getLocation());
-                fileSystemService.renameFile(fsf);
+
+        boolean authSuccess = false;
+        if (user.getRole() == Role.readonly) {
+            authSuccess = false;
+        } else if (user.getRole().equals(Role.admin) || user.getRole().equals(Role.sourcepartneradmin)) {
+            authSuccess = true;
+        } else if (user.getRole().equals(Role.user)) {
+            if (candidateAttachment.getCreatedBy().getId().equals(user.getId())) {
+                authSuccess = true;
+            } else {
+                authSuccess = false;
             }
         }
 
-        //Only AWS/S3 files support this CV to not CV and vice versa
-        //for CV to non CV and vice versa only applies to AWS/S3 files
-        if (attachmentType == AttachmentType.file) {
-            // Run text extraction if attachment changed from not CV to a CV or remove if changed from CV to not CV.
-            if (request.getCv() && !candidateAttachment.isCv()) {
-                try {
-                    String uniqueFilename = candidateAttachment.getLocation();
-                    String destination;
-                    if (candidateAttachment.isMigrated()) {
-                        destination = "candidate/migrated/" + uniqueFilename;
-                    } else {
-                        destination = "candidate/" + candidateAttachment.getCandidate().getCandidateNumber() + "/" + uniqueFilename;
-                    }
-                    File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
-                    String extractedText = textExtractHelper.getTextExtractFromFile(srcFile, candidateAttachment.getFileType());
-                    if (StringUtils.isNotBlank(extractedText)) {
-                        candidateAttachment.setTextExtract(extractedText);
-                        candidateAttachmentRepository.save(candidateAttachment);
-                    }
-                } catch (Exception e) {
-                    log.error("Unable to extract text from file " + candidateAttachment.getLocation(), e.getMessage());
-                    candidateAttachment.setTextExtract(null);
+        if (authSuccess) {
+            // UPDATE THE NAME
+            if (!candidateAttachment.getName().equals(request.getName())) {
+                candidateAttachment.setName(request.getName());
+                if (attachmentType == AttachmentType.googlefile) {
+                    //For Google files we also rename the uploaded file
+                    FileSystemFile fsf = new FileSystemFile();
+                    fsf.setName(request.getName());
+                    fsf.setUrl(candidateAttachment.getLocation());
+                    fileSystemService.renameFile(fsf);
                 }
-            } else if (!request.getCv() && candidateAttachment.isCv()) {
-                candidateAttachment.setTextExtract(null);
-                candidateAttachmentRepository.save(candidateAttachment);
             }
+            // UPDATE THE URL LOCATION (IF LINK)
+            if (candidateAttachment.getType().equals(AttachmentType.link)) {
+                candidateAttachment.setLocation(request.getLocation());
+            }
+            // UPDATE THE CANDIDATE AUDIT FIELDS
+            Candidate candidate = candidateAttachment.getCandidate();
+            candidate.setAuditFields(user);
+            candidateService.save(candidate, true);
+            candidateAttachment.setAuditFields(user);
+            candidateAttachmentRepository.save(candidateAttachment);
+        } else {
+            throw new InvalidRequestException("You don't have permission to complete this action.");
         }
 
-        // Update the fields related to the file type
-        if (candidateAttachment.getType().equals(AttachmentType.link)) {
-            candidateAttachment.setLocation(request.getLocation());
-            candidateAttachment.setAuditFields(user);
-        } else if (candidateAttachment.getType().equals(AttachmentType.file)){
-            candidateAttachment.setCv(request.getCv());
-            candidateAttachment.setAuditFields(user);
-        }
-
-        // Update the candidate audit fields
-        Candidate candidate = candidateAttachment.getCandidate();
-        candidate.setAuditFields(candidate.getUser());
-        candidateService.save(candidate, true);
-
-        return candidateAttachmentRepository.save(candidateAttachment);
+        return candidateAttachment;
     }
 
     @Override
