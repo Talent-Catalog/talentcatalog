@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.exception.UnauthorisedActionException;
 import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.repository.db.CandidateEducationRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
@@ -151,10 +152,14 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
         CandidateEducation candidateEducation = candidateEducationRepository.findByIdLoadCandidate(id)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateEducation.class, id));
         Candidate candidate = candidateEducation.getCandidate();
-        candidateEducationRepository.delete(candidateEducation);
 
-        setAuditFieldsFromUser(candidate, loggedInUser);
-        candidateService.save(candidate, true);
+        if (userContext.authoriseLoggedInUser(candidate)) {
+            candidateEducationRepository.delete(candidateEducation);
+            setAuditFieldsFromUser(candidate, loggedInUser);
+            candidateService.save(candidate, true);
+        } else {
+            throw new UnauthorisedActionException();
+        }
     }
 
 }

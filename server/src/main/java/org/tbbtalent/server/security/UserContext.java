@@ -16,14 +16,15 @@
 
 package org.tbbtalent.server.security;
 
-import java.util.Optional;
-
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.User;
+
+import java.util.Optional;
 
 @Service
 public class UserContext {
@@ -75,5 +76,22 @@ public class UserContext {
     public @Nullable String getUserLanguage() {
         User user = getLoggedInUser().orElse(null);
         return user == null ? null : user.getSelectedLanguage();
+    }
+
+    public boolean authoriseLoggedInUser(Candidate candidateObjectBelongsTo) {
+        User user = getLoggedInUser().orElse(null);
+        if (user != null) {
+            if (user.getReadOnly()) {
+                return false;
+            } else if (user.getRole().equals(Role.admin) || user.getRole().equals(Role.sourcepartneradmin)) {
+                return true;
+            } else if (user.getRole().equals(Role.user)){
+                return candidateObjectBelongsTo.getId().equals(user.getCandidate().getId());
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 }
