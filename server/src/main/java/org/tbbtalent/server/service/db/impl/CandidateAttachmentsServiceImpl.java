@@ -26,10 +26,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.tbbtalent.server.exception.InvalidCredentialsException;
-import org.tbbtalent.server.exception.InvalidRequestException;
-import org.tbbtalent.server.exception.InvalidSessionException;
-import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.exception.*;
 import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
@@ -37,7 +34,7 @@ import org.tbbtalent.server.request.PagedSearchRequest;
 import org.tbbtalent.server.request.attachment.CreateCandidateAttachmentRequest;
 import org.tbbtalent.server.request.attachment.SearchCandidateAttachmentsRequest;
 import org.tbbtalent.server.request.attachment.UpdateCandidateAttachmentRequest;
-import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateAttachmentService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.GoogleFileSystemService;
@@ -60,7 +57,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     private final CandidateService candidateService;
     private final CandidateAttachmentRepository candidateAttachmentRepository;
     private final GoogleFileSystemService fileSystemService;
-    private final UserContext userContext;
+    private final AuthService authService;
     private final S3ResourceHelper s3ResourceHelper;
     private final TextExtractHelper textExtractHelper;
 
@@ -72,13 +69,13 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                                            CandidateService candidateService,
                                            CandidateAttachmentRepository candidateAttachmentRepository,
                                            GoogleFileSystemService fileSystemService, S3ResourceHelper s3ResourceHelper,
-                                           UserContext userContext) {
+                                           AuthService authService) {
         this.candidateRepository = candidateRepository;
         this.candidateService = candidateService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
         this.fileSystemService = fileSystemService;
         this.s3ResourceHelper = s3ResourceHelper;
-        this.userContext = userContext;
+        this.authService = authService;
         this.textExtractHelper = new TextExtractHelper(candidateAttachmentRepository, s3ResourceHelper);
     }
 
@@ -89,7 +86,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
     @Override
     public Page<CandidateAttachment> searchCandidateAttachmentsForLoggedInCandidate(PagedSearchRequest request) {
-        Long candidateId = userContext.getLoggedInCandidateId();
+        Long candidateId = authService.getLoggedInCandidateId();
         if (candidateId == null) {
             throw new InvalidSessionException("Not logged in");
         }
@@ -99,7 +96,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
     @Override
     public List<CandidateAttachment> listCandidateAttachmentsForLoggedInCandidate() {
-        Long candidateId = userContext.getLoggedInCandidateId();
+        Long candidateId = authService.getLoggedInCandidateId();
         if (candidateId == null) {
             throw new InvalidSessionException("Not logged in");
         }
@@ -122,7 +119,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
     @Override
     public CandidateAttachment createCandidateAttachment(CreateCandidateAttachmentRequest request) {
-        User user = userContext.getLoggedInUser()
+        User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Candidate candidate;
@@ -133,7 +130,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             candidate = candidateRepository.findById(request.getCandidateId())
                     .orElseThrow(() -> new NoSuchObjectException(Candidate.class, request.getCandidateId()));
         } else {
-            candidate = userContext.getLoggedInCandidate();
+            candidate = authService.getLoggedInCandidate();
             if (candidate == null) {
                 throw new InvalidSessionException("Not logged in");
             }
@@ -207,7 +204,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     // repository but not from S3 bucket.
     @Override
     public void deleteCandidateAttachment(Long id) {
-        User user = userContext.getLoggedInUser()
+        User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         CandidateAttachment candidateAttachment = candidateAttachmentRepository.findByIdLoadCandidate(id)
@@ -217,7 +214,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
         // If coming from candidate portal check delete logic
         if (user.getRole().equals(Role.user)) {
-             candidate = userContext.getLoggedInCandidate();
+             candidate = authService.getLoggedInCandidate();
             if (candidate == null) {
                 throw new InvalidSessionException("Not logged in");
             }
@@ -284,7 +281,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     @Override
     public void downloadCandidateAttachment(
             CandidateAttachment attachment, OutputStream out) throws IOException {
-        User user = userContext.getLoggedInUser()
+        User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         boolean creator = attachment.getCreatedBy().equals(user);
         boolean mine = attachment.getCandidate().equals(user.getCandidate());
@@ -325,26 +322,13 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
     @Override
     public CandidateAttachment updateCandidateAttachment(Long id,
-            UpdateCandidateAttachmentRequest request) throws IOException {
-        User user = userContext.getLoggedInUser()
+            UpdateCandidateAttachmentRequest request) throws IOException, UnauthorisedActionException {
+        User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         CandidateAttachment candidateAttachment = getCandidateAttachment(id);
         final AttachmentType attachmentType = candidateAttachment.getType();
 
-        boolean authSuccess = false;
-        if (user.getRole() == Role.readonly) {
-            authSuccess = false;
-        } else if (user.getRole().equals(Role.admin) || user.getRole().equals(Role.sourcepartneradmin)) {
-            authSuccess = true;
-        } else if (user.getRole().equals(Role.user)) {
-            if (candidateAttachment.getCreatedBy().getId().equals(user.getId())) {
-                authSuccess = true;
-            } else {
-                authSuccess = false;
-            }
-        }
-
-        if (authSuccess) {
+        if (authService.authoriseLoggedInUser(candidateAttachment.getCandidate())) {
             // UPDATE THE NAME
             if (!candidateAttachment.getName().equals(request.getName())) {
                 candidateAttachment.setName(request.getName());
@@ -367,7 +351,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             candidateAttachment.setAuditFields(user);
             candidateAttachmentRepository.save(candidateAttachment);
         } else {
-            throw new InvalidRequestException("You don't have permission to complete this action.");
+            throw new UnauthorisedActionException("update");
         }
 
         return candidateAttachment;
@@ -461,7 +445,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     @NonNull
     public CandidateAttachment uploadAttachment(Boolean cv, MultipartFile file) 
             throws IOException, InvalidSessionException {
-        Long candidateId = userContext.getLoggedInCandidateId();
+        Long candidateId = authService.getLoggedInCandidateId();
         if (candidateId == null) {
             throw new InvalidSessionException("Not logged in");
         }

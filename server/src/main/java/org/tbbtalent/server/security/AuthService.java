@@ -27,7 +27,7 @@ import org.tbbtalent.server.model.db.User;
 import java.util.Optional;
 
 @Service
-public class UserContext {
+public class AuthService {
 
     /**
      * Return logged in user. Optional empty id not logged in.
@@ -78,15 +78,21 @@ public class UserContext {
         return user == null ? null : user.getSelectedLanguage();
     }
 
-    public boolean authoriseLoggedInUser(Candidate candidateObjectBelongsTo) {
+    public boolean authoriseLoggedInUser(Candidate owner) {
         User user = getLoggedInUser().orElse(null);
         if (user != null) {
             if (user.getReadOnly()) {
                 return false;
-            } else if (user.getRole().equals(Role.admin) || user.getRole().equals(Role.sourcepartneradmin)) {
+            } else if (user.getRole().equals(Role.admin)) {
                 return true;
+            } else if (user.getRole().equals(Role.sourcepartneradmin)) {
+                if (!user.getSourceCountries().isEmpty()) {
+                    return user.getSourceCountries().contains(owner.getCountry());
+                } else {
+                    return true;
+                }
             } else if (user.getRole().equals(Role.user)){
-                return candidateObjectBelongsTo.getId().equals(user.getCandidate().getId());
+                return owner.getId().equals(user.getCandidate().getId());
             } else {
                 return false;
             }

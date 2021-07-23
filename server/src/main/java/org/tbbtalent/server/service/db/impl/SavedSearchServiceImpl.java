@@ -34,7 +34,7 @@ import org.tbbtalent.server.request.candidate.SearchJoinRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.search.*;
-import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.service.db.SavedSearchService;
@@ -62,14 +62,14 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final OccupationRepository occupationRepository;
     private final EducationMajorRepository educationMajorRepository;
     private final EducationLevelRepository educationLevelRepository;
-    private final UserContext userContext;
+    private final AuthService authService;
 
     @Autowired
     public SavedSearchServiceImpl(
             CandidateSavedListService candidateSavedListService,
             UserRepository userRepository,
             SavedListRepository savedListRepository,
-            SavedListService savedListService, 
+            SavedListService savedListService,
             SavedSearchRepository savedSearchRepository,
             SearchJoinRepository searchJoinRepository,
             LanguageLevelRepository languageLevelRepository,
@@ -78,7 +78,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             OccupationRepository occupationRepository,
             EducationMajorRepository educationMajorRepository,
             EducationLevelRepository educationLevelRepository,
-            UserContext userContext) {
+            AuthService authService) {
         this.candidateSavedListService = candidateSavedListService;
         this.userRepository = userRepository;
         this.savedListRepository = savedListRepository;
@@ -91,12 +91,12 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         this.occupationRepository = occupationRepository;
         this.educationMajorRepository = educationMajorRepository;
         this.educationLevelRepository = educationLevelRepository;
-        this.userContext = userContext;
+        this.authService = authService;
     }
 
     @Override
     public List<SavedSearch> search(SearchSavedSearchRequest request) {
-        final User loggedInUser = userContext.getLoggedInUser().orElse(null);
+        final User loggedInUser = authService.getLoggedInUser().orElse(null);
 
         List<SavedSearch> savedSearches;
         //If requesting watches
@@ -127,7 +127,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     @Override
     public Page<SavedSearch> searchPaged(SearchSavedSearchRequest request) {
-        final User loggedInUser = userContext.getLoggedInUser().orElse(null);
+        final User loggedInUser = authService.getLoggedInUser().orElse(null);
 
         Page<SavedSearch> savedSearches;
         //If requesting watches
@@ -229,7 +229,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             CreateFromDefaultSavedSearchRequest request)  
             throws NoSuchObjectException {
         
-        final User loggedInUser = userContext.getLoggedInUser()
+        final User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         String name;
@@ -288,7 +288,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     public SavedSearch createSavedSearch(UpdateSavedSearchRequest request) 
             throws EntityExistsException {
         SavedSearch savedSearch = convertToSavedSearch(request);
-        final User loggedInUser = userContext.getLoggedInUser().orElse(null);
+        final User loggedInUser = authService.getLoggedInUser().orElse(null);
         if (loggedInUser != null) {
             checkDuplicates(null, request.getName(), loggedInUser.getId());
             savedSearch.setAuditFields(loggedInUser);
@@ -326,7 +326,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     @Transactional
     public SavedSearch updateSavedSearch(long id, UpdateSavedSearchRequest request) 
             throws EntityExistsException {
-        final User loggedInUser = userContext.getLoggedInUser()
+        final User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         if(request.getSearchCandidateRequest() == null){
@@ -363,7 +363,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     @Transactional
     public boolean deleteSavedSearch(long id)  {
         SavedSearch savedSearch = savedSearchRepository.findByIdLoadAudit(id).orElse(null);
-        final User loggedInUser = userContext.getLoggedInUser().orElse(null);
+        final User loggedInUser = authService.getLoggedInUser().orElse(null);
 
         if (savedSearch != null && loggedInUser != null) {
 
@@ -451,7 +451,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     public @NotNull SavedSearch getDefaultSavedSearch() 
             throws NoSuchObjectException {
         //Check that we have a logged in user.
-        User loggedInUser = userContext.getLoggedInUser()
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         SavedSearch savedSearch = 
@@ -522,7 +522,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     public @NotNull SavedList getSelectionListForLoggedInUser(long id) 
         throws InvalidSessionException {
 
-        final User loggedInUser = userContext.getLoggedInUser()
+        final User loggedInUser = authService.getLoggedInUser()
             .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         return getSelectionList(id, loggedInUser.getId());
@@ -530,7 +530,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     @Override
     public void updateCandidateContextNote(long id, UpdateCandidateContextNoteRequest request) {
-        final User loggedInUser = userContext.getLoggedInUser().orElse(null);
+        final User loggedInUser = authService.getLoggedInUser().orElse(null);
         if (loggedInUser != null) {
             SavedList savedList = savedListRepository
                     .findSelectionList(id, loggedInUser.getId())
@@ -666,7 +666,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
     private SearchCandidateRequest convertToSearchCandidateRequest(SavedSearch request) {
-        User user = userContext.getLoggedInUser().orElse(null);
+        User user = authService.getLoggedInUser().orElse(null);
         SearchCandidateRequest searchCandidateRequest = new SearchCandidateRequest();
         searchCandidateRequest.setSavedSearchId(request.getId());
         searchCandidateRequest.setSimpleQueryString(request.getSimpleQueryString());

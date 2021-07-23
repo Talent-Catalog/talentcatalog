@@ -16,7 +16,6 @@
 
 package org.tbbtalent.server.api.admin;
 
-import javax.validation.Valid;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -29,11 +28,12 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.request.candidate.*;
-import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
@@ -49,10 +49,10 @@ public class CandidateAdminApi {
 
     @Autowired
     public CandidateAdminApi(CandidateService candidateService,
-                             UserContext userContext) {
+                             AuthService authService) {
         this.candidateService = candidateService;
-        builderSelector = new CandidateBuilderSelector(userContext);
-        intakeDataBuilderSelector = new CandidateIntakeDataBuilderSelector(userContext);
+        builderSelector = new CandidateBuilderSelector(authService);
+        intakeDataBuilderSelector = new CandidateIntakeDataBuilderSelector(authService);
     }
 
     @PostMapping("search")

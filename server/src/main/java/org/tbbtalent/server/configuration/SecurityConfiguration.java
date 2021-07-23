@@ -95,6 +95,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // DELETE: DELETE ATTACHMENT
                 .antMatchers(HttpMethod.DELETE, "/api/admin/candidate-attachment/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED")
 
+                // DELETE: DELETE EDUCATION
+                .antMatchers(HttpMethod.DELETE, "/api/admin/candidate-education/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED")
+
                 // DELETE: DELETE CANDIDATE EXAM (INTAKE INTERVIEW)
                 .antMatchers(HttpMethod.DELETE, "/api/admin/candidate-exam/*").hasAnyRole( "ADMIN", "SOURCEPARTNERADMIN", "SEMILIMITED", "LIMITED")
 

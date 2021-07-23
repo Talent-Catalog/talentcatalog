@@ -17,7 +17,7 @@
 package org.tbbtalent.server.exception;
 
 public class UnauthorisedActionException extends ServiceException {
-    public UnauthorisedActionException() {
-        super("invalid_request", "You are not authorised to perform this action.");
+    public UnauthorisedActionException(String action) {
+        super("invalid_request", "You are not authorised to perform this " + action + ".");
     }
 }

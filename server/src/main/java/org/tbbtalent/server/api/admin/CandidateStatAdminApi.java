@@ -27,7 +27,7 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.repository.db.CountryRepository;
 import org.tbbtalent.server.request.candidate.stat.CandidateStatsRequest;
-import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
@@ -43,18 +43,18 @@ public class CandidateStatAdminApi {
     private final CandidateService candidateService;
     private final CountryRepository countryRepository;
     private final SavedListService savedListService;
-    private final UserContext userContext;
+    private final AuthService authService;
 
     @Autowired
     public CandidateStatAdminApi(
             CandidateService candidateService,
-            CountryRepository countryRepository, 
+            CountryRepository countryRepository,
             SavedListService savedListService,
-            UserContext userContext) {
+            AuthService authService) {
         this.candidateService = candidateService;
         this.countryRepository = countryRepository;
         this.savedListService = savedListService;
-        this.userContext = userContext;
+        this.authService = authService;
     }
 
     /**
@@ -367,7 +367,7 @@ public class CandidateStatAdminApi {
      * Get logged in user’s source country Ids, defaulting to all countries if empty
      */
     private List<Long> getDefaultSourceCountryIds(){
-        User user = userContext.getLoggedInUser()
+        User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         List<Long> listOfCountryIds;

@@ -16,39 +16,35 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.CandidateEducation;
-import org.tbbtalent.server.model.db.CandidateNote;
-import org.tbbtalent.server.model.db.NoteType;
-import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.repository.db.CandidateNoteRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.request.note.CreateCandidateNoteRequest;
 import org.tbbtalent.server.request.note.SearchCandidateNotesRequest;
 import org.tbbtalent.server.request.note.UpdateCandidateNoteRequest;
-import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateNoteService;
+
+import javax.transaction.Transactional;
 
 @Service
 public class CandidateNotesServiceImpl implements CandidateNoteService {
 
     private final CandidateRepository candidateRepository;
     private final CandidateNoteRepository candidateNoteRepository;
-    private final UserContext userContext;
+    private final AuthService authService;
 
     @Autowired
     public CandidateNotesServiceImpl(CandidateRepository candidateRepository, CandidateNoteRepository candidateNoteRepository,
-                                     UserContext userContext) {
+                                     AuthService authService) {
         this.candidateRepository = candidateRepository;
         this.candidateNoteRepository = candidateNoteRepository;
-        this.userContext = userContext;
+        this.authService = authService;
     }
 
     @Override
@@ -59,7 +55,7 @@ public class CandidateNotesServiceImpl implements CandidateNoteService {
 
     @Override
     public CandidateNote createCandidateNote(CreateCandidateNoteRequest request) {
-        User user = userContext.getLoggedInUser()
+        User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Candidate candidate = candidateRepository.findById(request.getCandidateId())
@@ -80,7 +76,7 @@ public class CandidateNotesServiceImpl implements CandidateNoteService {
         CandidateNote candidateNote = this.candidateNoteRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateEducation.class, id));
 
-        User user = userContext.getLoggedInUser()
+        User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         // Update education object to insert into the database
