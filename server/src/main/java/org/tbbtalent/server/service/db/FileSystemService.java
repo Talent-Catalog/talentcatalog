@@ -22,8 +22,8 @@ import java.io.OutputStream;
 
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.tbbtalent.server.util.filesystem.FileSystemFile;
-import org.tbbtalent.server.util.filesystem.FileSystemFolder;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 
 /**
  * Standard interface to any filesystem - tailored to Talent Catalog's use for
@@ -42,7 +42,7 @@ public interface FileSystemService {
      * @throws IOException If problem accessing file system
      */
     @Nullable
-    FileSystemFolder findAFolder(String folderName) throws IOException;
+    GoogleFileSystemFolder findAFolder(String folderName) throws IOException;
 
     /**
      * Creates a folder with the given name.
@@ -53,14 +53,14 @@ public interface FileSystemService {
      * @throws IOException If there was a problem creating the folder
      */
     @NonNull
-    FileSystemFolder createFolder(String folderName) throws IOException;
+    GoogleFileSystemFolder createFolder(String folderName) throws IOException;
 
     /**
      * Deletes the given file
      * @param file Describes file to be deleted
      * @throws IOException If there was a problem deleting the file
      */
-    void deleteFile(FileSystemFile file) throws IOException;
+    void deleteFile(GoogleFileSystemFile file) throws IOException;
 
     /**
      * Downloads the given file into the given OutputStream
@@ -68,7 +68,7 @@ public interface FileSystemService {
      * @param out Stream to write the contents of the file to
      * @throws IOException If there was a problem uploading the file.
      */
-    void downloadFile(@NonNull FileSystemFile file, @NonNull OutputStream out)
+    void downloadFile(@NonNull GoogleFileSystemFile file, @NonNull OutputStream out)
             throws IOException;
 
     /**
@@ -76,7 +76,7 @@ public interface FileSystemService {
      * @param file Description of file, including id or url, plus its new name
      * @throws IOException If there was a problem renaming the file
      */
-    void renameFile(@NonNull FileSystemFile file) throws IOException;
+    void renameFile(@NonNull GoogleFileSystemFile file) throws IOException;
     
     /**
      * Uploads the given local file.
@@ -88,8 +88,8 @@ public interface FileSystemService {
      * @throws IOException If there was a problem uploading the file.
      */
     @NonNull
-    FileSystemFile uploadFile(
-            @Nullable FileSystemFolder parentFolder, String fileName, File file) 
+    GoogleFileSystemFile uploadFile(
+            @Nullable GoogleFileSystemFolder parentFolder, String fileName, File file) 
             throws IOException;
     
 }

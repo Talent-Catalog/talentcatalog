@@ -58,7 +58,7 @@ import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.*;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.service.db.util.PdfHelper;
-import org.tbbtalent.server.util.filesystem.FileSystemFolder;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
@@ -100,7 +100,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final CandidateEsRepository candidateEsRepository;
     private final CandidateSavedListService candidateSavedListService;
     private final ElasticsearchOperations elasticsearchOperations;
-    private final GoogleFileSystemService fileSystemService;
+    private final FileSystemService fileSystemService;
     private final SalesforceService salesforceService;
     private final CountryRepository countryRepository;
     private final CountryService countryService;
@@ -130,7 +130,7 @@ public class CandidateServiceImpl implements CandidateService {
         CandidateEsRepository candidateEsRepository,
         CandidateSavedListService candidateSavedListService,
         ElasticsearchOperations elasticsearchOperations,
-        GoogleFileSystemService fileSystemService,
+        FileSystemService fileSystemService,
         SalesforceService salesforceService,
         CountryRepository countryRepository,
         CountryService countryService,
@@ -1894,7 +1894,7 @@ public class CandidateServiceImpl implements CandidateService {
         
         String candidateNumber = candidate.getCandidateNumber();
         
-        FileSystemFolder folder = fileSystemService.findAFolder(candidateNumber);
+        GoogleFileSystemFolder folder = fileSystemService.findAFolder(candidateNumber);
         
         if (folder == null) {
             folder = fileSystemService.createFolder(candidateNumber);

@@ -16,6 +16,14 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
+import java.util.UUID;
+import java.util.regex.Pattern;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -30,7 +38,11 @@ import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.model.db.AttachmentType;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateAttachment;
+import org.tbbtalent.server.model.db.Role;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.request.PagedSearchRequest;
@@ -40,16 +52,11 @@ import org.tbbtalent.server.request.attachment.UpdateCandidateAttachmentRequest;
 import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.CandidateAttachmentService;
 import org.tbbtalent.server.service.db.CandidateService;
-import org.tbbtalent.server.service.db.GoogleFileSystemService;
+import org.tbbtalent.server.service.db.FileSystemService;
 import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
-import org.tbbtalent.server.util.filesystem.FileSystemFile;
-import org.tbbtalent.server.util.filesystem.FileSystemFolder;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 import org.tbbtalent.server.util.textExtract.TextExtractHelper;
-
-import java.io.*;
-import java.util.List;
-import java.util.UUID;
-import java.util.regex.Pattern;
 
 @Service
 public class CandidateAttachmentsServiceImpl implements CandidateAttachmentService {
@@ -59,7 +66,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
     private final CandidateAttachmentRepository candidateAttachmentRepository;
-    private final GoogleFileSystemService fileSystemService;
+    private final FileSystemService fileSystemService;
     private final UserContext userContext;
     private final S3ResourceHelper s3ResourceHelper;
     private final TextExtractHelper textExtractHelper;
@@ -71,7 +78,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     public CandidateAttachmentsServiceImpl(CandidateRepository candidateRepository,
                                            CandidateService candidateService,
                                            CandidateAttachmentRepository candidateAttachmentRepository,
-                                           GoogleFileSystemService fileSystemService, S3ResourceHelper s3ResourceHelper,
+                                           FileSystemService fileSystemService, S3ResourceHelper s3ResourceHelper,
                                            UserContext userContext) {
         this.candidateRepository = candidateRepository;
         this.candidateService = candidateService;
@@ -252,8 +259,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                     s3ResourceHelper.deleteFile("candidate/" + folder + "/" + candidateAttachment.getLocation());
                     break;
                 case googlefile:
-                    FileSystemFile fsf = new FileSystemFile();
-                    fsf.setUrl(candidateAttachment.getLocation());
+                    GoogleFileSystemFile fsf = new GoogleFileSystemFile(candidateAttachment.getLocation());
                     if (!user.getRole().equals(Role.admin)) {
                         fsf.setName("RemovedByCandidate_" + candidateAttachment.getName());
                         try {
@@ -298,8 +304,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             throw new InvalidRequestException("You don't have permission to download this attachment.");
         } else {
             if (attachment.getType() == AttachmentType.googlefile) {
-                FileSystemFile file = new FileSystemFile();
-                file.setUrl(attachment.getLocation());
+                GoogleFileSystemFile file = new GoogleFileSystemFile(attachment.getLocation());
                 fileSystemService.downloadFile(file, out);
             } else {
                 //We only handle Google attachments for now because that is all
@@ -338,9 +343,8 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             candidateAttachment.setName(request.getName());
             if (attachmentType == AttachmentType.googlefile) {
                 //For Google files we also rename the uploaded file 
-                FileSystemFile fsf = new FileSystemFile();
+                GoogleFileSystemFile fsf = new GoogleFileSystemFile(candidateAttachment.getLocation());
                 fsf.setName(request.getName());
-                fsf.setUrl(candidateAttachment.getLocation());
                 fileSystemService.renameFile(fsf);
             }
         }
@@ -427,14 +431,11 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
         //Create a folder object for the candidate folder (where the attachment 
         //file will be uploaded to)
-        FileSystemFolder parentFolder = new FileSystemFolder();
-        //Only need the Google folder id, which can be extracted from the 
-        //folder's url.
-        parentFolder.setId(fileSystemService.extractIdFromUrl(folderLink));
+        GoogleFileSystemFolder parentFolder = new GoogleFileSystemFolder(folderLink);
         
         //Upload the file to its folder, with the correct name (not the temp
         //file name).
-        FileSystemFile uploadedFile = fileSystemService.uploadFile(
+        GoogleFileSystemFile uploadedFile = fileSystemService.uploadFile(
                 parentFolder, fileName, tempFile);
 
         final String fileType = getFileExtension((fileName));
