@@ -37,8 +37,18 @@ public abstract class FileSystemBaseEntity {
         this.url = url;
     }
 
+    /**
+     * Name of file or older on file system.
+     * <p/>
+     * Note that this is changeable (eg can be renamed to anything - manually on Google by the user) 
+     * and does not have to be unique. It is the url that ultimately
+     * defines the file/folder.
+     */
     private String name;
-    
+
+    /**
+     * Url by which folder or file can be identified on the file system.
+     */
     @NonNull
     private String url;
 }
