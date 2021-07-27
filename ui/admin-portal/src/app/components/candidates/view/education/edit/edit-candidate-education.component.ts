@@ -36,7 +36,7 @@ export class EditCandidateEducationComponent implements OnInit {
   candidateEducation: CandidateEducation;
 
   candidateForm: FormGroup;
-
+  candidateId: number;
   countries = [];
   majors = [];
   years = [];
@@ -95,6 +95,7 @@ export class EditCandidateEducationComponent implements OnInit {
     this.saving = true;
     const request: UpdateCandidateEducationRequest = {
       id: this.candidateEducation.id,
+      candidateId: this.candidateId,
       courseName: this.candidateForm.value.courseName,
       institution: this.candidateForm.value.institution,
       countryId: this.candidateForm.value.countryId,

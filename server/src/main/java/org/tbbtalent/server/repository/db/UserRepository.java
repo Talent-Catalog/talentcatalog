@@ -16,7 +16,6 @@
 
 package org.tbbtalent.server.repository.db;
 
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,6 +24,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.User;
+
+import java.util.List;
 
 public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
     
@@ -69,4 +70,11 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
         + "and u.role != 'user' " 
         + "and u.status != 'deleted'")
     List<User> searchStaffNotUsingMfa();
+
+    @Query("select distinct u from User u "
+            + " where lower(u.username) = lower(:username) "
+            + " and u.role = :role "
+            + " and u.status != 'deleted' ")
+    User findByCandidateId(@Param("username") String username,
+                               @Param("role") Role role);
 }

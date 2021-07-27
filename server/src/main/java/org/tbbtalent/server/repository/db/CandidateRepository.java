@@ -171,6 +171,11 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>, Jpa
     Optional<Candidate> findByIdLoadUser(@Param("id") Long id,
                                          @Param("userSourceCountries") Set<Country> userSourceCountries);
 
+    @Query(" select c from Candidate c "
+            + " join c.user u "
+            + " where c.id = :id ")
+    Optional<Candidate> findByIdLoadUser(@Param("id") Long id);
+
 
     /**
      * ADMIN PORTAL SETTINGS METHODS: no source country restrictions.

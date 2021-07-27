@@ -34,6 +34,7 @@ export interface CreateCandidateEducationRequest {
 
 export interface UpdateCandidateEducationRequest {
   id: number;
+  candidateId: number;
   educationType: string;
   countryId: number;
   majorId: number;

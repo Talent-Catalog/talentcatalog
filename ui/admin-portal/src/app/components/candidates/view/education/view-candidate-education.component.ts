@@ -70,6 +70,8 @@ export class ViewCandidateEducationComponent implements OnInit, OnChanges {
       backdrop: 'static'
     });
 
+    editCandidateEducationModal.componentInstance.candidateId = this.candidate.id;
+
     editCandidateEducationModal.componentInstance.candidateEducation = candidateEducation;
 
     editCandidateEducationModal.result

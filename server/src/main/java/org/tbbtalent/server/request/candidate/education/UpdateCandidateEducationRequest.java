@@ -21,6 +21,7 @@ import org.tbbtalent.server.model.db.EducationType;
 public class UpdateCandidateEducationRequest {
 
     private Long id;
+    private Long candidateId;
     private EducationType educationType;
     private Long countryId;
     private Long majorId;
@@ -37,6 +38,10 @@ public class UpdateCandidateEducationRequest {
     public void setId(Long id) {
         this.id = id;
     }
+
+    public Long getCandidateId() { return candidateId; }
+
+    public void setCandidateId(Long candidateId) { this.candidateId = candidateId; }
 
     public EducationType getEducationType() {
         return educationType;
