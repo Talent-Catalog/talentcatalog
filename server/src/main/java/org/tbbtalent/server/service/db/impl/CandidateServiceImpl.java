@@ -43,6 +43,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientException;
+import org.tbbtalent.server.configuration.GoogleDriveConfig;
 import org.tbbtalent.server.exception.*;
 import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.model.es.CandidateEs;
@@ -101,6 +102,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final CandidateSavedListService candidateSavedListService;
     private final ElasticsearchOperations elasticsearchOperations;
     private final FileSystemService fileSystemService;
+    private final GoogleDriveConfig googleDriveConfig;
     private final SalesforceService salesforceService;
     private final CountryRepository countryRepository;
     private final CountryService countryService;
@@ -131,6 +133,7 @@ public class CandidateServiceImpl implements CandidateService {
         CandidateSavedListService candidateSavedListService,
         ElasticsearchOperations elasticsearchOperations,
         FileSystemService fileSystemService,
+        GoogleDriveConfig googleDriveConfig,
         SalesforceService salesforceService,
         CountryRepository countryRepository,
         CountryService countryService,
@@ -157,6 +160,7 @@ public class CandidateServiceImpl implements CandidateService {
         this.candidateEsRepository = candidateEsRepository;
         this.candidateSavedListService = candidateSavedListService;
         this.elasticsearchOperations = elasticsearchOperations;
+        this.googleDriveConfig = googleDriveConfig;
         this.countryRepository = countryRepository;
         this.countryService = countryService;
         this.educationLevelRepository = educationLevelRepository;
@@ -1894,10 +1898,14 @@ public class CandidateServiceImpl implements CandidateService {
         
         String candidateNumber = candidate.getCandidateNumber();
         
-        GoogleFileSystemFolder folder = fileSystemService.findAFolder(candidateNumber);
+        GoogleFileSystemFolder folder = fileSystemService.findAFolder(
+            googleDriveConfig.getCandidateDataDrive(), googleDriveConfig.getCandidateRootFolder(),
+            candidateNumber);
         
         if (folder == null) {
-            folder = fileSystemService.createFolder(candidateNumber);
+            folder = fileSystemService.createFolder(
+                googleDriveConfig.getCandidateDataDrive(), googleDriveConfig.getCandidateRootFolder(),
+                candidateNumber);
         }
         candidate.setFolderlink(folder.getUrl());
         save(candidate, false);

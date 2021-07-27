@@ -22,11 +22,12 @@ import java.io.OutputStream;
 
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 
 /**
- * Standard interface to any filesystem - tailored to Talent Catalog's use for
+ * Standard interface to Google filesystem - tailored to Talent Catalog's use for
  * storing candidate data - in particular uploaded files (eg CVs)
  *
  * @author John Cameron
@@ -42,7 +43,9 @@ public interface FileSystemService {
      * @throws IOException If problem accessing file system
      */
     @Nullable
-    GoogleFileSystemFolder findAFolder(String folderName) throws IOException;
+    GoogleFileSystemFolder findAFolder(
+        GoogleFileSystemDrive drive, GoogleFileSystemFolder parentFolder, String folderName) 
+        throws IOException;
 
     /**
      * Creates a folder with the given name.
@@ -53,7 +56,9 @@ public interface FileSystemService {
      * @throws IOException If there was a problem creating the folder
      */
     @NonNull
-    GoogleFileSystemFolder createFolder(String folderName) throws IOException;
+    GoogleFileSystemFolder createFolder(
+        GoogleFileSystemDrive drive, GoogleFileSystemFolder parentFolder, String folderName) 
+        throws IOException;
 
     /**
      * Deletes the given file
@@ -88,8 +93,8 @@ public interface FileSystemService {
      * @throws IOException If there was a problem uploading the file.
      */
     @NonNull
-    GoogleFileSystemFile uploadFile(
-            @Nullable GoogleFileSystemFolder parentFolder, String fileName, File file) 
+    GoogleFileSystemFile uploadFile(GoogleFileSystemDrive drive,
+        @Nullable GoogleFileSystemFolder parentFolder, String fileName, File file) 
             throws IOException;
     
 }

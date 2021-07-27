@@ -34,6 +34,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.tbbtalent.server.configuration.GoogleDriveConfig;
 import org.tbbtalent.server.exception.InvalidCredentialsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.InvalidSessionException;
@@ -67,6 +68,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
     private final CandidateService candidateService;
     private final CandidateAttachmentRepository candidateAttachmentRepository;
     private final FileSystemService fileSystemService;
+    private final GoogleDriveConfig googleDriveConfig;
     private final UserContext userContext;
     private final S3ResourceHelper s3ResourceHelper;
     private final TextExtractHelper textExtractHelper;
@@ -76,14 +78,17 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
     @Autowired
     public CandidateAttachmentsServiceImpl(CandidateRepository candidateRepository,
-                                           CandidateService candidateService,
-                                           CandidateAttachmentRepository candidateAttachmentRepository,
-                                           FileSystemService fileSystemService, S3ResourceHelper s3ResourceHelper,
-                                           UserContext userContext) {
+        CandidateService candidateService,
+        CandidateAttachmentRepository candidateAttachmentRepository,
+        FileSystemService fileSystemService,
+        GoogleDriveConfig googleDriveConfig,
+        S3ResourceHelper s3ResourceHelper,
+        UserContext userContext) {
         this.candidateRepository = candidateRepository;
         this.candidateService = candidateService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
         this.fileSystemService = fileSystemService;
+        this.googleDriveConfig = googleDriveConfig;
         this.s3ResourceHelper = s3ResourceHelper;
         this.userContext = userContext;
         this.textExtractHelper = new TextExtractHelper(candidateAttachmentRepository, s3ResourceHelper);
@@ -435,7 +440,8 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         
         //Upload the file to its folder, with the correct name (not the temp
         //file name).
-        GoogleFileSystemFile uploadedFile = fileSystemService.uploadFile(
+        GoogleFileSystemFile uploadedFile = 
+            fileSystemService.uploadFile(googleDriveConfig.getCandidateDataDrive(),
                 parentFolder, fileName, tempFile);
 
         final String fileType = getFileExtension((fileName));

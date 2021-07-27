@@ -22,40 +22,42 @@ import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import org.tbbtalent.server.configuration.GoogleDriveConfig;
 import org.tbbtalent.server.service.db.FileSystemService;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
+
 
 @Service
 public class GoogleFileSystemServiceImpl implements FileSystemService {
     private static final Logger log = LoggerFactory.getLogger(GoogleFileSystemServiceImpl.class);
     
     private static final String FOLDER_MIME_TYPE = "application/vnd.google-apps.folder";
-
-    @Value("${google.drive.candidateDataDriveId}")
-    private String candidateDataDriveId;
-
-    @Value("${google.drive.candidateRootFolderId}")
-    private String candidateRootFolderId;
     
     private final Drive googleDriveService;
+    private final GoogleDriveConfig googleDriveConfig;
 
     @Autowired
-    public GoogleFileSystemServiceImpl(Drive googleDriveService) {
-        this.googleDriveService = googleDriveService;
+    public GoogleFileSystemServiceImpl(GoogleDriveConfig googleDriveConfig)
+        throws GeneralSecurityException, IOException {
+        this.googleDriveConfig = googleDriveConfig;
+        this.googleDriveService = googleDriveConfig.getGoogleDriveService();
     }
 
     @Override
-    public GoogleFileSystemFolder findAFolder(String folderName) throws IOException {
+    public GoogleFileSystemFolder findAFolder(
+        GoogleFileSystemDrive drive, GoogleFileSystemFolder parentFolder, String folderName) 
+        throws IOException {
         //See https://developers.google.com/drive/api/v3/search-files
         // and https://developers.google.com/drive/api/v3/enable-shareddrives
         // Search for CandidateData drive.
@@ -63,9 +65,9 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
                 .setSupportsAllDrives(true)
                 .setIncludeItemsFromAllDrives(true)
                 .setCorpora("drive")
-                .setDriveId(candidateDataDriveId)
+                .setDriveId(drive.getId())
                 .setQ("name='" + folderName + "'" +
-                      " and '" + candidateRootFolderId + "' in parents" +        
+                      " and '" + parentFolder.getId() + "' in parents" +        
                       " and mimeType='" + FOLDER_MIME_TYPE + "'")
                 .setPageSize(10)
                 .setFields("nextPageToken, files(id,name,webViewLink)")
@@ -83,12 +85,14 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
 
     @Override
     public @NonNull
-    GoogleFileSystemFolder createFolder(String folderName) throws IOException {
+    GoogleFileSystemFolder createFolder(
+        GoogleFileSystemDrive drive, GoogleFileSystemFolder parentFolder, String folderName) 
+        throws IOException {
         //See https://developers.google.com/drive/api/v3/folder
         //and https://developers.google.com/drive/api/v3/enable-shareddrives 
         File fileMetadata = new File();
-        fileMetadata.setDriveId(candidateDataDriveId);
-        fileMetadata.setParents(Collections.singletonList(candidateRootFolderId));
+        fileMetadata.setDriveId(drive.getId());
+        fileMetadata.setParents(Collections.singletonList(parentFolder.getId()));
         fileMetadata.setName(folderName);
         fileMetadata.setMimeType(FOLDER_MIME_TYPE);
         File file = googleDriveService.files().create(fileMetadata)
@@ -136,7 +140,7 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
 
     @Override
     public @NonNull
-    GoogleFileSystemFile uploadFile(
+    GoogleFileSystemFile uploadFile(GoogleFileSystemDrive drive,
             @Nullable GoogleFileSystemFolder parentFolder, 
             String fileName, java.io.File file) 
             throws IOException {
@@ -146,7 +150,7 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
         //Set parent to given folder, or drive (root) if no folder given
         List<String> parent;
         if (parentFolder == null) {
-            parent = Collections.singletonList(candidateDataDriveId);
+            parent = Collections.singletonList(drive.getId());
         } else {
             parent = Collections.singletonList(parentFolder.getId());
         }

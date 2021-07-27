@@ -48,6 +48,7 @@ dependencies {
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
     
     if (!isDev) {
         implementation(project(':ui:admin-portal'))

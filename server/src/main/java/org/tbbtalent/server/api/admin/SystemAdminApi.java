@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClientException;
+import org.tbbtalent.server.configuration.GoogleDriveConfig;
 import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.model.sf.Opportunity;
@@ -80,8 +81,8 @@ public class SystemAdminApi {
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     private final Map<Integer, Integer> countryForGeneralCountry;
-
-    private Drive googleDriveService;
+    
+    private final GoogleDriveConfig googleDriveConfig;
 
     @Value("${spring.datasource.url}")
     private String targetJdbcUrl;
@@ -100,24 +101,24 @@ public class SystemAdminApi {
     
     @Autowired
     public SystemAdminApi(
-            DataSharingService dataSharingService,
-            UserContext userContext,
-            CandidateAttachmentRepository candidateAttachmentRepository,
-            CandidateNoteRepository candidateNoteRepository,
-            CandidateRepository candidateRepository,
-            Drive googleDriveService,
-            PopulateElasticsearchService populateElasticsearchService,
-            SalesforceService salesforceService,
-            S3ResourceHelper s3ResourceHelper) {
+        DataSharingService dataSharingService,
+        UserContext userContext,
+        CandidateAttachmentRepository candidateAttachmentRepository,
+        CandidateNoteRepository candidateNoteRepository,
+        CandidateRepository candidateRepository,
+        PopulateElasticsearchService populateElasticsearchService,
+        SalesforceService salesforceService,
+        S3ResourceHelper s3ResourceHelper,
+        GoogleDriveConfig googleDriveConfig) {
         this.dataSharingService = dataSharingService;
         this.userContext = userContext;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
         this.candidateNoteRepository = candidateNoteRepository;
-        this.googleDriveService = googleDriveService;
         this.candidateRepository = candidateRepository;
         this.populateElasticsearchService = populateElasticsearchService;
         this.salesforceService = salesforceService;
         this.s3ResourceHelper = s3ResourceHelper;
+        this.googleDriveConfig = googleDriveConfig;
         countryForGeneralCountry = getExtraCountryMappings();
     }
 
@@ -242,8 +243,8 @@ public class SystemAdminApi {
         return "done";
     }
 
-    // todo Remove after running. One off method. Login as System Admin user.
-    @GetMapping("update-statuses")
+    // Removed after running. One off method. Login as System Admin user.
+    //@GetMapping("update-statuses")
     public String updateStatusesIneligible() {
         List<CandidateStatus> statuses = new ArrayList<>(EnumSet.of(CandidateStatus.pending, CandidateStatus.incomplete));
         List<Candidate> candidates = candidateRepository.findByStatuses(statuses);
@@ -282,13 +283,13 @@ public class SystemAdminApi {
     }
 
     @GetMapping("google")
-    public String migrateGoogleDriveFolders() throws IOException {
+    public String migrateGoogleDriveFolders() throws IOException, GeneralSecurityException {
         log.info("Starting google folder re-linking. About to get folders.");
         String nextPageToken = null;
         int count = 0;
         do {
             // Getting folders
-            FileList result = googleDriveService.files().list()
+            FileList result = googleDriveConfig.getGoogleDriveService().files().list()
                     .setQ("'" + candidateRootFolderId + "' in parents" +
                             " and mimeType='application/vnd.google-apps.folder'")
                     .setSupportsAllDrives(true)

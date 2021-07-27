@@ -23,8 +23,8 @@ import lombok.ToString;
 
 
 /**
- * Base class for representing folders or files on a remote file system where files and folders 
- * can be identified by a url.
+ * Base class for representing drives, folders or files on a remote file system where 
+ * all can be identified by a url.
  *
  * @author John Cameron
  */
