@@ -28,7 +28,7 @@ import org.tbbtalent.server.repository.db.CandidateCertificationRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.request.candidate.certification.CreateCandidateCertificationRequest;
 import org.tbbtalent.server.request.candidate.certification.UpdateCandidateCertificationRequest;
-import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateCertificationService;
 import org.tbbtalent.server.service.db.CandidateService;
 
@@ -42,17 +42,17 @@ public class CandidateCertificationServiceImpl implements CandidateCertification
     private final CandidateCertificationRepository candidateCertificationRepository;
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
-    private final UserContext userContext;
+    private final AuthService authService;
 
     @Autowired
     public CandidateCertificationServiceImpl(CandidateCertificationRepository candidateCertificationRepository,
                                              CandidateRepository candidateRepository,
                                              CandidateService candidateService,
-                                             UserContext userContext) {
+                                             AuthService authService) {
         this.candidateCertificationRepository = candidateCertificationRepository;
         this.candidateRepository = candidateRepository;
         this.candidateService = candidateService;
-        this.userContext = userContext;
+        this.authService = authService;
     }
 
     @Override
@@ -62,7 +62,7 @@ public class CandidateCertificationServiceImpl implements CandidateCertification
 
     @Override
     public CandidateCertification createCandidateCertification(CreateCandidateCertificationRequest request) {
-        User loggedInUser = userContext.getLoggedInUser()
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Candidate candidate = candidateService.getCandidateFromRequest(request.getCandidateId());
@@ -86,7 +86,7 @@ public class CandidateCertificationServiceImpl implements CandidateCertification
 
     @Override
     public CandidateCertification updateCandidateCertification(UpdateCandidateCertificationRequest request) {
-        User loggedInUser = userContext.getLoggedInUser()
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         CandidateCertification candidateCertification = this.candidateCertificationRepository.findByIdLoadCandidate(request.getId())
@@ -110,7 +110,7 @@ public class CandidateCertificationServiceImpl implements CandidateCertification
 
     @Override
     public void deleteCandidateCertification(Long id) {
-        User loggedInUser = userContext.getLoggedInUser()
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         CandidateCertification candidateCertification = candidateCertificationRepository.findByIdLoadCandidate(id)

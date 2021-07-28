@@ -19,7 +19,7 @@ package org.tbbtalent.server.api.admin;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.User;
-import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
 import javax.validation.constraints.NotNull;
@@ -31,14 +31,14 @@ import javax.validation.constraints.NotNull;
  * @author John Cameron
  */
 public class CandidateBuilderSelector {
-    private final UserContext userContext;
+    private final AuthService authService;
 
-    public CandidateBuilderSelector(UserContext userContext) {
-        this.userContext = userContext;
+    public CandidateBuilderSelector(AuthService authService) {
+        this.authService = authService;
     }
 
     private @Nullable Role getRole() {
-        User user = userContext.getLoggedInUser().orElse(null);
+        User user = authService.getLoggedInUser().orElse(null);
         return user == null ? null : user.getRole();
     }
 

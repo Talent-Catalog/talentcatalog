@@ -45,7 +45,6 @@ export class EditCandidateAttachmentComponent implements OnInit {
     this.form = this.fb.group({
       id: [this.attachment.id],
       name: [this.attachment.name, Validators.required],
-      cv: [this.attachment.cv]
     });
     if (this.attachment.type === 'link') {
       this.form.addControl('location', new FormControl(this.attachment.location, [Validators.required]));
@@ -56,7 +55,7 @@ export class EditCandidateAttachmentComponent implements OnInit {
     this.loading = true;
     const request: UpdateCandidateAttachmentRequest = {
       name: this.form.value.name,
-      cv: this.form.value.cv
+      location: this.form.value?.location
     };
     this.candidateAttachmentService.updateAttachment(this.form.value.id, request).subscribe(
       (response) => {
