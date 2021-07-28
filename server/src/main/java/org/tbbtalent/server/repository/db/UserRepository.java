@@ -70,11 +70,4 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
         + "and u.role != 'user' " 
         + "and u.status != 'deleted'")
     List<User> searchStaffNotUsingMfa();
-
-    @Query("select distinct u from User u "
-            + " where lower(u.username) = lower(:username) "
-            + " and u.role = :role "
-            + " and u.status != 'deleted' ")
-    User findByCandidateId(@Param("username") String username,
-                               @Param("role") Role role);
 }

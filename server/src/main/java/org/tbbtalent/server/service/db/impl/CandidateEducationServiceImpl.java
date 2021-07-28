@@ -17,7 +17,6 @@
 package org.tbbtalent.server.service.db.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
@@ -108,7 +107,6 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
     }
 
     @Override
-    @PreAuthorize("hasPermission(#request.getCandidateId() ,'write')")
     public CandidateEducation updateCandidateEducation(UpdateCandidateEducationRequest request) {
         User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
@@ -147,7 +145,6 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
     }
 
     @Override
-    @PreAuthorize("hasPermission(#request.getCandidateId(), 'write')")
     public void deleteCandidateEducation(Long id) throws UnauthorisedActionException {
         User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
