@@ -17,12 +17,6 @@
 package org.tbbtalent.server.service.db.audit;
 
 
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -35,7 +29,13 @@ import org.tbbtalent.server.model.db.AbstractDomainObject;
 import org.tbbtalent.server.model.db.AuditLog;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.repository.db.AuditLogRepository;
-import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.security.AuthService;
+
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Aspect
 @Component
@@ -44,13 +44,13 @@ public class Auditor {
     private static final Logger log = LoggerFactory.getLogger(Auditor.class);
 
     private final AuditLogRepository auditLogRepository;
-    private final UserContext userContext;
+    private final AuthService authService;
     public static final Long ANONYMOUS_USER_ID = -999L;
 
 
-    public Auditor(AuditLogRepository auditLogRepository, UserContext userContext) {
+    public Auditor(AuditLogRepository auditLogRepository, AuthService authService) {
         this.auditLogRepository = auditLogRepository;
-        this.userContext = userContext;
+        this.authService = authService;
     }
 
     @AfterReturning(
@@ -87,7 +87,7 @@ public class Auditor {
             }
             
             
-            User user = userContext.getLoggedInUser().orElse(null);
+            User user = authService.getLoggedInUser().orElse(null);
             String auditName = "Anonymous";
             Long userId = ANONYMOUS_USER_ID;
             if (user != null)

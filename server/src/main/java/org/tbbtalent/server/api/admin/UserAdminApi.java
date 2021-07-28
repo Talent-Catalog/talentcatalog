@@ -24,7 +24,7 @@ import org.tbbtalent.server.exception.UsernameTakenException;
 import org.tbbtalent.server.model.db.Role;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.user.*;
-import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.UserService;
 import org.tbbtalent.server.util.dto.DtoBuilder;
 
@@ -36,12 +36,12 @@ import java.util.Map;
 public class UserAdminApi {
 
     private final UserService userService;
-    private final UserContext userContext;
+    private final AuthService authService;
 
     @Autowired
-    public UserAdminApi(UserService userService, UserContext userContext) {
+    public UserAdminApi(UserService userService, AuthService authService) {
         this.userService = userService;
-        this.userContext = userContext;
+        this.authService = authService;
     }
 
     @PostMapping("search")
@@ -53,7 +53,7 @@ public class UserAdminApi {
     @GetMapping("{id}")
     public Map<String, Object> get(@PathVariable("id") long id) {
         User user = this.userService.getUser(id);
-        User loggedInUser = userContext.getLoggedInUser()
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         if (loggedInUser.getRole() == Role.admin) {

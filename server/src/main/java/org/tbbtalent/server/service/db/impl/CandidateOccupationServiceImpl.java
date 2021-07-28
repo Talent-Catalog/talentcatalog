@@ -33,7 +33,7 @@ import org.tbbtalent.server.request.candidate.occupation.CreateCandidateOccupati
 import org.tbbtalent.server.request.candidate.occupation.UpdateCandidateOccupationRequest;
 import org.tbbtalent.server.request.candidate.occupation.UpdateCandidateOccupationsRequest;
 import org.tbbtalent.server.request.candidate.occupation.VerifyCandidateOccupationRequest;
-import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateNoteService;
 import org.tbbtalent.server.service.db.CandidateOccupationService;
 import org.tbbtalent.server.service.db.CandidateService;
@@ -56,7 +56,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
     private final CandidateNoteService candidateNoteService;
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
-    private final UserContext userContext;
+    private final AuthService authService;
     private final EmailHelper emailHelper;
 
     @Autowired
@@ -66,7 +66,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
                                           CandidateRepository candidateRepository,
                                           CandidateService candidateService,
                                           CandidateNoteService candidateNoteService,
-                                          UserContext userContext,
+                                          AuthService authService,
                                           EmailHelper emailHelper) {
         this.candidateOccupationRepository = candidateOccupationRepository;
         this.candidateJobExperienceRepository = candidateJobExperienceRepository;
@@ -74,14 +74,14 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         this.candidateService = candidateService;
         this.occupationRepository = occupationRepository;
         this.candidateNoteService = candidateNoteService;
-        this.userContext = userContext;
+        this.authService = authService;
         this.emailHelper = emailHelper;
     }
 
 
     @Override
     public CandidateOccupation createCandidateOccupation(CreateCandidateOccupationRequest request) {
-        User user = userContext.getLoggedInUser()
+        User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         
         // Load the industry from the database - throw an exception if not found
@@ -104,7 +104,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
 //            candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(request.getCandidateId(),
 //                    occupation.getName() +" verification status set to "+request.isVerified(), request.getComment()));
         } else {
-            candidate = userContext.getLoggedInCandidate();
+            candidate = authService.getLoggedInCandidate();
             if (candidate == null) {
                 throw new InvalidSessionException("Not logged in");
             }
@@ -131,7 +131,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
 
     @Override
     public void deleteCandidateOccupation(Long id) {
-        User user = userContext.getLoggedInUser()
+        User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         CandidateOccupation candidateOccupation = candidateOccupationRepository.findByIdLoadCandidate(id)
@@ -144,7 +144,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
             candidate = candidateRepository.findById(candidateOccupation.getCandidate().getId())
                     .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateOccupation.getCandidate().getId()));
         } else {
-            candidate = userContext.getLoggedInCandidate();
+            candidate = authService.getLoggedInCandidate();
             if (candidate == null) {
                 throw new InvalidSessionException("Not logged in");
             }
@@ -162,7 +162,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
 
     @Override
     public List<CandidateOccupation> listMyOccupations() {
-        Long candidateId = userContext.getLoggedInCandidateId();
+        Long candidateId = authService.getLoggedInCandidateId();
         return candidateOccupationRepository.findByCandidateIdLoadOccupation(candidateId);
 
     }
@@ -186,7 +186,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
 
     @Override
     public List<CandidateOccupation> updateCandidateOccupations(UpdateCandidateOccupationsRequest request) {
-        Candidate candidate = userContext.getLoggedInCandidate();
+        Candidate candidate = authService.getLoggedInCandidate();
         if (candidate == null) {
             throw new InvalidSessionException("Not logged in");
         }
@@ -278,7 +278,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         candidateOccupation.setYearsExperience(request.getYearsExperience());
         candidateOccupation.setVerified(request.isVerified());
 
-        candidateOccupation.setAuditFields(userContext.getLoggedInUser().orElse(null));
+        candidateOccupation.setAuditFields(authService.getLoggedInUser().orElse(null));
         // removed as no longer use verification
 //        candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(candidateOccupation.getCandidate().getId(),
 //                candidateOccupation.getOccupation().getName() +" verification status set to "+request.isVerified(), request.getComment()));

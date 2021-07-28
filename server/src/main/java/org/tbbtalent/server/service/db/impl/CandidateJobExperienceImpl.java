@@ -30,7 +30,7 @@ import org.tbbtalent.server.repository.db.CountryRepository;
 import org.tbbtalent.server.request.work.experience.CreateJobExperienceRequest;
 import org.tbbtalent.server.request.work.experience.SearchJobExperienceRequest;
 import org.tbbtalent.server.request.work.experience.UpdateJobExperienceRequest;
-import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateJobExperienceService;
 import org.tbbtalent.server.service.db.CandidateService;
 
@@ -42,7 +42,7 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
     private final CandidateOccupationRepository candidateOccupationRepository;
-    private final UserContext userContext;
+    private final AuthService authService;
 
     @Autowired
     public CandidateJobExperienceImpl(CandidateJobExperienceRepository candidateJobExperienceRepository,
@@ -50,13 +50,13 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
                                       CountryRepository countryRepository,
                                       CandidateService candidateService,
                                       CandidateRepository candidateRepository,
-                                      UserContext userContext) {
+                                      AuthService authService) {
         this.candidateJobExperienceRepository = candidateJobExperienceRepository;
         this.countryRepository = countryRepository;
         this.candidateRepository = candidateRepository;
         this.candidateService = candidateService;
         this.candidateOccupationRepository = candidateOccupationRepository;
-        this.userContext = userContext;
+        this.authService = authService;
     }
 
     @Override
@@ -76,7 +76,7 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
             candidate = candidateRepository.findById(request.getCandidateId())
                     .orElseThrow(() -> new NoSuchObjectException(Candidate.class, request.getCandidateId()));
         } else {
-            candidate = userContext.getLoggedInCandidate();
+            candidate = authService.getLoggedInCandidate();
             if (candidate == null) {
                 throw new InvalidSessionException("Not logged in");
             }
@@ -113,7 +113,7 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
 
     @Override
     public CandidateJobExperience updateCandidateJobExperience(UpdateJobExperienceRequest request) {
-        Candidate candidate = userContext.getLoggedInCandidate();
+        Candidate candidate = authService.getLoggedInCandidate();
         if (candidate == null) {
             throw new InvalidSessionException("Not logged in");
         }
@@ -163,7 +163,7 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
 
     @Override
     public void deleteCandidateJobExperience(Long id) {
-        User user = userContext.getLoggedInUser()
+        User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         CandidateJobExperience candidateJobExperience = candidateJobExperienceRepository.findByIdLoadCandidate(id)
@@ -176,7 +176,7 @@ public class CandidateJobExperienceImpl implements CandidateJobExperienceService
             candidate = candidateRepository.findById(candidateJobExperience.getCandidate().getId())
                     .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateJobExperience.getCandidate().getId()));
         } else {
-            candidate = userContext.getLoggedInCandidate();
+            candidate = authService.getLoggedInCandidate();
             if (candidate == null) {
                 throw new InvalidSessionException("Not logged in");
             }

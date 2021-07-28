@@ -28,7 +28,7 @@ import org.tbbtalent.server.repository.db.LanguageRepository;
 import org.tbbtalent.server.request.candidate.language.CreateCandidateLanguageRequest;
 import org.tbbtalent.server.request.candidate.language.UpdateCandidateLanguageRequest;
 import org.tbbtalent.server.request.candidate.language.UpdateCandidateLanguagesRequest;
-import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateLanguageService;
 import org.tbbtalent.server.service.db.CandidateService;
 
@@ -48,7 +48,7 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
     private final CandidateService candidateService;
     private final LanguageRepository languageRepository;
     private final LanguageLevelRepository languageLevelRepository;
-    private final UserContext userContext;
+    private final AuthService authService;
 
     @Autowired
     public CandidateLanguageServiceImpl(CandidateLanguageRepository candidateLanguageRepository,
@@ -56,13 +56,13 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
                                         CandidateRepository candidateRepository,
                                         CandidateService candidateService,
                                         LanguageLevelRepository languageLevelRepository,
-                                        UserContext userContext) {
+                                        AuthService authService) {
         this.candidateLanguageRepository = candidateLanguageRepository;
         this.languageRepository = languageRepository;
         this.candidateRepository = candidateRepository;
         this.candidateService = candidateService;
         this.languageLevelRepository = languageLevelRepository;
-        this.userContext = userContext;
+        this.authService = authService;
     }
 
     /**
@@ -72,7 +72,7 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
      */
     @Override
     public CandidateLanguage createCandidateLanguage(CreateCandidateLanguageRequest request) {
-        User loggedInUser = userContext.getLoggedInUser()
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Candidate candidate = candidateService.getCandidateFromRequest(request.getCandidateId());
@@ -109,7 +109,7 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
      */
     @Override
     public CandidateLanguage updateCandidateLanguage(UpdateCandidateLanguageRequest request) {
-        User loggedInUser = userContext.getLoggedInUser()
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         CandidateLanguage candidateLanguage = candidateLanguageRepository.findById(request.getId())
@@ -146,7 +146,7 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
      */
     @Override
     public void deleteCandidateLanguage(Long id) {
-        User loggedInUser = userContext.getLoggedInUser()
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         CandidateLanguage candidateLanguage = candidateLanguageRepository.findByIdLoadCandidate(id)
@@ -170,7 +170,7 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
      */
     @Override
     public List<CandidateLanguage> updateCandidateLanguages(UpdateCandidateLanguagesRequest request) {
-        Candidate candidate = userContext.getLoggedInCandidate();
+        Candidate candidate = authService.getLoggedInCandidate();
         List<CandidateLanguage> updatedLanguages = new ArrayList<>();
         List<Long> updatedLanguageIds = new ArrayList<>();
 
