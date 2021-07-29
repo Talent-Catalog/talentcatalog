@@ -54,8 +54,8 @@ import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.candidate.*;
 import org.tbbtalent.server.request.note.CreateCandidateNoteRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.security.PasswordHelper;
-import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.*;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.service.db.util.PdfHelper;
@@ -71,6 +71,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -108,7 +110,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final CountryService countryService;
     private final EducationLevelRepository educationLevelRepository;
     private final PasswordHelper passwordHelper;
-    private final UserContext userContext;
+    private final AuthService authService;
     private final SavedSearchService savedSearchService;
     private final CandidateNoteService candidateNoteService;
     private final CandidateCitizenshipService candidateCitizenshipService;
@@ -139,7 +141,7 @@ public class CandidateServiceImpl implements CandidateService {
         CountryService countryService,
         EducationLevelRepository educationLevelRepository,
         PasswordHelper passwordHelper,
-        UserContext userContext,
+        AuthService authService,
         SavedSearchService savedSearchService,
         CandidateNoteService candidateNoteService,
         CandidateCitizenshipService candidateCitizenshipService,
@@ -165,7 +167,7 @@ public class CandidateServiceImpl implements CandidateService {
         this.countryService = countryService;
         this.educationLevelRepository = educationLevelRepository;
         this.passwordHelper = passwordHelper;
-        this.userContext = userContext;
+        this.authService = authService;
         this.savedSearchService = savedSearchService;
         this.candidateNoteService = candidateNoteService;
         this.candidateCitizenshipService = candidateCitizenshipService;
@@ -331,7 +333,7 @@ public class CandidateServiceImpl implements CandidateService {
      * @param candidate Entity to save
      */
     private void saveIt(Candidate candidate) {
-        candidate.setAuditFields(userContext.getLoggedInUser().orElse(null));
+        candidate.setAuditFields(authService.getLoggedInUser().orElse(null));
         save(candidate, true);
     }
 
@@ -432,7 +434,7 @@ public class CandidateServiceImpl implements CandidateService {
             //Check for selection list to set the selected attribute on returned
             // candidates.
             SavedList selectionList = null;
-            User user = userContext.getLoggedInUser().orElse(null);
+            User user = authService.getLoggedInUser().orElse(null);
             if (user != null) {
                 selectionList = savedSearchService
                         .getSelectionList(savedSearchId, user.getId());
@@ -453,7 +455,7 @@ public class CandidateServiceImpl implements CandidateService {
     private Specification<Candidate> computeQuery(SearchCandidateRequest request) {
         //There may be no logged in user if the search is called by the
         //overnight Watcher process.
-        User user = userContext.getLoggedInUser().orElse(null);
+        User user = authService.getLoggedInUser().orElse(null);
 
         //This list is initialized with the main saved search id, but can be
         //added to by addQuery below when the search is built on other
@@ -702,7 +704,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Page<Candidate> searchCandidates(SearchCandidateRequest request) {
         Page<Candidate> candidates;
-        User user = userContext.getLoggedInUser().orElse(null);
+        User user = authService.getLoggedInUser().orElse(null);
         if (user == null) {
             candidates = doSearchCandidates(request);
         } else {
@@ -735,7 +737,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Page<Candidate> searchCandidates(CandidateEmailSearchRequest request) {
         String s = request.getCandidateEmail();
-        User loggedInUser = userContext.getLoggedInUser()
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.sourcepartneradmin) {
             Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
@@ -754,7 +756,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Page<Candidate> searchCandidates(CandidateNumberOrNameSearchRequest request) {
         String s = request.getCandidateNumberOrName();
-        User loggedInUser = userContext.getLoggedInUser()
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         boolean searchForNumber = s.length() > 0 && Character.isDigit(s.charAt(0));
@@ -782,7 +784,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Page<Candidate> searchCandidates(CandidatePhoneSearchRequest request) {
         String s = request.getCandidatePhone();
-        User loggedInUser = userContext.getLoggedInUser()
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         if (loggedInUser.getRole() == Role.admin || loggedInUser.getRole() == Role.sourcepartneradmin){
@@ -803,7 +805,7 @@ public class CandidateServiceImpl implements CandidateService {
         if (savedSearchIds.contains(searchJoinRequest.getSavedSearchId())) {
             throw new CircularReferencedException(searchJoinRequest.getSavedSearchId());
         }
-        User user = userContext.getLoggedInUser().orElse(null);
+        User user = authService.getLoggedInUser().orElse(null);
         //add id to list as do not want circular references
         savedSearchIds.add(searchJoinRequest.getSavedSearchId());
         //load saved search
@@ -900,7 +902,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     @Transactional
     public void updateCandidateStatus(UpdateCandidateStatusRequest request) {
-        User loggedInUser = userContext.getLoggedInUser()
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
@@ -956,7 +958,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateCandidateLinks(long id, UpdateCandidateLinksRequest request) {
-        User loggedInUser = userContext.getLoggedInUser()
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
@@ -972,7 +974,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateCandidate(long id, UpdateCandidateRequest request) {
-        User loggedInUser = userContext.getLoggedInUser()
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
@@ -1013,7 +1015,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateCandidateAdditionalInfo(long id, UpdateCandidateAdditionalInfoRequest request) {
-        User loggedInUser = userContext.getLoggedInUser()
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
@@ -1026,7 +1028,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateCandidateSurvey(long id, UpdateCandidateSurveyRequest request) {
-        User loggedInUser = userContext.getLoggedInUser()
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
@@ -1109,7 +1111,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateContact(UpdateCandidateContactRequest request) {
-        User user = userContext.getLoggedInUser()
+        User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         // Check update request for a duplicate email or phone number
@@ -1136,7 +1138,7 @@ public class CandidateServiceImpl implements CandidateService {
         Country nationality = countryRepository.findById(request.getNationality())
                 .orElseThrow(() -> new NoSuchObjectException(Country.class, request.getNationality()));
 
-        User user = userContext.getLoggedInUser()
+        User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         user.setFirstName(request.getFirstName());
@@ -1221,7 +1223,14 @@ public class CandidateServiceImpl implements CandidateService {
         Candidate candidate = getLoggedInCandidate()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         candidate.setAdditionalInfo(request.getAdditionalInfo());
-        candidate.setLinkedInLink(request.getLinkedInLink());
+        String linkedInRegex = "^http[s]?:/\\/www\\.linkedin\\.com\\/in\\/[A-z0-9_-]+\\/?$";
+        Pattern p = Pattern.compile(linkedInRegex);
+        Matcher m = p.matcher(request.getLinkedInLink());
+        if (m.find()) {
+            candidate.setLinkedInLink(request.getLinkedInLink());
+        } else {
+            throw new InvalidRequestException("This is not a valid LinkedIn link.");
+        }
         candidate.setAuditFields(candidate.getUser());
         return save(candidate, true);
     }
@@ -1254,7 +1263,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Optional<Candidate> getLoggedInCandidateLoadCandidateOccupations() {
-        Long candidateId = userContext.getLoggedInCandidateId();
+        Long candidateId = authService.getLoggedInCandidateId();
         if (candidateId == null) {
             return Optional.empty();
         } else {
@@ -1266,7 +1275,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Optional<Candidate> getLoggedInCandidateLoadCertifications() {
-        Long candidateId = userContext.getLoggedInCandidateId();
+        Long candidateId = authService.getLoggedInCandidateId();
         if (candidateId == null) {
             return Optional.empty();
         } else {
@@ -1278,7 +1287,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Optional<Candidate> getLoggedInCandidateLoadCandidateLanguages() {
-        Long candidateId = userContext.getLoggedInCandidateId();
+        Long candidateId = authService.getLoggedInCandidateId();
         if (candidateId == null) {
             return Optional.empty();
         } else {
@@ -1290,7 +1299,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Optional<Candidate> getLoggedInCandidate() {
-        User user = userContext.getLoggedInUser().orElse(null);
+        User user = authService.getLoggedInUser().orElse(null);
         if (user == null) {
             return Optional.empty();
         }
@@ -1300,7 +1309,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate findByCandidateNumber(String candidateNumber) {
-        User loggedInUser = userContext.getLoggedInUser()
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
@@ -1600,7 +1609,7 @@ public class CandidateServiceImpl implements CandidateService {
      */
     @Override
     public void setCandidateContext(long savedSearchId, Iterable<Candidate> candidates) {
-        User user = userContext.getLoggedInUser().orElse(null);
+        User user = authService.getLoggedInUser().orElse(null);
         SavedList selectionList = null;
         if (user != null) {
             selectionList = savedSearchService
@@ -1620,7 +1629,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     private String[] getExportTitles() {
-        User loggedInUser = userContext.getLoggedInUser()
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Role role = loggedInUser.getRole();
@@ -1643,7 +1652,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     private String[] getExportCandidateStrings(Candidate candidate) {
-        User loggedInUser = userContext.getLoggedInUser()
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Role role = loggedInUser.getRole();
@@ -2084,14 +2093,15 @@ public class CandidateServiceImpl implements CandidateService {
      */
     @Override
     public Candidate getCandidateFromRequest(@Nullable Long requestCandidateId) {
+        User loggedInUser = authService.getLoggedInUser().orElse(null);
         Candidate candidate;
-        if (requestCandidateId != null) {
+        if (requestCandidateId != null && loggedInUser.getRole() != Role.user) {
             // Coming from Admin Portal
             candidate = candidateRepository.findById(requestCandidateId)
                     .orElseThrow(() -> new NoSuchObjectException(Candidate.class, requestCandidateId));
         } else {
             // Coming from Candidate Portal
-            candidate = userContext.getLoggedInCandidate();
+            candidate = authService.getLoggedInCandidate();
             if (candidate == null) {
                 throw new InvalidSessionException("Not logged in");
             }

@@ -38,7 +38,7 @@ import org.tbbtalent.server.repository.db.CountryRepository;
 import org.tbbtalent.server.repository.db.CountrySpecification;
 import org.tbbtalent.server.request.country.SearchCountryRequest;
 import org.tbbtalent.server.request.country.UpdateCountryRequest;
-import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CountryService;
 import org.tbbtalent.server.service.db.TranslationService;
 
@@ -60,17 +60,17 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
     private final CandidateRepository candidateRepository;
     private final CountryRepository countryRepository;
     private final TranslationService translationService;
-    private final UserContext userContext;
+    private final AuthService authService;
 
     @Autowired
     public CountryServiceImpl(CandidateRepository candidateRepository,
                               CountryRepository countryRepository,
                               TranslationService translationService,
-                              UserContext userContext) {
+                              AuthService authService) {
         this.candidateRepository = candidateRepository;
         this.countryRepository = countryRepository;
         this.translationService = translationService;
-        this.userContext = userContext;
+        this.authService = authService;
     }
 
     @Override
@@ -104,7 +104,7 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
 
     @Override
     public List<Country> listCountries(Boolean restricted) {
-        User user = userContext.getLoggedInUser().orElse(null);
+        User user = authService.getLoggedInUser().orElse(null);
         List<Country> countries;
 
         if (restricted) {

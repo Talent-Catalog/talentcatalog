@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.exception.InvalidSessionException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.exception.UnauthorisedActionException;
 import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.repository.db.CandidateEducationRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
@@ -27,7 +28,7 @@ import org.tbbtalent.server.repository.db.CountryRepository;
 import org.tbbtalent.server.repository.db.EducationMajorRepository;
 import org.tbbtalent.server.request.candidate.education.CreateCandidateEducationRequest;
 import org.tbbtalent.server.request.candidate.education.UpdateCandidateEducationRequest;
-import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateEducationService;
 import org.tbbtalent.server.service.db.CandidateService;
 
@@ -43,7 +44,7 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
     private final EducationMajorRepository educationMajorRepository;
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
-    private final UserContext userContext;
+    private final AuthService authService;
 
     @Autowired
     public CandidateEducationServiceImpl(CandidateEducationRepository candidateEducationRepository,
@@ -51,13 +52,13 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
                                          EducationMajorRepository educationMajorRepository,
                                          CandidateRepository candidateRepository,
                                          CandidateService candidateService,
-                                         UserContext userContext) {
+                                         AuthService authService) {
         this.candidateEducationRepository = candidateEducationRepository;
         this.countryRepository = countryRepository;
         this.educationMajorRepository = educationMajorRepository;
         this.candidateRepository = candidateRepository;
         this.candidateService = candidateService;
-        this.userContext = userContext;
+        this.authService = authService;
     }
 
     @Override
@@ -67,7 +68,7 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
 
     @Override
     public CandidateEducation createCandidateEducation(CreateCandidateEducationRequest request) {
-        User loggedInUser = userContext.getLoggedInUser()
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Candidate candidate = candidateService.getCandidateFromRequest(request.getCandidateId());
@@ -107,7 +108,7 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
 
     @Override
     public CandidateEducation updateCandidateEducation(UpdateCandidateEducationRequest request) {
-        User loggedInUser = userContext.getLoggedInUser()
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         // Get ENUM for education type
@@ -144,17 +145,21 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
     }
 
     @Override
-    public void deleteCandidateEducation(Long id) {
-        User loggedInUser = userContext.getLoggedInUser()
+    public void deleteCandidateEducation(Long id) throws UnauthorisedActionException {
+        User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         CandidateEducation candidateEducation = candidateEducationRepository.findByIdLoadCandidate(id)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateEducation.class, id));
         Candidate candidate = candidateEducation.getCandidate();
-        candidateEducationRepository.delete(candidateEducation);
 
-        setAuditFieldsFromUser(candidate, loggedInUser);
-        candidateService.save(candidate, true);
+        if (authService.authoriseLoggedInUser(candidate)) {
+            candidateEducationRepository.delete(candidateEducation);
+            setAuditFieldsFromUser(candidate, loggedInUser);
+            candidateService.save(candidate, true);
+        } else {
+            throw new UnauthorisedActionException("delete");
+        }
     }
 
 }

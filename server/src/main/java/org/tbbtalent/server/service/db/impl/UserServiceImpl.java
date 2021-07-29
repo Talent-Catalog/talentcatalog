@@ -40,9 +40,9 @@ import org.tbbtalent.server.repository.db.*;
 import org.tbbtalent.server.request.LoginRequest;
 import org.tbbtalent.server.request.user.*;
 import org.tbbtalent.server.response.JwtAuthenticationResponse;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.security.JwtTokenProvider;
 import org.tbbtalent.server.security.PasswordHelper;
-import org.tbbtalent.server.security.UserContext;
 import org.tbbtalent.server.service.db.UserService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.util.qr.EncodedQrImage;
@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordHelper passwordHelper;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider tokenProvider;
-    private final UserContext userContext;
+    private final AuthService authService;
     private final EmailHelper emailHelper;
     private final SavedSearchRepository savedSearchRepository;
 
@@ -95,7 +95,7 @@ public class UserServiceImpl implements UserService {
                            PasswordHelper passwordHelper,
                            AuthenticationManager authenticationManager,
                            JwtTokenProvider tokenProvider,
-                           UserContext userContext,
+                           AuthService authService,
                            EmailHelper emailHelper) {
         this.userRepository = userRepository;
         this.candidateRepository = candidateRepository;
@@ -104,7 +104,7 @@ public class UserServiceImpl implements UserService {
         this.passwordHelper = passwordHelper;
         this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;
-        this.userContext = userContext;
+        this.authService = authService;
         this.emailHelper = emailHelper;
     }
 
@@ -415,7 +415,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public User getLoggedInUser() {
-        User user = userContext.getLoggedInUser().orElse(null);
+        User user = authService.getLoggedInUser().orElse(null);
         if (user == null) {
             throw new InvalidSessionException("Can not find an active session for a user with this token");
         }
@@ -424,7 +424,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getMyUser() {
-        return userContext.getLoggedInUser().orElse(null);
+        return authService.getLoggedInUser().orElse(null);
     }
 
     /**
@@ -440,7 +440,7 @@ public class UserServiceImpl implements UserService {
         }
 
         /* Check that the old passwords match */
-        User user = userContext.getLoggedInUser()
+        User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         // TODO extend PasswordEncoder to expose BCrypts `checkpw` method (to compare plaintext and hashed passwords)

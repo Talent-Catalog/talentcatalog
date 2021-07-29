@@ -16,16 +16,8 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import static org.springframework.data.jpa.domain.Specification.where;
-
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -39,29 +31,25 @@ import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.model.db.SavedSearch;
-import org.tbbtalent.server.model.db.Status;
-import org.tbbtalent.server.model.db.User;
-import org.tbbtalent.server.repository.db.CandidateRepository;
-import org.tbbtalent.server.repository.db.GetCandidateSavedListsQuery;
-import org.tbbtalent.server.repository.db.GetSavedListsQuery;
-import org.tbbtalent.server.repository.db.SavedListRepository;
-import org.tbbtalent.server.repository.db.UserRepository;
+import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.repository.db.*;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
-import org.tbbtalent.server.request.list.ContentUpdateType;
-import org.tbbtalent.server.request.list.IHasSetOfCandidates;
-import org.tbbtalent.server.request.list.SearchSavedListRequest;
-import org.tbbtalent.server.request.list.UpdateExplicitSavedListContentsRequest;
-import org.tbbtalent.server.request.list.UpdateSavedListContentsRequest;
-import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
+import org.tbbtalent.server.request.list.*;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
-import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.SavedListService;
+
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.springframework.data.jpa.domain.Specification.where;
 
 /**
  * Saved List service
@@ -76,22 +64,22 @@ public class SavedListServiceImpl implements SavedListService {
     private final CandidateSavedListService candidateSavedListService;
     private final SalesforceService salesforceService;
     private final UserRepository userRepository;
-    private final UserContext userContext;
+    private final AuthService authService;
 
     @Autowired
     public SavedListServiceImpl(
-        CandidateRepository candidateRepository,
-        SavedListRepository savedListRepository,
-        CandidateSavedListService candidateSavedListService,
-        SalesforceService salesforceService, UserRepository userRepository,
-        UserContext userContext
+            CandidateRepository candidateRepository,
+            SavedListRepository savedListRepository,
+            CandidateSavedListService candidateSavedListService,
+            SalesforceService salesforceService, UserRepository userRepository,
+            AuthService authService
     ) {
         this.candidateRepository = candidateRepository;
         this.savedListRepository = savedListRepository;
         this.candidateSavedListService = candidateSavedListService;
         this.salesforceService = salesforceService;
         this.userRepository = userRepository;
-        this.userContext = userContext;
+        this.authService = authService;
     }
 
     @Override
@@ -216,7 +204,7 @@ public class SavedListServiceImpl implements SavedListService {
     @Transactional
     public SavedList createSavedList(UpdateSavedListInfoRequest request) 
             throws EntityExistsException {
-        final User loggedInUser = userContext.getLoggedInUser().orElse(null);
+        final User loggedInUser = authService.getLoggedInUser().orElse(null);
         return createSavedList(loggedInUser, request);
     }
 
@@ -226,7 +214,7 @@ public class SavedListServiceImpl implements SavedListService {
         SavedList savedList = savedListRepository.findByIdLoadCandidates(savedListId)
                 .orElse(null);
 
-        final User loggedInUser = userContext.getLoggedInUser().orElse(null);
+        final User loggedInUser = authService.getLoggedInUser().orElse(null);
         if (savedList != null && loggedInUser != null) {
 
             // Check if user owns this list
@@ -341,7 +329,7 @@ public class SavedListServiceImpl implements SavedListService {
 
     @Override
     public List<SavedList> search(long candidateId, SearchSavedListRequest request) {
-        final User loggedInUser = userContext.getLoggedInUser().orElse(null);
+        final User loggedInUser = authService.getLoggedInUser().orElse(null);
         User userWithSharedSearches = loggedInUser == null ? null :
                 userRepository.findByIdLoadSharedSearches(loggedInUser.getId());
         GetSavedListsQuery getSavedListsQuery =
@@ -359,7 +347,7 @@ public class SavedListServiceImpl implements SavedListService {
 
     @Override
     public List<SavedList> listSavedLists(SearchSavedListRequest request) {
-        final User loggedInUser = userContext.getLoggedInUser().orElse(null);
+        final User loggedInUser = authService.getLoggedInUser().orElse(null);
         User userWithSharedSearches = loggedInUser == null ? null :
                 userRepository.findByIdLoadSharedSearches(
                         loggedInUser.getId());
@@ -376,7 +364,7 @@ public class SavedListServiceImpl implements SavedListService {
 
     @Override
     public Page<SavedList> searchSavedLists(SearchSavedListRequest request) {
-        final User loggedInUser = userContext.getLoggedInUser().orElse(null);
+        final User loggedInUser = authService.getLoggedInUser().orElse(null);
         User userWithSharedSearches = loggedInUser == null ? null :
                 userRepository.findByIdLoadSharedSearches(
                         loggedInUser.getId());
@@ -395,7 +383,7 @@ public class SavedListServiceImpl implements SavedListService {
     @Override
     public SavedList updateSavedList(long savedListId, UpdateSavedListInfoRequest request) 
             throws NoSuchObjectException, EntityExistsException {
-        final User loggedInUser = userContext.getLoggedInUser().orElse(null);
+        final User loggedInUser = authService.getLoggedInUser().orElse(null);
         if (loggedInUser != null) {
             checkDuplicates(savedListId, request.getName(), loggedInUser);
         }
@@ -508,7 +496,7 @@ public class SavedListServiceImpl implements SavedListService {
      * @return Saved entity
      */
     private SavedList saveIt(SavedList savedList) {
-        savedList.setAuditFields(userContext.getLoggedInUser().orElse(null));
+        savedList.setAuditFields(authService.getLoggedInUser().orElse(null));
         return savedListRepository.save(savedList);
     }
     

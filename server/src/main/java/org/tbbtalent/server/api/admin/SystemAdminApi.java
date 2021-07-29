@@ -37,7 +37,7 @@ import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
 import org.tbbtalent.server.repository.db.CandidateNoteRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
-import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.DataSharingService;
 import org.tbbtalent.server.service.db.PopulateElasticsearchService;
 import org.tbbtalent.server.service.db.SalesforceService;
@@ -66,7 +66,7 @@ public class SystemAdminApi {
 
     private static final Logger log = LoggerFactory.getLogger(SystemAdminApi.class);
 
-    private final UserContext userContext;
+    private final AuthService authService;
     final static String DATE_FORMAT = "dd-MM-yyyy";
     
     private final DataSharingService dataSharingService;
@@ -101,17 +101,17 @@ public class SystemAdminApi {
     
     @Autowired
     public SystemAdminApi(
-        DataSharingService dataSharingService,
-        UserContext userContext,
-        CandidateAttachmentRepository candidateAttachmentRepository,
-        CandidateNoteRepository candidateNoteRepository,
-        CandidateRepository candidateRepository,
-        PopulateElasticsearchService populateElasticsearchService,
-        SalesforceService salesforceService,
-        S3ResourceHelper s3ResourceHelper,
-        GoogleDriveConfig googleDriveConfig) {
+            DataSharingService dataSharingService,
+            AuthService authService,
+            CandidateAttachmentRepository candidateAttachmentRepository,
+            CandidateNoteRepository candidateNoteRepository,
+            CandidateRepository candidateRepository,
+            PopulateElasticsearchService populateElasticsearchService,
+            SalesforceService salesforceService,
+            S3ResourceHelper s3ResourceHelper,
+            GoogleDriveConfig googleDriveConfig) {
         this.dataSharingService = dataSharingService;
-        this.userContext = userContext;
+        this.authService = authService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
         this.candidateNoteRepository = candidateNoteRepository;
         this.candidateRepository = candidateRepository;
@@ -249,7 +249,7 @@ public class SystemAdminApi {
         List<CandidateStatus> statuses = new ArrayList<>(EnumSet.of(CandidateStatus.pending, CandidateStatus.incomplete));
         List<Candidate> candidates = candidateRepository.findByStatuses(statuses);
         log.info("Have all pending and incomplete candidates. There is a total of: " + candidates.size());
-        User loggedInUser = userContext.getLoggedInUser().orElse(null);
+        User loggedInUser = authService.getLoggedInUser().orElse(null);
         int count = 0;
         int success = 0;
         for(Candidate candidate : candidates) {
@@ -355,8 +355,8 @@ public class SystemAdminApi {
     public String migrateStatus() {
         try {
             Long userId = 1L;
-            if (userContext != null) {
-                User loggedInUser = userContext.getLoggedInUser().orElse(null);
+            if (authService != null) {
+                User loggedInUser = authService.getLoggedInUser().orElse(null);
                 if (loggedInUser != null){
                     userId = loggedInUser.getId();
                 }
@@ -414,8 +414,8 @@ public class SystemAdminApi {
     public String migrateExtract() {
         TextExtractHelper textExtractHelper = new TextExtractHelper(candidateAttachmentRepository, s3ResourceHelper);
         Long userId = 1L;
-        if (userContext != null) {
-            User loggedInUser = userContext.getLoggedInUser().orElse(null);
+        if (authService != null) {
+            User loggedInUser = authService.getLoggedInUser().orElse(null);
             if (loggedInUser != null){
                 userId = loggedInUser.getId();
             }
@@ -487,8 +487,8 @@ public class SystemAdminApi {
     public String migrateSurvey() {
         try {
             Long userId = 1L;
-            if (userContext != null) {
-                User loggedInUser = userContext.getLoggedInUser().orElse(null);
+            if (authService != null) {
+                User loggedInUser = authService.getLoggedInUser().orElse(null);
                 if (loggedInUser != null){
                     userId = loggedInUser.getId();
                 }
@@ -566,8 +566,8 @@ public class SystemAdminApi {
     public String migrate() {
         try {
             Long userId = 1L; 
-            if (userContext != null) {
-                User loggedInUser = userContext.getLoggedInUser().orElse(null);
+            if (authService != null) {
+                User loggedInUser = authService.getLoggedInUser().orElse(null);
                 if (loggedInUser != null){
                     userId = loggedInUser.getId();
                 }
