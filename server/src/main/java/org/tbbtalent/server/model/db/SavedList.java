@@ -61,6 +61,12 @@ public class SavedList extends AbstractCandidateSource {
     private static final Logger log = LoggerFactory.getLogger(SavedList.class);
 
     /**
+     * Url link to corresponding candidate folder on Google Drive, if one exists. 
+     */
+    @Nullable
+    private String folderlink;
+    
+    /**
      * Non null if this is the selection list for the given saved search.
      * <p/>
      * For "normal" saved lists (ie not selection lists) this will always be 
@@ -113,6 +119,15 @@ public class SavedList extends AbstractCandidateSource {
     // https://thoughts-on-java.org/best-practices-for-many-to-many-associations-with-hibernate-and-jpa/
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "sharedLists", cascade = CascadeType.MERGE)
     private Set<User> users = new HashSet<>();
+
+    @Nullable
+    public String getFolderlink() {
+        return folderlink;
+    }
+
+    public void setFolderlink(@Nullable String folderlink) {
+        this.folderlink = folderlink;
+    }
 
     @Nullable
     public SavedSearch getSavedSearch() {
