@@ -16,22 +16,21 @@
 
 package org.tbbtalent.server.service.googledrive;
 
-import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.tbbtalent.server.configuration.GoogleDriveConfig;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.repository.db.CandidateRepository;
 import org.tbbtalent.server.repository.db.UserRepository;
 import org.tbbtalent.server.service.db.impl.GoogleFileSystemServiceImpl;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 // @SpringBootTest
@@ -39,14 +38,8 @@ public class MigrateDriveTest {
 
     private static final Logger log = LoggerFactory.getLogger(MigrateDriveTest.class);
 
-    @Value("${google.drive.candidateDataDriveId}")
-    private String candidateDataDriveId;
-
-    @Value("${google.drive.candidateRootFolderId}")
-    private String candidateRootFolderId;
-
     @Autowired
-    private Drive googleDriveService;
+    private GoogleDriveConfig googleDriveConfig;
 
     @Autowired
     private CandidateRepository candidateRepository;
@@ -63,14 +56,14 @@ public class MigrateDriveTest {
 //    @Transactional
 //    @Test
 //    @BeforeEach
-    void getSampleGoogleFolders() throws IOException {
-        FileList result = googleDriveService.files().list()
-                .setQ("'" + candidateRootFolderId + "' in parents" +
+    void getSampleGoogleFolders() throws IOException, GeneralSecurityException {
+        FileList result = googleDriveConfig.getGoogleDriveService().files().list()
+                .setQ("'" + googleDriveConfig.getCandidateRootFolderId() + "' in parents" +
                         " and mimeType='application/vnd.google-apps.folder'")
                 .setSupportsAllDrives(true)
                 .setIncludeItemsFromAllDrives(true)
                 .setCorpora("drive")
-                .setDriveId(candidateDataDriveId)
+                .setDriveId(googleDriveConfig.getCandidateDataDriveId())
                 .setFields("nextPageToken, files(id,name,webViewLink)")
                 .execute();
         folders = result.getFiles();

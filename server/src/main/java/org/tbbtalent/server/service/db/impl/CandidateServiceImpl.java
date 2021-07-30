@@ -43,6 +43,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientException;
+import org.tbbtalent.server.configuration.GoogleDriveConfig;
 import org.tbbtalent.server.exception.*;
 import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.model.es.CandidateEs;
@@ -58,7 +59,7 @@ import org.tbbtalent.server.security.PasswordHelper;
 import org.tbbtalent.server.service.db.*;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.service.db.util.PdfHelper;
-import org.tbbtalent.server.util.filesystem.FileSystemFolder;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
@@ -102,7 +103,8 @@ public class CandidateServiceImpl implements CandidateService {
     private final CandidateEsRepository candidateEsRepository;
     private final CandidateSavedListService candidateSavedListService;
     private final ElasticsearchOperations elasticsearchOperations;
-    private final GoogleFileSystemService fileSystemService;
+    private final FileSystemService fileSystemService;
+    private final GoogleDriveConfig googleDriveConfig;
     private final SalesforceService salesforceService;
     private final CountryRepository countryRepository;
     private final CountryService countryService;
@@ -126,32 +128,33 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Autowired
     public CandidateServiceImpl(UserRepository userRepository,
-                                SavedListService savedListService,
-                                SavedSearchRepository savedSearchRepository,
-                                CandidateRepository candidateRepository,
-                                CandidateEsRepository candidateEsRepository,
-                                CandidateSavedListService candidateSavedListService,
-                                ElasticsearchOperations elasticsearchOperations,
-                                GoogleFileSystemService fileSystemService,
-                                SalesforceService salesforceService,
-                                CountryRepository countryRepository,
-                                CountryService countryService,
-                                EducationLevelRepository educationLevelRepository,
-                                PasswordHelper passwordHelper,
-                                AuthService authService,
-                                SavedSearchService savedSearchService,
-                                CandidateNoteService candidateNoteService,
-                                CandidateCitizenshipService candidateCitizenshipService,
-                                CandidateDependantService candidateDependantService,
-                                CandidateDestinationService candidateDestinationService,
-                                CandidateVisaService candidateVisaService,
-                                CandidateVisaJobCheckService candidateVisaJobCheckService,
-                                CandidateExamService candidateExamService,
-                                SurveyTypeRepository surveyTypeRepository,
-                                OccupationRepository occupationRepository,
-                                LanguageLevelRepository languageLevelRepository,
-                                CandidateExamRepository candidateExamRepository,
-                                EmailHelper emailHelper, PdfHelper pdfHelper) {
+        SavedListService savedListService,
+        SavedSearchRepository savedSearchRepository,
+        CandidateRepository candidateRepository,
+        CandidateEsRepository candidateEsRepository,
+        CandidateSavedListService candidateSavedListService,
+        ElasticsearchOperations elasticsearchOperations,
+        FileSystemService fileSystemService,
+        GoogleDriveConfig googleDriveConfig,
+        SalesforceService salesforceService,
+        CountryRepository countryRepository,
+        CountryService countryService,
+        EducationLevelRepository educationLevelRepository,
+        PasswordHelper passwordHelper,
+        AuthService authService,
+        SavedSearchService savedSearchService,
+        CandidateNoteService candidateNoteService,
+        CandidateCitizenshipService candidateCitizenshipService,
+        CandidateDependantService candidateDependantService,
+        CandidateDestinationService candidateDestinationService,
+        CandidateVisaService candidateVisaService,
+        CandidateVisaJobCheckService candidateVisaJobCheckService,
+        CandidateExamService candidateExamService,
+        SurveyTypeRepository surveyTypeRepository,
+        OccupationRepository occupationRepository,
+        LanguageLevelRepository languageLevelRepository,
+        CandidateExamRepository candidateExamRepository,
+        EmailHelper emailHelper, PdfHelper pdfHelper) {
         this.userRepository = userRepository;
         this.savedListService = savedListService;
         this.savedSearchRepository = savedSearchRepository;
@@ -159,6 +162,7 @@ public class CandidateServiceImpl implements CandidateService {
         this.candidateEsRepository = candidateEsRepository;
         this.candidateSavedListService = candidateSavedListService;
         this.elasticsearchOperations = elasticsearchOperations;
+        this.googleDriveConfig = googleDriveConfig;
         this.countryRepository = countryRepository;
         this.countryService = countryService;
         this.educationLevelRepository = educationLevelRepository;
@@ -1903,10 +1907,14 @@ public class CandidateServiceImpl implements CandidateService {
         
         String candidateNumber = candidate.getCandidateNumber();
         
-        FileSystemFolder folder = fileSystemService.findAFolder(candidateNumber);
+        GoogleFileSystemFolder folder = fileSystemService.findAFolder(
+            googleDriveConfig.getCandidateDataDrive(), googleDriveConfig.getCandidateRootFolder(),
+            candidateNumber);
         
         if (folder == null) {
-            folder = fileSystemService.createFolder(candidateNumber);
+            folder = fileSystemService.createFolder(
+                googleDriveConfig.getCandidateDataDrive(), googleDriveConfig.getCandidateRootFolder(),
+                candidateNumber);
         }
         candidate.setFolderlink(folder.getUrl());
         save(candidate, false);
