@@ -26,6 +26,7 @@ import {NotFoundComponent} from "./not-found/not-found.component";
 import {RoleGuardService} from "./services/role-guard.service";
 import {CandidatesSearchComponent} from "./components/candidates/candidates-search/candidates-search.component";
 import {CandidatesListComponent} from "./components/candidates/candidates-list/candidates-list.component";
+import {NewJobComponent} from "./components/job/new-job/new-job.component";
 
 const routes: Routes = [
   {
@@ -62,6 +63,11 @@ const routes: Routes = [
             data: {title: 'TBB Search'}
           },
         ]
+      },
+      {
+        path: 'job',
+        component: NewJobComponent,
+        data: {title: 'TBB Job'}
       },
       {
         path: 'list',

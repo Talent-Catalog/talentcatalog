@@ -1,0 +1,17 @@
+<div class="alert alert-danger" *ngIf="error">
+  {{error}}
+</div>
+
+<app-joblink (updateError)="error=$event"
+             (joblinkValidation)="onJoblinkValidation($event)"
+></app-joblink>
+
+<div *ngIf="jobName">
+  {{jobName}}
+</div>
+
+<button type="button" class="btn btn-primary" (click)="create()"
+        [disabled]="!jobName || saving">
+  <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
+  Register
+</button>

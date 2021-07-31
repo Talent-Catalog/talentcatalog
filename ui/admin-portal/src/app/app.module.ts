@@ -228,6 +228,7 @@ import {CreateCandidateLanguageComponent} from './components/candidates/view/lan
 import {SalesforceStageComponent} from './components/util/salesforce-stage/salesforce-stage.component';
 import {IeltsScoreValidationComponent} from './components/util/ielts-score-validation/ielts-score-validation.component';
 import {FileSelectorComponent} from './components/util/file-selector/file-selector.component';
+import { NewJobComponent } from './components/job/new-job/new-job.component';
 
 @NgModule({
   declarations: [
@@ -431,7 +432,8 @@ import {FileSelectorComponent} from './components/util/file-selector/file-select
     CreateCandidateLanguageComponent,
     SalesforceStageComponent,
     IeltsScoreValidationComponent,
-    FileSelectorComponent
+    FileSelectorComponent,
+    NewJobComponent
   ],
   imports: [
     BrowserModule,
