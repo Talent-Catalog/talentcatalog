@@ -654,6 +654,10 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     return !isSavedSearch(this.candidateSource);
   }
 
+  isSavedList(): boolean {
+    return !isSavedSearch(this.candidateSource);
+  }
+
   isSwapSelectionSupported(): boolean {
     //Not supported for saved searches because swapping an empty selection on a search could
     //potentially end up selecting huge numbers of candidates - up to the whole database.
@@ -1237,6 +1241,29 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   hasSavedSearchSource(): boolean {
     return this.getSavedSearchSource() != null;
+  }
+
+  doShowListFolder() {
+    if (isSavedList(this.candidateSource)) {
+      const folderlink = this.candidateSource.folderlink;
+      if (folderlink) {
+        //Open link in new window
+        window.open(folderlink, "_blank");
+      } else {
+        this.error = null;
+        this.searching = true;
+        this.savedListService.createFolder(this.candidateSource.id).subscribe(
+          savedList => {
+            this.candidateSource = savedList;
+            this.searching = false;
+            window.open(savedList.folderlink, "_blank");
+          },
+          error => {
+            this.error = error;
+            this.searching = false;
+          });
+      }
+    }
   }
 
   doShowSearch() {

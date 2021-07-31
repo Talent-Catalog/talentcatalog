@@ -122,6 +122,9 @@ google:
   # go to that drive or folder.
     candidateDataDriveId: ${GOOGLE_DRIVE_CANDIDATEDATADRIVEID:0AHvd4Bs-dSp4Uk9PVA}
     candidateRootFolderId: ${GOOGLE_DRIVE_CANDIDATEROOTFOLDERID:1TdqTBpojT07qNPWTgU_wXWON1678beTn}
+    listFoldersDriveId:  ${GOOGLE_DRIVE_LISTFOLDERSDRIVEID:0AJpRzZk9D_kLUk9PVA}
+    listFoldersRootId:  ${GOOGLE_DRIVE_LISTFOLDERSROOTID:1BkMPOr392ubCriQdhBAmFKxlume-c7d2}
+      
         
       
       

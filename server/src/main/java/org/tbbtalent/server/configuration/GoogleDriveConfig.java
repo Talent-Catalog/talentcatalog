@@ -42,7 +42,9 @@ import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 
 /**
- * Configures GoogleDrive 
+ * Configures GoogleDrive.
+ * <p/>
+ * All access is delegated to a particular user - {@link #DELEGATED_USER}
  *
  * @author John Cameron
  */
@@ -52,6 +54,7 @@ import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 public class GoogleDriveConfig {
 
   private static final String APPLICATION_NAME = "TalentCatalog";
+  private static final String DELEGATED_USER = "candidates@talentbeyondboundaries.org";
   private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
   /**
@@ -124,6 +127,28 @@ public class GoogleDriveConfig {
    */
   private GoogleFileSystemFolder candidateRootFolder;
 
+  /**
+   * The ID of the CandidateData Google Drive
+   */
+  private String listFoldersDriveId;
+
+  /**
+   * This is lazily computed from the above drive Id.
+   * @see #getListFoldersDrive() 
+   */
+  private GoogleFileSystemDrive listFoldersDrive;
+
+  /**
+   * The ID of the root folder of the list folders on Google Drive
+   */
+  private String listFoldersRootId;
+
+  /**
+   * This is lazily computed from the above folder Id.
+   * @see #getListFoldersRoot()  
+   */
+  private GoogleFileSystemFolder listFoldersRoot;
+
   public GoogleFileSystemDrive getCandidateDataDrive() {
     if (candidateDataDrive == null) {
       candidateDataDrive = new GoogleFileSystemDrive(null);
@@ -140,6 +165,22 @@ public class GoogleDriveConfig {
     return candidateRootFolder;
   }
 
+  public GoogleFileSystemDrive getListFoldersDrive() {
+    if (listFoldersDrive == null) {
+      listFoldersDrive = new GoogleFileSystemDrive(null);
+      listFoldersDrive.setId(listFoldersDriveId);
+    }
+    return listFoldersDrive;
+  }
+
+  public GoogleFileSystemFolder getListFoldersRoot() {
+    if (listFoldersRoot == null) {
+      listFoldersRoot = new GoogleFileSystemFolder(null);
+      listFoldersRoot.setId(listFoldersRootId);
+    }
+    return listFoldersRoot;
+  }
+
   /**
    * This code was extracted from here: https://developers.google.com/drive/api/v3/quickstart/java
    */
@@ -149,7 +190,7 @@ public class GoogleDriveConfig {
           GoogleNetHttpTransport.newTrustedTransport();
       Credential credential = computeCredential(HTTP_TRANSPORT)
           .createScoped(Collections.singleton(DriveScopes.DRIVE))
-          .createDelegated("candidates@talentbeyondboundaries.org");
+          .createDelegated(DELEGATED_USER);
 
       googleDriveService = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
           .setApplicationName(APPLICATION_NAME)

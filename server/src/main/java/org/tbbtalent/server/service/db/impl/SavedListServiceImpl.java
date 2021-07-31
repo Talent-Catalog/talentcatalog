@@ -16,8 +16,16 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import static org.springframework.data.jpa.domain.Specification.where;
+
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,28 +36,36 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.tbbtalent.server.configuration.GoogleDriveConfig;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
-import org.tbbtalent.server.model.db.*;
-import org.tbbtalent.server.repository.db.*;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.SavedSearch;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.repository.db.CandidateRepository;
+import org.tbbtalent.server.repository.db.GetCandidateSavedListsQuery;
+import org.tbbtalent.server.repository.db.GetSavedListsQuery;
+import org.tbbtalent.server.repository.db.SavedListRepository;
+import org.tbbtalent.server.repository.db.UserRepository;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
-import org.tbbtalent.server.request.list.*;
+import org.tbbtalent.server.request.list.ContentUpdateType;
+import org.tbbtalent.server.request.list.IHasSetOfCandidates;
+import org.tbbtalent.server.request.list.SearchSavedListRequest;
+import org.tbbtalent.server.request.list.UpdateExplicitSavedListContentsRequest;
+import org.tbbtalent.server.request.list.UpdateSavedListContentsRequest;
+import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
+import org.tbbtalent.server.service.db.FileSystemService;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.SavedListService;
-
-import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static org.springframework.data.jpa.domain.Specification.where;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 
 /**
  * Saved List service
@@ -62,21 +78,27 @@ public class SavedListServiceImpl implements SavedListService {
     private final CandidateRepository candidateRepository;
     private final SavedListRepository savedListRepository;
     private final CandidateSavedListService candidateSavedListService;
+    private final FileSystemService fileSystemService;
+    private final GoogleDriveConfig googleDriveConfig;
     private final SalesforceService salesforceService;
     private final UserRepository userRepository;
     private final AuthService authService;
 
     @Autowired
     public SavedListServiceImpl(
-            CandidateRepository candidateRepository,
-            SavedListRepository savedListRepository,
-            CandidateSavedListService candidateSavedListService,
-            SalesforceService salesforceService, UserRepository userRepository,
-            AuthService authService
+        CandidateRepository candidateRepository,
+        SavedListRepository savedListRepository,
+        CandidateSavedListService candidateSavedListService,
+        FileSystemService fileSystemService,
+        GoogleDriveConfig googleDriveConfig,
+        SalesforceService salesforceService, UserRepository userRepository,
+        AuthService authService
     ) {
         this.candidateRepository = candidateRepository;
         this.savedListRepository = savedListRepository;
         this.candidateSavedListService = candidateSavedListService;
+        this.fileSystemService = fileSystemService;
+        this.googleDriveConfig = googleDriveConfig;
         this.salesforceService = salesforceService;
         this.userRepository = userRepository;
         this.authService = authService;
@@ -184,6 +206,25 @@ public class SavedListServiceImpl implements SavedListService {
         destination.addCandidates(candidates, sourceList);
 
         saveIt(destination);
+    }
+
+    @Override
+    public SavedList createListFolder(long id) throws NoSuchObjectException, IOException {
+        SavedList savedList = get(id);
+        
+        GoogleFileSystemDrive foldersDrive = googleDriveConfig.getListFoldersDrive();
+        GoogleFileSystemFolder foldersRoot = googleDriveConfig.getListFoldersRoot(); 
+
+        String folderName = Long.toString(id);
+        
+        GoogleFileSystemFolder folder = fileSystemService.findAFolder(
+            foldersDrive, foldersRoot, folderName);
+        if (folder == null) {
+            folder = fileSystemService.createFolder(foldersDrive, foldersRoot, folderName);
+        }
+        savedList.setFolderlink(folder.getUrl());
+        saveIt(savedList);
+        return savedList;
     }
 
     @Override

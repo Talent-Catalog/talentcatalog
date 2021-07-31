@@ -59,6 +59,7 @@ import org.tbbtalent.server.security.PasswordHelper;
 import org.tbbtalent.server.service.db.*;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.service.db.util.PdfHelper;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 
 import javax.validation.constraints.NotNull;
@@ -1904,17 +1905,16 @@ public class CandidateServiceImpl implements CandidateService {
     public Candidate createCandidateFolder(long id) 
             throws NoSuchObjectException, IOException {
         Candidate candidate = getCandidate(id);
-        
+
+        GoogleFileSystemDrive candidateDrive = googleDriveConfig.getCandidateDataDrive();
+        GoogleFileSystemFolder candidateRoot = googleDriveConfig.getCandidateRootFolder();
+
         String candidateNumber = candidate.getCandidateNumber();
         
         GoogleFileSystemFolder folder = fileSystemService.findAFolder(
-            googleDriveConfig.getCandidateDataDrive(), googleDriveConfig.getCandidateRootFolder(),
-            candidateNumber);
-        
+            candidateDrive, candidateRoot, candidateNumber);
         if (folder == null) {
-            folder = fileSystemService.createFolder(
-                googleDriveConfig.getCandidateDataDrive(), googleDriveConfig.getCandidateRootFolder(),
-                candidateNumber);
+            folder = fileSystemService.createFolder(candidateDrive, candidateRoot, candidateNumber);
         }
         candidate.setFolderlink(folder.getUrl());
         save(candidate, false);
