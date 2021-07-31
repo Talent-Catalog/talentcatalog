@@ -16,15 +16,8 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,32 +33,38 @@ import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.repository.db.TranslationRepository;
 import org.tbbtalent.server.request.translation.CreateTranslationRequest;
 import org.tbbtalent.server.request.translation.UpdateTranslationRequest;
-import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.TranslationService;
 import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class TranslationServiceImpl implements TranslationService {
 
     private final TranslationRepository translationRepository;
     private final S3ResourceHelper s3ResourceHelper;
-    private final UserContext userContext;
+    private final AuthService authService;
 
     @Autowired
     public TranslationServiceImpl(TranslationRepository translationRepository,
                                   S3ResourceHelper s3ResourceHelper,
-                                  UserContext userContext) {
+                                  AuthService authService) {
         this.s3ResourceHelper = s3ResourceHelper;
-        this.userContext = userContext;
+        this.authService = authService;
         this.translationRepository = translationRepository;
     }
 
     public <T extends AbstractTranslatableDomainObject<Long>> void translate(List<T> items,
                                                                              String type) {
-        String selectedLanguage = userContext.getUserLanguage();
+        String selectedLanguage = authService.getUserLanguage();
         translate(items, type, selectedLanguage);
     }
 
@@ -95,7 +94,7 @@ public class TranslationServiceImpl implements TranslationService {
     @Override
     @Transactional
     public Translation createTranslation(CreateTranslationRequest request) throws EntityExistsException {
-        User user = userContext.getLoggedInUser()
+        User user = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Translation translation = new Translation(user, request.getId(), request.getType(),

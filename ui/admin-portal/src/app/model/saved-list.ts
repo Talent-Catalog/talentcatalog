@@ -37,7 +37,8 @@ export enum ContentUpdateType {
 }
 
 export interface SavedList extends CandidateSource {
-  savedSearchSource?: SavedSearchRef
+  savedSearchSource?: SavedSearchRef;
+  folderlink?: string;
 }
 
 export function isSavedList(source: CandidateSource): source is SavedList {

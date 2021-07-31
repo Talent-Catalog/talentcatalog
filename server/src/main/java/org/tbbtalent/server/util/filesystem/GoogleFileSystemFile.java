@@ -17,9 +17,13 @@
 package org.tbbtalent.server.util.filesystem;
 
 /**
- * Represents a folder on a remote file system
+ * Represents a file on a remote Google file system
  *
  * @author John Cameron
  */
-public class FileSystemFolder extends FileSystemBaseEntity {
+public class GoogleFileSystemFile extends GoogleFileSystemBaseEntity {
+
+  public GoogleFileSystemFile(String url) {
+    super(url);
+  }
 }

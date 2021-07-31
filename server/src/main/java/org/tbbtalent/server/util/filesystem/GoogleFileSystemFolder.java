@@ -14,23 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.service.db;
+package org.tbbtalent.server.util.filesystem;
 
 /**
- * Access to a Google Drive file system.
+ * Represents a folder on a remote Google file system
  *
  * @author John Cameron
  */
-public interface GoogleFileSystemService extends FileSystemService {
+public class GoogleFileSystemFolder extends GoogleFileSystemBaseEntity {
 
-    /**
-     * Extracts a Google id from the Google url (for the file or folder).
-     * <p/>
-     * For example, in this url for a Google folder
-     * https://drive.google.com/drive/folders/1GtuMI7IjIXzL68U9OjnO5PZccJ_x7GHr?usp=sharing
-     * the id is 1GtuMI7IjIXzL68U9OjnO5PZccJ_x7GHr 
-     * @param url Link to a Google file or folder
-     * @return Google id
-     */
-    String extractIdFromUrl(String url);
+  public GoogleFileSystemFolder(String url) {
+    super(url);
+  }
 }

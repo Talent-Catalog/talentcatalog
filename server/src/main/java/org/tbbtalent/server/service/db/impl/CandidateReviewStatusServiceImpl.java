@@ -28,7 +28,7 @@ import org.tbbtalent.server.repository.db.CandidateReviewStatusRepository;
 import org.tbbtalent.server.repository.db.SavedSearchRepository;
 import org.tbbtalent.server.request.reviewstatus.CreateCandidateReviewStatusRequest;
 import org.tbbtalent.server.request.reviewstatus.UpdateCandidateReviewStatusRequest;
-import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateReviewStatusService;
 
 @Service
@@ -37,14 +37,14 @@ public class CandidateReviewStatusServiceImpl implements CandidateReviewStatusSe
     private final CandidateRepository candidateRepository;
     private final CandidateReviewStatusRepository candidateReviewStatusRepository;
     private final SavedSearchRepository savedSearchRepository;
-    private final UserContext userContext;
+    private final AuthService authService;
 
     @Autowired
-    public CandidateReviewStatusServiceImpl(CandidateRepository candidateRepository, CandidateReviewStatusRepository candidateReviewStatusRepository, SavedSearchRepository savedSearchRepository, UserContext userContext) {
+    public CandidateReviewStatusServiceImpl(CandidateRepository candidateRepository, CandidateReviewStatusRepository candidateReviewStatusRepository, SavedSearchRepository savedSearchRepository, AuthService authService) {
         this.candidateRepository = candidateRepository;
         this.candidateReviewStatusRepository = candidateReviewStatusRepository;
         this.savedSearchRepository = savedSearchRepository;
-        this.userContext = userContext;
+        this.authService = authService;
     }
 
     @Override
@@ -66,7 +66,7 @@ public class CandidateReviewStatusServiceImpl implements CandidateReviewStatusSe
         candidateReviewStatusItem.setSavedSearch(savedSearch);
         candidateReviewStatusItem.setComment(request.getComment());
         candidateReviewStatusItem.setReviewStatus(request.getReviewStatus());
-        candidateReviewStatusItem.setAuditFields(userContext.getLoggedInUser().orElse(null));
+        candidateReviewStatusItem.setAuditFields(authService.getLoggedInUser().orElse(null));
         return candidateReviewStatusRepository.save(candidateReviewStatusItem);
     }
 
@@ -77,7 +77,7 @@ public class CandidateReviewStatusServiceImpl implements CandidateReviewStatusSe
 
         candidateReviewStatusItem.setReviewStatus(request.getReviewStatus());
         candidateReviewStatusItem.setComment(request.getComment());
-        candidateReviewStatusItem.setAuditFields(userContext.getLoggedInUser().orElse(null));
+        candidateReviewStatusItem.setAuditFields(authService.getLoggedInUser().orElse(null));
 
         return candidateReviewStatusRepository.save(candidateReviewStatusItem);
 

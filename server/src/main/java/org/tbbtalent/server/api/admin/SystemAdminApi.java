@@ -30,13 +30,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClientException;
+import org.tbbtalent.server.configuration.GoogleDriveConfig;
 import org.tbbtalent.server.model.db.*;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.repository.db.CandidateAttachmentRepository;
 import org.tbbtalent.server.repository.db.CandidateNoteRepository;
 import org.tbbtalent.server.repository.db.CandidateRepository;
-import org.tbbtalent.server.security.UserContext;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.DataSharingService;
 import org.tbbtalent.server.service.db.PopulateElasticsearchService;
 import org.tbbtalent.server.service.db.SalesforceService;
@@ -65,7 +66,7 @@ public class SystemAdminApi {
 
     private static final Logger log = LoggerFactory.getLogger(SystemAdminApi.class);
 
-    private final UserContext userContext;
+    private final AuthService authService;
     final static String DATE_FORMAT = "dd-MM-yyyy";
     
     private final DataSharingService dataSharingService;
@@ -80,8 +81,8 @@ public class SystemAdminApi {
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     private final Map<Integer, Integer> countryForGeneralCountry;
-
-    private Drive googleDriveService;
+    
+    private final GoogleDriveConfig googleDriveConfig;
 
     @Value("${spring.datasource.url}")
     private String targetJdbcUrl;
@@ -101,23 +102,23 @@ public class SystemAdminApi {
     @Autowired
     public SystemAdminApi(
             DataSharingService dataSharingService,
-            UserContext userContext,
+            AuthService authService,
             CandidateAttachmentRepository candidateAttachmentRepository,
             CandidateNoteRepository candidateNoteRepository,
             CandidateRepository candidateRepository,
-            Drive googleDriveService,
             PopulateElasticsearchService populateElasticsearchService,
             SalesforceService salesforceService,
-            S3ResourceHelper s3ResourceHelper) {
+            S3ResourceHelper s3ResourceHelper,
+            GoogleDriveConfig googleDriveConfig) {
         this.dataSharingService = dataSharingService;
-        this.userContext = userContext;
+        this.authService = authService;
         this.candidateAttachmentRepository = candidateAttachmentRepository;
         this.candidateNoteRepository = candidateNoteRepository;
-        this.googleDriveService = googleDriveService;
         this.candidateRepository = candidateRepository;
         this.populateElasticsearchService = populateElasticsearchService;
         this.salesforceService = salesforceService;
         this.s3ResourceHelper = s3ResourceHelper;
+        this.googleDriveConfig = googleDriveConfig;
         countryForGeneralCountry = getExtraCountryMappings();
     }
 
@@ -242,13 +243,13 @@ public class SystemAdminApi {
         return "done";
     }
 
-    // todo Remove after running. One off method. Login as System Admin user.
-    @GetMapping("update-statuses")
+    // Removed after running. One off method. Login as System Admin user.
+    //@GetMapping("update-statuses")
     public String updateStatusesIneligible() {
         List<CandidateStatus> statuses = new ArrayList<>(EnumSet.of(CandidateStatus.pending, CandidateStatus.incomplete));
         List<Candidate> candidates = candidateRepository.findByStatuses(statuses);
         log.info("Have all pending and incomplete candidates. There is a total of: " + candidates.size());
-        User loggedInUser = userContext.getLoggedInUser().orElse(null);
+        User loggedInUser = authService.getLoggedInUser().orElse(null);
         int count = 0;
         int success = 0;
         for(Candidate candidate : candidates) {
@@ -282,13 +283,13 @@ public class SystemAdminApi {
     }
 
     @GetMapping("google")
-    public String migrateGoogleDriveFolders() throws IOException {
+    public String migrateGoogleDriveFolders() throws IOException, GeneralSecurityException {
         log.info("Starting google folder re-linking. About to get folders.");
         String nextPageToken = null;
         int count = 0;
         do {
             // Getting folders
-            FileList result = googleDriveService.files().list()
+            FileList result = googleDriveConfig.getGoogleDriveService().files().list()
                     .setQ("'" + candidateRootFolderId + "' in parents" +
                             " and mimeType='application/vnd.google-apps.folder'")
                     .setSupportsAllDrives(true)
@@ -354,8 +355,8 @@ public class SystemAdminApi {
     public String migrateStatus() {
         try {
             Long userId = 1L;
-            if (userContext != null) {
-                User loggedInUser = userContext.getLoggedInUser().orElse(null);
+            if (authService != null) {
+                User loggedInUser = authService.getLoggedInUser().orElse(null);
                 if (loggedInUser != null){
                     userId = loggedInUser.getId();
                 }
@@ -413,8 +414,8 @@ public class SystemAdminApi {
     public String migrateExtract() {
         TextExtractHelper textExtractHelper = new TextExtractHelper(candidateAttachmentRepository, s3ResourceHelper);
         Long userId = 1L;
-        if (userContext != null) {
-            User loggedInUser = userContext.getLoggedInUser().orElse(null);
+        if (authService != null) {
+            User loggedInUser = authService.getLoggedInUser().orElse(null);
             if (loggedInUser != null){
                 userId = loggedInUser.getId();
             }
@@ -486,8 +487,8 @@ public class SystemAdminApi {
     public String migrateSurvey() {
         try {
             Long userId = 1L;
-            if (userContext != null) {
-                User loggedInUser = userContext.getLoggedInUser().orElse(null);
+            if (authService != null) {
+                User loggedInUser = authService.getLoggedInUser().orElse(null);
                 if (loggedInUser != null){
                     userId = loggedInUser.getId();
                 }
@@ -565,8 +566,8 @@ public class SystemAdminApi {
     public String migrate() {
         try {
             Long userId = 1L; 
-            if (userContext != null) {
-                User loggedInUser = userContext.getLoggedInUser().orElse(null);
+            if (authService != null) {
+                User loggedInUser = authService.getLoggedInUser().orElse(null);
                 if (loggedInUser != null){
                     userId = loggedInUser.getId();
                 }
