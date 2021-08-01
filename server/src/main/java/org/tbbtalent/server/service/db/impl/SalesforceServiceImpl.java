@@ -138,7 +138,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     private final WebClient webClient;
     
     /**
-     * This is the accessToken required for for all Salesforce REST API
+     * This is the accessToken required for all Salesforce REST API
      * calls. It should appear in the Authorization header, prefixed by
      * "Bearer ".
      * <p/>
