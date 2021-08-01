@@ -75,6 +75,9 @@ import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 @Service
 public class SavedListServiceImpl implements SavedListService {
 
+    private final static String LIST_CVS_SUBFOLDER = "CvsForEmployer";
+    private final static String LIST_JOB_DESCRIPTION_SUBFOLDER = "JobDescription";
+    
     private final CandidateRepository candidateRepository;
     private final SavedListRepository savedListRepository;
     private final CandidateSavedListService candidateSavedListService;
@@ -221,6 +224,12 @@ public class SavedListServiceImpl implements SavedListService {
             foldersDrive, foldersRoot, folderName);
         if (folder == null) {
             folder = fileSystemService.createFolder(foldersDrive, foldersRoot, folderName);
+            
+            folderName = savedList.getName();
+            GoogleFileSystemFolder subfolder = fileSystemService.createFolder(foldersDrive, folder, folderName);
+
+            fileSystemService.createFolder(foldersDrive, subfolder, LIST_CVS_SUBFOLDER);
+            fileSystemService.createFolder(foldersDrive, subfolder, LIST_JOB_DESCRIPTION_SUBFOLDER);
         }
         savedList.setFolderlink(folder.getUrl());
         saveIt(savedList);
