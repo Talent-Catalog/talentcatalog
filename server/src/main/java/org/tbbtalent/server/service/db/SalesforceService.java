@@ -31,6 +31,10 @@ import org.tbbtalent.server.request.candidate.SalesforceOppParams;
 
 /**
  * Access to Salesforce.
+ * <p/>
+ * Note that our Salesforce configuration supports different types of opportunity, including
+ * Employer opportunities and Candidate opportunities. However, they are all just different
+ * versions (defined by the Salesforce "RecordType") of the standard Salesforce Opportunity record.
  *
  * @author John Cameron
  */
@@ -73,8 +77,8 @@ public interface SalesforceService {
             throws GeneralSecurityException, WebClientException;
 
     /**
-     * Searches for a Salesforce Opportunity record corresponding to the given 
-     * Salesforce id
+     * Searches for a Salesforce Opportunity record (Employer or Candidate opportunity) 
+     * corresponding to the given Salesforce id
      * @param sfId Salesforce id
      * @return Salesforce opportunity, null if none
      * @throws GeneralSecurityException If there are errors relating to keys
@@ -150,22 +154,22 @@ public interface SalesforceService {
             throws GeneralSecurityException, WebClientException, SalesforceException;
 
     /**
-     * Creates or updates the Salesforce Opportunity records corresponding to the 
-     * given candidates for the given job opportunity.
+     * Creates or updates the Salesforce Candidate Opportunity records corresponding to the 
+     * given candidates for the given Employer job opportunity.
      * <p/>
      * Note the candidate job opportunities are identified by the unique
      * external id TBBCandidateExternalId__c
      * 
      * @param candidates Candidates
      * @param salesforceOppParams Optional Salesforce fields to set on candidate opportunities           
-     * @param sfJoblink url link to Job opportunity on Salesforce
+     * @param sfJoblink url link to Employer job opportunity on Salesforce
      * @throws GeneralSecurityException If there are errors relating to keys
      * and digital signing.
      * @throws WebClientException if there is a problem connecting to Salesforce
      * @throws SalesforceException if Salesforce had a problem with the data,
-     * including if sfJoblink is not a valid link to a Salesforce job opportunity.
+     * including if sfJoblink is not a valid link to a Salesforce employer job opportunity.
      */
-    void createOrUpdateJobOpportunities(
+    void createOrUpdateCandidateOpportunities(
             List<Candidate> candidates, @Nullable SalesforceOppParams salesforceOppParams, String sfJoblink)
             throws GeneralSecurityException, WebClientException, SalesforceException;
     

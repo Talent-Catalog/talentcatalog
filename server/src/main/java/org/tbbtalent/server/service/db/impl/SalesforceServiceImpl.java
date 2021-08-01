@@ -275,7 +275,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     }
 
     @Override
-    public void createOrUpdateJobOpportunities(
+    public void createOrUpdateCandidateOpportunities(
         List<Candidate> candidates, SalesforceOppParams salesforceOppParams, String sfJoblink) 
             throws GeneralSecurityException, WebClientException, SalesforceException {
 

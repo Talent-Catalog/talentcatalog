@@ -1976,7 +1976,7 @@ public class CandidateServiceImpl implements CandidateService {
         
         //If we have a Salesforce job opportunity, we can also update associated candidate opps.
         if (sfJoblink != null && sfJoblink.length() > 0) {
-            salesforceService.createOrUpdateJobOpportunities(
+            salesforceService.createOrUpdateCandidateOpportunities(
                 orderedCandidates, salesforceOppParams, sfJoblink);
         }
     }
