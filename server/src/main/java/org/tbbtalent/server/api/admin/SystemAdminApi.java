@@ -122,41 +122,6 @@ public class SystemAdminApi {
         countryForGeneralCountry = getExtraCountryMappings();
     }
 
-    /**
-     * Returns info (including "name") about the Salesforce opportunity 
-     * corresponding to the given url - or null if the url does not refer
-     * to a Salesforce opportunity.
-     * @param sfUrl A url
-     * @return Map containing "name" attribute, or null if not an opportunity.
-     * @throws GeneralSecurityException If there are errors relating to keys
-     * and digital signing.
-     * @throws WebClientException if there is a problem connecting to Salesforce
-     */
-    @GetMapping("sfjobname")
-    @Nullable
-    public Map<String, Object> findSfJobName(
-            @RequestParam(value = "url") String sfUrl) 
-            throws GeneralSecurityException {
-
-        Opportunity opp = null;
-
-        //Make sure that it is referring to a Salesforce Opportunity record
-        String objectType = SalesforceServiceImpl.extractObjectTypeFromSfUrl(sfUrl);
-        if ("Opportunity".equals(objectType)) {
-            String sfId = SalesforceServiceImpl.extractIdFromSfUrl(sfUrl);
-            if (sfId != null) {
-                opp = salesforceService.findOpportunity(sfId);
-            }
-        }
-        return opportunityDto().build(opp);
-    }
-
-    private DtoBuilder opportunityDto() {
-        return new DtoBuilder()
-                .add("name")
-                ;
-    }
-
     @GetMapping("updatesflinks")
     public String updateCandidateSalesforceLinks() throws GeneralSecurityException {
         log.info("Searching Salesforce for candidate contact records");
@@ -362,7 +327,7 @@ public class SystemAdminApi {
                 }
             }
 
-            Connection sourceConn = DriverManager.getConnection("jdbc:mysql://v1.tbbtalent.org/yiitbb?useUnicode=yes&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull", "sayre", "MoroccoBound");
+            Connection sourceConn = DriverManager.getConnection("jdbc:mysql://...", "", "");
             Statement sourceStmt = sourceConn.createStatement();
 
             Connection targetConn = DriverManager.getConnection(targetJdbcUrl, targetUser, targetPwd);
@@ -494,7 +459,7 @@ public class SystemAdminApi {
                 }
             }
             
-            Connection sourceConn = DriverManager.getConnection("jdbc:mysql://v1.tbbtalent.org/yiitbb?useUnicode=yes&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull", "sayre", "MoroccoBound");
+            Connection sourceConn = DriverManager.getConnection("jdbc:mysql:", "", "");
             Statement sourceStmt = sourceConn.createStatement();
 
             Connection targetConn = DriverManager.getConnection(targetJdbcUrl, targetUser, targetPwd);
@@ -573,7 +538,7 @@ public class SystemAdminApi {
                 }
             }
 
-            Connection sourceConn = DriverManager.getConnection("jdbc:mysql://v1.tbbtalent.org/yiitbb?useUnicode=yes&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull", "sayre", "MoroccoBound");
+            Connection sourceConn = DriverManager.getConnection("jdbc:mysql://", "", "");
             Statement sourceStmt = sourceConn.createStatement();
 
             Connection targetConn = DriverManager.getConnection(targetJdbcUrl, targetUser, targetPwd);
