@@ -59,7 +59,6 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.1'
-    implementation 'com.itextpdf:kernel:7.1.16'
     implementation group: 'org.apache.poi', name: 'poi', version: '4.1.2'
     implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '4.1.2'
     implementation group: 'org.apache.poi', name: 'poi-scratchpad', version: '4.1.2'
@@ -96,8 +95,7 @@ dependencies {
     implementation('com.opencsv:opencsv:5.0')
     implementation('commons-beanutils:commons-beanutils:1.9.3')
     implementation('org.thymeleaf.extras:thymeleaf-extras-java8time')
-    implementation('org.xhtmlrenderer:flying-saucer-core:9.1.6')
-    implementation('org.xhtmlrenderer:flying-saucer-pdf-itext5:9.1.6')
+    implementation('org.xhtmlrenderer:flying-saucer-pdf-itext5:9.1.22')
     implementation('net.sf.jtidy:jtidy:r938')
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2", "io.jsonwebtoken:jjwt-jackson:0.11.2")
     runtimeOnly('org.postgresql:postgresql')
