@@ -2,11 +2,16 @@ import {Component, OnInit} from '@angular/core';
 import {JoblinkValidationEvent} from "../../util/joblink/joblink.component";
 import {SavedList, UpdateSavedListInfoRequest} from "../../../model/saved-list";
 import {SavedListService} from "../../../services/saved-list.service";
-import {Progress, UpdateEmployerOpportunityRequest} from "../../../model/base";
+import {
+  PostJobToSlackRequest,
+  Progress,
+  UpdateEmployerOpportunityRequest
+} from "../../../model/base";
 import {getCandidateSourceExternalHref} from "../../../model/saved-search";
 import {Location} from "@angular/common";
 import {Router} from "@angular/router";
 import {SalesforceService} from "../../../services/salesforce.service";
+import {SlackService} from "../../../services/slack.service";
 
 @Component({
   selector: 'app-new-job',
@@ -20,15 +25,18 @@ export class NewJobComponent implements OnInit {
   creatingList: Progress = Progress.NotStarted;
   creatingFolders: Progress = Progress.NotStarted;
   creatingSFLinks: Progress = Progress.NotStarted;
+  postingToSlack: Progress = Progress.NotStarted;
   findingJob: boolean;
   errorFindingJob: string = null;
   errorCreatingFolders: string = null;
   errorCreatingList: string = null;
   errorCreatingSFLinks: string = null;
+  errorPostingToSlack: string = null;
 
   constructor(
     private salesforceService: SalesforceService,
     private savedListService: SavedListService,
+    private slackService: SlackService,
     private location: Location,
     private router: Router) { }
 
@@ -52,7 +60,7 @@ export class NewJobComponent implements OnInit {
     }
   }
 
-  create() {
+  createList() {
     this.errorCreatingList = null;
     this.creatingList = Progress.Started;
     const request: UpdateSavedListInfoRequest = {
@@ -64,7 +72,7 @@ export class NewJobComponent implements OnInit {
       (savedList) => {
         this.creatingList = Progress.Finished;
         this.savedList = savedList;
-        this.processSavedList();
+        this.createFolders();
       },
       (error) => {
         this.errorCreatingList = error;
@@ -72,7 +80,7 @@ export class NewJobComponent implements OnInit {
       });
   }
 
-  private processSavedList() {
+  private createFolders() {
     //todo Check if list already exists for this opportunity - if so, use that, and update other things
     //     as needed.
     this.errorCreatingFolders = null;
@@ -107,8 +115,30 @@ export class NewJobComponent implements OnInit {
         this.creatingSFLinks = Progress.NotStarted;
       });
 
+    //Slack post can run in parallel with creating SF backlinks
+    this.postJobToSlack();
 
-    //todo Slack post (can run in parallel with creating SF backlinks)
+  }
+
+  private postJobToSlack() {
+    this.errorPostingToSlack = null;
+    this.postingToSlack = Progress.Started;
+
+    const request: PostJobToSlackRequest = {
+      sfJoblink: this.savedList.sfJoblink,
+      jobName: this.jobName,
+      folderlink: this.savedList.folderlink,
+      listlink: this.listLink
+    };
+    this.slackService.postJob(request).subscribe(
+      () => {
+        //todo Could return link to Slack post
+        this.postingToSlack = Progress.Finished;
+      },
+      error => {
+        this.errorPostingToSlack = error;
+        this.postingToSlack = Progress.NotStarted;
+      });
 
   }
 }

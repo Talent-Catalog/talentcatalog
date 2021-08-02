@@ -117,6 +117,13 @@ export interface UpdateEmployerOpportunityRequest {
   folderlink?: string;
 }
 
+export interface PostJobToSlackRequest {
+  sfJoblink: string;
+  jobName?: string;
+  listlink?: string;
+  folderlink?: string;
+}
+
 export class PagedSearchRequest {
   pageSize?: number;
   pageNumber?: number;

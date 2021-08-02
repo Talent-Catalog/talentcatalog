@@ -11,7 +11,7 @@
   {{jobName}}
 </div>
 
-<button type="button" class="btn btn-primary" (click)="create()"
+<button type="button" class="btn btn-primary" (click)="createList()"
         [disabled]="!jobName || findingJob">
   <i class="fas fa-spinner fa-spin" *ngIf="findingJob"></i>
   Register
@@ -69,4 +69,18 @@
   {{errorCreatingSFLinks}}
 </div>
 
-<!--todo SFLinks and Slack-->
+<div [ngSwitch]="postingToSlack">
+  <div *ngSwitchCase="Progress.NotStarted">
+    * Post job information to Slack: list, links to folder and Salesforce opp
+  </div>
+  <div *ngSwitchCase="Progress.Started">
+    * Posting to Slack <i class="fas fa-spinner fa-spin"></i>
+  </div>
+  <div *ngSwitchCase="Progress.Finished">
+    * A post has been made to Slack. Now go to Slack and share the post with the relevant
+    employer's Slack channel, and pin to that channel.
+  </div>
+</div>
+<div class="alert alert-danger" *ngIf="errorPostingToSlack">
+  {{errorPostingToSlack}}
+</div>
