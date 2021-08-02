@@ -59,6 +59,7 @@ import org.tbbtalent.server.security.PasswordHelper;
 import org.tbbtalent.server.service.db.*;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.service.db.util.PdfHelper;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 
 import javax.validation.constraints.NotNull;
@@ -1223,13 +1224,17 @@ public class CandidateServiceImpl implements CandidateService {
         Candidate candidate = getLoggedInCandidate()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         candidate.setAdditionalInfo(request.getAdditionalInfo());
-        String linkedInRegex = "^http[s]?:/\\/www\\.linkedin\\.com\\/in\\/[A-z0-9_-]+\\/?$";
-        Pattern p = Pattern.compile(linkedInRegex);
-        Matcher m = p.matcher(request.getLinkedInLink());
-        if (m.find()) {
-            candidate.setLinkedInLink(request.getLinkedInLink());
+        if (!request.getLinkedInLink().isEmpty()) {
+            String linkedInRegex = "^http[s]?:/\\/www\\.linkedin\\.com\\/in\\/[A-z0-9_-]+\\/?$";
+            Pattern p = Pattern.compile(linkedInRegex);
+            Matcher m = p.matcher(request.getLinkedInLink());
+            if (m.find()) {
+                candidate.setLinkedInLink(request.getLinkedInLink());
+            } else {
+                throw new InvalidRequestException("This is not a valid LinkedIn link.");
+            }
         } else {
-            throw new InvalidRequestException("This is not a valid LinkedIn link.");
+            candidate.setLinkedInLink(null);
         }
         candidate.setAuditFields(candidate.getUser());
         return save(candidate, true);
@@ -1904,17 +1909,16 @@ public class CandidateServiceImpl implements CandidateService {
     public Candidate createCandidateFolder(long id) 
             throws NoSuchObjectException, IOException {
         Candidate candidate = getCandidate(id);
-        
+
+        GoogleFileSystemDrive candidateDrive = googleDriveConfig.getCandidateDataDrive();
+        GoogleFileSystemFolder candidateRoot = googleDriveConfig.getCandidateRootFolder();
+
         String candidateNumber = candidate.getCandidateNumber();
         
         GoogleFileSystemFolder folder = fileSystemService.findAFolder(
-            googleDriveConfig.getCandidateDataDrive(), googleDriveConfig.getCandidateRootFolder(),
-            candidateNumber);
-        
+            candidateDrive, candidateRoot, candidateNumber);
         if (folder == null) {
-            folder = fileSystemService.createFolder(
-                googleDriveConfig.getCandidateDataDrive(), googleDriveConfig.getCandidateRootFolder(),
-                candidateNumber);
+            folder = fileSystemService.createFolder(candidateDrive, candidateRoot, candidateNumber);
         }
         candidate.setFolderlink(folder.getUrl());
         save(candidate, false);

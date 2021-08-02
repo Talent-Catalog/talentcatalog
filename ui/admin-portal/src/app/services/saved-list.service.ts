@@ -40,6 +40,12 @@ export class SavedListService {
     return this.http.post<SavedList>(`${this.apiUrl}`, request);
   }
 
+  createFolder(savedListId: number): Observable<SavedList> {
+    return this.http.put<SavedList>(
+      `${this.apiUrl}/${savedListId}/create-folder`, null);
+  }
+
+
   delete(id: number): Observable<boolean>  {
     return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
   }

@@ -480,6 +480,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private BigDecimal ieltsScore;
 
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNo healthIssues;
+
+    @Nullable
+    private String healthIssuesNotes;
+
     public Candidate() {
     }
 
@@ -1234,6 +1241,16 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
 
     public void setBirthCountry(@Nullable Country birthCountry) { this.birthCountry = birthCountry; }
 
+    @Nullable
+    public YesNo getHealthIssues() {return healthIssues;}
+
+    public void setHealthIssues(@Nullable YesNo healthIssues) {this.healthIssues = healthIssues;}
+
+    @Nullable
+    public String getHealthIssuesNotes() {return healthIssuesNotes;}
+
+    public void setHealthIssuesNotes(@Nullable String healthIssuesNotes) {this.healthIssuesNotes = healthIssuesNotes;}
+
     public boolean isSelected() {
         return selected;
     }
@@ -1356,6 +1373,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getFamilyMoveNotes() != null) {
             setFamilyMoveNotes(data.getFamilyMoveNotes());
+        }
+        if (data.getHealthIssues() != null) {
+            setHealthIssues(data.getHealthIssues());
+        }
+        if (data.getHealthIssuesNotes() != null) {
+            setHealthIssuesNotes(data.getHealthIssuesNotes());
         }
         if (data.getHomeLocation() != null) {
             setHomeLocation(data.getHomeLocation());

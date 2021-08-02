@@ -102,6 +102,8 @@ public class CandidateIntakeDataUpdate {
     private YesNo familyMove;
     private String familyMoveNotes;
 
+    private YesNo healthIssues;
+    private String healthIssuesNotes;
     private String homeLocation;
     private String hostChallenges;
     private Long hostEntryYear;

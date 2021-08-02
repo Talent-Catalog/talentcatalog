@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.api.admin;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
@@ -179,6 +180,14 @@ public class SavedListAdminApi implements
         
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(targetList);
+    }
+    
+    @PutMapping("{id}/create-folder")
+    public Map<String, Object> createListFolder(@PathVariable("id") long id)
+        throws IOException {
+        SavedList savedList = this.savedListService.createListFolder(id);
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.build(savedList);
     }
 
     @PutMapping("/shared-add/{id}")

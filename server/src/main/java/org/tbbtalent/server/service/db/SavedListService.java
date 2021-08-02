@@ -97,6 +97,20 @@ public interface SavedListService {
     void copyContents(UpdateExplicitSavedListContentsRequest request, SavedList destination);
 
     /**
+     * Creates a folder for the given list on Google Drive.
+     * <p/>
+     * If a folder already exists for the list, does nothing.
+     *
+     * @param id ID of list
+     * @return Updated saved list object, containing link to folder (created or
+     * existing) in {@link SavedList#getFolderlink()}
+     * @throws NoSuchObjectException if no list is found with that id
+     * @throws IOException           if there is a problem creating the folder.
+     */
+    SavedList createListFolder(long id)
+        throws NoSuchObjectException, IOException;     
+
+    /**
      * Create a new SavedList 
      * @param request Create request
      * @return Created saved list
