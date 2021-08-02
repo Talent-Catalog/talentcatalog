@@ -68,7 +68,7 @@ management:
 
 jwt:
   secret: ${JWT_SECRET:RX4bokONoSrrNLM6CMTij9iG9jHFG5VfsN1zIi9UqDGK3pQXASG7xMEga2VrAj3P1SNmywqnWRoTXnltuJ5l+A==}
-  expirationInMs: 604800000
+  expirationInMs: 86400000
 
 salesforce:
   # Security is set up using a self signed certificate generated using openssl:
