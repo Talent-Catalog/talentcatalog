@@ -1,17 +1,72 @@
-<div class="alert alert-danger" *ngIf="error">
-  {{error}}
-</div>
 
-<app-joblink (updateError)="error=$event"
+<app-joblink (updateError)="errorFindingJob=$event"
              (joblinkValidation)="onJoblinkValidation($event)"
 ></app-joblink>
+
+<div class="alert alert-danger" *ngIf="errorFindingJob">
+  {{errorFindingJob}}
+</div>
 
 <div *ngIf="jobName">
   {{jobName}}
 </div>
 
 <button type="button" class="btn btn-primary" (click)="create()"
-        [disabled]="!jobName || saving">
-  <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
+        [disabled]="!jobName || findingJob">
+  <i class="fas fa-spinner fa-spin" *ngIf="findingJob"></i>
   Register
 </button>
+
+<div [ngSwitch]="creatingList">
+  <div *ngSwitchCase="Progress.NotStarted">
+    * Create list associated with job
+  </div>
+  <div *ngSwitchCase="Progress.Started">
+    * Creating list <i class="fas fa-spinner fa-spin"></i>
+  </div>
+  <div *ngSwitchCase="Progress.Finished">
+    * List {{listLink}} is the list that should be populated with job candidates.
+  </div>
+</div>
+<div class="alert alert-danger" *ngIf="errorCreatingList">
+  {{errorCreatingList}}
+</div>
+
+<div [ngSwitch]="creatingFolders">
+  <div *ngSwitchCase="Progress.NotStarted">
+    * Create folders associated with list
+  </div>
+  <div *ngSwitchCase="Progress.Started">
+    * Creating folders <i class="fas fa-spinner fa-spin"></i>
+  </div>
+  <div *ngSwitchCase="Progress.Finished">
+    * The folders on Google Drive <a href="{{savedList.folderlink}}" target="_blank">here</a>
+    are associated with this list and job should be used
+    to store the job description and also the CVs that are send to the employer.
+    We can just send the employer a link to the folder containing the CVs.
+    They will only see the contents of that folder - nothing else.
+  </div>
+</div>
+<div class="alert alert-danger" *ngIf="errorCreatingFolders">
+  {{errorCreatingFolders}}
+</div>
+
+<div [ngSwitch]="creatingSFLinks">
+  <div *ngSwitchCase="Progress.NotStarted">
+    * Add links to Salesforce Job Opportunity back to list and list folders
+  </div>
+  <div *ngSwitchCase="Progress.Started">
+    * Creating Salesforce links <i class="fas fa-spinner fa-spin"></i>
+  </div>
+  <div *ngSwitchCase="Progress.Finished">
+    * The Salesforce job opportunity
+    <a href="{{savedList.sfJoblink}}" target="_blank">{{savedList.name}}</a> has links to the
+    above Talent catalog list and the list folders. This provides easy access to all relevant data
+    directly from Salesforce.
+  </div>
+</div>
+<div class="alert alert-danger" *ngIf="errorCreatingSFLinks">
+  {{errorCreatingSFLinks}}
+</div>
+
+<!--todo SFLinks and Slack-->

@@ -21,11 +21,14 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.model.sf.Opportunity;
+import org.tbbtalent.server.request.opportunity.UpdateEmployerOpportunityRequest;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
 import org.tbbtalent.server.util.dto.DtoBuilder;
@@ -44,7 +47,7 @@ public class SalesforceAdminApi {
    * Returns info (including "name") about the Salesforce opportunity corresponding to the given 
    * url - or null if the url does not refer to a Salesforce opportunity.
    * <p/>
-   * Note that the url is passed as request param - it not possible to pass another url in the 
+   * Note that the url is passed as request param - it is not possible to pass another url in the 
    * request url itself.
    * @param sfUrl Link to salesforce opportunity
    * @return Map containing "name" attribute and other opportunity attributes (as defined in the 
@@ -70,6 +73,12 @@ public class SalesforceAdminApi {
     return opportunityDto().build(opp);
   }
 
+  @PutMapping("update-emp-opp")
+  public void updateEmployerOpportunity(@RequestBody UpdateEmployerOpportunityRequest request)
+      throws GeneralSecurityException {
+    salesforceService.updateEmployerOpportunity(request);
+  }
+  
   private DtoBuilder opportunityDto() {
     return new DtoBuilder()
         .add("name")

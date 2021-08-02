@@ -28,6 +28,7 @@ import org.tbbtalent.server.model.sf.Opportunity;
 import java.security.GeneralSecurityException;
 import java.util.List;
 import org.tbbtalent.server.request.candidate.SalesforceOppParams;
+import org.tbbtalent.server.request.opportunity.UpdateEmployerOpportunityRequest;
 
 /**
  * Access to Salesforce.
@@ -182,4 +183,15 @@ public interface SalesforceService {
      * @throws SalesforceException if Salesforce had a problem with the data
      */
     void updateContact(Candidate candidate) throws GeneralSecurityException;
+    
+    /**
+     * Updates the Salesforce Employer opportunity record corresponding to the sfJoblink in the 
+     * given request.
+     * 
+     * @param request Contains a link to the opportunity to be updated, plus the data to update.
+     * @throws GeneralSecurityException If there are errors relating to keys and digital signing.
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     * @throws SalesforceException if Salesforce had a problem with the data
+     */
+    void updateEmployerOpportunity(UpdateEmployerOpportunityRequest request) throws GeneralSecurityException;
 }
