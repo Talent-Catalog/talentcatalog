@@ -68,6 +68,7 @@ management:
 
 jwt:
   secret: ${JWT_SECRET:RX4bokONoSrrNLM6CMTij9iG9jHFG5VfsN1zIi9UqDGK3pQXASG7xMEga2VrAj3P1SNmywqnWRoTXnltuJ5l+A==}
+  # This equates to 24 hours in milliseconds
   expirationInMs: 86400000
 
 salesforce:
