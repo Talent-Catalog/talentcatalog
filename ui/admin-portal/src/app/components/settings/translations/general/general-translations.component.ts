@@ -131,7 +131,6 @@ const ALL_FIELDS = {
     },
     "RESETPASSWORD": {
       "TITLE": null,
-      "ERROR": null,
       "SUCCESS": null,
       "LABEL": {
         "EMAIL": null

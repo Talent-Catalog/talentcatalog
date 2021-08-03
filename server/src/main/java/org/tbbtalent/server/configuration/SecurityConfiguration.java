@@ -261,6 +261,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         // Add the JWT security filter
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         http.addFilterAfter(languageFilter(), UsernamePasswordAuthenticationFilter.class);
+
+        // See https://docs.spring.io/spring-security/site/docs/5.2.0.RELEASE/reference/html/default-security-headers-2.html#webflux-headers-csp
+        // And about allowing Google see https://developers.google.com/web/fundamentals/security/csp/
+        http.headers().contentSecurityPolicy("script-src 'self' https://apis.google.com");
     }
 
     //See https://docs.spring.io/spring-security/site/docs/current/reference/html5/#cors
