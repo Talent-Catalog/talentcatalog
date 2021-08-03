@@ -82,6 +82,8 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("familyMove")
                 .add("familyMoveNotes")
 
+                .add("healthIssues")
+                .add("healthIssuesNotes")
                 .add("homeLocation")
                 .add("hostChallenges")
                 .add("hostEntryYear")
