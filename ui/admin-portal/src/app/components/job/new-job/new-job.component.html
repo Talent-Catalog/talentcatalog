@@ -1,86 +1,130 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]="['/']">Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page">
+      Create a New Job
+    </li>
+  </ol>
+</nav>
 
-<app-joblink (updateError)="errorFindingJob=$event"
-             (joblinkValidation)="onJoblinkValidation($event)"
-></app-joblink>
-
-<div class="alert alert-danger" *ngIf="errorFindingJob">
-  {{errorFindingJob}}
-</div>
-
-<div *ngIf="jobName">
-  {{jobName}}
-</div>
-
-<button type="button" class="btn btn-primary" (click)="createList()"
-        [disabled]="!jobName || findingJob">
-  <i class="fas fa-spinner fa-spin" *ngIf="findingJob"></i>
-  Register
-</button>
-
-<div [ngSwitch]="creatingList">
-  <div *ngSwitchCase="Progress.NotStarted">
-    * Create list associated with job
+<div class="d-flex mb-3">
+  <div class="mr-4">
+    <h5>Add a salesforce job link to begin</h5>
+    <p>If a valid link, click Create to create the following:</p>
+      <ul>
+        <li>Create list associated with job and connect with Salesforce joblink</li>
+        <li>Create google folders associated with list and connect to Salesforce joblink</li>
+        <li>Post job information to Slack: list, links to folder and Salesforce opp</li>
+      </ul>
   </div>
-  <div *ngSwitchCase="Progress.Started">
-    * Creating list <i class="fas fa-spinner fa-spin"></i>
+
+  <div class="d-flex flex-column flex-grow-1">
+    <app-joblink
+      (updateError)="errorFindingJob=$event"
+      (joblinkValidation)="onJoblinkValidation($event)">
+    </app-joblink>
+    <div class="alert alert-danger" *ngIf="errorFindingJob">
+      {{errorFindingJob}}
+    </div>
   </div>
-  <div *ngSwitchCase="Progress.Finished">
-    * List {{listLink}} is the list that should be populated with job candidates.
-  </div>
-</div>
-<div class="alert alert-danger" *ngIf="errorCreatingList">
-  {{errorCreatingList}}
 </div>
 
-<div [ngSwitch]="creatingFolders">
-  <div *ngSwitchCase="Progress.NotStarted">
-    * Create folders associated with list
+<div *ngIf="jobName" class="card">
+  <div class="card-header d-flex align-items-baseline justify-content-between">
+    <h5>Job: {{jobName}}</h5>
+      <button *ngIf="jobName" type="button" class="btn btn-primary float-right" (click)="createList()"
+              [disabled]="!jobName || findingJob">
+        <i class="fas fa-spinner fa-spin" *ngIf="findingJob"></i>
+        Create Job
+      </button>
   </div>
-  <div *ngSwitchCase="Progress.Started">
-    * Creating folders <i class="fas fa-spinner fa-spin"></i>
+  <div class="card-body">
+    <div class="progress">
+      <div class="tbb-primary" [ngClass]="{'progress-bar-animated progress-bar-striped': totalProgress != 100 }" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" [ngStyle]="{'width': totalProgress + '%'}"></div>
+    </div>
+
+    <div class="d-flex flex-column pt-4">
+      <div [ngSwitch]="creatingList">
+        <ul class="fa-ul">
+          <li *ngSwitchCase="Progress.NotStarted"><span class="fa-li text-secondary"><i class="far fa-square"></i></span>
+            Create list associated with job
+          </li>
+          <li *ngSwitchCase="Progress.Started"><span class="fa-li text-primary"><i class="fas fa-spinner fa-spin"></i></span>
+            Creating list
+          </li>
+          <li *ngSwitchCase="Progress.Finished"><span class="fa-li text-success"><i class="fas fa-check-square"></i></span>
+            List <a [href]="listLink" target="_blank>">{{listLink}}</a> is the list that should be populated with job candidates.
+          </li>
+        </ul>
+        <div class="alert alert-danger" *ngIf="errorCreatingList">
+          {{errorCreatingList}}
+        </div>
+      </div>
+
+      <div [ngSwitch]="creatingFolders">
+        <ul class="fa-ul">
+          <li *ngSwitchCase="Progress.NotStarted"><span class="fa-li text-secondary"><i class="far fa-square"></i></span>
+            Create folders associated with list
+          </li>
+          <li *ngSwitchCase="Progress.Started"><span class="fa-li text-primary"><i class="fas fa-spinner fa-spin"></i></span>
+            Creating folders
+          </li>
+          <li *ngSwitchCase="Progress.Finished"><span class="fa-li text-success"><i class="fas fa-check-square"></i></span>
+            The folders on Google Drive <a href="{{savedList.folderlink}}" target="_blank">here</a>
+            are associated with this list and job should be used
+            to store the job description and also the CVs that are send to the employer.
+            We can just send the employer a link to the folder containing the CVs.
+            They will only see the contents of that folder - nothing else.
+          </li>
+        </ul>
+        <div class="alert alert-danger" *ngIf="errorCreatingFolders">
+          {{errorCreatingFolders}}
+        </div>
+      </div>
+
+      <div [ngSwitch]="creatingSFLinks">
+        <ul class="fa-ul">
+          <li *ngSwitchCase="Progress.NotStarted"><span class="fa-li text-secondary"><i class="far fa-square"></i></span>
+            Add links to Salesforce Job Opportunity back to list and list folders
+          </li>
+          <li *ngSwitchCase="Progress.Started"><span class="fa-li text-primary"><i class="fas fa-spinner fa-spin"></i></span>
+            Creating Salesforce links
+          </li>
+          <li *ngSwitchCase="Progress.Finished"><span class="fa-li text-success"><i class="fas fa-check-square"></i></span>
+            The Salesforce job opportunity
+            <a href="{{savedList.sfJoblink}}" target="_blank">{{savedList.name}}</a> has links to the
+            above Talent catalog list and the list folders. This provides easy access to all relevant data
+            directly from Salesforce.
+          </li>
+        </ul>
+        <div class="alert alert-danger" *ngIf="errorCreatingSFLinks">
+          {{errorCreatingSFLinks}}
+        </div>
+      </div>
+
+      <div [ngSwitch]="postingToSlack">
+        <ul class="fa-ul">
+          <li *ngSwitchCase="Progress.NotStarted"><span class="fa-li text-secondary"><i class="far fa-square"></i></span>
+            Post job information to Slack: list, links to folder and Salesforce opp
+          </li>
+          <li *ngSwitchCase="Progress.Started"><span class="fa-li text-primary"><i class="fas fa-spinner fa-spin"></i></span>
+            Posting to Slack
+          </li>
+          <li *ngSwitchCase="Progress.Finished"><span class="fa-li text-success"><i class="fas fa-check-square"></i></span>
+            A post has been made to Slack. Now go to Slack and share the post with the relevant
+            employer's Slack channel, and pin to that channel.
+          </li>
+        </ul>
+        <div class="alert alert-danger" *ngIf="errorPostingToSlack">
+          {{errorPostingToSlack}}
+        </div>
+      </div>
+    </div>
   </div>
-  <div *ngSwitchCase="Progress.Finished">
-    * The folders on Google Drive <a href="{{savedList.folderlink}}" target="_blank">here</a>
-    are associated with this list and job should be used
-    to store the job description and also the CVs that are send to the employer.
-    We can just send the employer a link to the folder containing the CVs.
-    They will only see the contents of that folder - nothing else.
-  </div>
-</div>
-<div class="alert alert-danger" *ngIf="errorCreatingFolders">
-  {{errorCreatingFolders}}
 </div>
 
-<div [ngSwitch]="creatingSFLinks">
-  <div *ngSwitchCase="Progress.NotStarted">
-    * Add links to Salesforce Job Opportunity back to list and list folders
-  </div>
-  <div *ngSwitchCase="Progress.Started">
-    * Creating Salesforce links <i class="fas fa-spinner fa-spin"></i>
-  </div>
-  <div *ngSwitchCase="Progress.Finished">
-    * The Salesforce job opportunity
-    <a href="{{savedList.sfJoblink}}" target="_blank">{{savedList.name}}</a> has links to the
-    above Talent catalog list and the list folders. This provides easy access to all relevant data
-    directly from Salesforce.
-  </div>
-</div>
-<div class="alert alert-danger" *ngIf="errorCreatingSFLinks">
-  {{errorCreatingSFLinks}}
-</div>
 
-<div [ngSwitch]="postingToSlack">
-  <div *ngSwitchCase="Progress.NotStarted">
-    * Post job information to Slack: list, links to folder and Salesforce opp
-  </div>
-  <div *ngSwitchCase="Progress.Started">
-    * Posting to Slack <i class="fas fa-spinner fa-spin"></i>
-  </div>
-  <div *ngSwitchCase="Progress.Finished">
-    * A post has been made to Slack. Now go to Slack and share the post with the relevant
-    employer's Slack channel, and pin to that channel.
-  </div>
-</div>
-<div class="alert alert-danger" *ngIf="errorPostingToSlack">
-  {{errorPostingToSlack}}
-</div>
+
+
+
+
