@@ -264,7 +264,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         // See https://docs.spring.io/spring-security/site/docs/5.2.0.RELEASE/reference/html/default-security-headers-2.html#webflux-headers-csp
         // And about allowing Google see https://developers.google.com/web/fundamentals/security/csp/
-        http.headers().contentSecurityPolicy("script-src 'self' https://apis.google.com");
+        // http.headers().contentSecurityPolicy("script-src 'self' https://apis.google.com");
     }
 
     //See https://docs.spring.io/spring-security/site/docs/current/reference/html5/#cors
