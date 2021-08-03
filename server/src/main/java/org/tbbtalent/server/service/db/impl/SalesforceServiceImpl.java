@@ -583,14 +583,17 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     public void updateEmployerOpportunity(UpdateEmployerOpportunityRequest request)
         throws GeneralSecurityException {
 
-        String sfJoblink = request.getSfJoblink();
-
-        //Get id of job opportunity.  
-        String jobOpportunityId = extractIdFromSfUrl(sfJoblink);
-
-        EmployerOpportunityRequest sfRequest = new EmployerOpportunityRequest(request);
-
-        executeUpdate(jobOpportunityId, sfRequest);
+        //todo Stub it out for testing
+        return;
+        
+//        String sfJoblink = request.getSfJoblink();
+//
+//        //Get id of job opportunity.  
+//        String jobOpportunityId = extractIdFromSfUrl(sfJoblink);
+//
+//        EmployerOpportunityRequest sfRequest = new EmployerOpportunityRequest(request);
+//
+//        executeUpdate(jobOpportunityId, sfRequest);
     }
 
     /**

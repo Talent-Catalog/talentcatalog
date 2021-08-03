@@ -17,7 +17,6 @@
 package org.tbbtalent.server.service.db.impl;
 
 import org.springframework.stereotype.Service;
-import org.tbbtalent.server.exception.NotImplementedException;
 import org.tbbtalent.server.request.opportunity.PostJobToSlackRequest;
 import org.tbbtalent.server.service.db.SlackService;
 
@@ -32,6 +31,5 @@ public class SlackServiceImpl implements SlackService {
   @Override
   public void postJob(PostJobToSlackRequest request) {
     //TODO JC postJob not implemented in SlackServiceImpl
-    throw new NotImplementedException("SlackServiceImpl", "postJob");
   }
 }
