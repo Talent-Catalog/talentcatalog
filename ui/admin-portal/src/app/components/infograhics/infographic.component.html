@@ -20,72 +20,76 @@
 <!--      <i class="fas fa-file-excel"></i> Export-->
 <!--    </button>-->
 <!--  </div>-->
-    <form [formGroup]="statsFilter" class="d-flex align-items-baseline">
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]="['/']">Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page">
+      Load Infographics
+    </li>
+  </ol>
+</nav>
+<form [formGroup]="statsFilter" class="d-flex align-items-baseline">
 
-      <div class="flex-fill">
-        <!-- SAVED LIST -->
-        <div class="d-flex flex-fill mb-2">
-          <div class="mr-2 flex-fill w-50">
-            <label>List</label>
-            <!-- Disabled if saved search is entered -->
-            <ng-select
-              id="savedList"
-              [items]="lists"
-              [closeOnSelect]="false"
-              [searchable]="true"
-              placeholder="Select or type..."
-              bindLabel="name"
-              [readonly]="savedSearch != null"
-              formControlName="savedList">
-            </ng-select>
-          </div>
-
-          <!-- SAVED SEARCH -->
-          <div class="flex-fill w-50">
-            <label>Search</label>
-            <!-- Disabled if saved list is entered -->
-            <ng-select
-              id="savedSearch"
-              [items]="searches"
-              [closeOnSelect]="false"
-              [searchable]="true"
-              placeholder="Select or type..."
-              bindLabel="name"
-              [readonly]="savedList != null"
-              formControlName="savedSearch">
-            </ng-select>
-          </div>
-        </div>
-        <div class="text-muted small">
-          <p>Notes: Either List or Search can be specified, but not both.
-            Default date filters go from start of registrations to today's date.</p>
-        </div>
+  <div class="flex-fill">
+    <!-- SAVED LIST -->
+    <div class="d-flex flex-fill mb-2">
+      <div class="mr-2 flex-fill w-50">
+        <label>List</label>
+        <!-- Disabled if saved search is entered -->
+        <ng-select
+          id="savedList"
+          [items]="lists"
+          [closeOnSelect]="false"
+          [searchable]="true"
+          placeholder="Select or type..."
+          bindLabel="name"
+          [readonly]="savedSearch != null"
+          formControlName="savedList">
+        </ng-select>
       </div>
 
-      <div class="d-flex align-items-center flex-fill">
-        <!-- DATE FROM -->
-        <div class="ml-2">
-          <label for="dateFrom">Date From:</label>
-          <app-date-picker id="dateFrom" [control]="statsFilter.controls.dateFrom" [allowFuture]="false"></app-date-picker>
-        </div>
-        <!-- DATE TO -->
-        <div class="">
-          <label for="dateTo">Date To:</label>
-          <app-date-picker id="dateTo" [control]="statsFilter.controls.dateTo" [allowFuture]="false"></app-date-picker>
-        </div>
-
-
+      <!-- SAVED SEARCH -->
+      <div class="flex-fill w-50">
+        <label>Search</label>
+        <!-- Disabled if saved list is entered -->
+        <ng-select
+          id="savedSearch"
+          [items]="searches"
+          [closeOnSelect]="false"
+          [searchable]="true"
+          placeholder="Select or type..."
+          bindLabel="name"
+          [readonly]="savedList != null"
+          formControlName="savedSearch">
+        </ng-select>
       </div>
-      <div class="d-flex align-self-center flex-fill justify-content-end">
-        <button class="btn btn-primary btn-block" (click)="submitStatsRequest()">
-          <i class="fas fa-calendar-alt"></i> Filter
-        </button>
-      </div>
-    </form>
+    </div>
+    <div class="text-muted small">
+      <p>Notes: Either List or Search can be specified, but not both.
+        Default date filters go from start of registrations to today's date.</p>
+    </div>
+  </div>
+
+  <div class="d-flex align-items-center flex-fill">
+    <!-- DATE FROM -->
+    <div class="ml-2">
+      <label for="dateFrom">Date From:</label>
+      <app-date-picker id="dateFrom" [control]="statsFilter.controls.dateFrom" [allowFuture]="false"></app-date-picker>
+    </div>
+    <!-- DATE TO -->
+    <div class="">
+      <label for="dateTo">Date To:</label>
+      <app-date-picker id="dateTo" [control]="statsFilter.controls.dateTo" [allowFuture]="false"></app-date-picker>
+    </div>
 
 
-<!--  </div>-->
-
+  </div>
+  <div class="d-flex align-self-center flex-fill justify-content-end">
+    <button class="btn btn-primary btn-block" (click)="submitStatsRequest()">
+      <i class="fas fa-calendar-alt"></i> Filter
+    </button>
+  </div>
+</form>
 
 <ng-container *ngIf="loading">
   <i class="fas fa-spinner fa-spin"></i>

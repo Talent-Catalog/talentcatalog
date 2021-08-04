@@ -2,11 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {JoblinkValidationEvent} from "../../util/joblink/joblink.component";
 import {SavedList, UpdateSavedListInfoRequest} from "../../../model/saved-list";
 import {SavedListService} from "../../../services/saved-list.service";
-import {
-  PostJobToSlackRequest,
-  Progress,
-  UpdateEmployerOpportunityRequest
-} from "../../../model/base";
+import {PostJobToSlackRequest, Progress, UpdateEmployerOpportunityRequest} from "../../../model/base";
 import {getCandidateSourceExternalHref} from "../../../model/saved-search";
 import {Location} from "@angular/common";
 import {Router} from "@angular/router";
@@ -33,6 +29,7 @@ export class NewJobComponent implements OnInit {
   errorCreatingList: string = null;
   errorCreatingSFLinks: string = null;
   errorPostingToSlack: string = null;
+  totalProgress: number;
 
   constructor(
     private salesforceService: SalesforceService,
@@ -50,6 +47,11 @@ export class NewJobComponent implements OnInit {
   get Progress() {
     return Progress;
   }
+
+  get progressPercent() {
+    return this.totalProgress;
+  }
+
 
   onJoblinkValidation(jobOpportunity: JoblinkValidationEvent) {
     if (jobOpportunity.valid) {
@@ -73,6 +75,7 @@ export class NewJobComponent implements OnInit {
       (savedList) => {
         this.creatingList = Progress.Finished;
         this.savedList = savedList;
+        this.totalProgress = 25;
         this.createFolders();
       },
       (error) => {
@@ -89,6 +92,7 @@ export class NewJobComponent implements OnInit {
     this.savedListService.createFolder(this.savedList.id).subscribe(
       savedList => {
         this.savedList = savedList;
+        this.totalProgress = 50;
         this.createSFBacklinks();
         this.creatingFolders = Progress.Finished;
       },
@@ -110,6 +114,7 @@ export class NewJobComponent implements OnInit {
     this.salesforceService.updateEmployerOpportunity(request).subscribe(
       () => {
         this.creatingSFLinks = Progress.Finished;
+        this.totalProgress = 75;
       },
       error => {
         this.errorCreatingSFLinks = error;
@@ -136,6 +141,7 @@ export class NewJobComponent implements OnInit {
         //todo Could return link to Slack channel
         this.slacklink = "https://todo.com";
         this.postingToSlack = Progress.Finished;
+        this.totalProgress = 100;
       },
       error => {
         this.errorPostingToSlack = error;

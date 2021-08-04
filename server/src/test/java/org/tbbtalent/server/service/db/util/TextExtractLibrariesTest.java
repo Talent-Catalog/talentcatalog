@@ -16,12 +16,6 @@
 
 package org.tbbtalent.server.service.db.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.io.RandomAccessFile;
@@ -34,14 +28,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.tbbtalent.server.service.db.aws.S3ResourceHelper;
 
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfReader;
-import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor;
-import com.itextpdf.kernel.pdf.canvas.parser.listener.LocationTextExtractionStrategy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class TextExtractLibrariesTest {
@@ -89,18 +82,18 @@ public class TextExtractLibrariesTest {
      */
 //    @Test
     void iTextMethodsPdf() throws IOException {
-        String src = "src/test/resources/text/EnglishPdf.pdf";
-        PdfDocument pdfDoc = new PdfDocument(new PdfReader(src));
-        assertNotNull(pdfDoc);
-
-        String str;
-        StringBuffer txt = new StringBuffer();
-        for (int i=1; i<= pdfDoc.getNumberOfPages(); i++){
-            str = PdfTextExtractor.getTextFromPage(pdfDoc.getPage(i), new LocationTextExtractionStrategy());
-            txt.append(str);
-        }
-        assertNotEquals("", txt);
-        pdfDoc.close();
+//        String src = "src/test/resources/text/EnglishPdf.pdf";
+//        PdfDocument pdfDoc = new PdfDocument(new PdfReader(src));
+//        assertNotNull(pdfDoc);
+//
+//        String str;
+//        StringBuffer txt = new StringBuffer();
+//        for (int i=1; i<= pdfDoc.getNumberOfPages(); i++){
+//            str = PdfTextExtractor.getTextFromPage(pdfDoc.getPage(i), new LocationTextExtractionStrategy());
+//            txt.append(str);
+//        }
+//        assertNotEquals("", txt);
+//        pdfDoc.close();
     }
 
     /**

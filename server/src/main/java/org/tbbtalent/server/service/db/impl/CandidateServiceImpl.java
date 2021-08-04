@@ -1224,13 +1224,17 @@ public class CandidateServiceImpl implements CandidateService {
         Candidate candidate = getLoggedInCandidate()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         candidate.setAdditionalInfo(request.getAdditionalInfo());
-        String linkedInRegex = "^http[s]?:/\\/www\\.linkedin\\.com\\/in\\/[A-z0-9_-]+\\/?$";
-        Pattern p = Pattern.compile(linkedInRegex);
-        Matcher m = p.matcher(request.getLinkedInLink());
-        if (m.find()) {
-            candidate.setLinkedInLink(request.getLinkedInLink());
+        if (request.getLinkedInLink() != null && !request.getLinkedInLink().isEmpty()) {
+            String linkedInRegex = "^http[s]?:/\\/www\\.linkedin\\.com\\/in\\/[A-z0-9_-]+\\/?$";
+            Pattern p = Pattern.compile(linkedInRegex);
+            Matcher m = p.matcher(request.getLinkedInLink());
+            if (m.find()) {
+                candidate.setLinkedInLink(request.getLinkedInLink());
+            } else {
+                throw new InvalidRequestException("This is not a valid LinkedIn link.");
+            }
         } else {
-            throw new InvalidRequestException("This is not a valid LinkedIn link.");
+            candidate.setLinkedInLink(null);
         }
         candidate.setAuditFields(candidate.getUser());
         return save(candidate, true);
