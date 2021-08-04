@@ -60,6 +60,7 @@ export interface Candidate extends HasId {
   drivingLicense: DrivingLicenseStatus;
   unhcrStatus: UnhcrStatus;
   ieltsScore: string;
+  numberDependants: number;
   langAssessmentScore: string;
   candidateExams: CandidateExam[];
 }

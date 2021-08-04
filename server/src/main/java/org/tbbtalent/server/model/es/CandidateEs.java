@@ -155,6 +155,9 @@ public class CandidateEs {
     @Field(type = FieldType.Double)
     private BigDecimal ieltsScore;
 
+    @Field(type = FieldType.Double)
+    private Long numberDependants;
+
     public CandidateEs() {
     }
 
@@ -186,6 +189,7 @@ public class CandidateEs {
         this.dob = candidate.getDob();
         this.residenceStatus = candidate.getResidenceStatus();
         this.ieltsScore = candidate.getIeltsScore();
+        this.numberDependants = candidate.getNumberDependants();
 
         this.maxEducationLevel = null;
         if (candidate.getMaxEducationLevel() != null) {

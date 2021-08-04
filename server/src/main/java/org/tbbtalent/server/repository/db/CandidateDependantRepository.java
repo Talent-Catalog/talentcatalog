@@ -17,8 +17,16 @@
 package org.tbbtalent.server.repository.db;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.tbbtalent.server.model.db.CandidateDependant;
 
 public interface CandidateDependantRepository
         extends JpaRepository<CandidateDependant, Long> {
+
+    //select count(*) from candidate_dependant cd where candidate_id = 32156;
+    @Query(" select count(cd) from CandidateDependant cd "
+            + " left join cd.candidate c "
+            + " where c.id = :candidateId")
+    Long countByCandidateId(@Param("candidateId") Long candidateId);
 }
