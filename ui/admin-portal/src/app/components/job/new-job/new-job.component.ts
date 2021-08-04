@@ -22,6 +22,7 @@ export class NewJobComponent implements OnInit {
   jobName: string;
   savedList: SavedList;
   sfJoblink: string;
+  slacklink: string;
   creatingList: Progress = Progress.NotStarted;
   creatingFolders: Progress = Progress.NotStarted;
   creatingSFLinks: Progress = Progress.NotStarted;
@@ -132,7 +133,8 @@ export class NewJobComponent implements OnInit {
     };
     this.slackService.postJob(request).subscribe(
       () => {
-        //todo Could return link to Slack post
+        //todo Could return link to Slack channel
+        this.slacklink = "https://todo.com";
         this.postingToSlack = Progress.Finished;
       },
       error => {

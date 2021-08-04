@@ -583,7 +583,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     public void updateEmployerOpportunity(UpdateEmployerOpportunityRequest request)
         throws GeneralSecurityException {
 
-        //todo Stub it out for testing
+        //todo Stubbed it out for testing
         return;
         
 //        String sfJoblink = request.getSfJoblink();
