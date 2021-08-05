@@ -66,14 +66,28 @@ public class CandidateDependantServiceImpl implements CandidateDependantService 
         cd.setHealthConcern(request.getHealthConcern());
         cd.setHealthNotes(request.getHealthNotes());
 
-        return candidateDependantRepository.save(cd);
+        cd = candidateDependantRepository.save(cd);
+        Long noOfObjects = candidateDependantRepository.countByCandidateId(candidateId);
+        candidate.setNumberDependants(noOfObjects);
+        return cd;
     }
 
     @Override
-    public boolean deleteDependant(long dependantId)
+    public Candidate deleteDependant(long dependantId)
             throws EntityReferencedException, InvalidRequestException {
+        CandidateDependant cd;
+        cd = candidateDependantRepository.findById(dependantId)
+                .orElseThrow(() -> new NoSuchObjectException(CandidateDependant.class, dependantId));
+        Candidate candidate = cd.getCandidate();
         candidateDependantRepository.deleteById(dependantId);
-        return true;
+
+        Long noOfObjects = candidateDependantRepository.countByCandidateId(cd.getCandidate().getId());
+        if (noOfObjects == 0) {
+            candidate.setNumberDependants(null);
+        } else {
+            candidate.setNumberDependants(noOfObjects);
+        }
+        return candidate;
     }
 
     @Override

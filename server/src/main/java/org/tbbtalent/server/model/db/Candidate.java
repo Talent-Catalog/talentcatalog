@@ -480,6 +480,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private BigDecimal ieltsScore;
 
+    @Nullable
+    private Long numberDependants;
+
     @Enumerated(EnumType.STRING)
     @Nullable
     private YesNo healthIssues;
@@ -1232,9 +1235,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         return ieltsScore;
     }
 
-    public void setIeltsScore(@Nullable BigDecimal ieltsScore) {
-        this.ieltsScore = ieltsScore;
-    }
+    public void setIeltsScore(@Nullable BigDecimal ieltsScore) {this.ieltsScore = ieltsScore;}
+
+    @Nullable
+    public Long getNumberDependants() {return numberDependants;}
+
+    public void setNumberDependants(@Nullable Long numberDependants) {this.numberDependants = numberDependants;}
 
     @Nullable
     public Country getBirthCountry() { return birthCountry; }

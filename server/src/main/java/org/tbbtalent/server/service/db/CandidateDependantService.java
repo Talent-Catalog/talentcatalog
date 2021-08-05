@@ -43,12 +43,12 @@ public interface CandidateDependantService {
     /**
      * Delete the candidate dependant with the given id.
      * @param dependantId ID of record to be deleted
-     * @return True if record was deleted, false if it was not found.
+     * @return Candidate owner of the dependant object, need it to save numberDependants on candidate object.
      * @throws EntityReferencedException if the object cannot be deleted because
      * it is referenced by another object.
      * @throws InvalidRequestException if not authorized to delete this list.
      */
-    boolean deleteDependant(long dependantId)
+    Candidate deleteDependant(long dependantId)
             throws EntityReferencedException, InvalidRequestException;
 
     /**
