@@ -64,7 +64,8 @@ public class CandidateEs {
             "maxEducationLevel",
             "ieltsScore",
             "residenceStatus",
-    }; 
+            "numberDependants",
+    };
    
     @Id
     private String id;
@@ -155,7 +156,7 @@ public class CandidateEs {
     @Field(type = FieldType.Double)
     private BigDecimal ieltsScore;
 
-    @Field(type = FieldType.Double)
+    @Field(type = FieldType.Long)
     private Long numberDependants;
 
     public CandidateEs() {
@@ -348,7 +349,7 @@ public class CandidateEs {
                 //and updated, is assumed to be a keyword field.
                 //This will need to change if we add other sorting fields 
                 //that are not keyword fields (eg numeric fields).
-                String[] nonKeywordFields = {"masterId", "updated", "maxEducationLevel", "ieltsScore"};
+                String[] nonKeywordFields = {"masterId", "updated", "maxEducationLevel", "ieltsScore", "numberDependants"};
 
                 boolean keywordField = Arrays.stream(nonKeywordFields).noneMatch(sortField::equals);
                 
