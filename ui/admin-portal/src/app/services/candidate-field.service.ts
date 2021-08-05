@@ -74,7 +74,7 @@ export class CandidateFieldService {
       this.getIeltsScoreType, null),
     new CandidateFieldInfo("Legal status", "residenceStatus",
       this.getDisplayEnum, null),
-    new CandidateFieldInfo("# Dependants", "numberDependants",
+    new CandidateFieldInfo("Dependants", "numberDependants",
       null, null),
   ];
 
