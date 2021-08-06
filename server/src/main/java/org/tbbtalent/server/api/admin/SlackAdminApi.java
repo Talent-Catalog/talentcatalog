@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbbtalent.server.request.opportunity.PostJobToSlackRequest;
+import org.tbbtalent.server.request.opportunity.PostJobToSlackResponse;
 import org.tbbtalent.server.service.db.SlackService;
 
 /**
@@ -39,9 +40,15 @@ public class SlackAdminApi {
     this.slackService = slackService;
   }
 
+  /**
+   * Post job info to Slack
+   * @param request Data to be posted
+   * @return Url of channel posted to
+   */
   @PostMapping("post-job")
-  public void postJob(@RequestBody PostJobToSlackRequest request) {
-    slackService.postJob(request);
+  public PostJobToSlackResponse postJob(@RequestBody PostJobToSlackRequest request) {
+    String slackChannelUrl = slackService.postJob(request);
+    return new PostJobToSlackResponse(slackChannelUrl);
   }
   
 }

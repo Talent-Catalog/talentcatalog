@@ -125,6 +125,9 @@ export interface UpdateEmployerOpportunityRequest extends HasJobRelatedLinks {
 export interface PostJobToSlackRequest extends HasJobRelatedLinks {
   jobName?: string;
 }
+export interface PostJobToSlackResponse {
+  slackChannelUrl: string;
+}
 
 export class PagedSearchRequest {
   pageSize?: number;

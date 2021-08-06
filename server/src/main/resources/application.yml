@@ -97,6 +97,7 @@ salesforce:
     tbbAccount: 0011N00001DouDKQAZ
   
 slack:
+  workspace: https://refugeejobsmarket.slack.com
   channelId: C029WMY6H1U
   token: ${SLACK_TOKEN}
 

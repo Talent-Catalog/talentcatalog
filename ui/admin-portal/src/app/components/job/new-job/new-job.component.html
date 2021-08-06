@@ -114,8 +114,9 @@
             Posting to Slack
           </li>
           <li *ngSwitchCase="Progress.Finished"><span class="fa-li text-success"><i class="fas fa-check-square"></i></span>
-            A post has been made to Slack {{slacklink}}. Now go to Slack and share the post with the relevant
-            employer's Slack channel, and pin to that channel.
+            A post has been made to Slack containing links to all job information.
+            Now <a href="{{slacklink}}" target="_blank">go to Slack</a> and share the post with the
+            relevant employer's Slack channel, and pin to that channel.
           </li>
         </ul>
         <div class="alert alert-danger" *ngIf="errorPostingToSlack">

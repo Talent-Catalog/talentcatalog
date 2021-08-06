@@ -45,5 +45,14 @@ public class SlackConfig {
    * https://api.slack.com/apps/A01UW0XCBBN/oauth?  
    */
   private String token;
+
+  /**
+   * Url of TBB's Slack workspace - eg https://refugeejobsmarket.slack.com/
+   */
+  private String workspace;
+  
+  public String getChannelUrl() {
+    return workspace + "/archives/" + channelId;
+  }
   
 }

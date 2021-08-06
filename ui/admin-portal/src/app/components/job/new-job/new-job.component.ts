@@ -141,9 +141,8 @@ export class NewJobComponent implements OnInit {
       listlink: this.listLink
     };
     this.slackService.postJob(request).subscribe(
-      () => {
-        //todo Could return link to Slack channel
-        this.slacklink = "https://todo.com";
+      (response) => {
+        this.slacklink = response.slackChannelUrl;
         this.postingToSlack = Progress.Finished;
         this.totalProgress = 100;
       },

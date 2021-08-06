@@ -14,21 +14,27 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.service.db;
+package org.tbbtalent.server.request.opportunity;
 
-import org.tbbtalent.server.request.opportunity.PostJobToSlackRequest;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
- * Interface to TBB's Slack workspace
- *
+ * Request to post job related information to Slack.
  * @author John Cameron
  */
-public interface SlackService {
+@Getter
+@Setter
+@ToString
+public class PostJobToSlackResponse {
 
   /**
-   * Sends a post TBB's Slack workspace containing information about a job.
-   * @param request Contains the information to be posted 
-   * @return Url of Slack channel posted to
+   * Url of channel posted to
    */
-  String postJob(PostJobToSlackRequest request);
+  private String slackChannelUrl;
+
+  public PostJobToSlackResponse(String slackChannelUrl) {
+    this.slackChannelUrl = slackChannelUrl;
+  }
 }

@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.configuration.SlackConfig;
+import org.tbbtalent.server.exception.SlackException;
 import org.tbbtalent.server.request.opportunity.PostJobToSlackRequest;
 import org.tbbtalent.server.service.db.SlackService;
 
@@ -55,9 +56,8 @@ public class SlackServiceImpl implements SlackService {
     this.slackConfig = slackConfig;
   }
 
-  //todo Return Slack channel?
   @Override
-  public void postJob(PostJobToSlackRequest request) {
+  public String postJob(PostJobToSlackRequest request) {
     List<LayoutBlock> message = new ArrayList<>();
     message.add(HeaderBlock
         .builder()
@@ -73,7 +73,7 @@ public class SlackServiceImpl implements SlackService {
         .builder()
         .text(MarkdownTextObject
             .builder()
-            .text("• List: " + request.getListlink())
+            .text("• Talent Catalog List: " + request.getListlink())
             .build())
         .build());
     
@@ -128,9 +128,10 @@ public class SlackServiceImpl implements SlackService {
       ChatPostMessageResponse response = methodsClient.chatPostMessage(req);
       response.getChannel();
     } catch (Exception ex) {
-      //todo better handling of this
-      log.info("Slack failed", ex);
+      throw new SlackException(
+          "Post to Slack channel " + slackConfig.getChannelUrl() + " failed: " + ex);
     }
     
+    return slackConfig.getChannelUrl();
   }
 }
