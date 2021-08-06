@@ -65,6 +65,18 @@ public class SavedList extends AbstractCandidateSource {
      */
     @Nullable
     private String folderlink;
+
+    /**
+     * Url link to corresponding candidate folder on Google Drive, if one exists. 
+     */
+    @Nullable
+    private String foldercvlink;
+
+    /**
+     * Url link to corresponding candidate folder on Google Drive, if one exists. 
+     */
+    @Nullable
+    private String folderjdlink;
     
     /**
      * Non null if this is the selection list for the given saved search.
@@ -127,6 +139,24 @@ public class SavedList extends AbstractCandidateSource {
 
     public void setFolderlink(@Nullable String folderlink) {
         this.folderlink = folderlink;
+    }
+
+    @Nullable
+    public String getFoldercvlink() {
+        return foldercvlink;
+    }
+
+    public void setFoldercvlink(@Nullable String foldercvlink) {
+        this.foldercvlink = foldercvlink;
+    }
+
+    @Nullable
+    public String getFolderjdlink() {
+        return folderjdlink;
+    }
+
+    public void setFolderjdlink(@Nullable String folderjdlink) {
+        this.folderjdlink = folderjdlink;
     }
 
     @Nullable

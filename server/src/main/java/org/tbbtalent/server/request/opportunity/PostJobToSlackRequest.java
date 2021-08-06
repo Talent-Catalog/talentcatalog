@@ -16,25 +16,21 @@
 
 package org.tbbtalent.server.request.opportunity;
 
-import javax.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 /**
- * todo Doc
+ * Request to post job related information to Slack.
  * @author John Cameron
  */
 @Getter
 @Setter
-@ToString
-public class PostJobToSlackRequest {
-  @NotBlank
-  private String sfJoblink;
-  
+@ToString(callSuper = true)
+public class PostJobToSlackRequest extends HasJobRelatedLinksImpl {
+
+  /**
+   * Name of job - normally taken from name of job's related Salesforce Employer job opportunity.
+   */
   private String jobName;
-  
-  private String listlink;
-  
-  private String folderlink;
 }

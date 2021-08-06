@@ -43,6 +43,8 @@ public class SavedListBuilderSelector {
                 .add("savedSearchSource", savedSearchSourceDto())
                 .add("sfJoblink")
                 .add("folderlink")
+                .add("foldercvlink")
+                .add("folderjdlink")
                 .add("createdBy", userDto())
                 .add("createdDate")
                 .add("updatedBy", userDto())

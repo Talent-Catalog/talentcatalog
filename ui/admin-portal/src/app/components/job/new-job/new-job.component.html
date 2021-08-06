@@ -2,7 +2,7 @@
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a [routerLink]="['/']">Home</a></li>
     <li class="breadcrumb-item active" aria-current="page">
-      Create a New Job
+      Register a New Job
     </li>
   </ol>
 </nav>
@@ -10,7 +10,7 @@
 <div class="d-flex mb-3">
   <div class="mr-4">
     <h5>Add a salesforce job link to begin</h5>
-    <p>If a valid link, click Create to create the following:</p>
+    <p>If a valid link, click Register to create the following:</p>
       <ul>
         <li>Create list associated with job and connect with Salesforce joblink</li>
         <li>Create google folders associated with list and connect to Salesforce joblink</li>
@@ -31,11 +31,12 @@
 
 <div *ngIf="jobName" class="card">
   <div class="card-header d-flex align-items-baseline justify-content-between">
-    <h5>Job: {{jobName}}</h5>
+    <h5>{{jobName}}</h5>
+<!--    todo Disable button (or hide) when it has completed-->
       <button *ngIf="jobName" type="button" class="btn btn-primary float-right" (click)="createList()"
               [disabled]="!jobName || findingJob">
         <i class="fas fa-spinner fa-spin" *ngIf="findingJob"></i>
-        Create Job
+        Register Job
       </button>
   </div>
   <div class="card-body">
@@ -70,9 +71,11 @@
             Creating folders
           </li>
           <li *ngSwitchCase="Progress.Finished"><span class="fa-li text-success"><i class="fas fa-check-square"></i></span>
-            The folders on Google Drive <a href="{{savedList.folderlink}}" target="_blank">here</a>
-            are associated with this list and job should be used
-            to store the job description and also the CVs that are send to the employer.
+            The folder on Google Drive <a href="{{savedList.folderlink}}" target="_blank">here</a>
+            is associated with this list and job.
+            There is a <a href="{{savedList.foldercvlink}}" target="_blank">subfolder for CVs</a>.
+            There is also a <a href="{{savedList.folderjdlink}}" target="_blank">
+              subfolder for Job Descriptions</a>.
             We can just send the employer a link to the folder containing the CVs.
             They will only see the contents of that folder - nothing else.
           </li>

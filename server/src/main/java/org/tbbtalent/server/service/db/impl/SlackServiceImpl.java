@@ -31,12 +31,15 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.tbbtalent.server.configuration.SlackConfig;
 import org.tbbtalent.server.request.opportunity.PostJobToSlackRequest;
 import org.tbbtalent.server.service.db.SlackService;
 
 /**
- * TODO JC Doc
+ * Interface to TBB's Slack workspace
+ * <p/>
  * See https://medium.com/cloud-native-the-gathering/how-to-send-formatted-slack-message-blocks-via-the-java-slack-sdk-client-api-3fc9edb1aa98
+ * <p/>
  * There is an app registered on https://api.slack.com/apps for TBB's Slack workspace 
  * (Jobs Marketplace for Refugees) called TalentCatalog.
  *
@@ -46,6 +49,13 @@ import org.tbbtalent.server.service.db.SlackService;
 public class SlackServiceImpl implements SlackService {
   private static final Logger log = LoggerFactory.getLogger(SlackServiceImpl.class);
 
+  private final SlackConfig slackConfig;
+
+  public SlackServiceImpl(SlackConfig slackConfig) {
+    this.slackConfig = slackConfig;
+  }
+
+  //todo Return Slack channel?
   @Override
   public void postJob(PostJobToSlackRequest request) {
     List<LayoutBlock> message = new ArrayList<>();
@@ -66,18 +76,27 @@ public class SlackServiceImpl implements SlackService {
             .text("• List: " + request.getListlink())
             .build())
         .build());
+    
+    String folderDescription =
+        "• Google Folders:" 
+            + " <" + request.getFolderlink() + "|Root> folder,"
+            + " <" + request.getFoldercvlink() + "|CVs> folder (share with employers),"
+            + " <" + request.getFolderjdlink() + "|Job Description> folder";
     message.add(SectionBlock
         .builder()
         .text(MarkdownTextObject
             .builder()
-            .text("• Google Folder: " + request.getFolderlink())
+            .text(folderDescription)
             .build())
         .build());
+    
+    String sfLine = 
+        "• Salesforce: <" + request.getSfJoblink() + "|Employer job opportunity>";
     message.add(SectionBlock
         .builder()
         .text(MarkdownTextObject
             .builder()
-            .text("• Salesforce: " + request.getSfJoblink())
+            .text(sfLine)
             .build())
         .build());
     message.add(DividerBlock
@@ -85,7 +104,7 @@ public class SlackServiceImpl implements SlackService {
         .build());
     
     String finalInstructions = 
-        "Now please...\n" 
+        "Next...\n\n" 
         + "• Copy job description documents into Job Description folder (if they are not already there)\n" 
             + "• Share this post to the channel associated with this employer.";
     message.add(SectionBlock
@@ -96,23 +115,20 @@ public class SlackServiceImpl implements SlackService {
             .build())
         .build());
 
-    //todo Need config for prod and test Slack channels
     ChatPostMessageRequest req = ChatPostMessageRequest.builder()
-//        .channel("C029WMY6H1U")
-        .channel("C029XH683GW") //test
+        .channel(slackConfig.getChannelId())
         .text("New job")
         .blocks(message)
         .build();
     
     Slack slack = Slack.getInstance();
-    MethodsClient methodsClient = slack.methods("xoxb-130076373828-1988494714609-qfarB4l7JJvo1fGlLFjO3RsJ");
+    MethodsClient methodsClient = slack.methods(slackConfig.getToken());
     try {
       // Get a response as a Java object
-//      ChatPostMessageResponse response = methodsClient.chatPostMessage(reqx -> 
-//          reqx.channel("CU1SM56CD").text(":wave: Hi from a bot written in Java!"));
       ChatPostMessageResponse response = methodsClient.chatPostMessage(req);
       response.getChannel();
     } catch (Exception ex) {
+      //todo better handling of this
       log.info("Slack failed", ex);
     }
     

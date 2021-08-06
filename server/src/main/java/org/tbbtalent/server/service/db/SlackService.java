@@ -19,11 +19,15 @@ package org.tbbtalent.server.service.db;
 import org.tbbtalent.server.request.opportunity.PostJobToSlackRequest;
 
 /**
- * TODO JC Doc
+ * Interface to TBB's Slack workspace
  *
  * @author John Cameron
  */
 public interface SlackService {
 
+  /**
+   * Sends a post TBB's Slack workspace containing information about a job.
+   * @param request Contains the information to be posted 
+   */
   void postJob(PostJobToSlackRequest request);
 }

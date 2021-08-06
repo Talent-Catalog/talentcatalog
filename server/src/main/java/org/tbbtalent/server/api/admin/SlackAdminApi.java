@@ -25,7 +25,7 @@ import org.tbbtalent.server.request.opportunity.PostJobToSlackRequest;
 import org.tbbtalent.server.service.db.SlackService;
 
 /**
- * TODO JC Doc
+ * API for communicating with TBB's Slack workspace
  *
  * @author John Cameron
  */

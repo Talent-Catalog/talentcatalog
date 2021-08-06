@@ -111,17 +111,19 @@ export interface Opportunity {
   name: string;
 }
 
-export interface UpdateEmployerOpportunityRequest {
+export interface HasJobRelatedLinks {
   sfJoblink: string;
   listlink?: string;
   folderlink?: string;
+  foldercvlink?: string;
+  folderjdlink?: string;
 }
 
-export interface PostJobToSlackRequest {
-  sfJoblink: string;
+export interface UpdateEmployerOpportunityRequest extends HasJobRelatedLinks {
+}
+
+export interface PostJobToSlackRequest extends HasJobRelatedLinks {
   jobName?: string;
-  listlink?: string;
-  folderlink?: string;
 }
 
 export class PagedSearchRequest {

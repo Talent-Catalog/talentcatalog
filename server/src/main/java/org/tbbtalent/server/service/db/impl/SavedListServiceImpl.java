@@ -228,8 +228,13 @@ public class SavedListServiceImpl implements SavedListService {
             folderName = savedList.getName();
             GoogleFileSystemFolder subfolder = fileSystemService.createFolder(foldersDrive, folder, folderName);
 
-            fileSystemService.createFolder(foldersDrive, subfolder, LIST_CVS_SUBFOLDER);
-            fileSystemService.createFolder(foldersDrive, subfolder, LIST_JOB_DESCRIPTION_SUBFOLDER);
+            GoogleFileSystemFolder cvfolder = 
+                fileSystemService.createFolder(foldersDrive, subfolder, LIST_CVS_SUBFOLDER);
+            savedList.setFoldercvlink(cvfolder.getUrl());
+
+            GoogleFileSystemFolder jdfolder = 
+                fileSystemService.createFolder(foldersDrive, subfolder, LIST_JOB_DESCRIPTION_SUBFOLDER);
+            savedList.setFolderjdlink(jdfolder.getUrl());
         }
         savedList.setFolderlink(folder.getUrl());
         saveIt(savedList);

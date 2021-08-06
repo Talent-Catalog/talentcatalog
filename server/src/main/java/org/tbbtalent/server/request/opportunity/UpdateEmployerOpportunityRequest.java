@@ -16,7 +16,6 @@
 
 package org.tbbtalent.server.request.opportunity;
 
-import javax.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -29,12 +28,7 @@ import lombok.ToString;
  */
 @Getter
 @Setter
-@ToString
-public class UpdateEmployerOpportunityRequest {
-  @NotBlank
-  private String sfJoblink;
-  
-  private String listlink;
-  
-  private String folderlink;
+@ToString(callSuper = true)
+public class UpdateEmployerOpportunityRequest extends HasJobRelatedLinksImpl {
+
 }

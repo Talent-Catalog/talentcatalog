@@ -582,18 +582,15 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     @Override
     public void updateEmployerOpportunity(UpdateEmployerOpportunityRequest request)
         throws GeneralSecurityException {
-
-        //todo Stubbed it out for testing
-        return;
         
-//        String sfJoblink = request.getSfJoblink();
-//
-//        //Get id of job opportunity.  
-//        String jobOpportunityId = extractIdFromSfUrl(sfJoblink);
-//
-//        EmployerOpportunityRequest sfRequest = new EmployerOpportunityRequest(request);
-//
-//        executeUpdate(jobOpportunityId, sfRequest);
+        String sfJoblink = request.getSfJoblink();
+
+        //Get id of job opportunity.  
+        String jobOpportunityId = extractIdFromSfUrl(sfJoblink);
+
+        EmployerOpportunityRequest sfRequest = new EmployerOpportunityRequest(request);
+
+        executeUpdate(jobOpportunityId, sfRequest);
     }
 
     /**
@@ -1117,18 +1114,26 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     class EmployerOpportunityRequest {
 
         /**
-         * Link (url) to Google folder
+         * Link (url) to Google CVs folder
          */
-        public String Document_Store__c;
+        public String CVs_Folder__c;
+
+        /**
+         * Link (url) to Google Job Description folder
+         */
+        public String Job_Description_Folder__c;
 
         /**
          * Link (url) to Talent Catalog list
          */
         public String Talent_Catalog_List__c;
-
-
+        
         public EmployerOpportunityRequest(UpdateEmployerOpportunityRequest request) {
-            Document_Store__c = request.getFolderlink();
+            //Note that we only populate the CVs and JD folders - we don't bother with the 
+            //root folder. Not really needed because TBB staff can get to it on Google Drive 
+            // from the others.
+            CVs_Folder__c = request.getFoldercvlink();
+            Job_Description_Folder__c = request.getFolderjdlink();
             Talent_Catalog_List__c = request.getListlink();
         }
     }

@@ -109,6 +109,8 @@ export class NewJobComponent implements OnInit {
     const request: UpdateEmployerOpportunityRequest = {
       sfJoblink: this.savedList.sfJoblink,
       folderlink: this.savedList.folderlink,
+      foldercvlink: this.savedList.foldercvlink,
+      folderjdlink: this.savedList.folderjdlink,
       listlink: this.listLink
     };
     this.salesforceService.updateEmployerOpportunity(request).subscribe(
@@ -134,6 +136,8 @@ export class NewJobComponent implements OnInit {
       sfJoblink: this.savedList.sfJoblink,
       jobName: this.jobName,
       folderlink: this.savedList.folderlink,
+      foldercvlink: this.savedList.foldercvlink,
+      folderjdlink: this.savedList.folderjdlink,
       listlink: this.listLink
     };
     this.slackService.postJob(request).subscribe(

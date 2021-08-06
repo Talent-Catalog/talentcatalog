@@ -96,7 +96,9 @@ salesforce:
     otherAccount: 0013l00002JmHQhAAN
     tbbAccount: 0011N00001DouDKQAZ
   
-    
+slack:
+  channelId: C029WMY6H1U
+  token: ${SLACK_TOKEN}
 
 server:
   tomcat:
