@@ -33,7 +33,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.configuration.SlackConfig;
 import org.tbbtalent.server.exception.SlackException;
+import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.opportunity.PostJobToSlackRequest;
+import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.SlackService;
 
 /**
@@ -50,14 +52,20 @@ import org.tbbtalent.server.service.db.SlackService;
 public class SlackServiceImpl implements SlackService {
   private static final Logger log = LoggerFactory.getLogger(SlackServiceImpl.class);
 
+  private final AuthService authService;
   private final SlackConfig slackConfig;
 
-  public SlackServiceImpl(SlackConfig slackConfig) {
+  public SlackServiceImpl(AuthService authService, SlackConfig slackConfig) {
+    this.authService = authService;
     this.slackConfig = slackConfig;
   }
 
   @Override
   public String postJob(PostJobToSlackRequest request) {
+    User user = authService.getLoggedInUser().orElse(null);
+    String registeredBy = user == null ? "?" :
+        "<mailto:" + user.getEmail() + "|" + user.getDisplayName() + ">";
+    
     List<LayoutBlock> message = new ArrayList<>();
     message.add(HeaderBlock
         .builder()
@@ -69,6 +77,15 @@ public class SlackServiceImpl implements SlackService {
     message.add(DividerBlock
         .builder()
         .build());
+
+    message.add(SectionBlock
+        .builder()
+        .text(MarkdownTextObject
+            .builder()
+            .text("• Job registered by " + registeredBy)
+            .build())
+        .build());
+    
     message.add(SectionBlock
         .builder()
         .text(MarkdownTextObject
