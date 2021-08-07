@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {AfterContentInit, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterContentInit, AfterViewChecked, Component, OnInit, ViewChild} from '@angular/core';
 import {NgbNav, NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {SavedSearchSubtype, SavedSearchType} from "../../model/saved-search";
 import {CandidateSourceType, SearchBy} from "../../model/base"
@@ -27,7 +27,7 @@ import {FormBuilder, FormGroup} from "@angular/forms";
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit, AfterContentInit{
+export class HomeComponent implements OnInit, AfterViewChecked {
 
   activeTabId: string;
   categoryForm: FormGroup;
@@ -57,9 +57,8 @@ export class HomeComponent implements OnInit, AfterContentInit{
     });
   }
 
-  ngAfterContentInit(): void {
-    //Have to wait until AfterContentInit to avoid Expression changed error: https://angular.io/errors/NG0100
-    //This is called in order for the navigation tabs, this.nav, to be set. See doc on @ViewChild
+  ngAfterViewChecked(): void {
+    //This is called in order for the navigation tabs, this.nav, to be set.
     this.selectDefaultTab()
   }
 
