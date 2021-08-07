@@ -480,6 +480,16 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private BigDecimal ieltsScore;
 
+    @Nullable
+    private Long numberDependants;
+
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNo healthIssues;
+
+    @Nullable
+    private String healthIssuesNotes;
+
     public Candidate() {
     }
 
@@ -1225,14 +1235,27 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         return ieltsScore;
     }
 
-    public void setIeltsScore(@Nullable BigDecimal ieltsScore) {
-        this.ieltsScore = ieltsScore;
-    }
+    public void setIeltsScore(@Nullable BigDecimal ieltsScore) {this.ieltsScore = ieltsScore;}
+
+    @Nullable
+    public Long getNumberDependants() {return numberDependants;}
+
+    public void setNumberDependants(@Nullable Long numberDependants) {this.numberDependants = numberDependants;}
 
     @Nullable
     public Country getBirthCountry() { return birthCountry; }
 
     public void setBirthCountry(@Nullable Country birthCountry) { this.birthCountry = birthCountry; }
+
+    @Nullable
+    public YesNo getHealthIssues() {return healthIssues;}
+
+    public void setHealthIssues(@Nullable YesNo healthIssues) {this.healthIssues = healthIssues;}
+
+    @Nullable
+    public String getHealthIssuesNotes() {return healthIssuesNotes;}
+
+    public void setHealthIssuesNotes(@Nullable String healthIssuesNotes) {this.healthIssuesNotes = healthIssuesNotes;}
 
     public boolean isSelected() {
         return selected;
@@ -1356,6 +1379,12 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         }
         if (data.getFamilyMoveNotes() != null) {
             setFamilyMoveNotes(data.getFamilyMoveNotes());
+        }
+        if (data.getHealthIssues() != null) {
+            setHealthIssues(data.getHealthIssues());
+        }
+        if (data.getHealthIssuesNotes() != null) {
+            setHealthIssuesNotes(data.getHealthIssuesNotes());
         }
         if (data.getHomeLocation() != null) {
             setHomeLocation(data.getHomeLocation());

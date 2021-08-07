@@ -500,7 +500,7 @@ public class UserServiceImpl implements UserService {
             // temporary for testing till emails are working
             log.info("RESET URL: " + portalUrl + "/reset-password/" + user.getResetToken());
         } else {
-            throw new NoSuchObjectException(User.class, request.getEmail());
+            log.error("unable to send reset email for " + request.getEmail());
         }
     }
 
