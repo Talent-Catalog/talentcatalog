@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.exception.RegisteredListException;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
@@ -113,23 +114,32 @@ public interface SavedListService {
         throws NoSuchObjectException, IOException;     
 
     /**
-     * Create a new SavedList 
-     * @param request Create request
+     * Creates a new SavedList unless it is a registered list and a registered list for that
+     * job, as defined by {@link SavedList#getSfJoblink()} already exists, in which case
+     * nothing new is created, and the existing list is returned.
+     * @param request Request defining new list (including whether it is a registered list
+     *                ({@link UpdateSavedListInfoRequest#getRegisteredJob()})
      * @return Created saved list
      * @throws EntityExistsException if a list with this name already exists.
+     * @throws RegisteredListException if request is for a registered list but sfJoblink or name is missing
      */
     SavedList createSavedList(UpdateSavedListInfoRequest request) 
-            throws EntityExistsException;
+            throws EntityExistsException, RegisteredListException;
 
     /**
-     * Create a new SavedList
+     /**
+     * Creates a new SavedList unless it is a registered list and a registered list for that
+     * job, as defined by {@link SavedList#getSfJoblink()} already exists, in which case
+     * nothing new is created, and the existing list is returned.
      * @param user User to be recorded as creator of saved list
-     * @param request Create request
+     * @param request Request defining new list (including whether it is a registered list
+     *                ({@link UpdateSavedListInfoRequest#getRegisteredJob()})
      * @return Created saved list
      * @throws EntityExistsException if a list with this name already exists.
+     * @throws RegisteredListException if request is for a registered list but sfJoblink or name is missing
      */
     SavedList createSavedList(User user, UpdateSavedListInfoRequest request) 
-            throws EntityExistsException;
+            throws EntityExistsException, RegisteredListException;
 
     /**
      * Delete the SavedList with the given ID

@@ -67,8 +67,11 @@ public class SavedListAdminApi implements
      */
     
     /**
-     * Creates a new SavedList.
-     * @param request Request defining new list.
+     * Creates a new SavedList unless it is a registered list and a registered list for that
+     * job, as defined by {@link SavedList#getSfJoblink()} already exists, in which case
+     * nothing new is created, and the existing list is returned.
+     * @param request Request defining new list (including whether it is a registered list
+     *                ({@link UpdateSavedListInfoRequest#getRegisteredJob()})
      * @return The details about the list.  
      * @throws EntityExistsException if a list with this name already exists.
      */

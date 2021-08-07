@@ -29,7 +29,6 @@ export class NewJobComponent implements OnInit {
   errorCreatingList: string = null;
   errorCreatingSFLinks: string = null;
   errorPostingToSlack: string = null;
-  totalProgress: number;
 
   constructor(
     private salesforceService: SalesforceService,
@@ -48,25 +47,51 @@ export class NewJobComponent implements OnInit {
     return Progress;
   }
 
-  get progressPercent() {
-    return this.totalProgress;
+  get progressPercent(): number {
+    let pct = 0;
+    if (this.creatingList === Progress.Finished) {
+      pct += 25;
+    }
+    if (this.creatingFolders === Progress.Finished) {
+      pct += 25;
+    }
+    if (this.creatingSFLinks === Progress.Finished) {
+      pct += 25;
+    }
+    if (this.postingToSlack === Progress.Finished) {
+      pct += 25;
+    }
+    return pct;
   }
 
 
   onJoblinkValidation(jobOpportunity: JoblinkValidationEvent) {
+    this.creatingList = Progress.NotStarted;
+    this.creatingFolders = Progress.NotStarted;
+    this.creatingSFLinks = Progress.NotStarted;
+    this.postingToSlack = Progress.NotStarted;
+
     if (jobOpportunity.valid) {
       this.sfJoblink = jobOpportunity.sfJoblink;
       this.jobName = jobOpportunity.jobname;
     } else {
-      this.sfJoblink = null;
       this.jobName = null;
     }
   }
 
-  createList() {
+  onJoblinkError(error) {
+    this.errorFindingJob = error;
+    if (error) {
+      this.jobName = null;
+    }
+  }
+
+
+  createRegisteredList() {
     this.errorCreatingList = null;
     this.creatingList = Progress.Started;
     const request: UpdateSavedListInfoRequest = {
+      registeredJob: true,
       name: this.jobName,
       fixed: true,
       sfJoblink: this.sfJoblink ? this.sfJoblink : null
@@ -75,7 +100,6 @@ export class NewJobComponent implements OnInit {
       (savedList) => {
         this.creatingList = Progress.Finished;
         this.savedList = savedList;
-        this.totalProgress = 25;
         this.createFolders();
       },
       (error) => {
@@ -85,14 +109,11 @@ export class NewJobComponent implements OnInit {
   }
 
   private createFolders() {
-    //todo Check if list already exists for this opportunity - if so, use that, and update other things
-    //     as needed.
     this.errorCreatingFolders = null;
     this.creatingFolders = Progress.Started;
     this.savedListService.createFolder(this.savedList.id).subscribe(
       savedList => {
         this.savedList = savedList;
-        this.totalProgress = 50;
         this.createSFBacklinks();
         this.creatingFolders = Progress.Finished;
       },
@@ -116,7 +137,6 @@ export class NewJobComponent implements OnInit {
     this.salesforceService.updateEmployerOpportunity(request).subscribe(
       () => {
         this.creatingSFLinks = Progress.Finished;
-        this.totalProgress = 75;
       },
       error => {
         this.errorCreatingSFLinks = error;
@@ -144,12 +164,15 @@ export class NewJobComponent implements OnInit {
       (response) => {
         this.slacklink = response.slackChannelUrl;
         this.postingToSlack = Progress.Finished;
-        this.totalProgress = 100;
       },
       error => {
         this.errorPostingToSlack = error;
         this.postingToSlack = Progress.NotStarted;
       });
 
+  }
+
+  doRegistration() {
+    this.createRegisteredList();
   }
 }

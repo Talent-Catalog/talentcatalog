@@ -32,6 +32,7 @@ import javax.persistence.Transient;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 
@@ -77,6 +78,13 @@ public class SavedList extends AbstractCandidateSource {
      */
     @Nullable
     private String folderjdlink;
+
+    /**
+     * If true, this list is associated with a "registered" job. See the Angular "New Job" menu
+     * item. A link to the job record on Salesforce is in {@link #getSfJoblink()}.
+     * There should only be one list registered to a particular job, as defined by its sfJoblink.
+     */
+    private Boolean registeredJob = false;
     
     /**
      * Non null if this is the selection list for the given saved search.
@@ -157,6 +165,17 @@ public class SavedList extends AbstractCandidateSource {
 
     public void setFolderjdlink(@Nullable String folderjdlink) {
         this.folderjdlink = folderjdlink;
+    }
+
+    @NonNull
+    public Boolean getRegisteredJob() {
+        return registeredJob;
+    }
+
+    public void setRegisteredJob(Boolean registeredJob) {
+        if (registeredJob != null) {
+            this.registeredJob = registeredJob;
+        }
     }
 
     @Nullable
