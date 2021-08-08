@@ -19,7 +19,7 @@ import {AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, ValidationErr
 import {salesforceUrlPattern} from '../../../model/base';
 import {Observable, of} from 'rxjs';
 import {catchError, map, tap} from 'rxjs/operators';
-import {SalesforceService} from '../../../services/salesforce.service';
+import {SalesforceService} from "../../../services/salesforce.service";
 
 @Component({
   selector: 'app-joblink',
@@ -62,7 +62,7 @@ export class JoblinkComponent implements OnInit {
         this.joblinkValidation.emit("");
       } else {
         //See if we have name for a job corresponding to this url
-        retval = this.salesforceService.findSfJobName(url).pipe(
+        retval = this.salesforceService.getOpportunity(url).pipe(
           //As side effect populate the job details
           tap(opportunity => {
             const valid = opportunity && opportunity.name !== null;

@@ -39,6 +39,8 @@ export enum ContentUpdateType {
 export interface SavedList extends CandidateSource {
   savedSearchSource?: SavedSearchRef;
   folderlink?: string;
+  foldercvlink?: string;
+  folderjdlink?: string;
 }
 
 export function isSavedList(source: CandidateSource): source is SavedList {
@@ -48,6 +50,7 @@ export function isSavedList(source: CandidateSource): source is SavedList {
 export interface UpdateSavedListInfoRequest {
   name?: string;
   fixed?: boolean;
+  registeredJob?: boolean;
   sfJoblink?: string;
 }
 

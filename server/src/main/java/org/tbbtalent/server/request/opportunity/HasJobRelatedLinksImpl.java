@@ -14,36 +14,42 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.request.list;
+package org.tbbtalent.server.request.opportunity;
 
+import javax.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.lang.Nullable;
-import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.request.candidate.AbstractUpdateCandidateSourceRequest;
 
 /**
- * Request for modifying just the info associated with a SavedList (not the content) 
- * - eg changing the name
+ * Base class for objects containing job related links.
+ *
+ * @author John Cameron
  */
 @Getter
 @Setter
-@ToString(callSuper = true)
-public class UpdateSavedListInfoRequest extends AbstractUpdateCandidateSourceRequest {
+@ToString
+public class HasJobRelatedLinksImpl {
 
   /**
-   * @see SavedList
+   * Link to Salesforce employer job opportunity
    */
-  @Nullable
-  private Boolean registeredJob;
-
+  @NotBlank
+  private String sfJoblink;
   /**
-   * Populates the given SavedList from this request
-   * @param savedList List to be populated
+   * Link to associated Talent Catalog list
    */
-  public void populateFromRequest(SavedList savedList) {
-    savedList.setRegisteredJob(registeredJob);
-    super.populateFromRequest(savedList);
-  }
+  private String listlink;
+  /**
+   * Link to associated Google Drive root folder
+   */
+  private String folderlink;
+  /**
+   * Link to associated Google Drive CVs subfolder
+   */
+  private String foldercvlink;
+  /**
+   * Link to associated Google Drive Job Description subfolder
+   */
+  private String folderjdlink;
 }

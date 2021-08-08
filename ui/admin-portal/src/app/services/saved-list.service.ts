@@ -45,7 +45,6 @@ export class SavedListService {
       `${this.apiUrl}/${savedListId}/create-folder`, null);
   }
 
-
   delete(id: number): Observable<boolean>  {
     return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
   }
@@ -65,22 +64,4 @@ export class SavedListService {
   update(id: number, request: UpdateSavedListInfoRequest): Observable<SavedList>  {
     return this.http.put<SavedList>(`${this.apiUrl}/${id}`, request);
   }
-
-  //todo Sharing and watching
-  //
-  // addSharedUser(id: number, request: { userId: number }): Observable<SavedSearch> {
-  //   return this.http.put<SavedSearch>(`${this.apiUrl}/shared-add/${id}`, request);
-  // }
-  //
-  // removeSharedUser(id: number, request: { userId: number }): Observable<SavedSearch> {
-  //   return this.http.put<SavedSearch>(`${this.apiUrl}/shared-remove/${id}`, request);
-  // }
-  //
-  // addWatcher(id: number, request: { userId: number }): Observable<SavedSearch> {
-  //   return this.http.put<SavedSearch>(`${this.apiUrl}/watcher-add/${id}`, request);
-  // }
-  //
-  // removeWatcher(id: number, request: { userId: number }): Observable<SavedSearch> {
-  //   return this.http.put<SavedSearch>(`${this.apiUrl}/watcher-remove/${id}`, request);
-  // }
 }

@@ -16,6 +16,8 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.io.Encoders;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
@@ -33,7 +35,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -55,14 +59,9 @@ import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.model.sf.Contact;
 import org.tbbtalent.server.model.sf.Opportunity;
 import org.tbbtalent.server.request.candidate.SalesforceOppParams;
+import org.tbbtalent.server.request.opportunity.UpdateEmployerOpportunityRequest;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
-
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.io.Encoders;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 import reactor.core.publisher.Mono;
 
 /**
@@ -76,7 +75,7 @@ import reactor.core.publisher.Mono;
  * be converted to a Json object by {@link WebClient} methods and included in the body of the
  * HTTP request sent to SF.
  * These Java objects are defined here in nested classes like: {@link ContactRequest} and 
- * {@link OpportunityRequest}.
+ * {@link CandidateOpportunityRequest}.
  * <p/>
  * Operating on multiple records in a single HTTP request is called a "composite" request by SF.
  * See https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/using_composite_resources.htm
@@ -138,7 +137,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     private final WebClient webClient;
     
     /**
-     * This is the accessToken required for for all Salesforce REST API
+     * This is the accessToken required for all Salesforce REST API
      * calls. It should appear in the Authorization header, prefixed by
      * "Bearer ".
      * <p/>
@@ -154,6 +153,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         this.emailHelper = emailHelper;
         
         classSfPathMap.put(ContactRequest.class, "Contact");
+        classSfPathMap.put(EmployerOpportunityRequest.class, "Opportunity");
         classSfCompositePathMap.put(ContactRequestComposite.class, "Contact");
         classSfCompositePathMap.put(OpportunityRequestComposite.class, "Opportunity");
         
@@ -275,7 +275,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     }
 
     @Override
-    public void createOrUpdateJobOpportunities(
+    public void createOrUpdateCandidateOpportunities(
         List<Candidate> candidates, SalesforceOppParams salesforceOppParams, String sfJoblink) 
             throws GeneralSecurityException, WebClientException, SalesforceException {
 
@@ -341,12 +341,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             String jobOwnerId = opportunity.getOwnerId();
 
             //Now build requests of candidate opportunities we want to create
-            List<OpportunityRecordComposite> opportunityRequests = new ArrayList<>();
+            List<CandidateOpportunityRecordComposite> opportunityRequests = new ArrayList<>();
 
             for (Candidate candidate : candidatesToProcess) {
                 //Create a request using data from the candidate
-                OpportunityRecordComposite opportunityRequest =
-                    new OpportunityRecordComposite(
+                CandidateOpportunityRecordComposite opportunityRequest =
+                    new CandidateOpportunityRecordComposite(
                         candidate, stageName, nextStep, jobOpportunityName, jobOpportunityId,
                         jobAccountId, jobOwnerId);
                 opportunityRequests.add(opportunityRequest);
@@ -369,7 +369,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
 
             //Log any failures
             int count = 0;
-            for (OpportunityRecordComposite request : opportunityRequests) {
+            for (CandidateOpportunityRecordComposite request : opportunityRequests) {
                 UpsertResult result = results[count++];
                 if (!result.isSuccess()) {
                     log.error("Update failed for opportunity "
@@ -577,6 +577,20 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         
         //Execute the update request
         executeUpdate(salesforceId, contactRequest);
+    }
+
+    @Override
+    public void updateEmployerOpportunity(UpdateEmployerOpportunityRequest request)
+        throws GeneralSecurityException {
+        
+        String sfJoblink = request.getSfJoblink();
+
+        //Get id of job opportunity.  
+        String jobOpportunityId = extractIdFromSfUrl(sfJoblink);
+
+        EmployerOpportunityRequest sfRequest = new EmployerOpportunityRequest(request);
+
+        executeUpdate(jobOpportunityId, sfRequest);
     }
 
     /**
@@ -1090,14 +1104,47 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             attributes = new CompositeAttributes("Contact");
         }
     }
-
+    
     /**
      * See doc for {@link ContactRequest}
      */
     @Getter
     @Setter
     @ToString
-    class OpportunityRequest {
+    class EmployerOpportunityRequest {
+
+        /**
+         * Link (url) to Google CVs folder
+         */
+        public String CVs_Folder__c;
+
+        /**
+         * Link (url) to Google Job Description folder
+         */
+        public String Job_Description_Folder__c;
+
+        /**
+         * Link (url) to Talent Catalog list
+         */
+        public String Talent_Catalog_List__c;
+        
+        public EmployerOpportunityRequest(UpdateEmployerOpportunityRequest request) {
+            //Note that we only populate the CVs and JD folders - we don't bother with the 
+            //root folder. Not really needed because TBB staff can get to it on Google Drive 
+            // from the others.
+            CVs_Folder__c = request.getFoldercvlink();
+            Job_Description_Folder__c = request.getFolderjdlink();
+            Talent_Catalog_List__c = request.getListlink();
+        }
+    }
+    
+    /**
+     * See doc for {@link ContactRequest}
+     */
+    @Getter
+    @Setter
+    @ToString
+    class CandidateOpportunityRequest {
 
         /**
          * Id of associated Account.
@@ -1147,7 +1194,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
          */
         public String TBBCandidateExternalId__c;
 
-        public OpportunityRequest(Candidate candidate,
+        public CandidateOpportunityRequest(Candidate candidate,
             String stageName, String nextStep,
             String jobOpportunityName,
             String jobOpportunityId,
@@ -1182,7 +1229,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     @ToString
     class OpportunityRequestComposite implements HasSize {
         public boolean allOrNone = false;
-        public List<OpportunityRecordComposite> records = new ArrayList<>();
+        public List<CandidateOpportunityRecordComposite> records = new ArrayList<>();
 
         @Override
         public int checkSize() {
@@ -1196,10 +1243,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     @Getter
     @Setter
     @ToString(callSuper = true)
-    class OpportunityRecordComposite extends OpportunityRequest {
+    class CandidateOpportunityRecordComposite extends CandidateOpportunityRequest {
         public CompositeAttributes attributes;
 
-        public OpportunityRecordComposite(Candidate candidate,
+        public CandidateOpportunityRecordComposite(Candidate candidate,
             String stageName, String nextStep,
             String jobOpportunityName,
             String jobOpportunityId,

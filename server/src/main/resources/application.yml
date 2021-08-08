@@ -7,6 +7,13 @@ tbb:
 
   alert:
     email: alert@talentbeyondboundaries.org 
+
+logging:
+  level:
+    reactor:
+      netty:
+        http:
+          client: INFO
       
 spring:
   servlet:
@@ -89,7 +96,10 @@ salesforce:
     otherAccount: 0013l00002JmHQhAAN
     tbbAccount: 0011N00001DouDKQAZ
   
-    
+slack:
+  workspace: https://refugeejobsmarket.slack.com
+  channelId: C029WMY6H1U
+  token: ${SLACK_TOKEN}
 
 server:
   tomcat:

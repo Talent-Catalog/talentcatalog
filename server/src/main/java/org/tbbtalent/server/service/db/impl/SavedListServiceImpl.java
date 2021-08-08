@@ -40,6 +40,7 @@ import org.tbbtalent.server.configuration.GoogleDriveConfig;
 import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.exception.RegisteredListException;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.SavedSearch;
@@ -75,6 +76,9 @@ import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 @Service
 public class SavedListServiceImpl implements SavedListService {
 
+    private final static String LIST_CVS_SUBFOLDER = "CvsForEmployer";
+    private final static String LIST_JOB_DESCRIPTION_SUBFOLDER = "JobDescription";
+    private final static String REGISTERED_NAME_SUFFIX = "*";
     private final CandidateRepository candidateRepository;
     private final SavedListRepository savedListRepository;
     private final CandidateSavedListService candidateSavedListService;
@@ -221,6 +225,17 @@ public class SavedListServiceImpl implements SavedListService {
             foldersDrive, foldersRoot, folderName);
         if (folder == null) {
             folder = fileSystemService.createFolder(foldersDrive, foldersRoot, folderName);
+            
+            folderName = savedList.getName();
+            GoogleFileSystemFolder subfolder = fileSystemService.createFolder(foldersDrive, folder, folderName);
+
+            GoogleFileSystemFolder cvfolder = 
+                fileSystemService.createFolder(foldersDrive, subfolder, LIST_CVS_SUBFOLDER);
+            savedList.setFoldercvlink(cvfolder.getUrl());
+
+            GoogleFileSystemFolder jdfolder = 
+                fileSystemService.createFolder(foldersDrive, subfolder, LIST_JOB_DESCRIPTION_SUBFOLDER);
+            savedList.setFolderjdlink(jdfolder.getUrl());
         }
         savedList.setFolderlink(folder.getUrl());
         saveIt(savedList);
@@ -229,10 +244,34 @@ public class SavedListServiceImpl implements SavedListService {
 
     @Override
     public SavedList createSavedList(User user, UpdateSavedListInfoRequest request)
-        throws EntityExistsException {
-        if (user != null) {
-            checkDuplicates(null, request.getName(), user);
+        throws EntityExistsException, RegisteredListException {
+
+        final boolean isRegisteredList =
+            request.getRegisteredJob() != null && request.getRegisteredJob();
+        if (isRegisteredList) {
+            //Check for a registered list with same sfJobLink (owned any user)
+            final String sfJoblink = request.getSfJoblink();
+            if (sfJoblink == null) {
+                throw new RegisteredListException("Missing Salesforce link for registered job list");
+            }
+            final String jobName = request.getName();
+            if (jobName == null) {
+                throw new RegisteredListException("Missing name for registered job list");
+            }
+            SavedList registeredList = savedListRepository.findRegisteredJobList(sfJoblink)
+                .orElse(null);
+            //If we already have a registered list for this job, just return it
+            if (registeredList != null) {
+                return registeredList;
+            }
+            //Modify registered name to avoid clashes with unregistered list names
+            request.setName(jobName + REGISTERED_NAME_SUFFIX);
+        } else {
+            if (user != null) {
+                checkDuplicates(null, request.getName(), user);
+            }
         }
+        
         SavedList savedList = new SavedList();
         request.populateFromRequest(savedList);
 

@@ -26,6 +26,12 @@ export enum CandidateSourceType {
   SavedSearch
 }
 
+export enum Progress {
+  NotStarted,
+  Started,
+  Finished
+}
+
 export enum ReviewStatus {
   unverified,
   verified,
@@ -103,6 +109,24 @@ export interface CandidateSource extends Auditable {
 
 export interface Opportunity {
   name: string;
+}
+
+export interface HasJobRelatedLinks {
+  sfJoblink: string;
+  listlink?: string;
+  folderlink?: string;
+  foldercvlink?: string;
+  folderjdlink?: string;
+}
+
+export interface UpdateEmployerOpportunityRequest extends HasJobRelatedLinks {
+}
+
+export interface PostJobToSlackRequest extends HasJobRelatedLinks {
+  jobName?: string;
+}
+export interface PostJobToSlackResponse {
+  slackChannelUrl: string;
 }
 
 export class PagedSearchRequest {

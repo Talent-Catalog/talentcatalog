@@ -47,4 +47,9 @@ public interface SavedListRepository extends JpaRepository<SavedList, Long>, Jpa
     Optional<SavedList> findSelectionList(
             @Param("savedSearchId")long savedSearchId, 
             @Param("userId")Long userId);
+
+    @Query(" select distinct s from SavedList s " +
+        " where s.registeredJob = true " +
+        " and s.sfJoblink = :sfJoblink" )
+    Optional<SavedList> findRegisteredJobList(@Param("sfJoblink") String sfJoblink);
 }                       
