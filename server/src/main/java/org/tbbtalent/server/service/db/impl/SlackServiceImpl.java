@@ -122,7 +122,7 @@ public class SlackServiceImpl implements SlackService {
     
     String finalInstructions = 
         "Next...\n\n" 
-        + "• Copy job description documents into Job Description folder (if they are not already there)\n" 
+        + "• Copy job description documents into the above Job Description folder (if they are not already there)\n" 
             + "• Share this post to the channel associated with this employer.";
     message.add(SectionBlock
         .builder()
