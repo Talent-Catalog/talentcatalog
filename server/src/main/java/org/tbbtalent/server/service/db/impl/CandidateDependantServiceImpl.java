@@ -67,8 +67,6 @@ public class CandidateDependantServiceImpl implements CandidateDependantService 
         cd.setHealthNotes(request.getHealthNotes());
 
         cd = candidateDependantRepository.save(cd);
-        Long noOfObjects = candidateDependantRepository.countByCandidateId(candidateId);
-        candidate.setNumberDependants(noOfObjects);
         return cd;
     }
 
@@ -78,15 +76,11 @@ public class CandidateDependantServiceImpl implements CandidateDependantService 
         CandidateDependant cd;
         cd = candidateDependantRepository.findById(dependantId)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateDependant.class, dependantId));
-        Candidate candidate = cd.getCandidate();
+        Long candidateId = cd.getCandidate().getId();
         candidateDependantRepository.deleteById(dependantId);
 
-        Long noOfObjects = candidateDependantRepository.countByCandidateId(cd.getCandidate().getId());
-        if (noOfObjects == 0) {
-            candidate.setNumberDependants(null);
-        } else {
-            candidate.setNumberDependants(noOfObjects);
-        }
+        Candidate candidate = candidateRepository.findById(candidateId)
+                .orElseThrow(() -> new NoSuchObjectException(Candidate.class, candidateId));
         return candidate;
     }
 

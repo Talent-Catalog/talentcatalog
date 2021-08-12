@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.model.db;
 
+import org.hibernate.annotations.Formula;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.api.admin.SavedSearchAdminApi;
 import org.tbbtalent.server.model.es.CandidateEs;
@@ -480,7 +481,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private BigDecimal ieltsScore;
 
-    @Nullable
+    @Formula("(SELECT COUNT(cd.id) FROM candidate as c left join candidate_dependant as cd on cd.candidate_id = c.id where c.id = id )")
     private Long numberDependants;
 
     @Enumerated(EnumType.STRING)
@@ -533,6 +534,23 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
             }
         }
         return contextNote;
+    }
+
+    /**
+     * Used alongside @Formula for updating the elasticsearch record of number of
+     * dependants.
+     * @return Long of total up-to-date number of dependants belonging to Candidate.
+     */
+    @Transient
+    public Long getNumberDependants() {
+        if (!candidateDependants.isEmpty()) {
+            Long numberDeps = 0L;
+            for (CandidateDependant cd : candidateDependants) {
+                numberDeps ++;
+            }
+            return numberDeps;
+        }
+        return null;
     }
 
     /**
@@ -1236,11 +1254,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     }
 
     public void setIeltsScore(@Nullable BigDecimal ieltsScore) {this.ieltsScore = ieltsScore;}
-
-    @Nullable
-    public Long getNumberDependants() {return numberDependants;}
-
-    public void setNumberDependants(@Nullable Long numberDependants) {this.numberDependants = numberDependants;}
 
     @Nullable
     public Country getBirthCountry() { return birthCountry; }
