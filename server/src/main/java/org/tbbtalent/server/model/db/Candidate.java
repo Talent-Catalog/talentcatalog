@@ -543,7 +543,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
      */
     @Transient
     public Long getNumberDependants() {
-        if (!candidateDependants.isEmpty()) {
+        if (candidateDependants != null && !candidateDependants.isEmpty()) {
             Long numberDeps = 0L;
             for (CandidateDependant cd : candidateDependants) {
                 numberDeps ++;
