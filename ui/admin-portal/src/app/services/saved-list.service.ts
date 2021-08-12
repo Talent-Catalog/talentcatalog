@@ -19,12 +19,7 @@ import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
-import {SavedSearch} from "../model/saved-search";
-import {
-  SavedList,
-  SearchSavedListRequest,
-  UpdateSavedListInfoRequest
-} from "../model/saved-list";
+import {SavedList, SearchSavedListRequest, UpdateSavedListInfoRequest} from "../model/saved-list";
 
 @Injectable({
   providedIn: 'root'
@@ -49,8 +44,8 @@ export class SavedListService {
     return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
   }
 
-  get(id: number): Observable<SavedSearch> {
-    return this.http.get<SavedSearch>(`${this.apiUrl}/${id}`);
+  get(id: number): Observable<SavedList> {
+    return this.http.get<SavedList>(`${this.apiUrl}/${id}`);
   }
 
   search(request: SearchSavedListRequest): Observable<SavedList[]> {
