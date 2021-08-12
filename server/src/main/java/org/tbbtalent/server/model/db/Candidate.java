@@ -481,7 +481,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private BigDecimal ieltsScore;
 
-    @Formula("(SELECT COUNT(cd.id) FROM candidate as c left join candidate_dependant as cd on cd.candidate_id = c.id where c.id = id )")
+    @Formula("(SELECT COUNT(cd.id) FROM candidate c inner join candidate_dependant cd on c.id = cd.candidate_id where c.id = id group by c.id)")
     private Long numberDependants;
 
     @Enumerated(EnumType.STRING)
