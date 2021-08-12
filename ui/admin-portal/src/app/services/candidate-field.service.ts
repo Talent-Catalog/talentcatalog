@@ -42,6 +42,9 @@ export class CandidateFieldService {
   private getIeltsScoreType = (value) => {
     return this.getIeltsScore(value);
   }
+  private countSetNulls = (value) => {
+    return value === 0 ? null : value;
+  }
 
   private allDisplayableFields = [
     new CandidateFieldInfo("First Name", "user.firstName",
@@ -75,7 +78,7 @@ export class CandidateFieldService {
     new CandidateFieldInfo("Legal status", "residenceStatus",
       this.getDisplayEnum, null),
     new CandidateFieldInfo("Dependants", "numberDependants",
-      null, null),
+      this.countSetNulls, null),
   ];
 
   private allDisplayableFieldsMap = new Map<string, CandidateFieldInfo>();
