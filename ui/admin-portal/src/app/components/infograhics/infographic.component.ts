@@ -116,7 +116,7 @@ export class InfographicComponent implements OnInit {
         if (isSavedSearchId) {
           this.savedSearchService.get(id).subscribe(
             (savedSearch) => {
-              this.statsFilter.controls['savedSearch'].patchValue(id);
+              this.statsFilter.controls['savedSearch'].patchValue(savedSearch);
               this.submitStatsRequest();
             }, error => {
               this.error = error;

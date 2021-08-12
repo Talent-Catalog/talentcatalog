@@ -59,7 +59,7 @@
           [searchable]="true"
           placeholder="Select or type..."
           bindLabel="name"
-          [readonly]="savedList != null"
+          [readonly]="savedList != null  || this.listFromUrl == true"
           formControlName="savedSearch">
         </ng-select>
       </div>
