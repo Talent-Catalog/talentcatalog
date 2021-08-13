@@ -97,6 +97,13 @@ public interface FileSystemService {
         @Nullable GoogleFileSystemFolder parentFolder, String fileName, File file) 
             throws IOException;
 
+    /**
+     * This creates a copy of the JOI intake template and places it in the new Job Description folder
+     * under the new job folder when a new job is added and folders are created.
+     * @param parentFolder - this is the Job Description folder.
+     * @param jobName - this is the name of the job from Salesforce.
+     * @throws IOException
+     */
     void createJobOppIntakeFile(GoogleFileSystemFolder parentFolder,
                                 String jobName) throws IOException;
     

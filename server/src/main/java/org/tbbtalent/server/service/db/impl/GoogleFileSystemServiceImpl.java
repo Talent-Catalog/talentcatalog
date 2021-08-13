@@ -176,13 +176,6 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
         return fsf;
     }
 
-    /**
-     * This creates a copy of the JOI intake template and places it in the new Job Description folder
-     * under the new job folder when a new job is added and folders are created.
-     * @param parentFolder - this is the Job Description folder.
-     * @param jobName - this is the name of the job from Salesforce.
-     * @throws IOException
-     */
     @Override
     public void createJobOppIntakeFile(GoogleFileSystemFolder parentFolder, String jobName) throws IOException {
         String copyTitle = "JobOpportunityIntake - " + jobName;
