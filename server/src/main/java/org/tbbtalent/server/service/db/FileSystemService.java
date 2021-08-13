@@ -97,7 +97,7 @@ public interface FileSystemService {
         @Nullable GoogleFileSystemFolder parentFolder, String fileName, File file) 
             throws IOException;
 
-    void createJobOppIntakeFile(@Nullable GoogleFileSystemFolder parentFolder,
+    void createJobOppIntakeFile(GoogleFileSystemFolder parentFolder,
                                 String jobName) throws IOException;
     
 }
