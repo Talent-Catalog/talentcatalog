@@ -26,6 +26,12 @@ import com.google.api.client.util.PemReader;
 import com.google.api.client.util.SecurityUtils;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -35,11 +41,6 @@ import java.security.PrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Collection;
 import java.util.Collections;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
-import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 
 /**
  * Configures GoogleDrive.
@@ -148,6 +149,11 @@ public class GoogleDriveConfig {
    * @see #getListFoldersRoot()  
    */
   private GoogleFileSystemFolder listFoldersRoot;
+
+  /**
+   * This is the id of the template doc for the Job Opportunity Intake to be copied when job created.
+   */
+  private String jobOppIntakeTemplateId;
 
   public GoogleFileSystemDrive getCandidateDataDrive() {
     if (candidateDataDrive == null) {

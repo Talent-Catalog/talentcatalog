@@ -16,16 +16,8 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import static org.springframework.data.jpa.domain.Specification.where;
-
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -41,24 +33,11 @@ import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.RegisteredListException;
-import org.tbbtalent.server.model.db.Candidate;
-import org.tbbtalent.server.model.db.SavedList;
-import org.tbbtalent.server.model.db.SavedSearch;
-import org.tbbtalent.server.model.db.Status;
-import org.tbbtalent.server.model.db.User;
-import org.tbbtalent.server.repository.db.CandidateRepository;
-import org.tbbtalent.server.repository.db.GetCandidateSavedListsQuery;
-import org.tbbtalent.server.repository.db.GetSavedListsQuery;
-import org.tbbtalent.server.repository.db.SavedListRepository;
-import org.tbbtalent.server.repository.db.UserRepository;
+import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.repository.db.*;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
-import org.tbbtalent.server.request.list.ContentUpdateType;
-import org.tbbtalent.server.request.list.IHasSetOfCandidates;
-import org.tbbtalent.server.request.list.SearchSavedListRequest;
-import org.tbbtalent.server.request.list.UpdateExplicitSavedListContentsRequest;
-import org.tbbtalent.server.request.list.UpdateSavedListContentsRequest;
-import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
+import org.tbbtalent.server.request.list.*;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
@@ -67,6 +46,15 @@ import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
+
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.springframework.data.jpa.domain.Specification.where;
 
 /**
  * Saved List service
@@ -224,18 +212,22 @@ public class SavedListServiceImpl implements SavedListService {
         GoogleFileSystemFolder folder = fileSystemService.findAFolder(
             foldersDrive, foldersRoot, folderName);
         if (folder == null) {
+            // CREATE FOLDERS
+            // List ID folder
             folder = fileSystemService.createFolder(foldersDrive, foldersRoot, folderName);
-            
+            // Job name folder
             folderName = savedList.getName();
             GoogleFileSystemFolder subfolder = fileSystemService.createFolder(foldersDrive, folder, folderName);
-
+            // Cv folder
             GoogleFileSystemFolder cvfolder = 
                 fileSystemService.createFolder(foldersDrive, subfolder, LIST_CVS_SUBFOLDER);
             savedList.setFoldercvlink(cvfolder.getUrl());
-
+            // JD folder
             GoogleFileSystemFolder jdfolder = 
                 fileSystemService.createFolder(foldersDrive, subfolder, LIST_JOB_DESCRIPTION_SUBFOLDER);
             savedList.setFolderjdlink(jdfolder.getUrl());
+            // CREATE JOB OPPORTUNITY INTAKE FILE IN JD FOLDER
+            fileSystemService.createJobOppIntakeFile(jdfolder, savedList.getName());
         }
         savedList.setFolderlink(folder.getUrl());
         saveIt(savedList);

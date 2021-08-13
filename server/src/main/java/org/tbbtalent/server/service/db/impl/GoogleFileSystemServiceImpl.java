@@ -20,11 +20,6 @@ import com.google.api.client.http.FileContent;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.security.GeneralSecurityException;
-import java.util.Collections;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +31,12 @@ import org.tbbtalent.server.service.db.FileSystemService;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.security.GeneralSecurityException;
+import java.util.Collections;
+import java.util.List;
 
 
 @Service
@@ -173,6 +174,22 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
         fsf.setName(fileName);
         
         return fsf;
+    }
+
+    @Override
+    public void createJobOppIntakeFile(GoogleFileSystemFolder parentFolder, String jobName) throws IOException {
+        String copyTitle = "JobOpportunityIntake - " + jobName;
+        String templateId = googleDriveConfig.getJobOppIntakeTemplateId();
+
+        List<String> parent = Collections.singletonList(parentFolder.getId());
+        File copyMetadata = new File();
+        copyMetadata.setName(copyTitle);
+        copyMetadata.setParents(parent);
+
+        File documentCopyFile = googleDriveService.files()
+                .copy(templateId, copyMetadata)
+                .setSupportsAllDrives(true)
+                .execute();
     }
     
 }

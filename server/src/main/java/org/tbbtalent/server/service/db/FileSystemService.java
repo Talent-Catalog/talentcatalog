@@ -16,15 +16,15 @@
 
 package org.tbbtalent.server.service.db;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * Standard interface to Google filesystem - tailored to Talent Catalog's use for
@@ -96,5 +96,8 @@ public interface FileSystemService {
     GoogleFileSystemFile uploadFile(GoogleFileSystemDrive drive,
         @Nullable GoogleFileSystemFolder parentFolder, String fileName, File file) 
             throws IOException;
+
+    void createJobOppIntakeFile(@Nullable GoogleFileSystemFolder parentFolder,
+                                String jobName) throws IOException;
     
 }

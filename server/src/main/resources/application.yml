@@ -135,6 +135,8 @@ google:
     candidateRootFolderId: ${GOOGLE_DRIVE_CANDIDATEROOTFOLDERID:1TdqTBpojT07qNPWTgU_wXWON1678beTn}
     listFoldersDriveId:  ${GOOGLE_DRIVE_LISTFOLDERSDRIVEID:0AJpRzZk9D_kLUk9PVA}
     listFoldersRootId:  ${GOOGLE_DRIVE_LISTFOLDERSROOTID:1BkMPOr392ubCriQdhBAmFKxlume-c7d2}
+  # Job Opportunity Intake template
+    jobOppIntakeTemplateId: 1iDEfXhEaTU-c_Znen-_cR3YIRTl7Mnl2UY-sUeZGH3k
       
         
       
