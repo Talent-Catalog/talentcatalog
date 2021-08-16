@@ -20,11 +20,6 @@ import com.google.api.client.http.FileContent;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.security.GeneralSecurityException;
-import java.util.Collections;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +32,12 @@ import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.security.GeneralSecurityException;
+import java.util.Collections;
+import java.util.List;
+
 
 @Service
 public class GoogleFileSystemServiceImpl implements FileSystemService {
@@ -45,12 +46,10 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
     private static final String FOLDER_MIME_TYPE = "application/vnd.google-apps.folder";
     
     private final Drive googleDriveService;
-    private final GoogleDriveConfig googleDriveConfig;
 
     @Autowired
     public GoogleFileSystemServiceImpl(GoogleDriveConfig googleDriveConfig)
         throws GeneralSecurityException, IOException {
-        this.googleDriveConfig = googleDriveConfig;
         this.googleDriveService = googleDriveConfig.getGoogleDriveService();
     }
 
@@ -172,6 +171,24 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
         fsf.setId(uploadedfile.getId());
         fsf.setName(fileName);
         
+        return fsf;
+    }
+
+    @Override
+    public GoogleFileSystemFile copy(GoogleFileSystemFolder parentFolder, String copyTitle, String sourceFileId) throws IOException {
+        List<String> parent = Collections.singletonList(parentFolder.getId());
+        File copyMetadata = new File();
+        copyMetadata.setName(copyTitle);
+        copyMetadata.setParents(parent);
+
+        File copyFile = googleDriveService.files()
+                .copy(sourceFileId, copyMetadata)
+                .setSupportsAllDrives(true)
+                .execute();
+
+        GoogleFileSystemFile fsf = new GoogleFileSystemFile(copyFile.getWebViewLink());
+        fsf.setId(copyFile.getId());
+        fsf.setName(copyTitle);
         return fsf;
     }
     
