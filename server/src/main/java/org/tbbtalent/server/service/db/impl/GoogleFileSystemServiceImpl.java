@@ -46,12 +46,10 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
     private static final String FOLDER_MIME_TYPE = "application/vnd.google-apps.folder";
     
     private final Drive googleDriveService;
-    private final GoogleDriveConfig googleDriveConfig;
 
     @Autowired
     public GoogleFileSystemServiceImpl(GoogleDriveConfig googleDriveConfig)
         throws GeneralSecurityException, IOException {
-        this.googleDriveConfig = googleDriveConfig;
         this.googleDriveService = googleDriveConfig.getGoogleDriveService();
     }
 
@@ -177,19 +175,21 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
     }
 
     @Override
-    public void createJobOppIntakeFile(GoogleFileSystemFolder parentFolder, String jobName) throws IOException {
-        String copyTitle = "JobOpportunityIntake - " + jobName;
-        String templateId = googleDriveConfig.getJobOppIntakeTemplateId();
-
+    public GoogleFileSystemFile copy(GoogleFileSystemFolder parentFolder, String copyTitle, String sourceFileId) throws IOException {
         List<String> parent = Collections.singletonList(parentFolder.getId());
         File copyMetadata = new File();
         copyMetadata.setName(copyTitle);
         copyMetadata.setParents(parent);
 
-        File documentCopyFile = googleDriveService.files()
-                .copy(templateId, copyMetadata)
+        File copyFile = googleDriveService.files()
+                .copy(sourceFileId, copyMetadata)
                 .setSupportsAllDrives(true)
                 .execute();
+
+        GoogleFileSystemFile fsf = new GoogleFileSystemFile(copyFile.getWebViewLink());
+        fsf.setId(copyFile.getId());
+        fsf.setName(copyTitle);
+        return fsf;
     }
     
 }

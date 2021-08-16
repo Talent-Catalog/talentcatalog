@@ -98,13 +98,12 @@ public interface FileSystemService {
             throws IOException;
 
     /**
-     * This creates a copy of the JOI intake template and places it in the new Job Description folder
-     * under the new job folder when a new job is added and folders are created.
-     * @param parentFolder - this is the Job Description folder.
-     * @param jobName - this is the name of the job from Salesforce.
-     * @throws IOException
+     * This creates a copy of a Google document and places it in the parent folder
+     * under the provided copy title.
+     * @param parentFolder - this is the folder where the new copy will belong.
+     * @param copyTitle - this is the name for the new copy.
+     * @param sourceFileId - this is id of the file to be copied.
+     * @throws IOException If there was a problem copying the file.
      */
-    void createJobOppIntakeFile(GoogleFileSystemFolder parentFolder,
-                                String jobName) throws IOException;
-    
+    GoogleFileSystemFile copy(GoogleFileSystemFolder parentFolder, String copyTitle, String sourceFileId) throws IOException;
 }

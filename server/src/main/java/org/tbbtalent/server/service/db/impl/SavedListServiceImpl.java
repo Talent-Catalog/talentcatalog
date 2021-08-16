@@ -227,7 +227,8 @@ public class SavedListServiceImpl implements SavedListService {
                 fileSystemService.createFolder(foldersDrive, subfolder, LIST_JOB_DESCRIPTION_SUBFOLDER);
             savedList.setFolderjdlink(jdfolder.getUrl());
             // CREATE JOB OPPORTUNITY INTAKE FILE IN JD FOLDER
-            fileSystemService.createJobOppIntakeFile(jdfolder, savedList.getName());
+            String joiFileName = "JobOpportunityIntake - " + savedList.getName();
+            fileSystemService.copy(jdfolder, joiFileName, googleDriveConfig.getJobOppIntakeTemplateId());
         }
         savedList.setFolderlink(folder.getUrl());
         saveIt(savedList);
