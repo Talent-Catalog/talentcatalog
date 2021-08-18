@@ -39,6 +39,10 @@
     </div>
     <div class="d-flex align-items-end flex-column justify-content-between">
       <div class="d-flex float-right">
+        <button class="btn btn-sm btn-outline-secondary mr-1" (click)="inputOldIntakeNote('Full Intake', $event.target)" [disabled]="saving">
+          <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
+          Input Original Intake
+        </button>
         <button class="btn btn-sm btn-outline-success mr-1" (click)="createIntakeNote('Full Intake', 'start', $event.target)" [disabled]="saving">
           Start Intake
         </button>
