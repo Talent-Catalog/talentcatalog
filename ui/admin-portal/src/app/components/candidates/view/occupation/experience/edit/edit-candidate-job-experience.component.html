@@ -66,18 +66,16 @@
       <!-- FULL TIME -->
       <div class="form-group">
         <label for="fullTime">Contract Type *</label>
-        <ng-select id="fullTime" name="fullTime" [formControlName]="'fullTime'" [clearable]="false">
-          <ng-option value="true">Full time</ng-option>
-          <ng-option value="false">Part Time</ng-option>
+        <ng-select id="fullTime" [formControlName]="'fullTime'" [clearable]="false" [items]="fullTime"
+                   bindValue="value" bindLabel="displayText">
         </ng-select>
       </div>
 
       <!-- PAID -->
       <div class="form-group">
         <label for="paid">Employment Type *</label>
-        <ng-select id="paid" name="paid" [formControlName]="'paid'" [clearable]="false">
-          <ng-option value="true">Paid</ng-option>
-          <ng-option value="false">Voluntary</ng-option>
+        <ng-select id="paid" [formControlName]="'paid'" [clearable]="false" [items]="paid"
+                   bindValue="value" bindLabel="displayText">
         </ng-select>
       </div>
 

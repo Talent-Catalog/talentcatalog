@@ -40,6 +40,16 @@ export class EditCandidateJobExperienceComponent implements OnInit {
   loading: boolean;
   saving: boolean;
 
+  fullTime = [
+    { displayText: 'Full Time', value: true },
+    { displayText: 'Part Time', value: false },
+  ];
+
+  paid = [
+    { displayText: 'Paid', value: true },
+    { displayText: 'Voluntary', value: false },
+  ];
+
   constructor(private activeModal: NgbActiveModal,
               private fb: FormBuilder,
               private candidateJobExperienceService: CandidateJobExperienceService,
