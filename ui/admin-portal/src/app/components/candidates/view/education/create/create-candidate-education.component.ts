@@ -81,13 +81,13 @@ export class CreateCandidateEducationComponent implements OnInit {
     );
 
     this.candidateForm = this.fb.group({
-      courseName: [null, [Validators.required]],
-      institution: [null, [Validators.required]],
+      courseName: [null],
+      institution: [null],
       countryId: [null, [Validators.required]],
       educationMajorId: [null, [Validators.required]],
       yearCompleted: [null],
       lengthOfCourseYears: [null],
-      educationType: [null, [Validators.required]],
+      educationType: [null],
       incomplete: [null, ]
     });
     this.loading = false;
