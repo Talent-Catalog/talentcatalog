@@ -55,19 +55,6 @@
     </div>
 
     <!-- DOB -->
-<!--    <div class="col-12 col-md-6">-->
-<!--      <div class="form-group">-->
-<!--        <label for="dob">{{ 'REGISTRATION.PERSONAL.LABEL.DOB' | translate }} <sup>*</sup></label>-->
-<!--        <input type="date" id="dob" class="form-control" [formControlName]="'dob'" datepicker-popup-->
-<!--               is-open="status.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions"-->
-<!--               date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />-->
-<!--        <app-form-control-error [control]="form.controls.dob"></app-form-control-error>-->
-<!--      </div>-->
-<!--    </div>-->
-
-<!--    <hr class="col-12">-->
-
-    <!-- DOB -->
     <div class="col-12 col-md-6">
       <div class="form-group">
         <label for="dob">{{ 'REGISTRATION.PERSONAL.LABEL.DOB' | translate }} <sup>*</sup></label>
@@ -131,25 +118,46 @@
       </div>
     </div>
 
-    <!-- UN REGISTRATION - removed for now -->
-    <!--    <div class="form-group">-->
-    <!--      <label for="registeredWithUN">{{ 'REGISTRATION.PERSONAL.LABEL.REGISTEREDWITHUN' | translate }}</label>-->
-    <!--      <select class="form-control" name="nationality" id="registeredWithUN" [formControlName]="'registeredWithUN'">-->
-    <!--        <option value=""></option>-->
-    <!--        <option [value]="true">Yes</option>-->
-    <!--        <option [value]="false">No</option>-->
-    <!--      </select>-->
+    <hr class="col-12">
 
-    <!--      <p class="text-muted">-->
-    <!--        You do not need to be registered with the UN to be eligible for TBB.-->
-    <!--      </p>-->
-    <!--    </div>-->
+    <!-- UNHCR REGISTRATION -->
+    <div class="col-12 col-md-6">
+      <div class="form-group">
+        <label for="unhcrRegistered">{{ 'REGISTRATION.PERSONAL.LABEL.REGISTEREDWITHUN' | translate }} <sup>*</sup></label>
+        <select class="form-control" name="unhcrRegistered" id="unhcrRegistered" [formControlName]="'unhcrRegistered'">
+          <option value=""></option>
+          <option [value]="'yes'">{{ 'CONFIRMATION.YES' | translate }}</option>
+          <option [value]="'no'">{{ 'CONFIRMATION.NO' | translate }}</option>
+          <option [value]="'unsure'">{{ 'CONFIRMATION.UNSURE' | translate }}</option>
+        </select>
+        <p class="text-muted small">
+          {{ 'REGISTRATION.PERSONAL.NOTE.UNHCRREGISTERED' | translate }}
+        </p>
+      </div>
+    </div>
 
-    <!--    &lt;!&ndash; REGISTRATION NUMBER &ndash;&gt;-->
-    <!--    <div class="form-group" *ngIf="form.value.registeredWithUN === 'true'">-->
-    <!--      <label for="registrationId">{{ 'REGISTRATION.PERSONAL.LABEL.REGISTRATIONID' | translate }}</label>-->
-    <!--      <input type="text" class="form-control" id="registrationId" placeholder="" [formControlName]="'registrationId'">-->
-    <!--    </div>-->
+    <!-- REGISTRATION NUMBER -->
+    <div class="col-12 col-md-6" *ngIf="hasUnhcr">
+      <div class="form-group">
+        <label for="unhcrNumber">{{ 'REGISTRATION.PERSONAL.LABEL.REGISTRATIONID' | translate }}</label>
+        <input type="text" class="form-control" id="unhcrNumber" placeholder="" [formControlName]="'unhcrNumber'">
+      </div>
+    </div>
+
+    <!-- UNHCR REGISTRATION -->
+    <div class="col-12" *ngIf="hasUnhcr">
+      <div class="form-group">
+        <label for="unhcrConsent">{{ 'REGISTRATION.PERSONAL.LABEL.UNHCRCONSENT' | translate }} <sup>*</sup></label>
+        <select class="form-control" name="unhcrConsent" id="unhcrConsent" [formControlName]="'unhcrConsent'">
+          <option value=""></option>
+          <option [value]="'yes'">{{ 'CONFIRMATION.YES' | translate }}</option>
+          <option [value]="'no'">{{ 'CONFIRMATION.NO' | translate }}</option>
+        </select>
+        <p class="text-muted small">
+          {{ 'REGISTRATION.PERSONAL.NOTE.UNHCRCONSENT' | translate }}
+        </p>
+      </div>
+    </div>
 
   </form>
 
