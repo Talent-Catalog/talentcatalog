@@ -271,6 +271,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private String unhcrNumber;
 
+    @Enumerated(EnumType.STRING)
+    @Nullable
+    private YesNo unhcrConsent;
+
     @Nullable
     private Long unhcrFile;
 
@@ -955,6 +959,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public String getUnhcrNumber() { return unhcrNumber; }
 
     public void setUnhcrNumber(@Nullable String unhcrNumber) { this.unhcrNumber = unhcrNumber; }
+
+    @Nullable
+    public YesNo getUnhcrConsent() {return unhcrConsent;}
+
+    public void setUnhcrConsent(@Nullable YesNo unhcrConsent) {
+        this.unhcrConsent = unhcrConsent;
+    }
 
     @Nullable
     public Long getUnhcrFile() { return unhcrFile; }

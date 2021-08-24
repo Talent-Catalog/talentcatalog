@@ -77,7 +77,7 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
       yearOfArrival: [''],
       /* NATIONALITY */
       nationality: ['', Validators.required],
-      unhcrRegistered: ['', Validators.required],
+      unhcrRegistered: [null, Validators.required],
       unhcrNumber: [null],
       unhcrConsent: ['', Validators.required]
     });
@@ -104,8 +104,9 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
           yearOfArrival: response.yearOfArrival,
           /* NATIONALITY */
           nationality: response.nationality ? response.nationality.id : null,
-          // registeredWithUN: response.registeredWithUN,
-          // registrationId: response.registrationId
+          unhcrRegistered: response.unhcrRegistered,
+          unhcrNumber: response.unhcrNumber,
+          unhcrConsent: response.unhcrConsent,
 
         });
         this._loading.candidate = false;
@@ -138,7 +139,7 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
   }
 
   get hasUnhcr() {
-    return this.form.value.unhcrRegistered === 'yes';
+    return this.form.value.unhcrRegistered === 'Yes';
   }
 
   loadDropDownData() {

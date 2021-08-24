@@ -125,10 +125,10 @@
       <div class="form-group">
         <label for="unhcrRegistered">{{ 'REGISTRATION.PERSONAL.LABEL.REGISTEREDWITHUN' | translate }} <sup>*</sup></label>
         <select class="form-control" name="unhcrRegistered" id="unhcrRegistered" [formControlName]="'unhcrRegistered'">
-          <option value=""></option>
-          <option [value]="'yes'">{{ 'CONFIRMATION.YES' | translate }}</option>
-          <option [value]="'no'">{{ 'CONFIRMATION.NO' | translate }}</option>
-          <option [value]="'unsure'">{{ 'CONFIRMATION.UNSURE' | translate }}</option>
+          <option [value]="''"></option>
+          <option [value]="'Yes'">{{ 'CONFIRMATION.YES' | translate }}</option>
+          <option [value]="'No'">{{ 'CONFIRMATION.NO' | translate }}</option>
+          <option [value]="'Unsure'">{{ 'CONFIRMATION.UNSURE' | translate }}</option>
         </select>
         <p class="text-muted small">
           {{ 'REGISTRATION.PERSONAL.NOTE.UNHCRREGISTERED' | translate }}
@@ -149,9 +149,9 @@
       <div class="form-group">
         <label for="unhcrConsent">{{ 'REGISTRATION.PERSONAL.LABEL.UNHCRCONSENT' | translate }} <sup>*</sup></label>
         <select class="form-control" name="unhcrConsent" id="unhcrConsent" [formControlName]="'unhcrConsent'">
-          <option value=""></option>
-          <option [value]="'yes'">{{ 'CONFIRMATION.YES' | translate }}</option>
-          <option [value]="'no'">{{ 'CONFIRMATION.NO' | translate }}</option>
+          <option [value]="'NoResponse'"></option>
+          <option [value]="'Yes'">{{ 'CONFIRMATION.YES' | translate }}</option>
+          <option [value]="'No'">{{ 'CONFIRMATION.NO' | translate }}</option>
         </select>
         <p class="text-muted small">
           {{ 'REGISTRATION.PERSONAL.NOTE.UNHCRCONSENT' | translate }}

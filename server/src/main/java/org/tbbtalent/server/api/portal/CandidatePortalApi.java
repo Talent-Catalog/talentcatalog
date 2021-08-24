@@ -216,8 +216,9 @@ public class CandidatePortalApi {
                 .add("city")
                 .add("yearOfArrival")
                 .add("nationality", countryDto())
-                .add("unhcrStatus")
+                .add("unhcrRegistered")
                 .add("unhcrNumber")
+                .add("unhcrConsent")
                 ;
     }
 
@@ -403,6 +404,9 @@ public class CandidatePortalApi {
                 .add("yearOfArrival")
                 .add("nationality", countryDto())
                 .add("country", countryDto())
+                .add("unhcrRegistered")
+                .add("unhcrNumber")
+                .add("unhcrConsent")
                 /* OCCUPATIONS */
                 .add("candidateOccupations", candidateOccupationDto())
                 /* JOB EXPERIENCE */
