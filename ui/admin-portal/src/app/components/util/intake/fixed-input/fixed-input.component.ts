@@ -28,6 +28,7 @@ export class FixedInputComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    console.log(this.answer)
   }
 
 }

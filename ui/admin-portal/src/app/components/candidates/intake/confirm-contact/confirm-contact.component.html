@@ -46,11 +46,15 @@
   <div class="col-3">
     <app-fixed-input
       [question]="'UNHCR Registered'"
-      [answer]="candidate.unhcrRegistered + ' ' + candidate.unhcrNumber">
+      [answer]="candidate?.unhcrRegistered">
+    </app-fixed-input>
+    <app-fixed-input
+      [question]="'UNHCR Number'"
+      [answer]="candidate?.unhcrNumber">
     </app-fixed-input>
     <app-fixed-input
       [question]="'UNHCR Consent'"
-      [answer]="candidate.unhcrConsent">
+      [answer]="candidate?.unhcrConsent">
     </app-fixed-input>
   </div>
   <div class="col-3">

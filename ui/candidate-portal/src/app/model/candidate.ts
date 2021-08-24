@@ -39,7 +39,7 @@ export interface Candidate {
   nationality: Country;
   unhcrRegistered: YesNoUnsure;
   unhcrNumber: string;
-  unhcrConsent: string;
+  unhcrConsent: YesNo;
   candidateJobExperiences: CandidateJobExperience[];
   candidateCertifications: CandidateCertification[];
   candidateLanguages: CandidateLanguage[];
