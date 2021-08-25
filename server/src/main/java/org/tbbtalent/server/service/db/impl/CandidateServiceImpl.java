@@ -1246,7 +1246,8 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         // Don't update status to pending if status is already pending
         if (!candidate.getStatus().equals(CandidateStatus.pending)) {
-            if (candidate.getNationality() != candidate.getCountry()) {
+            if (candidate.getNationality() != candidate.getCountry() ||
+                    candidate.getCountry().getId() == 6180 && candidate.getNationality().getId() == 6180) {
                 final UpdateCandidateStatusRequest request =
                         new UpdateCandidateStatusRequest(candidate.getId());
                 UpdateCandidateStatusInfo info = request.getInfo();
