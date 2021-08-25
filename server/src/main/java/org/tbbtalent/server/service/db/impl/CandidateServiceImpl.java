@@ -2142,8 +2142,9 @@ public class CandidateServiceImpl implements CandidateService {
     private String checkStatusValidity(long countryReq, long nationalityReq, Candidate candidate) {
         String newStatus = "";
         // If candidate pending, but they updating country & nationality as same. Change to ineligible.
+        // EXCEPTION: UNLESS AFGHAN IN AFGHANISTAN
         if (candidate.getStatus() == CandidateStatus.pending) {
-            if (countryReq == nationalityReq) {
+            if (countryReq == nationalityReq && countryReq != 6180) {
                 newStatus = "ineligible";
             }
         // If candidate ineligible & it has country & nationality the same (causing the status) BUT the request
@@ -2151,6 +2152,10 @@ public class CandidateServiceImpl implements CandidateService {
         // that the cause of the ineligible status was due to country & nationality being the same, and not another reason.
         } else if (candidate.getStatus() == CandidateStatus.ineligible) {
             if (candidate.getCountry() == candidate.getNationality() && countryReq != nationalityReq) {
+                newStatus = "pending";
+            }
+            // EXCEPTION: IF AFGHAN IN AFGHANISTAN SET PENDING
+            if (countryReq == 6180 && nationalityReq == 6180) {
                 newStatus = "pending";
             }
         }
