@@ -149,7 +149,7 @@
       <div class="form-group">
         <label for="unhcrConsent">{{ 'REGISTRATION.PERSONAL.LABEL.UNHCRCONSENT' | translate }} <sup>*</sup></label>
         <select class="form-control" name="unhcrConsent" id="unhcrConsent" [formControlName]="'unhcrConsent'">
-          <option [value]="'NoResponse'"></option>
+          <option [value]="''"></option>
           <option [value]="'Yes'">{{ 'CONFIRMATION.YES' | translate }}</option>
           <option [value]="'No'">{{ 'CONFIRMATION.NO' | translate }}</option>
         </select>
