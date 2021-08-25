@@ -119,7 +119,7 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
   get tbbCriteriaFailed() {
     let failed: boolean = false;
     if (this.country !== '0' && this.country !== '') {
-      if (this.country === this.nationality) {
+      if (this.country === this.nationality && this.country !== '6180') {
         failed = true;
       } else {
         failed = false;
