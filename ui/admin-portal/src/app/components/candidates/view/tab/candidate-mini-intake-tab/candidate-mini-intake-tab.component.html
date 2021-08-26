@@ -269,8 +269,11 @@
 
 <div class="d-flex align-items-end flex-column justify-content-between">
   <div class="d-flex float-right">
-    <button class="btn btn-sm btn-outline-dark mr-1 mt-3" (click)="createIntakeNote('Mini Intake', 'complete', $event.target)" [disabled]="saving">
+    <button class="btn btn-sm btn-outline-dark mr-1 mt-3 mb-2" (click)="createIntakeNote('Mini Intake', 'complete', $event.target)" [disabled]="saving">
       Complete Intake
     </button>
+  </div>
+  <div>
+    <div class="text-muted small font-italic">- No need to click if inputting an original intake.</div>
   </div>
 </div>
