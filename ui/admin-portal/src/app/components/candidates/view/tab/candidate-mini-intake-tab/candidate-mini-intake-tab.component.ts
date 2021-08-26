@@ -39,6 +39,8 @@ export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
 
   @ViewChildren(NgbAccordion) accs: QueryList<NgbAccordion>;
 
+  clickedOldIntake: boolean;
+
   constructor(candidateService: CandidateService,
               countryService: CountryService,
               educationLevelService: EducationLevelService,
@@ -64,6 +66,7 @@ export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
   }
 
   public inputOldIntakeNote(formName: string, button) {
+    this.clickedOldIntake = true;
     // Popup modal to gather who and when.
     const oldIntakeInputModal = this.modalService.open(OldIntakeInputComponent, {
       centered: true,
