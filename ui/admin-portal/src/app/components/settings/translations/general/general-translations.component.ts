@@ -250,7 +250,12 @@ const ALL_FIELDS = {
           "YEAROFARRIVAL": null,
           "NATIONALITY": null,
           "REGISTEREDWITHUN": null,
-          "REGISTRATIONID": null
+          "REGISTRATIONID": null,
+          "UNHCRCONSENT": null
+        },
+        "NOTE": {
+          "UNHCRREGISTERED": null,
+          "UNHCRCONSENT": null
         }
       },
       "OCCUPATION": {
@@ -518,4 +523,9 @@ const ALL_FIELDS = {
         "LINK": null,
       },
     },
+  "CONFIRMATION": {
+    "YES": null,
+    "NO": null,
+    "UNSURE": null,
+    }
   };

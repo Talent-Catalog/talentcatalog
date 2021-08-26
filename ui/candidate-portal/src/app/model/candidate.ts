@@ -37,7 +37,9 @@ export interface Candidate {
   city: string;
   yearOfArrival: number;
   nationality: Country;
-  registeredWithUN: boolean;
+  unhcrRegistered: YesNoUnsure;
+  unhcrNumber: string;
+  unhcrConsent: YesNo;
   candidateJobExperiences: CandidateJobExperience[];
   candidateCertifications: CandidateCertification[];
   candidateLanguages: CandidateLanguage[];
@@ -63,6 +65,17 @@ export enum CandidateStatus {
   pending = "pending",
   unreachable = "unreachable",
   withdrawn = "withdrawn (inactive)"
+}
+
+export enum YesNo {
+  Yes = "Yes",
+  No = "No",
+}
+
+export enum YesNoUnsure {
+  Yes = "Yes",
+  No = "No",
+  Unsure = "Unsure"
 }
 
 export class BaseCandidateContactRequest {

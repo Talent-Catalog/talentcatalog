@@ -40,6 +40,9 @@ export interface Candidate extends HasId {
   nationality: Country;
   phone: string;
   whatsapp: string;
+  unhcrRegistered: YesNoUnsure;
+  unhcrNumber: string;
+  unhcrConsent: YesNo;
   user: User;
   candidateReviewStatusItems: CandidateReviewStatusItem[];
   migrationEducationMajor: EducationMajor;
@@ -180,6 +183,7 @@ export interface CandidateIntakeData {
   unhcrNumber?: string;
   unhcrFile?: number;
   unhcrNotRegStatus?: NotRegisteredStatus;
+  unhcrConsent?: YesNo;
   unhcrNotes?: string;
   unrwaRegistered?: YesNoUnsure;
   unrwaNumber?: string;

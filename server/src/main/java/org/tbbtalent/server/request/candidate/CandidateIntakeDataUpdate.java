@@ -158,6 +158,7 @@ public class CandidateIntakeDataUpdate {
     private String unhcrNumber;
     private Long unhcrFile;
     private NotRegisteredStatus unhcrNotRegStatus;
+    private YesNo unhcrConsent;
     private String unhcrNotes;
     private YesNoUnsure unrwaRegistered;
     private String unrwaNumber;

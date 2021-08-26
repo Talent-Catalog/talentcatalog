@@ -14,21 +14,4 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
-
-@Component({
-  selector: 'app-fixed-input',
-  templateUrl: './fixed-input.component.html',
-  styleUrls: ['./fixed-input.component.scss']
-})
-export class FixedInputComponent implements OnInit {
-  @Input() question: string;
-  @Input() answer: string;
-
-  constructor() { }
-
-  ngOnInit(): void {
-    console.log(this.answer)
-  }
-
-}
+alter table candidate add column unhcr_consent text;

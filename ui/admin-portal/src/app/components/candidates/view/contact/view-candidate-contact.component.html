@@ -112,6 +112,22 @@
         </div>
       </div>
 
+      <div *ngIf="candidate.unhcrRegistered" class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="far fa-registered"></i>UNHCR Registered</label>
+
+        <div class="form-control-plaintext">
+          <span>{{candidate.unhcrRegistered}}</span><span *ngIf="candidate.unhcrNumber && candidate.unhcrRegistered === 'Yes'"> - #{{candidate.unhcrNumber}}</span>
+        </div>
+      </div>
+
+      <div *ngIf="candidate.unhcrConsent" class="form-group col-sm-12 col-md-4">
+        <label class="col-form-label"><i class="far fa-thumbs-up"></i>UNHCR Consent</label>
+
+        <div class="form-control-plaintext">
+          <span>{{candidate.unhcrConsent}}</span>
+        </div>
+      </div>
+
     </div>
 
   </div>

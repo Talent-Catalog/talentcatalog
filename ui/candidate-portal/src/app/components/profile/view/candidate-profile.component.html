@@ -172,6 +172,35 @@
             </div>
           </div>
 
+          <hr class="w-100 mx-5">
+
+          <div class="col-12 col-md-6">
+            <div class="form-group">
+              <label>{{ 'REGISTRATION.PERSONAL.LABEL.REGISTEREDWITHUN' | translate }}</label>
+              <p>
+                {{candidate?.unhcrRegistered | translate }}
+              </p>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <div class="form-group">
+              <label>{{ 'REGISTRATION.PERSONAL.LABEL.REGISTRATIONID' | translate }}</label>
+              <p>
+                {{candidate?.unhcrNumber | translate }}
+              </p>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="form-group">
+              <label>{{ 'REGISTRATION.PERSONAL.LABEL.UNHCRCONSENT' | translate }}</label>
+              <p>
+                {{candidate?.unhcrConsent | translate }}
+              </p>
+            </div>
+          </div>
+
         </div>
 
       </div>

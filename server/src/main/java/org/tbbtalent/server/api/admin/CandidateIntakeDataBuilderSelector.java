@@ -139,6 +139,7 @@ public class CandidateIntakeDataBuilderSelector {
                 .add("unhcrNumber")
                 .add("unhcrFile")
                 .add("unhcrNotRegStatus")
+                .add("unhcrConsent")
                 .add("unhcrNotes")
 
                 .add("unrwaRegistered")

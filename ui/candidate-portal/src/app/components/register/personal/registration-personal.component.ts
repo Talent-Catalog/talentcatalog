@@ -77,8 +77,9 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
       yearOfArrival: [''],
       /* NATIONALITY */
       nationality: ['', Validators.required],
-      // registeredWithUN: ['', Validators.required],
-      // registrationId: ['', Validators.required]
+      unhcrRegistered: [null, Validators.required],
+      unhcrNumber: [null],
+      unhcrConsent: [null]
     });
     this.loadDropDownData();
 
@@ -103,8 +104,9 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
           yearOfArrival: response.yearOfArrival,
           /* NATIONALITY */
           nationality: response.nationality ? response.nationality.id : null,
-          // registeredWithUN: response.registeredWithUN,
-          // registrationId: response.registrationId
+          unhcrRegistered: response.unhcrRegistered,
+          unhcrNumber: response.unhcrNumber,
+          unhcrConsent: response.unhcrConsent,
 
         });
         this._loading.candidate = false;
@@ -114,6 +116,16 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
         this._loading.candidate = false;
       }
     );
+
+    this.form.get('unhcrRegistered').valueChanges
+      .subscribe(unhcrRegistered => {
+        if (unhcrRegistered === 'Yes') {
+          this.form.get('unhcrConsent').setValidators([Validators.required]);
+        } else if (unhcrRegistered === 'No') {
+          this.form.get('unhcrConsent').setValidators(null);
+        }
+        this.form.get('unhcrConsent').updateValueAndValidity();
+      });
   }
 
   get tbbCriteriaFailed() {
@@ -134,6 +146,10 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
 
   get country() {
     return this.form.value.countryId?.toString();
+  }
+
+  get hasUnhcr() {
+   return this.form.value.unhcrRegistered === 'Yes';
   }
 
   loadDropDownData() {

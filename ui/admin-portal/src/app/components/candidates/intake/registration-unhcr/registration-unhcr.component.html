@@ -51,6 +51,14 @@
         <label for="unhcrFile">How many people are included on your UNHCR file?</label>
         <input type="number" class="form-control" id="unhcrFile" [formControlName]="'unhcrFile'">
       </div>
+      <div class="form-group">
+        <label for="unhcrConsent">
+          Permission to share with UNHCR?
+        </label>
+        <ng-select id="unhcrConsent" [formControlName]="'unhcrConsent'" (clear)="setNoResponse('unhcrConsent')"
+                   [items]="unhcrConsentOptions" [clearOnBackspace]="false"
+                   placeholder="Select" bindLabel="displayText" bindValue="value"></ng-select>
+      </div>
     </div>
 
     <div *ngIf="unhcrRegistered == 'No'">
