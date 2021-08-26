@@ -70,8 +70,6 @@ public class CandidateBuilderSelector {
                 .add("unhcrRegistered")
                 .add("unhcrNumber")
                 .add("unhcrConsent")
-                .add("yearOfArrival")
-                .add("yearOfArrival")
                 .add("additionalInfo")
                 .add("linkedInLink")
                 .add("candidateMessage")
