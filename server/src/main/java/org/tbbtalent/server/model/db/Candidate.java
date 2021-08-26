@@ -1558,6 +1558,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getUnhcrFile() != null) {
             setUnhcrFile(data.getUnhcrFile());
         }
+        if (data.getUnhcrConsent() != null) {
+            setUnhcrConsent(data.getUnhcrConsent());
+        }
         if (data.getUnhcrNotes() != null) {
             setUnhcrNotes(data.getUnhcrNotes());
         }
