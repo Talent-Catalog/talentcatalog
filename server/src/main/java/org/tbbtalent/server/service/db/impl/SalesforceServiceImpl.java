@@ -329,8 +329,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         }
         
         if (candidatesToProcess.size() > 0) {
-            //First get some more info about the job: its name and its 
-            //associated account.
+            //First get some more info about the job: its name, its 
+            //associated account and country
             Opportunity opportunity = findOpportunity(jobOpportunityId);
             String jobOpportunityName = opportunity == null ? null : opportunity.getName();
             if (jobOpportunityName == null) {
@@ -339,6 +339,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             }
             String jobAccountId = opportunity.getAccountId();
             String jobOwnerId = opportunity.getOwnerId();
+            String country = opportunity.getAccountCountry__c();
+            String recordType = "Candidate recruitment";
+            if ("Canada".equals(country)) {
+                recordType = "Candidate recruitment (CAN)";
+            }
 
             //Now build requests of candidate opportunities we want to create
             List<CandidateOpportunityRecordComposite> opportunityRequests = new ArrayList<>();
@@ -346,7 +351,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             for (Candidate candidate : candidatesToProcess) {
                 //Create a request using data from the candidate
                 CandidateOpportunityRecordComposite opportunityRequest =
-                    new CandidateOpportunityRecordComposite(
+                    new CandidateOpportunityRecordComposite(recordType,
                         candidate, stageName, nextStep, jobOpportunityName, jobOpportunityId,
                         jobAccountId, jobOwnerId);
                 opportunityRequests.add(opportunityRequest);
@@ -555,7 +560,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         if (sfId != null) {
             opportunity = findRecordFieldsFromId(
                     "Opportunity", sfId,
-                    "Name,AccountId,OwnerId", Opportunity.class);
+                    "Name,AccountId,OwnerId,AccountCountry__c", Opportunity.class);
         }
         return opportunity;
     }
@@ -1137,6 +1142,17 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             Talent_Catalog_List__c = request.getListlink();
         }
     }
+
+    @Getter
+    @Setter
+    @ToString
+    class RecordTypeField {
+        public String Name;
+
+        public RecordTypeField(String recordTypeName) {
+            Name = recordTypeName;
+        }
+    }
     
     /**
      * See doc for {@link ContactRequest}
@@ -1145,7 +1161,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     @Setter
     @ToString
     class CandidateOpportunityRequest {
-
+        public RecordTypeField RecordType;
         /**
          * Id of associated Account.
          */
@@ -1194,13 +1210,15 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
          */
         public String TBBCandidateExternalId__c;
 
-        public CandidateOpportunityRequest(Candidate candidate,
+        public CandidateOpportunityRequest(String recordType, Candidate candidate,
             String stageName, String nextStep,
             String jobOpportunityName,
             String jobOpportunityId,
             String jobAccountId, String jobOwnerId) {
             User user = candidate.getUser();
             String candidateNumber = candidate.getCandidateNumber();
+
+            RecordType = new RecordTypeField(recordType);
             
             Name = user.getFirstName() + 
                     "(" + candidateNumber + ")-" + jobOpportunityName;
@@ -1246,12 +1264,12 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     class CandidateOpportunityRecordComposite extends CandidateOpportunityRequest {
         public CompositeAttributes attributes;
 
-        public CandidateOpportunityRecordComposite(Candidate candidate,
+        public CandidateOpportunityRecordComposite(String recordType, Candidate candidate,
             String stageName, String nextStep,
             String jobOpportunityName,
             String jobOpportunityId,
             String jobAccountId, String jobOwnerId) {
-            super(candidate, stageName, nextStep, jobOpportunityName, jobOpportunityId, jobAccountId, jobOwnerId);
+            super(recordType, candidate, stageName, nextStep, jobOpportunityName, jobOpportunityId, jobAccountId, jobOwnerId);
             attributes = new CompositeAttributes("Opportunity");
         }
     }

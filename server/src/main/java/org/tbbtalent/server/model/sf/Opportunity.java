@@ -31,5 +31,6 @@ import lombok.ToString;
 public class Opportunity {
     public String Name;
     public String AccountId;
+    public String AccountCountry__c;
     public String OwnerId;
 }

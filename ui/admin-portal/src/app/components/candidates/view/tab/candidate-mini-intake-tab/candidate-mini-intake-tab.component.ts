@@ -17,7 +17,15 @@
 import {Component, QueryList, ViewChildren} from '@angular/core';
 import {IntakeComponentTabBase} from '../../../../util/intake/IntakeComponentTabBase';
 import {Subject} from "rxjs";
-import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
+import {NgbAccordion, NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {OldIntakeInputComponent} from "../../../../util/old-intake-input-modal/old-intake-input.component";
+import {CandidateService} from "../../../../../services/candidate.service";
+import {CountryService} from "../../../../../services/country.service";
+import {EducationLevelService} from "../../../../../services/education-level.service";
+import {OccupationService} from "../../../../../services/occupation.service";
+import {LanguageLevelService} from "../../../../../services/language-level.service";
+import {CandidateNoteService} from "../../../../../services/candidate-note.service";
+import {AuthService} from "../../../../../services/auth.service";
 
 @Component({
   selector: 'app-candidate-mini-intake-tab',
@@ -31,6 +39,19 @@ export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
 
   @ViewChildren(NgbAccordion) accs: QueryList<NgbAccordion>;
 
+  clickedOldIntake: boolean;
+
+  constructor(candidateService: CandidateService,
+              countryService: CountryService,
+              educationLevelService: EducationLevelService,
+              occupationService: OccupationService,
+              languageLevelService: LanguageLevelService,
+              noteService: CandidateNoteService,
+              authService: AuthService,
+              private modalService: NgbModal) {
+    super(candidateService, countryService, educationLevelService, occupationService, languageLevelService, noteService, authService)
+  }
+
   togglePanels(openAll: boolean) {
     this.toggleAll.next(openAll);
     if (openAll) {
@@ -42,5 +63,22 @@ export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
         acc.collapseAll();
       })
     }
+  }
+
+  public inputOldIntakeNote(formName: string, button) {
+    this.clickedOldIntake = true;
+    // Popup modal to gather who and when.
+    const oldIntakeInputModal = this.modalService.open(OldIntakeInputComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    oldIntakeInputModal.componentInstance.candidateId = this.candidate.id;
+    oldIntakeInputModal.componentInstance.formName = formName;
+
+    oldIntakeInputModal.result
+      .then((country) => button.textContent = 'Note created!')
+      .catch(() => { /* Isn't possible */
+      });
   }
 }

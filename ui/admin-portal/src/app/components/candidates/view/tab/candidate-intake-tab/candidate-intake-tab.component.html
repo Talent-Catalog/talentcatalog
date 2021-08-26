@@ -37,18 +37,25 @@
       </div>
       <h5>Full Intake</h5>
     </div>
-    <div class="d-flex align-items-end flex-column justify-content-between">
-      <div class="d-flex float-right">
-        <button class="btn btn-sm btn-outline-success mr-1" (click)="createIntakeNote('Full Intake', 'start', $event.target)" [disabled]="saving">
-          Start Intake
-        </button>
-        <button class="btn btn-sm btn-outline-secondary ml-1" (click)="createIntakeNote('Full Intake', 'update', $event.target)" [disabled]="saving">
-          Update Intake
-        </button>
+
+    <div class="d-flex flex-column justify-content-between">
+
+      <div class="btn-group">
+          <button class="btn btn-sm btn-primary border border-white" (click)="inputOldIntakeNote('Full Intake', $event.target)" [disabled]="saving">
+            <i *ngIf="saving" class="fas fa-spinner fa-spin" ></i>
+            Input Original Intake
+          </button>
+          <button class="btn btn-sm btn-success border border-white" (click)="createIntakeNote('Full Intake', 'start', $event.target)" [disabled]="saving || clickedOldIntake">
+            Start Intake
+          </button>
+          <button class="btn btn-sm btn-secondary border border-white" (click)="createIntakeNote('Full Intake', 'update', $event.target)" [disabled]="saving || clickedOldIntake">
+            Update Intake
+          </button>
       </div>
       <div>
-        <div class="text-muted small text-right">Before starting or updating the interview, please click appropriate button.</div>
-        <div class="text-muted small text-right">This will create a note on the right to help track changes.</div>
+        <div class="text-muted small font-italic">- Before starting or updating the interview, please click appropriate button.</div>
+        <div class="text-muted small font-italic">- If entering an old intake click Input Original Intake and ignore other buttons.</div>
+        <div class="text-muted small font-italic">- This will create a note on the right to help track changes. Only click once per intake.</div>
       </div>
 
     </div>
@@ -387,8 +394,11 @@
 
 <div class="d-flex align-items-end flex-column justify-content-between">
   <div class="d-flex float-right">
-    <button class="btn btn-sm btn-outline-dark mr-1 mt-3" (click)="createIntakeNote('Full Intake', 'complete', $event.target)" [disabled]="saving">
+    <button class="btn btn-sm btn-outline-dark mr-1 mt-3 mb-2" (click)="createIntakeNote('Full Intake', 'complete', $event.target)" [disabled]="saving">
       Complete Intake
     </button>
+  </div>
+  <div>
+    <div class="text-muted small font-italic">- No need to click if inputting an original intake.</div>
   </div>
 </div>

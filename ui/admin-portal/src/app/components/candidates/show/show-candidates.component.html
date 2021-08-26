@@ -125,6 +125,12 @@
         <i class="fas fa-sync"></i><i class="fas fa-user-check"></i>
       </button>
 
+      <button class="btn btn-sm btn-secondary" [disabled]="!isSelection()"
+              (click)="removeSelectedCandidatesFromList()"
+              title="Remove Selection">
+        Remove <i class="fas fa-user-check"></i>
+      </button>
+
       <button  *ngIf="isImportable()" class="btn btn-sm btn-secondary" (click)="importCandidates()"
               title="Export candidates">
         <i class="fas fa-spinner fa-spin" *ngIf=importing></i>
@@ -273,7 +279,7 @@
                   <li ngbDropdownItem><a target="_blank" class="no-link" [routerLink]="['/candidate', candidate.candidateNumber]">Open
                     in new tab</a></li>
                   <li class="dropdown-divider"></li>
-                  <li *ngIf="isContentModifiable()" ngbDropdownItem (click)="removeCandidateFromList(candidate)">Delete from list</li>
+                  <li *ngIf="isContentModifiable()" ngbDropdownItem (click)="removeCandidateFromList(candidate)">Remove from list</li>
                 </ul>
               </div>
             </td>

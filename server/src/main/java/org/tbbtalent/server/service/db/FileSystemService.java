@@ -16,15 +16,15 @@
 
 package org.tbbtalent.server.service.db;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * Standard interface to Google filesystem - tailored to Talent Catalog's use for
@@ -96,5 +96,14 @@ public interface FileSystemService {
     GoogleFileSystemFile uploadFile(GoogleFileSystemDrive drive,
         @Nullable GoogleFileSystemFolder parentFolder, String fileName, File file) 
             throws IOException;
-    
+
+    /**
+     * This creates a copy of a Google document and places it in the parent folder
+     * under the provided copy title.
+     * @param parentFolder - this is the folder where the new copy will belong.
+     * @param copyTitle - this is the name for the new copy.
+     * @param sourceFileId - this is id of the file to be copied.
+     * @throws IOException If there was a problem copying the file.
+     */
+    GoogleFileSystemFile copy(GoogleFileSystemFolder parentFolder, String copyTitle, String sourceFileId) throws IOException;
 }

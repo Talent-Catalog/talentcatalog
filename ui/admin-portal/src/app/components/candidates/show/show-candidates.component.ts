@@ -1127,9 +1127,13 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   }
 
-  removeCandidateFromList(candidate: Candidate) {
+  private removeFromList(candidates: Candidate[]) {
+
+    //Need to deselect any candidates being removed.
+    this.selectedCandidates = this.selectedCandidates.filter(c => !candidates.includes(c));
+
     const request: IHasSetOfCandidates = {
-      candidateIds: [candidate.id]
+      candidateIds: candidates.map(c => c.id)
     };
     this.savedListCandidateService.remove(this.candidateSource.id, request).subscribe(
       () => {
@@ -1139,7 +1143,14 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         this.error = error;
       }
     );
+  }
 
+  removeCandidateFromList(candidate: Candidate) {
+    this.removeFromList([candidate]);
+  }
+
+  removeSelectedCandidatesFromList() {
+    this.removeFromList(this.selectedCandidates);
   }
 
   renderCandidateRow(candidate: Candidate) {

@@ -24,7 +24,6 @@ import {ActivatedRoute} from "@angular/router";
 import {SavedSearch} from "../../model/saved-search";
 import {forkJoin} from "rxjs";
 import {SavedSearchService} from "../../services/saved-search.service";
-import {findHasId} from "../../model/base";
 
 @Component({
   selector: 'app-infographic',
@@ -41,6 +40,7 @@ export class InfographicComponent implements OnInit {
   statReports: StatReport[];
   statsFilter: FormGroup;
   statsName: string;
+  listFromUrl: boolean = false;
 
   constructor(private route: ActivatedRoute,
               private statService: CandidateStatService,
@@ -112,14 +112,25 @@ export class InfographicComponent implements OnInit {
       const id: number = +params.get('id');
       const isSavedSearchId = params.get('source') === 'search';
       if (id) {
+        this.listFromUrl = true;
         if (isSavedSearchId) {
-          this.statsFilter.controls['savedSearch'].patchValue(findHasId(id, this.searches));
-        } else {
-          this.statsFilter.controls['savedList'].patchValue(findHasId(id, this.lists));
-        }
+          this.savedSearchService.get(id).subscribe(
+            (savedSearch) => {
+              this.statsFilter.controls['savedSearch'].patchValue(savedSearch);
+              this.submitStatsRequest();
+            }, error => {
+              this.error = error;
+            });
 
-        //Auto run if we have an id
-        this.submitStatsRequest();
+        } else {
+          this.savedListService.get(id).subscribe(
+            (savedList) => {
+              this.statsFilter.controls['savedList'].patchValue(savedList);
+              this.submitStatsRequest();
+            }, error => {
+              this.error = error;
+          });
+        }
       }
     });
   }
