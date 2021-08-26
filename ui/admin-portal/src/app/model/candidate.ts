@@ -183,6 +183,7 @@ export interface CandidateIntakeData {
   unhcrNumber?: string;
   unhcrFile?: number;
   unhcrNotRegStatus?: NotRegisteredStatus;
+  unhcrConsent?: YesNo;
   unhcrNotes?: string;
   unrwaRegistered?: YesNoUnsure;
   unrwaNumber?: string;
