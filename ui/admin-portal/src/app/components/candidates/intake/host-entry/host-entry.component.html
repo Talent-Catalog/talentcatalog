@@ -32,7 +32,7 @@
                [clearOnBackspace]="false" placeholder="Select" bindLabel="name" bindValue="id"></ng-select>
   </div>
 
-  <div *ngIf="notHostBorn">
+  <div>
     <div class="form-group">
       <label for="hostEntryYear">
         What year did you immigrate to {{candidate?.country?.name}}?
@@ -40,7 +40,7 @@
       <ng-select id="hostEntryYear" [formControlName]="'hostEntryYear'" [items]="years"
                  [clearOnBackspace]="false" placeholder="Select"></ng-select>
     </div>
-    <div *ngIf="hasNotes" class="form-group">
+    <div class="form-group">
       <label for="hostEntryYearNotes">Notes</label>
       <textarea type="text" class="md-textarea-auto form-control" rows="3"
                 id="hostEntryYearNotes" [formControlName]="'hostEntryYearNotes'"
