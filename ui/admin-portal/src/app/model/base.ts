@@ -38,6 +38,12 @@ export enum ReviewStatus {
   rejected
 }
 
+/**
+ * This restricts the data displayed in our browse tabs.
+ * For example, if a tab is showing all my lists or all my searches - this would be "all".
+ * Or if a tab is showing all searches of a given type (eg Profession, Job, Other), this would
+ * be "type"
+ */
 export enum SearchBy {
   type,
   all,

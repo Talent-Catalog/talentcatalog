@@ -54,6 +54,7 @@ import {ConfirmationComponent} from '../../../util/confirm/confirmation.componen
 })
 export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
 
+  private filterKeySuffix: string = 'Filter';
   private savedStateKeyPrefix: string = 'BrowseKey';
 
   @Input() sourceType: CandidateSourceType;
@@ -84,13 +85,16 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
 
     this.loggedInUser = this.authService.getLoggedInUser();
 
+    //Pick up any previous keyword filter
+    const filter = this.localStorageService.get(this.savedStateKey() + this.filterKeySuffix);
     this.searchForm = this.fb.group({
-      keyword: ['']
+      keyword: [filter]
     });
     this.pageNumber = 1;
     this.pageSize = 50;
 
-    this.onChanges();
+    this.subscribeToFilterChanges();
+    this.search();
   }
 
   get keyword(): string {
@@ -98,10 +102,20 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.search();
+    //We want to catch changes of sub type (eg Professions/Business to Professions/Healthcare)
+    if (changes.savedSearchSubtype) {
+      //The very first call of this is before ngOnInit. See https://angular.io/guide/lifecycle-hooks
+      //We only want to catch changes after we have started the component.
+      if (!changes.savedSearchSubtype.isFirstChange()) {
+        //Pick up filter for this new sub type and update search
+        const filter = this.localStorageService.get(this.savedStateKey() + this.filterKeySuffix);
+        this.searchForm?.controls['keyword'].patchValue(filter);
+        this.search();
+      }
+    }
   }
 
-  onChanges(): void {
+  subscribeToFilterChanges(): void {
     this.searchForm.valueChanges
       .pipe(
         debounceTime(400),
@@ -110,10 +124,13 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
       .subscribe(() => {
         this.search();
       });
-    this.search();
   }
 
   search() {
+
+    //Remember keyword filter from last search
+    this.localStorageService.set(this.savedStateKey() + this.filterKeySuffix, this.keyword);
+
     let req: SearchCandidateSourcesRequest;
     if (this.sourceType === CandidateSourceType.SavedSearch) {
       req = new SearchSavedSearchRequest();
@@ -190,6 +207,11 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
     });
   }
 
+  /**
+   * Called when a particular source (ie list of search) is selected from browse results
+   * of the search of sources.
+   * @param source Selected candidate source
+   */
   onSelect(source: CandidateSource) {
     this.selectedSource = source;
 
@@ -200,19 +222,20 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   }
 
   private savedStateKey() {
-    //We save the last state of each combination of inputs - ie the last
-    //selected item.
-    //(These inputs are associated with each tab in home.component.html)
+    //This key is constructed from the combination of inputs which are associated with each tab
+    // in home.component.html
+    //This key is used to store the last state associated with each tab.
 
-    //The standard key is "Browse" + the sourceType + the search type
+    //The standard key is "BrowseKey" + the sourceType (SavedSearch or SaveList) +
+    // the search by (corresponding to the specific displayed tab)
     let key = this.savedStateKeyPrefix
       + CandidateSourceType[this.sourceType]
       + SearchBy[this.searchBy];
 
     //If searching by type, also need the saved search type
-    if (this.searchBy === SearchBy.type && this.savedSearchType !== undefined) {
+    if (this.searchBy === SearchBy.type && this.savedSearchType != null) {
       key += this.savedSearchType +
-        (this.savedSearchSubtype !== undefined ? '/' + this.savedSearchSubtype : "");
+        (this.savedSearchSubtype != null ? '/' + this.savedSearchSubtype : "");
     }
     return key;
   }
