@@ -102,15 +102,16 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    //THe very first call of this is before ngOnInit and can be ignored.
-    //See https://angular.io/guide/lifecycle-hooks
-    //We only want to catch changes of sub type (eg Professions/Business to Professions/Healthcare)
-    //after we have started the component.
-    if (!changes.savedSearchSubtype?.isFirstChange()) {
-      //Pick up filter for this new sub type and update search
-      const filter = this.localStorageService.get(this.savedStateKey() + this.filterKeySuffix);
-      this.searchForm?.controls['keyword'].patchValue(filter);
-      this.search();
+    //We want to catch changes of sub type (eg Professions/Business to Professions/Healthcare)
+    if (changes.savedSearchSubtype) {
+      //The very first call of this is before ngOnInit. See https://angular.io/guide/lifecycle-hooks
+      //We only want to catch changes after we have started the component.
+      if (!changes.savedSearchSubtype.isFirstChange()) {
+        //Pick up filter for this new sub type and update search
+        const filter = this.localStorageService.get(this.savedStateKey() + this.filterKeySuffix);
+        this.searchForm?.controls['keyword'].patchValue(filter);
+        this.search();
+      }
     }
   }
 
@@ -126,6 +127,10 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   }
 
   search() {
+
+    //Remember keyword filter from last search
+    this.localStorageService.set(this.savedStateKey() + this.filterKeySuffix, this.keyword);
+
     let req: SearchCandidateSourcesRequest;
     if (this.sourceType === CandidateSourceType.SavedSearch) {
       req = new SearchSavedSearchRequest();
@@ -172,9 +177,6 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
     }
 
     this.loading = true;
-
-    //Remember keyword filter from last search
-    this.localStorageService.set(this.savedStateKey() + this.filterKeySuffix, this.keyword);
 
     this.candidateSourceService.searchPaged(req).subscribe(results => {
       this.results = results;
