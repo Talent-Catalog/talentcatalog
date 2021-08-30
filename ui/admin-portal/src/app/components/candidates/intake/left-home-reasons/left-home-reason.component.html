@@ -40,10 +40,12 @@
     </ng-select>
   </div>
 
-  <div *ngIf="hasOther">
+  <div>
     <div class="form-group">
-      <label for="leftHomeOther">If other, please explain</label>
-      <input type="text" class="form-control" id="leftHomeOther" [formControlName]="'leftHomeOther'">
+      <label for="leftHomeOther">Please explain</label>
+      <textarea type="text" class="md-textarea-auto form-control" rows="4"
+                id="leftHomeOther" [formControlName]="'leftHomeOther'"
+                placeholder="" ></textarea>
     </div>
   </div>
 </form>
