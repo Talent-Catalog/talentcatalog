@@ -77,7 +77,7 @@ export class RegistrationEducationComponent implements OnInit, OnDestroy {
     this.editTarget = null;
     this.candidateEducationItems = [];
     this.form = this.fb.group({
-      maxEducationLevelId: ['']
+      maxEducationLevelId: [0]
     });
 
     this.form.get('maxEducationLevelId').valueChanges.subscribe(value => {
@@ -85,9 +85,9 @@ export class RegistrationEducationComponent implements OnInit, OnDestroy {
         if (this.loading) {
           return;
         }
-        let educationLevel: EducationLevel = this.educationLevels.find(e => e.id == value);
+        const educationLevel: EducationLevel = this.educationLevels.find(e => e.id === value);
         if (educationLevel){
-           let education = this.candidateEducationItems.find(e => e.educationType == educationLevel.educationType);
+           const education = this.candidateEducationItems.find(e => e.educationType === educationLevel.educationType);
            if (education){
              return;
            }
