@@ -134,7 +134,7 @@ export interface CandidateIntakeData {
   langAssessment?: string;
   langAssessmentScore?: string;
   leftHomeReasons?: LeftHomeReason[];
-  leftHomeOther?: string;
+  leftHomeNotes?: string;
   militaryService?: YesNo;
   militaryWanted?: YesNo;
   militaryNotes?: string;

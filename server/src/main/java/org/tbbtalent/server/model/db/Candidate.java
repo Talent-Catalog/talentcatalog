@@ -355,7 +355,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private List<LeftHomeReason> leftHomeReasons;
 
     @Nullable
-    private String leftHomeOther;
+    private String leftHomeNotes;
 
     @Enumerated(EnumType.STRING)
     @Nullable
@@ -1095,9 +1095,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setLeftHomeReasons(@Nullable List<LeftHomeReason> leftHomeReasons) { this.leftHomeReasons = leftHomeReasons; }
 
     @Nullable
-    public String getLeftHomeOther() { return leftHomeOther; }
+    public String getLeftHomeNotes() { return leftHomeNotes; }
 
-    public void setLeftHomeOther(@Nullable String leftHomeOther) { this.leftHomeOther = leftHomeOther; }
+    public void setLeftHomeNotes(@Nullable String leftHomeNotes) { this.leftHomeNotes = leftHomeNotes; }
 
     @Nullable
     public YesNoUnsure getReturnHomeFuture() { return returnHomeFuture; }
@@ -1453,8 +1453,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getLeftHomeReasons() != null) {
             setLeftHomeReasons(data.getLeftHomeReasons());
         }
-        if (data.getLeftHomeOther() != null) {
-            setLeftHomeOther(data.getLeftHomeOther());
+        if (data.getLeftHomeNotes() != null) {
+            setLeftHomeNotes(data.getLeftHomeNotes());
         }
         if (data.getMilitaryService() != null) {
             setMilitaryService(data.getMilitaryService());

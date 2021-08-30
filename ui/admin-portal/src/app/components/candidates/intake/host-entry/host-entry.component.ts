@@ -64,7 +64,7 @@ export class HostEntryComponent extends IntakeComponentBase implements OnInit {
       returnedHomeReasonNo: [this.candidateIntakeData?.returnedHomeReasonNo],
       returnHomeSafe: [this.candidateIntakeData?.returnHomeSafe],
       leftHomeReasons: [options],
-      leftHomeOther: [this.candidateIntakeData?.leftHomeOther],
+      leftHomeNotes: [this.candidateIntakeData?.leftHomeNotes],
       returnHomeFuture: [this.candidateIntakeData?.returnHomeFuture],
       returnHomeWhen: [this.candidateIntakeData?.returnHomeWhen],
     });
