@@ -116,8 +116,8 @@ import {ViewCandidateAdditionalInfoComponent} from './components/candidates/view
 import {ViewCandidateSkillComponent} from './components/candidates/view/skill/view-candidate-skill.component';
 import {BrowseCandidateSourcesComponent} from './components/candidates/show/browse/browse-candidate-sources.component';
 import {ChartsModule} from 'ng2-charts';
-import {InfographicComponent} from './components/infograhics/infographic.component';
-import {ChartComponent} from './components/infograhics/chart/chart.component';
+import {InfographicComponent} from './components/infographics/infographic.component';
+import {ChartComponent} from './components/infographics/chart/chart.component';
 import {MonthPickerComponent} from './components/util/month-picker/month-picker.component';
 import {CandidateSourceResultsComponent} from './components/candidates/show/returns/candidate-source-results.component';
 import {DefineSearchComponent} from './components/search/define-search/define-search.component';
