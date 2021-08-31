@@ -108,7 +108,7 @@ export class RegistrationEducationComponent implements OnInit, OnDestroy {
     this.candidateService.getCandidateEducation().subscribe(
       (candidate) => {
         this.form.patchValue({
-          maxEducationLevelId: candidate.maxEducationLevel ? candidate.maxEducationLevel.id : null,
+          maxEducationLevelId: candidate.maxEducationLevel ? candidate.maxEducationLevel.id : 0,
         });
         if (candidate.candidateEducations) {
           this.candidateEducationItems = candidate.candidateEducations
@@ -162,17 +162,6 @@ export class RegistrationEducationComponent implements OnInit, OnDestroy {
 
   save(dir: string) {
     this.saving = true;
-
-    // If the candidate hasn't changed anything, skip the update service call
-    if (this.form.pristine) {
-      if (dir === 'next') {
-        this.onSave.emit();
-        this.registrationService.next();
-      } else {
-        this.registrationService.back();
-      }
-      return;
-    }
 
     this.candidateService.updateCandidateEducationLevel(this.form.value).subscribe(
       (response) => {
