@@ -36,6 +36,7 @@
         <country>au</country>
         <database>
 
+            <!--            todo Need to remove these credentials into env variables-->
             <url>jdbc:mysql://mysql.refugeetalent.com:3306/GlobalTalentDb</url>
             <user>GlobalTalentUser</user>
             <password>d26OKew37IkE</password>

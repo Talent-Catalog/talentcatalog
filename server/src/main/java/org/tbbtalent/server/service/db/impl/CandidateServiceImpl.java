@@ -1799,6 +1799,15 @@ public class CandidateServiceImpl implements CandidateService {
                         doSearchCandidates(searchCandidateRequest);
 
                 if (candidates.getNumberOfElements() > 0) {
+                    log.info("Found " + candidates.getNumberOfElements() + " candidates");
+
+                    int i = 0;
+                    for (Candidate candidate : candidates) {
+                        i++;
+                        log.info("Candidate " + i + ": " + candidate.getCandidateNumber());
+                        if (i > 5) break;
+                    }
+                    
                     //Query has results. Need to let watchers know
                     Set<Long> watcherUserIds = savedSearch.getWatcherUserIds();
                     for (Long watcherUserId : watcherUserIds) {

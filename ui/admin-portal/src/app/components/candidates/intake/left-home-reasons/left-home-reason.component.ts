@@ -38,7 +38,7 @@ export class LeftHomeReasonComponent extends IntakeComponentBase implements OnIn
       enumKeysToEnumOptions(this.candidateIntakeData?.leftHomeReasons, LeftHomeReason);
     this.form = this.fb.group({
       leftHomeReasons: [options],
-      leftHomeOther: [this.candidateIntakeData?.leftHomeOther]
+      leftHomeNotes: [this.candidateIntakeData?.leftHomeNotes]
     });
   }
 

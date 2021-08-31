@@ -118,7 +118,7 @@ public class CandidateIntakeDataUpdate {
     private String langAssessment;
     private String langAssessmentScore;
     private List<LeftHomeReason> leftHomeReasons;
-    private String leftHomeOther;
+    private String leftHomeNotes;
     private YesNo militaryService;
     private YesNoUnsure militaryWanted;
     private String militaryNotes;
