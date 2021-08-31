@@ -30,17 +30,11 @@ public class EmailTester {
 
     public static void main(String[] args) {
 //        testStubSend();
-        testSmtpSend();
+//        testSmtpSend();
     }
     
     private static void testStubSend() {
         EmailSender emailSender = stubEmailSender();
-        EmailHelper helper = new EmailHelper(emailSender, textTemplateEngine(), htmlTemplateEngine());
-        helper.sendResetPasswordEmail(user());
-    }
-    
-    private static void testSmtpSend() {
-        EmailSender emailSender = smtpEmailSender();
         EmailHelper helper = new EmailHelper(emailSender, textTemplateEngine(), htmlTemplateEngine());
         helper.sendResetPasswordEmail(user());
     }
@@ -64,22 +58,6 @@ public class EmailTester {
         sender.setAuthenticate(false);
         sender.setDefaultEmail("test-from@dp.test.com");
         sender.setTestOverrideEmail("");
-        sender.init();
-        return sender;
-    }
-    
-    private static EmailSender smtpEmailSender() {
-        EmailSender sender = new EmailSender();
-        sender.setType(EmailType.SMTP);
-        sender.setHost("smtp.gmail.com");
-        sender.setPort(587);
-//        sender.setUser("devtestingdp@gmail.com");
-//        sender.setPassword("H@6J9bpcIDHa");
-        sender.setUser("tbbtalent@talentbeyondboundaries.org");
-        sender.setPassword("TBB4Talent!now");
-        sender.setAuthenticate(true);
-        sender.setDefaultEmail("martina@digitalpurpose.com.au");
-        sender.setTestOverrideEmail("martina+tbb@digitalpurpose.com.au");
         sender.init();
         return sender;
     }

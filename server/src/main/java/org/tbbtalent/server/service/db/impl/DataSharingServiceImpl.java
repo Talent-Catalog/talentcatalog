@@ -90,17 +90,7 @@ public class DataSharingServiceImpl implements DataSharingService {
     @Value("${tbb.partner-dbcopy-config}")
     private String partnerDbcopyConfig = "data.sharing/tbbCopies.xml";
 
-    //Need to set zeroDateTimeBehavior because of all the null Dates in the
-    //database. Otherwise cannot process those dates.
-//    static final String ZERO_DATE_TIME_CONFIG =
-//            "?zeroDateTimeBehavior=convertToNull";
-//
-//    private static final String DB_MASTER_URL =
-//            "jdbc:postgresql://prod-tbb.cskpt7osayvj.us-east-1.rds.amazonaws.com:5432/tbbtalent" +
-//                    ZERO_DATE_TIME_CONFIG;
-
     private static final String DB_LOCAL_COPY_URL = "jdbc:h2:mem:"; 
-//    + ZERO_DATE_TIME_CONFIG;
 
     private Connection tbbMaster;
     private Connection tbbLocalCopy;
