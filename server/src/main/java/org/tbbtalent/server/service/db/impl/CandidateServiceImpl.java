@@ -17,10 +17,38 @@
 package org.tbbtalent.server.service.db.impl;
 
 import com.opencsv.CSVWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.security.GeneralSecurityException;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.validation.constraints.NotNull;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.elasticsearch.index.query.*;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.elasticsearch.index.query.SimpleQueryStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,38 +72,101 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tbbtalent.server.configuration.GoogleDriveConfig;
-import org.tbbtalent.server.exception.*;
-import org.tbbtalent.server.model.db.*;
+import org.tbbtalent.server.exception.CircularReferencedException;
+import org.tbbtalent.server.exception.CountryRestrictionException;
+import org.tbbtalent.server.exception.EntityReferencedException;
+import org.tbbtalent.server.exception.ExportFailedException;
+import org.tbbtalent.server.exception.InvalidRequestException;
+import org.tbbtalent.server.exception.InvalidSessionException;
+import org.tbbtalent.server.exception.NoSuchObjectException;
+import org.tbbtalent.server.exception.PasswordMatchException;
+import org.tbbtalent.server.exception.UsernameTakenException;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateDestination;
+import org.tbbtalent.server.model.db.CandidateEducation;
+import org.tbbtalent.server.model.db.CandidateExam;
+import org.tbbtalent.server.model.db.CandidateLanguage;
+import org.tbbtalent.server.model.db.CandidateOccupation;
+import org.tbbtalent.server.model.db.CandidateStatus;
+import org.tbbtalent.server.model.db.Country;
+import org.tbbtalent.server.model.db.DataRow;
+import org.tbbtalent.server.model.db.DependantRelations;
+import org.tbbtalent.server.model.db.EducationLevel;
+import org.tbbtalent.server.model.db.Exam;
+import org.tbbtalent.server.model.db.Gender;
+import org.tbbtalent.server.model.db.LanguageLevel;
+import org.tbbtalent.server.model.db.Occupation;
+import org.tbbtalent.server.model.db.Role;
+import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.SavedSearch;
+import org.tbbtalent.server.model.db.SearchJoin;
+import org.tbbtalent.server.model.db.SearchType;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.SurveyType;
+import org.tbbtalent.server.model.db.UnhcrStatus;
+import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.model.db.YesNoUnsure;
 import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.model.sf.Contact;
-import org.tbbtalent.server.repository.db.*;
+import org.tbbtalent.server.repository.db.CandidateExamRepository;
+import org.tbbtalent.server.repository.db.CandidateRepository;
+import org.tbbtalent.server.repository.db.CandidateSpecification;
+import org.tbbtalent.server.repository.db.CountryRepository;
+import org.tbbtalent.server.repository.db.EducationLevelRepository;
+import org.tbbtalent.server.repository.db.GetSavedListCandidatesQuery;
+import org.tbbtalent.server.repository.db.LanguageLevelRepository;
+import org.tbbtalent.server.repository.db.OccupationRepository;
+import org.tbbtalent.server.repository.db.SavedSearchRepository;
+import org.tbbtalent.server.repository.db.SurveyTypeRepository;
+import org.tbbtalent.server.repository.db.UserRepository;
 import org.tbbtalent.server.repository.es.CandidateEsRepository;
 import org.tbbtalent.server.request.LoginRequest;
-import org.tbbtalent.server.request.candidate.*;
+import org.tbbtalent.server.request.candidate.BaseCandidateContactRequest;
+import org.tbbtalent.server.request.candidate.CandidateEmailSearchRequest;
+import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
+import org.tbbtalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
+import org.tbbtalent.server.request.candidate.CandidatePhoneSearchRequest;
+import org.tbbtalent.server.request.candidate.CreateCandidateRequest;
+import org.tbbtalent.server.request.candidate.IHasSetOfSavedLists;
+import org.tbbtalent.server.request.candidate.RegisterCandidateRequest;
+import org.tbbtalent.server.request.candidate.SalesforceOppParams;
+import org.tbbtalent.server.request.candidate.SavedListGetRequest;
+import org.tbbtalent.server.request.candidate.SavedSearchGetRequest;
+import org.tbbtalent.server.request.candidate.SearchCandidateRequest;
+import org.tbbtalent.server.request.candidate.SearchJoinRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateContactRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateEducationRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateLinksRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateListOppsRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateOppsRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
+import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tbbtalent.server.request.note.CreateCandidateNoteRequest;
 import org.tbbtalent.server.request.search.UpdateSavedSearchRequest;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.security.PasswordHelper;
-import org.tbbtalent.server.service.db.*;
+import org.tbbtalent.server.service.db.CandidateCitizenshipService;
+import org.tbbtalent.server.service.db.CandidateDependantService;
+import org.tbbtalent.server.service.db.CandidateDestinationService;
+import org.tbbtalent.server.service.db.CandidateExamService;
+import org.tbbtalent.server.service.db.CandidateNoteService;
+import org.tbbtalent.server.service.db.CandidateSavedListService;
+import org.tbbtalent.server.service.db.CandidateService;
+import org.tbbtalent.server.service.db.CandidateVisaJobCheckService;
+import org.tbbtalent.server.service.db.CandidateVisaService;
+import org.tbbtalent.server.service.db.CountryService;
+import org.tbbtalent.server.service.db.FileSystemService;
+import org.tbbtalent.server.service.db.SalesforceService;
+import org.tbbtalent.server.service.db.SavedListService;
+import org.tbbtalent.server.service.db.SavedSearchService;
 import org.tbbtalent.server.service.db.email.EmailHelper;
 import org.tbbtalent.server.service.db.util.PdfHelper;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
-
-import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.security.GeneralSecurityException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class CandidateServiceImpl implements CandidateService {
@@ -1783,7 +1874,12 @@ public class CandidateServiceImpl implements CandidateService {
             log.info("Notify watchers: running " + searches.size() + " searches");
             
             int count = 0;
+
+            OffsetDateTime yesterday = OffsetDateTime.now().minusDays(1);
             
+            //Look through all watched searches looking for any that have candidates that were
+            //created since yesterday.
+            //Those are the searches that need to notify their watchers.
             for (SavedSearch savedSearch : searches) {
 
                 count++;
@@ -1793,22 +1889,19 @@ public class CandidateServiceImpl implements CandidateService {
                 SearchCandidateRequest searchCandidateRequest =
                         convertToSearchCandidateRequest(savedSearch);
 
-                LocalDate date = LocalDate.now().minusDays(1);
-                searchCandidateRequest.setFromDate(date);
                 Page<Candidate> candidates =
                         doSearchCandidates(searchCandidateRequest);
 
+                boolean newCandidates = false;
                 if (candidates.getNumberOfElements() > 0) {
-                    log.info("Found " + candidates.getNumberOfElements() + " candidates");
-
-                    int i = 0;
-                    for (Candidate candidate : candidates) {
-                        i++;
-                        log.info("Candidate " + i + ": " + candidate.getCandidateNumber());
-                        if (i > 5) break;
-                    }
-                    
-                    //Query has results. Need to let watchers know
+                    //Get first (latest) candidate
+                    Candidate candidate = candidates.getContent().get(0);
+                    OffsetDateTime createdDate = candidate.getCreatedDate();
+                    newCandidates = createdDate.isAfter(yesterday);
+                }
+                
+                if (newCandidates) {
+                    //Query has new results. Need to let watchers know
                     Set<Long> watcherUserIds = savedSearch.getWatcherUserIds();
                     for (Long watcherUserId : watcherUserIds) {
                         Set<SavedSearch> userWatches = userNotifications
