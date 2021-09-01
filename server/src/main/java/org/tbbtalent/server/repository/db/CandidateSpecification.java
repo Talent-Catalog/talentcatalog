@@ -79,15 +79,6 @@ public class CandidateSpecification {
             Join<Candidate, CandidateSkill> candidateSkills = null;
             Join<Candidate, CandidateAttachment> candidateAttachments = null;
 
-            //CreatedBy date > from date is only set in the watcher notification code.
-            if (request.getFromDate() != null) {
-                conjunction.getExpressions().add(builder.greaterThanOrEqualTo(
-                        candidate.get("createdDate"), 
-                        getOffsetDateTime(
-                                request.getFromDate(),LocalTime.MIN, request.getTimezone()))
-                );
-            }
-
             query.distinct(true);
 
             /*
