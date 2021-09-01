@@ -49,7 +49,7 @@
     <div *ngIf="partnerRegistered === 'Yes'">
       <div class="form-group">
         <label>
-          What is your partner's candidate number?
+          If yes, please select your partner from the dropdown. <small>(Start typing name or number to find)</small>
         </label>
         <app-candidate-name-num-search
           [handleSelect]="'displayOnly'"
@@ -143,7 +143,7 @@
 
     <div class="form-group">
       <label for="partnerCitizenshipId">
-        What is your partners current citizenship?
+        What is your partners current country of citizenship?
       </label>
       <ng-select id="partnerCitizenshipId" [formControlName]="'partnerCitizenshipId'"
                  [items]="nationalities" [clearOnBackspace]="false"
