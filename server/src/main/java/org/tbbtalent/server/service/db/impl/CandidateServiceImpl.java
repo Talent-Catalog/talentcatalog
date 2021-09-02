@@ -1865,8 +1865,8 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     //Midnight GMT
-    //todo set hour back to 0
-    @Scheduled(cron = "0 1 3 * * ?", zone = "GMT")
+    //todo set hour back to 1 0
+    @Scheduled(cron = "0 30 4 * * ?", zone = "GMT")
     public void notifySearchWatchers() {
         String currentSearch = "";
         try {
@@ -1890,6 +1890,11 @@ public class CandidateServiceImpl implements CandidateService {
                 
                 SearchCandidateRequest searchCandidateRequest =
                         convertToSearchCandidateRequest(savedSearch);
+                
+                //Set up paging
+                searchCandidateRequest.setPageNumber(0);
+                //Short page is all we need - we are only going to look at first element
+                searchCandidateRequest.setPageSize(1);
 
                 Page<Candidate> candidates =
                         doSearchCandidates(searchCandidateRequest);
