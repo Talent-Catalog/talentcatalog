@@ -429,10 +429,11 @@ public class CandidateServiceImpl implements CandidateService {
         save(candidate, true);
     }
 
-    //todo this is horrible cloned code duplicated from SavedSearchServiceImpl - factor it out.
+    //todo this is horrible cloned code duplicated from SavedSearchServiceImpl.convertToSearchCandidateRequest - factor it out.
     private SearchCandidateRequest convertToSearchCandidateRequest(SavedSearch savedSearch) {
         SearchCandidateRequest searchCandidateRequest = new SearchCandidateRequest();
         searchCandidateRequest.setSavedSearchId(savedSearch.getId());
+        searchCandidateRequest.setSimpleQueryString(savedSearch.getSimpleQueryString());
         searchCandidateRequest.setKeyword(savedSearch.getKeyword());
         searchCandidateRequest.setStatuses(getStatusListFromString(savedSearch.getStatuses()));
         searchCandidateRequest.setGender(savedSearch.getGender());
@@ -1864,7 +1865,8 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     //Midnight GMT
-    @Scheduled(cron = "0 1 0 * * ?", zone = "GMT")
+    //todo set hour back to 0
+    @Scheduled(cron = "0 1 3 * * ?", zone = "GMT")
     public void notifySearchWatchers() {
         String currentSearch = "";
         try {
