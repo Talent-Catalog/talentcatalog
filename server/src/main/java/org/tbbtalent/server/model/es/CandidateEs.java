@@ -314,6 +314,9 @@ public class CandidateEs {
     public static PageRequest convertToElasticSortField(
             PagedSearchRequest request) {
         PageRequest requestAdj;
+
+        int pageNumber = request.getPageNumber() == null ? 0 : request.getPageNumber();
+        int pageSize = request.getPageSize() == null ? 25 : request.getPageSize();
         
         String[] sortFields = request.getSortFields();
 
@@ -322,7 +325,7 @@ public class CandidateEs {
             
             //Special hack for id field - which is masterId in CandidateEs.
             //Sort by candidate's id even though displayed as candidate number on front end.
-            //Candidate Number is a text field so can't be sorted.
+            //Candidate Number is a text field so can't be sorted in a sensible numeric way.
             //Thankfully the id and CN increment the same, so still displays in order.
             if (sortField.equals("id")) {
                 sortField = "masterId";
@@ -338,11 +341,9 @@ public class CandidateEs {
                     break;
                 }
             }
-
             
             if (!matched) {
-                requestAdj = PageRequest.of(
-                        request.getPageNumber(), request.getPageSize());
+                requestAdj = PageRequest.of(pageNumber, pageSize);
             } else {
                 //todo extract this logic into a method that Candidate Service Impl can also call.
                 //This logic assumes that sorting field, apart from masterId 
@@ -363,7 +364,7 @@ public class CandidateEs {
                     esFieldSpec += ".keyword";
                 }
                 requestAdj = PageRequest.of(
-                        request.getPageNumber(), request.getPageSize(),
+                        pageNumber, pageSize,
                         (request.getSortDirection() == Sort.Direction.ASC ?
                                 Sort.by(esFieldSpec).ascending() :
                                 Sort.by(esFieldSpec).descending())
@@ -372,8 +373,7 @@ public class CandidateEs {
                 );
             }
         } else {
-            requestAdj = PageRequest.of(
-                    request.getPageNumber(), request.getPageSize());
+            requestAdj = PageRequest.of(pageNumber, pageSize);
         }
         return requestAdj;
     }
