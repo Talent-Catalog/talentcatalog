@@ -1865,8 +1865,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     //Midnight GMT
-    //todo set hour back to 1 0
-    @Scheduled(cron = "0 30 4 * * ?", zone = "GMT")
+    @Scheduled(cron = "0 1 0 * * ?", zone = "GMT")
     public void notifySearchWatchers() {
         String currentSearch = "";
         try {
