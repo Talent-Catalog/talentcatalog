@@ -38,7 +38,7 @@ export class IeltsScoreValidationComponent implements OnInit, OnChanges {
 
   update() {
     // Only send the string to the component form if date matches the correct format
-    if (this.value != null) {
+    if (this.value != null && this.value !== "") {
       if (this.ieltsExamCheck()) {
         if (this.regex.test(this.value)) {
           this.error = null;
@@ -49,6 +49,8 @@ export class IeltsScoreValidationComponent implements OnInit, OnChanges {
       } else {
         this.control.patchValue(this.value);
       }
+    } else {
+      this.control.patchValue('NoResponse');
     }
   }
 
