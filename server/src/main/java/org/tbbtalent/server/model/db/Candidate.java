@@ -1443,13 +1443,23 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         if (data.getLangAssessment() != null) {
             setLangAssessment(data.getLangAssessment());
         }
+
         if (data.getLangAssessmentScore() != null) {
-            setLangAssessmentScore(data.getLangAssessmentScore());
-            if (ieltsScore == null) {
-                BigDecimal score = new BigDecimal(data.getLangAssessmentScore());
+            BigDecimal score;
+            // If the LangAssessmentScore is NoResponse set to null in database.
+            if (data.getLangAssessmentScore().equals("NoResponse")) {
+                setLangAssessmentScore(null);
+                score = null;
+            } else {
+                setLangAssessmentScore(data.getLangAssessmentScore());
+                score = new BigDecimal(data.getLangAssessmentScore());
+            }
+            // If no IeltsGen exam exists, the ielts score comes from the lang assessment score and needs to be updated here.
+            if (!hasIelts()) {
                 setIeltsScore(score);
             }
         }
+
         if (data.getLeftHomeReasons() != null) {
             setLeftHomeReasons(data.getLeftHomeReasons());
         }
@@ -1613,5 +1623,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
             setWorkDesiredNotes(data.getWorkDesiredNotes());
         }
 
+    }
+
+    private boolean hasIelts() {
+        return candidateExams.stream().anyMatch(ce -> ce.getExam().equals(Exam.IELTSGen));
     }
 }

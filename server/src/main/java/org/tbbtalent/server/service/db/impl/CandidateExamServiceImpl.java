@@ -91,6 +91,8 @@ public class CandidateExamServiceImpl implements CandidateExamService {
                 candidate.setIeltsScore(score);
             }
         } else {
+            // If changing the type of exam from IELTS (existingIelts = true) to another
+            // exam type (data.getExamType != IeltsGen) then set IeltsScore to null
             if (existingIelts) {
                 candidate.setIeltsScore(null);
             }
