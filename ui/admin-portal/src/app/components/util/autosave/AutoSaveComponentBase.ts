@@ -15,7 +15,7 @@
  */
 import {AfterViewInit, Directive, OnDestroy, OnInit} from "@angular/core";
 import {Observable, Subject} from "rxjs";
-import {catchError, debounceTime, switchMap, takeUntil, tap} from "rxjs/operators";
+import {catchError, debounceTime, map, switchMap, takeUntil, tap} from "rxjs/operators";
 import {FormGroup} from "@angular/forms";
 
 /**
@@ -23,7 +23,7 @@ import {FormGroup} from "@angular/forms";
  * <p/>
  * Provides following standard functionality
  * <ul>
- *   <li>Implements autosave of form data after x seconds of inactivity</li>
+ *   <li>Implements autosaving of form data after x seconds of inactivity</li>
  *   <li>Provides standard "error" and "saving" attributes for display to user</li>
  *   <li>Provides FormGroup form variable for subclass to create and populate.
  *   The form should be created in the subclass's onInit method
@@ -82,6 +82,11 @@ export abstract class AutoSaveComponentBase implements AfterViewInit, OnDestroy,
    */
   abstract onSuccessfulSave(): void;
 
+  preprocessFormValues(formValue: Object): Object {
+    //Default is no preprocessing - just pass form values on unchanged
+    return formValue;
+  }
+
   /**
    * This is called after ngOnInit - ie after the form has been set up.
    * <p/>
@@ -105,6 +110,9 @@ export abstract class AutoSaveComponentBase implements AfterViewInit, OnDestroy,
 
       //Only pass values on if there has been inactivity for the given timeout
       debounceTime(timeout),
+
+      //Hook into form values preprocessor
+      map(formValue => this.preprocessFormValues(formValue)),
 
       //Do a save of the received form values.
       switchMap(formValue => {

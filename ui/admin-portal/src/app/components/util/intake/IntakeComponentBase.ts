@@ -14,29 +14,31 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {AfterViewInit, Directive, Input, OnDestroy, OnInit} from '@angular/core';
-import {catchError, debounceTime, map, switchMap, takeUntil, tap} from 'rxjs/operators';
-import {Subject} from 'rxjs';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {Directive, Input, OnInit} from '@angular/core';
+import {Observable} from 'rxjs';
+import {FormBuilder} from '@angular/forms';
 import {Candidate, CandidateIntakeData, CandidateVisa} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
+import {AutoSaveComponentBase} from "../autosave/AutoSaveComponentBase";
 
 /**
  * Base class for all candidate intake components.
  * <p/>
  * Provides following standard functionality
  * <ul>
- *   <li>Implements autosave of form data after x seconds of inactivity</li>
- *   <li>Declares standard component @Inputs</li>
- *   <li>Provides standard "error" and "saving" attributes for display to user</li>
- *   <li>Provides FormGroup form variable for subclass to create and populate.
- *   The form should be created in the subclass's onInit method
- *   </li>
+ *   <li>Declares standard component @Inputs. Note that these inputs are not all used in this
+ *   code but by declaring them here we standardize their naming and purpose, which will
+ *   be used by subclasses.</li>
+ *   <li>Provide a FormBuilder instance {@link fb} that subclasses can use to create the form</li>
+ *   <li>Provides a standard setNoResponse method for form fields</li>
+ *   <li>Implements the saving of updated intake data</li>
+ *   <li>Adds some special preprocessing of form values</li>
+ *   <li>Inherits the standard autosave functionality from {@link AutoSaveComponentBase} </li>
  * </ul>
  * @author John Cameron
  */
 @Directive()
-export abstract class IntakeComponentBase implements AfterViewInit, OnDestroy, OnInit {
+export abstract class IntakeComponentBase extends AutoSaveComponentBase implements OnInit {
   /**
    * This is the candidate whose intake data we are entering
    */
@@ -49,18 +51,6 @@ export abstract class IntakeComponentBase implements AfterViewInit, OnDestroy, O
   @Input() candidateIntakeData: CandidateIntakeData;
 
   /**
-   * Error which should be displayed to user if not null.
-   * Typically an error connecting to the Spring server.
-   */
-  error: string;
-
-  /**
-   * Form containing the component's field(s).
-   * This should be created and initialized in the subclass's ngOnInit method.
-   */
-  form: FormGroup;
-
-  /**
    * Index into a array member of candidateIntakeData if that is what is
    * being updated.
    */
@@ -71,23 +61,6 @@ export abstract class IntakeComponentBase implements AfterViewInit, OnDestroy, O
    */
   @Input() visaCheckRecord: CandidateVisa;
 
-  /**
-   * True when a save is underway. Should be used to show the user when a save
-   * is happening.
-   */
-  saving: boolean;
-
-  /**
-   * True when a field is being entered before save. Should be used to show the user difference between typing and save.
-   */
-  typing: boolean;
-
-  /**
-   * Used to signal that subscription to form values should be dropped.
-   * @see ngOnDestroy
-   */
-  private unsubscribe = new Subject<void>()
-
   @Input() editable: boolean = true;
 
   /**
@@ -96,14 +69,13 @@ export abstract class IntakeComponentBase implements AfterViewInit, OnDestroy, O
    * @param fb FormBuilder
    * @param candidateService CandidateService which saves the intake data
    */
-  protected constructor(
-    protected fb: FormBuilder,
-    private candidateService: CandidateService,
-  ) {}
+  protected constructor(protected fb: FormBuilder, private candidateService: CandidateService) {
+    super();
+  }
 
   /**
    * This must be implemented by subclass which should create and initialize
-   * the form in this method.
+   * the form in this method using the FormBuilder inherited from here.
    * <p/>
    * The names of form controls are used to send the data to the server so they
    * must match the field names in CandidateIntakeDataUpdate.java, otherwise
@@ -112,63 +84,35 @@ export abstract class IntakeComponentBase implements AfterViewInit, OnDestroy, O
   abstract ngOnInit(): void;
 
   /**
-   * This is called after ngOnInit - ie after the form has been set up.
-   * <p/>
-   * It sets up the autosave.
+   * Save the form data
    */
-  ngAfterViewInit(): void {
-    //1 second timeout
-    this.setupAutosave(1000);
+  doSave(formValue: any): Observable<any> {
+    return this.candidateService.updateIntakeData(this.candidate.id, formValue);
   }
 
   /**
-   * Subscribes to changes in form data, saving form data after a period of
-   * inactivity.
-   * @param timeout Data will be saved after this many milliseconds of
-   * inactivity
+   * This must be implemented to do any processing following a successful save.
+   * Typically that will involve updating the locally stored copy of the data that the form
+   * is being used to update.
    */
-  private setupAutosave(timeout: number) {
-    this.form.valueChanges?.pipe(
-
-      tap(() => this.typing = true),
-
-      //Only pass values on if there has been inactivity for the given timeout
-      debounceTime(timeout),
-
-      //Convert any possible multiselected enums
-      map(formValue => IntakeComponentBase.convertEnumOptions(formValue)),
-
-      //Do a save of the received form values.
-      switchMap(formValue => {
-          this.typing = false;
-          this.error = null;
-          this.saving = true;
-          return this.candidateService.updateIntakeData(this.candidate.id, formValue);
-        }
-      ),
-
-      //We catch errors, copying them to this.error, but then just continuing
-      catchError((error, caught) => {
-        this.saving = false;
-        this.error = error;
-        return caught;
-      }),
-
-      //Subscription will continue until the given Observable emits.
-      //See ngOnDestroy
-      takeUntil(this.unsubscribe)
-    ).subscribe(
-
-      //Save has completed successfully
-      () => this.saving = false,
-
-      //Theoretically never get here because we catch errors in the pipe
-      (error) => {
-        this.saving = false;
-        this.error = error;
-      }
-    )
+  onSuccessfulSave(): void {
+    //Nothing special to do
   }
+
+  /**
+   * Convert any multiselected enums
+   */
+  preprocessFormValues(formValue: Object): Object {
+    return IntakeComponentBase.convertEnumOptions(formValue);
+  }
+
+  /**
+   * Sets a standard no response value to the named form control.
+   * @param formControlName Name of control in the intake form.
+   */
+  setNoResponse(formControlName: string) {
+    this.form.controls[formControlName].setValue('NoResponse');
+  };
 
   /**
    * Converts the data returned by multiselected enums to a simple array of
@@ -214,19 +158,5 @@ export abstract class IntakeComponentBase implements AfterViewInit, OnDestroy, O
       }
     }
     return gotOne;
-  }
-
-  setNoResponse(formControlName: string) {
-    this.form.controls[formControlName].setValue('NoResponse');
-  };
-
-  /**
-   * When the component is destroyed we need to stop subscribing
-   * (otherwise we get a memory leak)
-   */
-  ngOnDestroy(): void {
-    //Stop subscribing by emitting a value from the Unsubscribe Observable
-    //See takeUntil in the above pipe.
-    this.unsubscribe.next();
   }
 }
