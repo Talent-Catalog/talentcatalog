@@ -14,7 +14,7 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="isCandidateSelected && sourceType === 'searches' || sourceType === 'lists'">
+<div>
   <div class="alert alert-danger" *ngIf="error">
     {{error}}
   </div>
@@ -24,12 +24,8 @@
     <div class="form-group">
       <label class="h6" for="contextNotes">
         <app-autosave-status [saving]="saving" [typing]="typing"></app-autosave-status>
-        <span *ngIf="isSearch()">Notes for {{candidate.user.firstName}} in
-          '{{candidateSource.name}}' search selection</span>
-        <span *ngIf="!isSearch()">Notes for {{candidate.user.firstName}} in
-          '{{candidateSource.name}}'</span>
+        <span>{{title}}</span>
       </label>
-
 
       <textarea id="contextNotes" class="md-textarea-auto form-control" rows="3"
                 [formControlName]="'contextNote'"></textarea>
