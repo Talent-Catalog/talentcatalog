@@ -26,6 +26,7 @@ import {getExternalHref} from '../util/url';
 import {Occupation} from './occupation';
 import {LanguageLevel} from './language-level';
 import {HasId} from "./base";
+import {CandidateAttachment} from "./candidate-attachment";
 
 export interface Candidate extends HasId {
   id: number;
@@ -170,6 +171,10 @@ export interface CandidateIntakeData {
 
   resettleThird?: YesNo;
   resettleThirdStatus?: string;
+
+  shareableCv?: CandidateAttachment;
+  shareableDoc?: CandidateAttachment;
+  shareableNotes?: string;
 
   workAbroad?: YesNo;
   workAbroadNotes?: string;

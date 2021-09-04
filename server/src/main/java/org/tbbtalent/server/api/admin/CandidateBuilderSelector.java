@@ -96,7 +96,12 @@ public class CandidateBuilderSelector {
                 .add("nationality", countryDto())
                 .add("user", userDto())
                 .add("candidateReviewStatusItems", reviewDto())
-                ;
+
+                .add("shareableCv", candidateAttachmentDto())
+                .add("shareableDoc", candidateAttachmentDto())
+                .add("shareableNotes")
+
+            ;
     }
 
     private DtoBuilder candidateSemiLimitedDto() {
@@ -214,5 +219,20 @@ public class CandidateBuilderSelector {
                 .add("score")
                 ;
     }
+    
+    private DtoBuilder candidateAttachmentDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("type")
+            .add("name")
+            .add("location")
+            .add("fileType")
+            .add("migrated")
+            .add("cv")
+            .add("createdBy", userDto())
+            .add("createdDate")
+            ;
+    }
+
 
 }

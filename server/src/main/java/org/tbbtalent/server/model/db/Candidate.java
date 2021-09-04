@@ -52,6 +52,19 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private String additionalInfo;
     private String candidateMessage;
     private String linkedInLink;
+    
+    @Nullable
+    private String shareableNotes;
+
+    @Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shareable_cv_attachment_id")
+    private CandidateAttachment shareableCv;
+
+    @Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shareable_doc_attachment_id")
+    private CandidateAttachment shareableDoc;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "survey_type_id")
@@ -1302,7 +1315,34 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public String getSfId() {
         return SalesforceServiceImpl.extractIdFromSfUrl(sflink);
     }
-    
+
+    @Nullable
+    public String getShareableNotes() {
+        return shareableNotes;
+    }
+
+    public void setShareableNotes(@Nullable String shareableNotes) {
+        this.shareableNotes = shareableNotes;
+    }
+
+    @Nullable
+    public CandidateAttachment getShareableCv() {
+        return shareableCv;
+    }
+
+    public void setShareableCv(@Nullable CandidateAttachment shareableCv) {
+        this.shareableCv = shareableCv;
+    }
+
+    @Nullable
+    public CandidateAttachment getShareableDoc() {
+        return shareableDoc;
+    }
+
+    public void setShareableDoc(@Nullable CandidateAttachment shareableDoc) {
+        this.shareableDoc = shareableDoc;
+    }
+
     @Nullable
     public String getVideolink() {
         return videolink;
