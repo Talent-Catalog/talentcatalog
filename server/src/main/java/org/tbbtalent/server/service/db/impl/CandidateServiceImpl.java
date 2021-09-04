@@ -142,6 +142,7 @@ import org.tbbtalent.server.request.candidate.UpdateCandidateListOppsRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateOppsRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateRequest;
+import org.tbbtalent.server.request.candidate.UpdateCandidateShareableNotesRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateSurveyRequest;
@@ -1116,6 +1117,19 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
 
         candidate.setAdditionalInfo(request.getAdditionalInfo());
+        return save(candidate, true);
+    }
+
+    @Override
+    public Candidate updateShareableNotes(long id, UpdateCandidateShareableNotesRequest request) {
+        User loggedInUser = authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+        Set<Country> sourceCountries = getDefaultSourceCountries(loggedInUser);
+        Candidate candidate = this.candidateRepository.findByIdLoadUser(id, sourceCountries)
+            .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
+
+        candidate.setShareableNotes(request.getShareableNotes());
         return save(candidate, true);
     }
 

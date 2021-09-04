@@ -73,7 +73,7 @@ export abstract class AutoSaveComponentBase implements AfterViewInit, OnDestroy,
   /**
    * This must be implemented by subclass to save the current contents of the form.
    */
-  abstract doSave(formValue: any): Observable<void>;
+  abstract doSave(formValue: any): Observable<any>;
 
   /**
    * This must be implemented to do any processing following a successful save.

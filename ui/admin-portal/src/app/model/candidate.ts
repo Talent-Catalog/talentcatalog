@@ -54,6 +54,9 @@ export interface Candidate extends HasId {
   folderlink: string;
   sflink: string;
   videolink: string;
+  shareableCv: CandidateAttachment;
+  shareableDoc: CandidateAttachment;
+  shareableNotes: string;
   surveyType: SurveyType;
   surveyComment: string;
   selected: boolean;
@@ -171,10 +174,6 @@ export interface CandidateIntakeData {
 
   resettleThird?: YesNo;
   resettleThirdStatus?: string;
-
-  shareableCv?: CandidateAttachment;
-  shareableDoc?: CandidateAttachment;
-  shareableNotes?: string;
 
   workAbroad?: YesNo;
   workAbroadNotes?: string;
@@ -366,6 +365,10 @@ export interface UpdateCandidateOppsRequest {
 export interface UpdateCandidateListOppsRequest {
   savedListId: number;
   salesforceOppParams?: SalesforceOppParams;
+}
+
+export interface UpdateCandidateShareableNotesRequest {
+  shareableNotes?: string;
 }
 
 export interface UpdateCandidateStatusInfo {

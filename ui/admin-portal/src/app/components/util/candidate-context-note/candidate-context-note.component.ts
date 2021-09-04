@@ -91,8 +91,4 @@ export class CandidateContextNoteComponent extends AutoSaveComponentBase
       this.form.controls['contextNote'].patchValue(this.candidate.contextNote);
     }
   }
-
-  isSearch() {
-    return isSavedSearch(this.candidateSource);
-  }
 }

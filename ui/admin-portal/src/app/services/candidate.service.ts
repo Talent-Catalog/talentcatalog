@@ -18,7 +18,10 @@ import {Injectable} from '@angular/core';
 import {
   Candidate,
   CandidateIntakeData,
-  SalesforceOppParams, UpdateCandidateListOppsRequest, UpdateCandidateOppsRequest,
+  SalesforceOppParams,
+  UpdateCandidateListOppsRequest,
+  UpdateCandidateOppsRequest,
+  UpdateCandidateShareableNotesRequest,
   UpdateCandidateStatusRequest
 } from '../model/candidate';
 import {Observable} from 'rxjs';
@@ -70,6 +73,11 @@ export class CandidateService {
 
   updateLinks(id: number, details): Observable<Candidate>  {
     return this.http.put<Candidate>(`${this.apiUrl}/${id}/links`, details);
+  }
+
+  updateShareableNotes(
+    id: number, request: UpdateCandidateShareableNotesRequest): Observable<Candidate> {
+    return this.http.put<Candidate>(`${this.apiUrl}/${id}/shareable-notes`, request);
   }
 
   updateStatus(details: UpdateCandidateStatusRequest): Observable<void>  {
