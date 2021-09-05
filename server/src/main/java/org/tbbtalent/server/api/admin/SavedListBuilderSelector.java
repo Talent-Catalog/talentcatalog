@@ -34,8 +34,10 @@ public class SavedListBuilderSelector {
     private DtoBuilder savedListDto() {
         return new DtoBuilder()
                 .add("id")
+                .add("description")
                 .add("displayedFieldsLong")
                 .add("displayedFieldsShort")
+                .add("exportFields")
                 .add("status")
                 .add("name")
                 .add("fixed")
