@@ -82,6 +82,14 @@ export abstract class AutoSaveComponentBase implements AfterViewInit, OnDestroy,
    */
   abstract onSuccessfulSave(): void;
 
+  /**
+   * Override this if you want to change the formValue before processing it.
+   * <p/>
+   * This gets called by the "map" method in the autosave pipe - see {@link #setupAutosave} below.
+   * <p/>
+   * The default implementation is just to return the formValue unchanged.
+   * @param formValue Form values as currently entered
+   */
   preprocessFormValues(formValue: Object): Object {
     //Default is no preprocessing - just pass form values on unchanged
     return formValue;
