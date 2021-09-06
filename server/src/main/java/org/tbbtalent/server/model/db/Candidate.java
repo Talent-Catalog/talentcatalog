@@ -16,6 +16,28 @@
 
 package org.tbbtalent.server.model.db;
 
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.annotations.Formula;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.api.admin.SavedSearchAdminApi;
@@ -23,13 +45,6 @@ import org.tbbtalent.server.model.es.CandidateEs;
 import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
-
-import javax.persistence.*;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "candidate")
@@ -520,6 +535,23 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.phone = phone;
         this.whatsapp = whatsapp;
         this.status = CandidateStatus.draft;
+    }
+
+    @NotNull
+    public List<String> extractFields(@Nullable List<String> exportFields)
+        throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        List<String> extracts = new ArrayList<>();
+        if (exportFields != null) {
+            for (String exportField : exportFields) {
+                Object obj = PropertyUtils.getProperty(this, exportField);
+                if (obj instanceof User) {
+                    extracts.add(((User) obj).getDisplayName());
+                } else {
+                    extracts.add(obj == null ? "" : obj.toString());
+                }
+            }
+        }
+        return extracts;
     }
 
     public String getCandidateNumber() {
