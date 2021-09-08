@@ -26,12 +26,7 @@ import com.google.api.client.util.PemReader;
 import com.google.api.client.util.SecurityUtils;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
-import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
-
+import com.google.api.services.sheets.v4.Sheets;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -41,9 +36,16 @@ import java.security.PrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Collection;
 import java.util.Collections;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 
 /**
  * Configures GoogleDrive.
+ * <p/>
+ * We are authenticated as a service account: see https://cloud.google.com/docs/authentication/production?authuser=2 
  * <p/>
  * All access is delegated to a particular user - {@link #DELEGATED_USER}
  *
@@ -58,6 +60,8 @@ public class GoogleDriveConfig {
   private static final String DELEGATED_USER = "candidates@talentbeyondboundaries.org";
   private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
+  private Credential credential= null;
+  
   /**
    * OAuth 2.0 Client ID.
    * See the Google Drive API for the TalentCatalog project 
@@ -105,6 +109,12 @@ public class GoogleDriveConfig {
    * @see #getGoogleDriveService()  
    */
   private Drive googleDriveService;
+
+  /**
+   * This is lazily computed from all the above Google API settings above.
+   * @see #getGoogleSheetsService()   
+   */
+  private Sheets googleSheetsService;
 
   /**
    * The ID of the CandidateData Google Drive
@@ -187,23 +197,35 @@ public class GoogleDriveConfig {
     return listFoldersRoot;
   }
 
-  /**
-   * This code was extracted from here: https://developers.google.com/drive/api/v3/quickstart/java
-   */
-  public Drive getGoogleDriveService() throws IOException, GeneralSecurityException {
-    if (googleDriveService == null) {
+  private void configureGoogle() throws IOException, GeneralSecurityException {
+    if (credential == null) {
+      /*
+       * See https://developers.google.com/drive/api/v3/quickstart/java
+       */
       final NetHttpTransport HTTP_TRANSPORT =
           GoogleNetHttpTransport.newTrustedTransport();
-      Credential credential = computeCredential(HTTP_TRANSPORT)
+      credential = computeCredential(HTTP_TRANSPORT)
           .createScoped(Collections.singleton(DriveScopes.DRIVE))
           .createDelegated(DELEGATED_USER);
 
       googleDriveService = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
           .setApplicationName(APPLICATION_NAME)
           .build();
-    }
 
+      googleSheetsService = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
+          .setApplicationName(APPLICATION_NAME)
+          .build();
+    }
+  }
+  
+  public Drive getGoogleDriveService() throws IOException, GeneralSecurityException {
+    configureGoogle();
     return googleDriveService;
+  }
+
+  public Sheets getGoogleSheetsService() throws IOException, GeneralSecurityException {
+    configureGoogle();
+    return googleSheetsService;
   }
 
   private GoogleCredential computeCredential(NetHttpTransport HTTP_TRANSPORT) throws IOException {
@@ -214,6 +236,9 @@ public class GoogleDriveConfig {
 
     Collection<String> emptyScopes = Collections.emptyList();
 
+    /**
+     * This code follows the service Account flow described in the doc for {@link GoogleCredential}
+     */ 
     GoogleCredential.Builder credentialBuilder = new GoogleCredential.Builder()
         .setTransport(HTTP_TRANSPORT)
         .setJsonFactory(JSON_FACTORY)

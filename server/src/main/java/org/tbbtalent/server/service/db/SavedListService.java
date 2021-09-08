@@ -17,6 +17,7 @@
 package org.tbbtalent.server.service.db;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
@@ -28,6 +29,7 @@ import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.RegisteredListException;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.request.candidate.PublishListRequest;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
@@ -283,4 +285,8 @@ public interface SavedListService {
     void updateDisplayedFieldPaths(
             long savedListId, UpdateDisplayedFieldPathsRequest request)
             throws NoSuchObjectException;
+
+    //TODO JC Doc
+    String publish(long savedListId, PublishListRequest request)
+        throws IOException, GeneralSecurityException;
 }

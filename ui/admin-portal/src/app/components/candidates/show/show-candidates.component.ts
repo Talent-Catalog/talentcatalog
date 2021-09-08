@@ -76,7 +76,7 @@ import {
   ContentUpdateType,
   CopySourceContentsRequest,
   IHasSetOfCandidates,
-  isSavedList,
+  isSavedList, PublishListRequest,
   SavedListGetRequest,
   UpdateExplicitSavedListContentsRequest
 } from '../../../model/saved-list';
@@ -131,6 +131,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   searching: boolean;
   exporting: boolean;
   importing: boolean;
+  publishing: boolean;
   updating: boolean;
   updatingStatuses: boolean;
   savingSelection: boolean;
@@ -522,16 +523,16 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       request = new SavedListGetRequest();
     }
-    request.pageNumber = this.pageNumber - 1;
-    request.pageSize = this.pageSize;
+
+    //Note: The page number and size are ignored in this call (all records are exported).
+    //Only the sort fields are processed.
     request.sortFields = [this.sortField];
     request.sortDirection = this.sortDirection;
     if (request instanceof SavedSearchGetRequest) {
       request.reviewStatusFilter = this.reviewStatusFilter;
     }
 
-    this.candidateSourceCandidateService.export(
-      this.candidateSource, request).subscribe(
+    this.candidateSourceCandidateService.export(this.candidateSource, request).subscribe(
       result => {
         const options = {type: 'text/csv;charset=utf-8;'};
         const filename = 'candidates.csv';
@@ -554,6 +555,26 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         });
         reader.readAsText(err.error);
         this.exporting = false;
+      }
+    );
+  }
+
+  publishCandidates() {
+    this.publishing = true;
+
+    //todo Don't need sort fields
+    const request: PublishListRequest = {
+      sortFields: [this.sortField],
+      sortDirection: this.sortDirection
+    }
+    this.savedListCandidateService.publish(this.candidateSource.id, request).subscribe(
+      result => {
+        //todo Result could be link to Google doc
+        this.publishing = false;
+      },
+      error => {
+        this.error = error;
+        this.publishing = false;
       }
     );
   }
@@ -686,6 +707,10 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isImportable(): boolean {
+    return isSavedList(this.candidateSource);
+  }
+
+  isPublishable(): boolean {
     return isSavedList(this.candidateSource);
   }
 

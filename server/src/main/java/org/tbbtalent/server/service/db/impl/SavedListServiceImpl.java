@@ -16,9 +16,23 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import static org.springframework.data.jpa.domain.Specification.where;
+
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
+import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,28 +47,34 @@ import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.RegisteredListException;
-import org.tbbtalent.server.model.db.*;
-import org.tbbtalent.server.repository.db.*;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.SavedSearch;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.repository.db.CandidateRepository;
+import org.tbbtalent.server.repository.db.GetCandidateSavedListsQuery;
+import org.tbbtalent.server.repository.db.GetSavedListsQuery;
+import org.tbbtalent.server.repository.db.SavedListRepository;
+import org.tbbtalent.server.repository.db.UserRepository;
+import org.tbbtalent.server.request.candidate.PublishListRequest;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
-import org.tbbtalent.server.request.list.*;
+import org.tbbtalent.server.request.list.ContentUpdateType;
+import org.tbbtalent.server.request.list.IHasSetOfCandidates;
+import org.tbbtalent.server.request.list.SearchSavedListRequest;
+import org.tbbtalent.server.request.list.UpdateExplicitSavedListContentsRequest;
+import org.tbbtalent.server.request.list.UpdateSavedListContentsRequest;
+import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
+import org.tbbtalent.server.service.db.DocPublisherService;
 import org.tbbtalent.server.service.db.FileSystemService;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
-
-import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static org.springframework.data.jpa.domain.Specification.where;
 
 /**
  * Saved List service
@@ -70,17 +90,21 @@ public class SavedListServiceImpl implements SavedListService {
     private final CandidateRepository candidateRepository;
     private final SavedListRepository savedListRepository;
     private final CandidateSavedListService candidateSavedListService;
+    private final DocPublisherService docPublisherService;
     private final FileSystemService fileSystemService;
     private final GoogleDriveConfig googleDriveConfig;
     private final SalesforceService salesforceService;
     private final UserRepository userRepository;
     private final AuthService authService;
 
+    private static final Logger log = LoggerFactory.getLogger(SavedListServiceImpl.class);
+
     @Autowired
     public SavedListServiceImpl(
         CandidateRepository candidateRepository,
         SavedListRepository savedListRepository,
         CandidateSavedListService candidateSavedListService,
+        DocPublisherService docPublisherService,
         FileSystemService fileSystemService,
         GoogleDriveConfig googleDriveConfig,
         SalesforceService salesforceService, UserRepository userRepository,
@@ -89,6 +113,7 @@ public class SavedListServiceImpl implements SavedListService {
         this.candidateRepository = candidateRepository;
         this.savedListRepository = savedListRepository;
         this.candidateSavedListService = candidateSavedListService;
+        this.docPublisherService = docPublisherService;
         this.fileSystemService = fileSystemService;
         this.googleDriveConfig = googleDriveConfig;
         this.salesforceService = salesforceService;
@@ -509,6 +534,50 @@ public class SavedListServiceImpl implements SavedListService {
         savedList.removeUser(user);
 
         return savedListRepository.save(savedList);
+    }
+
+    @Override
+    public String publish(long id, PublishListRequest request)
+        throws GeneralSecurityException, IOException {
+        SavedList savedList = savedListRepository.findById(id)
+            .orElseThrow(() -> new NoSuchObjectException(SavedList.class, id));
+        Set<Candidate> candidates = savedList.getCandidates();
+
+        //todo test
+        List<String> exportFields = Arrays.asList("user", "user.firstName", "user.lastName", 
+            "shareableNotes");
+
+        
+        List<List<Object>> publishedData = new ArrayList<>();
+        
+
+        //Title row
+        List<Object> title = new ArrayList<>();
+        for (String exportField : exportFields) {
+            title.add(exportField);
+        }
+        publishedData.add(title);
+
+        //Add row for each candidate
+        for (Candidate candidate : candidates) {
+            List<Object> candidateData = new ArrayList<>();
+            publishedData.add(candidateData);
+            List<String> extracts = null;
+            try {
+                extracts = candidate.extractFields(exportFields);
+                for (String extract : extracts) {
+                    candidateData.add(extract);
+                }
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            }
+        }
+
+       return docPublisherService.createPublishedDoc(savedList.getName(), publishedData);
     }
 
     /**

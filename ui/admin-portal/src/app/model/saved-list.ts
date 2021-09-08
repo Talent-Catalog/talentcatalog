@@ -82,6 +82,10 @@ export interface IHasSetOfCandidates {
   candidateIds: number[];
 }
 
+//todo fill in fields
+export class PublishListRequest extends PagedSearchRequest {
+}
+
 export class SearchSavedListRequest extends SearchCandidateSourcesRequest {
 
 }
