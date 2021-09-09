@@ -447,9 +447,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     private IeltsStatus partnerIelts;
 
-    @Enumerated(EnumType.STRING)
     @Nullable
-    private IeltsScore partnerIeltsScore;
+    private String partnerIeltsScore;
 
     @Nullable
     private Long partnerIeltsYr;
@@ -1225,9 +1224,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public void setPartnerIelts(@Nullable IeltsStatus partnerIelts) { this.partnerIelts = partnerIelts; }
 
     @Nullable
-    public IeltsScore getPartnerIeltsScore() { return partnerIeltsScore; }
+    public String getPartnerIeltsScore() { return partnerIeltsScore; }
 
-    public void setPartnerIeltsScore(@Nullable IeltsScore partnerIeltsScore) { this.partnerIeltsScore = partnerIeltsScore; }
+    public void setPartnerIeltsScore(@Nullable String partnerIeltsScore) { this.partnerIeltsScore = partnerIeltsScore; }
 
     @Nullable
     public Long getPartnerIeltsYr() { return partnerIeltsYr; }
