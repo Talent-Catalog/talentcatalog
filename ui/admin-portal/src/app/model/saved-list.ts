@@ -41,6 +41,7 @@ export interface SavedList extends CandidateSource {
   folderlink?: string;
   foldercvlink?: string;
   folderjdlink?: string;
+  publishedDocLink?: string;
 }
 
 export function isSavedList(source: CandidateSource): source is SavedList {

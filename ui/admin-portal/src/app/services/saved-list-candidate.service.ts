@@ -46,17 +46,6 @@ export class SavedListCandidateService {
     return this.http.put<void>(`${this.apiUrl}/${id}/merge`, request);
   }
 
-  //todo Should return link to file
-  /**
-   * Exports the whole list as a file containing candidate information that is suitable for
-   * "publishing" - ie sharing externally, for example with prospective employers.
-   * @param id ID of list to be published
-   * @param request Request specifying the candidate data to be shared.
-   */
-  publish(id: number, request: PublishListRequest): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${id}/publish`, request);
-  }
-
   remove(id: number, request: UpdateExplicitSavedListContentsRequest): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/${id}/remove`, request);
   }

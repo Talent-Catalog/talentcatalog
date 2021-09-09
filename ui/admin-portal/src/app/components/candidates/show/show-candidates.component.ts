@@ -567,9 +567,12 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       sortFields: [this.sortField],
       sortDirection: this.sortDirection
     }
-    this.savedListCandidateService.publish(this.candidateSource.id, request).subscribe(
+    this.savedListService.publish(this.candidateSource.id, request).subscribe(
       result => {
-        //todo Result could be link to Google doc
+        if (isSavedList(this.candidateSource)) {
+          //Update the list's published doc link
+          this.candidateSource.publishedDocLink = result.publishedDocLink;
+        }
         this.publishing = false;
       },
       error => {
@@ -1277,6 +1280,20 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   hasSavedSearchSource(): boolean {
     return this.getSavedSearchSource() != null;
+  }
+
+  hasPublishedDoc() {
+    return isSavedList(this.candidateSource) && this.candidateSource.publishedDocLink != null;
+  }
+
+  doShowPublishedDoc() {
+    if (isSavedList(this.candidateSource)) {
+      const folderlink = this.candidateSource.publishedDocLink;
+      if (folderlink) {
+        //Open link in new window
+        window.open(folderlink, "_blank");
+      }
+    }
   }
 
   doShowListFolder() {

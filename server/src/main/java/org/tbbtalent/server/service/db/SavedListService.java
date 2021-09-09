@@ -286,7 +286,15 @@ public interface SavedListService {
             long savedListId, UpdateDisplayedFieldPathsRequest request)
             throws NoSuchObjectException;
 
-    //TODO JC Doc
-    String publish(long savedListId, PublishListRequest request)
-        throws IOException, GeneralSecurityException;
+    /**
+     * Create a published external document from the data of candidates in the given list. 
+     * @param savedListId Id of saved list
+     * @param request Request containing details of what is to be published 
+     * @return SavedList containing a link to the published doc
+     * @throws GeneralSecurityException if there are security problems accessing document storage
+     * @throws IOException if there are problems creating the document 
+     * @throws ReflectiveOperationException if the publish request contains unknown fields
+     */
+    SavedList publish(long savedListId, PublishListRequest request)
+        throws GeneralSecurityException, IOException, ReflectiveOperationException;
 }

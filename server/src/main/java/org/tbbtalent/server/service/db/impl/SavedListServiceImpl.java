@@ -22,7 +22,6 @@ import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -552,8 +551,8 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
-    public String publish(long id, PublishListRequest request)
-        throws GeneralSecurityException, IOException {
+    public SavedList publish(long id, PublishListRequest request)
+        throws GeneralSecurityException, IOException, ReflectiveOperationException {
 
         //Get list, creating list folder if necessary
         SavedList savedList = createListFolder(id);
@@ -580,28 +579,23 @@ public class SavedListServiceImpl implements SavedListService {
             List<Object> candidateData = new ArrayList<>();
             publishedData.add(candidateData);
             List<String> extracts = null;
-            try {
-                extracts = candidate.extractFields(exportFields);
-                for (String extract : extracts) {
-                    candidateData.add(extract);
-                }
-                
-                //TODO JC clean up catches and logging
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            }
+            extracts = candidate.extractFields(exportFields);
+            for (String extract : extracts) {
+                candidateData.add(extract);
+            }             
         }
         
         GoogleFileSystemDrive drive = googleDriveConfig.getListFoldersDrive();
         GoogleFileSystemFolder listFolder = new GoogleFileSystemFolder(savedList.getFolderlink());
 
         //And create the doc in that folder.
-        return docPublisherService.createPublishedDoc(
+        String link = docPublisherService.createPublishedDoc(
            drive, listFolder, savedList.getName(), publishedData);
+        
+        savedList.setPublishedDocLink(link);
+        saveIt(savedList);
+        
+        return savedList;
     }
 
     /**

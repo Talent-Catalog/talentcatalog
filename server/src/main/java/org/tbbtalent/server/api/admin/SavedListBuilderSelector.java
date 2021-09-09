@@ -47,6 +47,7 @@ public class SavedListBuilderSelector {
                 .add("folderlink")
                 .add("foldercvlink")
                 .add("folderjdlink")
+                .add("publishedDocLink")
                 .add("registeredJob")
                 .add("createdBy", userDto())
                 .add("createdDate")
