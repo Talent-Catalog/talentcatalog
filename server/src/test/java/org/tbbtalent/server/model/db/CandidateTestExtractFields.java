@@ -42,6 +42,7 @@ class CandidateTestExtractFields {
   void setUp() {
     candidate = new Candidate();
     candidate.setId(1234L);
+    candidate.setCandidateNumber("1234");
     User user = new User();
     candidate.setUser(user);
     user.setFirstName("fred");
@@ -77,12 +78,22 @@ class CandidateTestExtractFields {
   }
 
   @Test
-  void exportToCsv()
+  void extractObjectTypeTest()
       throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, IOException {
-    List<String> exportFields = Arrays.asList("id", "user", "user.firstName", "user.lastName");
+    List<String> exportFields = Arrays.asList("id", "candidateNumber", "user", "user.firstName", "user.lastName");
     List<Object> extracts = candidate.extractFields(exportFields);
     
+    //Id is a number
     assertEquals(Long.class, extracts.get(0).getClass());
+    
+    //CandidateNumber should have been extracted as a number
+    assertEquals(Long.class, extracts.get(1).getClass());
+    
+    //User is extracted as a String
+    assertEquals(String.class, extracts.get(2).getClass());
+    
+    //First name is a String
+    assertEquals(String.class, extracts.get(3).getClass());
     
 
   }

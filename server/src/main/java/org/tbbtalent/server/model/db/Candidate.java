@@ -545,7 +545,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
                 Object obj = PropertyUtils.getProperty(this, exportField);
                 if (obj instanceof User) {
                     extracts.add(((User) obj).getDisplayName());
-                } else if ("candidateNumber".equals(exportField)) {
+                } else if (obj != null && "candidateNumber".equals(exportField)) {
                     //Convert candidateNumber to a number
                     Long cn = Long.parseLong((String) obj);
                     extracts.add(cn);
