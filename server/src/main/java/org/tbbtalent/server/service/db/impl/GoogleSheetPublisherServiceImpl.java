@@ -16,16 +16,20 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import com.google.api.services.drive.model.File;
 import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Collections;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.configuration.GoogleDriveConfig;
 import org.tbbtalent.server.service.db.DocPublisherService;
+import org.tbbtalent.server.service.db.FileSystemService;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 
 /**
  * Publishes Google Sheets on a Google Drive
@@ -34,27 +38,25 @@ import org.tbbtalent.server.service.db.DocPublisherService;
  */
 @Service
 public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
+  private static final String SHEET_MIME_TYPE = "application/vnd.google-apps.spreadsheet";
+  private static final Logger log = LoggerFactory.getLogger(GoogleSheetPublisherServiceImpl.class);
+
   private final GoogleDriveConfig googleDriveConfig;
+  private final FileSystemService fileSystemService;
 
   public GoogleSheetPublisherServiceImpl(
-      GoogleDriveConfig googleDriveConfig) {
+      GoogleDriveConfig googleDriveConfig,
+      FileSystemService fileSystemService) {
     this.googleDriveConfig = googleDriveConfig;
+    this.fileSystemService = fileSystemService;
   }
 
   @Override
-  public String createPublishedDoc(String name, List<List<Object>> data)
+  public String createPublishedDoc(GoogleFileSystemDrive drive, GoogleFileSystemFolder folder, 
+      String name, List<List<Object>> data)
       throws GeneralSecurityException, IOException {
-    File fileMetadata = new File();
-    fileMetadata.setDriveId("0AJpRzZk9D_kLUk9PVA");
-    fileMetadata.setParents(Collections.singletonList("1BkMPOr392ubCriQdhBAmFKxlume-c7d2"));
-    fileMetadata.setName(name);
-    fileMetadata.setMimeType("application/vnd.google-apps.spreadsheet");
-    File file = googleDriveConfig.getGoogleDriveService().files().create(fileMetadata)
-        .setSupportsAllDrives(true)
-        .setFields("id,webViewLink")
-        .execute();
 
-    System.out.println("Created empty spreadsheet link: " + file.getWebViewLink());
+    GoogleFileSystemFile file = fileSystemService.createFile(drive, folder, name, SHEET_MIME_TYPE);
 
     ValueRange body = new ValueRange().setValues(data);
     UpdateValuesResponse result =
@@ -62,8 +64,9 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
             .update(file.getId(), "1:1000", body)
             .setValueInputOption("USER_ENTERED")
             .execute();
-    System.out.printf("%d cells updated.", result.getUpdatedCells());
 
-    return file.getWebViewLink();
+    log.info("Created " + result.getUpdatedCells() + " cells in spreadsheet with link: " + file.getUrl());
+
+    return file.getUrl();
   }
 }

@@ -225,15 +225,22 @@ public class SavedListServiceImpl implements SavedListService {
         saveIt(destination);
     }
 
-    @Override
-    public SavedList createListFolder(long id) throws NoSuchObjectException, IOException {
+    /**
+     * Finds folder for the given list on Google Drive, creating one if none found.
+     *
+     * @param id ID of list
+     * @throws NoSuchObjectException if no list is found with that id
+     * @throws IOException           if there is a problem creating the folder.
+     */
+    private void findOrCreateListFolder(long id) 
+        throws NoSuchObjectException, IOException {
         SavedList savedList = get(id);
-        
+
         GoogleFileSystemDrive foldersDrive = googleDriveConfig.getListFoldersDrive();
-        GoogleFileSystemFolder foldersRoot = googleDriveConfig.getListFoldersRoot(); 
+        GoogleFileSystemFolder foldersRoot = googleDriveConfig.getListFoldersRoot();
 
         String folderName = Long.toString(id);
-        
+
         GoogleFileSystemFolder folder = fileSystemService.findAFolder(
             foldersDrive, foldersRoot, folderName);
         if (folder == null) {
@@ -243,19 +250,27 @@ public class SavedListServiceImpl implements SavedListService {
             // Job name folder
             folderName = savedList.getName();
             GoogleFileSystemFolder subfolder = fileSystemService.createFolder(foldersDrive, folder, folderName);
+            savedList.setFolderlink(subfolder.getUrl());
             // Cv folder
-            GoogleFileSystemFolder cvfolder = 
+            GoogleFileSystemFolder cvfolder =
                 fileSystemService.createFolder(foldersDrive, subfolder, LIST_CVS_SUBFOLDER);
             savedList.setFoldercvlink(cvfolder.getUrl());
             // JD folder
-            GoogleFileSystemFolder jdfolder = 
+            GoogleFileSystemFolder jdfolder =
                 fileSystemService.createFolder(foldersDrive, subfolder, LIST_JOB_DESCRIPTION_SUBFOLDER);
             savedList.setFolderjdlink(jdfolder.getUrl());
             // CREATE JOB OPPORTUNITY INTAKE FILE IN JD FOLDER
             String joiFileName = "JobOpportunityIntake - " + savedList.getName();
             fileSystemService.copy(jdfolder, joiFileName, googleDriveConfig.getJobOppIntakeTemplateId());
         }
-        savedList.setFolderlink(folder.getUrl());
+    } 
+    
+    @Override
+    public SavedList createListFolder(long id) throws NoSuchObjectException, IOException {
+        SavedList savedList = get(id);
+
+        findOrCreateListFolder(id);
+
         saveIt(savedList);
         return savedList;
     }
@@ -539,8 +554,10 @@ public class SavedListServiceImpl implements SavedListService {
     @Override
     public String publish(long id, PublishListRequest request)
         throws GeneralSecurityException, IOException {
-        SavedList savedList = savedListRepository.findById(id)
-            .orElseThrow(() -> new NoSuchObjectException(SavedList.class, id));
+
+        //Get list, creating list folder if necessary
+        SavedList savedList = createListFolder(id);
+
         Set<Candidate> candidates = savedList.getCandidates();
 
         //todo test
@@ -568,6 +585,8 @@ public class SavedListServiceImpl implements SavedListService {
                 for (String extract : extracts) {
                     candidateData.add(extract);
                 }
+                
+                //TODO JC clean up catches and logging
             } catch (InvocationTargetException e) {
                 e.printStackTrace();
             } catch (IllegalAccessException e) {
@@ -576,8 +595,13 @@ public class SavedListServiceImpl implements SavedListService {
                 e.printStackTrace();
             }
         }
+        
+        GoogleFileSystemDrive drive = googleDriveConfig.getListFoldersDrive();
+        GoogleFileSystemFolder listFolder = new GoogleFileSystemFolder(savedList.getFolderlink());
 
-       return docPublisherService.createPublishedDoc(savedList.getName(), publishedData);
+        //And create the doc in that folder.
+        return docPublisherService.createPublishedDoc(
+           drive, listFolder, savedList.getName(), publishedData);
     }
 
     /**

@@ -194,7 +194,7 @@ public class SavedListCandidateAdminApi implements
         candidateService.exportToCsv(savedListId, request, response.getWriter());
     }
 
-    //TODO JC Should return link to file
+    //TODO JC Should return List - containing new field with public doc link 
     @PutMapping(value = "{id}/publish")
     public void publish(
         @PathVariable("id") long savedListId, @Valid @RequestBody PublishListRequest request)

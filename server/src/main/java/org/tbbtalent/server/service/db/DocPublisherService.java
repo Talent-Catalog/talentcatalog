@@ -19,6 +19,8 @@ package org.tbbtalent.server.service.db;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 
 /**
  * Creates an external document from the given data - representing a number of rows of data
@@ -32,10 +34,13 @@ public interface DocPublisherService {
   /**
    * Creates an external document with the given name from the given data 
    *
+   * @param drive Drive where doc is created
+   * @param folder Folder where doc is created
    * @param name Name of created document 
    * @param data Data which comprises the published document
    * @return A link to the created document
    */
-  String createPublishedDoc(String name, List<List<Object>> data) throws GeneralSecurityException, IOException;
+  String createPublishedDoc(GoogleFileSystemDrive drive, GoogleFileSystemFolder folder,
+      String name, List<List<Object>> data) throws GeneralSecurityException, IOException;
 
 }

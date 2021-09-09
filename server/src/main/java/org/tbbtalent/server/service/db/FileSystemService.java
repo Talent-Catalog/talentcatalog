@@ -46,8 +46,20 @@ public interface FileSystemService {
     GoogleFileSystemFolder findAFolder(
         GoogleFileSystemDrive drive, GoogleFileSystemFolder parentFolder, String folderName) 
         throws IOException;
-
-    //TODO JC Need create file
+    
+    /**
+     * Creates a file with the given name.
+     * Does not check if file with that name already exists - may create
+     * create a duplicate file with the same name if the file system allows it. 
+     * @param fileName Name of folder to be created
+     * @param mimeType Type of file - see https://developers.google.com/drive/api/v3/mime-types
+     * @return File created
+     * @throws IOException If there was a problem creating the file
+     */
+    @NonNull
+    GoogleFileSystemFile createFile(
+        GoogleFileSystemDrive drive, GoogleFileSystemFolder parentFolder, String fileName, 
+        String mimeType) throws IOException;
     
     /**
      * Creates a folder with the given name.
