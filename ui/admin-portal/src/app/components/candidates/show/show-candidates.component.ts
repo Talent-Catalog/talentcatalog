@@ -561,6 +561,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   publishCandidates() {
     this.publishing = true;
+    this.error = null;
 
     //todo Don't need sort fields
     const request: PublishListRequest = {

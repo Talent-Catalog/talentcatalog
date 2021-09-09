@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import com.opencsv.CSVWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -42,6 +41,7 @@ class CandidateTestExtractFields {
   @BeforeEach
   void setUp() {
     candidate = new Candidate();
+    candidate.setId(1234L);
     User user = new User();
     candidate.setUser(user);
     user.setFirstName("fred");
@@ -56,7 +56,7 @@ class CandidateTestExtractFields {
     List<String> exportFields = Arrays.asList("user", "user.firstName", "user.lastName");
 
     try {
-      List<String> extracts = candidate.extractFields(exportFields);
+      List<Object> extracts = candidate.extractFields(exportFields);
       assertNotNull(extracts);
       assertEquals(exportFields.size(), extracts.size());
     } catch (Exception e) {
@@ -68,7 +68,7 @@ class CandidateTestExtractFields {
   void extractFieldsCallWithNull() {
 
     try {
-      List<String> extracts = candidate.extractFields(null);
+      List<Object> extracts = candidate.extractFields(null);
       assertNotNull(extracts);
       assertEquals(0, extracts.size());
     } catch (Exception e) {
@@ -79,21 +79,11 @@ class CandidateTestExtractFields {
   @Test
   void exportToCsv()
       throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, IOException {
-    List<String> exportFields = Arrays.asList("user", "user.firstName", "user.lastName");
-    List<String> extracts = candidate.extractFields(exportFields);
+    List<String> exportFields = Arrays.asList("id", "user", "user.firstName", "user.lastName");
+    List<Object> extracts = candidate.extractFields(exportFields);
+    
+    assertEquals(Long.class, extracts.get(0).getClass());
+    
 
-
-    CSVWriter csvWriter = new CSVWriter(writer);
-    
-    //Title line
-    csvWriter.writeNext(exportFields.toArray(new String[0]));
-
-    csvWriter.writeNext(extracts.toArray(new String[0]));
-    
-    String s = writer.toString();
-    
-    assertNotNull(s);
-    
-    csvWriter.close();
   }
 }

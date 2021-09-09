@@ -537,16 +537,20 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     }
 
     @NotNull
-    public List<String> extractFields(@Nullable List<String> exportFields)
+    public List<Object> extractFields(@Nullable List<String> exportFields)
         throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        List<String> extracts = new ArrayList<>();
+        List<Object> extracts = new ArrayList<>();
         if (exportFields != null) {
             for (String exportField : exportFields) {
                 Object obj = PropertyUtils.getProperty(this, exportField);
                 if (obj instanceof User) {
                     extracts.add(((User) obj).getDisplayName());
+                } else if ("candidateNumber".equals(exportField)) {
+                    //Convert candidateNumber to a number
+                    Long cn = Long.parseLong((String) obj);
+                    extracts.add(cn);
                 } else {
-                    extracts.add(obj == null ? "" : obj.toString());
+                    extracts.add(obj);
                 }
             }
         }
