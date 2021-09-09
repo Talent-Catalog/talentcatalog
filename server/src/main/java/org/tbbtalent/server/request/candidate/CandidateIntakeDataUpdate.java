@@ -136,7 +136,7 @@ public class CandidateIntakeDataUpdate {
     private YesNo partnerEnglish;
     private Long partnerEnglishLevelId;
     private IeltsStatus partnerIelts;
-    private IeltsScore partnerIeltsScore;
+    private String partnerIeltsScore;
     private Long partnerIeltsYr;
     private Long partnerCitizenshipId;
 
