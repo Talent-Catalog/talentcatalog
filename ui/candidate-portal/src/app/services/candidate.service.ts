@@ -21,6 +21,16 @@ import {Observable} from 'rxjs';
 import {Candidate} from '../model/candidate';
 import {map} from 'rxjs/operators';
 
+export interface UpdateCandidateAdditionalInfo extends UpdateCandidateSurvey {
+  additionalInfo?: string,
+  linkedInLink?: string,
+}
+
+export interface UpdateCandidateSurvey {
+  surveyTypeId?: number,
+  surveyComment?: string,
+}
+
 @Injectable({
   providedIn: 'root'
 })

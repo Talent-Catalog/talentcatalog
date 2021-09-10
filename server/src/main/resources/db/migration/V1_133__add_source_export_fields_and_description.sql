@@ -14,14 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.service.db;
+alter table saved_list add column export_fields text;
+alter table saved_search add column export_fields text;
 
-import org.tbbtalent.server.model.db.SurveyType;
-
-import java.util.List;
-
-public interface SurveyTypeService {
-    List<SurveyType> listActiveSurveyTypes();
-    List<SurveyType> listSurveyTypes();
-}
+alter table saved_list add column description text;
+alter table saved_search add column description text;
 

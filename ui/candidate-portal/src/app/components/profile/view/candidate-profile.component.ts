@@ -16,7 +16,8 @@
 
 import {Component, OnInit} from '@angular/core';
 import {CandidateService} from "../../../services/candidate.service";
-import {Candidate, linkedInUrl} from "../../../model/candidate";
+import {Candidate} from "../../../model/candidate";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'app-candidate-profile',
@@ -29,21 +30,24 @@ export class CandidateProfileComponent implements OnInit {
   loading: boolean;
 
   candidate: Candidate;
-  linkedInUrl = linkedInUrl;
+  usAfghan: boolean;
 
-  constructor(private candidateService: CandidateService) { }
+  constructor(private candidateService: CandidateService,
+              private route: ActivatedRoute) { }
 
   ngOnInit() {
     this.loading = true;
     this.candidateService.getProfile().subscribe(
       (response) => {
         this.candidate = response;
+        this.usAfghan = response.surveyType?.id === 10;
         this.loading = false;
       },
       (error) => {
         this.error = error;
         this.loading = false;
       });
+
   }
 
 }

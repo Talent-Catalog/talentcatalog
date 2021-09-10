@@ -665,7 +665,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
     }
 
-    private SearchCandidateRequest convertToSearchCandidateRequest(SavedSearch request) {
+    private SearchCandidateRequest convertToSearchCandidateRequest(SavedSearch request) throws CountryRestrictionException{
         User user = authService.getLoggedInUser().orElse(null);
         SearchCandidateRequest searchCandidateRequest = new SearchCandidateRequest();
         searchCandidateRequest.setSavedSearchId(request.getId());
@@ -685,18 +685,19 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         List<Long> requestCountries = getIdsFromString(request.getCountryIds());
 
         // if a user has source country restrictions AND IF the request has countries selected
-        if(user != null 
-                && user.getSourceCountries().size() > 0 
+        if(user != null
+                && user.getSourceCountries().size() > 0
                 && request.getCountryIds() != null) {
             List<Long> sourceCountries = user.getSourceCountries().stream()
                     .map(Country::getId)
                     .collect(Collectors.toList());
             //find the users source countries in the saved search countries
             requestCountries.retainAll(sourceCountries);
-            if(requestCountries.size() == 0){
-                //if no source countries in the saved search countries throw an error
-                throw new CountryRestrictionException("You don't have access to any of the countries in the Saved Search: " + request.getName());
-            }
+            //todo removed to fix default search showing source countries that no longer belong. Find an alternative solution.
+//            if(requestCountries.size() == 0){
+//                //if no source countries in the saved search countries throw an error
+//                throw new CountryRestrictionException("You don't have access to any of the countries in the Saved Search: " + request.getName());
+//            }
         }
         searchCandidateRequest.setCountryIds(requestCountries);
 

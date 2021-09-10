@@ -16,8 +16,8 @@
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
-import {Router} from "@angular/router";
-import {CandidateService} from "../../../services/candidate.service";
+import {ActivatedRoute, Router} from "@angular/router";
+import {CandidateService, UpdateCandidateSurvey} from "../../../services/candidate.service";
 import {AuthService} from "../../../services/auth.service";
 import {Candidate, RegisterCandidateRequest} from "../../../model/candidate";
 import {RegistrationService} from "../../../services/registration.service";
@@ -44,8 +44,11 @@ export class RegistrationContactComponent implements OnInit {
   authenticated: boolean;
   candidate: Candidate;
 
+  usAfghan: boolean;
+
   constructor(private fb: FormBuilder,
               private router: Router,
+              private route: ActivatedRoute,
               private candidateService: CandidateService,
               private authService: AuthService,
               private reCaptchaV3Service: ReCaptchaV3Service,
@@ -157,8 +160,25 @@ export class RegistrationContactComponent implements OnInit {
     req.passwordConfirmation = this.passwordConfirmation;
     req.reCaptchaV3Token = token;
 
+    this.usAfghan = this.route.snapshot.queryParams['source'] === 'us-afghan';
+
+    const request: UpdateCandidateSurvey = {
+      surveyTypeId: 10,
+    }
+
     this.authService.register(req).subscribe(
       (response) => {
+        // If successfully registered, check if US-Afghan and if so update the survey.
+        if (this.usAfghan) {
+          this.candidateService.updateCandidateSurvey(request).subscribe(
+            (res) => {
+              console.log(res);
+            }, (error) => {
+              this.error = error;
+              this.saving = false;
+            }
+          )
+        }
         this.registrationService.next();
       },
       (error) => {

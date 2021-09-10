@@ -31,24 +31,26 @@
                   [formControlName]="'additionalInfo'"></textarea>
       </div>
 
-      <div class="form-group">
-        <label for="surveyTypeId">
-          {{ 'REGISTRATION.SUBMIT.LABEL.SURVEY' | translate }} <sup>*</sup>
-        </label>
-        <select class="form-control" name="surveyTypeId" id="surveyTypeId" [formControlName]="'surveyTypeId'">
-          <option value=""></option>
-          <option *ngFor="let s of surveyTypes" [value]="s.id">{{s.name}}</option>
-        </select>
-      </div>
-
-      <ng-container *ngIf="form.controls.surveyTypeId.value !== ''">
+      <div *ngIf="!usAfghan">
         <div class="form-group">
-          <label class="font-weight-bold" for="surveyComment">
-            {{ 'REGISTRATION.SUBMIT.LABEL.COMMENT' | translate }}
+          <label for="surveyTypeId">
+            {{ 'REGISTRATION.SUBMIT.LABEL.SURVEY' | translate }} <sup>*</sup>
           </label>
-          <input type="text" class="form-control" id="surveyComment" placeholder="" [formControlName]="'surveyComment'">
+          <select class="form-control" name="surveyTypeId" id="surveyTypeId" [formControlName]="'surveyTypeId'">
+            <option value=""></option>
+            <option *ngFor="let s of surveyTypes" [value]="s.id">{{s.name}}</option>
+          </select>
         </div>
-      </ng-container>
+
+        <ng-container *ngIf="form.controls.surveyTypeId.value !== ''">
+          <div class="form-group">
+            <label class="font-weight-bold" for="surveyComment">
+              {{ 'REGISTRATION.SUBMIT.LABEL.COMMENT' | translate }}
+            </label>
+            <input type="text" class="form-control" id="surveyComment" placeholder="" [formControlName]="'surveyComment'">
+          </div>
+        </ng-container>
+      </div>
 
       <div class="form-group">
         <div>

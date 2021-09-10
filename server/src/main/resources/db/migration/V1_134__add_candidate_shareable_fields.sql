@@ -14,14 +14,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.service.db;
-
-import org.tbbtalent.server.model.db.SurveyType;
-
-import java.util.List;
-
-public interface SurveyTypeService {
-    List<SurveyType> listActiveSurveyTypes();
-    List<SurveyType> listSurveyTypes();
-}
-
+alter table candidate add column shareable_notes text;
+alter table candidate add column shareable_cv_attachment_id bigint references candidate_attachment;
+alter table candidate add column shareable_doc_attachment_id bigint references candidate_attachment;
