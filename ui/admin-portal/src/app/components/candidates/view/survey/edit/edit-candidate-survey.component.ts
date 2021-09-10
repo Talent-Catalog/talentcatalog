@@ -62,7 +62,7 @@ export class EditCandidateSurveyComponent implements OnInit {
     this.surveyTypeService.listSurveyTypes().subscribe(
       (response) => {
         /* Sort order with 'Other' showing last */
-        const sortOrder = [1, 2, 3, 4, 5, 6, 7, 9, 8];
+        const sortOrder = [1, 2, 3, 4, 5, 6, 7, 9, 8, 10];
         this.surveyTypes = response
           .sort((a, b) => {
             return sortOrder.indexOf(a.id) - sortOrder.indexOf(b.id);

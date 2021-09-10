@@ -29,7 +29,7 @@ export class SurveyTypeService {
 
   constructor(private http: HttpClient) { }
 
-  listSurveyTypes(): Observable<SurveyType[]> {
+  listActiveSurveyTypes(): Observable<SurveyType[]> {
     return this.http.get<SurveyType[]>(`${this.apiUrl}`);
   }
 
