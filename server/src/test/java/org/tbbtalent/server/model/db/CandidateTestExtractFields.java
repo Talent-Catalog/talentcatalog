@@ -20,12 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -52,49 +49,39 @@ class CandidateTestExtractFields {
   }
 
   @Test
-  void extractFields() {
-
-    List<String> exportFields = Arrays.asList("user", "user.firstName", "user.lastName");
-
+  void extractFieldCallWithNull() {
     try {
-      List<Object> extracts = candidate.extractFields(exportFields);
-      assertNotNull(extracts);
-      assertEquals(exportFields.size(), extracts.size());
+      candidate.extractField(null);
+      fail("Null exportField should throw exception ");
     } catch (Exception e) {
-      fail("Failed extracting " + exportFields + " from " + candidate, e);
-    }
-  }
-
-  @Test
-  void extractFieldsCallWithNull() {
-
-    try {
-      List<Object> extracts = candidate.extractFields(null);
-      assertNotNull(extracts);
-      assertEquals(0, extracts.size());
-    } catch (Exception e) {
-      fail("Failed extracting null exportFields from " + candidate, e);
+      assertEquals(IllegalArgumentException.class, e.getClass());
     }
   }
 
   @Test
   void extractObjectTypeTest()
-      throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, IOException {
-    List<String> exportFields = Arrays.asList("id", "candidateNumber", "user", "user.firstName", "user.lastName");
-    List<Object> extracts = candidate.extractFields(exportFields);
+      throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    Object obj;
     
+    obj = candidate.extractField("id");
+    assertNotNull(obj);
     //Id is a number
-    assertEquals(Long.class, extracts.get(0).getClass());
-    
-    //CandidateNumber should have been extracted as a number
-    assertEquals(Long.class, extracts.get(1).getClass());
-    
-    //User is extracted as a String
-    assertEquals(String.class, extracts.get(2).getClass());
-    
-    //First name is a String
-    assertEquals(String.class, extracts.get(3).getClass());
-    
+    assertEquals(Long.class, obj.getClass());
 
+    obj = candidate.extractField("candidateNumber");
+    assertNotNull(obj);
+    //CandidateNumber should have been extracted as a number
+    assertEquals(Long.class, obj.getClass());
+
+    obj = candidate.extractField("user");
+    assertNotNull(obj);
+    //User is extracted as a String
+    assertEquals(String.class, obj.getClass());
+
+    obj = candidate.extractField("user.firstName");
+    assertNotNull(obj);
+    //First name is a String
+    assertEquals(String.class, obj.getClass());
+    
   }
 }

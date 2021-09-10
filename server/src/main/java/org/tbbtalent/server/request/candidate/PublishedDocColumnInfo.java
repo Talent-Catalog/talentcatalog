@@ -16,18 +16,27 @@
 
 package org.tbbtalent.server.request.candidate;
 
-import org.springframework.lang.Nullable;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Something that has a value and a link. 
- * Objects like this can be used to construct hyperlinks - eg in a spreadsheet.  
+ * Defines the data which defines a column in a published Google Sheet doc
  *
  * @author John Cameron
  */
-public interface IHasValueWithLink {
-  @Nullable
-  Object getValue();
-  
-  @Nullable
-  String getLink();
+@Getter
+@Setter
+public class PublishedDocColumnInfo {
+
+  /**
+   * This string appears as the column header
+   */
+  private String header;
+
+  /**
+   * This represents the data used to construct cells in a particular column.
+   * If the column contains a link, this will be the value that is displayed, plus the link
+   * if someone clicks on that cell.
+   */
+  private IHasValueSourceWithLink columnContent;
 }

@@ -18,36 +18,36 @@ package org.tbbtalent.server.request.candidate;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
+import org.tbbtalent.server.model.db.Candidate;
 
 /**
- * These objects are used to construct Google Sheet cell values.
- * <p/>
- * They allow for hyperlinks to be generated.
+ * Source of data which is a fixed constant 
  *
  * @author John Cameron
  */
 @Getter
 @Setter
-@ToString
-public class PublishedGoogleSheetValue implements IHasValueWithLink {
-  Object value;
-  String link;
+public class PublishedDocConstantSource implements IValueSource {
 
   /**
-   * Generate the value that will be used to populate a Google Sheet cell entry.
-   * <p/>
-   * In particular it allows for the creation of a hyperlink when both a value and an associated
-   * link (url) are present.
-   * @return The value used to populate a Google Sheet cell.
+   * This is the constant value always returned
    */
-  public Object getCellValue() {
-    if (link == null || value == null) {
-      return value; 
-    } else {
-      //String values need to be quoted
-      String quotedValue = value instanceof String ? "\"" + value + "\"" : value.toString();
-      return "=HYPERLINK(\"" + link + "\"," + quotedValue + ")";
-    }
+  private Object value;
+
+  public PublishedDocConstantSource() {
+  }
+
+  public PublishedDocConstantSource(Object value) {
+    this.value = value;
+  }
+
+  /**
+   * Returns constant value
+   * @param candidate Ignore
+   * @return Constant value
+   */
+  @Override
+  public Object fetchValue(Candidate candidate) {
+    return value;
   }
 }

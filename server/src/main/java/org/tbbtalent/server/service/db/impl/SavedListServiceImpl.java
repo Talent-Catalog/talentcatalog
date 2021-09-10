@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -56,7 +55,12 @@ import org.tbbtalent.server.repository.db.GetCandidateSavedListsQuery;
 import org.tbbtalent.server.repository.db.GetSavedListsQuery;
 import org.tbbtalent.server.repository.db.SavedListRepository;
 import org.tbbtalent.server.repository.db.UserRepository;
+import org.tbbtalent.server.request.candidate.PublishedDocColumnContent;
+import org.tbbtalent.server.request.candidate.PublishedDocColumnInfo;
+import org.tbbtalent.server.request.candidate.PublishedDocConstantSource;
+import org.tbbtalent.server.request.candidate.PublishedDocFieldSource;
 import org.tbbtalent.server.request.candidate.PublishListRequest;
+import org.tbbtalent.server.request.candidate.PublishedDocBuilder;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
 import org.tbbtalent.server.request.list.ContentUpdateType;
@@ -552,45 +556,70 @@ public class SavedListServiceImpl implements SavedListService {
 
     @Override
     public SavedList publish(long id, PublishListRequest request)
-        throws GeneralSecurityException, IOException, ReflectiveOperationException {
+        throws GeneralSecurityException, IOException {
 
         //Get list, creating list folder if necessary
         SavedList savedList = createListFolder(id);
-
+        
+        //Fetch candidates in list
         Set<Candidate> candidates = savedList.getCandidates();
 
+//todo DEBUG        List<ColumnInfo> columnInfos = request.getColumns(); DEBUG
         //todo test
-        List<String> exportFields = Arrays.asList("user", "user.firstName", "user.lastName", 
-            "shareableNotes");
+        List<PublishedDocColumnInfo> columnInfos = new ArrayList<>();
+        PublishedDocColumnInfo info;
+        PublishedDocColumnContent content;
 
+        info = new PublishedDocColumnInfo();
+        info.setHeader("Candidate id");
+        content = new PublishedDocColumnContent();
+        content.setValueSource(new PublishedDocFieldSource("id"));
+        info.setColumnContent(content);
+        columnInfos.add(info);
+
+        info = new PublishedDocColumnInfo();
+        info.setHeader("Candidate number");
+        content = new PublishedDocColumnContent();
+        content.setValueSource(new PublishedDocFieldSource("candidateNumber"));
+        content.setLink("https://www.talentbeyondboundaries.org/");
+        info.setColumnContent(content);
+        columnInfos.add(info);
+
+        info = new PublishedDocColumnInfo();
+        info.setHeader("Name");
+        content = new PublishedDocColumnContent();
+        content.setValueSource(new PublishedDocFieldSource("user"));
+        info.setColumnContent(content);
+        columnInfos.add(info);
+
+        info = new PublishedDocColumnInfo();
+        info.setHeader("CV");
+        content = new PublishedDocColumnContent();
+        content.setValueSource(new PublishedDocConstantSource("cv"));
+        content.setLink("https://www.talentbeyondboundaries.org/");
+        info.setColumnContent(content);
+        columnInfos.add(info);
+
+        PublishedDocBuilder builder = new PublishedDocBuilder();
         
+        //This is what will be used to create the published doc
         List<List<Object>> publishedData = new ArrayList<>();
-        
 
         //Title row
-        List<Object> title = new ArrayList<>();
-        for (String exportField : exportFields) {
-            title.add(exportField);
-        }
+        List<Object> title = builder.buildTitle(columnInfos);
         publishedData.add(title);
 
         //Add row for each candidate
         for (Candidate candidate : candidates) {
-            List<Object> candidateData = new ArrayList<>();
+            List<Object> candidateData = builder.buildRow(candidate, columnInfos);
             publishedData.add(candidateData);
-            List<String> extracts = null;
-            extracts = candidate.extractFields(exportFields);
-            for (String extract : extracts) {
-                candidateData.add(extract);
-            }             
         }
-        
+
+        //Create the doc in the list folder.
         GoogleFileSystemDrive drive = googleDriveConfig.getListFoldersDrive();
         GoogleFileSystemFolder listFolder = new GoogleFileSystemFolder(savedList.getFolderlink());
-
-        //And create the doc in that folder.
-        String link = docPublisherService.createPublishedDoc(
-           drive, listFolder, savedList.getName(), publishedData);
+        String link = docPublisherService
+            .createPublishedDoc(drive, listFolder, savedList.getName(), publishedData);
         
         savedList.setPublishedDocLink(link);
         saveIt(savedList);

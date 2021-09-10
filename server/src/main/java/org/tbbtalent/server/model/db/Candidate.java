@@ -536,25 +536,17 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.status = CandidateStatus.draft;
     }
 
-    @NotNull
-    public List<Object> extractFields(@Nullable List<String> exportFields)
+    @Nullable
+    public Object extractField(String exportField)
         throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        List<Object> extracts = new ArrayList<>();
-        if (exportFields != null) {
-            for (String exportField : exportFields) {
-                Object obj = PropertyUtils.getProperty(this, exportField);
-                if (obj instanceof User) {
-                    extracts.add(((User) obj).getDisplayName());
-                } else if (obj != null && "candidateNumber".equals(exportField)) {
-                    //Convert candidateNumber to a number
-                    Long cn = Long.parseLong((String) obj);
-                    extracts.add(cn);
-                } else {
-                    extracts.add(obj);
-                }
-            }
+        Object obj = PropertyUtils.getProperty(this, exportField);
+        if (obj instanceof User) {
+            obj = ((User) obj).getDisplayName();
+        } else if (obj != null && "candidateNumber".equals(exportField)) {
+            //Convert candidateNumber to a number
+            obj = Long.parseLong((String) obj);
         }
-        return extracts;
+        return obj;
     }
 
     public String getCandidateNumber() {
