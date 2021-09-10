@@ -19,11 +19,17 @@ package org.tbbtalent.server.request.candidate;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-import org.tbbtalent.server.request.PagedSearchRequest;
 
-//TODO JC Doc - fill in extra fields
+/**
+ * Request to "publish" a list, ie to create a shareable external doc from the candidates in the
+ * list.
+ */
 @Getter
 @Setter
-public class PublishListRequest extends PagedSearchRequest {
+public class PublishListRequest {
+
+  /**
+   * Defines the columns of data to be displayed in the doc for each candidate in a list.
+   */
   List<PublishedDocColumnInfo> columns;
 }

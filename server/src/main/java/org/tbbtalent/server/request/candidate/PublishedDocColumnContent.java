@@ -18,6 +18,8 @@ package org.tbbtalent.server.request.candidate;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 /**
  * Represents the data behind the content of a column in a published Google Sheet document
@@ -27,6 +29,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PublishedDocColumnContent implements IHasValueSourceWithLink {
+  @Nullable
   private String link;
+  
+  @NonNull
   private IValueSource valueSource;
 }
