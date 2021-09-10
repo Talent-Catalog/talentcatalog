@@ -29,6 +29,14 @@ import lombok.Setter;
 public class PublishedDocColumnInfo {
 
   /**
+   * This the unique id of this column.
+   * <p/>
+   * Candidate sources store lists of these in their exportColumns field, representing the last
+   * used list of columns used to publish with.
+   */
+  private String key;
+  
+  /**
    * This string appears as the column header
    */
   private String header;
