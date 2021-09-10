@@ -563,6 +563,8 @@ public class SavedListServiceImpl implements SavedListService {
         
         //Fetch candidates in list
         Set<Candidate> candidates = savedList.getCandidates();
+        
+        //TODO JC Need to sort this list - by id
 
 //todo DEBUG        List<ColumnInfo> columnInfos = request.getColumns(); DEBUG
         //todo test
@@ -620,7 +622,8 @@ public class SavedListServiceImpl implements SavedListService {
         GoogleFileSystemFolder listFolder = new GoogleFileSystemFolder(savedList.getFolderlink());
         String link = docPublisherService
             .createPublishedDoc(drive, listFolder, savedList.getName(), publishedData);
-        
+
+        //TODO JC Need to also save exportColumns
         savedList.setPublishedDocLink(link);
         saveIt(savedList);
         
