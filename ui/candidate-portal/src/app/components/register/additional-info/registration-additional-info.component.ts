@@ -45,6 +45,7 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
   // Component states
   saving: boolean;
 
+  usAfghan: boolean;
   surveyTypes: SurveyType[];
 
   constructor(private fb: FormBuilder,
@@ -64,8 +65,28 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
       linkedInLink: ['', Validators.pattern(linkedInRegex)],
     });
 
-
-    this.loadDropDownData();
+    this.candidateService.getCandidateSurvey().subscribe(
+      (response) => {
+        // if afghan
+        if (response?.surveyType?.id === 10) {
+          this.usAfghan = true;
+          this.form.removeControl('surveyTypeId');
+          this.form.removeControl('surveyComment');
+          this._loading.surveyTypes = false;
+        } else {
+          this.loadDropDownData();
+          this.form.patchValue({
+            surveyTypeId: response.surveyType ? response.surveyType.id : null,
+            surveyComment: response.surveyComment
+          });
+        }
+        this._loading.candidateSurvey = false;
+      },
+      (error) => {
+        this.error = error;
+        this._loading.candidateSurvey = false;
+      }
+    );
 
     this.candidateService.getCandidateAdditionalInfo().subscribe(
       (response) => {
@@ -83,27 +104,13 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
       }
     );
 
-    this.candidateService.getCandidateSurvey().subscribe(
-      (response) => {
-        this.form.patchValue({
-          surveyTypeId: response.surveyType ? response.surveyType.id : null,
-          surveyComment: response.surveyComment
-        });
-        this._loading.candidateSurvey = false;
-      },
-      (error) => {
-        this.error = error;
-        this._loading.candidateSurvey = false;
-      }
-    );
-
   }
 
   loadDropDownData() {
     this._loading.surveyTypes = true;
 
     /* Load the survey types  */
-    this.surveyTypeService.listSurveyTypes().subscribe(
+    this.surveyTypeService.listActiveSurveyTypes().subscribe(
       (response) => {
         /* Sort order with 'Other' showing last */
         const sortOrder = [1, 2, 3, 4, 5, 6, 7, 9, 8];
@@ -123,31 +130,50 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
   save(dir: string) {
     this.saving = true;
 
-    this.candidateService.updateCandidateSurvey(this.form.value).subscribe(
-      (response) => {
+    if (this.usAfghan) {
+      this.candidateService.updateCandidateAdditionalInfo(this.form.value).subscribe(
+        (candidate) => {
 
-        this.candidateService.updateCandidateAdditionalInfo(this.form.value).subscribe(
-          (response) => {
-
-            this.saving = false;
-            if (dir === 'next') {
-              this.onSave.emit();
-              this.registrationService.next();
-            } else {
-              this.registrationService.back();
-            }
-          },
-          (error) => {
-            this.error = error;
-            this.saving = false;
+          this.saving = false;
+          if (dir === 'next') {
+            this.onSave.emit();
+            this.registrationService.next();
+          } else {
+            this.registrationService.back();
           }
-        );
-      },
-      (error) => {
-        this.error = error;
-        this.saving = false;
-      }
-    );
+        },
+        (error) => {
+          this.error = error;
+          this.saving = false;
+        }
+      );
+    } else {
+      this.candidateService.updateCandidateSurvey(this.form.value).subscribe(
+        (response) => {
+
+          this.candidateService.updateCandidateAdditionalInfo(this.form.value).subscribe(
+            (candidate) => {
+
+              this.saving = false;
+              if (dir === 'next') {
+                this.onSave.emit();
+                this.registrationService.next();
+              } else {
+                this.registrationService.back();
+              }
+            },
+            (error) => {
+              this.error = error;
+              this.saving = false;
+            }
+          );
+        },
+        (error) => {
+          this.error = error;
+          this.saving = false;
+        }
+      );
+    }
 
   }
 

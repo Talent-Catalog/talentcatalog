@@ -259,15 +259,16 @@ public class CandidateSpecification {
                 boolean us = loggedInUser.getSourceCountries().stream().anyMatch(c -> c.getId() == 6178);
                 if (!us) {
                     conjunction.getExpressions().add(
-                            builder.notEqual(surveyType.get("name"), "NGO")
+                            builder.notEqual(builder.lower(surveyType.get("name")), "us-afghan")
                     );
                 }
                 // if source countries is null, remove us afghans
             } else {
                 conjunction.getExpressions().add(
-                        builder.notEqual(surveyType.get("name"), "NGO")
+                        builder.notEqual(builder.lower(surveyType.get("name")), "us-afghan")
                 );
             }
+
             // GENDER SEARCH
             if (request.getGender() != null) {
                 conjunction.getExpressions().add(
