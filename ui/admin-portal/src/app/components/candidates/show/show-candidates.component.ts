@@ -76,7 +76,7 @@ import {
   ContentUpdateType,
   CopySourceContentsRequest,
   IHasSetOfCandidates,
-  isSavedList, PublishListRequest,
+  isSavedList, PublishedDocColumnInfo, PublishListRequest,
   SavedListGetRequest,
   UpdateExplicitSavedListContentsRequest
 } from '../../../model/saved-list';
@@ -563,16 +563,20 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.publishing = true;
     this.error = null;
 
-    //todo Don't need sort fields
-    const request: PublishListRequest = {
-      sortFields: [this.sortField],
-      sortDirection: this.sortDirection
-    }
+    const idColumnInfo = new PublishedDocColumnInfo("id", "Candidate id", null);
+    idColumnInfo.columnContent.fieldName = "id";
+    const cvColumnInfo = new PublishedDocColumnInfo("cv", "CV", null);
+    cvColumnInfo.columnContent.value = "cv";
+
+    const request: PublishListRequest = new PublishListRequest();
+    request.columns.push(idColumnInfo, cvColumnInfo);
+
     this.savedListService.publish(this.candidateSource.id, request).subscribe(
       result => {
         if (isSavedList(this.candidateSource)) {
-          //Update the list's published doc link
+          //Update the list's published doc link and the export columns
           this.candidateSource.publishedDocLink = result.publishedDocLink;
+          this.candidateSource.exportColumns = result.exportColumns;
         }
         this.publishing = false;
       },

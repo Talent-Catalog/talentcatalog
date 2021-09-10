@@ -51,14 +51,14 @@ class PublishedDocBuilderTest {
     infoId = new PublishedDocColumnInfo();
     infoId.setHeader("Candidate id");
     content = new PublishedDocColumnContent();
-    content.setValueSource(new PublishedDocFieldSource("id"));
+    content.setFieldName("id");
     infoId.setColumnContent(content);
     columnInfos.add(infoId);
     
     infoCN = new PublishedDocColumnInfo();
     infoCN.setHeader("Candidate number");
     content = new PublishedDocColumnContent();
-    content.setValueSource(new PublishedDocFieldSource("candidateNumber"));
+    content.setFieldName("candidateNumber");
     content.setLink("https://www.talentbeyondboundaries.org/");
     infoCN.setColumnContent(content);
     columnInfos.add(infoCN);
@@ -66,14 +66,14 @@ class PublishedDocBuilderTest {
     info = new PublishedDocColumnInfo();
     info.setHeader("Name");
     content = new PublishedDocColumnContent();
-    content.setValueSource(new PublishedDocFieldSource("user"));
+    content.setFieldName("user");
     info.setColumnContent(content);
     columnInfos.add(info);
     
     info = new PublishedDocColumnInfo();
     info.setHeader("CV");
     content = new PublishedDocColumnContent();
-    content.setValueSource(new PublishedDocConstantSource("cv"));
+    content.setValue("cv");
     content.setLink("https://www.talentbeyondboundaries.org/");
     info.setColumnContent(content);
     columnInfos.add(info);

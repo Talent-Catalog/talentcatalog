@@ -46,5 +46,5 @@ public class PublishedDocColumnInfo {
    * If the column contains a link, this will be the value that is displayed, plus the link
    * if someone clicks on that cell.
    */
-  private IHasValueSourceWithLink columnContent;
+  private PublishedDocColumnContent columnContent;
 }

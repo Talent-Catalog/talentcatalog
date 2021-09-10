@@ -83,8 +83,26 @@ export interface IHasSetOfCandidates {
   candidateIds: number[];
 }
 
-//todo fill in fields
-export class PublishListRequest extends PagedSearchRequest {
+export class PublishedDocColumnContent {
+  link?: string;
+  fieldName?: string;
+  value?: any;
+}
+
+export class PublishedDocColumnInfo {
+  key: string;
+  header: string;
+  columnContent: PublishedDocColumnContent = new PublishedDocColumnContent();
+
+  constructor(key: string, header: string, link: string) {
+    this.key = key;
+    this.header = header;
+    this.columnContent.link = link;
+  }
+}
+
+export class PublishListRequest {
+  columns: PublishedDocColumnInfo[] = [];
 }
 
 export class SearchSavedListRequest extends SearchCandidateSourcesRequest {

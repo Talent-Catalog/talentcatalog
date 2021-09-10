@@ -28,8 +28,8 @@ import org.tbbtalent.server.model.db.Candidate;
 public class PublishedDocBuilder {
 
   public Object buildCell(Candidate candidate, PublishedDocColumnInfo columnInfo) {
-    IHasValueSourceWithLink columnContent = columnInfo.getColumnContent();
-    Object value = columnContent.getValueSource().fetchValue(candidate);
+    PublishedDocColumnContent columnContent = columnInfo.getColumnContent();
+    Object value = columnContent.fetchValue(candidate);
     String link = columnContent.getLink();
     if (link == null || value == null) {
       return value;

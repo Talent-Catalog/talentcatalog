@@ -55,12 +55,9 @@ import org.tbbtalent.server.repository.db.GetCandidateSavedListsQuery;
 import org.tbbtalent.server.repository.db.GetSavedListsQuery;
 import org.tbbtalent.server.repository.db.SavedListRepository;
 import org.tbbtalent.server.repository.db.UserRepository;
-import org.tbbtalent.server.request.candidate.PublishedDocColumnContent;
-import org.tbbtalent.server.request.candidate.PublishedDocColumnInfo;
-import org.tbbtalent.server.request.candidate.PublishedDocConstantSource;
-import org.tbbtalent.server.request.candidate.PublishedDocFieldSource;
 import org.tbbtalent.server.request.candidate.PublishListRequest;
 import org.tbbtalent.server.request.candidate.PublishedDocBuilder;
+import org.tbbtalent.server.request.candidate.PublishedDocColumnInfo;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
 import org.tbbtalent.server.request.list.ContentUpdateType;
@@ -566,41 +563,7 @@ public class SavedListServiceImpl implements SavedListService {
         
         //TODO JC Need to sort this list - by id
 
-//todo DEBUG        List<ColumnInfo> columnInfos = request.getColumns(); DEBUG
-        //todo test
-        List<PublishedDocColumnInfo> columnInfos = new ArrayList<>();
-        PublishedDocColumnInfo info;
-        PublishedDocColumnContent content;
-
-        info = new PublishedDocColumnInfo();
-        info.setHeader("Candidate id");
-        content = new PublishedDocColumnContent();
-        content.setValueSource(new PublishedDocFieldSource("id"));
-        info.setColumnContent(content);
-        columnInfos.add(info);
-
-        info = new PublishedDocColumnInfo();
-        info.setHeader("Candidate number");
-        content = new PublishedDocColumnContent();
-        content.setValueSource(new PublishedDocFieldSource("candidateNumber"));
-        content.setLink("https://www.talentbeyondboundaries.org/");
-        info.setColumnContent(content);
-        columnInfos.add(info);
-
-        info = new PublishedDocColumnInfo();
-        info.setHeader("Name");
-        content = new PublishedDocColumnContent();
-        content.setValueSource(new PublishedDocFieldSource("user"));
-        info.setColumnContent(content);
-        columnInfos.add(info);
-
-        info = new PublishedDocColumnInfo();
-        info.setHeader("CV");
-        content = new PublishedDocColumnContent();
-        content.setValueSource(new PublishedDocConstantSource("cv"));
-        content.setLink("https://www.talentbeyondboundaries.org/");
-        info.setColumnContent(content);
-        columnInfos.add(info);
+        List<PublishedDocColumnInfo> columnInfos = request.getColumns(); 
 
         PublishedDocBuilder builder = new PublishedDocBuilder();
         
