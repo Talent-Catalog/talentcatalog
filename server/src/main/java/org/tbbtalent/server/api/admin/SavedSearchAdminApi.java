@@ -340,7 +340,7 @@ public class SavedSearchAdminApi implements
                 .add("description")
                 .add("displayedFieldsLong")
                 .add("displayedFieldsShort")
-                .add("exportFields")
+                .add("exportColumns")
                 .add("name")
                 .add("savedSearchType")
                 .add("savedSearchSubtype")

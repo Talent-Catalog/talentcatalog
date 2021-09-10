@@ -94,14 +94,15 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
     private List<String> displayedFieldsShort;
 
     /**
-     * If not null (or empty) this is the list of candidate fields which are
+     * If not null (or empty) this is the list of column keys which are
      * exported for each candidate.
      * <p/>
      * Similar to {@link #displayedFieldsLong}
+     * @see org.tbbtalent.server.request.candidate.PublishedDocColumnInfo
      */
     @Convert(converter = DelimitedStringsConverter.class)
     @Nullable
-    private List<String> exportFields; 
+    private List<String> exportColumns; 
 
     /**
      * If true, only the owner can modify the details of the candidate source
@@ -158,12 +159,12 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
     }
 
     @Nullable
-    public List<String> getExportFields() {
-        return exportFields;
+    public List<String> getExportColumns() {
+        return exportColumns;
     }
 
-    public void setExportFields(@Nullable List<String> exportFields) {
-        this.exportFields = exportFields;
+    public void setExportColumns(@Nullable List<String> exportColumns) {
+        this.exportColumns = exportColumns;
     }
 
     public String getName() {

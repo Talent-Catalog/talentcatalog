@@ -37,7 +37,7 @@ public class SavedListBuilderSelector {
                 .add("description")
                 .add("displayedFieldsLong")
                 .add("displayedFieldsShort")
-                .add("exportFields")
+                .add("exportColumns")
                 .add("status")
                 .add("name")
                 .add("fixed")
