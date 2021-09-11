@@ -36,6 +36,14 @@ const routes: Routes = [
     }
   },
   {
+    path: 'us',
+    canActivate: [RedirectGuard],
+    component: RedirectGuard,
+    data: {
+      externalUrl: 'https://www.talentbeyondboundaries.org/talentcatalog/us-afghan'
+    }
+  },
+  {
     path: 'reset-password',
     component: ResetPasswordComponent,
   },
