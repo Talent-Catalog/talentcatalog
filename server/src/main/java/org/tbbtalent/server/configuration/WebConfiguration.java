@@ -40,6 +40,7 @@ public class WebConfiguration implements WebMvcConfigurer {
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addRedirectViewController("/", "/candidate-portal/");
+        registry.addRedirectViewController("/us", "/candidate-portal/us");
     }
 
     @Override
