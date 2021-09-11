@@ -563,6 +563,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.publishing = true;
     this.error = null;
 
+    //todo  These standard columns need to be in a columns service that are retrieved from
+    //SavedList exportColumns field
     const idColumnInfo = new PublishedDocColumnInfo("id", "Candidate id", null);
     idColumnInfo.columnContent.fieldName = "id";
     const cvColumnInfo = new PublishedDocColumnInfo("cv", "CV", null);
