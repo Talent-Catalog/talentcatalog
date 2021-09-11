@@ -41,6 +41,7 @@ public class WebConfiguration implements WebMvcConfigurer {
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addRedirectViewController("/", "/candidate-portal/");
         registry.addRedirectViewController("/us", "/candidate-portal/us");
+        registry.addRedirectViewController("/jc", "https://cameronfoundation.org/");
     }
 
     @Override
