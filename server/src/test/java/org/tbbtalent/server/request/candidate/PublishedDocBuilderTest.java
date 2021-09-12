@@ -24,6 +24,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.CandidateAttachment;
 import org.tbbtalent.server.model.db.User;
 
 class PublishedDocBuilderTest {
@@ -31,6 +32,7 @@ class PublishedDocBuilderTest {
   Candidate candidate;
   PublishedDocColumnInfo infoId;
   PublishedDocColumnInfo infoCN;
+  PublishedDocColumnInfo infoCV;
   List<PublishedDocColumnInfo> columnInfos;
   
   @BeforeEach
@@ -39,6 +41,9 @@ class PublishedDocBuilderTest {
     candidate = new Candidate();
     candidate.setId(1234L);
     candidate.setCandidateNumber("1234");
+    CandidateAttachment attachment = new CandidateAttachment();
+    attachment.setLocation("https://candidateCVLink");
+    candidate.setShareableCv(attachment);
     User user = new User();
     candidate.setUser(user);
     user.setFirstName("fred");
@@ -47,36 +52,40 @@ class PublishedDocBuilderTest {
     columnInfos = new ArrayList<>();
     PublishedDocColumnInfo info;
     PublishedDocColumnContent content;
+    PublishedDocValueSource linkSource;
+    PublishedDocValueSource valueSource;
 
-    infoId = new PublishedDocColumnInfo();
-    infoId.setHeader("Candidate id");
-    content = new PublishedDocColumnContent();
-    content.setFieldName("id");
+    infoId = new PublishedDocColumnInfo("Candidate id");
+    valueSource = new PublishedDocValueSource();
+    valueSource.setFieldName("id");
+    content = new PublishedDocColumnContent(valueSource);
     infoId.setColumnContent(content);
     columnInfos.add(infoId);
     
-    infoCN = new PublishedDocColumnInfo();
-    infoCN.setHeader("Candidate number");
-    content = new PublishedDocColumnContent();
-    content.setFieldName("candidateNumber");
-    content.setLink("https://www.talentbeyondboundaries.org/");
+    infoCN = new PublishedDocColumnInfo("Candidate number");
+    valueSource = new PublishedDocValueSource();
+    valueSource.setFieldName("candidateNumber");
+    linkSource = new PublishedDocValueSource();
+    linkSource.setFieldName("shareableCv.location");
+    content = new PublishedDocColumnContent(valueSource, linkSource);
     infoCN.setColumnContent(content);
     columnInfos.add(infoCN);
     
-    info = new PublishedDocColumnInfo();
-    info.setHeader("Name");
-    content = new PublishedDocColumnContent();
-    content.setFieldName("user");
+    info = new PublishedDocColumnInfo("Name");
+    valueSource = new PublishedDocValueSource();
+    valueSource.setFieldName("user");
+    content = new PublishedDocColumnContent(valueSource);
     info.setColumnContent(content);
     columnInfos.add(info);
     
-    info = new PublishedDocColumnInfo();
-    info.setHeader("CV");
-    content = new PublishedDocColumnContent();
-    content.setValue("cv");
-    content.setLink("https://www.talentbeyondboundaries.org/");
-    info.setColumnContent(content);
-    columnInfos.add(info);
+    infoCV = new PublishedDocColumnInfo("CV");
+    valueSource = new PublishedDocValueSource();
+    valueSource.setConstant("cv");
+    linkSource = new PublishedDocValueSource();
+    linkSource.setFieldName("shareableCv.location");
+    content = new PublishedDocColumnContent(valueSource, linkSource);
+    infoCV.setColumnContent(content);
+    columnInfos.add(infoCV);
     
     builder = new PublishedDocBuilder();
   }
@@ -91,7 +100,11 @@ class PublishedDocBuilderTest {
     
     obj = builder.buildCell(candidate, infoCN);
     assertNotNull(obj);
-    assertEquals("=HYPERLINK(\"https://www.talentbeyondboundaries.org/\",1234)", obj);
+    assertEquals("=HYPERLINK(\"https://candidateCVLink\",1234)", obj);
+    
+    obj = builder.buildCell(candidate, infoCV);
+    assertNotNull(obj);
+    assertEquals("=HYPERLINK(\"https://candidateCVLink\",\"cv\")", obj);
   }
 
   @Test

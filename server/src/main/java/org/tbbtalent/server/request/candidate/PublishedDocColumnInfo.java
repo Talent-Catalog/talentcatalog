@@ -47,4 +47,11 @@ public class PublishedDocColumnInfo {
    * if someone clicks on that cell.
    */
   private PublishedDocColumnContent columnContent;
+
+  public PublishedDocColumnInfo() {
+  }
+
+  public PublishedDocColumnInfo(String header) {
+    this.header = header;
+  }
 }

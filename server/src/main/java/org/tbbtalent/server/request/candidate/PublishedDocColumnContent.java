@@ -18,45 +18,37 @@ package org.tbbtalent.server.request.candidate;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
-import org.tbbtalent.server.model.db.Candidate;
 
 /**
- * Represents the data behind the content of a column in a published Google Sheet document
+ * Represents the data behind the content of a column in a published Google Sheet document.
+ * <p/>
+ * Each column will either display a single value, or else it will display a link will be 
+ * constructed of two values: one which is the visible value and the other is the link that you 
+ * go to when you click on that value.
  *
  * @author John Cameron
  */
 @Getter
 @Setter
 public class PublishedDocColumnContent {
-  private static final Logger log = LoggerFactory.getLogger(PublishedDocColumnContent.class);
   
   @Nullable
-  private String link;
+  private PublishedDocValueSource link;
   
-  @Nullable
-  private String fieldName; 
-  
-  @Nullable
-  private Object value; 
+  private PublishedDocValueSource value;
 
-  public Object fetchValue(Candidate candidate) {
-    Object val = null;
-    if (fieldName != null) {
-      if (candidate == null) {
-        log.error("Cannot extract field " + fieldName + " from null candidate");
-      } else {
-        try {
-          val = candidate.extractField(fieldName);
-        } catch (Exception e) {
-          log.error("Error extracting field " + fieldName + " from candidate " + candidate.getCandidateNumber());
-        }
-      }
-    } else {
-      val = value;
-    }
-    return val;
+  public PublishedDocColumnContent() {
+  }
+
+  public PublishedDocColumnContent(PublishedDocValueSource value) {
+    this.value = value;
+  }
+
+  public PublishedDocColumnContent(
+      PublishedDocValueSource value, 
+      @Nullable PublishedDocValueSource link) {
+    this(value);
+    this.link = link;
   }
 }

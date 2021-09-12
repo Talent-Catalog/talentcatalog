@@ -29,8 +29,9 @@ public class PublishedDocBuilder {
 
   public Object buildCell(Candidate candidate, PublishedDocColumnInfo columnInfo) {
     PublishedDocColumnContent columnContent = columnInfo.getColumnContent();
-    Object value = columnContent.fetchValue(candidate);
-    String link = columnContent.getLink();
+    Object value = columnContent.getValue().fetchData(candidate);
+    final PublishedDocValueSource linkSource = columnContent.getLink();
+    String link = linkSource == null ? null : (String) linkSource.fetchData(candidate);
     if (link == null || value == null) {
       return value;
     } else {
