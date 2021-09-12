@@ -16,9 +16,27 @@
 import {Candidate} from "./candidate";
 
 export class CandidateFieldInfo {
+  /**
+   * This is how we display the field to the user
+   */
   displayName: string;
+
+  /**
+   * This identifies field according to its candidate entity name - eg maritalStatus or
+   * user.firstName
+   */
   fieldPath: string;
 
+  /**
+   * Create an info
+   * @param displayName see doc above
+   * @param fieldPath see doc above
+   * @param fieldFormatter Function which returns the field's displayed value. If null, the field
+   * displays in the default way. Useful for formatting dates, for example.
+   * @param fieldSelector If null, field is always available for display. If not null, field is
+   * only available for display if this function returns true. For example, candidate names are
+   * only displayable to user admins.
+   */
   constructor(displayName: string, fieldPath: string,
               private fieldFormatter: (value: any) => string,
               public fieldSelector: () => boolean) {
