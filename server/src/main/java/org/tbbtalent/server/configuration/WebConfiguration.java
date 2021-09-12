@@ -28,8 +28,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.PathResourceResolver;
 
 /**
- * This is where the Angular jars (admin-portal.jar and candidate-portal.jar) 
- * are served from on the server. 
+ * This defines some redirections and also where the Angular jars 
+ * (admin-portal.jar and candidate-portal.jar) are served from on the server. 
+ * <p/>
+ * Note that in development (rather than when running in production) the Angular code is
+ * not served up from this Spring server, but rather from "ng serve" servers - one for
+ * candidate-portal and one for admin-portal.
  */
 @Configuration
 public class WebConfiguration implements WebMvcConfigurer {
