@@ -29,19 +29,7 @@ import {RedirectGuard} from './services/redirect.guard';
 const routes: Routes = [
   {
     path: '',
-    canActivate: [RedirectGuard],
-    component: RedirectGuard,
-    data: {
-      externalUrl: 'https://www.talentbeyondboundaries.org/talentcatalog/'
-    }
-  },
-  {
-    path: 'us',
-    canActivate: [RedirectGuard],
-    component: RedirectGuard,
-    data: {
-      externalUrl: 'https://www.talentbeyondboundaries.org/talentcatalog/us-afghan'
-    }
+    component: LandingComponent,
   },
   {
     path: 'reset-password',
