@@ -31,6 +31,8 @@ export class PublishedDocColumnService {
 
   constructor() {
     this.addColumn("id", "Candidate id", new PublishedDocFieldSource("id"));
+    this.addColumn("candidateNumber", "Candidate number", new PublishedDocFieldSource("candidateNumber"));
+    this.addColumn("contextNote", "Context Note", new PublishedDocFieldSource("contextNote"));
     this.addColumn("name", "Name", new PublishedDocFieldSource("user"));
     this.addColumn("firstName", "First Name", new PublishedDocFieldSource("user.firstName"));
     this.addColumn("lastName", "Last Name", new PublishedDocFieldSource("user.lastName"));

@@ -19,7 +19,6 @@ package org.tbbtalent.server.model.db;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,7 +35,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.annotations.Formula;
 import org.springframework.lang.Nullable;
@@ -602,7 +600,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
      * savedList.
      * These values are stored in {@link CandidateSavedList}.
      * Setting this value to refer to a particular SavedList will result in
-     * this Candidate object returning attritbutes correspondint that list.
+     * this Candidate object returning attributes corresponding to that list.
      * <p/>
      * For example, see {@link #getContextNote()}
      * 

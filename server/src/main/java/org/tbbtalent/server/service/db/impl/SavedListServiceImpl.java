@@ -494,6 +494,13 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
+    public void setCandidateContext(long savedListId, Iterable<Candidate> candidates) {
+        for (Candidate candidate : candidates) {
+            candidate.setContextSavedListId(savedListId);
+        }
+    }
+
+    @Override
     public SavedList updateSavedList(long savedListId, UpdateSavedListInfoRequest request) 
             throws NoSuchObjectException, EntityExistsException {
         final User loggedInUser = authService.getLoggedInUser().orElse(null);
@@ -561,7 +568,10 @@ public class SavedListServiceImpl implements SavedListService {
         //Fetch candidates in list
         Set<Candidate> candidates = savedList.getCandidates();
         
-        //TODO JC Need to sort this list - by id
+        //TODO JC Need to sort this list - by id 
+
+        //Set list context on candidates so that Candidate field contextNote can be accessed.
+        setCandidateContext(savedList.getId(), candidates);
 
         List<PublishedDocColumnInfo> columnInfos = request.getColumns(); 
 

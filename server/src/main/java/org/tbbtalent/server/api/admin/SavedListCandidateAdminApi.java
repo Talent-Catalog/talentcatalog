@@ -135,7 +135,7 @@ public class SavedListCandidateAdminApi implements
         Page<Candidate> candidates = this.candidateService
                 .getSavedListCandidates(savedListId, request);
         
-        setCandidateContext(savedListId, candidates);
+        this.savedListService.setCandidateContext(savedListId, candidates);
 
         DtoBuilder builder = candidateBuilderSelector.selectBuilder();
         return builder.buildPage(candidates);
@@ -169,17 +169,6 @@ public class SavedListCandidateAdminApi implements
         DtoBuilder builder = savedListBuilderSelector.selectBuilder();
         
         return builder.build(savedList);
-    }
-
-    /**
-     * Mark the Candidate objects with the list context.
-     * This means that context fields (ie ContextNote) associated with the 
-     * list will be returned through the DtoBuilder if present.
-     */
-    private void setCandidateContext(long savedListId, Iterable<Candidate> candidates) {
-        for (Candidate candidate : candidates) {
-            candidate.setContextSavedListId(savedListId);
-        }
     }
 
     @PostMapping(value = "{id}/export/csv", produces = MediaType.TEXT_PLAIN_VALUE)

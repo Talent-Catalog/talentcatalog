@@ -217,7 +217,8 @@ public class SavedListAdminApi implements
      * Create a published external document from the data of candidates in the given list. 
      * @param savedListId Id of saved list
      * @param request Request containing details of what is to be published 
-     * @return SavedList containing a link to the published doc
+     * @return SavedList containing a link to the published doc as well as to the possibly updated 
+     * published column keys in exportColumns.  
      */
     @PutMapping(value = "{id}/publish")
     public Map<String, Object> publish(

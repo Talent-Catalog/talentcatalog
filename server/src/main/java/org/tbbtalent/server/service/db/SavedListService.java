@@ -27,6 +27,7 @@ import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.RegisteredListException;
+import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.request.candidate.PublishListRequest;
@@ -234,6 +235,17 @@ public interface SavedListService {
      * @return Matching SavedList's
      */
     Page<SavedList> searchSavedLists(SearchSavedListRequest request);
+
+    /**
+     * Mark the given Candidate objects with the given list context.
+     * This means that context fields (ie ContextNote) associated with the 
+     * list will be returned through {@link Candidate#getContextNote()}
+     * @param savedListId ID of saved list
+     * @param candidates Candidate objects to be marked with the list context. Note that this 
+     *                   is a transient property only found on the given objects (ie it is not
+     *                   stored in the database).
+     */
+    void setCandidateContext(long savedListId, Iterable<Candidate> candidates);
 
     /**
      * Update the info associated with the SavedList with the given id 
