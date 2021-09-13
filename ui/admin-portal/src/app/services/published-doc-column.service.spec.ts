@@ -14,27 +14,19 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tbbtalent.server.request.candidate;
+import { TestBed } from '@angular/core/testing';
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.lang.Nullable;
+import { PublishedDocColumnService } from './published-doc-column.service';
 
-/**
- * Represents the data behind the content of a column in a published Google Sheet document.
- * <p/>
- * Each column will either display a single value, or else it will display a link will be 
- * constructed of two values: one which is the visible value and the other is the link that you 
- * go to when you click on that value.
- *
- * @author John Cameron
- */
-@Getter
-@Setter
-public class PublishedDocColumnContent {
-  
-  @Nullable
-  private PublishedDocValueSource link;
-  
-  private PublishedDocValueSource value;
-}
+describe('PublishedDocColumnService', () => {
+  let service: PublishedDocColumnService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(PublishedDocColumnService);
+  });
+
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+});

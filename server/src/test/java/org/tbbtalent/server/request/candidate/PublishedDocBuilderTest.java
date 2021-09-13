@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.lang.Nullable;
 import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.CandidateAttachment;
 import org.tbbtalent.server.model.db.User;
@@ -33,8 +34,22 @@ class PublishedDocBuilderTest {
   PublishedDocColumnInfo infoId;
   PublishedDocColumnInfo infoCN;
   PublishedDocColumnInfo infoCV;
+  PublishedDocColumnInfo infoUser;
   List<PublishedDocColumnInfo> columnInfos;
-  
+
+  private PublishedDocColumnInfo addColumn(String key, String header,
+      PublishedDocValueSource value, @Nullable PublishedDocValueSource link) {
+    PublishedDocColumnInfo info = new PublishedDocColumnInfo(key, header);
+    info.getColumnContent().setValue(value);
+    info.getColumnContent().setLink(link);
+    columnInfos.add(info);
+    return info;
+  }
+
+  private PublishedDocColumnInfo addColumn(String key, String header, PublishedDocValueSource value) {
+    return addColumn(key, header, value, null);
+  }
+
   @BeforeEach
   void setUp() {
 
@@ -50,42 +65,18 @@ class PublishedDocBuilderTest {
     user.setLastName("nurk with \n in the middle");
     
     columnInfos = new ArrayList<>();
-    PublishedDocColumnInfo info;
-    PublishedDocColumnContent content;
-    PublishedDocValueSource linkSource;
-    PublishedDocValueSource valueSource;
 
-    infoId = new PublishedDocColumnInfo("Candidate id");
-    valueSource = new PublishedDocValueSource();
-    valueSource.setFieldName("id");
-    content = new PublishedDocColumnContent(valueSource);
-    infoId.setColumnContent(content);
-    columnInfos.add(infoId);
+    infoId = addColumn("id", "Candidate id", new PublishedDocFieldSource("id"));
     
-    infoCN = new PublishedDocColumnInfo("Candidate number");
-    valueSource = new PublishedDocValueSource();
-    valueSource.setFieldName("candidateNumber");
-    linkSource = new PublishedDocValueSource();
-    linkSource.setFieldName("shareableCv.location");
-    content = new PublishedDocColumnContent(valueSource, linkSource);
-    infoCN.setColumnContent(content);
-    columnInfos.add(infoCN);
+    infoCN = addColumn("cn", "Candidate number", 
+        new PublishedDocFieldSource("candidateNumber"), 
+        new PublishedDocFieldSource("shareableCv.location"));
     
-    info = new PublishedDocColumnInfo("Name");
-    valueSource = new PublishedDocValueSource();
-    valueSource.setFieldName("user");
-    content = new PublishedDocColumnContent(valueSource);
-    info.setColumnContent(content);
-    columnInfos.add(info);
+    infoUser = addColumn("name", "Name", new PublishedDocFieldSource("user"));
     
-    infoCV = new PublishedDocColumnInfo("CV");
-    valueSource = new PublishedDocValueSource();
-    valueSource.setConstant("cv");
-    linkSource = new PublishedDocValueSource();
-    linkSource.setFieldName("shareableCv.location");
-    content = new PublishedDocColumnContent(valueSource, linkSource);
-    infoCV.setColumnContent(content);
-    columnInfos.add(infoCV);
+    infoCV = addColumn("cv", "CV",
+        new PublishedDocConstantSource("cv"),
+        new PublishedDocFieldSource("shareableCv.location"));
     
     builder = new PublishedDocBuilder();
   }

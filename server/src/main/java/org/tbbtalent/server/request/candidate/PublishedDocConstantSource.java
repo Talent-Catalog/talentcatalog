@@ -16,25 +16,17 @@
 
 package org.tbbtalent.server.request.candidate;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.lang.Nullable;
 
 /**
- * Represents the data behind the content of a column in a published Google Sheet document.
- * <p/>
- * Each column will either display a single value, or else it will display a link will be 
- * constructed of two values: one which is the visible value and the other is the link that you 
- * go to when you click on that value.
+ * Convenience class for creating a value source based on a constant value.
  *
  * @author John Cameron
  */
-@Getter
-@Setter
-public class PublishedDocColumnContent {
-  
-  @Nullable
-  private PublishedDocValueSource link;
-  
-  private PublishedDocValueSource value;
+public class PublishedDocConstantSource extends PublishedDocValueSource {
+
+  public PublishedDocConstantSource(@Nullable Object constant) {
+    super();
+    setConstant(constant);
+  }
 }

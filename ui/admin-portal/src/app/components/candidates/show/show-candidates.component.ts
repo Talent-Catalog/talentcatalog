@@ -97,6 +97,7 @@ import {CandidateFieldService} from '../../../services/candidate-field.service';
 import {EditCandidateStatusComponent} from "../view/status/edit-candidate-status.component";
 import {SalesforceStageComponent} from "../../util/salesforce-stage/salesforce-stage.component";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
+import {PublishedDocColumnService} from "../../../services/published-doc-column.service";
 
 interface CachedTargetList {
   sourceID: number;
@@ -177,7 +178,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
               private router: Router,
               private candidateSourceResultsCacheService: CandidateSourceResultsCacheService,
               private candidateFieldService: CandidateFieldService,
-              private authService: AuthService
+              private authService: AuthService,
+              private publishedDocColumnService: PublishedDocColumnService
 
   ) {
     this.searchForm = this.fb.group({
@@ -563,15 +565,12 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.publishing = true;
     this.error = null;
 
-    //todo  These standard columns need to be in a columns service that are retrieved from
-    //SavedList exportColumns field
-    const idColumnInfo = new PublishedDocColumnInfo("id", "Candidate id", null);
-    idColumnInfo.columnContent.fieldName = "id";
-    const cvColumnInfo = new PublishedDocColumnInfo("cv", "CV", null);
-    cvColumnInfo.columnContent.value = "cv";
+    //Get the export columns for this source.
+    const columnKeys: string[] =  this.candidateSource.exportColumns;
 
+    //Construct the request
     const request: PublishListRequest = new PublishListRequest();
-    request.columns.push(idColumnInfo, cvColumnInfo);
+    request.columns = this.publishedDocColumnService.getColumnInfosFromKeys(columnKeys)
 
     this.savedListService.publish(this.candidateSource.id, request).subscribe(
       result => {

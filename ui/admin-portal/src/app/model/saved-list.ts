@@ -83,10 +83,28 @@ export interface IHasSetOfCandidates {
   candidateIds: number[];
 }
 
-export class PublishedDocColumnContent {
-  link?: string;
+export class PublishedDocValueSource {
   fieldName?: string;
-  value?: any;
+  constant?: any;
+}
+
+export class PublishedDocFieldSource extends PublishedDocValueSource {
+  constructor(fieldName: string) {
+    super();
+    super.fieldName = fieldName;
+  }
+}
+
+export class PublishedDocConstantSource extends PublishedDocValueSource {
+  constructor(constant: any) {
+    super();
+    super.constant = constant;
+  }
+}
+
+export class PublishedDocColumnContent {
+  link?: PublishedDocValueSource;
+  value: PublishedDocValueSource;
 }
 
 export class PublishedDocColumnInfo {
@@ -94,10 +112,9 @@ export class PublishedDocColumnInfo {
   header: string;
   columnContent: PublishedDocColumnContent = new PublishedDocColumnContent();
 
-  constructor(key: string, header: string, link: string) {
+  constructor(key: string, header: string) {
     this.key = key;
     this.header = header;
-    this.columnContent.link = link;
   }
 }
 

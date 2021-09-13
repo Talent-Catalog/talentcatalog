@@ -46,12 +46,13 @@ public class PublishedDocColumnInfo {
    * If the column contains a link, this will be the value that is displayed, plus the link
    * if someone clicks on that cell.
    */
-  private PublishedDocColumnContent columnContent;
+  private PublishedDocColumnContent columnContent = new PublishedDocColumnContent();
 
   public PublishedDocColumnInfo() {
   }
 
-  public PublishedDocColumnInfo(String header) {
+  public PublishedDocColumnInfo(String key, String header) {
+    this.key = key;
     this.header = header;
   }
 }
