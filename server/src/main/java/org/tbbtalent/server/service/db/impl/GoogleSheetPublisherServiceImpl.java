@@ -56,7 +56,8 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
       String name, List<List<Object>> data)
       throws GeneralSecurityException, IOException {
 
-    GoogleFileSystemFile file = fileSystemService.createFile(drive, folder, name, SHEET_MIME_TYPE);
+    GoogleFileSystemFile file = fileSystemService.copyFile(
+        folder, name, googleDriveConfig.getPublishedSheetTemplate());
 
     ValueRange body = new ValueRange().setValues(data);
     UpdateValuesResponse result =
