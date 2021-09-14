@@ -123,6 +123,10 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
           this.form.get('unhcrConsent').setValidators([Validators.required]);
         } else if (unhcrRegistered === 'No') {
           this.form.get('unhcrConsent').setValidators(null);
+          this.form.get('unhcrConsent').setValue(null);
+        } else {
+          this.form.get('unhcrConsent').setValidators(null);
+          this.form.get('unhcrConsent').setValue(null);
         }
         this.form.get('unhcrConsent').updateValueAndValidity();
       });
