@@ -29,6 +29,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -1625,10 +1626,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     }
 
     private boolean hasIelts() {
-        if (!candidateExams.isEmpty()) {
-            return candidateExams.stream().anyMatch(ce -> ce.getExam().equals(Exam.IELTSGen));
-        } else {
-            return false;
-        }
+        return candidateExams.stream().filter(ce -> Objects.nonNull(ce.getExam())).anyMatch(ce -> ce.getExam().equals(Exam.IELTSGen));
     }
 }
