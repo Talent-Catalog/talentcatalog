@@ -45,6 +45,14 @@ import org.tbbtalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
 
+import javax.persistence.*;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+
 @Entity
 @Table(name = "candidate")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_id_seq", allocationSize = 1)
@@ -1699,6 +1707,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     }
 
     private boolean hasIelts() {
-        return candidateExams.stream().anyMatch(ce -> ce.getExam().equals(Exam.IELTSGen));
+        return candidateExams.stream().filter(ce -> Objects.nonNull(ce.getExam())).anyMatch(ce -> ce.getExam().equals(Exam.IELTSGen));
     }
 }
