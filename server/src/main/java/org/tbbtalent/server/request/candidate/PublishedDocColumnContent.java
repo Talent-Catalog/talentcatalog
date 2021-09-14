@@ -36,5 +36,6 @@ public class PublishedDocColumnContent {
   @Nullable
   private PublishedDocValueSource link;
   
+  @Nullable
   private PublishedDocValueSource value;
 }

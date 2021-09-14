@@ -104,7 +104,7 @@ export class PublishedDocConstantSource extends PublishedDocValueSource {
 
 export class PublishedDocColumnContent {
   link?: PublishedDocValueSource;
-  value: PublishedDocValueSource;
+  value?: PublishedDocValueSource;
 }
 
 export class PublishedDocColumnInfo {

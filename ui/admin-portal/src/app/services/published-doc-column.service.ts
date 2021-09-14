@@ -33,10 +33,20 @@ export class PublishedDocColumnService {
     this.addColumn("id", "Candidate id", new PublishedDocFieldSource("id"));
     this.addColumn("candidateNumber", "Candidate number", new PublishedDocFieldSource("candidateNumber"));
     this.addColumn("contextNote", "Context Note", new PublishedDocFieldSource("contextNote"));
-    this.addColumn("name", "Name", new PublishedDocFieldSource("user"));
+    this.addColumn("email", "Email", new PublishedDocFieldSource("user.email"));
     this.addColumn("firstName", "First Name", new PublishedDocFieldSource("user.firstName"));
+    this.addColumn("gender", "Gender", new PublishedDocFieldSource("gender"));
+    this.addColumn("ieltsScore", "IELTS", new PublishedDocFieldSource("ieltsScore"));
+    this.addColumn("interviewDate", "Interview Date", null);
+    this.addColumn("interviewTime", "Interview Time", null);
+    this.addColumn("interviewPanel", "Interview Panel", null);
+    this.addColumn("interviewFeedback", "Interview Feedback", null);
     this.addColumn("lastName", "Last Name", new PublishedDocFieldSource("user.lastName"));
+    this.addColumn("name", "Name", new PublishedDocFieldSource("user"));
+    this.addColumn("offer", "Offer?", null);
     this.addColumn("shareableNotes", "Notes", new PublishedDocFieldSource("shareableNotes"));
+    this.addColumnWithLink("doc", "Other document", new PublishedDocConstantSource("doc"),
+      new PublishedDocFieldSource("shareableDoc.location"));
     this.addColumnWithLink("cv", "CV", new PublishedDocConstantSource("cv"),
       new PublishedDocFieldSource("shareableCv.location"));
   }
