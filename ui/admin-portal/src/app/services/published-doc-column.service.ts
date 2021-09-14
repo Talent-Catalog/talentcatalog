@@ -59,8 +59,8 @@ export class PublishedDocColumnService {
   private addColumnWithLink(key: string, header: string,
                          value: PublishedDocValueSource, link: PublishedDocValueSource) {
     const info = new PublishedDocColumnInfo(key, header);
-    info.columnContent.value = value;
-    info.columnContent.link = link;
+    info.content.value = value;
+    info.content.link = link;
     this.allColumnInfosMap.set(key, info);
   }
 

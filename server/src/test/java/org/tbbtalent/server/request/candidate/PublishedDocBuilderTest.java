@@ -40,8 +40,8 @@ class PublishedDocBuilderTest {
   private PublishedDocColumnInfo addColumn(String key, String header,
       PublishedDocValueSource value, @Nullable PublishedDocValueSource link) {
     PublishedDocColumnInfo info = new PublishedDocColumnInfo(key, header);
-    info.getColumnContent().setValue(value);
-    info.getColumnContent().setLink(link);
+    info.getContent().setValue(value);
+    info.getContent().setLink(link);
     columnInfos.add(info);
     return info;
   }

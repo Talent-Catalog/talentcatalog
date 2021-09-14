@@ -28,7 +28,7 @@ import org.tbbtalent.server.model.db.Candidate;
 public class PublishedDocBuilder {
 
   public Object buildCell(Candidate candidate, PublishedDocColumnInfo columnInfo) {
-    PublishedDocColumnContent columnContent = columnInfo.getColumnContent();
+    PublishedDocColumnContent columnContent = columnInfo.getContent();
     Object value = columnContent.getValue().fetchData(candidate);
     final PublishedDocValueSource linkSource = columnContent.getLink();
     String link = linkSource == null ? null : (String) linkSource.fetchData(candidate);

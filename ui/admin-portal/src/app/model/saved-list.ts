@@ -110,7 +110,7 @@ export class PublishedDocColumnContent {
 export class PublishedDocColumnInfo {
   key: string;
   header: string;
-  columnContent: PublishedDocColumnContent = new PublishedDocColumnContent();
+  content: PublishedDocColumnContent = new PublishedDocColumnContent();
 
   constructor(key: string, header: string) {
     this.key = key;
