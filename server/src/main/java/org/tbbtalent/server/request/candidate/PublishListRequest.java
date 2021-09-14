@@ -16,6 +16,7 @@
 
 package org.tbbtalent.server.request.candidate;
 
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,5 +32,17 @@ public class PublishListRequest {
   /**
    * Defines the columns of data to be displayed in the doc for each candidate in a list.
    */
-  List<PublishedDocColumnInfo> columns;
+  private List<PublishedDocColumnInfo> columns;
+
+  /**
+   * Retrieves the column keys associated with the columns in this request.
+   * @return List of keys.
+   */
+  public List<String> getExportColumnKeys() {
+    List<String> keys = new ArrayList<>();
+    for (PublishedDocColumnInfo column : columns) {
+      keys.add(column.getKey());
+    }
+    return keys;
+  }
 }

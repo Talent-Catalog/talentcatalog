@@ -596,7 +596,8 @@ public class SavedListServiceImpl implements SavedListService {
         String link = docPublisherService
             .createPublishedDoc(drive, listFolder, savedList.getName(), publishedData);
 
-        //TODO JC Need to also save exportColumns
+        //Update saved list with the corresponding column keys and document link.
+        savedList.setExportColumns(request.getExportColumnKeys());
         savedList.setPublishedDocLink(link);
         saveIt(savedList);
         
