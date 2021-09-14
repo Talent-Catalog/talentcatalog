@@ -1625,6 +1625,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     }
 
     private boolean hasIelts() {
-        return candidateExams.stream().anyMatch(ce -> ce.getExam().equals(Exam.IELTSGen));
+        if (!candidateExams.isEmpty()) {
+            return candidateExams.stream().anyMatch(ce -> ce.getExam().equals(Exam.IELTSGen));
+        } else {
+            return false;
+        }
     }
 }
