@@ -35,6 +35,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import org.apache.commons.beanutils.NestedNullException;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.annotations.Formula;
 import org.springframework.lang.Nullable;
@@ -537,7 +538,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     @Nullable
     public Object extractField(String exportField)
         throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        Object obj = PropertyUtils.getProperty(this, exportField);
+        Object obj;        
+        try {
+            obj = PropertyUtils.getProperty(this, exportField);
+        } catch (NestedNullException ex) {
+            //Return null if any value in nested reference is null.
+            //For example user.email should return null if user is null.
+            obj = null;
+        }
         if (obj instanceof User) {
             obj = ((User) obj).getDisplayName();
         } else if (obj != null && "candidateNumber".equals(exportField)) {
