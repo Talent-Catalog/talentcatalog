@@ -116,8 +116,10 @@ public interface FileSystemService {
      * under the provided copy title.
      * @param parentFolder - this is the folder where the new copy will belong.
      * @param copyTitle - this is the name for the new copy.
-     * @param sourceFileId - this is id of the file to be copied.
+     * @param sourceFile - this is the file to be copied.
      * @throws IOException If there was a problem copying the file.
      */
-    GoogleFileSystemFile copy(GoogleFileSystemFolder parentFolder, String copyTitle, String sourceFileId) throws IOException;
+    GoogleFileSystemFile copyFile(
+        GoogleFileSystemFolder parentFolder, String copyTitle, GoogleFileSystemFile sourceFile) 
+        throws IOException;
 }

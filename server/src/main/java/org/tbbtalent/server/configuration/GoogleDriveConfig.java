@@ -40,6 +40,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 
 /**
@@ -139,6 +140,17 @@ public class GoogleDriveConfig {
   private GoogleFileSystemFolder candidateRootFolder;
 
   /**
+   * This is the id of the template doc for the Job Opportunity Intake to be copied when job created.
+   */
+  private String jobOppIntakeTemplateId;
+
+  /**
+   * This is lazily computed from the above template Id.
+   * @see #getJobOppIntakeTemplate()
+   */
+  private GoogleFileSystemFile jobOppIntakeTemplate;
+
+  /**
    * The ID of the CandidateData Google Drive
    */
   private String listFoldersDriveId;
@@ -161,9 +173,15 @@ public class GoogleDriveConfig {
   private GoogleFileSystemFolder listFoldersRoot;
 
   /**
-   * This is the id of the template doc for the Job Opportunity Intake to be copied when job created.
+   * This is the id of the template for published sheets to be copied when a sheet is published.
    */
-  private String jobOppIntakeTemplateId;
+  private String publishedSheetTemplateId;
+
+  /**
+   * This is lazily computed from the above template Id.
+   * @see #getPublishedSheetTemplate()
+   */
+  private GoogleFileSystemFile publishedSheetTemplate;
 
   public GoogleFileSystemDrive getCandidateDataDrive() {
     if (candidateDataDrive == null) {
@@ -181,6 +199,14 @@ public class GoogleDriveConfig {
     return candidateRootFolder;
   }
 
+  public GoogleFileSystemFile getJobOppIntakeTemplate() {
+    if (jobOppIntakeTemplate == null) {
+      jobOppIntakeTemplate = new GoogleFileSystemFile(null);
+      jobOppIntakeTemplate.setId(jobOppIntakeTemplateId);
+    }
+    return jobOppIntakeTemplate;
+  }
+
   public GoogleFileSystemDrive getListFoldersDrive() {
     if (listFoldersDrive == null) {
       listFoldersDrive = new GoogleFileSystemDrive(null);
@@ -195,6 +221,14 @@ public class GoogleDriveConfig {
       listFoldersRoot.setId(listFoldersRootId);
     }
     return listFoldersRoot;
+  }
+
+  public GoogleFileSystemFile getPublishedSheetTemplate() {
+    if (publishedSheetTemplate == null) {
+      publishedSheetTemplate = new GoogleFileSystemFile(null);
+      publishedSheetTemplate.setId(publishedSheetTemplateId);
+    }
+    return publishedSheetTemplate;
   }
 
   private void configureGoogle() throws IOException, GeneralSecurityException {

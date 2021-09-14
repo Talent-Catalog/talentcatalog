@@ -193,14 +193,16 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
     }
 
     @Override
-    public GoogleFileSystemFile copy(GoogleFileSystemFolder parentFolder, String copyTitle, String sourceFileId) throws IOException {
+    public GoogleFileSystemFile copyFile(
+        GoogleFileSystemFolder parentFolder, String copyTitle, GoogleFileSystemFile sourceFile) 
+        throws IOException {
         List<String> parent = Collections.singletonList(parentFolder.getId());
         File copyMetadata = new File();
         copyMetadata.setName(copyTitle);
         copyMetadata.setParents(parent);
 
         File copyFile = googleDriveService.files()
-                .copy(sourceFileId, copyMetadata)
+                .copy(sourceFile.getId(), copyMetadata)
                 .setSupportsAllDrives(true)
                 .execute();
 

@@ -74,6 +74,7 @@ import org.tbbtalent.server.service.db.FileSystemService;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
 
 /**
@@ -238,6 +239,7 @@ public class SavedListServiceImpl implements SavedListService {
 
         GoogleFileSystemDrive foldersDrive = googleDriveConfig.getListFoldersDrive();
         GoogleFileSystemFolder foldersRoot = googleDriveConfig.getListFoldersRoot();
+        GoogleFileSystemFile jobOppIntakeTemplate = googleDriveConfig.getJobOppIntakeTemplate();
 
         String folderName = Long.toString(id);
 
@@ -261,7 +263,7 @@ public class SavedListServiceImpl implements SavedListService {
             savedList.setFolderjdlink(jdfolder.getUrl());
             // CREATE JOB OPPORTUNITY INTAKE FILE IN JD FOLDER
             String joiFileName = "JobOpportunityIntake - " + savedList.getName();
-            fileSystemService.copy(jdfolder, joiFileName, googleDriveConfig.getJobOppIntakeTemplateId());
+            fileSystemService.copyFile(jdfolder, joiFileName, jobOppIntakeTemplate);
         }
     } 
     
