@@ -108,13 +108,42 @@ export class PublishedDocColumnContent {
 }
 
 export class PublishedDocColumnInfo {
+  /**
+   * This is the unique key for this column.
+   * A comma separated list of these keys is what is stored on the server in the exportColumns field
+   * associated with the candidate source.
+   */
   key: string;
+
+  /**
+   * This is the name which is displayed to Angular users when they are deciding which columns
+   * should appear in the published doc.
+   * <p/>
+   * Note that this is not sent down to the Spring Server - it is only used to display the column
+   * to Angular users.
+   */
+  name: string;
+
+  /**
+   * This is the header for the column (it defaults to name)
+   */
   header: string;
+
+  /**
+   * Defines the content of the cells in the column.
+   */
   content: PublishedDocColumnContent = new PublishedDocColumnContent();
 
-  constructor(key: string, header: string) {
+  /**
+   *
+   * @param key Unique for this column
+   * @param name Name displayed to Angular user.
+   * @param header Column header. If null, defaults to name.
+   */
+  constructor(key: string, name: string, header: string) {
     this.key = key;
-    this.header = header;
+    this.name = name;
+    this.header = header == null ? name : header;
   }
 }
 

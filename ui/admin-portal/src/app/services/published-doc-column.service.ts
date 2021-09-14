@@ -30,24 +30,24 @@ export class PublishedDocColumnService {
   private allColumnInfosMap = new Map<string, PublishedDocColumnInfo>();
 
   constructor() {
-    this.addColumn("id", "Candidate id", new PublishedDocFieldSource("id"));
-    this.addColumn("candidateNumber", "Candidate number", new PublishedDocFieldSource("candidateNumber"));
-    this.addColumn("contextNote", "Context Note", new PublishedDocFieldSource("contextNote"));
-    this.addColumn("email", "Email", new PublishedDocFieldSource("user.email"));
-    this.addColumn("firstName", "First Name", new PublishedDocFieldSource("user.firstName"));
-    this.addColumn("gender", "Gender", new PublishedDocFieldSource("gender"));
-    this.addColumn("ieltsScore", "IELTS", new PublishedDocFieldSource("ieltsScore"));
-    this.addColumn("interviewDate", "Interview Date", null);
-    this.addColumn("interviewTime", "Interview Time", null);
-    this.addColumn("interviewPanel", "Interview Panel", null);
-    this.addColumn("interviewFeedback", "Interview Feedback", null);
-    this.addColumn("lastName", "Last Name", new PublishedDocFieldSource("user.lastName"));
-    this.addColumn("name", "Name", new PublishedDocFieldSource("user"));
-    this.addColumn("offer", "Offer?", null);
-    this.addColumn("shareableNotes", "Notes", new PublishedDocFieldSource("shareableNotes"));
-    this.addColumnWithLink("doc", "Other document", new PublishedDocConstantSource("doc"),
+    this.addColumn("id", "Candidate id", null, new PublishedDocFieldSource("id"));
+    this.addColumn("candidateNumber", "Candidate number", null, new PublishedDocFieldSource("candidateNumber"));
+    this.addColumn("contextNote", "Context Note", null, new PublishedDocFieldSource("contextNote"));
+    this.addColumn("email", "Email", null, new PublishedDocFieldSource("user.email"));
+    this.addColumn("firstName", "First Name", null, new PublishedDocFieldSource("user.firstName"));
+    this.addColumn("gender", "Gender", null, new PublishedDocFieldSource("gender"));
+    this.addColumn("ieltsScore", "IELTS", null, new PublishedDocFieldSource("ieltsScore"));
+    this.addColumn("interviewDate", "Interview Date", null, null);
+    this.addColumn("interviewTime", "Interview Time", null, null);
+    this.addColumn("interviewPanel", "Interview Panel", null, null);
+    this.addColumn("interviewFeedback", "Interview Feedback", null, null);
+    this.addColumn("lastName", "Last Name", null, new PublishedDocFieldSource("user.lastName"));
+    this.addColumn("name", "Name", "Full name", new PublishedDocFieldSource("user"));
+    this.addColumn("offer", "Offer?", null, null);
+    this.addColumn("shareableNotes", "Notes", null, new PublishedDocFieldSource("shareableNotes"));
+    this.addColumnWithLink("doc", "Other document", null, new PublishedDocConstantSource("doc"),
       new PublishedDocFieldSource("shareableDoc.location"));
-    this.addColumnWithLink("cv", "CV", new PublishedDocConstantSource("cv"),
+    this.addColumnWithLink("cv", "CV", null, new PublishedDocConstantSource("cv"),
       new PublishedDocFieldSource("shareableCv.location"));
   }
 
@@ -66,15 +66,15 @@ export class PublishedDocColumnService {
     return this.allColumnInfosMap.get(columnKey);
   }
 
-  private addColumnWithLink(key: string, header: string,
+  private addColumnWithLink(key: string, name: string, header: string,
                          value: PublishedDocValueSource, link: PublishedDocValueSource) {
-    const info = new PublishedDocColumnInfo(key, header);
+    const info = new PublishedDocColumnInfo(key, name, header);
     info.content.value = value;
     info.content.link = link;
     this.allColumnInfosMap.set(key, info);
   }
 
-  private addColumn(key: string, header: string, value: PublishedDocValueSource) {
-    this.addColumnWithLink(key, header, value, null);
+  private addColumn(key: string, name: string, header: string, value: PublishedDocValueSource) {
+    this.addColumnWithLink(key, name, header, value, null);
   }
 }
