@@ -29,8 +29,8 @@
 
     <!-- PHONE # -->
     <div class="form-group">
-      <label for="phone">{{ 'REGISTRATION.CONTACT.LABEL.PHONE' | translate }} <sup>*</sup></label>
-      <input type="text" class="form-control" id="phone" placeholder="" appInputFilter
+      <label for="phone">{{ 'REGISTRATION.CONTACT.LABEL.PHONE' | translate }}</label>
+      <input type="text" class="form-control" id="phone" placeholder=""
              [formControlName]="'phone'">
       <app-form-control-error [control]="form.controls.phone"></app-form-control-error>
     </div>
@@ -38,7 +38,7 @@
     <!-- WHATSAPP -->
     <div class="form-group">
       <label for="whatsapp">{{ 'REGISTRATION.CONTACT.LABEL.WHATSAPP' | translate }}</label>
-      <input type="text" class="form-control" id="whatsapp" placeholder="" appInputFilter
+      <input type="text" class="form-control" id="whatsapp" placeholder=""
              [formControlName]="'whatsapp'">
     </div>
 
