@@ -60,7 +60,7 @@ export class RegistrationContactComponent implements OnInit {
     this.candidate = null;
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.required]],
+      phone: [''],
       whatsapp: [''],
       // username: ['']
     });
