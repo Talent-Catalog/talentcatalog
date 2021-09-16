@@ -33,7 +33,7 @@ public class PublishedDocBuilder {
     final PublishedDocValueSource linkSource = columnContent.getLink();
     String link = linkSource == null ? null : (String) linkSource.fetchData(candidate);
     if (link == null || value == null) {
-      return value;
+      return value == null ? "" : value;
     } else {
       //String values need to be quoted - otherwise no quotes so that numbers still display as numbers.
       String quotedValue = value instanceof String ? "\"" + value + "\"" : value.toString();
