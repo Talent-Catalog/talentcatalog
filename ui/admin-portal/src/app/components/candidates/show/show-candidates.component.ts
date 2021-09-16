@@ -76,7 +76,8 @@ import {
   ContentUpdateType,
   CopySourceContentsRequest,
   IHasSetOfCandidates,
-  isSavedList, PublishedDocColumnInfo, PublishListRequest,
+  isSavedList,
+  PublishListRequest,
   SavedListGetRequest,
   UpdateExplicitSavedListContentsRequest
 } from '../../../model/saved-list';
@@ -98,6 +99,7 @@ import {EditCandidateStatusComponent} from "../view/status/edit-candidate-status
 import {SalesforceStageComponent} from "../../util/salesforce-stage/salesforce-stage.component";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 import {PublishedDocColumnService} from "../../../services/published-doc-column.service";
+import {PublishedDocColumnSelectorComponent} from "../../util/published-doc-column-selector/published-doc-column-selector.component";
 
 interface CachedTargetList {
   sourceID: number;
@@ -564,14 +566,26 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   publishCandidates() {
     this.publishing = true;
     this.error = null;
+    const modal = this.modalService.open(PublishedDocColumnSelectorComponent);
+    if (this.candidateSource.exportColumns != null) {
+      modal.componentInstance.selectedColumns = this.publishedDocColumnService.getColumnInfosFromKeys(this.candidateSource.exportColumns);
+    } else {
+      modal.componentInstance.selectedColumns = this.publishedDocColumnService.getAllColumnInfos();
+    }
+    modal.componentInstance.candidateSource = this.candidateSource;
 
-    //Get the export columns for this source.
-    const columnKeys: string[] =  this.candidateSource.exportColumns;
 
-    //Construct the request
-    const request: PublishListRequest = new PublishListRequest();
-    request.columns = this.publishedDocColumnService.getColumnInfosFromKeys(columnKeys)
+    modal.result
+      .then((request: PublishListRequest) => {
+        this.publishRequest(request);
+      },
+        error => this.error = error
+      )
+      .catch();
 
+  }
+
+  publishRequest(request: PublishListRequest) {
     this.savedListService.publish(this.candidateSource.id, request).subscribe(
       result => {
         if (isSavedList(this.candidateSource)) {

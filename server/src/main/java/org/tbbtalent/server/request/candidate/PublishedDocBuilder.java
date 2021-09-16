@@ -16,9 +16,12 @@
 
 package org.tbbtalent.server.request.candidate;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.api.client.util.Data;
 import org.tbbtalent.server.model.db.Candidate;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Used to build the published Google sheet doc
@@ -29,11 +32,21 @@ public class PublishedDocBuilder {
 
   public Object buildCell(Candidate candidate, PublishedDocColumnInfo columnInfo) {
     PublishedDocColumnContent columnContent = columnInfo.getContent();
-    Object value = columnContent.getValue().fetchData(candidate);
+    //Object value = columnContent.getValue().fetchData(candidate);
+
+    final PublishedDocValueSource valueSource = columnContent.getValue();
+    Object value = valueSource == null ? null : valueSource.fetchData(candidate);
+
     final PublishedDocValueSource linkSource = columnContent.getLink();
     String link = linkSource == null ? null : (String) linkSource.fetchData(candidate);
+
     if (link == null || value == null) {
-      return value;
+      // Handle null values in the table to avoid the cell ignored and overwritten
+      if (value == null) {
+        return Data.NULL_STRING;
+      } else {
+        return value;
+      }
     } else {
       //String values need to be quoted - otherwise no quotes so that numbers still display as numbers.
       String quotedValue = value instanceof String ? "\"" + value + "\"" : value.toString();
@@ -56,5 +69,10 @@ public class PublishedDocBuilder {
       title.add(columnInfo.getHeader());
     }
     return title;
+  }
+
+  public boolean doesCandidateObjectContainField(Candidate candidate, String fieldName) {
+    return Arrays.stream(candidate.getClass().getFields())
+            .anyMatch(f -> f.getName().equals(fieldName));
   }
 }

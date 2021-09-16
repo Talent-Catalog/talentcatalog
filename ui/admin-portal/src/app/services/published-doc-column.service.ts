@@ -14,20 +14,20 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {
-  PublishedDocColumnInfo, PublishedDocConstantSource,
+  PublishedDocColumnInfo,
+  PublishedDocConstantSource,
   PublishedDocFieldSource,
   PublishedDocValueSource
 } from "../model/saved-list";
-import {CandidateFieldInfo} from "../model/candidate-field-info";
 
 @Injectable({
   providedIn: 'root'
 })
 export class PublishedDocColumnService {
 
-  private allColumnInfosMap = new Map<string, PublishedDocColumnInfo>();
+  allColumnInfosMap = new Map<string, PublishedDocColumnInfo>();
 
   constructor() {
     this.addColumn("id", "Candidate id", null, new PublishedDocFieldSource("id"));
@@ -60,6 +60,10 @@ export class PublishedDocColumnService {
       }
     }
     return columnInfos;
+  }
+
+  getAllColumnInfos() {
+    return [...this.allColumnInfosMap.values()].slice(0, 2);
   }
 
   private getColumnInfoFromKey(columnKey: string): PublishedDocColumnInfo {

@@ -16,25 +16,6 @@
 
 package org.tbbtalent.server.model.db;
 
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import javax.persistence.CascadeType;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Transient;
 import org.apache.commons.beanutils.NestedNullException;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.annotations.Formula;
@@ -46,6 +27,7 @@ import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.impl.SalesforceServiceImpl;
 
 import javax.persistence.*;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -559,6 +541,8 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         } else if (obj != null && "candidateNumber".equals(exportField)) {
             //Convert candidateNumber to a number
             obj = Long.parseLong((String) obj);
+        } else if (obj instanceof Enum) {
+            obj = ((Enum<?>) obj).name();
         }
         return obj;
     }

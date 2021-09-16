@@ -1,0 +1,64 @@
+<!--
+  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<div class="modal-header">
+
+  <h4 class="modal-title">Select columns to display</h4>
+
+  <button type="button" class="close" aria-label="Close" (click)="dismiss()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+
+</div>
+
+<div class="modal-body">
+
+  <div class="alert alert-danger" *ngIf="error">
+    {{error}}
+  </div>
+  <div *ngIf="updating">
+    <i class="fas fa-spinner fa-spin"></i> Updating...
+  </div>
+
+  <div class="flex mb-3">
+    <div class="container">
+      <p class="text-center h6">Optional Fields</p>
+      <div [dragula]="dragulaGroupName" [(dragulaModel)]="availableColumns">
+        <div id="field" class="field" *ngFor="let field of availableColumns">{{ field.name }}</div>
+      </div>
+    </div>
+    <div class="container">
+      <p class="text-center h6">Selected Fields</p>
+      <div [dragula]="dragulaGroupName" [(dragulaModel)]="selectedColumns">
+        <div class="field" *ngFor="let field of selectedColumns">{{ field.name }}</div>
+      </div>
+    </div>
+  </div>
+  <button type="button" class="btn btn-primary" (click)="default()">
+    Reset to default
+  </button>
+
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary" (click)="close()">
+    Ok
+  </button>
+  <button type="button" class="btn btn-primary" (click)="dismiss()">
+    Cancel
+  </button>
+</div>
+
