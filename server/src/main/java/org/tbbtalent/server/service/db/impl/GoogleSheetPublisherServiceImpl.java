@@ -62,7 +62,7 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     ValueRange body = new ValueRange().setValues(data);
     UpdateValuesResponse result =
         googleDriveConfig.getGoogleSheetsService().spreadsheets().values()
-            .update(file.getId(), "1:1000", body)
+            .update(file.getId(), "2:1000", body)
             .setValueInputOption("USER_ENTERED")
             .execute();
 
