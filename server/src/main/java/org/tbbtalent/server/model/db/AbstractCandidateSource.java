@@ -59,6 +59,12 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
     private Status status;
 
     /**
+     * Description of the purpose of this candidate source
+     */
+    @Nullable
+    private String description;
+    
+    /**
      * If not null (or empty) this is the list of candidate fields which are
      * displayed for each candidate.
      * <p/>
@@ -85,7 +91,18 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
      */
     @Convert(converter = DelimitedStringsConverter.class)
     @Nullable
-    private List<String> displayedFieldsShort; 
+    private List<String> displayedFieldsShort;
+
+    /**
+     * If not null (or empty) this is the list of column keys which are
+     * exported for each candidate.
+     * <p/>
+     * Similar to {@link #displayedFieldsLong}
+     * @see org.tbbtalent.server.request.candidate.PublishedDocColumnInfo
+     */
+    @Convert(converter = DelimitedStringsConverter.class)
+    @Nullable
+    private List<String> exportColumns; 
 
     /**
      * If true, only the owner can modify the details of the candidate source
@@ -115,6 +132,15 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
     }
 
     @Nullable
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(@Nullable String description) {
+        this.description = description;
+    }
+
+    @Nullable
     public List<String> getDisplayedFieldsLong() {
         return displayedFieldsLong;
     }
@@ -130,6 +156,15 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
 
     public void setDisplayedFieldsShort(@Nullable List<String> displayedFieldsShort) {
         this.displayedFieldsShort = displayedFieldsShort;
+    }
+
+    @Nullable
+    public List<String> getExportColumns() {
+        return exportColumns;
+    }
+
+    public void setExportColumns(@Nullable List<String> exportColumns) {
+        this.exportColumns = exportColumns;
     }
 
     public String getName() {

@@ -1,0 +1,24 @@
+<div class="d-flex">
+  <div class="card-title mr-2">Selected Shareable Attachments</div>
+  <app-autosave-status [saving]="saving" [typing]="typing"></app-autosave-status>
+</div>
+
+<form [formGroup]="form">
+  <div  class="d-flex justify-content-around">
+    <div class="d-flex w-50 align-items-center">
+          <span for="surveyTypeId" class="mr-2">
+            <i class="far fa-star fa-sm"></i>CV
+          </span>
+      <ng-select id="surveyTypeId" class="mr-2" [formControlName]="'shareableCvAttachmentId'" [items]="cvs"
+                 placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
+    </div>
+
+    <div class="d-flex w-50 align-items-center">
+          <span for="surveyTypeId" class="mr-2">
+            <i class="far fa-star fa-sm"></i>Other
+          </span>
+      <ng-select id="surveyTypeIds" class="mr-2" [formControlName]="'shareableDocAttachmentId'" [items]="other"
+                 placeholder="Select" bindValue="id" bindLabel="name"></ng-select>
+    </div>
+  </div>
+</form>

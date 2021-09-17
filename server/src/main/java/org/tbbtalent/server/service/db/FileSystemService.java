@@ -46,7 +46,21 @@ public interface FileSystemService {
     GoogleFileSystemFolder findAFolder(
         GoogleFileSystemDrive drive, GoogleFileSystemFolder parentFolder, String folderName) 
         throws IOException;
-
+    
+    /**
+     * Creates a file with the given name.
+     * Does not check if file with that name already exists - may create
+     * create a duplicate file with the same name if the file system allows it. 
+     * @param fileName Name of folder to be created
+     * @param mimeType Type of file - see https://developers.google.com/drive/api/v3/mime-types
+     * @return File created
+     * @throws IOException If there was a problem creating the file
+     */
+    @NonNull
+    GoogleFileSystemFile createFile(
+        GoogleFileSystemDrive drive, GoogleFileSystemFolder parentFolder, String fileName, 
+        String mimeType) throws IOException;
+    
     /**
      * Creates a folder with the given name.
      * Does not check if folder with that name already exists - may create
@@ -101,9 +115,11 @@ public interface FileSystemService {
      * This creates a copy of a Google document and places it in the parent folder
      * under the provided copy title.
      * @param parentFolder - this is the folder where the new copy will belong.
-     * @param copyTitle - this is the name for the new copy.
-     * @param sourceFileId - this is id of the file to be copied.
+     * @param name - this is the name for the new copy.
+     * @param sourceFile - this is the file to be copied.
      * @throws IOException If there was a problem copying the file.
      */
-    GoogleFileSystemFile copy(GoogleFileSystemFolder parentFolder, String copyTitle, String sourceFileId) throws IOException;
+    GoogleFileSystemFile copyFile(
+        GoogleFileSystemFolder parentFolder, String name, GoogleFileSystemFile sourceFile) 
+        throws IOException;
 }

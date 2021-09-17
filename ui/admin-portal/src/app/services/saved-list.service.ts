@@ -19,7 +19,12 @@ import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
-import {SavedList, SearchSavedListRequest, UpdateSavedListInfoRequest} from "../model/saved-list";
+import {
+  PublishListRequest,
+  SavedList,
+  SearchSavedListRequest,
+  UpdateSavedListInfoRequest
+} from "../model/saved-list";
 
 @Injectable({
   providedIn: 'root'
@@ -46,6 +51,16 @@ export class SavedListService {
 
   get(id: number): Observable<SavedList> {
     return this.http.get<SavedList>(`${this.apiUrl}/${id}`);
+  }
+
+  /**
+   * Exports the whole list as a file containing candidate information that is suitable for
+   * "publishing" - ie sharing externally, for example with prospective employers.
+   * @param id ID of list to be published
+   * @param request Request specifying the candidate data to be shared.
+   */
+  publish(id: number, request: PublishListRequest): Observable<SavedList> {
+    return this.http.put<SavedList>(`${this.apiUrl}/${id}/publish`, request);
   }
 
   search(request: SearchSavedListRequest): Observable<SavedList[]> {

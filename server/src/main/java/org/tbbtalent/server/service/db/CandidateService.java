@@ -160,6 +160,10 @@ public interface CandidateService {
 
     Candidate updateCandidateAdditionalInfo(long id, UpdateCandidateAdditionalInfoRequest request);
 
+    Candidate updateShareableNotes(long id, UpdateCandidateShareableNotesRequest request);
+
+    Candidate updateShareableDocs(long id, UpdateCandidateShareableDocsRequest request);
+
     Candidate updateCandidateSurvey(long id, UpdateCandidateSurveyRequest request);
     
     void updateCandidateStatus(UpdateCandidateStatusRequest request);
@@ -426,4 +430,5 @@ public interface CandidateService {
      */
     boolean deleteCandidateExam(long examId)
             throws EntityReferencedException, InvalidRequestException;
+
 }

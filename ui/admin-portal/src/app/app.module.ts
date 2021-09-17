@@ -230,6 +230,8 @@ import {IeltsScoreValidationComponent} from './components/util/ielts-score-valid
 import {FileSelectorComponent} from './components/util/file-selector/file-selector.component';
 import {NewJobComponent} from './components/job/new-job/new-job.component';
 import {OldIntakeInputComponent} from './components/util/old-intake-input-modal/old-intake-input.component';
+import {CandidateShareableNotesComponent} from './components/util/candidate-shareable-notes/candidate-shareable-notes.component';
+import {ShareableDocsComponent} from './components/candidates/view/shareable-docs/shareable-docs.component';
 
 @NgModule({
   declarations: [
@@ -435,7 +437,9 @@ import {OldIntakeInputComponent} from './components/util/old-intake-input-modal/
     IeltsScoreValidationComponent,
     FileSelectorComponent,
     NewJobComponent,
-    OldIntakeInputComponent
+    OldIntakeInputComponent,
+    CandidateShareableNotesComponent,
+    ShareableDocsComponent
   ],
   imports: [
     BrowserModule,

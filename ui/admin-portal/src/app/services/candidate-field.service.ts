@@ -160,6 +160,7 @@ export class CandidateFieldService {
       if (field == null) {
         console.error("CandidateFieldService: Could not find field for " + fieldPath)
       } else {
+        //Ignore fields with a selector which returns false
         if (field.fieldSelector == null || field.fieldSelector()) {
           fields.push(field);
         }

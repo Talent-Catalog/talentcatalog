@@ -82,22 +82,40 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
         return folder;
     }
 
-    @Override
-    public @NonNull
-    GoogleFileSystemFolder createFolder(
-        GoogleFileSystemDrive drive, GoogleFileSystemFolder parentFolder, String folderName) 
-        throws IOException {
+    private File createFileInternal(GoogleFileSystemDrive drive,
+        GoogleFileSystemFolder parentFolder, String fileName, String mimeType) throws IOException {
         //See https://developers.google.com/drive/api/v3/folder
         //and https://developers.google.com/drive/api/v3/enable-shareddrives 
         File fileMetadata = new File();
         fileMetadata.setDriveId(drive.getId());
         fileMetadata.setParents(Collections.singletonList(parentFolder.getId()));
-        fileMetadata.setName(folderName);
-        fileMetadata.setMimeType(FOLDER_MIME_TYPE);
-        File file = googleDriveService.files().create(fileMetadata)
-                .setSupportsAllDrives(true)
-                .setFields("id,webViewLink")
-                .execute();
+        fileMetadata.setName(fileName);
+        fileMetadata.setMimeType(mimeType);
+        return googleDriveService.files().create(fileMetadata)
+            .setSupportsAllDrives(true)
+            .setFields("id,webViewLink")
+            .execute();
+    }    
+    
+    @Override
+    public @NonNull 
+    GoogleFileSystemFile createFile(GoogleFileSystemDrive drive,
+        GoogleFileSystemFolder parentFolder, String fileName, String mimeType) throws IOException {
+        File file = createFileInternal(drive, parentFolder, fileName, mimeType);
+
+        GoogleFileSystemFile googleFileSystemFile = new GoogleFileSystemFile(file.getWebViewLink());
+        googleFileSystemFile.setId(file.getId());
+        googleFileSystemFile.setName(fileName);
+        return googleFileSystemFile;
+    }
+
+    @Override
+    public @NonNull
+    GoogleFileSystemFolder createFolder(
+        GoogleFileSystemDrive drive, GoogleFileSystemFolder parentFolder, String folderName) 
+        throws IOException {
+        File file = createFileInternal(drive, parentFolder, folderName, FOLDER_MIME_TYPE);
+
         GoogleFileSystemFolder folder = new GoogleFileSystemFolder(file.getWebViewLink());
         folder.setId(file.getId());
         folder.setName(folderName);
@@ -175,20 +193,23 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
     }
 
     @Override
-    public GoogleFileSystemFile copy(GoogleFileSystemFolder parentFolder, String copyTitle, String sourceFileId) throws IOException {
+    public GoogleFileSystemFile copyFile(
+        GoogleFileSystemFolder parentFolder, String name, GoogleFileSystemFile sourceFile) 
+        throws IOException {
         List<String> parent = Collections.singletonList(parentFolder.getId());
         File copyMetadata = new File();
-        copyMetadata.setName(copyTitle);
+        copyMetadata.setName(name);
         copyMetadata.setParents(parent);
 
         File copyFile = googleDriveService.files()
-                .copy(sourceFileId, copyMetadata)
+                .copy(sourceFile.getId(), copyMetadata)
                 .setSupportsAllDrives(true)
+                .setFields("id,webViewLink")
                 .execute();
 
         GoogleFileSystemFile fsf = new GoogleFileSystemFile(copyFile.getWebViewLink());
         fsf.setId(copyFile.getId());
-        fsf.setName(copyTitle);
+        fsf.setName(name);
         return fsf;
     }
     

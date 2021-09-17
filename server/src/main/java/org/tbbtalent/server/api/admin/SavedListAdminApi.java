@@ -17,6 +17,7 @@
 package org.tbbtalent.server.api.admin;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
@@ -32,6 +33,7 @@ import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.request.candidate.PublishListRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateContextNoteRequest;
 import org.tbbtalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
@@ -207,6 +209,22 @@ public class SavedListAdminApi implements
             @PathVariable("id") long id,
             @RequestBody UpdateSharingRequest request) {
         SavedList savedList = this.savedListService.removeSharedUser(id, request);
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.build(savedList);
+    }
+
+    /**
+     * Create a published external document from the data of candidates in the given list. 
+     * @param savedListId Id of saved list
+     * @param request Request containing details of what is to be published 
+     * @return SavedList containing a link to the published doc as well as to the possibly updated 
+     * published column keys in exportColumns.  
+     */
+    @PutMapping(value = "{id}/publish")
+    public Map<String, Object> publish(
+        @PathVariable("id") long savedListId, @Valid @RequestBody PublishListRequest request)
+        throws IOException, GeneralSecurityException, ReflectiveOperationException {
+        SavedList savedList = savedListService.publish(savedListId, request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(savedList);
     }

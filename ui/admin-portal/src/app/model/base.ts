@@ -104,8 +104,10 @@ export interface Auditable extends HasId {
 
 export interface CandidateSource extends Auditable {
   name: string;
+  description?: string;
   displayedFieldsLong?: string[];
   displayedFieldsShort?: string[];
+  exportColumns?: string[];
   fixed: boolean;
   global: boolean;
   sfJoblink?: string;
