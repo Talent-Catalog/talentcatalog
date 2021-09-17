@@ -1,0 +1,21 @@
+@import "~src/scss/variables";
+
+span {
+  font-size: 15px;
+}
+
+#shareableNotes {
+  font-size: 15px;
+  color: $color-text-secondary;
+}
+
+::-webkit-input-placeholder {
+  font-size: 13px!important;
+}
+
+:-moz-placeholder { /* Firefox 18- */
+  font-size: 13px!important;
+}
+::-moz-placeholder {  /* Firefox 19+ */
+  font-size: 13px!important;
+}
