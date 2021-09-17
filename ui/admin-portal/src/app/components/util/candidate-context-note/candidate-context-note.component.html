@@ -14,7 +14,7 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div>
+<div *ngIf="isContextNoteDisplayed()">
   <div class="alert alert-danger" *ngIf="error">
     {{error}}
   </div>
@@ -28,7 +28,7 @@
       </label>
 
       <textarea id="contextNotes" class="md-textarea-auto form-control" rows="2"
-                placeholder="Add notes specific to the candidate in the list..."
+                placeholder="Add candidate notes specific to that candidate in the list..."
                 [formControlName]="'contextNote'"></textarea>
     </div>
 
