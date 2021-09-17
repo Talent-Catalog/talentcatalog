@@ -22,12 +22,13 @@
   <form [formGroup]="form">
 
     <div class="form-group">
-      <label class="h6" for="contextNotes">
+      <label class="h6 float-right" for="contextNotes">
+        <span class="mr-2 font-weight-normal">{{title}}</span>
         <app-autosave-status [saving]="saving" [typing]="typing"></app-autosave-status>
-        <span>{{title}}</span>
       </label>
 
-      <textarea id="contextNotes" class="md-textarea-auto form-control" rows="3"
+      <textarea id="contextNotes" class="md-textarea-auto form-control" rows="2"
+                placeholder="Add notes specific to the candidate in the list..."
                 [formControlName]="'contextNote'"></textarea>
     </div>
 

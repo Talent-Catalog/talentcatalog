@@ -162,6 +162,8 @@ public interface CandidateService {
 
     Candidate updateShareableNotes(long id, UpdateCandidateShareableNotesRequest request);
 
+    Candidate updateShareableDocs(long id, UpdateCandidateShareableDocsRequest request);
+
     Candidate updateCandidateSurvey(long id, UpdateCandidateSurveyRequest request);
     
     void updateCandidateStatus(UpdateCandidateStatusRequest request);

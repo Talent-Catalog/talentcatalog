@@ -13,4 +13,27 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+@import "~src/scss/variables";
 
+label {
+  text-align: right;
+  span {
+    font-size: 15px;
+  }
+}
+
+#contextNotes {
+  font-size: 15px;
+  color: $color-text-secondary;
+}
+
+::-webkit-input-placeholder {
+  font-size: 13px!important;
+}
+
+:-moz-placeholder { /* Firefox 18- */
+  font-size: 13px!important;
+}
+::-moz-placeholder {  /* Firefox 19+ */
+  font-size: 13px!important;
+}
