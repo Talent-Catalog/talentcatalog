@@ -16,12 +16,9 @@
 
 package org.tbbtalent.server.request.candidate;
 
-import com.google.api.client.util.Data;
-import org.tbbtalent.server.model.db.Candidate;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import org.tbbtalent.server.model.db.Candidate;
 
 /**
  * Used to build the published Google sheet doc
@@ -41,12 +38,7 @@ public class PublishedDocBuilder {
     String link = linkSource == null ? null : (String) linkSource.fetchData(candidate);
 
     if (link == null || value == null) {
-      // Handle null values in the table to avoid the cell ignored and overwritten
-      if (value == null) {
-        return Data.NULL_STRING;
-      } else {
-        return value;
-      }
+      return value == null ? "" : value;
     } else {
       //String values need to be quoted - otherwise no quotes so that numbers still display as numbers.
       String quotedValue = value instanceof String ? "\"" + value + "\"" : value.toString();
@@ -69,10 +61,5 @@ public class PublishedDocBuilder {
       title.add(columnInfo.getHeader());
     }
     return title;
-  }
-
-  public boolean doesCandidateObjectContainField(Candidate candidate, String fieldName) {
-    return Arrays.stream(candidate.getClass().getFields())
-            .anyMatch(f -> f.getName().equals(fieldName));
   }
 }
