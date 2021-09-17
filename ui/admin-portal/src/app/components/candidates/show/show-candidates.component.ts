@@ -76,7 +76,7 @@ import {
   ContentUpdateType,
   CopySourceContentsRequest,
   IHasSetOfCandidates,
-  isSavedList,
+  isSavedList, PublishedDocColumnInfo, PublishListRequest,
   SavedListGetRequest,
   UpdateExplicitSavedListContentsRequest
 } from '../../../model/saved-list';
@@ -97,6 +97,7 @@ import {CandidateFieldService} from '../../../services/candidate-field.service';
 import {EditCandidateStatusComponent} from "../view/status/edit-candidate-status.component";
 import {SalesforceStageComponent} from "../../util/salesforce-stage/salesforce-stage.component";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
+import {PublishedDocColumnService} from "../../../services/published-doc-column.service";
 
 interface CachedTargetList {
   sourceID: number;
@@ -131,6 +132,7 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   searching: boolean;
   exporting: boolean;
   importing: boolean;
+  publishing: boolean;
   updating: boolean;
   updatingStatuses: boolean;
   savingSelection: boolean;
@@ -176,7 +178,8 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
               private router: Router,
               private candidateSourceResultsCacheService: CandidateSourceResultsCacheService,
               private candidateFieldService: CandidateFieldService,
-              private authService: AuthService
+              private authService: AuthService,
+              private publishedDocColumnService: PublishedDocColumnService
 
   ) {
     this.searchForm = this.fb.group({
@@ -522,16 +525,16 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       request = new SavedListGetRequest();
     }
-    request.pageNumber = this.pageNumber - 1;
-    request.pageSize = this.pageSize;
+
+    //Note: The page number and size are ignored in this call (all records are exported).
+    //Only the sort fields are processed.
     request.sortFields = [this.sortField];
     request.sortDirection = this.sortDirection;
     if (request instanceof SavedSearchGetRequest) {
       request.reviewStatusFilter = this.reviewStatusFilter;
     }
 
-    this.candidateSourceCandidateService.export(
-      this.candidateSource, request).subscribe(
+    this.candidateSourceCandidateService.export(this.candidateSource, request).subscribe(
       result => {
         const options = {type: 'text/csv;charset=utf-8;'};
         const filename = 'candidates.csv';
@@ -554,6 +557,33 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         });
         reader.readAsText(err.error);
         this.exporting = false;
+      }
+    );
+  }
+
+  publishCandidates() {
+    this.publishing = true;
+    this.error = null;
+
+    //Get the export columns for this source.
+    const columnKeys: string[] =  this.candidateSource.exportColumns;
+
+    //Construct the request
+    const request: PublishListRequest = new PublishListRequest();
+    request.columns = this.publishedDocColumnService.getColumnInfosFromKeys(columnKeys)
+
+    this.savedListService.publish(this.candidateSource.id, request).subscribe(
+      result => {
+        if (isSavedList(this.candidateSource)) {
+          //Update the list's published doc link and the export columns
+          this.candidateSource.publishedDocLink = result.publishedDocLink;
+          this.candidateSource.exportColumns = result.exportColumns;
+        }
+        this.publishing = false;
+      },
+      error => {
+        this.error = error;
+        this.publishing = false;
       }
     );
   }
@@ -686,6 +716,10 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isImportable(): boolean {
+    return isSavedList(this.candidateSource);
+  }
+
+  isPublishable(): boolean {
     return isSavedList(this.candidateSource);
   }
 
@@ -1252,6 +1286,20 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
 
   hasSavedSearchSource(): boolean {
     return this.getSavedSearchSource() != null;
+  }
+
+  hasPublishedDoc() {
+    return isSavedList(this.candidateSource) && this.candidateSource.publishedDocLink != null;
+  }
+
+  doShowPublishedDoc() {
+    if (isSavedList(this.candidateSource)) {
+      const folderlink = this.candidateSource.publishedDocLink;
+      if (folderlink) {
+        //Open link in new window
+        window.open(folderlink, "_blank");
+      }
+    }
   }
 
   doShowListFolder() {

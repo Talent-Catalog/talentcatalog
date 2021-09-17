@@ -80,6 +80,12 @@ public class SavedList extends AbstractCandidateSource {
     private String folderjdlink;
 
     /**
+     * Url link to published list doc, if one exists. 
+     */
+    @Nullable
+    private String publishedDocLink;
+
+    /**
      * If true, this list is associated with a "registered" job. See the Angular "New Job" menu
      * item. A link to the job record on Salesforce is in {@link #getSfJoblink()}.
      * There should only be one list registered to a particular job, as defined by its sfJoblink.
@@ -165,6 +171,15 @@ public class SavedList extends AbstractCandidateSource {
 
     public void setFolderjdlink(@Nullable String folderjdlink) {
         this.folderjdlink = folderjdlink;
+    }
+
+    @Nullable
+    public String getPublishedDocLink() {
+        return publishedDocLink;
+    }
+
+    public void setPublishedDocLink(@Nullable String publishedDocLink) {
+        this.publishedDocLink = publishedDocLink;
     }
 
     @NonNull

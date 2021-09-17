@@ -43,69 +43,81 @@
 
   <!-- BODY -->
   <div class="card-body">
-
     <!-- EMPTY STATE -->
-    <p *ngIf="!attachments?.length">
-      No files have been uploaded by the candidate.
-    </p>
+    <div *ngIf="!attachments?.length">
+      <p >
+        No files have been uploaded by the candidate.
+      </p>
+    </div>
 
-    <!-- ATTACHMENTS -->
-    <div class="row position-relative mb-3" *ngFor="let attachment of attachments; let i = index">
-
-      <!-- EDIT -->
-      <div class="actions" *ngIf="editable">
-        <button class="btn btn-sm btn-outline-primary" (click)="editCandidateAttachment(attachment)">
-          <i class="fas fa-edit"></i>
-        </button>
-
-        <button class="btn btn-sm btn-outline-danger" (click)="deleteCandidateAttachment(attachment)">
-          <i class="fas fa-trash"></i>
-        </button>
+    <div *ngIf="attachments.length">
+      <div class="mb-4">
+        <app-shareable-docs
+          [candidate]="candidate"
+          [cvs]="cvs"
+          [other]="other">
+        </app-shareable-docs>
       </div>
 
-      <div>
-        <!-- NAME -->
-        <div class="col-12" [class.edit-padding]="editable">
-          <!-- Non Google files - ie links and AWS files -
-           we can just follow their urls-->
-          <a *ngIf="attachment.type!==AttachmentType.googlefile"
-             target="_blank" [href]="getAttachmentUrl(attachment)">
-            {{attachment.name}}
-          </a>
-          <!-- With Google files we can't link to the Google Shared Drive
-           because Google's security prevents that.
-           So instead, we download a copy of the file to the browser computer
-           and show that-->
-          <a *ngIf="attachment.type===AttachmentType.googlefile"
-                  (click)="downloadCandidateAttachment(attachment)"
-          target="_blank" class="is-link">
-            {{attachment.name}}
-          </a>
-          <span class="small text-dark"> - {{attachment.type}}</span>
-          <div class="d-inline ml-2" *ngIf="attachment.cv">
-            <app-cv-icon
-              [candidate]="candidate"
-              [attachment]="attachment"
-              (loadingStatus)="loading = $event"
-            >
-            </app-cv-icon>
+      <div class="card-title">All attachments</div>
+
+      <!-- ATTACHMENTS -->
+      <div class="row position-relative mb-3" *ngFor="let attachment of attachments; let i = index">
+
+        <!-- EDIT -->
+        <div class="actions" *ngIf="editable">
+          <button class="btn btn-sm btn-outline-primary" (click)="editCandidateAttachment(attachment)">
+            <i class="fas fa-edit"></i>
+          </button>
+
+          <button class="btn btn-sm btn-outline-danger" (click)="deleteCandidateAttachment(attachment)">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+
+        <div>
+          <!-- NAME -->
+          <div class="col-12" [class.edit-padding]="editable">
+            <!-- Non Google files - ie links and AWS files -
+             we can just follow their urls-->
+            <a *ngIf="attachment.type!==AttachmentType.googlefile"
+               target="_blank" [href]="getAttachmentUrl(attachment)">
+              {{attachment.name}}
+            </a>
+            <!-- With Google files we can't link to the Google Shared Drive
+             because Google's security prevents that.
+             So instead, we download a copy of the file to the browser computer
+             and show that-->
+            <a *ngIf="attachment.type===AttachmentType.googlefile"
+                    (click)="downloadCandidateAttachment(attachment)"
+            target="_blank" class="is-link">
+              {{attachment.name}}
+            </a>
+            <span class="small text-dark"> - {{attachment.type}}</span>
+            <div class="d-inline ml-2" *ngIf="attachment.cv">
+              <app-cv-icon
+                [candidate]="candidate"
+                [attachment]="attachment"
+                (loadingStatus)="loading = $event"
+              >
+              </app-cv-icon>
+            </div>
+          </div>
+
+          <!-- AUDIT DATA -->
+          <div class="col-12" *ngIf="attachment">
+            <app-updated-by [object]="attachment"></app-updated-by>
           </div>
         </div>
 
-        <!-- AUDIT DATA -->
-        <div class="col-12" *ngIf="attachment">
-          <app-updated-by [object]="attachment"></app-updated-by>
-        </div>
+      </div>
+
+      <!-- LOAD MORE -->
+      <div class="text-center" *ngIf="hasMore">
+        <button type="button" class="btn btn-sm btn-outline-dark" (click)="loadMore()">Load More</button>
       </div>
 
     </div>
-
-
-    <!-- LOAD MORE -->
-    <div class="text-center" *ngIf="hasMore">
-      <button type="button" class="btn btn-sm btn-outline-dark" (click)="loadMore()">Load More</button>
-    </div>
-
   </div>
 
 </div>

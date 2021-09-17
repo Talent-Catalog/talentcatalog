@@ -16,9 +16,21 @@
 
 package org.tbbtalent.server.service.db.impl;
 
+import static org.springframework.data.jpa.domain.Specification.where;
+
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,28 +45,37 @@ import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.RegisteredListException;
-import org.tbbtalent.server.model.db.*;
-import org.tbbtalent.server.repository.db.*;
+import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.SavedList;
+import org.tbbtalent.server.model.db.SavedSearch;
+import org.tbbtalent.server.model.db.Status;
+import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.repository.db.CandidateRepository;
+import org.tbbtalent.server.repository.db.GetCandidateSavedListsQuery;
+import org.tbbtalent.server.repository.db.GetSavedListsQuery;
+import org.tbbtalent.server.repository.db.SavedListRepository;
+import org.tbbtalent.server.repository.db.UserRepository;
+import org.tbbtalent.server.request.candidate.PublishListRequest;
+import org.tbbtalent.server.request.candidate.PublishedDocBuilder;
+import org.tbbtalent.server.request.candidate.PublishedDocColumnInfo;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
-import org.tbbtalent.server.request.list.*;
+import org.tbbtalent.server.request.list.ContentUpdateType;
+import org.tbbtalent.server.request.list.IHasSetOfCandidates;
+import org.tbbtalent.server.request.list.SearchSavedListRequest;
+import org.tbbtalent.server.request.list.UpdateExplicitSavedListContentsRequest;
+import org.tbbtalent.server.request.list.UpdateSavedListContentsRequest;
+import org.tbbtalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
+import org.tbbtalent.server.service.db.DocPublisherService;
 import org.tbbtalent.server.service.db.FileSystemService;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.SavedListService;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
+import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
-
-import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static org.springframework.data.jpa.domain.Specification.where;
 
 /**
  * Saved List service
@@ -70,17 +91,21 @@ public class SavedListServiceImpl implements SavedListService {
     private final CandidateRepository candidateRepository;
     private final SavedListRepository savedListRepository;
     private final CandidateSavedListService candidateSavedListService;
+    private final DocPublisherService docPublisherService;
     private final FileSystemService fileSystemService;
     private final GoogleDriveConfig googleDriveConfig;
     private final SalesforceService salesforceService;
     private final UserRepository userRepository;
     private final AuthService authService;
 
+    private static final Logger log = LoggerFactory.getLogger(SavedListServiceImpl.class);
+
     @Autowired
     public SavedListServiceImpl(
         CandidateRepository candidateRepository,
         SavedListRepository savedListRepository,
         CandidateSavedListService candidateSavedListService,
+        DocPublisherService docPublisherService,
         FileSystemService fileSystemService,
         GoogleDriveConfig googleDriveConfig,
         SalesforceService salesforceService, UserRepository userRepository,
@@ -89,6 +114,7 @@ public class SavedListServiceImpl implements SavedListService {
         this.candidateRepository = candidateRepository;
         this.savedListRepository = savedListRepository;
         this.candidateSavedListService = candidateSavedListService;
+        this.docPublisherService = docPublisherService;
         this.fileSystemService = fileSystemService;
         this.googleDriveConfig = googleDriveConfig;
         this.salesforceService = salesforceService;
@@ -200,15 +226,23 @@ public class SavedListServiceImpl implements SavedListService {
         saveIt(destination);
     }
 
-    @Override
-    public SavedList createListFolder(long id) throws NoSuchObjectException, IOException {
+    /**
+     * Finds folder for the given list on Google Drive, creating one if none found.
+     *
+     * @param id ID of list
+     * @throws NoSuchObjectException if no list is found with that id
+     * @throws IOException           if there is a problem creating the folder.
+     */
+    private void findOrCreateListFolder(long id) 
+        throws NoSuchObjectException, IOException {
         SavedList savedList = get(id);
-        
+
         GoogleFileSystemDrive foldersDrive = googleDriveConfig.getListFoldersDrive();
-        GoogleFileSystemFolder foldersRoot = googleDriveConfig.getListFoldersRoot(); 
+        GoogleFileSystemFolder foldersRoot = googleDriveConfig.getListFoldersRoot();
+        GoogleFileSystemFile jobOppIntakeTemplate = googleDriveConfig.getJobOppIntakeTemplate();
 
         String folderName = Long.toString(id);
-        
+
         GoogleFileSystemFolder folder = fileSystemService.findAFolder(
             foldersDrive, foldersRoot, folderName);
         if (folder == null) {
@@ -218,19 +252,27 @@ public class SavedListServiceImpl implements SavedListService {
             // Job name folder
             folderName = savedList.getName();
             GoogleFileSystemFolder subfolder = fileSystemService.createFolder(foldersDrive, folder, folderName);
+            savedList.setFolderlink(subfolder.getUrl());
             // Cv folder
-            GoogleFileSystemFolder cvfolder = 
+            GoogleFileSystemFolder cvfolder =
                 fileSystemService.createFolder(foldersDrive, subfolder, LIST_CVS_SUBFOLDER);
             savedList.setFoldercvlink(cvfolder.getUrl());
             // JD folder
-            GoogleFileSystemFolder jdfolder = 
+            GoogleFileSystemFolder jdfolder =
                 fileSystemService.createFolder(foldersDrive, subfolder, LIST_JOB_DESCRIPTION_SUBFOLDER);
             savedList.setFolderjdlink(jdfolder.getUrl());
             // CREATE JOB OPPORTUNITY INTAKE FILE IN JD FOLDER
             String joiFileName = "JobOpportunityIntake - " + savedList.getName();
-            fileSystemService.copy(jdfolder, joiFileName, googleDriveConfig.getJobOppIntakeTemplateId());
+            fileSystemService.copyFile(jdfolder, joiFileName, jobOppIntakeTemplate);
         }
-        savedList.setFolderlink(folder.getUrl());
+    } 
+    
+    @Override
+    public SavedList createListFolder(long id) throws NoSuchObjectException, IOException {
+        SavedList savedList = get(id);
+
+        findOrCreateListFolder(id);
+
         saveIt(savedList);
         return savedList;
     }
@@ -454,6 +496,13 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
+    public void setCandidateContext(long savedListId, Iterable<Candidate> candidates) {
+        for (Candidate candidate : candidates) {
+            candidate.setContextSavedListId(savedListId);
+        }
+    }
+
+    @Override
     public SavedList updateSavedList(long savedListId, UpdateSavedListInfoRequest request) 
             throws NoSuchObjectException, EntityExistsException {
         final User loggedInUser = authService.getLoggedInUser().orElse(null);
@@ -509,6 +558,52 @@ public class SavedListServiceImpl implements SavedListService {
         savedList.removeUser(user);
 
         return savedListRepository.save(savedList);
+    }
+
+    @Override
+    public SavedList publish(long id, PublishListRequest request)
+        throws GeneralSecurityException, IOException {
+
+        //Get list, creating list folder if necessary
+        SavedList savedList = createListFolder(id);
+        
+        //Fetch candidates in list
+        Set<Candidate> candidates = savedList.getCandidates();
+        
+        //TODO JC Need to sort this list - by id 
+
+        //Set list context on candidates so that Candidate field contextNote can be accessed.
+        setCandidateContext(savedList.getId(), candidates);
+
+        List<PublishedDocColumnInfo> columnInfos = request.getColumns(); 
+
+        PublishedDocBuilder builder = new PublishedDocBuilder();
+        
+        //This is what will be used to create the published doc
+        List<List<Object>> publishedData = new ArrayList<>();
+
+        //Title row
+        List<Object> title = builder.buildTitle(columnInfos);
+        publishedData.add(title);
+
+        //Add row for each candidate
+        for (Candidate candidate : candidates) {
+            List<Object> candidateData = builder.buildRow(candidate, columnInfos);
+            publishedData.add(candidateData);
+        }
+
+        //Create the doc in the list folder.
+        GoogleFileSystemDrive drive = googleDriveConfig.getListFoldersDrive();
+        GoogleFileSystemFolder listFolder = new GoogleFileSystemFolder(savedList.getFolderlink());
+        String link = docPublisherService
+            .createPublishedDoc(drive, listFolder, savedList.getName(), publishedData);
+
+        //Update saved list with the corresponding column keys and document link.
+        savedList.setExportColumns(request.getExportColumnKeys());
+        savedList.setPublishedDocLink(link);
+        saveIt(savedList);
+        
+        return savedList;
     }
 
     /**

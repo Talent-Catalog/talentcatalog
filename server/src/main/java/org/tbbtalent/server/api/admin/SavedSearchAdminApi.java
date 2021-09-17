@@ -337,8 +337,10 @@ public class SavedSearchAdminApi implements
     private DtoBuilder savedSearchDto() {
         return new DtoBuilder()
                 .add("id")
+                .add("description")
                 .add("displayedFieldsLong")
                 .add("displayedFieldsShort")
+                .add("exportColumns")
                 .add("name")
                 .add("savedSearchType")
                 .add("savedSearchSubtype")

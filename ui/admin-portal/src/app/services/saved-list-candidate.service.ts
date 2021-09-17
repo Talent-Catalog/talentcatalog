@@ -19,6 +19,7 @@ import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {
+  PublishListRequest,
   SavedList,
   UpdateExplicitSavedListContentsRequest
 } from "../model/saved-list";

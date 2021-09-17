@@ -43,8 +43,11 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
   s3BucketUrl = environment.s3BucketUrl;
 
   attachmentForm: FormGroup;
+  shareableForm: FormGroup;
   expanded: boolean;
   attachments: CandidateAttachment[];
+  cvs: CandidateAttachment[];
+  other: CandidateAttachment[];
   hasMore: boolean;
 
   constructor(private candidateAttachmentService: CandidateAttachmentService,
@@ -56,8 +59,7 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
     return AttachmentType;
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() {  }
 
   ngOnChanges(changes: SimpleChanges) {
     this.expanded = false;
@@ -70,6 +72,8 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
       sortDirection: 'DESC',
       sortFields: [['createdDate']]
     });
+
+
 
     if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
       this.doSearch();
@@ -86,6 +90,8 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
         } else {
           this.attachments.push(...results.content);
         }
+        this.cvs = this.attachments.filter(a => a.cv === true);
+        this.other = this.attachments.filter(a => a.cv === false);
 
         this.hasMore = results.totalPages > results.number + 1;
         this.loading = false;
@@ -95,7 +101,6 @@ export class ViewCandidateAttachmentComponent implements OnInit, OnChanges {
         this.loading = false;
       })
     ;
-
   }
 
   loadMore() {

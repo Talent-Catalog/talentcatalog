@@ -26,6 +26,7 @@ import {getExternalHref} from '../util/url';
 import {Occupation} from './occupation';
 import {LanguageLevel} from './language-level';
 import {HasId} from "./base";
+import {CandidateAttachment} from "./candidate-attachment";
 
 export interface Candidate extends HasId {
   id: number;
@@ -53,6 +54,9 @@ export interface Candidate extends HasId {
   folderlink: string;
   sflink: string;
   videolink: string;
+  shareableCv: CandidateAttachment;
+  shareableDoc: CandidateAttachment;
+  shareableNotes: string;
   surveyType: SurveyType;
   surveyComment: string;
   selected: boolean;
@@ -361,6 +365,15 @@ export interface UpdateCandidateOppsRequest {
 export interface UpdateCandidateListOppsRequest {
   savedListId: number;
   salesforceOppParams?: SalesforceOppParams;
+}
+
+export interface UpdateCandidateShareableNotesRequest {
+  shareableNotes?: string;
+}
+
+export interface UpdateCandidateShareableDocsRequest {
+  shareableCvAttachmentId: number,
+  shareableDocAttachmentId: number,
 }
 
 export interface UpdateCandidateStatusInfo {

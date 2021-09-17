@@ -16,6 +16,27 @@
 
 package org.tbbtalent.server.model.db;
 
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import org.apache.commons.beanutils.NestedNullException;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.annotations.Formula;
 import org.springframework.lang.Nullable;
 import org.tbbtalent.server.api.admin.SavedSearchAdminApi;
@@ -53,6 +74,19 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     private String additionalInfo;
     private String candidateMessage;
     private String linkedInLink;
+    
+    @Nullable
+    private String shareableNotes;
+
+    @Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shareable_cv_attachment_id")
+    private CandidateAttachment shareableCv;
+
+    @Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shareable_doc_attachment_id")
+    private CandidateAttachment shareableDoc;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "survey_type_id")
@@ -509,6 +543,26 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
         this.status = CandidateStatus.draft;
     }
 
+    @Nullable
+    public Object extractField(String exportField)
+        throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        Object obj;        
+        try {
+            obj = PropertyUtils.getProperty(this, exportField);
+        } catch (NestedNullException ex) {
+            //Return null if any value in nested reference is null.
+            //For example user.email should return null if user is null.
+            obj = null;
+        }
+        if (obj instanceof User) {
+            obj = ((User) obj).getDisplayName();
+        } else if (obj != null && "candidateNumber".equals(exportField)) {
+            //Convert candidateNumber to a number
+            obj = Long.parseLong((String) obj);
+        }
+        return obj;
+    }
+
     public String getCandidateNumber() {
         return candidateNumber;
     }
@@ -562,7 +616,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
      * savedList.
      * These values are stored in {@link CandidateSavedList}.
      * Setting this value to refer to a particular SavedList will result in
-     * this Candidate object returning attritbutes correspondint that list.
+     * this Candidate object returning attributes corresponding to that list.
      * <p/>
      * For example, see {@link #getContextNote()}
      * 
@@ -1302,7 +1356,34 @@ public class Candidate extends AbstractAuditableDomainObject<Long> {
     public String getSfId() {
         return SalesforceServiceImpl.extractIdFromSfUrl(sflink);
     }
-    
+
+    @Nullable
+    public String getShareableNotes() {
+        return shareableNotes;
+    }
+
+    public void setShareableNotes(@Nullable String shareableNotes) {
+        this.shareableNotes = shareableNotes;
+    }
+
+    @Nullable
+    public CandidateAttachment getShareableCv() {
+        return shareableCv;
+    }
+
+    public void setShareableCv(@Nullable CandidateAttachment shareableCv) {
+        this.shareableCv = shareableCv;
+    }
+
+    @Nullable
+    public CandidateAttachment getShareableDoc() {
+        return shareableDoc;
+    }
+
+    public void setShareableDoc(@Nullable CandidateAttachment shareableDoc) {
+        this.shareableDoc = shareableDoc;
+    }
+
     @Nullable
     public String getVideolink() {
         return videolink;

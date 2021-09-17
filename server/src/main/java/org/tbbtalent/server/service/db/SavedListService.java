@@ -17,6 +17,7 @@
 package org.tbbtalent.server.service.db;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
@@ -26,8 +27,10 @@ import org.tbbtalent.server.exception.EntityExistsException;
 import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.RegisteredListException;
+import org.tbbtalent.server.model.db.Candidate;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.User;
+import org.tbbtalent.server.request.candidate.PublishListRequest;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
 import org.tbbtalent.server.request.list.SearchSavedListRequest;
@@ -234,6 +237,17 @@ public interface SavedListService {
     Page<SavedList> searchSavedLists(SearchSavedListRequest request);
 
     /**
+     * Mark the given Candidate objects with the given list context.
+     * This means that context fields (ie ContextNote) associated with the 
+     * list will be returned through {@link Candidate#getContextNote()}
+     * @param savedListId ID of saved list
+     * @param candidates Candidate objects to be marked with the list context. Note that this 
+     *                   is a transient property only found on the given objects (ie it is not
+     *                   stored in the database).
+     */
+    void setCandidateContext(long savedListId, Iterable<Candidate> candidates);
+
+    /**
      * Update the info associated with the SavedList with the given id 
      * - for example changing its name. 
      * @param savedListId ID of saved list to be updated
@@ -283,4 +297,16 @@ public interface SavedListService {
     void updateDisplayedFieldPaths(
             long savedListId, UpdateDisplayedFieldPathsRequest request)
             throws NoSuchObjectException;
+
+    /**
+     * Create a published external document from the data of candidates in the given list. 
+     * @param savedListId Id of saved list
+     * @param request Request containing details of what is to be published 
+     * @return SavedList containing a link to the published doc
+     * @throws GeneralSecurityException if there are security problems accessing document storage
+     * @throws IOException if there are problems creating the document 
+     * @throws ReflectiveOperationException if the publish request contains unknown fields
+     */
+    SavedList publish(long savedListId, PublishListRequest request)
+        throws GeneralSecurityException, IOException, ReflectiveOperationException;
 }
