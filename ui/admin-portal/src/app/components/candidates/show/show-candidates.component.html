@@ -75,9 +75,9 @@
       <button class="btn" *ngIf="isSavedList()" (click)="doShowListFolder()">
         <i class="fab fa-google-drive" title="Create/show Google folder"></i>
       </button>
-<!--      <button class="btn" *ngIf="hasPublishedDoc()" (click)="doShowPublishedDoc()">-->
-<!--        <i class="fas fa-globe" title="Show published sheet"></i>-->
-<!--      </button>-->
+      <button class="btn" *ngIf="hasPublishedDoc()" (click)="doShowPublishedDoc()">
+        <i class="fas fa-globe" title="Show published sheet"></i>
+      </button>
       <button class="btn" *ngIf="timestamp" (click)="doSearch(true)">
         <i class="fas fa-sync" title="Refresh search"></i>
       </button>
@@ -146,11 +146,11 @@
         Export <i class="fas fa-file-excel"></i>
       </button>
 
-<!--      <button *ngIf="isPublishable()" class="btn btn-sm btn-secondary" (click)="publishCandidates()"-->
-<!--              title="Publish candidates to be shared externally - eg with employers">-->
-<!--        <i class="fas fa-spinner fa-spin" *ngIf=publishing></i>-->
-<!--        Publish <i class="fas fa-file-excel"></i>-->
-<!--      </button>-->
+      <button *ngIf="isPublishable()" class="btn btn-sm btn-secondary" (click)="publishCandidates()"
+              title="Publish candidates to be shared externally - eg with employers">
+        <i class="fas fa-spinner fa-spin" *ngIf=publishing></i>
+        Publish <i class="fas fa-file-excel"></i>
+      </button>
 
       <button *ngIf="isSalesforceUpdatable()" class="btn btn-sm btn-secondary"
               (click)="createUpdateSalesforce()"
