@@ -74,9 +74,9 @@ import {UserService} from '../../../services/user.service';
 import {SelectListComponent, TargetListSelection} from '../../list/select/select-list.component';
 import {
   ContentUpdateType,
-  CopySourceContentsRequest,
+  CopySourceContentsRequest, ExportColumn,
   IHasSetOfCandidates,
-  isSavedList, PublishedDocColumnInfo, PublishListRequest,
+  isSavedList, PublishedDocColumnDef, PublishListRequest, SavedList,
   SavedListGetRequest,
   UpdateExplicitSavedListContentsRequest
 } from '../../../model/saved-list';
@@ -98,6 +98,7 @@ import {EditCandidateStatusComponent} from "../view/status/edit-candidate-status
 import {SalesforceStageComponent} from "../../util/salesforce-stage/salesforce-stage.component";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 import {PublishedDocColumnService} from "../../../services/published-doc-column.service";
+import {display} from "html2canvas/dist/types/css/property-descriptors/display";
 
 interface CachedTargetList {
   sourceID: number;
@@ -565,20 +566,23 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
     this.publishing = true;
     this.error = null;
 
-    //Get the export columns for this source.
-    const columnKeys: string[] =  this.candidateSource.exportColumns;
+    //Get the export columns currently configured for this source.
+    let exportColumns: ExportColumn[] =  this.candidateSource.exportColumns;
 
+    exportColumns = this.modifyExportColumns(exportColumns);
+
+    //todo Note: 1 that the same column could appear more than once, 2: we need matching parameters
     //Construct the request
     const request: PublishListRequest = new PublishListRequest();
-    request.columns = this.publishedDocColumnService.getColumnInfosFromKeys(columnKeys)
+    request.columns = this.publishedDocColumnService.getColumnConfigFromExportColumns(exportColumns)
 
     this.savedListService.publish(this.candidateSource.id, request).subscribe(
-      result => {
+      (result: SavedList) => {
         if (isSavedList(this.candidateSource)) {
           //Update the list's published doc link and the export columns
           this.candidateSource.publishedDocLink = result.publishedDocLink;
-          this.candidateSource.exportColumns = result.exportColumns;
         }
+        this.candidateSource.exportColumns = result.exportColumns;
         this.publishing = false;
       },
       error => {
@@ -586,6 +590,30 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
         this.publishing = false;
       }
     );
+  }
+
+  private modifyExportColumns(exportColumns: ExportColumn[]) {
+    //todo Display existing report columns, offering the chance to modify them
+
+    //Todo - debugging - for now default empty export columns
+    if (exportColumns == null || exportColumns.length === 0) {
+      exportColumns = [];
+      let col: ExportColumn;
+      col = new ExportColumn();
+      col.index = 0;
+      col.key = "candidateNumber";
+      exportColumns.push(col);
+      col = new ExportColumn();
+      col.index = 1;
+      col.key = "name";
+      exportColumns.push(col);
+      col = new ExportColumn();
+      col.index = 2;
+      col.key = "cv";
+      exportColumns.push(col);
+    }
+
+    return exportColumns;
   }
 
   createAndDownloadBlobFile(body, options, filename) {

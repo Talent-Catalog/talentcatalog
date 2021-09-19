@@ -46,18 +46,20 @@ import org.tbbtalent.server.exception.InvalidRequestException;
 import org.tbbtalent.server.exception.NoSuchObjectException;
 import org.tbbtalent.server.exception.RegisteredListException;
 import org.tbbtalent.server.model.db.Candidate;
+import org.tbbtalent.server.model.db.ExportColumn;
 import org.tbbtalent.server.model.db.SavedList;
 import org.tbbtalent.server.model.db.SavedSearch;
 import org.tbbtalent.server.model.db.Status;
 import org.tbbtalent.server.model.db.User;
 import org.tbbtalent.server.repository.db.CandidateRepository;
+import org.tbbtalent.server.repository.db.ExportColumnRepository;
 import org.tbbtalent.server.repository.db.GetCandidateSavedListsQuery;
 import org.tbbtalent.server.repository.db.GetSavedListsQuery;
 import org.tbbtalent.server.repository.db.SavedListRepository;
 import org.tbbtalent.server.repository.db.UserRepository;
 import org.tbbtalent.server.request.candidate.PublishListRequest;
 import org.tbbtalent.server.request.candidate.PublishedDocBuilder;
-import org.tbbtalent.server.request.candidate.PublishedDocColumnInfo;
+import org.tbbtalent.server.request.candidate.PublishedDocColumnDef;
 import org.tbbtalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tbbtalent.server.request.candidate.source.CopySourceContentsRequest;
 import org.tbbtalent.server.request.list.ContentUpdateType;
@@ -70,6 +72,7 @@ import org.tbbtalent.server.request.search.UpdateSharingRequest;
 import org.tbbtalent.server.security.AuthService;
 import org.tbbtalent.server.service.db.CandidateSavedListService;
 import org.tbbtalent.server.service.db.DocPublisherService;
+import org.tbbtalent.server.service.db.ExportColumnsService;
 import org.tbbtalent.server.service.db.FileSystemService;
 import org.tbbtalent.server.service.db.SalesforceService;
 import org.tbbtalent.server.service.db.SavedListService;
@@ -89,6 +92,8 @@ public class SavedListServiceImpl implements SavedListService {
     private final static String LIST_JOB_DESCRIPTION_SUBFOLDER = "JobDescription";
     private final static String REGISTERED_NAME_SUFFIX = "*";
     private final CandidateRepository candidateRepository;
+    private final ExportColumnRepository exportColumnRepository;
+    private final ExportColumnsService exportColumnsService;
     private final SavedListRepository savedListRepository;
     private final CandidateSavedListService candidateSavedListService;
     private final DocPublisherService docPublisherService;
@@ -103,6 +108,8 @@ public class SavedListServiceImpl implements SavedListService {
     @Autowired
     public SavedListServiceImpl(
         CandidateRepository candidateRepository,
+        ExportColumnRepository exportColumnRepository,
+        ExportColumnsService exportColumnsService,
         SavedListRepository savedListRepository,
         CandidateSavedListService candidateSavedListService,
         DocPublisherService docPublisherService,
@@ -112,6 +119,8 @@ public class SavedListServiceImpl implements SavedListService {
         AuthService authService
     ) {
         this.candidateRepository = candidateRepository;
+        this.exportColumnRepository = exportColumnRepository;
+        this.exportColumnsService = exportColumnsService;
         this.savedListRepository = savedListRepository;
         this.candidateSavedListService = candidateSavedListService;
         this.docPublisherService = docPublisherService;
@@ -567,15 +576,16 @@ public class SavedListServiceImpl implements SavedListService {
         //Get list, creating list folder if necessary
         SavedList savedList = createListFolder(id);
         
+        
+        Set<ExportColumn> cols2 = savedList.getExportColumns();
+        
         //Fetch candidates in list
         Set<Candidate> candidates = savedList.getCandidates();
-        
-        //TODO JC Need to sort this list - by id 
 
         //Set list context on candidates so that Candidate field contextNote can be accessed.
         setCandidateContext(savedList.getId(), candidates);
 
-        List<PublishedDocColumnInfo> columnInfos = request.getColumns(); 
+        List<PublishedDocColumnDef> columnInfos = request.getConfiguredColumns(); 
 
         PublishedDocBuilder builder = new PublishedDocBuilder();
         
@@ -598,8 +608,13 @@ public class SavedListServiceImpl implements SavedListService {
         String link = docPublisherService
             .createPublishedDoc(drive, listFolder, savedList.getName(), publishedData);
 
-        //Update saved list with the corresponding column keys and document link.
-        savedList.setExportColumns(request.getExportColumnKeys());
+        /*
+         * Need to remove any existing columns - can't rely on the savedList.setExportColumns call
+         * to do that. See the doc for {@link ExportColumnsService}
+         */
+        exportColumnsService.clearExportColumns(savedList);
+        Set<ExportColumn> cols = request.getExportColumns(savedList);
+        savedList.setExportColumns(cols);
         savedList.setPublishedDocLink(link);
         saveIt(savedList);
         

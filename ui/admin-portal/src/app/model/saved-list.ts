@@ -102,15 +102,18 @@ export class PublishedDocConstantSource extends PublishedDocValueSource {
   }
 }
 
+/**
+ * See doc for corresponding Java class
+ */
 export class PublishedDocColumnContent {
   link?: PublishedDocValueSource;
   value?: PublishedDocValueSource;
 }
 
-export class PublishedDocColumnInfo {
+export class PublishedDocColumnDef {
   /**
    * This is the unique key for this column.
-   * A comma separated list of these keys is what is stored on the server in the exportColumns field
+   * This key is stored on the server in the exportColumns field as part of a ExportColumn object
    * associated with the candidate source.
    */
   key: string;
@@ -147,8 +150,33 @@ export class PublishedDocColumnInfo {
   }
 }
 
+/**
+ * See doc for corresponding Java class
+ */
+export class PublishedDocColumnProps {
+  header: string;
+  constant: string;
+}
+
+/**
+ * See doc for corresponding Java class
+ */
+export class PublishedDocColumnConfig {
+  columnProps: PublishedDocColumnProps;
+  columnDef: PublishedDocColumnDef;
+}
+
+/**
+ * See doc for corresponding Java class
+ */
+export class ExportColumn {
+  index: number;
+  key: string;
+  properties?: PublishedDocColumnProps;
+}
+
 export class PublishListRequest {
-  columns: PublishedDocColumnInfo[] = [];
+  columns: PublishedDocColumnConfig[] = [];
 }
 
 export class SearchSavedListRequest extends SearchCandidateSourcesRequest {

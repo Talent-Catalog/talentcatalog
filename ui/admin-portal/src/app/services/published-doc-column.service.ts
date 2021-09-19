@@ -16,7 +16,8 @@
 
 import { Injectable } from '@angular/core';
 import {
-  PublishedDocColumnInfo, PublishedDocConstantSource,
+  ExportColumn, PublishedDocColumnConfig,
+  PublishedDocColumnDef, PublishedDocConstantSource,
   PublishedDocFieldSource,
   PublishedDocValueSource
 } from "../model/saved-list";
@@ -27,7 +28,7 @@ import {CandidateFieldInfo} from "../model/candidate-field-info";
 })
 export class PublishedDocColumnService {
 
-  private allColumnInfosMap = new Map<string, PublishedDocColumnInfo>();
+  private allColumnInfosMap = new Map<string, PublishedDocColumnDef>();
 
   constructor() {
     this.addColumn("id", "Candidate id", null, new PublishedDocFieldSource("id"));
@@ -51,24 +52,27 @@ export class PublishedDocColumnService {
       new PublishedDocFieldSource("shareableCv.location"));
   }
 
-  getColumnInfosFromKeys(keys: string[]): PublishedDocColumnInfo[] {
-    const columnInfos: PublishedDocColumnInfo[] = [];
-    for (const columnKey of keys) {
-      const columnInfo = this.getColumnInfoFromKey(columnKey);
-      if (columnInfo != null) {
-        columnInfos.push(columnInfo)
+  getColumnConfigFromExportColumns(exportColumns: ExportColumn[]): PublishedDocColumnConfig[] {
+    const columnConfigs: PublishedDocColumnConfig[] = [];
+    for (const exportColumn of exportColumns) {
+      const columnDef = this.getColumnInfoFromKey(exportColumn.key);
+      if (columnDef != null) {
+        const config = new PublishedDocColumnConfig();
+        config.columnDef = columnDef;
+        config.columnProps = exportColumn.properties;
+        columnConfigs.push(config);
       }
     }
-    return columnInfos;
+    return columnConfigs;
   }
 
-  private getColumnInfoFromKey(columnKey: string): PublishedDocColumnInfo {
+  private getColumnInfoFromKey(columnKey: string): PublishedDocColumnDef {
     return this.allColumnInfosMap.get(columnKey);
   }
 
   private addColumnWithLink(key: string, name: string, header: string,
                          value: PublishedDocValueSource, link: PublishedDocValueSource) {
-    const info = new PublishedDocColumnInfo(key, name, header);
+    const info = new PublishedDocColumnDef(key, name, header);
     info.content.value = value;
     info.content.link = link;
     this.allColumnInfosMap.set(key, info);

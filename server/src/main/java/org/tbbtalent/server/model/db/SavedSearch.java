@@ -88,7 +88,10 @@ public class SavedSearch extends AbstractCandidateSource {
     //relationships here: 
     // https://thoughts-on-java.org/best-practices-for-many-to-many-associations-with-hibernate-and-jpa/
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "sharedSearches", cascade = CascadeType.MERGE)
-    private Set<User> users = new HashSet<>();     
+    private Set<User> users = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "savedSearch", cascade = CascadeType.MERGE)
+    private Set<ExportColumn> exportColumns;
 
     @Transient private List<String> countryNames;
     @Transient private List<String> nationalityNames;
@@ -104,6 +107,15 @@ public class SavedSearch extends AbstractCandidateSource {
     @Transient private SavedSearchSubtype savedSearchSubtype;
 
     public SavedSearch() {
+    }
+
+    @Nullable
+    public Set<ExportColumn> getExportColumns() {
+        return exportColumns;
+    }
+
+    public void setExportColumns(@Nullable Set<ExportColumn> exportColumns) {
+        this.exportColumns = exportColumns;
     }
 
     public Boolean getDefaultSearch() {
