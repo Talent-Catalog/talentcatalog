@@ -76,7 +76,7 @@ import {
   ContentUpdateType,
   CopySourceContentsRequest, ExportColumn,
   IHasSetOfCandidates,
-  isSavedList, PublishedDocColumnDef, PublishListRequest, SavedList,
+  isSavedList, PublishedDocColumnDef, PublishedDocColumnProps, PublishListRequest, SavedList,
   SavedListGetRequest,
   UpdateExplicitSavedListContentsRequest
 } from '../../../model/saved-list';
@@ -603,13 +603,38 @@ export class ShowCandidatesComponent implements OnInit, OnChanges, OnDestroy {
       col.index = 0;
       col.key = "candidateNumber";
       exportColumns.push(col);
+
       col = new ExportColumn();
       col.index = 1;
       col.key = "name";
       exportColumns.push(col);
+
       col = new ExportColumn();
       col.index = 2;
       col.key = "cv";
+      col.properties = new PublishedDocColumnProps();
+      col.properties.constant = "Click for CV"
+      exportColumns.push(col);
+
+      col = new ExportColumn();
+      col.index = 3;
+      col.key = "emptyColumn";
+      col.properties = new PublishedDocColumnProps();
+      col.properties.header = "Interview date"
+      exportColumns.push(col);
+
+      col = new ExportColumn();
+      col.index = 4;
+      col.key = "emptyColumn";
+      col.properties = new PublishedDocColumnProps();
+      col.properties.header = "Interview panel"
+      exportColumns.push(col);
+
+      col = new ExportColumn();
+      col.index = 5;
+      col.key = "emptyColumn";
+      col.properties = new PublishedDocColumnProps();
+      col.properties.header = "Offer?"
       exportColumns.push(col);
     }
 

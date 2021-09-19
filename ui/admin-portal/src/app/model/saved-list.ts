@@ -140,13 +140,12 @@ export class PublishedDocColumnDef {
   /**
    *
    * @param key Unique for this column
-   * @param name Name displayed to Angular user.
-   * @param header Column header. If null, defaults to name.
+   * @param name Name displayed to Angular user, also provides default header
    */
-  constructor(key: string, name: string, header: string) {
+  constructor(key: string, name: string) {
     this.key = key;
     this.name = name;
-    this.header = header == null ? name : header;
+    this.header = name;
   }
 }
 

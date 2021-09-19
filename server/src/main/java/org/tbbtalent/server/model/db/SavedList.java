@@ -17,6 +17,7 @@
 package org.tbbtalent.server.model.db;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -25,6 +26,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -150,14 +152,15 @@ public class SavedList extends AbstractCandidateSource {
     private Set<User> users = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "savedList", cascade = CascadeType.MERGE)
-    private Set<ExportColumn> exportColumns;
+    @OrderBy("index ASC")
+    private List<ExportColumn> exportColumns;
 
     @Nullable
-    public Set<ExportColumn> getExportColumns() {
+    public List<ExportColumn> getExportColumns() {
         return exportColumns;
     }
 
-    public void setExportColumns(@Nullable Set<ExportColumn> exportColumns) {
+    public void setExportColumns(@Nullable List<ExportColumn> exportColumns) {
         this.exportColumns = exportColumns;
     }
 

@@ -91,7 +91,8 @@ public class SavedSearch extends AbstractCandidateSource {
     private Set<User> users = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "savedSearch", cascade = CascadeType.MERGE)
-    private Set<ExportColumn> exportColumns;
+    @OrderBy("index ASC")
+    private List<ExportColumn> exportColumns;
 
     @Transient private List<String> countryNames;
     @Transient private List<String> nationalityNames;
@@ -110,11 +111,11 @@ public class SavedSearch extends AbstractCandidateSource {
     }
 
     @Nullable
-    public Set<ExportColumn> getExportColumns() {
+    public List<ExportColumn> getExportColumns() {
         return exportColumns;
     }
 
-    public void setExportColumns(@Nullable Set<ExportColumn> exportColumns) {
+    public void setExportColumns(@Nullable List<ExportColumn> exportColumns) {
         this.exportColumns = exportColumns;
     }
 

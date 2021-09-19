@@ -16,7 +16,7 @@
 
 package org.tbbtalent.server.service.db.impl;
 
-import java.util.Set;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.tbbtalent.server.model.db.ExportColumn;
 import org.tbbtalent.server.model.db.SavedList;
@@ -35,8 +35,10 @@ public class ExportColumnsServiceImpl implements ExportColumnsService {
 
   @Override
   public void clearExportColumns(SavedList savedList) {
-    Set<ExportColumn> cols = savedList.getExportColumns();
-    exportColumnRepository.deleteAll(cols);
+    List<ExportColumn> cols = savedList.getExportColumns();
+    if (cols != null) {
+      exportColumnRepository.deleteAll(cols);
+    }
     savedList.setExportColumns(null);
   }
 }

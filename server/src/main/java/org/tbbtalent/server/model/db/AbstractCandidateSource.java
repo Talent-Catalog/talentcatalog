@@ -134,7 +134,7 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
      * {@link ExportColumn#getIndex()} attribute in each ExportColumn.
      */
     @Nullable
-    public abstract Set<ExportColumn> getExportColumns();
+    public abstract List<ExportColumn> getExportColumns();
 
     /**
      * @see #getExportColumns()
@@ -143,7 +143,7 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
      * are deleted. You need to explicitly do that using 
      * {@link org.tbbtalent.server.service.db.ExportColumnsService}
      */
-    public abstract void setExportColumns(@Nullable Set<ExportColumn> exportColumns2);
+    public abstract void setExportColumns(@Nullable List<ExportColumn> exportColumns);
     
     @Nullable
     public String getDescription() {

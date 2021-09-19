@@ -62,6 +62,7 @@ public class SavedListBuilderSelector {
                 ;
     }
 
+    //todo Export column dto shoudl be common and shared with SavedSearch dtos
     private DtoBuilder exportColumnDto() {
         return new DtoBuilder()
                 .add("index")

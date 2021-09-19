@@ -576,9 +576,6 @@ public class SavedListServiceImpl implements SavedListService {
         //Get list, creating list folder if necessary
         SavedList savedList = createListFolder(id);
         
-        
-        Set<ExportColumn> cols2 = savedList.getExportColumns();
-        
         //Fetch candidates in list
         Set<Candidate> candidates = savedList.getCandidates();
 
@@ -613,7 +610,7 @@ public class SavedListServiceImpl implements SavedListService {
          * to do that. See the doc for {@link ExportColumnsService}
          */
         exportColumnsService.clearExportColumns(savedList);
-        Set<ExportColumn> cols = request.getExportColumns(savedList);
+        List<ExportColumn> cols = request.getExportColumns(savedList);
         savedList.setExportColumns(cols);
         savedList.setPublishedDocLink(link);
         saveIt(savedList);

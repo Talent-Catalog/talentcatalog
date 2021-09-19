@@ -17,9 +17,7 @@
 package org.tbbtalent.server.request.candidate;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 import org.tbbtalent.server.model.db.ExportColumn;
@@ -38,8 +36,8 @@ public class PublishListRequest {
    */
   private List<PublishedDocColumnConfig> columns;
   
-  public Set<ExportColumn> getExportColumns(SavedList savedList) {
-    Set<ExportColumn> exportColumns = new HashSet<>();
+  public List<ExportColumn> getExportColumns(SavedList savedList) {
+    List<ExportColumn> exportColumns = new ArrayList<>();
     int index = 0;
     for (PublishedDocColumnConfig config : columns) {
       ExportColumn col = new ExportColumn();
@@ -76,7 +74,11 @@ public class PublishListRequest {
         String constant = props.getConstant();
         if (constant != null) {
           PublishedDocValueSource valueSource = info.getContent().getValue();
-          if (valueSource instanceof PublishedDocConstantSource) {
+          if (valueSource == null) {
+            //Set value of default null value source
+            info.getContent().setValue(new PublishedDocConstantSource(constant));
+          } else if (valueSource.getFieldName() == null) {
+            //Only set constant value if field value absent
             valueSource.setConstant(constant);
           }
         }
