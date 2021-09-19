@@ -25,6 +25,8 @@ import org.tbbtalent.server.util.dto.DtoBuilder;
  * @author John Cameron
  */
 public class SavedListBuilderSelector {
+    private final ExportColumnsBuilderSelector exportColumnsBuilderSelector 
+        = new ExportColumnsBuilderSelector();
 
     public @NotNull DtoBuilder selectBuilder() {
         return savedListDto();
@@ -36,7 +38,7 @@ public class SavedListBuilderSelector {
                 .add("description")
                 .add("displayedFieldsLong")
                 .add("displayedFieldsShort")
-                .add("exportColumns", exportColumnDto())
+                .add("exportColumns", exportColumnsBuilderSelector.selectBuilder())
                 .add("status")
                 .add("name")
                 .add("fixed")
@@ -60,22 +62,6 @@ public class SavedListBuilderSelector {
         return new DtoBuilder()
                 .add("id")
                 ;
-    }
-
-    //todo Export column dto shoudl be common and shared with SavedSearch dtos
-    private DtoBuilder exportColumnDto() {
-        return new DtoBuilder()
-                .add("index")
-                .add("key")
-                .add("properties", publishedDocColumnPropsDto())
-                ;
-    }
-
-    private DtoBuilder publishedDocColumnPropsDto() {
-        return new DtoBuilder()
-            .add("header")
-            .add("constant")
-            ;
     }
 
     private DtoBuilder userDto() {
