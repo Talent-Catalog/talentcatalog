@@ -51,7 +51,7 @@ export class PublishedDocColumnService {
   getColumnConfigFromExportColumns(exportColumns: ExportColumn[]): PublishedDocColumnConfig[] {
     const columnConfigs: PublishedDocColumnConfig[] = [];
     for (const exportColumn of exportColumns) {
-      const columnDef = this.getColumnInfoFromKey(exportColumn.key);
+      const columnDef = this.getColumnDefFromKey(exportColumn.key);
       if (columnDef != null) {
         const config = new PublishedDocColumnConfig();
         config.columnDef = columnDef;
@@ -62,7 +62,7 @@ export class PublishedDocColumnService {
     return columnConfigs;
   }
 
-  private getColumnInfoFromKey(columnKey: string): PublishedDocColumnDef {
+  private getColumnDefFromKey(columnKey: string): PublishedDocColumnDef {
     return this.allColumnInfosMap.get(columnKey);
   }
 
