@@ -18,9 +18,6 @@ package org.tbbtalent.server.service.db.impl;
 
 import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -30,6 +27,10 @@ import org.tbbtalent.server.service.db.FileSystemService;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tbbtalent.server.util.filesystem.GoogleFileSystemFolder;
+
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.List;
 
 /**
  * Publishes Google Sheets on a Google Drive
@@ -62,7 +63,7 @@ public class GoogleSheetPublisherServiceImpl implements DocPublisherService {
     ValueRange body = new ValueRange().setValues(data);
     UpdateValuesResponse result =
         googleDriveConfig.getGoogleSheetsService().spreadsheets().values()
-            .update(file.getId(), "2:1000", body)
+            .update(file.getId(), "B7", body)
             .setValueInputOption("USER_ENTERED")
             .execute();
 
